@@ -20,6 +20,24 @@
 				<Tool Name="VFCustomBuildTool"/>
 				<Tool Name="VFPreLinkEventTool"/>
 				<Tool Name="VFPreBuildEventTool"/>
+				<Tool Name="VFPostBuildEventTool"/></Configuration>
+		<Configuration Name="Debug-mpe|Win32" DeleteExtensionsOnClean="*.obj;*.mod;*.pdb;*.asm;*.map;*.dyn;*.dpi;*.tmp;*.log;*.ilk;*.exe;$(TargetPath)">
+				<Tool Name="VFFortranCompilerTool" AdditionalOptions="/nolink" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" Preprocess="preprocessYes" AdditionalIncludeDirectories="$(SolutionDir)..\..\..\..\..\opencmissextras\cm\external\i386-win32-debug;$(SolutionDir)..\..\..\..\..\opencmissextras\cm\external\i386-win32-debug\include;$(SolutionDir)..\..\..\..\..\opencmissextras\cm\external\i386-win32-debug\include\finclude;$(SolutionDir)..\..\..\..\..\opencmissextras\cm\external\i386-win32-debug\bmake\cygwin-c-debug;C:\Program Files\MPICH2\include" PreprocessorDefinitions="PETSC_AVOID_MPIF_H" Diagnostics="diagnosticsShowAll" ModulePath="$(SolutionDir)..\object\i386-win32-debug\" ObjectFile="$(SolutionDir)..\object\i386-win32-debug\" Traceback="true" RuntimeChecks="rtChecksAll" BoundsCheck="true" RuntimeLibrary="rtQuickWinDebug"/>
+				<Tool Name="VFLinkerTool" OutputFile="$(SolutionDir)..\bin\i386-win32\FiniteElasticityExample-debug.exe" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" AdditionalLibraryDirectories="$(SolutionDir)..\object\i386-win32-debug\;$(SolutionDir)..\..\..\..\..\opencmissextras\cm\external\i386-win32-debug\lib;$(SolutionDir)..\..\..\..\..\opencmissextras\cm\external\i386-win32-debug\lib\cygwin-c-debug\;C:\Program Files\MPICH2\lib\" IgnoreDefaultLibraryNames="LIBC" GenerateDebugInformation="true" ProgramDatabaseFile="$(OUTDIR)/Fortran.pdb" SubSystem="subSystemWindows" AdditionalDependencies="C.lib ParMETISlib.lib METISlib.lib libpetscts.lib libpetscsnes.lib libpetscksp.lib libpetscdm.lib libpetscmat.lib libpetscvec.lib libpetsc.lib libflapack.lib libfblas.lib mpi.lib fmpich2.lib Advapi32.lib Gdi32.lib User32.lib"/>
+				<Tool Name="VFResourceCompilerTool"/>
+				<Tool Name="VFMidlTool" SuppressStartupBanner="true" TypeLibraryName="$(IntDir)/$(InputName).tlb"/>
+				<Tool Name="VFCustomBuildTool"/>
+				<Tool Name="VFPreLinkEventTool"/>
+				<Tool Name="VFPreBuildEventTool"/>
+				<Tool Name="VFPostBuildEventTool"/></Configuration>
+		<Configuration Name="Profile|Win32" DeleteExtensionsOnClean="*.obj;*.mod;*.pdb;*.asm;*.map;*.dyn;*.dpi;*.tmp;*.log;*.ilk;*.exe;$(TargetPath)">
+				<Tool Name="VFFortranCompilerTool" AdditionalOptions="/nolink /Qprof-genx" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" Preprocess="preprocessYes" AdditionalIncludeDirectories="$(SolutionDir)..\..\..\..\..\opencmissextras\cm\external\i386-win32-debug;$(SolutionDir)..\..\..\..\..\opencmissextras\cm\external\i386-win32-debug\include;$(SolutionDir)..\..\..\..\..\opencmissextras\cm\external\i386-win32-debug\include\finclude;$(SolutionDir)..\..\..\..\..\opencmissextras\cm\external\i386-win32-debug\bmake\cygwin-c-debug;C:\Program Files\MPICH2\include" PreprocessorDefinitions="PETSC_AVOID_MPIF_H" Diagnostics="diagnosticsShowAll" ModulePath="$(SolutionDir)..\object\i386-win32-debug\" ObjectFile="$(SolutionDir)..\object\i386-win32-debug\" Traceback="true" RuntimeChecks="rtChecksAll" BoundsCheck="true" RuntimeLibrary="rtQuickWinDebug"/>
+				<Tool Name="VFLinkerTool" OutputFile="$(SolutionDir)..\bin\i386-win32\FiniteElasticityExample-profile.exe" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" AdditionalLibraryDirectories="$(SolutionDir)..\object\i386-win32-debug\;$(SolutionDir)..\..\..\..\..\opencmissextras\cm\external\i386-win32-debug\lib;$(SolutionDir)..\..\..\..\..\opencmissextras\cm\external\i386-win32-debug\lib\cygwin-c-debug\;C:\Program Files\MPICH2\lib\" IgnoreDefaultLibraryNames="LIBC" GenerateDebugInformation="true" ProgramDatabaseFile="$(OUTDIR)/Fortran.pdb" SubSystem="subSystemWindows" AdditionalDependencies="C.lib ParMETISlib.lib METISlib.lib libpetscts.lib libpetscsnes.lib libpetscksp.lib libpetscdm.lib libpetscmat.lib libpetscvec.lib libpetsc.lib libflapack.lib libfblas.lib mpi.lib fmpich2.lib Advapi32.lib Gdi32.lib User32.lib"/>
+				<Tool Name="VFResourceCompilerTool"/>
+				<Tool Name="VFMidlTool" SuppressStartupBanner="true" TypeLibraryName="$(IntDir)/$(InputName).tlb"/>
+				<Tool Name="VFCustomBuildTool"/>
+				<Tool Name="VFPreLinkEventTool"/>
+				<Tool Name="VFPreBuildEventTool"/>
 				<Tool Name="VFPostBuildEventTool"/></Configuration></Configurations>
 	<Files>
 		<Filter Name="Header Files" Filter="fi;fd"/>
@@ -48,6 +66,7 @@
 		<File RelativePath="..\..\..\..\src\f90c_f.f90"/>
 		<File RelativePath="..\..\..\..\src\field_IO_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\field_routines.f90"/>
+		<File RelativePath="..\..\..\..\src\finite_elasticity_routines.f90"/>
 		<File RelativePath="..\..\src\FiniteElasticityExample.f90"/>
 		<File RelativePath="..\..\..\..\src\fluid_mechanics_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\generated_mesh_routines.f90"/>
@@ -56,6 +75,7 @@
 		<File RelativePath="..\..\..\..\src\kinds.f90"/>
 		<File RelativePath="..\..\..\..\src\lapack.f90"/>
 		<File RelativePath="..\..\..\..\src\Laplace_equations_routines.f90"/>
+		<File RelativePath="..\..\..\..\src\linear_elasticity_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\lists.f90"/>
 		<File RelativePath="..\..\..\..\src\machine_constants_win32.f90"/>
 		<File RelativePath="..\..\..\..\src\maths.f90"/>
