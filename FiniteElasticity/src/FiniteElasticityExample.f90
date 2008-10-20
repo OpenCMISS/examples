@@ -1,3 +1,46 @@
+!> \file
+!> $Id: FiniteElasticityExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> \author Chris Bradley
+!> \brief This is an example program to solve a finite elasticity equation using openCMISS calls.
+!>
+!> \section LICENSE
+!>
+!> Version: MPL 1.1/GPL 2.0/LGPL 2.1
+!>
+!> The contents of this file are subject to the Mozilla Public License
+!> Version 1.1 (the "License"); you may not use this file except in
+!> compliance with the License. You may obtain a copy of the License at
+!> http://www.mozilla.org/MPL/
+!>
+!> Software distributed under the License is distributed on an "AS IS"
+!> basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+!> License for the specific language governing rights and limitations
+!> under the License.
+!>
+!> The Original Code is openCMISS
+!>
+!> The Initial Developer of the Original Code is University of Auckland,
+!> Auckland, New Zealand and University of Oxford, Oxford, United
+!> Kingdom. Portions created by the University of Auckland and University
+!> of Oxford are Copyright (C) 2007 by the University of Auckland and
+!> the University of Oxford. All Rights Reserved.
+!>
+!> Contributor(s): Kumar Mithraratne
+!>
+!> Alternatively, the contents of this file may be used under the terms of
+!> either the GNU General Public License Version 2 or later (the "GPL"), or
+!> the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+!> in which case the provisions of the GPL or the LGPL are applicable instead
+!> of those above. If you wish to allow use of your version of this file only
+!> under the terms of either the GPL or the LGPL, and not to allow others to
+!> use your version of this file under the terms of the MPL, indicate your
+!> decision by deleting the provisions above and replace them with the notice
+!> and other provisions required by the GPL or the LGPL. If you do not delete
+!> the provisions above, a recipient may use your version of this file under
+!> the terms of any one of the MPL, the GPL or the LGPL.
+!>
+
+!> Main program
 PROGRAM FINITEELASTICITYEXAMPLE
 
   USE BASE_ROUTINES
@@ -13,6 +56,7 @@ PROGRAM FINITEELASTICITYEXAMPLE
   USE EQUATIONS_SET_ROUTINES
   USE FIELD_ROUTINES
   USE FIELD_IO_ROUTINES
+  USE FINITE_ELASTICITY_ROUTINES
   USE INPUT_OUTPUT
   USE ISO_VARYING_STRING
   USE KINDS
@@ -26,206 +70,303 @@ PROGRAM FINITEELASTICITYEXAMPLE
   USE TIMER
   USE TYPES
 
+#ifdef WIN32
+  USE IFQWIN
+#endif
+
+  IMPLICIT NONE
+
+  !Test program parameters
+
+  REAL(DP), PARAMETER :: HEIGHT=1.0_DP
+  REAL(DP), PARAMETER :: WIDTH=1.0_DP
+  REAL(DP), PARAMETER :: LENGTH=1.0_DP
+
+  !Program types
+
 
   !Program variables
 
-  INTEGER(INTG) :: NUMBER_OF_DOMAINS  
+  INTEGER(INTG) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
+  INTEGER(INTG) :: NUMBER_OF_DOMAINS
+
   INTEGER(INTG) :: NUMBER_COMPUTATIONAL_NODES
   INTEGER(INTG) :: MY_COMPUTATIONAL_NODE_NUMBER
   INTEGER(INTG) :: MPI_IERROR
 
-  INTEGER(INTG) :: first_global_dof,first_local_dof,first_local_rank,last_global_dof
-  INTEGER(INTG) :: last_local_dof,last_local_rank,rank_idx
-  INTEGER(INTG) :: np,np_idx,npt,ne,ne_idx,net
-  INTEGER(INTG) :: EQUATIONS_SET_INDEX
-  TYPE(DOMAIN_MAPPING_TYPE), POINTER :: DEPENDENT_DOF_MAPPING
-
-  TYPE(COORDINATE_SYSTEM_TYPE), POINTER :: globalcoordinate
-  TYPE(REGION_TYPE), POINTER :: region1
-  TYPE(BASIS_TYPE), POINTER :: basis1
-  TYPE(MESH_TYPE), POINTER :: mesh1
-  TYPE(DECOMPOSITION_TYPE), POINTER :: decompositon
-  TYPE(FIELD_TYPE), POINTER :: undeffield,fibrefield,materialfield,deffield,boundaryfield,GEOMETRIC_FIELD  
-  TYPE(EQUATIONS_SET_TYPE), POINTER :: equation
+  INTEGER(INTG) :: first_global_dof,first_local_dof,first_local_rank,last_global_dof,last_local_dof,last_local_rank,rank_idx
+  INTEGER(INTG) :: EQUATIONS_SET_INDEX  
+  INTEGER(INTG) :: NEXT_NUMBER,np,np_idx,npt
+  
+  TYPE(BASIS_TYPE), POINTER :: basis
+  TYPE(COORDINATE_SYSTEM_TYPE), POINTER :: coordinate_system
+  TYPE(MESH_TYPE), POINTER :: mesh
+  TYPE(DECOMPOSITION_TYPE), POINTER :: decomposition
+  TYPE(EQUATIONS_SET_TYPE), POINTER :: equations_set
+  TYPE(FIELD_TYPE), POINTER :: geometric_field,fibre_field,material_field
   TYPE(PROBLEM_TYPE), POINTER :: problem
+  TYPE(REGION_TYPE), POINTER :: region
   TYPE(SOLVER_TYPE), POINTER :: solver
+  TYPE(DOMAIN_MAPPING_TYPE), POINTER :: dependent_dof_mapping
   
   LOGICAL :: EXPORT_FIELD,IMPORT_FIELD
   TYPE(VARYING_STRING) :: FILE,METHOD
 
+  REAL(SP) :: START_USER_TIME(1),STOP_USER_TIME(1),START_SYSTEM_TIME(1),STOP_SYSTEM_TIME(1)
 
-  !Generic CMISS variables  
+#ifdef WIN32
+  !Quickwin type
+  LOGICAL :: QUICKWIN_STATUS=.FALSE.
+  TYPE(WINDOWCONFIG) :: QUICKWIN_WINDOW_CONFIG
+#endif
+
+  !Generic CMISS variables
+
   INTEGER(INTG) :: ERR
   TYPE(VARYING_STRING) :: ERROR
 
-  
+  INTEGER(INTG) :: DIAG_LEVEL_LIST(5)
+  CHARACTER(LEN=MAXSTRLEN) :: DIAG_ROUTINE_LIST(1),TIMING_ROUTINE_LIST(1)
+
+
+#ifdef WIN32
+  !Initialise QuickWin
+  QUICKWIN_WINDOW_CONFIG%TITLE="General Output" !Window title
+  QUICKWIN_WINDOW_CONFIG%NUMTEXTROWS=-1 !Max possible number of rows
+  QUICKWIN_WINDOW_CONFIG%MODE=QWIN$SCROLLDOWN
+  !Set the window parameters
+  QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
+  !If attempt fails set with system estimated values
+  IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
+#endif
+
   !Intialise cmiss
   CALL CMISS_INITIALISE(ERR,ERROR,*999)
-  
-  NUMBER_OF_DOMAINS=1
-    
+
+  !Set all diganostic levels on for testing
+  DIAG_LEVEL_LIST(1)=1
+  DIAG_LEVEL_LIST(2)=2
+  DIAG_LEVEL_LIST(3)=3
+  DIAG_LEVEL_LIST(4)=4
+  DIAG_LEVEL_LIST(5)=5
+
+  TIMING_ROUTINE_LIST(1)="PROBLEM_FINITE_ELEMENT_CALCULATE"
+
+  !Calculate the start times
+  CALL CPU_TIMER(USER_CPU,START_USER_TIME,ERR,ERROR,*999)
+  CALL CPU_TIMER(SYSTEM_CPU,START_SYSTEM_TIME,ERR,ERROR,*999)
+
   !Get the number of computational nodes
   NUMBER_COMPUTATIONAL_NODES=COMPUTATIONAL_NODES_NUMBER_GET(ERR,ERROR)
   IF(ERR/=0) GOTO 999
   !Get my computational node number
   MY_COMPUTATIONAL_NODE_NUMBER=COMPUTATIONAL_NODE_NUMBER_GET(ERR,ERROR)
   IF(ERR/=0) GOTO 999
+
+  !Read in the number of elements in the X & Y directions, and the number of partitions on the master node (number 0)
+  !IF(MY_COMPUTATIONAL_NODE_NUMBER==0) THEN
+  !  WRITE(*,'("Enter the number of elements in the X direction :")')
+  !  READ(*,*) NUMBER_GLOBAL_X_ELEMENTS
+  !  WRITE(*,'("Enter the number of elements in the Y direction :")')
+  !  READ(*,*) NUMBER_GLOBAL_Y_ELEMENTS
+  !  WRITE(*,'("Enter the number of elements in the Z direction :")')
+  !  READ(*,*) NUMBER_GLOBAL_Z_ELEMENTS
+  !  WRITE(*,'("Enter the number of domains :")')
+  !  READ(*,*) NUMBER_OF_DOMAINS
+  !ENDIF
   
+   NUMBER_GLOBAL_X_ELEMENTS=1
+   NUMBER_GLOBAL_Y_ELEMENTS=1
+   NUMBER_GLOBAL_Y_ELEMENTS=1   
+   NUMBER_OF_DOMAINS=1
+   
   !Broadcast the number of elements in the X & Y directions and the number of partitions to the other computational nodes
-  CALL MPI_BCAST(1,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
+  CALL MPI_BCAST(NUMBER_GLOBAL_X_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
   CALL MPI_ERROR_CHECK("MPI_BCAST",MPI_IERROR,ERR,ERROR,*999)
-  CALL MPI_BCAST(1,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
+  CALL MPI_BCAST(NUMBER_GLOBAL_Y_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
   CALL MPI_ERROR_CHECK("MPI_BCAST",MPI_IERROR,ERR,ERROR,*999)
-  CALL MPI_BCAST(1,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
+  CALL MPI_BCAST(NUMBER_GLOBAL_Z_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
   CALL MPI_ERROR_CHECK("MPI_BCAST",MPI_IERROR,ERR,ERROR,*999)
   CALL MPI_BCAST(NUMBER_OF_DOMAINS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
   CALL MPI_ERROR_CHECK("MPI_BCAST",MPI_IERROR,ERR,ERROR,*999)
   CALL WRITE_STRING(GENERAL_OUTPUT_TYPE,"COMPUTATIONAL ENVIRONMENT:",ERR,ERROR,*999)
-  CALL WRITE_STRING_VALUE(GENERAL_OUTPUT_TYPE,  &
-    &"  Total number of computaional nodes = ",NUMBER_COMPUTATIONAL_NODES, &
+  CALL WRITE_STRING_VALUE(GENERAL_OUTPUT_TYPE,"  Total number of computaional nodes = ",NUMBER_COMPUTATIONAL_NODES, &
     & ERR,ERROR,*999)
-  CALL WRITE_STRING_VALUE(GENERAL_OUTPUT_TYPE,"  My computational node number = ", &
-    & MY_COMPUTATIONAL_NODE_NUMBER,ERR,ERROR,*999)
+  CALL WRITE_STRING_VALUE(GENERAL_OUTPUT_TYPE,"  My computational node number = ",MY_COMPUTATIONAL_NODE_NUMBER,ERR,ERROR,*999)
 
+  !Create a CS - default is 3D rectangular cartesian CS with 0,0,0 as origin
+  CALL COORDINATE_SYSTEM_CREATE_START(1,coordinate_system,ERR,ERROR,*999)
+  CALL COORDINATE_SYSTEM_TYPE_SET(1,COORDINATE_RECTANGULAR_CARTESIAN_TYPE,ERR,ERROR,*999)
+  CALL COORDINATE_SYSTEM_DIMENSION_SET(coordinate_system,3,ERR,ERROR,*999)
+  CALL COORDINATE_SYSTEM_ORIGIN_SET(1,(/0.0_DP,0.0_DP,0.0_DP/),ERR,ERROR,*999)
+  CALL COORDINATE_SYSTEM_CREATE_FINISH(coordinate_system,ERR,ERROR,*999)
 
-!************************************************************************************
-  !create a 3D RC coordinate system 
-  CALL COORDINATE_SYSTEM_CREATE_START(1,globalcoordinate,ERR,ERROR,*999) ! default is 3D RC coordinate system
-  CALL COORDINATE_SYSTEM_CREATE_FINISH(globalcoordinate,ERR,ERROR,*999)
+  !Create a region and assign the CS to the region
+  CALL REGION_CREATE_START(1,region,ERR,ERROR,*999)
+  CALL REGION_COORDINATE_SYSTEM_SET(region,coordinate_system,ERR,ERROR,*999)
+  CALL REGION_CREATE_FINISH(region,ERR,ERROR,*999)
 
-  !create a region
-  CALL REGION_CREATE_START(1,region1,ERR,ERROR,*999)  ! default is to assign CS already created                
-  CALL REGION_CREATE_FINISH(region1,ERR,ERROR,*999)
+  !Define bases (default is trilinear lagrange)
+  CALL BASIS_CREATE_START(1,basis,ERR,ERROR,*999) 
+  CALL BASIS_TYPE_SET(1,BASIS_LAGRANGE_HERMITE_TP_TYPE,ERR,ERROR,*999) 
+  CALL BASIS_NUMBER_OF_XI_SET(basis,3,ERR,ERROR,*999)
+  CALL BASIS_INTERPOLATION_XI_SET(1,(/BASIS_LINEAR_LAGRANGE_INTERPOLATION,  &
+    & BASIS_LINEAR_LAGRANGE_INTERPOLATION,BASIS_LINEAR_LAGRANGE_INTERPOLATION/),ERR,ERROR,*999)
+  CALL BASIS_QUADRATURE_NUMBER_OF_GAUSS_XI_SET(1,(/3,3,3/),ERR,ERROR,*999)  
+  CALL BASIS_CREATE_FINISH(basis,ERR,ERROR,*999)
 
-  !define trilinear lagrange basis
-  CALL BASIS_CREATE_START(1,basis1,ERR,ERROR,*999) ! default tri-linear Lagrange with 2 Gauss pts in each xi 
-  CALL BASIS_CREATE_FINISH(basis1,ERR,ERROR,*999)
+  !Create a regular mesh
+  CALL MESH_CREATE_REGULAR(1,region,(/0.0_DP,0.0_DP,0.0_DP/),(/1.0_DP,1.0_DP,1.0_DP/),(/1, &
+   & 1,1/),basis,mesh,ERR,ERROR,*999)
 
-  !create a regular mesh    
-  CALL MESH_CREATE_REGULAR(1,region1,(/0.0_DP,0.0_DP,0.0_DP/),(/1.0_DP,1.0_DP,1.0_DP/), &
-    & (/1,1,1/),basis1,mesh1,ERR,ERROR,*999)
+  !Create a decomposition
+  CALL DECOMPOSITION_CREATE_START(1,mesh,decomposition,ERR,ERROR,*999)
+  CALL DECOMPOSITION_TYPE_SET(decomposition,DECOMPOSITION_CALCULATED_TYPE,ERR,ERROR,*999)
+  CALL DECOMPOSITION_NUMBER_OF_DOMAINS_SET(decomposition,1,ERR,ERROR,*999)
+  CALL DECOMPOSITION_CREATE_FINISH(mesh,decomposition,ERR,ERROR,*999)
+    
+  !Create a field to put geometry (defualt is geometry)
+  CALL FIELD_CREATE_START(1,region,geometric_field,ERR,ERROR,*999)
+  CALL FIELD_MESH_DECOMPOSITION_SET(geometric_field,decomposition,ERR,ERROR,*999)
+  CALL FIELD_TYPE_SET(1,region,FIELD_GEOMETRIC_TYPE,ERR,ERROR,*999)  
+  CALL FIELD_COMPONENT_MESH_COMPONENT_SET(geometric_field,FIELD_STANDARD_VARIABLE_TYPE,1,1,ERR,ERROR,*999)
+  CALL FIELD_COMPONENT_MESH_COMPONENT_SET(geometric_field,FIELD_STANDARD_VARIABLE_TYPE,2,1,ERR,ERROR,*999)
+  CALL FIELD_COMPONENT_MESH_COMPONENT_SET(geometric_field,FIELD_STANDARD_VARIABLE_TYPE,3,1,ERR,ERROR,*999)
+  CALL FIELD_CREATE_FINISH(region,geometric_field,ERR,ERROR,*999)
+       
+  !Update the geometric field parameters
+  CALL FIELD_GEOMETRIC_PARAMETERS_UPDATE_FROM_INITIAL_MESH(geometric_field,ERR,ERROR,*999)
+  CALL FIELD_PARAMETER_SET_UPDATE_NODE(geometric_field,FIELD_VALUES_SET_TYPE,1,2,1,1,1.1_DP,ERR,ERROR,*999)
 
-  !create a decomposition
-  CALL DECOMPOSITION_CREATE_START(1,mesh1,decompositon,ERR,ERROR,*999)
-  CALL DECOMPOSITION_TYPE_SET(decompositon,DECOMPOSITION_CALCULATED_TYPE,ERR,ERROR,*999)
-  CALL DECOMPOSITION_NUMBER_OF_DOMAINS_SET(decompositon,NUMBER_OF_DOMAINS,ERR,ERROR,*999)
-  CALL DECOMPOSITION_CREATE_FINISH(mesh1,decompositon,ERR,ERROR,*999)
+  !Create a fibre field and attach it to the geometric field
+  CALL FIELD_NEXT_NUMBER_FIND(region,NEXT_NUMBER,ERR,ERROR,*999)      
+  CALL FIELD_CREATE_START(NEXT_NUMBER,region,fibre_field,ERR,ERROR,*999)
+  CALL FIELD_TYPE_SET(NEXT_NUMBER,region,FIELD_FIBRE_TYPE,ERR,ERROR,*999)
+  CALL FIELD_MESH_DECOMPOSITION_SET(fibre_field,decomposition,ERR,ERROR,*999)        
+  CALL FIELD_GEOMETRIC_FIELD_SET(NEXT_NUMBER,region,geometric_field,ERR,ERROR,*999)
+  CALL FIELD_NUMBER_OF_COMPONENTS_SET(NEXT_NUMBER,region,3,ERR,ERROR,*999)   
+  CALL FIELD_COMPONENT_INTERPOLATION_SET(NEXT_NUMBER,1,1,region,FIELD_NODE_BASED_INTERPOLATION,ERR,ERROR,*999)   
+  CALL FIELD_COMPONENT_INTERPOLATION_SET(NEXT_NUMBER,1,2,region,FIELD_NODE_BASED_INTERPOLATION,ERR,ERROR,*999)   
+  CALL FIELD_COMPONENT_INTERPOLATION_SET(NEXT_NUMBER,1,3,region,FIELD_NODE_BASED_INTERPOLATION,ERR,ERROR,*999)         
+  CALL FIELD_CREATE_FINISH(region,fibre_field,ERR,ERROR,*999) 
 
-!******
-  !create a field on the region to put undeformed geometry
-  CALL FIELD_CREATE_START(1,region1,undeffield,ERR,ERROR,*999)  
-  CALL FIELD_TYPE_SET(1,region1,1,ERR,ERROR,*999)
-  CALL FIELD_MESH_DECOMPOSITION_SET(undeffield,decompositon,ERR,ERROR,*999)
-  CALL FIELD_CREATE_FINISH(region1,undeffield,ERR,ERROR,*999)
-  CALL FIELD_GEOMETRIC_PARAMETERS_UPDATE_FROM_INITIAL_MESH(undeffield,ERR,ERROR,*999)
-!******
-
-!******
-  !create a fibre field and attach it to the geometric field
-  CALL FIELD_CREATE_START(2,region1,fibrefield,ERR,ERROR,*999)
-  CALL FIELD_TYPE_SET(2,region1,2,ERR,ERROR,*999)
-  CALL FIELD_MESH_DECOMPOSITION_SET(fibrefield,decompositon,ERR,ERROR,*999)        
-  CALL FIELD_GEOMETRIC_FIELD_SET(2,region1,undeffield,ERR,ERROR,*999)   
-  CALL FIELD_COMPONENT_INTERPOLATION_SET(2,1,1,region1,3,ERR,ERROR,*999)   
-  CALL FIELD_COMPONENT_INTERPOLATION_SET(2,1,2,region1,3,ERR,ERROR,*999)   
-  CALL FIELD_COMPONENT_INTERPOLATION_SET(2,1,3,region1,3,ERR,ERROR,*999)         
-  CALL FIELD_CREATE_FINISH(region1,fibrefield,ERR,ERROR,*999) 
+  !Create a material properties field and attach it to the geometric field
+  CALL FIELD_NEXT_NUMBER_FIND(region,NEXT_NUMBER,ERR,ERROR,*999)  
+  CALL FIELD_CREATE_START(NEXT_NUMBER,region,material_field,ERR,ERROR,*999) 
+  CALL FIELD_TYPE_SET(NEXT_NUMBER,region,FIELD_MATERIAL_TYPE,ERR,ERROR,*999)
+  CALL FIELD_MESH_DECOMPOSITION_SET(material_field,decomposition,ERR,ERROR,*999)   
+  CALL FIELD_GEOMETRIC_FIELD_SET(NEXT_NUMBER,region,geometric_field,ERR,ERROR,*999)     
+  CALL FIELD_NUMBER_OF_COMPONENTS_SET(NEXT_NUMBER,region,2,ERR,ERROR,*999)
+  CALL FIELD_COMPONENT_INTERPOLATION_SET(NEXT_NUMBER,1,1,region,FIELD_NODE_BASED_INTERPOLATION,ERR,ERROR,*999)   
+  CALL FIELD_COMPONENT_INTERPOLATION_SET(NEXT_NUMBER,1,2,region,FIELD_NODE_BASED_INTERPOLATION,ERR,ERROR,*999) 
+  CALL FIELD_CREATE_FINISH(region,material_field,ERR,ERROR,*999) 
   
-!******  
-
-!****** 
-  !create a material properties field and attach it to the geometric field
-  CALL FIELD_CREATE_START(3,region1,materialfield,ERR,ERROR,*999) 
-  CALL FIELD_TYPE_SET(3,region1,4,ERR,ERROR,*999)
-  CALL FIELD_MESH_DECOMPOSITION_SET(materialfield,decompositon,ERR,ERROR,*999)   
-  CALL FIELD_GEOMETRIC_FIELD_SET(3,region1,undeffield,ERR,ERROR,*999)     
-  CALL FIELD_NUMBER_OF_COMPONENTS_SET(3,region1,2,ERR,ERROR,*999)
-  CALL FIELD_COMPONENT_INTERPOLATION_SET(3,1,1,region1,3,ERR,ERROR,*999)   
-  CALL FIELD_COMPONENT_INTERPOLATION_SET(3,1,2,region1,3,ERR,ERROR,*999)         
-  CALL FIELD_CREATE_FINISH(region1,materialfield,ERR,ERROR,*999) 
-  
-  npt=mesh1%TOPOLOGY(1)%PTR%NODES%NUMBER_OF_NODES
+  !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 3.0 respectively at each node.
+  npt=mesh%TOPOLOGY(1)%PTR%NODES%NUMBER_OF_NODES
   DO np_idx=1,npt,1
-    np=mesh1%TOPOLOGY(1)%PTR%NODES%NODES(np_idx)%GLOBAL_NUMBER
-    CALL FIELD_PARAMETER_SET_UPDATE_NODE(materialfield,1,1,np,1,1,2.0_DP,ERR,ERROR,*999)
-    CALL FIELD_PARAMETER_SET_UPDATE_NODE(materialfield,1,1,np,2,1,3.0_DP,ERR,ERROR,*999)
-  ENDDO
-!******
-
-!******
-  !create a field for boundary conditions and attach it to the geometric field
-  CALL FIELD_CREATE_START(4,region1,boundaryfield,ERR,ERROR,*999)
-  CALL FIELD_TYPE_SET(4,region1,3,ERR,ERROR,*999) 
-  CALL FIELD_MESH_DECOMPOSITION_SET(boundaryfield,decompositon,ERR,ERROR,*999)  
-  CALL FIELD_GEOMETRIC_FIELD_SET(4,region1,undeffield,ERR,ERROR,*999)  
-  CALL FIELD_NUMBER_OF_COMPONENTS_SET(4,region1,6,ERR,ERROR,*999)
-  CALL FIELD_CREATE_FINISH(region1,boundaryfield,ERR,ERROR,*999)  
-  DO np_idx=2,8,2
-    CALL FIELD_PARAMETER_SET_UPDATE_NODE(boundaryfield,1,1,np_idx,1,1,1.0_DP,ERR,ERROR,*999)   
-    CALL FIELD_PARAMETER_SET_UPDATE_NODE(boundaryfield,1,1,np_idx,2,1,0.0_DP,ERR,ERROR,*999)
-    CALL FIELD_PARAMETER_SET_UPDATE_NODE(boundaryfield,1,1,np_idx,3,1,0.0_DP,ERR,ERROR,*999)  
-    CALL FIELD_PARAMETER_SET_UPDATE_NODE(boundaryfield,1,1,np_idx,4,1,0.0_DP,ERR,ERROR,*999) 
-    CALL FIELD_PARAMETER_SET_UPDATE_NODE(boundaryfield,1,1,np_idx,5,1,0.0_DP,ERR,ERROR,*999) 
-    CALL FIELD_PARAMETER_SET_UPDATE_NODE(boundaryfield,1,1,np_idx,6,1,0.0_DP,ERR,ERROR,*999)           
-  ENDDO
-  DO np_idx=1,7,2
-    CALL FIELD_PARAMETER_SET_UPDATE_NODE(boundaryfield,1,1,np_idx,1,1,0.0_DP,ERR,ERROR,*999)   
-    CALL FIELD_PARAMETER_SET_UPDATE_NODE(boundaryfield,1,1,np_idx,2,1,0.0_DP,ERR,ERROR,*999)
-    CALL FIELD_PARAMETER_SET_UPDATE_NODE(boundaryfield,1,1,np_idx,3,1,0.0_DP,ERR,ERROR,*999)  
-    CALL FIELD_PARAMETER_SET_UPDATE_NODE(boundaryfield,1,1,np_idx,4,1,0.0_DP,ERR,ERROR,*999) 
-    CALL FIELD_PARAMETER_SET_UPDATE_NODE(boundaryfield,1,1,np_idx,5,1,0.0_DP,ERR,ERROR,*999) 
-    CALL FIELD_PARAMETER_SET_UPDATE_NODE(boundaryfield,1,1,np_idx,6,1,0.0_DP,ERR,ERROR,*999)           
-  ENDDO  
-!******
-
-!******
-  CALL FIELD_CREATE_START(5,region1,deffield,ERR,ERROR,*999)  
-  CALL FIELD_TYPE_SET(5,region1,1,ERR,ERROR,*999)
-  CALL FIELD_MESH_DECOMPOSITION_SET(deffield,decompositon,ERR,ERROR,*999)
-  CALL FIELD_DEPENDENT_TYPE_SET(5,region1,2,ERR,ERROR,*999)
-  CALL FIELD_GEOMETRIC_FIELD_SET(5,region1,undeffield,ERR,ERROR,*999)  
-  CALL FIELD_CREATE_FINISH(region1,deffield,ERR,ERROR,*999)
-  CALL FIELD_GEOMETRIC_PARAMETERS_UPDATE_FROM_INITIAL_MESH(deffield,ERR,ERROR,*999)
-!  !CALL FIELD_PARAMETER_SET_COPY(deffield,1,5,ERR,ERROR,*999)
-!******
-
-  FILE="aaaa"
-  METHOD="FORTRAN"
-  CALL FIELD_IO_NODES_EXPORT(region1%FIELDS,FILE,METHOD,ERR,ERROR,*999)
-!  CALL FIELD_IO_ELEMENTS_EXPORT(region1%FIELDS,FILE,METHOD,ERR,ERROR,*999)
-
-
-
-
-
-
-
- 
-
-  net=mesh1%TOPOLOGY(1)%PTR%ELEMENTS%NUMBER_OF_ELEMENTS
-  DO ne_idx=1,net,1
-    ne=mesh1%TOPOLOGY(1)%PTR%ELEMENTS%ELEMENTS(ne_idx)%GLOBAL_NUMBER
-      
+    np=mesh%TOPOLOGY(1)%PTR%NODES%NODES(np_idx)%GLOBAL_NUMBER
+    CALL FIELD_PARAMETER_SET_UPDATE_NODE(material_field,FIELD_VALUES_SET_TYPE,1,np,1,1,2.0_DP,ERR,ERROR,*999)
+    CALL FIELD_PARAMETER_SET_UPDATE_NODE(material_field,FIELD_VALUES_SET_TYPE,1,np,2,1,3.0_DP,ERR,ERROR,*999)
   ENDDO
 
+  !Create the equations_set
+  CALL EQUATIONS_SET_CREATE_START(1,region,geometric_field,equations_set,ERR,ERROR,*999)
+  CALL EQUATIONS_SET_SPECIFICATION_SET(equations_set,EQUATIONS_SET_ELASTICITY_CLASS, &
+    & EQUATIONS_SET_FINITE_ELASTICITY_TYPE,EQUATIONS_SET_NO_SUBTYPE,ERR,ERROR,*999)
+  CALL EQUATIONS_SET_CREATE_FINISH(equations_set,ERR,ERROR,*999)
+
+  !Create the equations set dependent field variables  
+  CALL EQUATIONS_SET_DEPENDENT_CREATE_START(equations_set,ERR,ERROR,*999)  
+  CALL EQUATIONS_SET_DEPENDENT_CREATE_FINISH(equations_set,ERR,ERROR,*999)
+
+  dependent_dof_mapping=>EQUATIONS_SET%DEPENDENT%DEPENDENT_FIELD%MAPPINGS%DOMAIN_MAPPING
+  first_global_dof=1
+  first_local_dof=0
+  first_local_rank=0
+  last_global_dof=dependent_dof_mapping%NUMBER_OF_GLOBAL
+  last_local_dof=0
+  last_local_rank=0
+  DO rank_idx=1,dependent_dof_mapping%GLOBAL_TO_LOCAL_MAP(first_global_dof)%NUMBER_OF_DOMAINS
+    IF(dependent_dof_mapping%GLOBAL_TO_LOCAL_MAP(first_global_dof)%LOCAL_TYPE(rank_idx)/=DOMAIN_LOCAL_GHOST) THEN
+      first_local_dof=dependent_dof_mapping%GLOBAL_TO_LOCAL_MAP(first_global_dof)%LOCAL_NUMBER(rank_idx)
+      first_local_rank=dependent_dof_mapping%GLOBAL_TO_LOCAL_MAP(first_global_dof)%DOMAIN_NUMBER(rank_idx)
+      EXIT
+    ENDIF
+  ENDDO !rank_idx  
+  DO rank_idx=1,dependent_dof_mapping%GLOBAL_TO_LOCAL_MAP(last_global_dof)%NUMBER_OF_DOMAINS
+    IF(dependent_dof_mapping%GLOBAL_TO_LOCAL_MAP(last_global_dof)%LOCAL_TYPE(rank_idx)/=DOMAIN_LOCAL_GHOST) THEN
+      last_local_dof=dependent_dof_mapping%GLOBAL_TO_LOCAL_MAP(last_global_dof)%LOCAL_NUMBER(rank_idx)
+      last_local_rank=dependent_dof_mapping%GLOBAL_TO_LOCAL_MAP(last_global_dof)%DOMAIN_NUMBER(rank_idx)
+      EXIT
+    ENDIF
+  ENDDO !rank_idx
   
+  !Create the problem fixed conditions (displacement bcs)
+  CALL EQUATIONS_SET_FIXED_CONDITIONS_CREATE_START(equations_set,ERR,ERROR,*999)
+  CALL EQUATIONS_SET_FIXED_CONDITIONS_SET_DOF(equations_set,1,EQUATIONS_SET_FIXED_BOUNDARY_CONDITION,0.0_DP,ERR,ERROR,*999)  
+  CALL EQUATIONS_SET_FIXED_CONDITIONS_SET_DOF(equations_set,2,EQUATIONS_SET_FIXED_BOUNDARY_CONDITION,0.1_DP,ERR,ERROR,*999)  
+  CALL EQUATIONS_SET_FIXED_CONDITIONS_SET_DOF(equations_set,3,EQUATIONS_SET_FIXED_BOUNDARY_CONDITION,0.0_DP,ERR,ERROR,*999)  
+  CALL EQUATIONS_SET_FIXED_CONDITIONS_SET_DOF(equations_set,4,EQUATIONS_SET_FIXED_BOUNDARY_CONDITION,0.1_DP,ERR,ERROR,*999)    
+  CALL EQUATIONS_SET_FIXED_CONDITIONS_SET_DOF(equations_set,5,EQUATIONS_SET_FIXED_BOUNDARY_CONDITION,0.0_DP,ERR,ERROR,*999)  
+  CALL EQUATIONS_SET_FIXED_CONDITIONS_SET_DOF(equations_set,6,EQUATIONS_SET_FIXED_BOUNDARY_CONDITION,0.1_DP,ERR,ERROR,*999)  
+  CALL EQUATIONS_SET_FIXED_CONDITIONS_SET_DOF(equations_set,7,EQUATIONS_SET_FIXED_BOUNDARY_CONDITION,0.0_DP,ERR,ERROR,*999)  
+  CALL EQUATIONS_SET_FIXED_CONDITIONS_SET_DOF(equations_set,8,EQUATIONS_SET_FIXED_BOUNDARY_CONDITION,0.1_DP,ERR,ERROR,*999)    
+  CALL EQUATIONS_SET_FIXED_CONDITIONS_SET_DOF(equations_set,9,EQUATIONS_SET_FIXED_BOUNDARY_CONDITION,0.0_DP,ERR,ERROR,*999)    
+  CALL EQUATIONS_SET_FIXED_CONDITIONS_SET_DOF(equations_set,11,EQUATIONS_SET_FIXED_BOUNDARY_CONDITION,0.0_DP,ERR,ERROR,*999)     
+  CALL EQUATIONS_SET_FIXED_CONDITIONS_SET_DOF(equations_set,13,EQUATIONS_SET_FIXED_BOUNDARY_CONDITION,0.0_DP,ERR,ERROR,*999)   
+  CALL EQUATIONS_SET_FIXED_CONDITIONS_SET_DOF(equations_set,15,EQUATIONS_SET_FIXED_BOUNDARY_CONDITION,0.0_DP,ERR,ERROR,*999)  
+  CALL EQUATIONS_SET_FIXED_CONDITIONS_SET_DOF(equations_set,17,EQUATIONS_SET_FIXED_BOUNDARY_CONDITION,0.0_DP,ERR,ERROR,*999)    
+  CALL EQUATIONS_SET_FIXED_CONDITIONS_SET_DOF(equations_set,19,EQUATIONS_SET_FIXED_BOUNDARY_CONDITION,0.0_DP,ERR,ERROR,*999)     
+  CALL EQUATIONS_SET_FIXED_CONDITIONS_SET_DOF(equations_set,21,EQUATIONS_SET_FIXED_BOUNDARY_CONDITION,0.0_DP,ERR,ERROR,*999)   
+  CALL EQUATIONS_SET_FIXED_CONDITIONS_SET_DOF(equations_set,23,EQUATIONS_SET_FIXED_BOUNDARY_CONDITION,0.0_DP,ERR,ERROR,*999)         
+  CALL EQUATIONS_SET_FIXED_CONDITIONS_CREATE_FINISH(equations_set,ERR,ERROR,*999)
+
+  !Create the equations set equations
+  CALL EQUATIONS_SET_EQUATIONS_CREATE_START(equations_set,ERR,ERROR,*999)
+  CALL EQUATIONS_SET_EQUATIONS_SPARSITY_TYPE_SET(equations_set,EQUATIONS_SET_SPARSE_MATRICES,ERR,ERROR,*999)
+  CALL EQUATIONS_SET_EQUATIONS_OUTPUT_TYPE_SET(equations_set,EQUATIONS_SET_NO_OUTPUT,ERR,ERROR,*999)
+  CALL EQUATIONS_SET_EQUATIONS_CREATE_FINISH(equations_set,ERR,ERROR,*999) 
+
+  !Create the problem
+  CALL PROBLEM_CREATE_START(1,problem,ERR,ERROR,*999)
+  CALL PROBLEM_SPECIFICATION_SET(problem,PROBLEM_ELASTICITY_CLASS,PROBLEM_FINITE_ELASTICITY_TYPE, &
+    & PROBLEM_NO_SUBTYPE,ERR,ERROR,*999)
+  CALL PROBLEM_CREATE_FINISH(problem,ERR,ERROR,*999)
+
+  !Create the problem control
+  CALL PROBLEM_CONTROL_CREATE_START(problem,ERR,ERROR,*999)
+  CALL PROBLEM_CONTROL_CREATE_FINISH(problem,ERR,ERROR,*999)
+
+  !Create the problem solutions
+  CALL PROBLEM_SOLUTIONS_CREATE_START(problem,ERR,ERROR,*999)
+  CALL PROBLEM_SOLUTION_EQUATIONS_SET_ADD(problem,1,equations_set,EQUATIONS_SET_INDEX,ERR,ERROR,*999)
+  CALL PROBLEM_SOLUTIONS_CREATE_FINISH(problem,ERR,ERROR,*999)
+
+  !Start the creation of the problem solver
+  CALL PROBLEM_SOLVER_CREATE_START(problem,ERR,ERROR,*999)
+  CALL PROBLEM_SOLVER_GET(problem,1,solver,ERR,ERROR,*999)
+  CALL SOLVER_SPARSITY_TYPE_SET(solver,SOLVER_SPARSE_MATRICES,ERR,ERROR,*999)
+  CALL SOLVER_OUTPUT_TYPE_SET(solver,SOLVER_NO_OUTPUT,ERR,ERROR,*999)
+  !CALL PROBLEM_SOLVER_CREATE_FINISH(problem,ERR,ERROR,*999)
+
+  equations_set%GEOMETRY%GEOMETRIC_FIELD=>geometric_field 
+  equations_set%GEOMETRY%FIBRE_FIELD=>fibre_field 
+  CALL EQUATIONS_SET_MATERIALS_CREATE_START(equations_set,ERR,ERROR,*999)  
+  equations_set%MATERIALS%MATERIAL_FIELD=>material_field
+  CALL EQUATIONS_SET_MATERIALS_CREATE_FINISH(equations_set,ERR,ERROR,*999)
+
+  !CALL PROBLEM_SOLVE(PROBLEM,ERR,ERROR,*999)
 
 
+  CALL FINITE_ELASTICITY_FINITE_ELEMENT_RESIDUAL_EVALUATE(equations_set,1,ERR,ERROR,*999)
 
-  !FILE="aaaa"
-  !METHOD="FORTRAN"
-  !CALL FIELD_IO_NODES_EXPORT(region1%FIELDS,FILE,METHOD,ERR,ERROR,*999)
 
-!************************************************************************************
-  
   CALL CMISS_FINALISE(ERR,ERROR,*999)
 
   WRITE(*,'(A)') "Program successfully completed."
-  
+
   STOP
 999 CALL CMISS_WRITE_ERROR(ERR,ERROR)
   STOP
-  
+
 END PROGRAM FINITEELASTICITYEXAMPLE
-
-
