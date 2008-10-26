@@ -50,6 +50,7 @@
 		<File RelativePath="..\..\..\..\src\f90c_f.f90"/>
 		<File RelativePath="..\..\..\..\src\field_IO_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\field_routines.f90"/>
+		<File RelativePath="..\..\..\..\src\finite_elasticity_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\fluid_mechanics_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\generated_mesh_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\input_output.f90"/>
@@ -57,6 +58,7 @@
 		<File RelativePath="..\..\..\..\src\kinds.f90"/>
 		<File RelativePath="..\..\..\..\src\lapack.f90"/>
 		<File RelativePath="..\..\..\..\src\Laplace_equations_routines.f90"/>
+		<File RelativePath="..\..\..\..\src\linear_elasticity_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\lists.f90"/>
 		<File RelativePath="..\..\..\..\src\machine_constants_win32.f90"/>
 		<File RelativePath="..\..\..\..\src\maths.f90"/>
