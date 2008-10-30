@@ -30,6 +30,7 @@
 		<File RelativePath="..\..\..\..\src\base_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\basis_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\blas.f90"/>
+    <File RelativePath="..\..\..\..\src\boundary_condition_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\classical_field_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\cmiss.f90"/>
 		<File RelativePath="..\..\..\..\src\cmiss_mpi.f90"/>
