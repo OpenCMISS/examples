@@ -243,11 +243,6 @@ PROGRAM FINITEELASTICITYEXAMPLE
   CALL BASIS_QUADRATURE_NUMBER_OF_GAUSS_XI_SET(basis_user_number2, &
     & (/BASIS_MID_QUADRATURE_SCHEME,BASIS_MID_QUADRATURE_SCHEME,BASIS_MID_QUADRATURE_SCHEME/),ERR,ERROR,*999)    
   CALL BASIS_CREATE_FINISH(BASIS2,ERR,ERROR,*999)
-
-  !Create a mesh with two components
-  !mesh_user_number=1
-  !CALL MESH_CREATE_REGULAR(mesh_user_number,REGION,(/0.0_DP,0.0_DP,0.0_DP/),(/width,height,length/), &
-  !  & (/number_global_x_elements,number_global_y_elements,number_global_z_elements/),BASIS1,MESH,ERR,ERROR,*999)
   
   total_number_of_nodes=8
   CALL NODES_CREATE_START(total_number_of_nodes,REGION,NODES,ERR,ERROR,*999)
