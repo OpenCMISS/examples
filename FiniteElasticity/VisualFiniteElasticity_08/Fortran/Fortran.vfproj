@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<VisualStudioProject ProjectCreator="Intel Fortran" Keyword="QuickWin" Version="9.10" ProjectIdGuid="{AD2C9AA0-14F6-4E61-85F3-F9C3E978D6AD}">
+<VisualStudioProject ProjectCreator="Intel Fortran" Keyword="QuickWin" Version="11.0" ProjectIdGuid="{AD2C9AA0-14F6-4E61-85F3-F9C3E978D6AD}">
 	<Platforms>
 		<Platform Name="Win32"/></Platforms>
 	<Configurations>
