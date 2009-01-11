@@ -73,6 +73,8 @@
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<File RelativePath="..\..\..\..\src\base_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\basis_routines.f90"/>
+		<File RelativePath="..\..\..\..\src\bioelec_domain_equation_routines.f90"/>
+		<File RelativePath="..\..\..\..\src\bioelectric_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\blas.f90"/>
 		<File RelativePath="..\..\..\..\src\boundary_condition_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\classical_field_routines.f90"/>
@@ -83,7 +85,9 @@
 		<File RelativePath="..\..\..\..\src\cmiss_petsc_types.f90"/>
 		<File RelativePath="..\..\..\..\src\computational_environment.f90"/>
 		<File RelativePath="..\..\..\..\src\constants.f90"/>
+		<File RelativePath="..\..\..\..\src\control_loop_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\coordinate_routines.f90"/>
+		<File RelativePath="..\..\..\..\src\diffusion_equation_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\distributed_matrix_vector.f90"/>
 		<File RelativePath="..\..\..\..\src\domain_mappings.f90"/>
 		<File RelativePath="..\..\..\..\src\elasticity_routines.f90"/>
@@ -92,12 +96,12 @@
 		<File RelativePath="..\..\..\..\src\equations_matrices_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\equations_set_constants.f90"/>
 		<File RelativePath="..\..\..\..\src\equations_set_routines.f90"/>
-		<File RelativePath="..\..\..\..\src\f90c_f.f90"/>
 		<File RelativePath="..\..\..\..\src\field_IO_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\field_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\finite_elasticity_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\fluid_mechanics_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\generated_mesh_routines.f90"/>
+		<File RelativePath="..\..\..\..\src\history_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\input_output.f90"/>
 		<File RelativePath="..\..\..\..\src\iso_varying_string.f90"/>
 		<File RelativePath="..\..\..\..\src\kinds.f90"/>
@@ -116,6 +120,7 @@
 		<File RelativePath="..\..\..\..\src\problem_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\region_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\solution_mapping_routines.f90"/>
+		<File RelativePath="..\..\..\..\src\solutions_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\solver_matrices_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\solver_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\strings.f90"/>
