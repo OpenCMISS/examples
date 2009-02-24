@@ -1,6 +1,6 @@
 !> \file
 !> \author David Nickerson <nickerso@users.sourceforge.net>
-!> \brief This example illustrates the definition of a field on the created mesh and some simple manipulations of that field.
+!> \brief This example illustrates the definition of a field on the created mesh and some simple manipulations of that field. In this example we directly access the field data rather than using the field API.
 !>
 !> \section LICENSE
 !>
@@ -113,7 +113,7 @@ PROGRAM SimpleFieldManipulationExample
   INTEGER(INTG) :: DIAG_LEVEL_LIST(5)
   CHARACTER(LEN=MAXSTRLEN) :: DIAG_ROUTINE_LIST(1)
 
-  INTEGER(INTG) :: nc
+  INTEGER(INTG) :: nc,node_idx,total_number_of_nodes,global_node_number
 
   !Intialise cmiss
   CALL CMISS_INITIALISE(ERR,ERROR,*999)
@@ -269,6 +269,26 @@ PROGRAM SimpleFieldManipulationExample
   CALL FIELD_CREATE_FINISH(REGION,GENERAL_FIELD,ERR,ERROR,*999)
 
   FILE="SimpleFieldManipulationExample-general"
+  IF(EXPORT_FIELD) THEN
+    CALL FIELD_IO_NODES_EXPORT(REGION%FIELDS, FILE, METHOD, ERR,ERROR,*999)  
+    CALL FIELD_IO_ELEMENTS_EXPORT(REGION%FIELDS, FILE, METHOD, ERR,ERROR,*999)
+  ENDIF
+
+  !Set the value of the field at each node in the mesh
+  total_number_of_nodes = MESH%TOPOLOGY(1)%PTR%NODES%NUMBER_OF_NODES
+  DO node_idx=1,total_number_of_nodes
+     global_node_number = MESH%TOPOLOGY(1)%PTR%NODES%NODES(node_idx)%GLOBAL_NUMBER
+     IF (DECOMPOSITION%DOMAIN(1)%PTR%NODE_DOMAIN(global_node_number) == &
+          & MY_COMPUTATIONAL_NODE_NUMBER) THEN
+        WRITE(*,*) 'Computational node number: ',MY_COMPUTATIONAL_NODE_NUMBER, &
+             & '; global node number: ',global_node_number
+        DO nc=1,field_general_number_of_components
+           CALL FIELD_PARAMETER_SET_UPDATE_NODE(GENERAL_FIELD,FIELD_VALUES_SET_TYPE,1,node_idx,nc,1,2.0_DP,ERR,ERROR,*999)
+        END DO
+     END IF
+  END DO
+
+  FILE="SimpleFieldManipulationExample-general-update1"
   IF(EXPORT_FIELD) THEN
     CALL FIELD_IO_NODES_EXPORT(REGION%FIELDS, FILE, METHOD, ERR,ERROR,*999)  
     CALL FIELD_IO_ELEMENTS_EXPORT(REGION%FIELDS, FILE, METHOD, ERR,ERROR,*999)
