@@ -100,6 +100,10 @@ PROGRAM SimpleFieldManipulationExample
   TYPE(FIELD_TYPE), POINTER :: GEOMETRIC_FIELD,GENERAL_FIELD
   TYPE(REGION_TYPE), POINTER :: REGION
 
+  TYPE(DOMAIN_TYPE), POINTER :: GENERAL_FIELD_DOMAIN
+  TYPE(DOMAIN_NODES_TYPE), POINTER :: DOMAIN_NODES
+  REAL(DP) :: field_value
+
   LOGICAL :: EXPORT_FIELD
   TYPE(VARYING_STRING) :: FILE,METHOD
 
@@ -274,20 +278,29 @@ PROGRAM SimpleFieldManipulationExample
     CALL FIELD_IO_ELEMENTS_EXPORT(REGION%FIELDS, FILE, METHOD, ERR,ERROR,*999)
   ENDIF
 
-  !Set the value of the field at each node in the mesh
-  total_number_of_nodes = MESH%TOPOLOGY(1)%PTR%NODES%NUMBER_OF_NODES
-  DO node_idx=1,total_number_of_nodes
-     global_node_number = MESH%TOPOLOGY(1)%PTR%NODES%NODES(node_idx)%GLOBAL_NUMBER
-     IF (DECOMPOSITION%DOMAIN(1)%PTR%NODE_DOMAIN(global_node_number) == &
-          & MY_COMPUTATIONAL_NODE_NUMBER) THEN
-        WRITE(*,*) 'Computational node number: ',MY_COMPUTATIONAL_NODE_NUMBER, &
-             & '; global node number: ',global_node_number
-        DO nc=1,field_general_number_of_components
-           CALL FIELD_PARAMETER_SET_UPDATE_NODE(GENERAL_FIELD,FIELD_VALUES_SET_TYPE,1,node_idx,nc,1,2.0_DP,ERR,ERROR,*999)
-        END DO
-     END IF
+  ! update the general field values for each node
+  ! get the field's domain for mesh component 1 (there is only 1?)
+  GENERAL_FIELD_DOMAIN => GENERAL_FIELD%DECOMPOSITION%DOMAIN(1)%PTR
+  DOMAIN_NODES => GENERAL_FIELD_DOMAIN%TOPOLOGY%NODES
+  DO node_idx=1,DOMAIN_NODES%NUMBER_OF_NODES
+     global_node_number = DOMAIN_NODES%NODES(node_idx)%GLOBAL_NUMBER
+     WRITE(*,*) 'Computational node number: ',MY_COMPUTATIONAL_NODE_NUMBER, &
+          & '; global node number: ',global_node_number
+     field_value = global_node_number
+     DO nc=1,field_general_number_of_components
+        field_value = field_value + (1.0_DP * (MY_COMPUTATIONAL_NODE_NUMBER+1))
+        CALL FIELD_PARAMETER_SET_UPDATE_NODE(GENERAL_FIELD, &
+             & FIELD_VALUES_SET_TYPE,1,node_idx,nc,1,field_value, &
+             & ERR,ERROR,*999)
+     END DO
   END DO
-
+  
+  ! synchronise all ranks
+  CALL FIELD_PARAMETER_SET_UPDATE_START(GENERAL_FIELD,FIELD_VALUES_SET_TYPE, &
+       & ERR,ERROR,*999)
+  CALL FIELD_PARAMETER_SET_UPDATE_FINISH(GENERAL_FIELD,FIELD_VALUES_SET_TYPE, &
+       & ERR,ERROR,*999)
+  
   FILE="SimpleFieldManipulationExample-general-update1"
   IF(EXPORT_FIELD) THEN
     CALL FIELD_IO_NODES_EXPORT(REGION%FIELDS, FILE, METHOD, ERR,ERROR,*999)  
