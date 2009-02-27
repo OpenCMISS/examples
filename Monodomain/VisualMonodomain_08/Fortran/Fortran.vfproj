@@ -102,6 +102,7 @@
 		<File RelativePath="..\..\..\..\src\finite_elasticity_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\fluid_mechanics_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\generated_mesh_routines.f90"/>
+		<File RelativePath="..\..\..\..\src\Helmholtz_equations_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\history_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\input_output.f90"/>
 		<File RelativePath="..\..\..\..\src\iso_varying_string.f90"/>
