@@ -305,27 +305,27 @@ PROGRAM MONODOMAINEXAMPLE
 
   !Temporary until fix fixed conditions set
   !Find the first and last dof numbers and ranks
-  DEPENDENT_DOF_MAPPING=>EQUATIONS_SET%DEPENDENT%DEPENDENT_FIELD%MAPPINGS%DOMAIN_MAPPING
-  first_global_dof=1
-  first_local_dof=0
-  first_local_rank=0
-  last_global_dof=DEPENDENT_DOF_MAPPING%NUMBER_OF_GLOBAL
-  last_local_dof=0
-  last_local_rank=0
-  DO rank_idx=1,DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(first_global_dof)%NUMBER_OF_DOMAINS
-    IF(DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(first_global_dof)%LOCAL_TYPE(rank_idx)/=DOMAIN_LOCAL_GHOST) THEN
-      first_local_dof=DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(first_global_dof)%LOCAL_NUMBER(rank_idx)
-      first_local_rank=DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(first_global_dof)%DOMAIN_NUMBER(rank_idx)
-      EXIT
-    ENDIF
-  ENDDO !rank_idx  
-  DO rank_idx=1,DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(last_global_dof)%NUMBER_OF_DOMAINS
-    IF(DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(last_global_dof)%LOCAL_TYPE(rank_idx)/=DOMAIN_LOCAL_GHOST) THEN
-      last_local_dof=DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(last_global_dof)%LOCAL_NUMBER(rank_idx)
-      last_local_rank=DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(last_global_dof)%DOMAIN_NUMBER(rank_idx)
-      EXIT
-    ENDIF
-  ENDDO !rank_idx
+!  DEPENDENT_DOF_MAPPING=>EQUATIONS_SET%DEPENDENT%DEPENDENT_FIELD%MAPPINGS%DOMAIN_MAPPING
+!  first_global_dof=1
+!  first_local_dof=0
+!  first_local_rank=0
+!  last_global_dof=DEPENDENT_DOF_MAPPING%NUMBER_OF_GLOBAL
+!  last_local_dof=0
+!  last_local_rank=0
+!  DO rank_idx=1,DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(first_global_dof)%NUMBER_OF_DOMAINS
+!    IF(DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(first_global_dof)%LOCAL_TYPE(rank_idx)/=DOMAIN_LOCAL_GHOST) THEN
+!      first_local_dof=DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(first_global_dof)%LOCAL_NUMBER(rank_idx)
+!      first_local_rank=DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(first_global_dof)%DOMAIN_NUMBER(rank_idx)
+!      EXIT
+!    ENDIF
+!  ENDDO !rank_idx  
+!  DO rank_idx=1,DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(last_global_dof)%NUMBER_OF_DOMAINS
+!    IF(DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(last_global_dof)%LOCAL_TYPE(rank_idx)/=DOMAIN_LOCAL_GHOST) THEN
+!      last_local_dof=DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(last_global_dof)%LOCAL_NUMBER(rank_idx)
+!      last_local_rank=DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(last_global_dof)%DOMAIN_NUMBER(rank_idx)
+!      EXIT
+!    ENDIF
+!  ENDDO !rank_idx
   !Create the problem fixed conditions
   CALL EQUATIONS_SET_FIXED_CONDITIONS_CREATE_START(EQUATIONS_SET,ERR,ERROR,*999)
   !Set bc's
