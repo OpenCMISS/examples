@@ -66,6 +66,7 @@
 		<File RelativePath="..\..\..\..\src\electromechanics_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\equations_mapping_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\equations_matrices_routines.f90"/>
+		<File RelativePath="..\..\..\..\src\equations_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\equations_set_constants.f90"/>
 		<File RelativePath="..\..\..\..\src\equations_set_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\field_IO_routines.f90"/>
@@ -74,6 +75,7 @@
 		<File RelativePath="..\..\src\FiniteElasticityExample.f90"/>
 		<File RelativePath="..\..\..\..\src\fluid_mechanics_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\generated_mesh_routines.f90"/>
+		<File RelativePath="..\..\..\..\src\Helmholtz_equations_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\history_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\input_output.f90"/>
 		<File RelativePath="..\..\..\..\src\iso_varying_string.f90"/>
@@ -91,8 +93,7 @@
 		<File RelativePath="..\..\..\..\src\problem_constants.f90"/>
 		<File RelativePath="..\..\..\..\src\problem_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\region_routines.f90"/>
-		<File RelativePath="..\..\..\..\src\solution_mapping_routines.f90"/>
-		<File RelativePath="..\..\..\..\src\solutions_routines.f90"/>
+		<File RelativePath="..\..\..\..\src\solver_mapping_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\solver_matrices_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\solver_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\strings.f90"/>
