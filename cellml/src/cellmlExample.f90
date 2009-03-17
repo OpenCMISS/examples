@@ -127,6 +127,12 @@ PROGRAM CELLMLEXAMPLE
   INTEGER(INTG) i,count,status,uriL
   CHARACTER(256) BUFFER
 
+  INTEGER(INTG), PARAMETER :: source_field_id=2
+  INTEGER(INTG), PARAMETER :: source_field_number_of_variables=1
+  INTEGER(INTG), PARAMETER :: source_field_number_of_components=3
+  TYPE(FIELD_TYPE), POINTER :: SOURCE_FIELD
+  
+  INTEGER(INTG) :: nc
 
   !Generic CMISS variables
   !=======================
@@ -207,6 +213,24 @@ PROGRAM CELLMLEXAMPLE
 
   CALL CREATE_MESH(MESH_DATA,NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,&
        & NUMBER_GLOBAL_Z_ELEMENTS,NUMBER_OF_DOMAINS,ERR,ERROR,*999)
+
+  ! Create the field we will use as the source field for the CellML environment
+  CALL FIELD_CREATE_START(source_field_id,MESH_DATA%REGION, &
+       & SOURCE_FIELD,ERR,ERROR,*999)
+  CALL FIELD_TYPE_SET(source_field_id,MESH_DATA%REGION, &
+       & FIELD_GENERAL_TYPE,ERR,ERROR,*999)  
+  CALL FIELD_MESH_DECOMPOSITION_SET(SOURCE_FIELD, &
+       & MESH_DATA%DECOMPOSITION,ERR,ERROR,*999)
+  CALL FIELD_GEOMETRIC_FIELD_SET(source_field_id,MESH_DATA%REGION, &
+       & MESH_DATA%GEOMETRIC_FIELD,ERR,ERROR,*999)
+  CALL FIELD_NUMBER_OF_VARIABLES_SET(source_field_id,MESH_DATA%REGION, &
+       & source_field_number_of_variables,ERR,ERROR,*999)
+  CALL FIELD_NUMBER_OF_COMPONENTS_SET(source_field_id,MESH_DATA%REGION,&
+       & source_field_number_of_components,ERR,ERROR,*999)
+  DO nc=1,source_field_number_of_components
+     CALL FIELD_COMPONENT_MESH_COMPONENT_SET(SOURCE_FIELD,FIELD_U_VARIABLE_TYPE,nc,1,ERR,ERROR,*999)
+  END DO
+  CALL FIELD_CREATE_FINISH(MESH_DATA%REGION,SOURCE_FIELD,ERR,ERROR,*999)
 
   FILE="SimpleFieldManipulationExample-geometry"
   METHOD="FORTRAN"
