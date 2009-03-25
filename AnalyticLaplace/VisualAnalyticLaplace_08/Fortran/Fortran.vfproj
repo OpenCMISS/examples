@@ -129,6 +129,7 @@
 		<File RelativePath="..\..\..\..\src\solver_matrices_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\solver_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\strings.f90"/>
+		<File RelativePath="..\..\..\..\src\test_framework_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\timer_f.f90"/>
 		<File RelativePath="..\..\..\..\src\trees.f90"/>
 		<File RelativePath="..\..\..\..\src\types.f90"/></Filter></Files>
