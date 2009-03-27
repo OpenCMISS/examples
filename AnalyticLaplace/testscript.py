@@ -1,13 +1,14 @@
 import hashlib
 import sys
 import commands
+import string
 
 def md5sum(filename):
   myfile = open(filename)
   m = hashlib.md5()
   
   for aline in myfile :
-    m.update(aline)
+    m.update(string.join(string.split(aline)))
   myfile.close()
   return m.hexdigest()
 
@@ -18,7 +19,9 @@ name = sys.argv[1]
 print commands.getoutput(name)
 
 actualfile = "LaplaceExample"
-expectedfile = "ExpectedLaplaceExample"
+namelist = string.split(name,'-')
+compiler = namelist[len(namelist)-1]
+expectedfile = "expected_files/ExpectedLaplaceExample_"+compiler
 md5actual =  md5sum(actualfile)
 md5expected =  md5sum(expectedfile)
 if md5actual == md5expected :
