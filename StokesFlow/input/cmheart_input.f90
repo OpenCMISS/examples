@@ -31,7 +31,7 @@ MODULE IMPORT_CMHEART
   WRITE(*,*)'Press ENTER to start'
   READ(*,*)
 
-  OPEN(UNIT=42, FILE='../../input/CMHEART.inp',STATUS='old')
+  OPEN(UNIT=42, FILE='./input/CMHEART.inp',STATUS='old')
 !  OPEN(UNIT=42, FILE='./CMHEART.inp',STATUS='old')
 
 
@@ -52,7 +52,7 @@ MODULE IMPORT_CMHEART
   
  
 
-   CALL PRINT_ON_SCREEN  
+  ! CALL PRINT_ON_SCREEN  
 
   WRITE(*,*)'export finished successfully...'
   WRITE(*,*)

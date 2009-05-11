@@ -1,6 +1,7 @@
-'../../input/HEX-M1-V1-P1_FE.aux'
-'../../input/HEX-M1-V1-P1_FE.C'
-'../../input/HEX-M1-V1-P1_FE.M'
+'./input/HEX-M2-V1-P1_FE.aux'
+'./input/HEX-M2-V1-P1_FE.C'
+'./input/HEX-M2-V1-P1_FE.M'
+
 
 ----------------------------------------------
 COPY RESPECTIVE 3D ELEMENT SET IN FRONT HERE
@@ -8,36 +9,36 @@ COPY RESPECTIVE 3D ELEMENT SET IN FRONT HERE
 
 for linear hex elements:
 
-'../../input/HEX-M1-V1-P1_FE.aux'
-'../../input/HEX-M1-V1-P1_FE.C'
-'../../input/HEX-M1-V1-P1_FE.M'
+'./input/HEX-M1-V1-P1_FE.aux'
+'./input/HEX-M1-V1-P1_FE.C'
+'./input/HEX-M1-V1-P1_FE.M'
 
 
 for quadratic hex elements:
-'../../input/HEX-M2-V1-P1_FE.aux'
-'../../input/HEX-M2-V1-P1_FE.C'
-'../../input/HEX-M2-V1-P1_FE.M'
+'./input/HEX-M2-V1-P1_FE.aux'
+'./input/HEX-M2-V1-P1_FE.C'
+'./input/HEX-M2-V1-P1_FE.M'
 
 for cubic hex elements:
-'../../input/HEX-M3-V1-P1_FE.aux'
-'../../input/HEX-M3-V1-P1_FE.C'
-'../../input/HEX-M3-V1-P1_FE.M'
+'./input/HEX-M3-V1-P1_FE.aux'
+'./input/HEX-M3-V1-P1_FE.C'
+'./input/HEX-M3-V1-P1_FE.M'
 
 ----------------------------------------------
 
 for linear tet elements:
-'../../input/TET-M1-V1-P1_FE.aux'
-'../../input/TET-M1-V1-P1_FE.C'
-'../../input/TET-M1-V1-P1_FE.M'
+'./input/TET-M1-V1-P1_FE.aux'
+'./input/TET-M1-V1-P1_FE.C'
+'./input/TET-M1-V1-P1_FE.M'
 
 for quadratic tet elements:
-'../../input/TET-M2-V1-P1_FE.aux'
-'../../input/TET-M2-V1-P1_FE.C'
-'../../input/TET-M2-V1-P1_FE.M'
+'./input/TET-M2-V1-P1_FE.aux'
+'./input/TET-M2-V1-P1_FE.C'
+'./input/TET-M2-V1-P1_FE.M'
 
 for cubic tet elements:
-'../../input/TET-M3-V1-P1_FE.aux'
-'../../input/TET-M3-V1-P1_FE.C'
-'../../input/TET-M3-V1-P1_FE.M'
+'./input/TET-M3-V1-P1_FE.aux'
+'./input/TET-M3-V1-P1_FE.C'
+'./input/TET-M3-V1-P1_FE.M'
 
 ----------------------------------------------
