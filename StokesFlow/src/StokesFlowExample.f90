@@ -212,8 +212,8 @@ IMPLICIT NONE
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   NULLIFY(BASIS_M)
-  NULLIFY(BASIS_V)
-  NULLIFY(BASIS_P)
+
+
 
   !Mesh: Set type to Lagrange/Simplex and define interpolation order
   CALL BASIS_CREATE_START(CM%ID_M,BASIS_M,ERR,ERROR,*999)
@@ -230,6 +230,8 @@ IMPLICIT NONE
 
   CALL BASIS_CREATE_FINISH(BASIS_M,ERR,ERROR,*999)
 
+  NULLIFY(BASIS_V)
+
   !Velocity: Set type to Lagrange/Simplex and define interpolation order
   CALL BASIS_CREATE_START(CM%ID_V,BASIS_V,ERR,ERROR,*999)
       CALL BASIS_TYPE_SET(BASIS_V,CM%IT_T,ERR,ERROR,*999)
@@ -244,6 +246,8 @@ IMPLICIT NONE
       END IF
 
   CALL BASIS_CREATE_FINISH(BASIS_V,ERR,ERROR,*999)
+
+  NULLIFY(BASIS_P)
 
   !Pressure: Set type to Lagrange/Simplex and define interpolation order
   CALL BASIS_CREATE_START(CM%ID_P,BASIS_P,ERR,ERROR,*999)
@@ -264,18 +268,16 @@ IMPLICIT NONE
 !Create a mesh with three mesh components for different field interpolations
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  NULLIFY(NODES)
-  NULLIFY(MESH_ELEMENTS_M)
-  NULLIFY(MESH_ELEMENTS_P)
-  NULLIFY(MESH_ELEMENTS_V)
 
   MESH_NUMBER_OF_COMPONENTS=3
+
+  NULLIFY(NODES)
 
   ! Define nodes from user input
   CALL NODES_CREATE_START(CM%N_T,REGION,NODES,ERR,ERROR,*999)
   CALL NODES_CREATE_FINISH(REGION,ERR,ERROR,*999)
 
-
+  NULLIFY(MESH)
 
   ! Define elements from user input
   CALL MESH_CREATE_START(1,REGION,CM%D,MESH,ERR,ERROR,*999)
@@ -283,59 +285,46 @@ IMPLICIT NONE
       CALL MESH_NUMBER_OF_COMPONENTS_SET(MESH,MESH_NUMBER_OF_COMPONENTS,ERR,ERROR,*999)
 
 
+
+  NULLIFY(MESH_ELEMENTS_M)
       !Mesh:
       CALL MESH_TOPOLOGY_ELEMENTS_CREATE_START(MESH,CM%ID_M,BASIS_M,MESH_ELEMENTS_M,ERR,ERROR,*999)
 	  DO k=1,CM%E_T
 	    CALL MESH_TOPOLOGY_ELEMENTS_ELEMENT_NODES_SET(k,MESH_ELEMENTS_M, &
 	    CM%M(k,1:CM%EN_M),ERR,ERROR,*999)
-
-
-!	WRITE(*,*)'k',k,'CM%M(k,1:CM%EN_M)',CM%M(k,1:CM%EN_M)
-!	WRITE(*,*)'k',k,'CM%M(k,1:CM%EN_M)',CM%M(k,28)
-
 	  END DO
       CALL MESH_TOPOLOGY_ELEMENTS_CREATE_FINISH(MESH,CM%ID_M,ERR,ERROR,*999)
 
 
-
+  NULLIFY(MESH_ELEMENTS_V)
       !Velocity:
       CALL MESH_TOPOLOGY_ELEMENTS_CREATE_START(MESH,CM%ID_V,BASIS_V,MESH_ELEMENTS_V,ERR,ERROR,*999)
 	  DO k=1,CM%E_T
 	    CALL MESH_TOPOLOGY_ELEMENTS_ELEMENT_NODES_SET(k,MESH_ELEMENTS_V, &
 	    CM%V(k,1:CM%EN_V),ERR,ERROR,*999)
 
-!	WRITE(*,*)'k',k,'CM%V(k,1:CM%EN_V)',CM%V(k,1:CM%EN_V)
-
 	  END DO
       CALL MESH_TOPOLOGY_ELEMENTS_CREATE_FINISH(MESH,CM%ID_V,ERR,ERROR,*999)
 
 
 
+  NULLIFY(MESH_ELEMENTS_P)
       !Pressure:
       CALL MESH_TOPOLOGY_ELEMENTS_CREATE_START(MESH,CM%ID_P,BASIS_P,MESH_ELEMENTS_P,ERR,ERROR,*999)
 	  DO k=1,CM%E_T
 	    CALL MESH_TOPOLOGY_ELEMENTS_ELEMENT_NODES_SET(k,MESH_ELEMENTS_P, &
 	    CM%P(k,1:CM%EN_P),ERR,ERROR,*999)
 
-!	WRITE(*,*)'k',k,'CM%P(k,1:CM%EN_P)',CM%P(k,1:CM%EN_P)
-
-
 	  END DO
       CALL MESH_TOPOLOGY_ELEMENTS_CREATE_FINISH(MESH,CM%ID_P,ERR,ERROR,*999)
 
   
+
+
+
   CALL MESH_CREATE_FINISH(REGION,MESH,ERR,ERROR,*999)
-  
 
 
-
-
-
-WRITE(*,*)'5'
-
-  !CALL MESH_CREATE_FINISH(REGION,MESH,ERR,ERROR,*999)
-
-WRITE(*,*)'6'
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !Create a decomposition for mesh
@@ -352,6 +341,8 @@ WRITE(*,*)'6'
       CALL DECOMPOSITION_NUMBER_OF_DOMAINS_SET(DECOMPOSITION,NUMBER_COMPUTATIONAL_NODES,ERR,ERROR,*999)
 
   CALL DECOMPOSITION_CREATE_FINISH(MESH,DECOMPOSITION,ERR,ERROR,*999)
+
+
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !Define geometric field
@@ -386,6 +377,8 @@ WRITE(*,*)'6'
   END DO
 
 
+
+
   CALL FIELD_PARAMETER_SET_UPDATE_START(GEOMETRIC_FIELD,FIELD_VALUES_SET_TYPE,ERR,ERROR,*999)
   CALL FIELD_PARAMETER_SET_UPDATE_FINISH(GEOMETRIC_FIELD,FIELD_VALUES_SET_TYPE,ERR,ERROR,*999)
   IF(.NOT.ASSOCIATED(GEOMETRIC_FIELD)) GEOMETRIC_FIELD=>REGION%FIELDS%FIELDS(1)%PTR
@@ -409,6 +402,10 @@ WRITE(*,*)'6'
   CALL EQUATIONS_SET_DEPENDENT_CREATE_FINISH(EQUATIONS_SET,ERR,ERROR,*999)
   DEPENDENT_DOF_MAPPING=>EQUATIONS_SET%DEPENDENT%DEPENDENT_FIELD%MAPPINGS%DOMAIN_MAPPING
 
+  !Create the equations set materials field variables
+  CALL EQUATIONS_SET_MATERIALS_CREATE_START(EQUATIONS_SET,ERR,ERROR,*999)
+  CALL EQUATIONS_SET_MATERIALS_CREATE_FINISH(EQUATIONS_SET,ERR,ERROR,*999)
+ 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !Define boundary conditions
@@ -435,6 +432,7 @@ WRITE(*,*)'6'
     CALL EQUATIONS_SPARSITY_TYPE_SET(EQUATIONS,EQUATIONS_SPARSE_MATRICES,ERR,ERROR,*999)
     CALL EQUATIONS_OUTPUT_TYPE_SET(EQUATIONS,EQUATIONS_ELEMENT_MATRIX_OUTPUT,ERR,ERROR,*999)
   CALL EQUATIONS_SET_EQUATIONS_CREATE_FINISH(EQUATIONS_SET,ERR,ERROR,*999)
+
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -473,36 +471,38 @@ WRITE(*,*)'6'
     CALL PROBLEM_SOLVER_EQUATIONS_EQUATIONS_SET_ADD(PROBLEM,CONTROL_LOOP_NODE,1,EQUATIONS_SET,EQUATIONS_SET_INDEX,ERR,ERROR,*999)
   CALL PROBLEM_SOLVER_EQUATIONS_CREATE_FINISH(PROBLEM,ERR,ERROR,*999)
 
-! ! ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-! ! ! !Solve the problem
-! ! ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-! ! ! 
-! ! ! WRITE(*,*)'42'
-! ! !   CALL PROBLEM_SOLVE(PROBLEM,ERR,ERROR,*999)
-! ! ! WRITE(*,*)'79'
-! ! ! 
-! ! ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-! ! ! !AFTERBURNER
-! ! ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-! ! ! 
-! ! !    EXPORT_FIELD=.FALSE.
-! ! !    METHOD="FORTRAN"
-! ! !    IF(EXPORT_FIELD) THEN
-! ! !      FILE="InputCMHeartMeshExample"
-! ! !      CALL FIELD_IO_NODES_EXPORT(REGION%FIELDS, FILE, METHOD, ERR,ERROR,*999)
-! ! !      CALL FIELD_IO_ELEMENTS_EXPORT(REGION%FIELDS, FILE, METHOD, ERR,ERROR,*999)
-! ! !    ENDIF
-! ! ! 
-! ! ! 
-! ! !    !Calculate the stop times and write out the elapsed user and system times
-! ! !    CALL CPU_TIMER(USER_CPU,STOP_USER_TIME,ERR,ERROR,*999)
-! ! !    CALL CPU_TIMER(SYSTEM_CPU,STOP_SYSTEM_TIME,ERR,ERROR,*999)
-! ! ! 
-! ! !    CALL WRITE_STRING_TWO_VALUE(GENERAL_OUTPUT_TYPE,"User time = ",STOP_USER_TIME(1)-START_USER_TIME(1),", System time = ", &
-! ! !      & STOP_SYSTEM_TIME(1)-START_SYSTEM_TIME(1),ERR,ERROR,*999)
-! ! ! 
-! ! ! !   this causes issues
-! ! ! !   CALL CMISS_FINALISE(ERR,ERROR,*999)
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!Solve the problem
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+WRITE(*,*)'42'
+  CALL PROBLEM_SOLVE(PROBLEM,ERR,ERROR,*999)
+WRITE(*,*)'79'
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!AFTERBURNER
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+   EXPORT_FIELD=.FALSE.
+   METHOD="FORTRAN"
+   IF(EXPORT_FIELD) THEN
+     FILE="InputCMHeartMeshExample"
+     CALL FIELD_IO_NODES_EXPORT(REGION%FIELDS, FILE, METHOD, ERR,ERROR,*999)
+     CALL FIELD_IO_ELEMENTS_EXPORT(REGION%FIELDS, FILE, METHOD, ERR,ERROR,*999)
+   ENDIF
+
+
+   !Calculate the stop times and write out the elapsed user and system times
+   CALL CPU_TIMER(USER_CPU,STOP_USER_TIME,ERR,ERROR,*999)
+   CALL CPU_TIMER(SYSTEM_CPU,STOP_SYSTEM_TIME,ERR,ERROR,*999)
+
+   CALL WRITE_STRING_TWO_VALUE(GENERAL_OUTPUT_TYPE,"User time = ",STOP_USER_TIME(1)-START_USER_TIME(1),", System time = ", &
+     & STOP_SYSTEM_TIME(1)-START_SYSTEM_TIME(1),ERR,ERROR,*999)
+
+!   this causes issues
+   CALL CMISS_FINALISE(ERR,ERROR,*999)
 
    WRITE(*,'(A)') "Program successfully completed."
 
