@@ -141,9 +141,8 @@ PROGRAM FINITEELASTICITYEXAMPLE
   INTEGER(INTG) :: field_dependent_user_number,field_dependent_number_of_varaiables,field_dependent_number_of_components 
   INTEGER(INTG) :: equation_set_user_number
   INTEGER(INTG) :: problem_user_number     
-  INTEGER(INTG) :: dof_idx,unfixed_dofs,total_no_dofs   
-  INTEGER(INTG) :: number_of_global_dependent_dofs,number_of_global_geometric_dofs  
-  REAL(DP), POINTER :: GEOMETRIC_FIELD_PARAMETERS(:),DEPENEDENT_FIELD_PARAMETERS(:) 
+  INTEGER(INTG) :: dof_idx,number_of_global_dependent_dofs,number_of_global_geometric_dofs  
+  REAL(DP), POINTER :: GEOMETRIC_FIELD_PARAMETERS(:)
   REAL(DP) :: VALUE
     
 #ifdef WIN32
@@ -481,25 +480,21 @@ PROGRAM FINITEELASTICITYEXAMPLE
   CALL PROBLEM_SOLVER_EQUATIONS_CREATE_FINISH(PROBLEM,ERR,ERROR,*999)
 
 !**********************************************************************************************************
-  CALL FIELD_PARAMETER_SET_DATA_GET(DEPENDENT_FIELD,FIELD_VALUES_SET_TYPE,DEPENEDENT_FIELD_PARAMETERS,ERR,ERROR,*999)
+!  CALL FIELD_PARAMETER_SET_VECTOR_GET(GEOMETRIC_FIELD,FIELD_VALUES_SET_TYPE,DISTRIBUTED_VECTOR,ERR,ERROR,*999)
+   
   CALL FIELD_PARAMETER_SET_DATA_GET(GEOMETRIC_FIELD,FIELD_VALUES_SET_TYPE,GEOMETRIC_FIELD_PARAMETERS,ERR,ERROR,*999)
-  number_of_global_dependent_dofs=DEPENDENT_FIELD%VARIABLES(1)%NUMBER_OF_GLOBAL_DOFS
   number_of_global_geometric_dofs=GEOMETRIC_FIELD%VARIABLES(1)%NUMBER_OF_GLOBAL_DOFS
-  unfixed_dofs=0
-  DO dof_idx=1,number_of_global_dependent_dofs    
-    IF (dof_idx<=number_of_global_geometric_dofs) THEN !geometric vars - add displacement BC to undeformed geomtery
-      VALUE=GEOMETRIC_FIELD_PARAMETERS(dof_idx)  
-      CALL FIELD_PARAMETER_SET_ADD_DOF(DEPENDENT_FIELD,FIELD_VALUES_SET_TYPE,dof_idx,VALUE,ERR,ERROR,*999)
-    ELSEIF (dof_idx.GT.number_of_global_geometric_dofs) THEN !hydrostatic vars  
-      VALUE=-5.0_DP 
-      CALL FIELD_PARAMETER_SET_ADD_DOF(DEPENDENT_FIELD,FIELD_VALUES_SET_TYPE,dof_idx,VALUE,ERR,ERROR,*999)
-    ENDIF
-  ENDDO
+  DO dof_idx=1,number_of_global_geometric_dofs    
+    VALUE=GEOMETRIC_FIELD_PARAMETERS(dof_idx)  
+    CALL FIELD_PARAMETER_SET_ADD_DOF(DEPENDENT_FIELD,FIELD_VALUES_SET_TYPE,dof_idx,VALUE,ERR,ERROR,*999)
+  ENDDO  
+  CALL FIELD_COMPONENT_VALUES_INITIALISE(DEPENDENT_FIELD,FIELD_U_VARIABLE_TYPE,field_dependent_user_number,FIELD_VALUES_SET_TYPE,-5.0_DP,ERR,ERROR,*999)
 !**********************************************************************************************************
 
   CALL PROBLEM_SOLVE(PROBLEM,ERR,ERROR,*999)
 
-  !Output solution
+  !Output solution  
+  number_of_global_dependent_dofs=DEPENDENT_FIELD%VARIABLES(1)%NUMBER_OF_GLOBAL_DOFS
   CALL WRITE_STRING_VECTOR(GENERAL_OUTPUT_TYPE,1,1,number_of_global_dependent_dofs,1,1,DEPENDENT_FIELD%PARAMETER_SETS% &
     & PARAMETER_SETS(1)%PTR%PARAMETERS%CMISS%DATA_DP,'(2x,f10.6)','(2x,f10.6)',ERR,ERROR,*999)
 
