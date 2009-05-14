@@ -70,7 +70,7 @@ SUBROUTINE READ_AUX
 
   NIMZ = TRIM(NIMZ); BASE_INFO%n_B = 0; BASE_INFO%HEXA = 0; BASE_INFO%DM = 3
 
-    OPEN(UNIT=1,FILE=NIMZ,STATUS='old',action='read')	! Read base file for initial parameters
+    OPEN(UNIT=1,FILE=NIMZ,STATUS='old',action='read') ! Read base file for initial parameters
 
       DO WHILE (0 < 1)
         READ(1,*,END=50) IN_CHAR

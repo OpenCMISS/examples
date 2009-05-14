@@ -1,4 +1,3 @@
-
 !> \file
 !> $Id: StokesFlowExample.f90 20 2009-04-08 20:22:52Z cpb $
 !> \author Sebastian Krittian
@@ -47,40 +46,45 @@ PROGRAM StokesFlow
 
 ! OpenCMISS Modules
 
-   USE BASE_ROUTINES				! needed
-   USE BASIS_ROUTINES				! needed
-   USE CMISS					! needed
-   USE CMISS_MPI				! needed with MPI
-   USE COMP_ENVIRONMENT				! needed with MPI
-   USE CONSTANTS				! basic definitions: pi, e, I, ...
-   USE CONTROL_LOOP_ROUTINES			! needed
-   USE COORDINATE_ROUTINES			! needed
-   USE DOMAIN_MAPPINGS				! needed
-   USE EQUATIONS_ROUTINES			! needed
-   USE EQUATIONS_SET_CONSTANTS			! needed
-   USE EQUATIONS_SET_ROUTINES			! needed
-   USE FIELD_ROUTINES				! needed
-   USE FIELD_IO_ROUTINES			! not needed
-   USE INPUT_OUTPUT				! needed
-   USE ISO_VARYING_STRING			! needed
-   USE KINDS					! needed
-   USE MESH_ROUTINES				! needed
-   USE MPI					! needed with MPI
-   USE PROBLEM_CONSTANTS			! needed
-   USE PROBLEM_ROUTINES				! needed
-   USE REGION_ROUTINES				! needed
-   USE SOLVER_ROUTINES				! needed
-   USE TIMER					! needed
-   USE TYPES					! needed
+   USE BASE_ROUTINES
+   USE BASIS_ROUTINES
+   USE CMISS
+   USE CMISS_MPI
+   USE COMP_ENVIRONMENT
+   USE CONSTANTS
+   USE CONTROL_LOOP_ROUTINES
+   USE COORDINATE_ROUTINES
+   USE DOMAIN_MAPPINGS
+   USE EQUATIONS_ROUTINES
+   USE EQUATIONS_SET_CONSTANTS
+   USE EQUATIONS_SET_ROUTINES
+   USE FIELD_ROUTINES
+   USE FIELD_IO_ROUTINES
+   USE INPUT_OUTPUT
+   USE ISO_VARYING_STRING
+   USE KINDS
+   USE MESH_ROUTINES
+   USE MPI
+   USE PROBLEM_CONSTANTS
+   USE PROBLEM_ROUTINES
+   USE REGION_ROUTINES
+   USE SOLVER_ROUTINES
+   USE TIMER
+   USE TYPES
 !!!!!
 #ifdef WIN32
    USE IFQWIN
 #endif
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! cmHeart input module
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
   USE IMPORT_CMHEART
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 IMPLICIT NONE
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
    !Program types
   TYPE(DOMAIN_MAPPING_TYPE), POINTER :: DEPENDENT_DOF_MAPPING
@@ -122,10 +126,16 @@ IMPLICIT NONE
   INTEGER:: DEPENDENT_FIELD_NUMBER_OF_VARIABLES
   INTEGER:: DEPENDENT_FIELD_NUMBER_OF_COMPONENTS
   INTEGER:: REGION_USER_NUMBER
+  INTEGER:: BC_NUMBER_OF_INLET_NODES,BC_NUMBER_OF_WALL_NODES
   INTEGER:: COORDINATE_USER_NUMBER
   INTEGER:: MESH_NUMBER_OF_COMPONENTS
   INTEGER:: k,l,m,n
   INTEGER:: X_DIRECTION,Y_DIRECTION,Z_DIRECTION
+  INTEGER, ALLOCATABLE, DIMENSION(:):: BC_INLET_NODES
+  INTEGER, ALLOCATABLE, DIMENSION(:):: BC_WALL_NODES
+  INTEGER, ALLOCATABLE, DIMENSION(:):: DOF_INDICES
+  INTEGER, ALLOCATABLE, DIMENSION(:):: DOF_CONDITION
+  REAL(DP), ALLOCATABLE, DIMENSION(:):: DOF_VALUES
 
 #ifdef WIN32
   !Quickwin type
@@ -152,33 +162,34 @@ IMPLICIT NONE
 !Import cmHeart Information
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-   CALL READ_CMHEART_EXE
-   CALL RECV_CMHEART_EXE(CM)
+  !Read node, element and basis information from cmheart input file
+  CALL READ_CMHEART_EXE
+  !Receive CM container for adjusting OpenCMISS calls
+  CALL RECV_CMHEART_EXE(CM)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !Intialise cmiss
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-   CALL CMISS_INITIALISE(ERR,ERROR,*999)
+  CALL CMISS_INITIALISE(ERR,ERROR,*999)
 
 !Set all diganostic levels on for testing
-  !DIAG_LEVEL_LIST(1)=1
-  !DIAG_LEVEL_LIST(2)=2
-  !DIAG_LEVEL_LIST(3)=3
-  !DIAG_LEVEL_LIST(4)=4
-  !DIAG_LEVEL_LIST(5)=5
-  !DIAG_ROUTINE_LIST(1)=""
-  !CALL DIAGNOSTICS_SET_ON(ALL_DIAG_TYPE,DIAG_LEVEL_LIST,"MoreComplexMeshExample",DIAG_ROUTINE_LIST,ERR,ERROR,*999)
-  !CALL DIAGNOSTICS_SET_ON(ALL_DIAG_TYPE,DIAG_LEVEL_LIST,"",DIAG_ROUTINE_LIST,ERR,ERROR,*999)
+!  DIAG_LEVEL_LIST(1)=1
+!   DIAG_LEVEL_LIST(2)=2
+!   DIAG_LEVEL_LIST(3)=3
+!   DIAG_LEVEL_LIST(4)=4
+!   DIAG_LEVEL_LIST(5)=5
+!  DIAG_ROUTINE_LIST(1)=""
+!  CALL DIAGNOSTICS_SET_ON(ALL_DIAG_TYPE,DIAG_LEVEL_LIST,"StokesFlowExample",DIAG_ROUTINE_LIST,ERR,ERROR,*999)
+!  CALL DIAGNOSTICS_SET_ON(ALL_DIAG_TYPE,DIAG_LEVEL_LIST,"",DIAG_ROUTINE_LIST,ERR,ERROR,*999)
 
   !TIMING_ROUTINE_LIST(1)=""
   !CALL TIMING_SET_ON(IN_TIMING_TYPE,.TRUE.,"",TIMING_ROUTINE_LIST,ERR,ERROR,*999)
 
-!Calculate the start times
+  !Calculate the start times
   CALL CPU_TIMER(USER_CPU,START_USER_TIME,ERR,ERROR,*999)
   CALL CPU_TIMER(SYSTEM_CPU,START_SYSTEM_TIME,ERR,ERROR,*999)
-
-!Get the number of computational nodes
+  !Get the number of computational nodes
   NUMBER_COMPUTATIONAL_NODES=COMPUTATIONAL_NODES_NUMBER_GET(ERR,ERROR)
   IF(ERR/=0) GOTO 999
   !Get my computational node number
@@ -192,7 +203,7 @@ IMPLICIT NONE
   NULLIFY(COORDINATE_SYSTEM)
   COORDINATE_USER_NUMBER=1
   CALL COORDINATE_SYSTEM_CREATE_START(COORDINATE_USER_NUMBER,COORDINATE_SYSTEM,ERR,ERROR,*999)
-      !Set the coordinate system dimension
+      !Set the coordinate system dimension to CM%D
       CALL COORDINATE_SYSTEM_DIMENSION_SET(COORDINATE_SYSTEM,CM%D,ERR,ERROR,*999)
   CALL COORDINATE_SYSTEM_CREATE_FINISH(COORDINATE_SYSTEM,ERR,ERROR,*999)
 
@@ -212,118 +223,110 @@ IMPLICIT NONE
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   NULLIFY(BASIS_M)
-
-
-
-  !Mesh: Set type to Lagrange/Simplex and define interpolation order
+  !Spatial basis BASIS_M (CM%ID_M)
   CALL BASIS_CREATE_START(CM%ID_M,BASIS_M,ERR,ERROR,*999)
+      !Set Lagrange/Simplex (CM%IT_T) for BASIS_M
       CALL BASIS_TYPE_SET(BASIS_M,CM%IT_T,ERR,ERROR,*999)
+      !Set number of XI (CM%D)
       CALL BASIS_NUMBER_OF_XI_SET(BASIS_M,CM%D,ERR,ERROR,*999)
-
+      !Set interpolation (CM%IT_M) for dimensions 
       IF (CM%D==2) THEN
-	CALL BASIS_INTERPOLATION_XI_SET(BASIS_M,(/CM%IT_M,CM%IT_M/),ERR,ERROR,*999)
+        CALL BASIS_INTERPOLATION_XI_SET(BASIS_M,(/CM%IT_M,CM%IT_M/),ERR,ERROR,*999)
       ELSE IF (CM%D==3) THEN
-	CALL BASIS_INTERPOLATION_XI_SET(BASIS_M,(/CM%IT_M,CM%IT_M,CM%IT_M/),ERR,ERROR,*999)
+        CALL BASIS_INTERPOLATION_XI_SET(BASIS_M,(/CM%IT_M,CM%IT_M,CM%IT_M/),ERR,ERROR,*999)
       ELSE
-	GOTO 999
+        GOTO 999
       END IF
-
   CALL BASIS_CREATE_FINISH(BASIS_M,ERR,ERROR,*999)
 
   NULLIFY(BASIS_V)
-
-  !Velocity: Set type to Lagrange/Simplex and define interpolation order
+  !Velocity basis BASIS_V (CM%ID_V)
   CALL BASIS_CREATE_START(CM%ID_V,BASIS_V,ERR,ERROR,*999)
+      !Set Lagrange/Simplex (CM%IT_T) for BASIS_V
       CALL BASIS_TYPE_SET(BASIS_V,CM%IT_T,ERR,ERROR,*999)
+      !Set number of XI (CM%D)
       CALL BASIS_NUMBER_OF_XI_SET(BASIS_V,CM%D,ERR,ERROR,*999)
-
+      !Set interpolation (CM%IT_V) for dimensions 
       IF (CM%D==2) THEN
-	CALL BASIS_INTERPOLATION_XI_SET(BASIS_V,(/CM%IT_V,CM%IT_V/),ERR,ERROR,*999)
+        CALL BASIS_INTERPOLATION_XI_SET(BASIS_V,(/CM%IT_V,CM%IT_V/),ERR,ERROR,*999)
       ELSE IF (CM%D==3) THEN
-	CALL BASIS_INTERPOLATION_XI_SET(BASIS_V,(/CM%IT_V,CM%IT_V,CM%IT_V/),ERR,ERROR,*999)
+        CALL BASIS_INTERPOLATION_XI_SET(BASIS_V,(/CM%IT_V,CM%IT_V,CM%IT_V/),ERR,ERROR,*999)
       ELSE
-	GOTO 999
+        GOTO 999
       END IF
-
   CALL BASIS_CREATE_FINISH(BASIS_V,ERR,ERROR,*999)
 
   NULLIFY(BASIS_P)
-
-  !Pressure: Set type to Lagrange/Simplex and define interpolation order
+  !Spatial pressure BASIS_P (CM%ID_P)
   CALL BASIS_CREATE_START(CM%ID_P,BASIS_P,ERR,ERROR,*999)
+      !Set Lagrange/Simplex (CM%IT_T) for BASIS_P
       CALL BASIS_TYPE_SET(BASIS_P,CM%IT_T,ERR,ERROR,*999)
+      !Set number of XI (CM%D)
       CALL BASIS_NUMBER_OF_XI_SET(BASIS_P,CM%D,ERR,ERROR,*999)
-
+      !Set interpolation (CM%IT_P) for dimensions 
       IF (CM%D==2) THEN
-	CALL BASIS_INTERPOLATION_XI_SET(BASIS_P,(/CM%IT_P,CM%IT_P/),ERR,ERROR,*999)
+        CALL BASIS_INTERPOLATION_XI_SET(BASIS_P,(/CM%IT_P,CM%IT_P/),ERR,ERROR,*999)
       ELSE IF (CM%D==3) THEN
-	CALL BASIS_INTERPOLATION_XI_SET(BASIS_P,(/CM%IT_P,CM%IT_P,CM%IT_P/),ERR,ERROR,*999)
+        CALL BASIS_INTERPOLATION_XI_SET(BASIS_P,(/CM%IT_P,CM%IT_P,CM%IT_P/),ERR,ERROR,*999)
       ELSE
-	GOTO 999
+        GOTO 999
       END IF
-
   CALL BASIS_CREATE_FINISH(BASIS_P,ERR,ERROR,*999)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !Create a mesh with three mesh components for different field interpolations
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
+  !Define number of mesh components
   MESH_NUMBER_OF_COMPONENTS=3
 
   NULLIFY(NODES)
-
-  ! Define nodes from user input
+  ! Define number of nodes (CM%N_T)
   CALL NODES_CREATE_START(CM%N_T,REGION,NODES,ERR,ERROR,*999)
   CALL NODES_CREATE_FINISH(REGION,ERR,ERROR,*999)
 
   NULLIFY(MESH)
-
-  ! Define elements from user input
+  ! Define 2D/3D (CM%D) mesh 
   CALL MESH_CREATE_START(1,REGION,CM%D,MESH,ERR,ERROR,*999)
+      !Set number of elements (CM%E_T)
       CALL MESH_NUMBER_OF_ELEMENTS_SET(MESH,CM%E_T,ERR,ERROR,*999)
+      !Set number of mesh components
       CALL MESH_NUMBER_OF_COMPONENTS_SET(MESH,MESH_NUMBER_OF_COMPONENTS,ERR,ERROR,*999)
 
-
-
-  NULLIFY(MESH_ELEMENTS_M)
-      !Mesh:
+      !Specify spatial mesh component (CM%ID_M)
+      NULLIFY(MESH_ELEMENTS_M)
       CALL MESH_TOPOLOGY_ELEMENTS_CREATE_START(MESH,CM%ID_M,BASIS_M,MESH_ELEMENTS_M,ERR,ERROR,*999)
-	  DO k=1,CM%E_T
-	    CALL MESH_TOPOLOGY_ELEMENTS_ELEMENT_NODES_SET(k,MESH_ELEMENTS_M, &
-	    CM%M(k,1:CM%EN_M),ERR,ERROR,*999)
-	  END DO
+          !Define mesh topology (MESH_ELEMENTS_M) using all elements' (CM%E_T) associations (CM%M(k,1:CM%EN_M))
+          DO k=1,CM%E_T
+            CALL MESH_TOPOLOGY_ELEMENTS_ELEMENT_NODES_SET(k,MESH_ELEMENTS_M, &
+            CM%M(k,1:CM%EN_M),ERR,ERROR,*999)
+          END DO
       CALL MESH_TOPOLOGY_ELEMENTS_CREATE_FINISH(MESH,CM%ID_M,ERR,ERROR,*999)
 
-
-  NULLIFY(MESH_ELEMENTS_V)
+      !Specify velocity mesh component (CM%ID_V)
+      NULLIFY(MESH_ELEMENTS_V)
       !Velocity:
       CALL MESH_TOPOLOGY_ELEMENTS_CREATE_START(MESH,CM%ID_V,BASIS_V,MESH_ELEMENTS_V,ERR,ERROR,*999)
-	  DO k=1,CM%E_T
-	    CALL MESH_TOPOLOGY_ELEMENTS_ELEMENT_NODES_SET(k,MESH_ELEMENTS_V, &
-	    CM%V(k,1:CM%EN_V),ERR,ERROR,*999)
-
-	  END DO
+          !Define mesh topology (MESH_ELEMENTS_V) using all elements' (CM%E_T) associations (CM%V(k,1:CM%EN_V))
+          DO k=1,CM%E_T
+            CALL MESH_TOPOLOGY_ELEMENTS_ELEMENT_NODES_SET(k,MESH_ELEMENTS_V, &
+            CM%V(k,1:CM%EN_V),ERR,ERROR,*999)
+          END DO
       CALL MESH_TOPOLOGY_ELEMENTS_CREATE_FINISH(MESH,CM%ID_V,ERR,ERROR,*999)
 
 
-
-  NULLIFY(MESH_ELEMENTS_P)
+      !Specify pressure mesh component (CM%ID_P)
+      NULLIFY(MESH_ELEMENTS_P)
       !Pressure:
       CALL MESH_TOPOLOGY_ELEMENTS_CREATE_START(MESH,CM%ID_P,BASIS_P,MESH_ELEMENTS_P,ERR,ERROR,*999)
-	  DO k=1,CM%E_T
-	    CALL MESH_TOPOLOGY_ELEMENTS_ELEMENT_NODES_SET(k,MESH_ELEMENTS_P, &
-	    CM%P(k,1:CM%EN_P),ERR,ERROR,*999)
-
-	  END DO
+          !Define mesh topology (MESH_ELEMENTS_P) using all elements' (CM%E_T) associations (CM%P(k,1:CM%EN_P))
+          DO k=1,CM%E_T
+            CALL MESH_TOPOLOGY_ELEMENTS_ELEMENT_NODES_SET(k,MESH_ELEMENTS_P, &
+            CM%P(k,1:CM%EN_P),ERR,ERROR,*999)
+          END DO
       CALL MESH_TOPOLOGY_ELEMENTS_CREATE_FINISH(MESH,CM%ID_P,ERR,ERROR,*999)
 
-  
-
-
-
   CALL MESH_CREATE_FINISH(REGION,MESH,ERR,ERROR,*999)
-
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -331,59 +334,53 @@ IMPLICIT NONE
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   NULLIFY(DECOMPOSITION)
-
+  !Define decomposition user number
   DECOMPOSITION_USER_NUMBER=1
-
+  !Perform decomposition
   CALL DECOMPOSITION_CREATE_START(DECOMPOSITION_USER_NUMBER,MESH,DECOMPOSITION,ERR,ERROR,*999)
-
       !Set the decomposition to be a general decomposition with the specified number of domains
       CALL DECOMPOSITION_TYPE_SET(DECOMPOSITION,DECOMPOSITION_CALCULATED_TYPE,ERR,ERROR,*999)
       CALL DECOMPOSITION_NUMBER_OF_DOMAINS_SET(DECOMPOSITION,NUMBER_COMPUTATIONAL_NODES,ERR,ERROR,*999)
-
   CALL DECOMPOSITION_CREATE_FINISH(MESH,DECOMPOSITION,ERR,ERROR,*999)
-
-
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !Define geometric field
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   NULLIFY(GEOMETRIC_FIELD)
-
+  !Set X,Y,Z direction parameters
   X_DIRECTION=1
   Y_DIRECTION=2
   Z_DIRECTION=3
+  !Set geometric field user number
   GEOMETRIC_FIELD_USER_NUMBER=1
 
   !Create geometric field
   CALL FIELD_CREATE_START(GEOMETRIC_FIELD_USER_NUMBER,REGION,GEOMETRIC_FIELD,ERR,ERROR,*999)
+      !Set field geometric type
       CALL FIELD_TYPE_SET(GEOMETRIC_FIELD_USER_NUMBER,REGION,FIELD_GEOMETRIC_TYPE,ERR,ERROR,*999)
+      !Set decomposition
       CALL FIELD_MESH_DECOMPOSITION_SET(GEOMETRIC_FIELD,DECOMPOSITION,ERR,ERROR,*999)
-
+      !Disable scaling      
+      CALL FIELD_SCALING_TYPE_SET(GEOMETRIC_FIELD,FIELD_NO_SCALING,ERR,ERROR,*999)	
+      !Set field component to mesh component for each dimension
       CALL FIELD_COMPONENT_MESH_COMPONENT_SET(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,X_DIRECTION,CM%ID_M,ERR,ERROR,*999)
       CALL FIELD_COMPONENT_MESH_COMPONENT_SET(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,Y_DIRECTION,CM%ID_M,ERR,ERROR,*999)
       IF(CM%D==3) THEN
       CALL FIELD_COMPONENT_MESH_COMPONENT_SET(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,Z_DIRECTION,CM%ID_M,ERR,ERROR,*999)
       ENDIF
-
   CALL FIELD_CREATE_FINISH(REGION,GEOMETRIC_FIELD,ERR,ERROR,*999)
 
-  !Set geometric field parameters and do update
-  DO k=1,CM%N_M	!number of mesh nodes
-    DO j=1,CM%D !dimensions
+  !Set geometric field parameters (CM%N(k,j)) and do update
+  DO k=1,CM%N_M
+    DO j=1,CM%D
       CALL FIELD_PARAMETER_SET_UPDATE_NODE(GEOMETRIC_FIELD,FIELD_VALUES_SET_TYPE,CM%ID_M,k,j, &
       FIELD_U_VARIABLE_TYPE,CM%N(k,j),ERR,ERROR,*999)
     END DO
   END DO
-
-
-
-
   CALL FIELD_PARAMETER_SET_UPDATE_START(GEOMETRIC_FIELD,FIELD_VALUES_SET_TYPE,ERR,ERROR,*999)
   CALL FIELD_PARAMETER_SET_UPDATE_FINISH(GEOMETRIC_FIELD,FIELD_VALUES_SET_TYPE,ERR,ERROR,*999)
   IF(.NOT.ASSOCIATED(GEOMETRIC_FIELD)) GEOMETRIC_FIELD=>REGION%FIELDS%FIELDS(1)%PTR
-
-
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !Create equations set
@@ -411,20 +408,67 @@ IMPLICIT NONE
 !Define boundary conditions
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+  BC_NUMBER_OF_WALL_NODES=192
+  ALLOCATE(BC_WALL_NODES(BC_NUMBER_OF_WALL_NODES))
+  BC_WALL_NODES=(/65,66,67,68,77,78,87,88,89,90,99,100,101,102,111,112,113,114,121,122,129,130,131,&
+  &138,139,140,147,148,149,150,157,158,165,166,167,174,175,176,183,184,189,190,195,196,201,202,207,&
+  &208,257,258,267,268,269,270,279,280,281,282,291,292,293,300,301,302,309,310,311,318,319,320,327,&
+  &328,329,336,337,338,345,346,351,352,357,358,363,364,413,414,423,424,425,426,435,436,437,438,447,&
+  &448,449,456,457,458,465,466,467,474,475,476,483,484,485,492,493,494,501,502,507,508,513,514,519,&
+  &520,569,570,579,580,851,582,591,592,593,594,603,604,605,612,613,614,621,622,623,630,631,632,639,&
+  &640,641,648,649,650,657,658,663,664,669,670,675,676,725,726,735,736,737,738,747,748,749,750,759,&
+  &760,761,768,769,770,777,778,779,786,787,788,795,796,797,804,805,806,813,814,819,820,825,826,831,&
+  &832/)
+
+
+  BC_NUMBER_OF_INLET_NODES=40
+  ALLOCATE(BC_INLET_NODES(BC_NUMBER_OF_INLET_NODES))
+  BC_INLET_NODES=(/677,678,679,680,713,714,715,716,717,718,719,720,721,722,723,724,&
+  &751,752,753,754,755,756,757,758,780,781,782,783,784,785,807,808,809,810,811,812,827,828,829,830/)
+
+
+  ALLOCATE(DOF_INDICES(CM%D*(BC_NUMBER_OF_WALL_NODES+BC_NUMBER_OF_INLET_NODES)))
+  ALLOCATE(DOF_VALUES(CM%D*(BC_NUMBER_OF_WALL_NODES+BC_NUMBER_OF_INLET_NODES)))
+  ALLOCATE(DOF_CONDITION(CM%D*(BC_NUMBER_OF_WALL_NODES+BC_NUMBER_OF_INLET_NODES)))
+
+  DOF_CONDITION=EQUATIONS_SET_FIXED_BOUNDARY_CONDITION
+
+  DO I=1,CM%D
+    DO J=1,BC_NUMBER_OF_WALL_NODES
+       DOF_INDICES(J+((I-1)*BC_NUMBER_OF_WALL_NODES))=BC_WALL_NODES(J)+((I-1)*CM%N_M)
+       DOF_VALUES(J+((I-1)*BC_NUMBER_OF_WALL_NODES))=0.0_DP
+    END DO
+  END DO
+
+  DO I=1,CM%D
+    DO J=1,BC_NUMBER_OF_INLET_NODES
+       DOF_INDICES(CM%D*BC_NUMBER_OF_WALL_NODES+J+((I-1)*BC_NUMBER_OF_INLET_NODES))=&
+       &BC_INLET_NODES(J)+((I-1)*CM%N_M)
+
+       IF(I==1) THEN !U
+       DOF_VALUES(CM%D*BC_NUMBER_OF_WALL_NODES+J+((I-1)*BC_NUMBER_OF_INLET_NODES))=0.0_DP
+       ELSE IF(I==2) THEN!V
+       DOF_VALUES(CM%D*BC_NUMBER_OF_WALL_NODES+J+((I-1)*BC_NUMBER_OF_INLET_NODES))=0.0_DP
+       ELSE !W, I=3
+       DOF_VALUES(CM%D*BC_NUMBER_OF_WALL_NODES+J+((I-1)*BC_NUMBER_OF_INLET_NODES))=1.0_DP
+       END IF
+    END DO
+  END DO
+ 
   !Create the problem fixed conditions
   CALL EQUATIONS_SET_FIXED_CONDITIONS_CREATE_START(EQUATIONS_SET,ERR,ERROR,*999)
-    !Set bc's
-    CALL EQUATIONS_SET_FIXED_CONDITIONS_SET_DOF(EQUATIONS_SET,1,EQUATIONS_SET_FIXED_BOUNDARY_CONDITION, &
-    & 42.0_DP,ERR,ERROR,*999)
+    !Set boundary conditions
+    DO I=1,BC_NUMBER_OF_INLET_NODES
+       CALL EQUATIONS_SET_FIXED_CONDITIONS_SET_DOF(EQUATIONS_SET,DOF_INDICES,DOF_CONDITION, &
+       & DOF_VALUES,ERR,ERROR,*999)
+    END DO
   CALL EQUATIONS_SET_FIXED_CONDITIONS_CREATE_FINISH(EQUATIONS_SET,ERR,ERROR,*999)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !Define equations
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
   NULLIFY(EQUATIONS)
-
   CALL EQUATIONS_SET_EQUATIONS_CREATE_START(EQUATIONS_SET,ERR,ERROR,*999)
     !Get the equations
     CALL EQUATIONS_SET_EQUATIONS_GET(EQUATIONS_SET,EQUATIONS,ERR,ERROR,*999)
@@ -433,12 +477,9 @@ IMPLICIT NONE
     CALL EQUATIONS_OUTPUT_TYPE_SET(EQUATIONS,EQUATIONS_ELEMENT_MATRIX_OUTPUT,ERR,ERROR,*999)
   CALL EQUATIONS_SET_EQUATIONS_CREATE_FINISH(EQUATIONS_SET,ERR,ERROR,*999)
 
-
-
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !Define problem and solver settings
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 
   NULLIFY(PROBLEM)
   !Set the problem to be a standard Stokes problem
@@ -447,11 +488,9 @@ IMPLICIT NONE
     & PROBLEM_STANDARD_STOKES_SUBTYPE,ERR,ERROR,*999)
   CALL PROBLEM_CREATE_FINISH(PROBLEM,ERR,ERROR,*999)
 
-
   !Create the problem control loop
   CALL PROBLEM_CONTROL_LOOP_CREATE_START(PROBLEM,ERR,ERROR,*999)
   CALL PROBLEM_CONTROL_LOOP_CREATE_FINISH(PROBLEM,ERR,ERROR,*999)
-
 
   !Start the creation of the problem solvers
   NULLIFY(SOLVER)
@@ -472,14 +511,11 @@ IMPLICIT NONE
   CALL PROBLEM_SOLVER_EQUATIONS_CREATE_FINISH(PROBLEM,ERR,ERROR,*999)
 
 
-
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !Solve the problem
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-WRITE(*,*)'42'
-  CALL PROBLEM_SOLVE(PROBLEM,ERR,ERROR,*999)
-WRITE(*,*)'79'
+ CALL PROBLEM_SOLVE(PROBLEM,ERR,ERROR,*999)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !AFTERBURNER
@@ -491,6 +527,7 @@ WRITE(*,*)'79'
      FILE="InputCMHeartMeshExample"
      CALL FIELD_IO_NODES_EXPORT(REGION%FIELDS, FILE, METHOD, ERR,ERROR,*999)
      CALL FIELD_IO_ELEMENTS_EXPORT(REGION%FIELDS, FILE, METHOD, ERR,ERROR,*999)
+     WRITE(*,*)'All fields exported...'
    ENDIF
 
 
@@ -502,7 +539,7 @@ WRITE(*,*)'79'
      & STOP_SYSTEM_TIME(1)-START_SYSTEM_TIME(1),ERR,ERROR,*999)
 
 !   this causes issues
-   CALL CMISS_FINALISE(ERR,ERROR,*999)
+!   CALL CMISS_FINALISE(ERR,ERROR,*999)
 
    WRITE(*,'(A)') "Program successfully completed."
 

@@ -1,9 +1,19 @@
-'./input/HEX-M1-V1-P1_FE.aux'
-'./input/HEX-M1-V1-P1_FE.C'
-'./input/HEX-M1-V1-P1_FE.M'
+'./input/HEX-M3-V3-P1.aux'
+'./input/VESSl_X.MD'
+'./input/VESSl_M.MD'
+
+'./input/HEX-M3-V1-P1_FE.aux'
+'./input/HEX-M3-V1-P1_FE.C'
+'./input/HEX-M3-V1-P1_FE.M'
 
 
 
+
+
+
+'./input/HEX-M2-V1-P1_FE.aux'
+'./input/HEX-M2-V1-P1_FE.C'
+'./input/HEX-M2-V1-P1_FE.M'
 ----------------------------------------------
 COPY RESPECTIVE 3D ELEMENT SET IN FRONT HERE
 ----------------------------------------------

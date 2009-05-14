@@ -70,7 +70,7 @@ SUBROUTINE READ_AUX
 
   NIMZ = TRIM(NIMZ); BASE_INFO%n_B = 0; BASE_INFO%HEXA = 0; BASE_INFO%DM = 3
 
-    OPEN(UNIT=1,FILE=NIMZ,STATUS='old',action='read')	! Read base file for initial parameters
+    OPEN(UNIT=1,FILE=NIMZ,STATUS='old',action='read') ! Read base file for initial parameters
 
       DO WHILE (0 < 1)
         READ(1,*,END=50) IN_CHAR
@@ -133,32 +133,32 @@ DO I=1,3
 
         IF (BASE_INFO%TRI_BASIS== 1.OR.BASE_INFO%TET_BASIS == 1)THEN
             IF(DIMEN==2) THEN
-	      IF(BASE_INFO%B(I)%n==3) THEN
+              IF(BASE_INFO%B(I)%n==3) THEN
                     NumberOfNodesPerElement(I)=3
                     OPENCMISS_INTERPOLATION(I)=7
-	      ELSE IF(BASE_INFO%B(I)%n==6) THEN
+              ELSE IF(BASE_INFO%B(I)%n==6) THEN
                     NumberOfNodesPerElement(I)=6
                     OPENCMISS_INTERPOLATION(I)=8
-	      ELSE IF(BASE_INFO%B(I)%n==10) THEN
+              ELSE IF(BASE_INFO%B(I)%n==10) THEN
                     NumberOfNodesPerElement(I)=10
                     OPENCMISS_INTERPOLATION(I)=9
-	      ELSE
+              ELSE
                   STOP
               END IF
            ELSE IF(DIMEN==3) THEN
-	      IF(BASE_INFO%B(I)%n==4) THEN
+              IF(BASE_INFO%B(I)%n==4) THEN
                     NumberOfNodesPerElement(I)=4
                     OPENCMISS_INTERPOLATION(I)=7
-	      ELSE IF(BASE_INFO%B(I)%n==10) THEN
+              ELSE IF(BASE_INFO%B(I)%n==10) THEN
                     NumberOfNodesPerElement(I)=10
                     OPENCMISS_INTERPOLATION(I)=8
-	      ELSE IF(BASE_INFO%B(I)%n==20) THEN
+              ELSE IF(BASE_INFO%B(I)%n==20) THEN
                     NumberOfNodesPerElement(I)=20
                     OPENCMISS_INTERPOLATION(I)=9
-	      ELSE
+              ELSE
                   STOP
               END IF
-	   ELSE 
+              ELSE 
                 STOP
            END IF
         END IF
@@ -381,7 +381,7 @@ SUBROUTINE ORDER_NUMBERING(NEW,OLD,n,m,I)
         NEW(J,63)=OLD(J,64)
         NEW(J,64)=OLD(J,8)        
 
-	ELSE
+        ELSE
            STOP
         END IF
 
