@@ -74,6 +74,7 @@
 		<File RelativePath="..\..\..\..\src\FieldExportConstants.h"/></Filter>
 		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
+		<File RelativePath="..\..\..\..\src\analytic_analysis_routines.f90"/>
 		<File RelativePath="..\..\src\AnalyticLaplaceExample.f90"/>
 		<File RelativePath="..\..\..\..\src\base_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\basis_routines.f90"/>
