@@ -16,7 +16,7 @@
 !> License for the specific language governing rights and limitations
 !> under the License.
 !>
-!> The Original Code is openCMISS
+!> The Original Code is OpenCMISS
 !>
 !> The Initial Developer of the Original Code is University of Auckland,
 !> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -161,7 +161,8 @@ PROGRAM DefineGeometryAndExportExample
     & ERR,ERROR,*999)
   CALL WRITE_STRING_VALUE(GENERAL_OUTPUT_TYPE,"  My computational node number = ",MY_COMPUTATIONAL_NODE_NUMBER,ERR,ERROR,*999)
 
-  !Start the creation of a new RC coordinate system 
+  !Start the creation of a new RC coordinate system
+  NULLIFY(COORDINATE_SYSTEM)
   CALL COORDINATE_SYSTEM_CREATE_START(1,COORDINATE_SYSTEM,ERR,ERROR,*999)
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
     !Set the coordinate system to be 2D
@@ -174,6 +175,7 @@ PROGRAM DefineGeometryAndExportExample
   CALL COORDINATE_SYSTEM_CREATE_FINISH(COORDINATE_SYSTEM,ERR,ERROR,*999)
 
   !Start the creation of the region
+  NULLIFY(REGION)
   CALL REGION_CREATE_START(1,REGION,ERR,ERROR,*999)
   !Set the regions coordinate system to the RC coordinate system that we have created
   CALL REGION_COORDINATE_SYSTEM_SET(REGION,COORDINATE_SYSTEM,ERR,ERROR,*999)
@@ -181,6 +183,7 @@ PROGRAM DefineGeometryAndExportExample
   CALL REGION_CREATE_FINISH(REGION,ERR,ERROR,*999)
 
   !Start the creation of a basis (default is trilinear lagrange)
+  NULLIFY(BASIS)
   CALL BASIS_CREATE_START(1,BASIS,ERR,ERROR,*999)  
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
      !Set the basis to be a bilinear Lagrange basis
@@ -212,9 +215,10 @@ PROGRAM DefineGeometryAndExportExample
   ENDIF
 
   !Finish the creation of a generated mesh in the region
-  CALL GENERATED_MESH_CREATE_FINISH(GENERATED_MESH,MESH,1,ERR,ERROR,*999) 
+  CALL GENERATED_MESH_CREATE_FINISH(GENERATED_MESH,1,MESH,ERR,ERROR,*999) 
 
   !Create a decomposition
+  NULLIFY(DECOMPOSITION)
   CALL DECOMPOSITION_CREATE_START(1,MESH,DECOMPOSITION,ERR,ERROR,*999)
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL DECOMPOSITION_TYPE_SET(DECOMPOSITION,DECOMPOSITION_CALCULATED_TYPE,ERR,ERROR,*999)
@@ -222,6 +226,7 @@ PROGRAM DefineGeometryAndExportExample
   CALL DECOMPOSITION_CREATE_FINISH(MESH,DECOMPOSITION,ERR,ERROR,*999)
 
   !Start to create a default (geometric) field on the region
+  NULLIFY(GEOMETRIC_FIELD)
   CALL FIELD_CREATE_START(1,REGION,GEOMETRIC_FIELD,ERR,ERROR,*999)
   !Set the decomposition to use
   CALL FIELD_MESH_DECOMPOSITION_SET(GEOMETRIC_FIELD,DECOMPOSITION,ERR,ERROR,*999)
@@ -233,10 +238,10 @@ PROGRAM DefineGeometryAndExportExample
      CALL FIELD_COMPONENT_MESH_COMPONENT_SET(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,3,1,ERR,ERROR,*999)
   ENDIF
   !Finish creating the field
-  CALL FIELD_CREATE_FINISH(REGION,GEOMETRIC_FIELD,ERR,ERROR,*999)
+  CALL FIELD_CREATE_FINISH(GEOMETRIC_FIELD,ERR,ERROR,*999)
 
   !Update the geometric field parameters
-  CALL GENERATED_MESHES_GEOMETRIC_PARAMETERS_CALCULATE(GEOMETRIC_FIELD,GENERATED_MESH,ERR,ERROR,*999)
+  CALL GENERATED_MESH_GEOMETRIC_PARAMETERS_CALCULATE(GEOMETRIC_FIELD,GENERATED_MESH,ERR,ERROR,*999)
 
   IF(.NOT.ASSOCIATED(GEOMETRIC_FIELD)) GEOMETRIC_FIELD=>REGION%FIELDS%FIELDS(1)%PTR
   
