@@ -143,6 +143,8 @@ PROGRAM StokesFlow
   INTEGER, ALLOCATABLE, DIMENSION(:):: DOF_CONDITION
   REAL(DP), ALLOCATABLE, DIMENSION(:):: DOF_VALUES
 
+  INTEGER, DIMENSION(42,79)::testsebo
+
 #ifdef WIN32
   !Quickwin type
   LOGICAL :: QUICKWIN_STATUS=.FALSE.
@@ -152,6 +154,8 @@ PROGRAM StokesFlow
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Program starts
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  testsebo=42
 
 #ifdef WIN32
   !Initialise QuickWin
@@ -475,10 +479,14 @@ PROGRAM StokesFlow
   NULLIFY(BOUNDARY_CONDITIONS)
   CALL EQUATIONS_SET_BOUNDARY_CONDITIONS_CREATE_START(EQUATIONS_SET,BOUNDARY_CONDITIONS,ERR,ERROR,*999)
   !Set boundary conditions
-  CALL BOUNDARY_CONDITIONS_SET_LOCAL_DOF(BOUNDARY_CONDITIONS,FIELD_U_VARIABLE_TYPE,DOF_INDICES,DOF_CONDITION, &
-    & DOF_VALUES,ERR,ERROR,*999)
+   CALL BOUNDARY_CONDITIONS_SET_LOCAL_DOF(BOUNDARY_CONDITIONS,FIELD_U_VARIABLE_TYPE,DOF_INDICES,DOF_CONDITION, &
+     & DOF_VALUES,ERR,ERROR,*999)
   CALL EQUATIONS_SET_BOUNDARY_CONDITIONS_CREATE_FINISH(EQUATIONS_SET,ERR,ERROR,*999)
  
+
+
+
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !Define problem and solver settings
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

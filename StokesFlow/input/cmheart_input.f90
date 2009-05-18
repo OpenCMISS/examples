@@ -11,11 +11,12 @@ MODULE IMPORT_CMHEART
   TYPE (ARRAY_MESH) MESH_INFO(3)
   INTEGER I,J, FLD, DIMEN, OPENCMISS_INTERPOLATION(3),a,b
   INTEGER NumberOfNodesPerElement(3), NumberOfNodesDefined(3), NumberOfElementsDefined(3), TotalNumberOfNodes
-  DOUBLE PRECISION, ALLOCATABLE::OPENCMISS_NODE_COORD(:,:)
-  INTEGER, ALLOCATABLE::OPENCMISS_ELEM_M(:,:),OPENCMISS_ELEM_V(:,:),OPENCMISS_ELEM_P(:,:)
+  DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE::OPENCMISS_NODE_COORD
+  INTEGER, DIMENSION(:,:), ALLOCATABLE::OPENCMISS_ELEM_M,OPENCMISS_ELEM_V,OPENCMISS_ELEM_P
   CHARACTER*60 IN_CHAR
   CHARACTER*90 NIMZ
   CHARACTER*30 NAMz
+  INTEGER:: ALLOC_ERROR
 
 
   CONTAINS
@@ -39,9 +40,10 @@ MODULE IMPORT_CMHEART
   CALL READ_NODES
   CALL READ_ELEMENTS
 
-  ALLOCATE(OPENCMISS_ELEM_M(NumberOfElementsDefined(1),NumberOfNodesPerElement(1)))
-  ALLOCATE(OPENCMISS_ELEM_V(NumberOfElementsDefined(2),NumberOfNodesPerElement(2)))
-  ALLOCATE(OPENCMISS_ELEM_P(NumberOfElementsDefined(3),NumberOfNodesPerElement(3)))
+
+  ALLOCATE(OPENCMISS_ELEM_M(NumberOfElementsDefined(1),NumberOfNodesPerElement(1)),STAT=ALLOC_ERROR)
+  ALLOCATE(OPENCMISS_ELEM_V(NumberOfElementsDefined(2),NumberOfNodesPerElement(2)),STAT=ALLOC_ERROR)
+  ALLOCATE(OPENCMISS_ELEM_P(NumberOfElementsDefined(3),NumberOfNodesPerElement(3)),STAT=ALLOC_ERROR)
 
 
   CALL MAKE_UNIQUE
@@ -56,6 +58,10 @@ MODULE IMPORT_CMHEART
 
   WRITE(*,*)'export finished successfully...'
   WRITE(*,*)
+
+  IF(ALLOC_ERROR.NE.0) THEN
+    STOP 'Error during allocation'
+  END IF
 
   END SUBROUTINE READ_CMHEART_EXE
 
@@ -106,7 +112,7 @@ SUBROUTINE READ_AUX
 ! ! ! !         WRITE(*,*)'BASE_INFO%QUAD_BASIS',BASE_INFO%QUAD_BASIS
 ! ! ! !         WRITE(*,*)'BASE_INFO%HEX_BASIS',BASE_INFO%HEX_BASIS
 
-        ALLOCATE(BASE_INFO%B(BASE_INFO%n_B))
+        ALLOCATE(BASE_INFO%B(BASE_INFO%n_B),STAT=ALLOC_ERROR)
 
 
     OPEN(UNIT=1,FILE=NIMZ,STATUS='old',action='read')	! Read base file for initial parameters
@@ -212,6 +218,10 @@ END DO
 
 
 END IF
+
+  IF(ALLOC_ERROR.NE.0) THEN
+    STOP 'Error during allocation'
+  END IF
 
 END SUBROUTINE READ_AUX
 
@@ -533,7 +543,10 @@ SUBROUTINE READ_NODES
 
       IMPLICIT NONE
 
-      INTEGER:: a,b
+      INTEGER:: a,b,J
+      DOUBLE PRECISION,DIMENSION(832,3):: sebo_test_array
+
+      sebo_test_array=0.0
 
       READ(42,*) NAMz
 
@@ -549,9 +562,12 @@ SUBROUTINE READ_NODES
 
   DO I=1,3
       MESH_INFO(I)%Lx=NumberOfNodesDefined(I)
-      ALLOCATE(MESH_INFO(I)%X(MESH_INFO(I)%Lx,3))
+      ALLOCATE(MESH_INFO(I)%X(MESH_INFO(I)%Lx,3),STAT=ALLOC_ERROR)
         DO J = 1,MESH_INFO(I)%Lx
           READ(1,*,END=35) MESH_INFO(I)%X(J,1:3)
+	  WRITE(*,*) MESH_INFO(I)%X(J,1:3)
+!          READ(1,*,END=35) sebo_test_array(J,1:3)
+!	  sebo_test_array(J,1:3)=(/1,2,3/)
         END DO
   END DO
 
@@ -560,7 +576,7 @@ SUBROUTINE READ_NODES
 
       CLOSE(1)
 
-    ALLOCATE(OPENCMISS_NODE_COORD(TotalNumberOfNodes,3))
+    ALLOCATE(OPENCMISS_NODE_COORD(TotalNumberOfNodes,3),STAT=ALLOC_ERROR)
     a=1
     b=0
 
@@ -580,7 +596,9 @@ SUBROUTINE READ_NODES
  35     PRINT *, 'FAILS'
         STOP
 
-
+  IF(ALLOC_ERROR.NE.0) THEN
+    STOP 'Error during allocation'
+  END IF
 
 END SUBROUTINE READ_NODES
 
@@ -608,7 +626,7 @@ SUBROUTINE READ_ELEMENTS
 
   DO I=1,3
       MESH_INFO(I)%Lt=NumberOfElementsDefined(I)
-      ALLOCATE(MESH_INFO(I)%T(MESH_INFO(I)%Lt,NumberOfNodesPerElement(I)))
+      ALLOCATE(MESH_INFO(I)%T(MESH_INFO(I)%Lt,NumberOfNodesPerElement(I)),STAT=ALLOC_ERROR)
         DO J = 1,MESH_INFO(I)%Lt
           READ(1,*,END=30) MESH_INFO(I)%T(J,1:NumberOfNodesPerElement(I))
         END DO
@@ -620,6 +638,9 @@ SUBROUTINE READ_ELEMENTS
  30     PRINT *, 'FAILS'
         STOP
 
+  IF(ALLOC_ERROR.NE.0) THEN
+    STOP 'Error during allocation'
+  END IF
 
 END SUBROUTINE READ_ELEMENTS
 
@@ -677,14 +698,17 @@ SUBROUTINE RECV_CMHEART_EXE(EXPORT)
 
   TYPE (EXPORT_CONTAINER):: EXPORT  
   TYPE (EXPORT_CONTAINER):: TMP  
+  INTEGER:: test
 
-  ALLOCATE(TMP%M(NumberOfElementsDefined(1),NumberOfNodesPerElement(1)))
-  ALLOCATE(TMP%V(NumberOfElementsDefined(2),NumberOfNodesPerElement(2)))
-  ALLOCATE(TMP%P(NumberOfElementsDefined(3),NumberOfNodesPerElement(3)))
-  ALLOCATE(TMP%N(TotalNumberOfNodes,3))
+  ALLOCATE(TMP%M(NumberOfElementsDefined(1),NumberOfNodesPerElement(1)),STAT=ALLOC_ERROR)
+  ALLOCATE(TMP%V(NumberOfElementsDefined(2),NumberOfNodesPerElement(2)),STAT=ALLOC_ERROR)
+  ALLOCATE(TMP%P(NumberOfElementsDefined(3),NumberOfNodesPerElement(3)),STAT=ALLOC_ERROR)
+  ALLOCATE(TMP%N(TotalNumberOfNodes,3),STAT=ALLOC_ERROR)
 
 
   TMP%M=OPENCMISS_ELEM_M
+  test=OPENCMISS_ELEM_M(1,56)
+
   TMP%V=OPENCMISS_ELEM_V
   TMP%P=OPENCMISS_ELEM_P
 
@@ -726,6 +750,10 @@ SUBROUTINE RECV_CMHEART_EXE(EXPORT)
   TMP%N_T=TMP%N_M+TMP%N_V+TMP%N_P
 
   EXPORT=TMP
+
+  IF(ALLOC_ERROR.NE.0) THEN
+    STOP 'Error during allocation'
+  END IF
 
 END SUBROUTINE RECV_CMHEART_EXE
 
