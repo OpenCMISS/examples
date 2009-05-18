@@ -40,6 +40,10 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
+!> \example examples/NonlinearPoisson/src/NonlinearPoissonExample.f90
+!! Example program to solve a nonlinear Poisson equation using openCMISS calls.
+!<
+
 !> Main program
 PROGRAM NONLINEARPOISSONEXAMPLE
 

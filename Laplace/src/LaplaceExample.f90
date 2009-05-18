@@ -40,6 +40,10 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
+!> \example examples/Laplace/src/LaplaceExample.f90
+!! Example program to solve a Laplace equation using openCMISS calls.
+!<
+
 !> Main program
 PROGRAM LAPLACEEXAMPLE
 

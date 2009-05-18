@@ -40,6 +40,10 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
+!> \example examples/InputCMHeartMesh/src/InputCMHeartMeshExample.f90
+!! Example program which imports CMHeart input files.
+!<
+
 !> Main program
 
 PROGRAM MeshFromCMHeart

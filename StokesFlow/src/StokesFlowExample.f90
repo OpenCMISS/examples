@@ -40,6 +40,10 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
+!> \example examples/StokesFlow/src/StokesFlowExample.f90
+!! Example program to solve a Stokes equation using openCMISS calls.
+!<
+
 !> Main program
 
 PROGRAM StokesFlow

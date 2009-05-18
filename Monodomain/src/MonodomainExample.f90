@@ -40,6 +40,10 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
+!> \example examples/Monodomain/src/MonodomainExample.f90
+!! Example program to solve a Monodomain equation using openCMISS calls.
+!<
+
 !> Main program
 PROGRAM MONODOMAINEXAMPLE
 

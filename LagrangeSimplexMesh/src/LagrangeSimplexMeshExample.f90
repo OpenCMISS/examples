@@ -40,6 +40,10 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
+!> \example examples/LagrangeSimplexMesh/src/LagrangeSimplexMeshExample.f90
+!! Example program which sets up a field which uses a mixed Lagrange and Simplex mesh using openCMISS calls.
+!<
+
 !> Main program
 PROGRAM LAGRANGESIMPLEXMESHEXAMPLE
 

@@ -40,6 +40,10 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
+!> \example examples/Diffusion/src/DiffusionExample.f90
+!! Example program to solve a diffusion equation using openCMISS calls.
+!<
+
 !> Main program
 PROGRAM DIFFUSIONEXAMPLE
 

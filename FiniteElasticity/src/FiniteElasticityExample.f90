@@ -40,6 +40,10 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
+!> \example examples/FiniteElasticity/src/FiniteElasticityExample.f90
+!! Example program to solve a finite elasticity equation using openCMISS calls.
+!<
+
 !> Main program
 PROGRAM FINITEELASTICITYEXAMPLE
 
