@@ -74,13 +74,15 @@
 		<File RelativePath="..\..\..\..\src\FieldExportConstants.h"/></Filter>
 		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
+		<File RelativePath="..\..\..\..\src\analytic_analysis_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\base_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\basis_routines.f90"/>
-		<File RelativePath="..\..\..\..\src\bioelec_domain_equation_routines.f90"/>
+		<File RelativePath="..\..\..\..\src\biodomain_equation_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\bioelectric_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\blas.f90"/>
 		<File RelativePath="..\..\..\..\src\boundary_condition_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\classical_field_routines.f90"/>
+		<File RelativePath="..\..\input\cmheart_input.f90"/>
 		<File RelativePath="..\..\..\..\src\cmiss.f90"/>
 		<File RelativePath="..\..\..\..\src\cmiss_mpi.f90"/>
 		<File RelativePath="..\..\..\..\src\cmiss_parmetis.f90"/>
@@ -112,7 +114,6 @@
 		<File RelativePath="..\..\..\..\src\kinds.f90"/>
 		<File RelativePath="..\..\..\..\src\lapack.f90"/>
 		<File RelativePath="..\..\..\..\src\Laplace_equations_routines.f90"/>
-		<File RelativePath="..\..\src\LaplaceExample.f90"/>
 		<File RelativePath="..\..\..\..\src\linear_elasticity_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\lists.f90"/>
 		<File RelativePath="..\..\..\..\src\machine_constants_win32.f90"/>
@@ -127,6 +128,8 @@
 		<File RelativePath="..\..\..\..\src\solver_mapping_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\solver_matrices_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\solver_routines.f90"/>
+		<File RelativePath="..\..\..\..\src\Stokes_fluid_routines.f90"/>
+		<File RelativePath="..\..\src\StokesFlowExample.f90"/>
 		<File RelativePath="..\..\..\..\src\strings.f90"/>
 		<File RelativePath="..\..\..\..\src\timer_f.f90"/>
 		<File RelativePath="..\..\..\..\src\trees.f90"/>
