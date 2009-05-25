@@ -91,6 +91,7 @@
 		<File RelativePath="..\..\..\..\src\constants.f90"/>
 		<File RelativePath="..\..\..\..\src\control_loop_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\coordinate_routines.f90"/>
+		<File RelativePath="..\..\..\..\src\Darcy_equations_routines.f90"/>
 		<File RelativePath="..\..\src\DarcyExample.f90"/>
 		<File RelativePath="..\..\..\..\src\diffusion_equation_routines.f90"/>
 		<File RelativePath="..\..\..\..\src\distributed_matrix_vector.f90"/>

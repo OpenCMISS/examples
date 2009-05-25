@@ -98,7 +98,7 @@ PROGRAM SimpleFieldManipulationExample
   TYPE(MESH_TYPE), POINTER :: MESH
   TYPE(DECOMPOSITION_TYPE), POINTER :: DECOMPOSITION
   TYPE(FIELD_TYPE), POINTER :: GEOMETRIC_FIELD,GENERAL_FIELD
-  TYPE(REGION_TYPE), POINTER :: REGION
+  TYPE(REGION_TYPE), POINTER :: REGION,WORLD_REGION
 
   TYPE(DOMAIN_TYPE), POINTER :: GENERAL_FIELD_DOMAIN
   TYPE(DOMAIN_NODES_TYPE), POINTER :: DOMAIN_NODES
@@ -120,7 +120,8 @@ PROGRAM SimpleFieldManipulationExample
   INTEGER(INTG) :: nc,node_idx,total_number_of_nodes,global_node_number
 
   !Intialise cmiss
-  CALL CMISS_INITIALISE(ERR,ERROR,*999)
+  NULLIFY(WORLD_REGION)
+  CALL CMISS_INITIALISE(WORLD_REGION,ERR,ERROR,*999)
   
   !Set all diganostic levels on for testing
   DIAG_LEVEL_LIST(1)=1
@@ -186,7 +187,7 @@ PROGRAM SimpleFieldManipulationExample
 
   !Start the creation of the region
   NULLIFY(REGION)
-  CALL REGION_CREATE_START(1,REGION,ERR,ERROR,*999)
+  CALL REGION_CREATE_START(1,WORLD_REGION,REGION,ERR,ERROR,*999)
   !Set the regions coordinate system to the RC coordinate system that we have created
   CALL REGION_COORDINATE_SYSTEM_SET(REGION,COORDINATE_SYSTEM,ERR,ERROR,*999)
   !Finish the creation of the region
