@@ -624,8 +624,10 @@ $(OBJECT_DIR)/%.o : $(MAIN_SOURCE_DIR)/%.f90
 
 $(OBJECT_DIR)/%.o : $(EXAMPLE_SOURCE_DIR)/%.f90
 	( cd $(OBJECT_DIR) ; $(FC) -o $@ $(FFLAGS) $(FPPFLAGS) -c $< )
-
+# start changed krittian
 $(OBJECT_DIR)/%.o : $(EXAMPLE_SOURCE_DIR)/../input/%.f90
+	( cd $(OBJECT_DIR) ; $(FC) -o $@ $(FFLAGS) $(FPPFLAGS) -c $< )
+$(OBJECT_DIR)/%.o : $(EXAMPLE_SOURCE_DIR)/../output/%.f90
 	( cd $(OBJECT_DIR) ; $(FC) -o $@ $(FFLAGS) $(FPPFLAGS) -c $< )
 # end changed krittian
 
@@ -698,7 +700,8 @@ OBJECTS = $(OBJECT_DIR)/$(BASE_EXAMPLE_NAME).o \
 	$(OBJECT_DIR)/timer_f.o \
 	$(OBJECT_DIR)/trees.o \
 	$(OBJECT_DIR)/types.o \
-        $(OBJECT_DIR)/cmheart_input.o 
+	$(OBJECT_DIR)/cmheart_input.o \
+	$(OBJECT_DIR)/cmgui_output.o
 # krittian: included input file
 
 ifeq ($(OPERATING_SYSTEM),linux)# Linux
@@ -1443,7 +1446,9 @@ $(OBJECT_DIR)/types.o	:	$(MAIN_SOURCE_DIR)/types.f90 \
 	$(OBJECT_DIR)/trees.o
 
 # krittian included for input
-$(OBJECT_DIR)/cmheart_input.o	:	$(EXAMPLE_SOURCE_DIR)/../input/cmheart_input.f90 
+$(OBJECT_DIR)/cmheart_input.o	:	$(EXAMPLE_SOURCE_DIR)/../input/cmheart_input.f90
+
+$(OBJECT_DIR)/cmgui_output.o	:	$(EXAMPLE_SOURCE_DIR)/../output/cmgui_output.f90  
 # krittian included for input
 
 $(OBJECT_DIR)/$(BASE_EXAMPLE_NAME).o	:	$(EXAMPLE_SOURCE_DIR)/$(BASE_EXAMPLE_NAME).f90 \
@@ -1476,6 +1481,7 @@ $(OBJECT_DIR)/$(BASE_EXAMPLE_NAME).o	:	$(EXAMPLE_SOURCE_DIR)/$(BASE_EXAMPLE_NAME
 	$(OBJECT_DIR)/solver_routines.o \
 	$(OBJECT_DIR)/timer_f.o \
 	$(OBJECT_DIR)/types.o \
+	$(OBJECT_DIR)/cmgui_output.o\
 	$(OBJECT_DIR)/cmheart_input.o
 # krittian included for input
 
