@@ -186,6 +186,8 @@ PROGRAM StokesFlow
 !Intialise cmiss
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+WRITE(*,*)'1'
+
   NULLIFY(WORLD_REGION)
   CALL CMISS_INITIALISE(WORLD_REGION,ERR,ERROR,*999)
 
@@ -202,6 +204,8 @@ PROGRAM StokesFlow
   !TIMING_ROUTINE_LIST(1)=""
   !CALL TIMING_SET_ON(IN_TIMING_TYPE,.TRUE.,"",TIMING_ROUTINE_LIST,ERR,ERROR,*999)
 
+WRITE(*,*)'2'
+
   !Calculate the start times
   CALL CPU_TIMER(USER_CPU,START_USER_TIME,ERR,ERROR,*999)
   CALL CPU_TIMER(SYSTEM_CPU,START_SYSTEM_TIME,ERR,ERROR,*999)
@@ -216,6 +220,9 @@ PROGRAM StokesFlow
 !Start the creation of a new RC coordinate system
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   
+
+WRITE(*,*)'3'
+
   NULLIFY(COORDINATE_SYSTEM)
   COORDINATE_USER_NUMBER=1
   CALL COORDINATE_SYSTEM_CREATE_START(COORDINATE_USER_NUMBER,COORDINATE_SYSTEM,ERR,ERROR,*999)
@@ -227,16 +234,34 @@ PROGRAM StokesFlow
 !Start the creation of a region
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+WRITE(*,*)'4'
+
   NULLIFY(REGION)
+
+WRITE(*,*)'4.1'
+
   REGION_USER_NUMBER=1
+
+WRITE(*,*)'4.2'
+
   CALL REGION_CREATE_START(REGION_USER_NUMBER,WORLD_REGION,REGION,ERR,ERROR,*999)
   !Set the regions coordinate system
+
+WRITE(*,*)'4.3'
+
   CALL REGION_COORDINATE_SYSTEM_SET(REGION,COORDINATE_SYSTEM,ERR,ERROR,*999)
+
+WRITE(*,*)'4.4'
+
   CALL REGION_CREATE_FINISH(REGION,ERR,ERROR,*999)
+
+WRITE(*,*)'4.5'
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !Start the creation of a basis for spatial, velocity and pressure field
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+WRITE(*,*)'5'
 
   NULLIFY(BASIS_M)
   !Spatial basis BASIS_M (CM%ID_M)
@@ -296,6 +321,8 @@ PROGRAM StokesFlow
 !Create a mesh with three mesh components for different field interpolations
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+WRITE(*,*)'6'
+
   !Define number of mesh components
   MESH_NUMBER_OF_COMPONENTS=3
 
@@ -352,6 +379,8 @@ PROGRAM StokesFlow
 !Create a decomposition for mesh
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+WRITE(*,*)'7'
+
   NULLIFY(DECOMPOSITION)
   !Define decomposition user number
   DECOMPOSITION_USER_NUMBER=1
@@ -365,6 +394,8 @@ PROGRAM StokesFlow
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !Define geometric field
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+WRITE(*,*)'8'
 
   NULLIFY(GEOMETRIC_FIELD)
   !Set X,Y,Z direction parameters
@@ -404,6 +435,9 @@ PROGRAM StokesFlow
 !Create equations set
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+
+WRITE(*,*)'9'
+
   NULLIFY(EQUATIONS_SET)
 
   !Set the equations set to be a Stokes Flow problem
@@ -426,6 +460,8 @@ PROGRAM StokesFlow
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !Define equations
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+WRITE(*,*)'10'
 
   NULLIFY(EQUATIONS)
   CALL EQUATIONS_SET_EQUATIONS_CREATE_START(EQUATIONS_SET,EQUATIONS,ERR,ERROR,*999)
@@ -570,7 +606,7 @@ PROGRAM StokesFlow
 
 
 
-
+WRITE(*,*)'11'
 
 
 
@@ -627,6 +663,8 @@ PROGRAM StokesFlow
 !Define problem and solver settings
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+WRITE(*,*)'12'
+
   NULLIFY(PROBLEM)
   !Set the problem to be a standard Stokes problem
   CALL PROBLEM_CREATE_START(1,PROBLEM,ERR,ERROR,*999)
@@ -666,12 +704,16 @@ PROGRAM StokesFlow
 !Solve the problem
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+WRITE(*,*)'13'
+
  CALL PROBLEM_SOLVE(PROBLEM,ERR,ERROR,*999)
      WRITE(*,*)'Problem solved... now export...'
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !AFTERBURNER
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+WRITE(*,*)'14'
 
    FILE="FILE"
    METHOD="FORTRAN"
