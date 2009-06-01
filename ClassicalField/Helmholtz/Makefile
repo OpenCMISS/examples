@@ -55,13 +55,15 @@ MAKEFLAGS = --no-builtin-rules --warn-undefined-variables
 #----------------------------------------------------------------------------------------------------------------------------------
 
 ifndef OPENCMISS_ROOT
-  OPENCMISS_ROOT := ../..
-  GLOBAL_ROOT := $(CURDIR)/../..
+  OPENCMISS_ROOT := ../../..
+  GLOBAL_ROOT := $(CURDIR)/../../..
 else
   GLOBAL_ROOT := ${OPENCMISS_ROOT}/cm
 endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
+
+EXAMPLE_PATH=ClassicalField/
 
 EXAMPLE_NAME = Helmholtz
 
