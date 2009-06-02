@@ -41,6 +41,10 @@
 
 !> Doxygen comments ignored when generating example pages
 
+!> \example simple-field-manipulation-direct-access/src/simple-field-manipulation-direct-accessExample.f90
+!! Example illustrating the creation of a regular mesh and then defining and manipulating a field over that mesh.
+!<
+
 !> Main program
 PROGRAM SimpleFieldManipulationExample
   

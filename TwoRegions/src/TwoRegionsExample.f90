@@ -40,7 +40,7 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example examples/TwoRegions/src/TwoRegionsExample.f90
+!> \example TwoRegions/src/TwoRegionsExample.f90
 !! Example program which sets up a field in two regions using openCMISS calls.
 !<
 

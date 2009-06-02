@@ -40,7 +40,7 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example examples/SimplexMesh/src/SimplexMeshExample.f90
+!> \example SimplexMesh/src/SimplexMeshExample.f90
 !! Example program which sets up a field which uses a Simplex using openCMISS calls.
 !<
 

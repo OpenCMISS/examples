@@ -40,8 +40,11 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example examples/Helmholtz/src/HelmholtzExample.f90
+!> \example ClassicalField/Helmholtz/src/HelmholtzExample.f90
 !! Example program to solve a Helmholtz equation using openCMISS calls.
+!! \par Latest Builds:
+!! http://autotest.bioeng.auckland.ac.nz:8888/builders/x86_64-linux-intel-OpenCMISS/builds/\linux_intel_latest/steps/Helmholtz%20Build
+!! http://autotest.bioeng.auckland.ac.nz:8888/builders/x86_64-linux-gnu-OpenCMISS/builds/\linux_gnu_latest/steps/Helmholtz%20Build
 !<
 
 !> Main program

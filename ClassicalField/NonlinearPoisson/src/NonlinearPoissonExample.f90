@@ -40,8 +40,11 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example examples/NonlinearPoisson/src/NonlinearPoissonExample.f90
+!> \example ClassicalField/NonlinearPoisson/src/NonlinearPoissonExample.f90
 !! Example program to solve a nonlinear Poisson equation using openCMISS calls.
+!! \par Latest Builds:
+!! http://autotest.bioeng.auckland.ac.nz:8888/builders/x86_64-linux-intel-OpenCMISS/builds/\linux_intel_latest/steps/NonlinearPoisson%20Build
+!! http://autotest.bioeng.auckland.ac.nz:8888/builders/x86_64-linux-gnu-OpenCMISS/builds/\linux_gnu_latest/steps/NonlinearPoisson%20Build
 !<
 
 !> Main program

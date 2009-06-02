@@ -40,7 +40,7 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example examples/MoreComplexMesh/src/MoreComplexMeshExample.f90
+!> \example MoreComplexMesh/src/MoreComplexMeshExample.f90
 !! Example program which sets up a field which uses a more complex mesh using openCMISS calls.
 !<
 

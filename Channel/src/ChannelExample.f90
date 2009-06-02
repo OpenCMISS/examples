@@ -40,7 +40,7 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ChannelExample.f90
+!> \example Channel/src/ChannelExample.f90
 !! using openCMISS calls.
 !<
 

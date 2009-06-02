@@ -40,8 +40,11 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example examples/Laplace/src/LaplaceExample.f90
+!> \example ClassicalField/Laplace/src/LaplaceExample.f90
 !! Example program to solve a Laplace equation using openCMISS calls.
+!! \par Latest Builds:
+!! http://autotest.bioeng.auckland.ac.nz:8888/builders/x86_64-linux-intel-OpenCMISS/builds/\linux_intel_latest/steps/Laplace%20Build
+!! http://autotest.bioeng.auckland.ac.nz:8888/builders/x86_64-linux-gnu-OpenCMISS/builds/\linux_gnu_latest/steps/Laplace%20Build
 !<
 
 !> Main program

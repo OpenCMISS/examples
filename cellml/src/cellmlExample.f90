@@ -42,6 +42,14 @@
 
 !> Doxygen comments get ignored when writing this out in the documentation
 
+! Uses EXAMPLE_PATH from Doxyfile but putting path from examples folder to ensure uniqueness.
+!> \example cellml/src/cellmlExample.f90
+!! A complete example demonstrating and testing the methods defined in the openCMISS(cellml) API.
+!! \par Latest Builds:
+!! http://autotest.bioeng.auckland.ac.nz:8888/builders/x86_64-linux-intel-OpenCMISS/builds/\linux_intel_latest/steps/cellml%20Build
+!! http://autotest.bioeng.auckland.ac.nz:8888/builders/x86_64-linux-gnu-OpenCMISS/builds/\linux_gnu_latest/steps/cellml%20Build
+!<
+
 ! An example application demonstrating the complete openCMISS(cellml) API.
 ! This example is designed to both provide a guide to the use of CellML models 
 ! in openCMISS and to test (guide?) the openCMISS(cellml) API implementation.
