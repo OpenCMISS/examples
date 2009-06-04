@@ -696,7 +696,7 @@ OBJECTS = $(OBJECT_DIR)/$(BASE_EXAMPLE_NAME).o \
 	$(OBJECT_DIR)/problem_constants.o \
 	$(OBJECT_DIR)/problem_routines.o \
 	$(OBJECT_DIR)/region_routines.o \
-	$(OBJECT_DIR)/Stokes_fluid_routines.o \
+	$(OBJECT_DIR)/Stokes_fluid_routines-TEST.o \
 	$(OBJECT_DIR)/solver_routines.o \
 	$(OBJECT_DIR)/solver_mapping_routines.o \
 	$(OBJECT_DIR)/solver_matrices_routines.o \
@@ -1137,7 +1137,7 @@ $(OBJECT_DIR)/fluid_mechanics_routines.o	:	$(MAIN_SOURCE_DIR)/fluid_mechanics_ro
 	$(OBJECT_DIR)/equations_set_constants.o \
 	$(OBJECT_DIR)/iso_varying_string.o \
 	$(OBJECT_DIR)/kinds.o \
-	$(OBJECT_DIR)/Stokes_fluid_routines.o \
+	$(OBJECT_DIR)/Stokes_fluid_routines-TEST.o \
 	$(OBJECT_DIR)/problem_constants.o \
 	$(OBJECT_DIR)/strings.o \
 	$(OBJECT_DIR)/types.o
@@ -1408,7 +1408,7 @@ $(OBJECT_DIR)/solver_matrices_routines.o	:	$(MAIN_SOURCE_DIR)/solver_matrices_ro
 	$(OBJECT_DIR)/strings.o \
 	$(OBJECT_DIR)/types.o
 
-$(OBJECT_DIR)/Stokes_fluid_routines.o	:	$(MAIN_SOURCE_DIR)/Stokes_fluid_routines.f90 \
+$(OBJECT_DIR)/Stokes_fluid_routines-TEST.o	:	$(EXAMPLE_SOURCE_DIR)/Stokes_fluid_routines-TEST.f90 \
 	$(OBJECT_DIR)/base_routines.o \
 	$(OBJECT_DIR)/basis_routines.o \
 	$(OBJECT_DIR)/boundary_condition_routines.o \
