@@ -72,7 +72,8 @@ include $(GLOBAL_ROOT)/utils/Makefile.inc
 #----------------------------------------------------------------------------------------------------------------------------------
 
 # changed krittian
-EXAMPLE_NAME = StokesFlow
+EXAMPLE_NAME = SingleElement
+EXAMPLE_PATH = FluidMechanics/StokesFlow/
 # end changed krittian
 
 #----------------------------------------------------------------------------------------------------------------------------------
@@ -118,7 +119,11 @@ endif
 
 BASE_EXAMPLE_NAME = $(EXAMPLE_NAME)Example
 
-EXAMPLE_ROOT = $(GLOBAL_ROOT)/examples/$(EXAMPLE_NAME)
+ifndef EXAMPLE_PATH
+  EXAMPLE_PATH :=
+endif
+
+EXAMPLE_ROOT = $(GLOBAL_ROOT)/examples/$(EXAMPLE_PATH)$(EXAMPLE_NAME)
 
 BASE_EXE_NAME = $(BASE_EXAMPLE_NAME)
 MAIN_SOURCE_DIR = $(GLOBAL_ROOT)/src
@@ -498,7 +503,7 @@ else
 endif
 
 #PETSc
-PETSC_LIBRARIES = -lpetscts -lpetscsnes -lpetscdm -lpetscksp -lpetscmat -lpetscvec -lpetsc -lMrm -lXmu -lXm -lXt -lX11
+PETSC_LIBRARIES = -lpetscts -lpetscsnes -lpetscdm -lpetscksp -lpetscmat -lpetscvec -lpetsc -lMrm -lXmu -lXm -lXt -lX11 -lstdc++
 PETSC_LIB_PATH =#
 PETSC_INCLUDE_PATH =#
 ifeq ($(OPERATING_SYSTEM),linux)# Linux
@@ -696,6 +701,7 @@ OBJECTS = $(OBJECT_DIR)/$(BASE_EXAMPLE_NAME).o \
 	$(OBJECT_DIR)/solver_mapping_routines.o \
 	$(OBJECT_DIR)/solver_matrices_routines.o \
 	$(OBJECT_DIR)/strings.o \
+	$(OBJECT_DIR)/test_framework_routines.o \
 	$(OBJECT_DIR)/timer_c.o \
 	$(OBJECT_DIR)/timer_f.o \
 	$(OBJECT_DIR)/trees.o \
@@ -749,6 +755,8 @@ ifeq ($(OPERATING_SYSTEM),aix)
 endif
 
 $(OBJECT_DIR)/analytic_analysis_routines.o  : $(MAIN_SOURCE_DIR)/analytic_analysis_routines.f90 \
+	$(OBJECT_DIR)/basis_routines.o \
+	$(OBJECT_DIR)/cmiss_mpi.o \
 	$(OBJECT_DIR)/constants.o \
 	$(OBJECT_DIR)/field_routines.o \
 	$(OBJECT_DIR)/input_output.o \
@@ -790,6 +798,7 @@ $(OBJECT_DIR)/bioelectric_routines.o	:	$(MAIN_SOURCE_DIR)/bioelectric_routines.f
 $(OBJECT_DIR)/biodomain_equation_routines.o	:	$(MAIN_SOURCE_DIR)/biodomain_equation_routines.f90 \
 	$(OBJECT_DIR)/base_routines.o \
 	$(OBJECT_DIR)/basis_routines.o \
+	$(OBJECT_DIR)/boundary_condition_routines.o \
 	$(OBJECT_DIR)/constants.o \
 	$(OBJECT_DIR)/control_loop_routines.o \
 	$(OBJECT_DIR)/distributed_matrix_vector.o \
@@ -935,6 +944,7 @@ $(OBJECT_DIR)/Darcy_equations_routines.o	:	$(MAIN_SOURCE_DIR)/Darcy_equations_ro
 $(OBJECT_DIR)/diffusion_equation_routines.o	:	$(MAIN_SOURCE_DIR)/diffusion_equation_routines.f90 \
 	$(OBJECT_DIR)/base_routines.o \
 	$(OBJECT_DIR)/basis_routines.o \
+	$(OBJECT_DIR)/boundary_condition_routines.o \
 	$(OBJECT_DIR)/constants.o \
 	$(OBJECT_DIR)/control_loop_routines.o \
 	$(OBJECT_DIR)/distributed_matrix_vector.o \
@@ -1100,6 +1110,7 @@ $(OBJECT_DIR)/field_IO_routines.o	:	$(MAIN_SOURCE_DIR)/field_IO_routines.f90 \
 $(OBJECT_DIR)/finite_elasticity_routines.o	:	$(MAIN_SOURCE_DIR)/finite_elasticity_routines.f90 \
 	$(OBJECT_DIR)/base_routines.o \
 	$(OBJECT_DIR)/basis_routines.o \
+	$(OBJECT_DIR)/boundary_condition_routines.o \
 	$(OBJECT_DIR)/constants.o \
 	$(OBJECT_DIR)/control_loop_routines.o \
 	$(OBJECT_DIR)/distributed_matrix_vector.o \
@@ -1214,6 +1225,7 @@ $(OBJECT_DIR)/Laplace_equations_routines.o	:	$(MAIN_SOURCE_DIR)/Laplace_equation
 $(OBJECT_DIR)/linear_elasticity_routines.o	:	$(MAIN_SOURCE_DIR)/linear_elasticity_routines.f90 \
 	$(OBJECT_DIR)/base_routines.o \
 	$(OBJECT_DIR)/basis_routines.o \
+	$(OBJECT_DIR)/boundary_condition_routines.o \
 	$(OBJECT_DIR)/constants.o \
 	$(OBJECT_DIR)/control_loop_routines.o \
 	$(OBJECT_DIR)/distributed_matrix_vector.o \
@@ -1297,6 +1309,7 @@ $(OBJECT_DIR)/node_routines.o	:	$(MAIN_SOURCE_DIR)/node_routines.f90 \
 $(OBJECT_DIR)/Poisson_equations_routines.o	:	$(MAIN_SOURCE_DIR)/Poisson_equations_routines.f90 \
 	$(OBJECT_DIR)/base_routines.o \
 	$(OBJECT_DIR)/basis_routines.o \
+	$(OBJECT_DIR)/boundary_condition_routines.o \
 	$(OBJECT_DIR)/constants.o \
 	$(OBJECT_DIR)/control_loop_routines.o \
 	$(OBJECT_DIR)/distributed_matrix_vector.o \
@@ -1348,6 +1361,7 @@ $(OBJECT_DIR)/region_routines.o	:	$(MAIN_SOURCE_DIR)/region_routines.f90 \
 	$(OBJECT_DIR)/iso_varying_string.o \
 	$(OBJECT_DIR)/kinds.o \
 	$(OBJECT_DIR)/mesh_routines.o \
+	$(OBJECT_DIR)/node_routines.o \
 	$(OBJECT_DIR)/strings.o \
 	$(OBJECT_DIR)/types.o
 
@@ -1423,7 +1437,14 @@ $(OBJECT_DIR)/strings.o	:	$(MAIN_SOURCE_DIR)/strings.f90 \
 	$(OBJECT_DIR)/kinds.o \
 	$(OBJECT_DIR)/iso_varying_string.o
 
-$(OBJECT_DIR)/timer_c.o	:	$(MAIN_SOURCE_DIR)/timer_c.c 
+$(OBJECT_DIR)/test_framework_routines.o	:	$(MAIN_SOURCE_DIR)/test_framework_routines.f90 \
+	$(OBJECT_DIR)/constants.o \
+	$(OBJECT_DIR)/iso_varying_string.o \
+	$(OBJECT_DIR)/kinds.o \
+	$(OBJECT_DIR)/matrix_vector.o \
+	$(OBJECT_DIR)/strings.o 
+
+$(OBJECT_DIR)/timer_c.o	:	$(MAIN_SOURCE_DIR)/timer_c.c \
 
 $(OBJECT_DIR)/timer_f.o	:	$(MAIN_SOURCE_DIR)/timer_f.f90 \
 	$(OBJECT_DIR)/base_routines.o \
@@ -1479,6 +1500,7 @@ $(OBJECT_DIR)/$(BASE_EXAMPLE_NAME).o	:	$(EXAMPLE_SOURCE_DIR)/$(BASE_EXAMPLE_NAME
 	$(OBJECT_DIR)/problem_routines.o \
 	$(OBJECT_DIR)/region_routines.o \
 	$(OBJECT_DIR)/solver_routines.o \
+	$(OBJECT_DIR)/test_framework_routines.o \
 	$(OBJECT_DIR)/timer_f.o \
 	$(OBJECT_DIR)/types.o \
 	$(OBJECT_DIR)/cmgui_output.o\
