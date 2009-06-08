@@ -13,16 +13,17 @@ failedExample = '';
 def buildExample(path) :
   global failedExample, success, compiler;
   os.chdir(path)
+  err=0
   if compiler == 'gnu' :
-    os.system("make COMPILER=gnu > " + cwd + "/logs/" + path.replace('/', '_'))
+    err=os.system("make COMPILER=gnu > " + cwd + "/logs/" + path.replace('/', '_')+ " 2>&1")
   elif compiler == 'intel' :
-    err=os.system("make > " + cwd + "/logs/" + path.replace('/', '_'))
-    if err==0 :
-      logFile.write(path.replace('/', '_')+'=success\n') 
-    else :
-      success=0
-      logFile.write(path.replace('/', '_')+'=fail\n') 
-      failedExample += path.replace('/', ' - ') + ' '
+    err=os.system("make > " + cwd + "/logs/" + path.replace('/', '_') + " 2>&1")
+  if err==0 :
+    logFile.write(path.replace('/', '_')+'=success\n') 
+  else :
+    success=0
+    logFile.write(path.replace('/', '_')+'=fail\n') 
+    failedExample += path.replace('/', ' - ') + ' '
   os.chdir(cwd)
   return;
 
@@ -49,7 +50,7 @@ buildExample("FiniteElasticity")
 buildExample("MoreComplexMesh")
 buildExample("simple-field-manipulation-direct-access")
 buildExample("SimplexMesh")
-buildExample("TwoRegions")
+#buildExample("TwoRegions")
 
 logFile.close()
 if success==0 :
