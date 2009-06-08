@@ -2,22 +2,25 @@ import os, sys
 
 cwd = os.getcwd();
 success = 1;
+logDir = cwd + "/../../build/logs";
 
-if os.path.isdir("logs"):
-  os.system("rm -r logs")
-os.mkdir("logs");
-logFile = open("logs/log.txt","w")
+if os.path.isdir(logDir):
+  os.system("rm -r " + logDir)
+  os.rmdir(cwd + "/../../build")
+os.mkdir(cwd + "/../../build")
+os.mkdir(logDir);
+logFile = open(logDir + "/log.txt","w")
 compiler = sys.argv[1];
 failedExample = '';
 
 def buildExample(path) :
-  global failedExample, success, compiler;
+  global failedExample, success, compiler, logDir;
   os.chdir(path)
   err=0
   if compiler == 'gnu' :
-    err=os.system("make COMPILER=gnu > " + cwd + "/logs/" + path.replace('/', '_')+ " 2>&1")
+    err=os.system("make COMPILER=gnu > " + logDir + "/" + path.replace('/', '_')+ " 2>&1")
   elif compiler == 'intel' :
-    err=os.system("make > " + cwd + "/logs/" + path.replace('/', '_') + " 2>&1")
+    err=os.system("make > " + logDir + "/" + path.replace('/', '_') + " 2>&1")
   if err==0 :
     logFile.write(path.replace('/', '_')+'=success\n') 
   else :
@@ -50,7 +53,7 @@ buildExample("FiniteElasticity")
 buildExample("MoreComplexMesh")
 buildExample("simple-field-manipulation-direct-access")
 buildExample("SimplexMesh")
-#buildExample("TwoRegions")
+buildExample("TwoRegions")
 
 logFile.close()
 if success==0 :
