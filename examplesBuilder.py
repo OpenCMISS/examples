@@ -25,10 +25,12 @@ def buildExample(path) :
     err=os.system("make > " + logDir + "/" + path.replace('/', '_') + " 2>&1")
   if err==0 :
     logFile.write(path.replace('/', '_')+'=success\n')
+    print path.replace('/', '_')+': success"
     successedExample += path.replace('/', ' - ') + '\n'
   else :
     success=0
     logFile.write(path.replace('/', '_')+'=fail\n') 
+    print path.replace('/', '_')+': fail\n"
     failedExample += path.replace('/', ' - ') + '\n'
   os.chdir(cwd)
   return;
