@@ -3,6 +3,7 @@ import os, sys
 cwd = os.getcwd();
 success = 1;
 logDir = cwd + "/../../build/logs";
+rootUrl = "http://autotest.bioeng.auckland.ac.nz:8888/"
 
 if os.path.isdir(logDir):
   os.system("rm -r " + logDir)
@@ -12,9 +13,10 @@ os.mkdir(logDir);
 logFile = open(logDir + "/log.txt","w")
 compiler = sys.argv[1];
 failedExample = '';
+successedExample = ''
 
 def buildExample(path) :
-  global failedExample, success, compiler, logDir;
+  global failedExample,successedExample,success,compiler,logDir;
   os.chdir(path)
   err=0
   if compiler == 'gnu' :
@@ -22,11 +24,12 @@ def buildExample(path) :
   elif compiler == 'intel' :
     err=os.system("make > " + logDir + "/" + path.replace('/', '_') + " 2>&1")
   if err==0 :
-    logFile.write(path.replace('/', '_')+'=success\n') 
+    logFile.write(path.replace('/', '_')+'=success\n')
+    successedExample += path.replace('/', ' - ') + '\n'
   else :
     success=0
     logFile.write(path.replace('/', '_')+'=fail\n') 
-    failedExample += path.replace('/', ' - ') + ' '
+    failedExample += path.replace('/', ' - ') + '\n'
   os.chdir(cwd)
   return;
 
@@ -56,7 +59,9 @@ buildExample("SimplexMesh")
 buildExample("TwoRegions")
 
 logFile.close()
+print "See %slogs_x86_64-linux-%s for detail" % (rootUrl, compiler) 
+print "Success Examples: \n%s" % (successedExample) 
 if success==0 :
-  raise RuntimeError, 'Failed in %s' % (failedExample)
+  raise RuntimeError, 'Failed in \n%s' % (failedExample)
 
 
