@@ -30,7 +30,7 @@ def buildExample(path) :
   else :
     success=0
     logFile.write(path.replace('/', '_')+'=fail\n') 
-    print path.replace('/', '_')+': fail\n"
+    print path.replace('/', '_')+': fail\n'
     failedExample += path.replace('/', ' - ') + '\n'
   os.chdir(cwd)
   return;
