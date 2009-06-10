@@ -49,6 +49,7 @@ buildExample("FluidMechanics/StokesFlow/SingleElement")
 buildExample("FluidMechanics/StokesFlow/VesselPipe")
 
 buildExample("FiniteElasticity/UniAxialExtension")
+buildExample("FiniteElasticity/TriCubicAxialExtension")
 
 # TODO Group them
 buildExample("LagrangeSimplexMesh")
