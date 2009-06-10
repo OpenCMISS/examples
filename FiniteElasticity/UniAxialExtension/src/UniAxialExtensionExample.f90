@@ -1,5 +1,5 @@
 !> \file
-!> $Id: FiniteElasticityExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id: UniAxialExtensionExample.f90 20 2007-05-28 20:22:52Z cpb $
 !> \author Chris Bradley
 !> \brief This is an example program to solve a finite elasticity equation using openCMISS calls.
 !>
@@ -40,12 +40,12 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example FiniteElasticity/src/FiniteElasticityExample.f90
+!> \example FiniteElasticity/UniAxialExtension/src/UniAxialExtensionExample.f90
 !! Example program to solve a finite elasticity equation using openCMISS calls.
 !<
 
 !> Main program
-PROGRAM FINITEELASTICITYEXAMPLE
+PROGRAM UNIAXIALEXTENSIONEXAMPLE
 
   USE BASE_ROUTINES   
   USE BASIS_ROUTINES   
@@ -502,5 +502,5 @@ PROGRAM FINITEELASTICITYEXAMPLE
 999 CALL CMISS_WRITE_ERROR(ERR,ERROR)
   STOP
 
-END PROGRAM FINITEELASTICITYEXAMPLE
+END PROGRAM UNIAXIALEXTENSIONEXAMPLE
 

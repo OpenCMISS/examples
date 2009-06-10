@@ -48,13 +48,14 @@ buildExample("FluidMechanics/StokesFlow/HexPipe")
 buildExample("FluidMechanics/StokesFlow/SingleElement")
 buildExample("FluidMechanics/StokesFlow/VesselPipe")
 
+buildExample("FiniteElasticity/UniAxialExtension")
+
 # TODO Group them
 buildExample("LagrangeSimplexMesh")
 buildExample("LinearElasticity")
 buildExample("cellml")
 buildExample("Darcy")
 buildExample("define-geometry-and-export")
-buildExample("FiniteElasticity")
 buildExample("MoreComplexMesh")
 buildExample("simple-field-manipulation-direct-access")
 buildExample("SimplexMesh")
