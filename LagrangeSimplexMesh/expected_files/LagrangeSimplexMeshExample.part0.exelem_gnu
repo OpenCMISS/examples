@@ -1,11 +1,11 @@
  Group name: Region 1           
  Shape.  Dimension=2
  #Scale factor sets= 1
- q.Lagrange*q.Lagrange, #Scale factors=9
+ l.Lagrange*q.Lagrange, #Scale factors=6
  #Nodes=           6
  #Fields=1
  1) coordinates,  coordinate, rectangular cartesian, #Components=2
-   x.   q.Lagrange*q.Lagrange, no modify, standard node based.
+   x.   l.Lagrange*q.Lagrange, no modify, standard node based.
      #Nodes= 6
      1.  #Values=1
       Value indices:     1
@@ -25,7 +25,7 @@
      6.  #Values=1
       Value indices:     1
       Scale factor indices:    6
-   y.   q.Lagrange*q.Lagrange, no modify, standard node based.
+   y.   l.Lagrange*q.Lagrange, no modify, standard node based.
      #Nodes= 6
      1.  #Values=1
       Value indices:     1
@@ -51,11 +51,11 @@
    Scale factors:
    1.0000000000000000E+000   1.0000000000000000E+000   1.0000000000000000E+000   1.0000000000000000E+000   1.0000000000000000E+000   1.0000000000000000E+000
  #Scale factor sets= 1
- q.Simplex*q.Simplex, #Scale factors=9
+ q.simplex(2)*q.simplex, #Scale factors=6
  #Nodes=           6
  #Fields=1
  1) coordinates,  coordinate, rectangular cartesian, #Components=2
-   y.   q.Simplex*q.Simplex, no modify, standard node based.
+   y.   q.simplex(2)*q.simplex, no modify, standard node based.
      #Nodes= 6
      1.  #Values=1
       Value indices:     1
@@ -75,7 +75,7 @@
      6.  #Values=1
       Value indices:     1
       Scale factor indices:    6
-   y.   q.Simplex*q.Simplex, no modify, standard node based.
+   y.   q.simplex(2)*q.simplex, no modify, standard node based.
      #Nodes= 6
      1.  #Values=1
       Value indices:     1
