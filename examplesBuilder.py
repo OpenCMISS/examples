@@ -50,6 +50,7 @@ buildExample("FluidMechanics/StokesFlow/VesselPipe")
 
 buildExample("FiniteElasticity/UniAxialExtension")
 buildExample("FiniteElasticity/TwoElementTriLinear")
+buildExample("FiniteElasticity/MixedBoundaryConditions")
 buildExample("FiniteElasticity/TriCubicAxialExtension")
 
 # TODO Group them
