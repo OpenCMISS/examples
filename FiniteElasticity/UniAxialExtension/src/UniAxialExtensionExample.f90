@@ -148,8 +148,7 @@ PROGRAM UNIAXIALEXTENSIONEXAMPLE
   INTEGER(INTG) :: equation_set_user_number
   INTEGER(INTG) :: problem_user_number     
   INTEGER(INTG) :: dof_idx,number_of_global_dependent_dofs,number_of_global_geometric_dofs  
-  REAL(DP), POINTER :: GEOMETRIC_FIELD_PARAMETERS(:),FIELD_DATA(:)
-  REAL(DP) :: VALUE
+  REAL(DP), POINTER :: FIELD_DATA(:)
 
 #ifdef WIN32
   !Initialise QuickWin
