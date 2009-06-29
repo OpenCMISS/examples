@@ -13,7 +13,7 @@ os.mkdir(logDir);
 compiler = sys.argv[1];
 
 def buildExample(path) :
-  global failedExample,successedExample,success,compiler,logDir;
+  global success,compiler,logDir;
   os.chdir(path)
   err=0
   if compiler == 'gnu' :
@@ -29,9 +29,8 @@ def buildExample(path) :
   return;
   
 def testExample(path, nodes) :
-  global compiler;
+  global success,compiler,logDir;
   os.putenv('PATH', os.environ['PATH']+':'+cwd+'/../../../opencmissextras/cm/external/x86_64-linux-debug-'+compiler+'/bin')
-  print os.environ['PATH']
   os.chdir(path)
   err=os.system('mpiexec -n '+nodes+' bin/x86_64-linux/'+path.rpartition('/')[2]+'Example-debug-'+compiler+' 10 10 0 '+nodes+" > " + logDir + "/test-" + path.replace('/', '_')+ " 2>&1")
   if err==0 :
