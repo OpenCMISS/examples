@@ -124,6 +124,8 @@ PROGRAM LAPLACEEXAMPLE
   TYPE(VARYING_STRING) :: FILE,METHOD
 
   REAL(SP) :: START_USER_TIME(1),STOP_USER_TIME(1),START_SYSTEM_TIME(1),STOP_SYSTEM_TIME(1)
+  
+  CHARACTER *10 BUFFER
 
 #ifdef WIN32
   !Quickwin type
@@ -186,17 +188,35 @@ PROGRAM LAPLACEEXAMPLE
   NUMBER_GLOBAL_Z_ELEMENTS=0
   NUMBER_OF_DOMAINS=2
   
-  !Read in the number of elements in the X & Y directions, and the number of partitions on the master node (number 0)
+!  !Read in the number of elements in the X & Y directions, and the number of partitions on the master node (number 0)
+!  IF(MY_COMPUTATIONAL_NODE_NUMBER==0) THEN
+!    WRITE(*,'("Enter the number of elements in the X direction :")')
+!    READ(*,*) NUMBER_GLOBAL_X_ELEMENTS
+!    WRITE(*,'("Enter the number of elements in the Y direction :")')
+!    READ(*,*) NUMBER_GLOBAL_Y_ELEMENTS
+!    WRITE(*,'("Enter the number of elements in the Z direction :")')
+!    READ(*,*) NUMBER_GLOBAL_Z_ELEMENTS
+!    WRITE(*,'("Enter the number of domains :")')
+!    READ(*,*) NUMBER_OF_DOMAINS
+!  ENDIF
+  
   IF(MY_COMPUTATIONAL_NODE_NUMBER==0) THEN
-    WRITE(*,'("Enter the number of elements in the X direction :")')
-    READ(*,*) NUMBER_GLOBAL_X_ELEMENTS
-    WRITE(*,'("Enter the number of elements in the Y direction :")')
-    READ(*,*) NUMBER_GLOBAL_Y_ELEMENTS
-    WRITE(*,'("Enter the number of elements in the Z direction :")')
-    READ(*,*) NUMBER_GLOBAL_Z_ELEMENTS
-    WRITE(*,'("Enter the number of domains :")')
-    READ(*,*) NUMBER_OF_DOMAINS
+    IF(COMMAND_ARGUMENT_COUNT()==4) THEN
+      !GET THE PARAMETERS FROM THE COMMAND LINE ARGUMENT
+      CALL GET_COMMAND_ARGUMENT(1,BUFFER)
+      READ(BUFFER,*) NUMBER_GLOBAL_X_ELEMENTS
+      CALL GET_COMMAND_ARGUMENT(2,BUFFER)
+      READ(BUFFER,*) NUMBER_GLOBAL_Y_ELEMENTS
+      CALL GET_COMMAND_ARGUMENT(3,BUFFER)
+      READ(BUFFER,*) NUMBER_GLOBAL_Z_ELEMENTS
+      CALL GET_COMMAND_ARGUMENT(4,BUFFER)
+      READ(BUFFER,*) NUMBER_OF_DOMAINS
+    ELSE
+      !TODO more detailed error message
+      CALL FLAG_ERROR("Incorrect number of argements.",ERR,ERROR,*999)
+    ENDIF
   ENDIF
+  
   !Broadcast the number of elements in the X & Y directions and the number of partitions to the other computational nodes
   CALL MPI_BCAST(NUMBER_GLOBAL_X_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
   CALL MPI_ERROR_CHECK("MPI_BCAST",MPI_IERROR,ERR,ERROR,*999)

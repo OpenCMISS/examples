@@ -10,28 +10,35 @@ if os.path.isdir(logDir):
   os.rmdir(cwd + "/../../build")
 os.mkdir(cwd + "/../../build")
 os.mkdir(logDir);
-logFile = open(logDir + "/log.txt","w")
 compiler = sys.argv[1];
-failedExample = '';
-successedExample = ''
 
 def buildExample(path) :
   global failedExample,successedExample,success,compiler,logDir;
   os.chdir(path)
   err=0
   if compiler == 'gnu' :
-    err=os.system("make COMPILER=gnu > " + logDir + "/" + path.replace('/', '_')+ " 2>&1")
+    err=os.system("make COMPILER=gnu > " + logDir + "/build-" + path.replace('/', '_')+ " 2>&1")
   elif compiler == 'intel' :
     err=os.system("make > " + logDir + "/" + path.replace('/', '_') + " 2>&1")
   if err==0 :
-    logFile.write(path.replace('/', '_')+'=success\n')
-    print path.replace('/', '_')+': success'
-    successedExample += path.replace('/', ' - ') + '\n'
+    print "Building " + path.replace('/', '_')+': success'
   else :
     success=0
-    logFile.write(path.replace('/', '_')+'=fail\n') 
-    print path.replace('/', '_')+': fail\n'
-    failedExample += path.replace('/', ' - ') + '\n'
+    print "Building " + path.replace('/', '_')+': fail'
+  os.chdir(cwd)
+  return;
+  
+def testExample(path, nodes) :
+  global compiler;
+  os.putenv('PATH', os.environ['PATH']+':'+cwd+'/../../../opencmissextras/cm/external/x86_64-linux-debug-'+compiler+'/bin')
+  print os.environ['PATH']
+  os.chdir(path)
+  err=os.system('mpiexec -n '+nodes+' bin/x86_64-linux/'+path.rpartition('/')[2]+'Example-debug-'+compiler+' 10 10 0 '+nodes+" > " + logDir + "/test-" + path.replace('/', '_')+ " 2>&1")
+  if err==0 :
+    print "Testing" + path.replace('/', '_')+': success'
+  else :
+    success=0
+    print "Testing" + path.replace('/', '_')+': fail'
   os.chdir(cwd)
   return;
 
@@ -39,6 +46,7 @@ buildExample("ClassicalField/AnalyticLaplace")
 buildExample("ClassicalField/Diffusion")
 buildExample("ClassicalField/Helmholtz")
 buildExample("ClassicalField/Laplace")
+testExample("ClassicalField/Laplace", '2')
 buildExample("ClassicalField/NonlinearPoisson")
 
 buildExample("Bioelectrics/Monodomain")
@@ -64,10 +72,8 @@ buildExample("simple-field-manipulation-direct-access")
 buildExample("SimplexMesh")
 buildExample("TwoRegions")
 
-logFile.close()
 print "See %slogs_x86_64-linux-%s for detail" % (rootUrl, compiler) 
-print "Success Examples: \n%s" % (successedExample) 
 if success==0 :
-  raise RuntimeError, 'Failed in \n%s' % (failedExample)
+  raise RuntimeError
 
 
