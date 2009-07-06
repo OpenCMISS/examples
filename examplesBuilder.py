@@ -59,7 +59,7 @@ buildExample("simple-field-manipulation-direct-access")
 buildExample("SimplexMesh")
 buildExample("TwoRegions")
 
-print "See %slogs_x86_64-linux-%s for detail" % (rootUrl, compiler) 
+print "See %slogs_x86_64-linux for detail" % (rootUrl) 
 if success==0 :
   raise RuntimeError
 

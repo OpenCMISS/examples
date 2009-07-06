@@ -38,7 +38,7 @@ def testExample(id, path, nodes) :
 testExample('1', "ClassicalField/Laplace", '1') 
 #testExample('2', "ClassicalField/Laplace", '2')
 
-print "See %slogs_x86_64-linux-%s for detail" % (rootUrl, compiler) 
+print "See %slogs_x86_64-linux for detail" % (rootUrl) 
 if success==0 :
   raise RuntimeError
 
