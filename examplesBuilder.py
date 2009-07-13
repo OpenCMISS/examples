@@ -1,7 +1,6 @@
 import os, sys
 
 cwd = os.getcwd();
-success = 1;
 logDir = cwd + "/../../build/logs";
 rootUrl = "https://autotest.bioeng.auckland.ac.nz/opencmiss-admin/"
 
@@ -12,7 +11,7 @@ compiler = sys.argv[1];
 
 
 def buildExample(path) :
-   global success,compiler,logDir;
+   global compiler,logDir;
    newDir = logDir
    for folder in path.split('/') :
      newDir = newDir + '/' + folder
@@ -23,10 +22,9 @@ def buildExample(path) :
      os.remove(newDir + "/build-" + compiler)
    err=os.system("make COMPILER=" + compiler + " > " + newDir + "/build-" + compiler +" 2>&1")
    if err==0 :
-     print "Building " + path+': success'
+     print "Building %s: <a class='success' href='%slogs_x86_64-linux/%s/build-%s'>success</a><br>" %(path,rootUrl,path,compiler)
    else :
-     success=0
-     print "Building " + path+': fail'
+     print "Building %s: <a class='fail' href='%slogs_x86_64-linux/%s/build-%s'>failed</a><br>" %(path,rootUrl,path,compiler)
    os.chdir(cwd)
    return;
 
@@ -58,9 +56,5 @@ buildExample("MoreComplexMesh")
 buildExample("simple-field-manipulation-direct-access")
 buildExample("SimplexMesh")
 buildExample("TwoRegions")
-
-print "See %slogs_x86_64-linux for detail" % (rootUrl) 
-if success==0 :
-  raise RuntimeError
 
 
