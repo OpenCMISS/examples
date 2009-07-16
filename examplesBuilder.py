@@ -36,10 +36,10 @@ buildExample("ClassicalField/NonlinearPoisson")
 
 buildExample("Bioelectrics/Monodomain")
   
-buildExample("FluidMechanics/StokesFlow/HexChannel")
-buildExample("FluidMechanics/StokesFlow/HexPipe")
-buildExample("FluidMechanics/StokesFlow/SingleElement")
-buildExample("FluidMechanics/StokesFlow/VesselPipe")
+buildExample("FluidMechanics/Stokes/HexChannel")
+buildExample("FluidMechanics/Stokes/HexPipe")
+buildExample("FluidMechanics/Stokes/SingleElement")
+buildExample("FluidMechanics/Stokes/VesselPipe")
 buildExample("FluidMechanics/Darcy")
 
 buildExample("FiniteElasticity/UniAxialExtension")
