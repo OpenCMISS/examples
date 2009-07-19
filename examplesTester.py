@@ -2,7 +2,7 @@ import os, sys
 
 cwd = os.getcwd();
 logDir = cwd + "/../../build/logs";
-rootUrl = "https://autotest.bioeng.auckland.ac.nz/opencmiss-admin/"
+rootUrl = "http://autotest.bioeng.auckland.ac.nz/opencmiss-build/"
 
 if not os.path.isdir(logDir):
   os.mkdir(cwd + "/../../build")
