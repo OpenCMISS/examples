@@ -46,8 +46,8 @@
 !> \example cellml/src/cellmlExample.f90
 !! A complete example demonstrating and testing the methods defined in the openCMISS(cellml) API.
 !! \par Latest Builds:
-!! http://autotest.bioeng.auckland.ac.nz:8888/builders/x86_64-linux-intel-OpenCMISS/builds/\linux_intel_latest/steps/cellml%20Build
-!! http://autotest.bioeng.auckland.ac.nz:8888/builders/x86_64-linux-gnu-OpenCMISS/builds/\linux_gnu_latest/steps/cellml%20Build
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/cellml/build-intel'>Linux Intel Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/cellml/build-gnu'>Linux GNU Build</a>
 !<
 
 ! An example application demonstrating the complete openCMISS(cellml) API.

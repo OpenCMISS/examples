@@ -40,8 +40,11 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example Darcy/src/DarcyExample.f90
+!> \example FluidMechanics/Darcy/src/DarcyExample.f90
 !! Example program to solve a Darcy equation using openCMISS calls.
+!! \par Latest Builds:
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FluidMechanics/Darcy/build-intel'>Linux Intel Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FluidMechanics/Darcy/build-gnu'>Linux GNU Build</a>
 !<
 
 !> Main program

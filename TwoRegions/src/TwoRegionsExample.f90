@@ -42,6 +42,9 @@
 
 !> \example TwoRegions/src/TwoRegionsExample.f90
 !! Example program which sets up a field in two regions using openCMISS calls.
+!! \par Latest Builds:
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/TwoRegions/build-intel'>Linux Intel Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/TwoRegions/build-gnu'>Linux GNU Build</a>
 !<
 
 !> Main program

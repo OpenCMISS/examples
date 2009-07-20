@@ -43,8 +43,9 @@
 !> \example ClassicalField/Laplace/src/LaplaceExample.f90
 !! Example program to solve a Laplace equation using openCMISS calls.
 !! \par Latest Builds:
-!! http://autotest.bioeng.auckland.ac.nz:8888/builders/x86_64-linux-intel-OpenCMISS/builds/\linux_intel_latest/steps/Laplace%20Build
-!! http://autotest.bioeng.auckland.ac.nz:8888/builders/x86_64-linux-gnu-OpenCMISS/builds/\linux_gnu_latest/steps/Laplace%20Build
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/Laplace/build-intel'>Linux Intel Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/Laplace/build-gnu'>Linux GNU Build</a>
+!!
 !<
 
 !> Main program

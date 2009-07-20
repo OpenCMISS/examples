@@ -40,8 +40,11 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example examples/StokesFlow/src/StokesFlowExample.f90
+!> \example FluidMechanics/Stokes/SingleElement/src/SingleElementExample.f90
 !! Example program to solve a Stokes equation using openCMISS calls.
+!! \par Latest Builds:
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FluidMechanics/Stokes/SingleElement/build-intel'>Linux Intel Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FluidMechanics/Stokes/SingleElement/build-gnu'>Linux GNU Build</a>
 !<
 
 !> Main program

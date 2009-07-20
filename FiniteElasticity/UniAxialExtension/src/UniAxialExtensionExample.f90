@@ -42,6 +42,9 @@
 
 !> \example FiniteElasticity/UniAxialExtension/src/UniAxialExtensionExample.f90
 !! Example program to solve a finite elasticity equation using openCMISS calls.
+!! \par Latest Builds:
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/UniAxialExtension/build-intel'>Linux Intel Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/UniAxialExtension/build-gnu'>Linux GNU Build</a>
 !<
 
 !> Main program

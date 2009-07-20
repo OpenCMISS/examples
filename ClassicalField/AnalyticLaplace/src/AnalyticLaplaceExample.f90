@@ -44,8 +44,8 @@
 !! Example illustrating the use of openCMISS to solve the Laplace problem and check with its Analytic Solution.
 !! 
 !! \par Latest Builds:
-!! http://autotest.bioeng.auckland.ac.nz:8888/builders/x86_64-linux-intel-OpenCMISS/builds/\linux_intel_latest/steps/AnalyticLaplace%20Build
-!! http://autotest.bioeng.auckland.ac.nz:8888/builders/x86_64-linux-gnu-OpenCMISS/builds/\linux_gnu_latest/steps/AnalyticLaplace%20Build
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/AnalyticLaplace/build-intel'>Linux Intel Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/AnalyticLaplace/build-gnu'>Linux GNU Build</a>
 !< 
 
 !> Main program
