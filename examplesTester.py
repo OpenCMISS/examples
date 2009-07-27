@@ -8,6 +8,7 @@ if not os.path.isdir(logDir):
   os.mkdir(cwd + "/../../build")
   os.mkdir(logDir);
 compiler = sys.argv[1];
+os.putenv('HOME', '/home/autotest')
 os.putenv('PATH', os.environ['PATH']+':'+cwd+'/../../../opencmissextras/cm/external/x86_64-linux-debug-'+compiler+'/bin')
 os.system('mpd &')
 
