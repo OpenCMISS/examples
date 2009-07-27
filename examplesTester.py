@@ -8,11 +8,11 @@ if not os.path.isdir(logDir):
   os.mkdir(cwd + "/../../build")
   os.mkdir(logDir);
 compiler = sys.argv[1];
-os.system('mpd.py &')
+os.putenv('PATH', os.environ['PATH']+':'+cwd+'/../../../opencmissextras/cm/external/x86_64-linux-debug-'+compiler+'/bin')
+os.system('mpd &')
 
 def testExample(id, path, nodes) :
    global compiler,logDir;
-   os.putenv('PATH', os.environ['PATH']+':'+cwd+'/../../../opencmissextras/cm/external/x86_64-linux-debug-'+compiler+'/bin')
    newDir = logDir
    for folder in path.split('/') :
      newDir = newDir + '/' + folder
@@ -22,7 +22,10 @@ def testExample(id, path, nodes) :
    if os.path.exists(newDir + "/test"+id+"-" + compiler) :
      os.remove(newDir + "/test"+id+"-" + compiler)
    execPath='bin/x86_64-linux/'+path.rpartition('/')[2]+'Example-debug-'+compiler
-   err=os.system('mpiexec.py -n ' + nodes + " " + execPath + ' 10 10 0 '+nodes+" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+   if nodes == '1' :
+     err=os.system(execPath + ' 2 2 0 '+nodes+" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+   else :
+     err=os.system('mpiexec -n ' + nodes + " " + execPath + ' 2 2 0 '+nodes+" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
    if not os.path.exists(execPath) :
      err=-1
    if err==0 :
@@ -34,5 +37,7 @@ def testExample(id, path, nodes) :
 
 
 testExample('1', "ClassicalField/Laplace", '1') 
-#testExample('2', "ClassicalField/Laplace", '2')
+testExample('2', "ClassicalField/Laplace", '2')
+
+os.system('mpdallexit')
 
