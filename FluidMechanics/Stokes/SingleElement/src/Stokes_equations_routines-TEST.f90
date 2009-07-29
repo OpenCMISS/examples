@@ -1234,7 +1234,8 @@ CONTAINS
                   DO ms=1,DEPENDENT_BASIS1%NUMBER_OF_ELEMENT_PARAMETERS
                       mhs=mhs+1
                       nhs=0
-                      IF(STIFFNESS_MATRIX%UPDATE_MATRIX.OR.DAMPING_MATRIX%UPDATE_MATRIX) THEN
+                      IF(STIFFNESS_MATRIX%UPDATE_MATRIX) THEN
+                      !IF(STIFFNESS_MATRIX%UPDATE_MATRIX.OR.DAMPING_MATRIX%UPDATE_MATRIX) THEN
                           !Loop over element columns
                           DO nh=1,(FIELD_VARIABLE%NUMBER_OF_COMPONENTS)
                                MESH_COMPONENT2=FIELD_VARIABLE%COMPONENTS(nh)%MESH_COMPONENT_NUMBER
