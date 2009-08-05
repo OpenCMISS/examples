@@ -275,7 +275,7 @@ ifeq ($(OPERATING_SYSTEM),linux)
     DBGC_FLGS += -O0
     OPTC_FLGS = -O3 -ansi_alias
     ifneq ($(PROF),false)
-      C_FLGS += -g -pg -tcollect
+      C_FLGS += -g -pg
       ELFLAGS += -pg
     endif
     ifeq ($(MPIPROF),true)
@@ -368,7 +368,7 @@ ifeq ($(OPERATING_SYSTEM),linux)
     DBGF_FLGS += -O0 -check all -traceback -debug all
     OPTF_FLGS = -O3
     ifneq ($(PROF),false)
-      F_FLGS += -g -pg -tcollect
+      F_FLGS += -g -pg
       ELFLAGS += -pg
     endif
     ifeq ($(MPIPROF),true)
@@ -529,7 +529,7 @@ else
 endif
 
 #PETSc
-PETSC_LIBRARIES = -lpetscts -lpetscsnes -lpetscdm -lpetscksp -lpetscmat -lpetscvec -lpetsc -lMrm -lXmu -lXm -lXt -lX11 -lstdc++
+PETSC_LIBRARIES = -lpetscts -lpetscsnes -lpetscdm -lpetscksp -lpetscmat -lpetscvec -lpetsc -lpetsccontrib -lMrm -lXmu -lXm -lXt -lX11 -lstdc++
 PETSC_LIB_PATH =#
 PETSC_INCLUDE_PATH =#
 ifeq ($(OPERATING_SYSTEM),linux)# Linux
@@ -871,13 +871,13 @@ OBJECTS = $(OBJECT_DIR)/$(BASE_EXAMPLE_NAME).o \
 	$(OBJECT_DIR)/maths.o \
 	$(OBJECT_DIR)/matrix_vector.o \
 	$(OBJECT_DIR)/mesh_routines.o \
+	$(OBJECT_DIR)/Navier_Stokes_equations_routines.o \
 	$(OBJECT_DIR)/node_routines.o \
 	$(OBJECT_DIR)/Poisson_equations_routines.o \
 	$(OBJECT_DIR)/problem_constants.o \
 	$(OBJECT_DIR)/problem_routines.o \
 	$(OBJECT_DIR)/region_routines.o \
-	$(OBJECT_DIR)/Stokes_equations_routines-TEST.o \
-	$(OBJECT_DIR)/Navier_Stokes_equations_routines.o \
+	$(OBJECT_DIR)/Stokes_equations_routines.o \
 	$(OBJECT_DIR)/solver_routines.o \
 	$(OBJECT_DIR)/solver_mapping_routines.o \
 	$(OBJECT_DIR)/solver_matrices_routines.o \
@@ -1318,8 +1318,8 @@ $(OBJECT_DIR)/fluid_mechanics_routines.o	:	$(MAIN_SOURCE_DIR)/fluid_mechanics_ro
 	$(OBJECT_DIR)/equations_set_constants.o \
 	$(OBJECT_DIR)/iso_varying_string.o \
 	$(OBJECT_DIR)/kinds.o \
-	$(OBJECT_DIR)/Stokes_equations_routines-TEST.o \
 	$(OBJECT_DIR)/Navier_Stokes_equations_routines.o \
+	$(OBJECT_DIR)/Stokes_equations_routines.o \
 	$(OBJECT_DIR)/problem_constants.o \
 	$(OBJECT_DIR)/strings.o \
 	$(OBJECT_DIR)/types.o
@@ -1479,6 +1479,30 @@ $(OBJECT_DIR)/mesh_routines.o	:	$(MAIN_SOURCE_DIR)/mesh_routines.f90 \
 	$(OBJECT_DIR)/trees.o \
 	$(OBJECT_DIR)/types.o
 
+$(OBJECT_DIR)/Navier_Stokes_equations_routines.o	:	$(MAIN_SOURCE_DIR)/Navier_Stokes_equations_routines.f90 \
+	$(OBJECT_DIR)/base_routines.o \
+	$(OBJECT_DIR)/basis_routines.o \
+	$(OBJECT_DIR)/boundary_condition_routines.o \
+	$(OBJECT_DIR)/constants.o \
+	$(OBJECT_DIR)/control_loop_routines.o \
+	$(OBJECT_DIR)/distributed_matrix_vector.o \
+	$(OBJECT_DIR)/domain_mappings.o \
+	$(OBJECT_DIR)/equations_routines.o \
+	$(OBJECT_DIR)/equations_mapping_routines.o \
+	$(OBJECT_DIR)/equations_matrices_routines.o \
+	$(OBJECT_DIR)/equations_set_constants.o \
+	$(OBJECT_DIR)/field_routines.o \
+	$(OBJECT_DIR)/input_output.o \
+	$(OBJECT_DIR)/iso_varying_string.o \
+	$(OBJECT_DIR)/kinds.o \
+	$(OBJECT_DIR)/matrix_vector.o \
+	$(OBJECT_DIR)/problem_constants.o \
+	$(OBJECT_DIR)/strings.o \
+	$(OBJECT_DIR)/solver_routines.o \
+	$(OBJECT_DIR)/timer_f.o \
+	$(OBJECT_DIR)/types.o
+
+
 $(OBJECT_DIR)/node_routines.o	:	$(MAIN_SOURCE_DIR)/node_routines.f90 \
 	$(OBJECT_DIR)/base_routines.o \
 	$(OBJECT_DIR)/input_output.o \
@@ -1590,30 +1614,7 @@ $(OBJECT_DIR)/solver_matrices_routines.o	:	$(MAIN_SOURCE_DIR)/solver_matrices_ro
 	$(OBJECT_DIR)/strings.o \
 	$(OBJECT_DIR)/types.o
 
-$(OBJECT_DIR)/Stokes_equations_routines-TEST.o	:	$(EXAMPLE_SOURCE_DIR)/Stokes_equations_routines-TEST.f90 \
-	$(OBJECT_DIR)/base_routines.o \
-	$(OBJECT_DIR)/basis_routines.o \
-	$(OBJECT_DIR)/boundary_condition_routines.o \
-	$(OBJECT_DIR)/constants.o \
-	$(OBJECT_DIR)/control_loop_routines.o \
-	$(OBJECT_DIR)/distributed_matrix_vector.o \
-	$(OBJECT_DIR)/domain_mappings.o \
-	$(OBJECT_DIR)/equations_routines.o \
-	$(OBJECT_DIR)/equations_mapping_routines.o \
-	$(OBJECT_DIR)/equations_matrices_routines.o \
-	$(OBJECT_DIR)/equations_set_constants.o \
-	$(OBJECT_DIR)/field_routines.o \
-	$(OBJECT_DIR)/input_output.o \
-	$(OBJECT_DIR)/iso_varying_string.o \
-	$(OBJECT_DIR)/kinds.o \
-	$(OBJECT_DIR)/matrix_vector.o \
-	$(OBJECT_DIR)/problem_constants.o \
-	$(OBJECT_DIR)/strings.o \
-	$(OBJECT_DIR)/solver_routines.o \
-	$(OBJECT_DIR)/timer_f.o \
-	$(OBJECT_DIR)/types.o
-
-$(OBJECT_DIR)/Navier_Stokes_equations_routines.o	:	$(MAIN_SOURCE_DIR)/Navier_Stokes_equations_routines.f90 \
+$(OBJECT_DIR)/Stokes_equations_routines.o	:	$(MAIN_SOURCE_DIR)/Stokes_equations_routines.f90 \
 	$(OBJECT_DIR)/base_routines.o \
 	$(OBJECT_DIR)/basis_routines.o \
 	$(OBJECT_DIR)/boundary_condition_routines.o \
@@ -1647,9 +1648,9 @@ $(OBJECT_DIR)/test_framework_routines.o	:	$(MAIN_SOURCE_DIR)/test_framework_rout
 	$(OBJECT_DIR)/iso_varying_string.o \
 	$(OBJECT_DIR)/kinds.o \
 	$(OBJECT_DIR)/matrix_vector.o \
-	$(OBJECT_DIR)/strings.o 
+	$(OBJECT_DIR)/strings.o
 
-$(OBJECT_DIR)/timer_c.o	:	$(MAIN_SOURCE_DIR)/timer_c.c \
+$(OBJECT_DIR)/timer_c.o		:	$(MAIN_SOURCE_DIR)/timer_c.c 
 
 $(OBJECT_DIR)/timer_f.o	:	$(MAIN_SOURCE_DIR)/timer_f.f90 \
 	$(OBJECT_DIR)/base_routines.o \
@@ -1750,7 +1751,7 @@ all64: debug64 opt64
 # TODO only for linux 64bit for now.
 test:
 # Test for 2x2 mesh using bilinear lagrange basis 
-	$(CURDIR)/bin/x86_64-linux/$(BASE_EXAMPLE_NAME)-debug 2 2 0 1 1
+	python $(CURDIR)/testscript.py $(CURDIR)/bin/$(LIB_ARCH_DIR)/$(BASE_EXAMPLE_NAME)$(DEBUG_SUFFIX)$(PROF_SUFFIX)$(COMPILER_SUFFIX)
 
 #-----------------------------------------------------------------------------
 
