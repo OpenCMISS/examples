@@ -1,2 +1,2 @@
-gfx read node './outout/cmgui.exnode'
-gfx read elem './outout/cmgui.exelem'
+gfx read node './output/cmgui.exnode'
+gfx read elem './output/cmgui.exelem'
