@@ -1,0 +1,91 @@
+cd input
+rm -f CMHEART.inp
+ln -s ./2d_input/quad4/stab/5^2/CMHEART.inp
+cd ../
+bin/x86_64-linux/ConvergenceStudyExample-debug-gnu
+mv output/cmgui.exnode input/2d_input/quad4/stab/5^2
+mv output/cmgui.exelem input/2d_input/quad4/stab/5^2
+mv output/Debug_Darcy.txt input/2d_input/quad4/stab/5^2
+mv output/conv.node input/2d_input/quad4/stab/5^2
+
+
+cd input
+rm -f CMHEART.inp
+ln -s ./2d_input/quad4/stab/10^2/CMHEART.inp
+cd ../
+bin/x86_64-linux/ConvergenceStudyExample-debug-gnu
+mv output/cmgui.exnode input/2d_input/quad4/stab/10^2
+mv output/cmgui.exelem input/2d_input/quad4/stab/10^2
+mv output/Debug_Darcy.txt input/2d_input/quad4/stab/10^2
+mv output/conv.node input/2d_input/quad4/stab/10^2
+
+
+cd input
+rm -f CMHEART.inp
+ln -s ./2d_input/quad4/stab/20^2/CMHEART.inp
+cd ../
+bin/x86_64-linux/ConvergenceStudyExample-debug-gnu
+mv output/cmgui.exnode input/2d_input/quad4/stab/20^2
+mv output/cmgui.exelem input/2d_input/quad4/stab/20^2
+mv output/Debug_Darcy.txt input/2d_input/quad4/stab/20^2
+mv output/conv.node input/2d_input/quad4/stab/20^2
+
+
+cd input
+rm -f CMHEART.inp
+ln -s ./2d_input/quad4/stab/40^2/CMHEART.inp
+cd ../
+bin/x86_64-linux/ConvergenceStudyExample-debug-gnu
+mv output/cmgui.exnode input/2d_input/quad4/stab/40^2
+mv output/cmgui.exelem input/2d_input/quad4/stab/40^2
+mv output/Debug_Darcy.txt input/2d_input/quad4/stab/40^2
+mv output/conv.node input/2d_input/quad4/stab/40^2
+
+
+cd input
+rm -f CMHEART.inp
+ln -s ./2d_input/quad4/stab/60^2/CMHEART.inp
+cd ../
+bin/x86_64-linux/ConvergenceStudyExample-debug-gnu
+mv output/cmgui.exnode input/2d_input/quad4/stab/60^2
+mv output/cmgui.exelem input/2d_input/quad4/stab/60^2
+mv output/Debug_Darcy.txt input/2d_input/quad4/stab/60^2
+mv output/conv.node input/2d_input/quad4/stab/60^2
+
+
+cd input
+rm -f CMHEART.inp
+ln -s ./2d_input/quad4/stab/80^2/CMHEART.inp
+cd ../
+bin/x86_64-linux/ConvergenceStudyExample-debug-gnu
+mv output/cmgui.exnode input/2d_input/quad4/stab/80^2
+mv output/cmgui.exelem input/2d_input/quad4/stab/80^2
+mv output/Debug_Darcy.txt input/2d_input/quad4/stab/80^2
+mv output/conv.node input/2d_input/quad4/stab/80^2
+
+
+cd input
+rm -f CMHEART.inp
+ln -s ./2d_input/quad4/stab/100^2/CMHEART.inp
+cd ../
+bin/x86_64-linux/ConvergenceStudyExample-debug-gnu
+mv output/cmgui.exnode input/2d_input/quad4/stab/100^2
+mv output/cmgui.exelem input/2d_input/quad4/stab/100^2
+mv output/Debug_Darcy.txt input/2d_input/quad4/stab/100^2
+mv output/conv.node input/2d_input/quad4/stab/100^2
+
+
+cd input
+rm -f CMHEART.inp
+ln -s ./2d_input/quad4/stab/120^2/CMHEART.inp
+cd ../
+bin/x86_64-linux/ConvergenceStudyExample-debug-gnu
+mv output/cmgui.exnode input/2d_input/quad4/stab/120^2
+mv output/cmgui.exelem input/2d_input/quad4/stab/120^2
+mv output/Debug_Darcy.txt input/2d_input/quad4/stab/120^2
+mv output/conv.node input/2d_input/quad4/stab/120^2
+
+
+
+
+
