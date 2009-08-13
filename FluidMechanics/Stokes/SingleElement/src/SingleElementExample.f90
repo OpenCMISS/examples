@@ -89,8 +89,7 @@ PROGRAM StokesFlow
 ! cmHeart input module
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  USE IMPORT_CMHEART
-  USE EXPORT_CMGUI
+  USE FLUID_MECHANICS_IO_ROUTINES
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   IMPLICIT NONE
@@ -177,9 +176,9 @@ PROGRAM StokesFlow
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !Read node, element and basis information from cmheart input file
-  CALL READ_CMHEART_EXE
   !Receive CM container for adjusting OpenCMISS calls
-  CALL RECV_CMHEART_EXE(CM)
+  CALL FLUID_MECHANICS_IO_READ_CMHEART(CM,ERR,ERROR,*999)
+
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !Intialise cmiss
@@ -441,6 +440,9 @@ PROGRAM StokesFlow
   
   CALL FIELD_COMPONENT_VALUES_INITIALISE(MATERIALS_FIELD,FIELD_U_VARIABLE_TYPE,&
   &FIELD_VALUES_SET_TYPE,1,1.0_DP,ERR,ERROR,*999)
+  CALL FIELD_COMPONENT_VALUES_INITIALISE(MATERIALS_FIELD,FIELD_U_VARIABLE_TYPE,&
+  &FIELD_VALUES_SET_TYPE,2,0.0_DP,ERR,ERROR,*999)
+
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !Define equations
@@ -498,7 +500,7 @@ PROGRAM StokesFlow
 
   CALL PROBLEM_SOLVERS_CREATE_START(PROBLEM,ERR,ERROR,*999)
     CALL PROBLEM_SOLVER_GET(PROBLEM,CONTROL_LOOP_NODE,1,SOLVER,ERR,ERROR,*999)
-    CALL SOLVER_OUTPUT_TYPE_SET(SOLVER,SOLVER_MATRIX_OUTPUT,ERR,ERROR,*999)
+!    CALL SOLVER_OUTPUT_TYPE_SET(SOLVER,SOLVER_MATRIX_OUTPUT,ERR,ERROR,*999)
     CALL SOLVER_LINEAR_ITERATIVE_DIVERGENCE_TOLERANCE_SET(SOLVER,DIVERGENCE_TOLERANCE,ERR,ERROR,*999)
     CALL SOLVER_LINEAR_ITERATIVE_ABSOLUTE_TOLERANCE_SET(SOLVER,ABSOLUTE_TOLERANCE,ERR,ERROR,*999)
     CALL SOLVER_LINEAR_ITERATIVE_RELATIVE_TOLERANCE_SET(SOLVER,RELATIVE_TOLERANCE,ERR,ERROR,*999)
@@ -531,18 +533,17 @@ PROGRAM StokesFlow
 !Afterburner
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-   FILE="FILE"
    METHOD="FORTRAN"
 
    EXPORT_FIELD=.TRUE.
    IF(EXPORT_FIELD) THEN
      WRITE(*,*)'Now export fields...'
-    CALL READ_CMGUI_EXE(REGION)
-    !Receive CM container for adjusting OpenCMISS calls
-    CALL SEND_CMGUI_EXE
+     FILE="FLUID_MECHANICS_IO_ROUTINES"
+     CALL FLUID_MECHANICS_IO_WRITE_CMGUI(REGION,FILE,ERR,ERROR,*999)
      WRITE(*,*)'All fields exported...'
-   ! CALL FIELD_IO_NODES_EXPORT(REGION%FIELDS, FILE, METHOD, ERR,ERROR,*999)  
-   ! CALL FIELD_IO_ELEMENTS_EXPORT(REGION%FIELDS, FILE, METHOD, ERR,ERROR,*999)
+     FILE="FIELD_IO_ROUTINES"
+     CALL FIELD_IO_NODES_EXPORT(REGION%FIELDS, FILE, METHOD, ERR,ERROR,*999)  
+     CALL FIELD_IO_ELEMENTS_EXPORT(REGION%FIELDS, FILE, METHOD, ERR,ERROR,*999)
    ENDIF
 
    !Calculate the stop times and write out the elapsed user and system times
