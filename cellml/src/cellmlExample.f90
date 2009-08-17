@@ -42,6 +42,14 @@
 
 !> Doxygen comments get ignored when writing this out in the documentation
 
+! Uses EXAMPLE_PATH from Doxyfile but putting path from examples folder to ensure uniqueness.
+!> \example cellml/src/cellmlExample.f90
+!! A complete example demonstrating and testing the methods defined in the openCMISS(cellml) API.
+!! \par Latest Builds:
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/cellml/build-intel'>Linux Intel Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/cellml/build-gnu'>Linux GNU Build</a>
+!<
+
 !> The module defines the MY_MESH_DATA type
 MODULE MY_MESH_DATA
 

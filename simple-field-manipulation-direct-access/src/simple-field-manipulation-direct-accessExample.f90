@@ -41,6 +41,13 @@
 
 !> Doxygen comments ignored when generating example pages
 
+!> \example simple-field-manipulation-direct-access/src/simple-field-manipulation-direct-accessExample.f90
+!! Example illustrating the creation of a regular mesh and then defining and manipulating a field over that mesh.
+!! \par Latest Builds:
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/simple-field-manipulation-direct-access/build-intel'>Linux Intel Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/simple-field-manipulation-direct-access/build-gnu'>Linux GNU Build</a>
+!<
+
 !> Main program
 PROGRAM SimpleFieldManipulationExample
   

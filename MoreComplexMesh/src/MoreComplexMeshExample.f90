@@ -40,8 +40,11 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example examples/MoreComplexMesh/src/MoreComplexMeshExample.f90
+!> \example MoreComplexMesh/src/MoreComplexMeshExample.f90
 !! Example program which sets up a field which uses a more complex mesh using openCMISS calls.
+!! \par Latest Builds:
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/MoreComplexMesh/build-intel'>Linux Intel Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/MoreComplexMesh/build-gnu'>Linux GNU Build</a>
 !<
 
 !> Main program

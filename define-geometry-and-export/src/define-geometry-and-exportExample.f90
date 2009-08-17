@@ -41,10 +41,12 @@
 
 !> Doxygen comments ignored when generating example pages
 
-!> \example define-mesh-and-exportExample.f90
+!> \example define-geometry-and-export/src/define-geometry-and-exportExample.f90
 !! Example illustrating the use of openCMISS to define a geometric mesh and export it for visualisation.
-!<
-
+!! \par Latest Builds:
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/define-geometry-and-export/build-intel'>Linux Intel Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/define-geometry-and-export/build-gnu'>Linux GNU Build</a>
+!< 
 !> Main program
 PROGRAM DefineGeometryAndExportExample
   

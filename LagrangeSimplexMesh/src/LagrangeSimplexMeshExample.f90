@@ -40,8 +40,11 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example examples/LagrangeSimplexMesh/src/LagrangeSimplexMeshExample.f90
+!> \example LagrangeSimplexMesh/src/LagrangeSimplexMeshExample.f90
 !! Example program which sets up a field which uses a mixed Lagrange and Simplex mesh using openCMISS calls.
+!! \par Latest Builds:
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/LagrangeSimplexMesh/build-intel'>Linux Intel Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/LagrangeSimplexMesh/build-gnu'>Linux GNU Build</a>
 !<
 
 !> Main program
