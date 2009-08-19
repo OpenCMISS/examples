@@ -44,6 +44,13 @@
 !! Example program to solve a Darcy equation using openCMISS calls.
 !<
 
+! ! 
+! !  This example considers a quarter of the symmetric five-spot problem.
+! !  Literature reference for the FiveSpotProblem:
+! !  A. Masud, T.J.R. Hughes, A stabilized mixed finite element method for Darcy flow,
+! !  Computer Methods in Applied Mechanics and Engineering 191 (2002), 4341-4370
+! ! 
+
 !> Main program
 PROGRAM DARCYEXAMPLE
 
@@ -151,7 +158,9 @@ PROGRAM DARCYEXAMPLE
   INTEGER:: MAXIMUM_ITERATIONS, GMRES_RESTART
 
   DOUBLE PRECISION:: FACT
-  DOUBLE PRECISION:: COORD_X, COORD_Y, COORD_Z, ARG_X, ARG_Y, ARG_Z
+  DOUBLE PRECISION:: COORD_X, COORD_Y
+  DOUBLE PRECISION:: LOC_X, LOC_Y
+  DOUBLE PRECISION:: MIDPOINT_X, MIDPOINT_Y
   DOUBLE PRECISION:: DENSITY
 
 #ifdef WIN32
@@ -195,8 +204,6 @@ PROGRAM DARCYEXAMPLE
     write(73,*)'X2: ',DARCY%X2
     write(73,*)'Y1: ',DARCY%Y1
     write(73,*)'Y2: ',DARCY%Y2
-    write(73,*)'Z1: ',DARCY%Z1
-    write(73,*)'Z2: ',DARCY%Z2
     write(73,*)'PERM: ',DARCY%PERM
     write(73,*)'VIS: ',DARCY%VIS
     write(73,*)'PERM_OVER_VIS: ',DARCY%PERM_OVER_VIS
@@ -485,6 +492,7 @@ PROGRAM DARCYEXAMPLE
     & FIELD_VALUES_SET_TYPE,2,DENSITY,ERR,ERROR,*999)
 
 
+
   !------------------------------------
   ! Create the equations_set equations
   !------------------------------------
@@ -530,29 +538,8 @@ PROGRAM DARCYEXAMPLE
 
       END IF
     END DO
-  ELSE IF( CM%D==3 ) THEN
-    i = 0
-    DO j=1,CM%N_M
-      COORD_X = CM%N( j, 1 )
-      COORD_Y = CM%N( j, 2 )
-      COORD_Z = CM%N( j, 3 )
-
-      IF( (ABS(COORD_X-DARCY%X1) < DARCY%GEOM_TOL) .OR. &
-        & (ABS(COORD_X-DARCY%X2) < DARCY%GEOM_TOL) .OR. &
-        & (ABS(COORD_Y-DARCY%Y1) < DARCY%GEOM_TOL) .OR. &
-        & (ABS(COORD_Y-DARCY%Y2) < DARCY%GEOM_TOL) .OR. &
-        & (ABS(COORD_Z-DARCY%Z1) < DARCY%GEOM_TOL) .OR. &
-        & (ABS(COORD_Z-DARCY%Z2) < DARCY%GEOM_TOL) ) THEN
-
-          i = i + 1
-          BC_WALL_NODES(i) = j
-
-          IF( DARCY%DEBUG ) THEN
-            write(73,*)'i, WALL_NODE, COORD_X, COORD_Y, COORD_Z = ',i, j, COORD_X, COORD_Y, COORD_Z
-          END IF
-
-      END IF
-    END DO
+  ELSE
+    GOTO 999
   END IF
 
 
@@ -562,31 +549,28 @@ PROGRAM DARCYEXAMPLE
 
   DOF_CONDITION = BOUNDARY_CONDITION_FIXED
 
-  IF( DARCY%TESTCASE == 1 ) THEN
-    FACT = DARCY%PERM_OVER_VIS
-  ELSE IF( DARCY%TESTCASE == 2 ) THEN
-    FACT = 2.0_DP * PI * DARCY%PERM_OVER_VIS / DARCY%LENGTH
-  ELSE
-    LOCAL_ERROR="DarcyExample: The setting of parameter TESTCASE is invalid."
-    CALL FLAG_ERROR(LOCAL_ERROR,ERR,ERROR,*999)
-  END IF
-
   IF( CM%D==2 ) THEN
     dummy = 0
     DO j=1,DARCY%BC_NUMBER_OF_WALL_NODES
       COORD_X = CM%N( BC_WALL_NODES(j) ,1)
       COORD_Y = CM%N( BC_WALL_NODES(j) ,2)
-      ARG_X = 2.0_DP * PI * COORD_X / DARCY%LENGTH
-      ARG_Y = 2.0_DP * PI * COORD_Y / DARCY%LENGTH
+      !
+      MIDPOINT_X = ( DARCY%X1 + DARCY%X2 ) / 2.0_DP
+      MIDPOINT_Y = ( DARCY%Y1 + DARCY%Y2 ) / 2.0_DP
+      LOC_X = ABS( COORD_X - MIDPOINT_X ) / ( 0.5_DP * DARCY%LENGTH )
+      LOC_Y = ABS( COORD_Y - MIDPOINT_Y ) / ( 0.5_DP * DARCY%LENGTH )
+      FACT = 2.0_DP * 0.25_DP / ( 0.5_DP * DARCY%LENGTH )
       !
       IF( (ABS(COORD_X-DARCY%X1) < DARCY%GEOM_TOL) .OR. (ABS(COORD_X-DARCY%X2) < DARCY%GEOM_TOL) ) THEN
         dummy = dummy + 1
         i = 1
         DOF_INDICES( dummy ) = BC_WALL_NODES(j) + (i-1) * CM%N_V
-        IF( DARCY%TESTCASE == 1 ) THEN
-          DOF_VALUES( dummy ) = - FACT * (  2.0_DP * COORD_X + 2.0_DP * COORD_Y )
+        IF( ( ABS(COORD_X-DARCY%X1) < DARCY%GEOM_TOL ) .AND. ( COORD_Y < (MIDPOINT_Y + DARCY%GEOM_TOL) ) ) THEN
+          DOF_VALUES( dummy ) = FACT * LOC_Y
+        ELSE IF( ( ABS(COORD_X-DARCY%X2) < DARCY%GEOM_TOL ) .AND. ( COORD_Y > (MIDPOINT_Y - DARCY%GEOM_TOL) ) ) THEN
+          DOF_VALUES( dummy ) = FACT * LOC_Y
         ELSE
-          DOF_VALUES( dummy ) = - FACT * COS( ARG_X ) * SIN( ARG_Y )
+          DOF_VALUES( dummy ) = 0.0_DP
         END IF
       END IF
       !
@@ -594,53 +578,12 @@ PROGRAM DARCYEXAMPLE
         dummy = dummy + 1
         i = 2
         DOF_INDICES( dummy ) = BC_WALL_NODES(j) + (i-1) * CM%N_V
-        IF( DARCY%TESTCASE == 1 ) THEN
-          DOF_VALUES( dummy ) = - FACT * (  2.0_DP * COORD_X - 2.0_DP * COORD_Y )
+        IF( ( ABS(COORD_Y-DARCY%Y1) < DARCY%GEOM_TOL ) .AND. ( COORD_X < (MIDPOINT_X + DARCY%GEOM_TOL) ) ) THEN
+          DOF_VALUES( dummy ) = FACT * LOC_X
+        ELSE IF( ( ABS(COORD_Y-DARCY%Y2) < DARCY%GEOM_TOL ) .AND. ( COORD_X > (MIDPOINT_X - DARCY%GEOM_TOL) ) ) THEN
+          DOF_VALUES( dummy ) = FACT * LOC_X
         ELSE
-          DOF_VALUES( dummy ) = - FACT * SIN( ARG_X ) * COS( ARG_Y )
-        END IF
-      END IF
-    END DO
-  ELSE IF( CM%D==3 ) THEN
-    dummy = 0
-    DO j=1,DARCY%BC_NUMBER_OF_WALL_NODES
-      COORD_X = CM%N( BC_WALL_NODES(j) ,1)
-      COORD_Y = CM%N( BC_WALL_NODES(j) ,2)
-      COORD_Z = CM%N( BC_WALL_NODES(j) ,3)
-      ARG_X = 2.0_DP * PI * COORD_X / DARCY%LENGTH
-      ARG_Y = 2.0_DP * PI * COORD_Y / DARCY%LENGTH
-      ARG_Z = 2.0_DP * PI * COORD_Z / DARCY%LENGTH
-
-      IF( (ABS(COORD_X-DARCY%X1) < DARCY%GEOM_TOL) .OR. (ABS(COORD_X-DARCY%X2) < DARCY%GEOM_TOL) ) THEN
-        dummy = dummy + 1
-        i = 1
-        DOF_INDICES( dummy ) = BC_WALL_NODES(j) + (i-1) * CM%N_V
-        IF( DARCY%TESTCASE == 1 ) THEN
-          DOF_VALUES( dummy ) = - FACT * (  2.0_DP * COORD_X + 2.0_DP * COORD_Y + COORD_Z )
-        ELSE
-          DOF_VALUES( dummy ) = - FACT * COS( ARG_X ) * SIN( ARG_Y ) * SIN( ARG_Z )
-        END IF
-      END IF
-      !
-      IF( (ABS(COORD_Y-DARCY%Y1) < DARCY%GEOM_TOL) .OR. (ABS(COORD_Y-DARCY%Y2) < DARCY%GEOM_TOL) ) THEN
-        dummy = dummy + 1
-        i = 2
-        DOF_INDICES( dummy ) = BC_WALL_NODES(j) + (i-1) * CM%N_V
-        IF( DARCY%TESTCASE == 1 ) THEN
-          DOF_VALUES( dummy ) = - FACT * (  2.0_DP * COORD_X - 2.0_DP * COORD_Y + COORD_Z )
-        ELSE
-          DOF_VALUES( dummy ) = - FACT * SIN( ARG_X ) * COS( ARG_Y ) * SIN( ARG_Z )
-        END IF
-      END IF
-      !
-      IF( (ABS(COORD_Z-DARCY%Z1) < DARCY%GEOM_TOL) .OR. (ABS(COORD_Z-DARCY%Z2) < DARCY%GEOM_TOL) ) THEN
-        dummy = dummy + 1
-        i = 3
-        DOF_INDICES( dummy ) = BC_WALL_NODES(j) + (i-1) * CM%N_V
-        IF( DARCY%TESTCASE == 1 ) THEN
-          DOF_VALUES( dummy ) = - FACT * ( 3.0_DP + COORD_X + COORD_Y )
-        ELSE
-          DOF_VALUES( dummy ) = - FACT * SIN( ARG_X ) * SIN( ARG_Y ) * COS( ARG_Z )
+          DOF_VALUES( dummy ) = 0.0_DP
         END IF
       END IF
     END DO

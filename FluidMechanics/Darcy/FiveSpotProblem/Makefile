@@ -65,7 +65,7 @@ endif
 
 EXAMPLE_PATH=FluidMechanics/Darcy/
 
-EXAMPLE_NAME = ConvergenceStudy
+EXAMPLE_NAME = FiveSpotProblem
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 
