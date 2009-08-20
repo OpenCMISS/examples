@@ -176,7 +176,7 @@ PROGRAM DARCYEXAMPLE
 ! Read problem-specific parameters 
 !-----------------------------------
 
-  CALL READ_DARCY_PARAMS
+  CALL FLUID_MECHANICS_IO_READ_DARCY_PARAMS
 
   IF( DARCY%DEBUG ) THEN
     OPEN(UNIT=73, FILE='./output/Debug_Darcy.txt', STATUS='unknown')  ! debug output
