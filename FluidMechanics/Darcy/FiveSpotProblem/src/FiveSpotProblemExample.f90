@@ -566,6 +566,8 @@ PROGRAM DARCYEXAMPLE
         i = 1
         DOF_INDICES( dummy ) = BC_WALL_NODES(j) + (i-1) * CM%N_V
         IF( ( ABS(COORD_X-DARCY%X1) < DARCY%GEOM_TOL ) .AND. ( COORD_Y < (MIDPOINT_Y + DARCY%GEOM_TOL) ) ) THEN
+          !Fine for quad4 elements. However, for quad9 elements, strictly speaking a quadratic rather than linear velocity profile
+          !should be imposed; see Ref. cited in the header.
           DOF_VALUES( dummy ) = FACT * LOC_Y
         ELSE IF( ( ABS(COORD_X-DARCY%X2) < DARCY%GEOM_TOL ) .AND. ( COORD_Y > (MIDPOINT_Y - DARCY%GEOM_TOL) ) ) THEN
           DOF_VALUES( dummy ) = FACT * LOC_Y
