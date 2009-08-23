@@ -47,9 +47,12 @@ buildExample("FiniteElasticity/TwoElementTriLinear")
 buildExample("FiniteElasticity/MixedBoundaryConditions")
 buildExample("FiniteElasticity/TriCubicAxialExtension")
 
+buildExample("LinearElasticity/2DPlaneStressLagrangeBasis")
+buildExample("LinearElasticity/3DLagrangeBasis")
+buildExample("LinearElasticity/3DCubicHermiteBasis")
+
 # TODO Group them
 buildExample("LagrangeSimplexMesh")
-buildExample("LinearElasticity")
 buildExample("cellml")
 buildExample("define-geometry-and-export")
 buildExample("MoreComplexMesh")
