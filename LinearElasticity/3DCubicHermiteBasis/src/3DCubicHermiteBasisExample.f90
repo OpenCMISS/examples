@@ -299,16 +299,16 @@ PROGRAM LINEARELASTICITYEXAMPLE
     CALL BASIS_CREATE_FINISH(XYZ_BASES(xi)%PTR,ERR,ERROR,*999)
   ENDDO !xi
 
-  !=MANUAL MESH CREATION=========================================================================================================
+  !=MANUAL MESH CREATION===========================================================================================================
   CALL WRITE_STRING(GENERAL_OUTPUT_TYPE," *** USING MANUAL MESH CREATION ***",ERR,ERROR,*999)
 
-  !=NODE CREATION================================================================================================================
+  !=NODE CREATION==================================================================================================================
   !Create nodes in REGION and set initial coordinates to 0,0,0
   NULLIFY(NODES)
   CALL NODES_CREATE_START(REGION,NUMBER_OF_NODES,NODES,ERR,ERROR,*999)
   CALL NODES_CREATE_FINISH(NODES,ERR,ERROR,*999)
   
-  !=CREATE MESH==================================================================================================================
+  !=CREATE MESH====================================================================================================================
   !Create a mesh with xi number of coordinates
   MESH_USER_NUMBER = 1
   NUMBER_OF_MESH_COMPS = NUMBER_OF_XI
@@ -365,7 +365,7 @@ PROGRAM LINEARELASTICITYEXAMPLE
   ENDDO !xi
   CALL MESH_CREATE_FINISH(MESH,ERR,ERROR,*999) 
 
-  !=CREATE DECOMPOSITION=========================================================================================================
+  !=CREATE DECOMPOSITION===========================================================================================================
   !Create mesh decomposition dividing mesh into number_of_domains for parallel solving
   DECOMPOSITION_USER_NUMBER = 1
   NULLIFY(DECOMPOSITION)
@@ -374,7 +374,7 @@ PROGRAM LINEARELASTICITYEXAMPLE
   CALL DECOMPOSITION_NUMBER_OF_DOMAINS_SET(DECOMPOSITION,NUMBER_OF_DOMAINS,ERR,ERROR,*999)
   CALL DECOMPOSITION_CREATE_FINISH(MESH,DECOMPOSITION,ERR,ERROR,*999)
 
-  !=CREATE GEOMETRIC FIELD=======================================================================================================
+  !=CREATE GEOMETRIC FIELD=========================================================================================================
   !Start to create a default (geometric) field on the region
   NULLIFY(GEOMETRIC_FIELD)
   FIELD_USER_NUMBER = 1
@@ -548,19 +548,6 @@ PROGRAM LINEARELASTICITYEXAMPLE
   ENDDO
   !-=MODIFIY-HERE-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   !Prescribe Number of BC & thier DERIV
-  !Do you want to prescribe the dependent variable [Y]? y
-  !The increment is [0.0]: 0.00000D+00
-  !Do you want to prescribe derivative number 2 [N]? n
-  !Do you want to prescribe derivative number 3 [N]? y
-  !The increment is [0.0]: 0.00000D+00
-  !Do you want to prescribe derivative number 4 [N]? n
-  !Do you want to prescribe derivative number 5 [N]? y
-  !The increment is [0.0]: 0.00000D+00
-  !Do you want to prescribe derivative number 6 [N]? n
-  !Do you want to prescribe derivative number 7 [N]? y
-  !The increment is [0.0]: 0.00000D+00
-  !Do you want to prescribe derivative number 8 [N]? y
-  !The increment is [0.0]: 0.00000D+00
   DISP_BC%MESH_COMP(1)%NUMBER_OF_BC_NODES_IN_DERIV(1)=4
   DISP_BC%MESH_COMP(1)%NUMBER_OF_BC_NODES_IN_DERIV(3)=4
   DISP_BC%MESH_COMP(1)%NUMBER_OF_BC_NODES_IN_DERIV(5)=4
@@ -715,12 +702,14 @@ PROGRAM LINEARELASTICITYEXAMPLE
   CALL FIELD_PARAMETER_SET_DATA_GET(DEPENDENT_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,FIELD_DATA,ERR,ERROR,*999) 
   CALL WRITE_STRING_VECTOR(GENERAL_OUTPUT_TYPE,1,1,NUMBER_OF_GLOBAL_DEPENDENT_DOFS,1,1,FIELD_DATA,'(2x,f20.15)','(2x,f20.15)', &
     & ERR,ERROR,*999)
-  CALL FIELD_PARAMETER_SET_DATA_RESTORE(DEPENDENT_FIELD,FIELD_DELUDELN_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,FIELD_DATA,ERR,ERROR,*999)
+  CALL FIELD_PARAMETER_SET_DATA_RESTORE(DEPENDENT_FIELD,FIELD_DELUDELN_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,FIELD_DATA, &
+    & ERR,ERROR,*999)
   CALL WRITE_STRING(GENERAL_OUTPUT_TYPE,"Reaction Forces",ERR,ERROR,*999)
-  CALL FIELD_PARAMETER_SET_DATA_GET(DEPENDENT_FIELD,FIELD_DELUDELN_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,FIELD_DATA,ERR,ERROR,*999) 
+  CALL FIELD_PARAMETER_SET_DATA_GET(DEPENDENT_FIELD,FIELD_DELUDELN_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,FIELD_DATA,ERR,ERROR,*999)
   CALL WRITE_STRING_VECTOR(GENERAL_OUTPUT_TYPE,1,1,NUMBER_OF_GLOBAL_DEPENDENT_DOFS,1,1,FIELD_DATA,'(2x,f20.15)','(2x,f20.15)', &
     & ERR,ERROR,*999)
-  CALL FIELD_PARAMETER_SET_DATA_RESTORE(DEPENDENT_FIELD,FIELD_DELUDELN_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,FIELD_DATA,ERR,ERROR,*999)
+  CALL FIELD_PARAMETER_SET_DATA_RESTORE(DEPENDENT_FIELD,FIELD_DELUDELN_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,FIELD_DATA, &
+    & ERR,ERROR,*999)
   !================================================================================================================================
 
   !Calculate the stop times and write out the elapsed user and system times
