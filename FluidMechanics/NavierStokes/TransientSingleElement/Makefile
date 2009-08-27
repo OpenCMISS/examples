@@ -65,7 +65,7 @@ endif
 
 EXAMPLE_PATH=FluidMechanics/NavierStokes/
 
-EXAMPLE_NAME = SingleElement
+EXAMPLE_NAME = TransientSingleElement
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 
