@@ -547,7 +547,7 @@ PROGRAM NavierStokesFlow
 
 WRITE(*,*)'start solving...'
 
-! CALL PROBLEM_SOLVE(PROBLEM,ERR,ERROR,*999)
+ CALL PROBLEM_SOLVE(PROBLEM,ERR,ERROR,*999)
      WRITE(*,*)'Problem solved...'
 WRITE(*,*)'finishing solving...'
 
