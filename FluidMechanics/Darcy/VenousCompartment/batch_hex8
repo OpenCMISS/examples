@@ -1,0 +1,34 @@
+mkdir output/hex8
+
+mkdir output/hex8/5^3
+rm -f input
+ln -s cases/hex8/5^3/ input
+bin/x86_64-linux/VenousCompartmentExample-debug-gnu
+mv output/cmgui.exnode output/hex8/5^3
+mv output/cmgui.exelem output/hex8/5^3
+mv output/conv.node    output/hex8/5^3
+
+mkdir output/hex8/10^3
+rm -f input
+ln -s cases/hex8/10^3/ input
+bin/x86_64-linux/VenousCompartmentExample-debug-gnu
+mv output/cmgui.exnode output/hex8/10^3
+mv output/cmgui.exelem output/hex8/10^3
+mv output/conv.node    output/hex8/10^3
+
+mkdir output/hex8/20^3
+rm -f input
+ln -s cases/hex8/20^3/ input
+bin/x86_64-linux/VenousCompartmentExample-debug-gnu
+mv output/cmgui.exnode output/hex8/20^3
+mv output/cmgui.exelem output/hex8/20^3
+mv output/conv.node    output/hex8/20^3
+
+mkdir output/hex8/40^3
+rm -f input
+ln -s cases/hex8/40^3/ input
+bin/x86_64-linux/VenousCompartmentExample-debug-gnu
+mv output/cmgui.exnode output/hex8/40^3
+mv output/cmgui.exelem output/hex8/40^3
+mv output/conv.node    output/hex8/40^3
+
