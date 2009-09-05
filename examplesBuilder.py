@@ -40,7 +40,10 @@ buildExample("FluidMechanics/Stokes/HexChannel")
 buildExample("FluidMechanics/Stokes/HexPipe")
 buildExample("FluidMechanics/Stokes/SingleElement")
 buildExample("FluidMechanics/Stokes/VesselPipe")
+
 buildExample("FluidMechanics/Darcy/ConvergenceStudy")
+buildExample("FluidMechanics/Darcy/FiveSpotProblem")
+buildExample("FluidMechanics/Darcy/VenousCompartment")
 
 buildExample("FiniteElasticity/UniAxialExtension")
 buildExample("FiniteElasticity/TwoElementTriLinear")
