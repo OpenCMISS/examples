@@ -1,7 +1,7 @@
 !> \file
 !> $Id: LinearElasticityExample.f90 20 2009-02-15 13:26:52Z cpb $
 !> \author Chris Bradley
-!> \brief This is an example program to solve analytic linear elasticity problems using openCMISS calls.
+!> \brief This example illustrates the use of openCMISS to solve an isotropic 2D Plane Stress plate extension problem and check with its Analytic Solution.
 !>
 !> \section LICENSE
 !>
@@ -41,7 +41,7 @@
 !>
 
 !> \example LinearElasticity/2DPlaneStressLagrangeBasisAnalytic/src/2DPlaneStressLagrangeBasisAnalyticExample.f90
-!! Example program to solve a linear elasticity equation using openCMISS calls.
+!! This example illustrates the use of openCMISS to solve an isotropic 2D Plane Stress plate extension problem and check with its Analytic Solution.
 !<
 
 !> Main program
@@ -136,7 +136,8 @@ PROGRAM ANALYTIC_LINEAR_ELASTICITY_EXAMPLE
   NUMBER_GLOBAL_Y_ELEMENTS = 1
   NUMBER_GLOBAL_Z_ELEMENTS = 1
 
-  !!TODO:: Complete 2D Linear Elasticity Analytic problem setup for both Hermite and Lagrange Problems -> Set geometry/boundary conditions by reading in nodes/elements/bc from legacy CMISS for each refinement until refinements/BC selections on faces are implemented in OpenCMISS.
+  !!TODO:: Complete 2D Linear Elasticity Analytic problem setup for Hermite Problems
+  !!TODO:: Complete 2D Linear Elasticity Analytic convergence test for all Problems
   !CALL ANALYTIC_LINEAR_ELASTICITY_TESTCASE_CONVERGENCE(2,6,2,BASIS_LINEAR_LAGRANGE_INTERPOLATION,ERR,ERROR,*999)
   !CALL ANALYTIC_LINEAR_ELASTICITY_TESTCASE_CONVERGENCE(2,10,2,BASIS_CUBIC_HERMITE_INTERPOLATION,ERR,ERROR,*999)
   CALL ANALYTIC_LINEAR_ELASTICITY_TESTCASE_EXPORT(1,1,1,BASIS_LINEAR_LAGRANGE_INTERPOLATION,ERR,ERROR,*999)
@@ -281,19 +282,6 @@ CONTAINS
       TYPE(ELEMENT_NODES_TYPE),POINTER :: MESH_COMP(:)
     END TYPE ELEMENT_TYPE
     TYPE(ELEMENT_TYPE), POINTER :: ELEMENT(:)
-    !Boundary Condition Types
-    TYPE BC_NODE_COORDINATES_TYPE
-      INTEGER(INTG),ALLOCATABLE :: NODE_NUMBER(:)
-      REAL(DP),ALLOCATABLE :: NODE_COORDINATES(:)
-    END TYPE BC_NODE_COORDINATES_TYPE
-    TYPE BC_ELEMENT_NODES_TYPE
-      INTEGER(INTG) :: NUMBER_OF_BC_NODES_IN_DERIV(8)
-      TYPE(BC_NODE_COORDINATES_TYPE) :: DERIV(8)
-    END TYPE BC_ELEMENT_NODES_TYPE
-    TYPE BC_MESH_COMP
-      TYPE(BC_ELEMENT_NODES_TYPE),POINTER :: MESH_COMP(:)
-    END TYPE BC_MESH_COMP
-    TYPE(BC_MESH_COMP), POINTER :: DISP_BC,FORCE_BC
 
     !Local variables
     !INTEGER(INTG) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
@@ -524,9 +512,9 @@ CONTAINS
     ENDDO
     !-=MODIFIY-HERE-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     !Prescribe node coordinates
-    l = 120.0_DP
-    w = 160.0_DP
-    h = 10.0_DP
+    l = 20.0_DP
+    w = 20.0_DP
+    h = 5.0_DP
     ELEMENT(1)%MESH_COMP(1)%DERIV(1)%NODE_COORDINATES = (/0.0_DP,l,0.0_DP,l/)
     ELEMENT(1)%MESH_COMP(2)%DERIV(1)%NODE_COORDINATES = (/0.0_DP,0.0_DP,w,w/)
     !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -581,7 +569,7 @@ CONTAINS
     NUMBER_OF_FIELD_COMPS = 3 !Young's Modulus & Poisson's Ratio & Thickness
     ALLOCATE(MATE_PARA(NUMBER_OF_FIELD_COMPS),STAT=ERR)
     IF(ERR/=0) CALL FLAG_ERROR("Could not allocate MATE_PARA",ERR,ERROR,*999)
-    MATE_PARA = (/30E6_DP,0.25_DP,0.036_DP/)
+    MATE_PARA = (/10E3_DP,0.3_DP,h/)
     !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     CALL FIELD_CREATE_START(FIELD_USER_NUMBER,REGION,MATERIAL_FIELD,ERR,ERROR,*999)
     CALL FIELD_TYPE_SET(MATERIAL_FIELD,FIELD_MATERIAL_TYPE,ERR,ERROR,*999)
@@ -654,95 +642,7 @@ CONTAINS
     CALL EQUATIONS_SET_EQUATIONS_CREATE_FINISH(EQUATIONS_SET,ERR,ERROR,*999) 
 
     !=PRESCRIBE BOUNDARY CONDITIONS================================================================================================
-    NULLIFY(BOUNDARY_CONDITIONS)
-    !Allocate Memory for Displacement & Force BC
-    NULLIFY(DISP_BC,FORCE_BC)
-    IF(ERR/=0) CALL FLAG_ERROR("Could not allocate DISP_BC",ERR,ERROR,*999)
-    ALLOCATE(DISP_BC,STAT=ERR)
-    IF(ERR/=0) CALL FLAG_ERROR("Could not allocate FORCE_BC",ERR,ERROR,*999)
-    ALLOCATE(FORCE_BC,STAT=ERR)
-    ALLOCATE(DISP_BC%MESH_COMP(MESH_COMP_IDX),STAT=ERR)
-    IF(ERR/=0) CALL FLAG_ERROR("Could not allocate DISP_BC%MESH_COMP(MESH_COMP_IDX)",ERR,ERROR,*999)
-    ALLOCATE(FORCE_BC%MESH_COMP(MESH_COMP_IDX),STAT=ERR)
-    IF(ERR/=0) CALL FLAG_ERROR("Could not allocate FORCE_BC%MESH_COMP(MESH_COMP_IDX)",ERR,ERROR,*999)
-    !Initialize Number of Displacement & Force BC
-    DO xi=1,NUMBER_OF_XI
-      MESH_COMP_IDX=xi
-      DISP_BC%MESH_COMP(MESH_COMP_IDX)%NUMBER_OF_BC_NODES_IN_DERIV=0
-      FORCE_BC%MESH_COMP(MESH_COMP_IDX)%NUMBER_OF_BC_NODES_IN_DERIV=0
-    ENDDO
-    !-=MODIFIY-HERE-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-    !Prescribe Number of BC & thier DERIV
-    DISP_BC%MESH_COMP(1)%NUMBER_OF_BC_NODES_IN_DERIV(1)=2
-    DISP_BC%MESH_COMP(2)%NUMBER_OF_BC_NODES_IN_DERIV=DISP_BC%MESH_COMP(1)%NUMBER_OF_BC_NODES_IN_DERIV
-    FORCE_BC%MESH_COMP(1)%NUMBER_OF_BC_NODES_IN_DERIV(1)=2
-    !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-    DO xi=1,NUMBER_OF_XI
-      MESH_COMP_IDX=xi
-      DO nu=1,NUMBER_OF_DERIV
-        NUMBER_OF_BC_NODES = DISP_BC%MESH_COMP(MESH_COMP_IDX)%NUMBER_OF_BC_NODES_IN_DERIV(nu)
-        IF(NUMBER_OF_BC_NODES/=0) THEN
-          ALLOCATE(DISP_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_NUMBER(NUMBER_OF_BC_NODES))
-          IF(ERR/=0) CALL FLAG_ERROR("Could not allocate DISP_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_NUMBER", &
-            & ERR,ERROR,*999) !!TODO:: Add Num to string
-          ALLOCATE(DISP_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_COORDINATES(NUMBER_OF_BC_NODES))
-          !Initialize Displacement BC Derivative_Node_Numbers & Node Coordinates
-          DISP_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_NUMBER=0
-          DISP_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_COORDINATES=0.0_DP
-        ENDIF
-        NUMBER_OF_BC_NODES = FORCE_BC%MESH_COMP(MESH_COMP_IDX)%NUMBER_OF_BC_NODES_IN_DERIV(nu)
-        IF(NUMBER_OF_BC_NODES/=0) THEN
-          ALLOCATE(FORCE_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_NUMBER(NUMBER_OF_BC_NODES))
-          IF(ERR/=0) CALL FLAG_ERROR("Could not allocate DISP_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_NUMBER", &
-            & ERR,ERROR,*999) !!TODO:: Add Num to string
-          ALLOCATE(FORCE_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_COORDINATES(NUMBER_OF_BC_NODES))
-          !Initialize Displacement BC Derivative_Node_Numbers & Node Coordinates
-          FORCE_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_NUMBER=0
-          FORCE_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_COORDINATES=0.0_DP
-        ENDIF
-      ENDDO !nu
-    ENDDO !xi
-    !-=MODIFIY-HERE-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-    !Prescribe Displacement BC Derivative Node Numbers & Node Coordinates
-    DISP_BC%MESH_COMP(1)%DERIV(1)%NODE_NUMBER(:)=(/1,3/)
-    DISP_BC%MESH_COMP(2)=DISP_BC%MESH_COMP(1)
-    !Prescribe Force BC Derivative Node Numbers & Node Coordinates
-    FORCE_BC%MESH_COMP(1)%DERIV(1)%NODE_NUMBER(:)=(/2,4/)
-    FORCE_BC%MESH_COMP(1)%DERIV(1)%NODE_COORDINATES(:)=800.0_DP
-    !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-    CALL EQUATIONS_SET_BOUNDARY_CONDITIONS_CREATE_START(EQUATIONS_SET,BOUNDARY_CONDITIONS,ERR,ERROR,*999)
     CALL EQUATIONS_SET_BOUNDARY_CONDITIONS_ANALYTIC(EQUATIONS_SET,ERR,ERROR,*999)
-    DO xi=1,NUMBER_OF_XI
-      MESH_COMP_IDX=xi
-      FIELD_COMP_IDX=xi
-      DO nu=1,NUMBER_OF_DERIV
-        !Displacement BC
-        NUMBER_OF_BC_NODES = DISP_BC%MESH_COMP(MESH_COMP_IDX)%NUMBER_OF_BC_NODES_IN_DERIV(nu)
-        IF(NUMBER_OF_BC_NODES/=0) THEN
-          DO np=1,NUMBER_OF_BC_NODES
-            !CALL FIELD_COMPONENT_DOF_GET_USER_NODE(FIELD,VARIABLE_TYPE,DERIVATIVE_NUMBER,USER_NODE_NUMBER,COMPONENT_NUMBER, &
-            !  & LOCAL_DOF,GLOBAL_DOF,ERR,ERROR,*)
-            !CALL FIELD_COMPONENT_DOF_GET_USER_NODE(DEPENDENT_FIELD,FIELD_U_VARIABLE_TYPE,nu,np,MESH_COMP_IDX, &
-            !  & LOCAL_DOF,GLOBAL_DOF,ERR,ERROR,*999)
-            !BOUNDARY_CONDITIONS%boundary_conditions_variable_type_map(1)%ptr%global_boundary_conditions(GLOBAL_DOF) = 1
-            CALL BOUNDARY_CONDITIONS_SET_NODE(BOUNDARY_CONDITIONS,FIELD_U_VARIABLE_TYPE,nu, &
-              & DISP_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_NUMBER(np),FIELD_COMP_IDX,BOUNDARY_CONDITION_FIXED, &
-              & DISP_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_COORDINATES(np),ERR,ERROR,*999)
-          ENDDO !np
-        ENDIF
-        !Force BC
-        NUMBER_OF_BC_NODES = FORCE_BC%MESH_COMP(MESH_COMP_IDX)%NUMBER_OF_BC_NODES_IN_DERIV(nu)
-        IF(NUMBER_OF_BC_NODES/=0) THEN
-          DO np=1,NUMBER_OF_BC_NODES
-            CALL BOUNDARY_CONDITIONS_SET_NODE(BOUNDARY_CONDITIONS,FIELD_DELUDELN_VARIABLE_TYPE,nu, &
-              & FORCE_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_NUMBER(np),FIELD_COMP_IDX,BOUNDARY_CONDITION_FIXED, &
-              & FORCE_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_COORDINATES(np),ERR,ERROR,*999)
-          ENDDO !np
-        ENDIF
-      ENDDO !nu
-    ENDDO !xi
-    CALL EQUATIONS_SET_BOUNDARY_CONDITIONS_CREATE_FINISH(EQUATIONS_SET,ERR,ERROR,*999)
-
     
     !=CREATE PROBLEM===============================================================================================================
     !Create the problem
