@@ -30,7 +30,7 @@ def testExample(id, path, nodes) :
    if not os.path.exists(execPath) :
      err=-1
    if err==0 :
-     print "Testing %s%s: <a class='success' href='%slogs_x86_64-linux/%s/test%s-%s'>successed</a><br>" %(path,id,rootUrl,path,id,compiler)
+     print "Testing %s%s: <a class='success' href='%slogs_x86_64-linux/%s/test%s-%s'>success</a><br>" %(path,id,rootUrl,path,id,compiler)
    else :
      print "Testing %s%s: <a class='fail' href='%slogs_x86_64-linux/%s/test%s-%s'>failed</a><br>" %(path,id,rootUrl,path,id,compiler)
    os.chdir(cwd)
