@@ -53,6 +53,7 @@ buildExample("FiniteElasticity/TriCubicAxialExtension")
 buildExample("LinearElasticity/2DPlaneStressLagrangeBasis")
 buildExample("LinearElasticity/2DPlaneStressLagrangeBasisAnalytic")
 buildExample("LinearElasticity/3DLagrangeBasis")
+buildExample("LinearElasticity/3DLagrangeBasisAnisotropicFibreField")
 buildExample("LinearElasticity/3DCubicHermiteBasis")
 
 # TODO Group them
