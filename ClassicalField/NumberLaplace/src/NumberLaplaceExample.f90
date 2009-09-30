@@ -127,10 +127,10 @@ PROGRAM NUMBERLAPLACEEXAMPLE
   CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
     !Set the coordinate system to be 2D
-    CALL CMISSCoordianteSystemDimensionSet(CoordinateSystemUserNumber,2,Err)
+    CALL CMISSCoordinateSystemDimensionSet(CoordinateSystemUserNumber,2,Err)
   ELSE
     !Set the coordinate system to be 3D
-    CALL CMISSCoordianteSystemDimensionSet(CoordinateSystemUserNumber,3,Err)
+    CALL CMISSCoordinateSystemDimensionSet(CoordinateSystemUserNumber,3,Err)
   ENDIF
   !Finish the creation of the coordinate system
   CALL CMISSCoordinateSystemCreateFinishe(CoordinateSystemUserNumber,Err)
