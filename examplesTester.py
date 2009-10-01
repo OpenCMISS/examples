@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, subprocess
 
 cwd = os.getcwd();
 logDir = cwd + "/../../build/logs";
@@ -12,7 +12,7 @@ os.putenv('HOME', '/home/autotest')
 os.putenv('PATH', os.environ['PATH']+':'+cwd+'/../../../opencmissextras/cm/external/x86_64-linux-debug-'+compiler+'/bin')
 os.system('mpd &')
 
-def testExample(id, path, nodes) :
+def testExample(id, path, nodes, input=None, args=None) :
    global compiler,logDir;
    newDir = logDir
    for folder in path.split('/') :
@@ -24,9 +24,28 @@ def testExample(id, path, nodes) :
      os.remove(newDir + "/test"+id+"-" + compiler)
    execPath='bin/x86_64-linux/'+path.rpartition('/')[2]+'Example-debug-'+compiler
    if nodes == '1' :
-     err=os.system(execPath + ' 2 2 0 '+nodes+" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+     if input != None :
+       inputPipe = subprocess.Popen(["echo", input], stdout=subprocess.PIPE)
+       f = open(newDir + "/test" + id + "-" + compiler,"w")
+       execCommand = subprocess.Popen([execPath], stdin=inputPipe.stdout, stdout=f,stderr=subprocess.PIPE)
+       f.close()
+       err = os.waitpid(execCommand.pid, 0)[1]
+     elif args==None :
+       err=os.system(execPath +" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+     else :
+       err=os.system(execPath + ' ' + args +" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
    else :
-     err=os.system('mpiexec -n ' + nodes + " " + execPath + ' 2 2 0 '+nodes+" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+     if input != None :
+       inputPipe = subprocess.Popen(["echo", input], stdout=subprocess.PIPE)
+       f = open(newDir + "/test" + id + "-" + compiler,"w")
+       execCommand = subprocess.Popen(["mpiexec","-n",nodes,execPath], stdin=inputPipe.stdout, stdout=f,stderr=subprocess.PIPE)
+       f.close()
+       err = os.waitpid(execCommand.pid, 0)[1]
+     elif args==None :
+       err=os.system('mpiexec -n ' + nodes + ' ' + execPath +" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+     else :
+       print 'mpiexec -n ' + nodes + " " + execPath + ' ' + args+" > " + newDir + "/test" + id + "-" + compiler + " 2>&1"
+       err=os.system('mpiexec -n ' + nodes + " " + execPath + ' ' + args+" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
    if not os.path.exists(execPath) :
      err=-1
    if err==0 :
@@ -36,9 +55,43 @@ def testExample(id, path, nodes) :
    os.chdir(cwd)
    return;
 
+testExample(id='1', path="ClassicalField/AnalyticLaplace", nodes='1')
+testExample(id='1', path="ClassicalField/Diffusion", nodes='1',input='4\n4\n0\n1')
+testExample(id='1', path="ClassicalField/Helmholtz", nodes='1',input='4\n4\n0\n1')
+testExample(id='1', path="ClassicalField/Laplace", nodes='1',args='4 4 0 1') 
+testExample(id='2', path="ClassicalField/Laplace", nodes='2',args='4 4 0 2')
+testExample(id='1', path="ClassicalField/NonlinearPoisson",nodes='1',input='4\n4\n0\n1')
 
-testExample('1', "ClassicalField/Laplace", '1') 
-testExample('2', "ClassicalField/Laplace", '2')
+testExample(id='1',path="Bioelectrics/Monodomain",nodes='1',input='4\n4\n0\n1')
+  
+testExample(id='1',path="FluidMechanics/Stokes/HexChannel",nodes='1',input='\n')
+testExample(id='1',path="FluidMechanics/Stokes/HexPipe",nodes='1',input='\n')
+testExample(id='1',path="FluidMechanics/Stokes/SingleElement",nodes='1',input='4\n4\n0\n1')
+testExample(id='1',path="FluidMechanics/Stokes/VesselPipe",nodes='1',input='\n')
+
+testExample(id='1',path="FluidMechanics/Darcy/ConvergenceStudy",nodes='1',input='4\n4\n0\n1')
+testExample(id='1',path="FluidMechanics/Darcy/FiveSpotProblem",nodes='1',input='4\n4\n0\n1')
+testExample(id='1',path="FluidMechanics/Darcy/VenousCompartment",nodes='1',input='4\n4\n0\n1')
+
+testExample(id='1',path="FiniteElasticity/UniAxialExtension",nodes='1',input='4\n4\n0\n1')
+testExample(id='1',path="FiniteElasticity/TwoElementTriLinear",nodes='1',input='4\n4\n0\n1')
+testExample(id='1',path="FiniteElasticity/MixedBoundaryConditions",nodes='1',input='4\n4\n0\n1')
+testExample(id='1',path="FiniteElasticity/TriCubicAxialExtension",nodes='1',input='4\n4\n0\n1')
+
+testExample(id='1',path="LinearElasticity/2DPlaneStressLagrangeBasis",nodes='1',input='4\n4\n0\n1')
+testExample(id='1',path="LinearElasticity/2DPlaneStressLagrangeBasisAnalytic",nodes='1',input='4\n4\n0\n1')
+testExample(id='1',path="LinearElasticity/3DLagrangeBasis",nodes='1',input='4\n4\n0\n1')
+testExample(id='1',path="LinearElasticity/3DLagrangeBasisAnisotropicFibreField",nodes='1',input='4\n4\n0\n1')
+testExample(id='1',path="LinearElasticity/3DCubicHermiteBasis",nodes='1',input='4\n4\n0\n1')
+
+# TODO Group them
+testExample(id='1',path="LagrangeSimplexMesh",nodes='1',input='4\n4\n0\n1')
+testExample(id='1',path="cellml",nodes='1',input='4\n4\n0\n1')
+testExample(id='1',path="define-geometry-and-export",nodes='1',input='4\n4\n0\n1')
+testExample(id='1',path="MoreComplexMesh",nodes='1',input='4\n4\n0\n1')
+testExample(id='1',path="simple-field-manipulation-direct-access",nodes='1',input='4\n4\n0\n1')
+testExample(id='1',path="SimplexMesh",nodes='1',input='4\n4\n0\n1')
+testExample(id='1',path="TwoRegions",nodes='1',input='4\n4\n0\n1')
 
 os.system('mpdallexit')
 
