@@ -8,7 +8,7 @@ if not os.path.isdir(logDir):
   os.mkdir(cwd + "/../../build")
   os.mkdir(logDir);
 compiler = sys.argv[1];
-
+f = open(logDir+'/failedBuilds',"w")
 
 def buildExample(path) :
    global compiler,logDir;
@@ -24,6 +24,7 @@ def buildExample(path) :
    if err==0 :
      print "Building %s: <a class='success' href='%slogs_x86_64-linux/%s/build-%s'>success</a><br>" %(path,rootUrl,path,compiler)
    else :
+     f.write(path+'\n')
      print "Building %s: <a class='fail' href='%slogs_x86_64-linux/%s/build-%s'>failed</a><br>" %(path,rootUrl,path,compiler)
    os.chdir(cwd)
    return;
@@ -65,4 +66,4 @@ buildExample("simple-field-manipulation-direct-access")
 buildExample("SimplexMesh")
 buildExample("TwoRegions")
 
-
+f.close()

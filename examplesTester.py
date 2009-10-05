@@ -11,48 +11,53 @@ compiler = sys.argv[1];
 os.putenv('HOME', '/home/autotest')
 os.putenv('PATH', os.environ['PATH']+':'+cwd+'/../../../opencmissextras/cm/external/x86_64-linux-debug-'+compiler+'/bin')
 os.system('mpd &')
+f = open(logDir+'/failedBuilds',"r")
+failedbuilds = f.read()
+f.close()
 
 def testExample(id, path, nodes, input=None, args=None) :
-   global compiler,logDir;
-   newDir = logDir
-   for folder in path.split('/') :
-     newDir = newDir + '/' + folder
-     if not os.path.isdir(newDir):
-       os.mkdir(newDir)
-   os.chdir(path)
-   if os.path.exists(newDir + "/test"+id+"-" + compiler) :
-     os.remove(newDir + "/test"+id+"-" + compiler)
-   execPath='bin/x86_64-linux/'+path.rpartition('/')[2]+'Example-debug-'+compiler
-   if nodes == '1' :
-     if input != None :
-       inputPipe = subprocess.Popen(["echo", input], stdout=subprocess.PIPE)
-       f = open(newDir + "/test" + id + "-" + compiler,"w")
-       execCommand = subprocess.Popen([execPath], stdin=inputPipe.stdout, stdout=f,stderr=subprocess.PIPE)
-       f.close()
-       err = os.waitpid(execCommand.pid, 0)[1]
-     elif args==None :
-       err=os.system(execPath +" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+   global compiler,logDir,failedbuilds;
+   if (failedbuilds.find(path)==-1) :
+     newDir = logDir
+     for folder in path.split('/') :
+       newDir = newDir + '/' + folder
+       if not os.path.isdir(newDir):
+         os.mkdir(newDir)
+     os.chdir(path)
+     if os.path.exists(newDir + "/test"+id+"-" + compiler) :
+       os.remove(newDir + "/test"+id+"-" + compiler)
+     execPath='bin/x86_64-linux/'+path.rpartition('/')[2]+'Example-debug-'+compiler
+     if nodes == '1' :
+       if input != None :
+         inputPipe = subprocess.Popen(["echo", input], stdout=subprocess.PIPE)
+         f = open(newDir + "/test" + id + "-" + compiler,"w")
+         execCommand = subprocess.Popen([execPath], stdin=inputPipe.stdout, stdout=f,stderr=subprocess.PIPE)
+         f.close()
+         err = os.waitpid(execCommand.pid, 0)[1]
+       elif args==None :
+         err=os.system(execPath +" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+       else :
+         err=os.system(execPath + ' ' + args +" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
      else :
-       err=os.system(execPath + ' ' + args +" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
-   else :
-     if input != None :
-       inputPipe = subprocess.Popen(["echo", input], stdout=subprocess.PIPE)
-       f = open(newDir + "/test" + id + "-" + compiler,"w")
-       execCommand = subprocess.Popen(["mpiexec","-n",nodes,execPath], stdin=inputPipe.stdout, stdout=f,stderr=subprocess.PIPE)
-       f.close()
-       err = os.waitpid(execCommand.pid, 0)[1]
-     elif args==None :
-       err=os.system('mpiexec -n ' + nodes + ' ' + execPath +" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+       if input != None :
+         inputPipe = subprocess.Popen(["echo", input], stdout=subprocess.PIPE)
+         f = open(newDir + "/test" + id + "-" + compiler,"w")
+         execCommand = subprocess.Popen(["mpiexec","-n",nodes,execPath], stdin=inputPipe.stdout, stdout=f,stderr=subprocess.PIPE)
+         f.close()
+         err = os.waitpid(execCommand.pid, 0)[1]
+       elif args==None :
+         err=os.system('mpiexec -n ' + nodes + ' ' + execPath +" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+       else :
+         err=os.system('mpiexec -n ' + nodes + " " + execPath + ' ' + args+" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+     if not os.path.exists(execPath) :
+       err=-1
+     if err==0 :
+       print "Testing %s%s: <a class='success' href='%slogs_x86_64-linux/%s/test%s-%s'>success</a><br>" %(path,id,rootUrl,path,id,compiler)
      else :
-       print 'mpiexec -n ' + nodes + " " + execPath + ' ' + args+" > " + newDir + "/test" + id + "-" + compiler + " 2>&1"
-       err=os.system('mpiexec -n ' + nodes + " " + execPath + ' ' + args+" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
-   if not os.path.exists(execPath) :
-     err=-1
-   if err==0 :
-     print "Testing %s%s: <a class='success' href='%slogs_x86_64-linux/%s/test%s-%s'>success</a><br>" %(path,id,rootUrl,path,id,compiler)
+       print "Testing %s%s: <a class='fail' href='%slogs_x86_64-linux/%s/test%s-%s'>failed</a><br>" %(path,id,rootUrl,path,id,compiler)
+     os.chdir(cwd)
    else :
-     print "Testing %s%s: <a class='fail' href='%slogs_x86_64-linux/%s/test%s-%s'>failed</a><br>" %(path,id,rootUrl,path,id,compiler)
-   os.chdir(cwd)
+     print "Testing %s%s: <a class='fail'>failed</a> due to build failure<br>" %(path,id)
    return;
 
 testExample(id='1', path="ClassicalField/AnalyticLaplace", nodes='1')
