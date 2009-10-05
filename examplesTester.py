@@ -31,7 +31,7 @@ def testExample(id, path, nodes, input=None, args=None) :
        if input != None :
          inputPipe = subprocess.Popen(["echo", input], stdout=subprocess.PIPE)
          f = open(newDir + "/test" + id + "-" + compiler,"w")
-         execCommand = subprocess.Popen([execPath], stdin=inputPipe.stdout, stdout=f,stderr=subprocess.PIPE)
+         execCommand = subprocess.Popen([execPath], stdin=inputPipe.stdout, stdout=f,stderr=f)
          f.close()
          err = os.waitpid(execCommand.pid, 0)[1]
        elif args==None :
