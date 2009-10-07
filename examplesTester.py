@@ -14,6 +14,7 @@ os.system('mpd &')
 f = open(logDir+'/failedBuilds',"r")
 failedbuilds = f.read()
 f.close()
+os.remove(logDir+'/failedBuilds')
 
 def testExample(id, path, nodes, input=None, args=None) :
    global compiler,logDir,failedbuilds;
