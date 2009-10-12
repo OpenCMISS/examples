@@ -63,9 +63,9 @@ endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_PATH=FluidMechanics/Stokes/
+EXAMPLE_PATH=FluidMechanics/Stokes/SINGLE_ELEMENTS/
 
-EXAMPLE_NAME = VesselPipe
+EXAMPLE_NAME = SteadyState
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 

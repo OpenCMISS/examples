@@ -63,9 +63,9 @@ endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_PATH=FluidMechanics/Stokes/
+EXAMPLE_PATH=FluidMechanics/Stokes/HEX_CHANNEL/
 
-EXAMPLE_NAME = HexPipe
+EXAMPLE_NAME = SteadyState
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 
