@@ -1,1 +1,0 @@
-gfortran -ffree-form -O3 cheart_prep3D.f -o GenerateInputFiles.out
