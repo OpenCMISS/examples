@@ -1,0 +1,52 @@
+cd input
+rm -f CMHEART.inp
+rm -f Darcy_parameters.inp
+ln -s ./3d_input/hex8/stab/5^3/CMHEART.inp
+ln -s ./3d_input/hex8/stab/5^3/Darcy_parameters.inp
+cd ../
+bin/x86_64-linux/ConvergenceStudyExample-debug-gnu
+mv output/cmgui.exnode input/3d_input/hex8/stab/5^3
+mv output/cmgui.exelem input/3d_input/hex8/stab/5^3
+mv output/Debug_Darcy.txt input/3d_input/hex8/stab/5^3
+mv output/conv.node input/3d_input/hex8/stab/5^3
+
+
+cd input
+rm -f CMHEART.inp
+rm -f Darcy_parameters.inp
+ln -s ./3d_input/hex8/stab/10^3/CMHEART.inp
+ln -s ./3d_input/hex8/stab/10^3/Darcy_parameters.inp
+cd ../
+bin/x86_64-linux/ConvergenceStudyExample-debug-gnu
+mv output/cmgui.exnode input/3d_input/hex8/stab/10^3
+mv output/cmgui.exelem input/3d_input/hex8/stab/10^3
+mv output/Debug_Darcy.txt input/3d_input/hex8/stab/10^3
+mv output/conv.node input/3d_input/hex8/stab/10^3
+
+
+cd input
+rm -f CMHEART.inp
+rm -f Darcy_parameters.inp
+ln -s ./3d_input/hex8/stab/20^3/CMHEART.inp
+ln -s ./3d_input/hex8/stab/20^3/Darcy_parameters.inp
+cd ../
+bin/x86_64-linux/ConvergenceStudyExample-debug-gnu
+mv output/cmgui.exnode input/3d_input/hex8/stab/20^3
+mv output/cmgui.exelem input/3d_input/hex8/stab/20^3
+mv output/Debug_Darcy.txt input/3d_input/hex8/stab/20^3
+mv output/conv.node input/3d_input/hex8/stab/20^3
+
+
+cd input
+rm -f CMHEART.inp
+rm -f Darcy_parameters.inp
+ln -s ./3d_input/hex8/stab/40^3/CMHEART.inp
+ln -s ./3d_input/hex8/stab/40^3/Darcy_parameters.inp
+cd ../
+bin/x86_64-linux/ConvergenceStudyExample-debug-gnu
+mv output/cmgui.exnode input/3d_input/hex8/stab/40^3
+mv output/cmgui.exelem input/3d_input/hex8/stab/40^3
+mv output/Debug_Darcy.txt input/3d_input/hex8/stab/40^3
+mv output/conv.node input/3d_input/hex8/stab/40^3
+
+
