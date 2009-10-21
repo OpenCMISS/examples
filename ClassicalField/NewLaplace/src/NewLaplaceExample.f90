@@ -1,7 +1,7 @@
 !> \file
-!> $Id: NumberLaplaceExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id: NewLaplaceExample.f90 20 2007-05-28 20:22:52Z cpb $
 !> \author Chris Bradley
-!> \brief This is an example program to solve a Laplace equation using OpenCMISS calls with objects accessed by user number.
+!> \brief This is an example program to solve a Laplace equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -40,8 +40,8 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/NumberLaplace/src/NumberLaplaceExample.f90
-!! Example program to solve a Laplace equation using openCMISS calls with objects accessed by user number.
+!> \example ClassicalField/NewLaplace/src/NewLaplaceExample.f90
+!! Example program to solve a Laplace equation using OpenCMISS calls.
 !! \par Latest Builds:
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/Laplace/build-intel'>Linux Intel Build</a>
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/Laplace/build-gnu'>Linux GNU Build</a>
@@ -49,10 +49,11 @@
 !<
 
 !> Main program
-PROGRAM NUMBERLAPLACEEXAMPLE
+PROGRAM LAPLACEEXAMPLE
 
   USE OPENCMISS
   USE MPI
+
 
 #ifdef WIN32
   USE IFQWIN
@@ -85,7 +86,26 @@ PROGRAM NUMBERLAPLACEEXAMPLE
   INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
   
   INTEGER(CMISSIntg) :: MPI_IERROR
-  
+
+  LOGICAL :: EXPORT_FIELD
+
+  !CMISS variables
+
+  TYPE(CMISSBasisType) :: Basis
+  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
+  TYPE(CMISSCoordinateSystemType) :: CoordinateSystem,WorldCoordinateSystem
+  TYPE(CMISSDecompositionType) :: Decomposition
+  TYPE(CMISSEquationsType) :: Equations
+  TYPE(CMISSEquationsSetType) :: EquationsSet
+  TYPE(CMISSFieldType) :: GeometricField,DependentField
+  TYPE(CMISSFieldsType) :: Fields
+  TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
+  TYPE(CMISSMeshType) :: Mesh
+  TYPE(CMISSProblemType) :: Problem
+  TYPE(CMISSRegionType) :: Region,WorldRegion
+  TYPE(CMISSSolverType) :: Solver
+  TYPE(CMISSSolverEquationsType) :: SolverEquations
+
 #ifdef WIN32
   !Quickwin type
   LOGICAL :: QUICKWIN_STATUS=.FALSE.
@@ -94,8 +114,6 @@ PROGRAM NUMBERLAPLACEEXAMPLE
   
   !Generic CMISS variables
   
-  INTEGER(CMISSIntg) :: WorldCoordinateSystemUserNumber
-  INTEGER(CMISSIntg) :: WorldRegionUserNumber
   INTEGER(CMISSIntg) :: EquationsSetIndex
   INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
   INTEGER(CMISSIntg) :: Err
@@ -111,9 +129,9 @@ PROGRAM NUMBERLAPLACEEXAMPLE
   IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
 #endif
 
-  !Intialise cmiss
-  CALL CMISSInitialise(WorldCoordinateSystemUserNumber,WorldRegionUserNumber,Err)
- 
+  !Intialise OpenCMISS
+  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
+  
   NUMBER_GLOBAL_X_ELEMENTS=2
   NUMBER_GLOBAL_Y_ELEMENTS=2
   NUMBER_GLOBAL_Z_ELEMENTS=0
@@ -126,105 +144,116 @@ PROGRAM NUMBERLAPLACEEXAMPLE
   CALL MPI_BCAST(NUMBER_OF_DOMAINS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
 
   !Start the creation of a new RC coordinate system
-  CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,Err)
+  CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
     !Set the coordinate system to be 2D
-    CALL CMISSCoordinateSystemDimensionSet(CoordinateSystemUserNumber,2,Err)
+    CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,2,Err)
   ELSE
     !Set the coordinate system to be 3D
-    CALL CMISSCoordinateSystemDimensionSet(CoordinateSystemUserNumber,3,Err)
+    CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,3,Err)
   ENDIF
   !Finish the creation of the coordinate system
-  CALL CMISSCoordinateSystemCreateFinish(CoordinateSystemUserNumber,Err)
+  CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
 
   !Start the creation of the region
-  CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegionUserNumber,Err)
+  CALL CMISSRegionTypeInitialise(Region,Err)
+  CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegion,Region,Err)
   !Set the regions coordinate system to the 2D RC coordinate system that we have created
-  CALL CMISSRegionCoordinateSystemSet(RegionUserNumber,CoordinateSystemUserNumber,Err)
+  CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
   !Finish the creation of the region
-  CALL CMISSRegionCreateFinish(RegionUserNumber,Err)
+  CALL CMISSRegionCreateFinish(Region,Err)
 
   !Start the creation of a basis (default is trilinear lagrange)
-  CALL CMISSBasisCreateStart(BasisUserNumber,Err)
+  CALL CMISSBasisTypeInitialise(Basis,Err)
+  CALL CMISSBasisCreateStart(BasisUserNumber,Basis,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
     !Set the basis to be a bilinear Lagrange basis
-    CALL CMISSBasisNumberOfXiSet(BasisUserNumber,2,Err)
+    CALL CMISSBasisNumberOfXiSet(Basis,2,Err)
   ELSE
     !Set the basis to be a trilinear Lagrange basis
-    CALL CMISSBasisNumberOfXiSet(BasisUserNumber,3,Err)
+    CALL CMISSBasisNumberOfXiSet(Basis,3,Err)
   ENDIF
   !Finish the creation of the basis
-  CALL CMISSBasisCreateFinish(BasisUserNumber,Err)
-    
+  CALL CMISSBasisCreateFinish(BASIS,Err)
+   
   !Start the creation of a generated mesh in the region
-  CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,RegionUserNumber,Err)
+  CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
+  CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
   !Set up a regular x*y*z mesh
-  CALL CMISSGeneratedMeshTypeSet(GeneratedMeshUserNumber,CMISSGeneratedMeshRegularMeshType,Err)
+  CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
   !Set the default basis
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMeshUserNumber,BasisUserNumber,Err)
+  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,Basis,Err)   
   !Define the mesh on the region
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMeshUserNumber,(/WIDTH,HEIGHT/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMeshUserNumber,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS/),Err)
+    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/WIDTH,HEIGHT/),Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS/),Err)
   ELSE
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMeshUserNumber,(/WIDTH,HEIGHT,LENGTH/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMeshUserNumber,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
+    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/WIDTH,HEIGHT,LENGTH/),Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
       & NUMBER_GLOBAL_Z_ELEMENTS/),Err)
-  ENDIF
+  ENDIF    
   !Finish the creation of a generated mesh in the region
-  CALL CMISSGeneratedMeshCreateFinish(GeneratedMeshUserNumber,MeshUserNumber,Err)
-  
+  CALL CMISSMeshTypeInitialise(Mesh,Err)
+  CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
+
   !Create a decomposition
-  CALL CMISSDecompositionCreateStart(DecompositionUserNumber,RegionUserNumber,MeshUserNumber,Err)
+  CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
+  CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
-  CALL CMISSDecompositionTypeSet(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,NUMBER_OF_DOMAINS,Err)
+  CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
+  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NUMBER_OF_DOMAINS,Err)
   !Finish the decomposition
-  CALL CMISSDecompositionCreateFinish(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,Err)
+  CALL CMISSDecompositionCreateFinish(Decomposition,Err)
   
   !Start to create a default (geometric) field on the region
-  CALL CMISSFieldCreateStart(GeometricFieldUserNumber,RegionUserNumber,Err)
+  CALL CMISSFieldTypeInitialise(GeometricField,Err)
+  CALL CMISSFieldCreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
   !Set the decomposition to use
-  CALL CMISSFieldMeshDecompositionSet(RegionUserNumber,GeometricFieldUserNumber,MeshUserNumber,DecompositionUserNumber,Err)
+  CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
   !Set the domain to be used by the field components.
-  CALL CMISSFieldComponentMeshComponentSet(RegionUserNumber,GeometricFieldUserNumber,CMISSFieldUVariableType,1,1,Err)
-  CALL CMISSFieldComponentMeshComponentSet(RegionUserNumber,GeometricFieldUserNumber,CMISSFieldUVariableType,2,1,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,1,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,1,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
-    CALL CMISSFieldComponentMeshComponentSet(RegionUserNumber,GeometricFieldUserNumber,CMISSFieldUVariableType,3,1,Err)
+    CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,1,Err)
   ENDIF
   !Finish creating the field
-  CALL CMISSFieldCreateFinish(RegionUserNumber,GeometricFieldUserNumber,Err)
+  CALL CMISSFieldCreateFinish(GeometricField,Err)
        
   !Update the geometric field parameters
-  CALL CMISSGeneratedMeshGeometricParametersCalculate(RegionUserNumber,GeometricFieldUserNumber,GeneratedMeshUserNumber,Err)
+  CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
   
   !Create the equations_set
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,RegionUserNumber,GeometricFieldUserNumber,Err)
+  CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,EquationsSet,Err)
   !Set the equations set to be a standard Laplace problem
-  CALL CMISSEquationsSetSpecificationSet(RegionUserNumber,EquationsSetUserNumber,CMISSEquationsSetClassicalFieldClass, &
+  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
     & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,Err)
   !Finish creating the equations set
-  CALL CMISSEquationsSetCreateFinish(RegionUserNumber,EquationsSetUserNumber,Err)
+  CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
   !Create the equations set dependent field variables
-  CALL CMISSEquationsSetDependentCreateStart(RegionUserNumber,EquationsSetUserNumber,DependentFieldUserNumber,Err)
+  CALL CMISSFieldTypeInitialise(DependentField,Err)
+  CALL CMISSEquationsSetDependentCreateStart(EquationsSet,DependentFieldUserNumber,DependentField,Err)
   !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetDependentCreateFinish(RegionUserNumber,EquationsSetUserNumber,Err)
+  CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
 
   !Create the equations set equations
-  CALL CMISSEquationsSetEquationsCreateStart(RegionUserNumber,EquationsSetUserNumber,Err)
+  CALL CMISSEquationsTypeInitialise(Equations,Err)
+  CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
   !Set the equations matrices sparsity type
-  CALL CMISSEquationsSparsityTypeSet(RegionUserNumber,EquationsSetUserNumber,CMISSEquationsSparseMatrices,Err)
+  CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
   !Set the equations set output
-  !CALL CMISSEquationsOutputTypeSet(RegionUserNumber,EquationsSetUserNumber,CMISSEquationsNoOutput,Err)
-  CALL CMISSEquationsOutputTypeSet(RegionUserNumber,EquationsSetUserNumber,CMISSEquationsTimingOutput,Err)
-  !CALL CMISSEquationsOutputTypeSet(RegionUserNumber,EquationsSetUserNumber,CMISSEquationsMatrixOutput,Err)
-  !CALL CMISSEquationsOutputTypeSet(RegionUserNumber,EquationsSetUserNumber,CMISSEquationsElementMatrixOutput,Err)
+  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
+  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsTimingOutput,Err)
+  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsMatrixOutput,Err)
+  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsElementMatrixOutput,Err)
   !Finish the equations set equations
-  CALL CMISSEquationsSetEquationsCreateFinish(RegionUserNumber,EquationsSetUserNumber,Err)
+  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
 
   !Start the creation of the equations set boundary conditions
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(RegionUserNumber,EquationsSetUserNumber,Err)
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
   !Set the first node to 0.0 and the last node to 1.0
   FirstNodeNumber=1
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
@@ -232,55 +261,71 @@ PROGRAM NUMBERLAPLACEEXAMPLE
   ELSE
     LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
   ENDIF
-  CALL CMISSBoundaryConditionsSetNode(RegionUserNumber,EquationsSetUserNumber,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
     & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(RegionUserNumber,EquationsSetUserNumber,CMISSFieldUVariableType,1,LastNodeNumber,1, &
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,LastNodeNumber,1, &
     & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
   !Finish the creation of the equations set boundary conditions
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(RegionUserNumber,EquationsSetUserNumber,Err)
+  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
   
   !Start the creation of a problem.
-  CALL CMISSProblemCreateStart(ProblemUserNumber,Err)
+  CALL CMISSProblemTypeInitialise(Problem,Err)
+  CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
   !Set the problem to be a standard Laplace problem
-  CALL CMISSProblemSpecificationSet(ProblemUserNumber,CMISSProblemClassicalFieldClass,CMISSProblemLaplaceEquationType, &
+  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemClassicalFieldClass,CMISSProblemLaplaceEquationType, &
     & CMISSProblemStandardLaplaceSubtype,Err)
   !Finish the creation of a problem.
-  CALL CMISSProblemCreateFinish(ProblemUserNumber,Err)
+  CALL CMISSProblemCreateFinish(Problem,Err)
 
   !Start the creation of the problem control loop
-  CALL CMISSProblemControlLoopCreateStart(ProblemUserNumber,Err)
+  CALL CMISSProblemControlLoopCreateStart(Problem,Err)
   !Finish creating the problem control loop
-  CALL CMISSProblemControlLoopCreateFinish(ProblemUserNumber,Err)
+  CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
  
   !Start the creation of the problem solvers
-  CALL CMISSProblemSolversCreateStart(ProblemUserNumber,Err)
-  !CALL CMISSSolverOutputTypeSet(ProblemUserNumber,CMISSControlLoopNode,1,CMISSSolverNoOutput,Err)
-  !CALL CMISSSolverOutputTypeSet(ProblemUserNumber,CMISSControlLoopNode,1,CMISSSolverProgressOutput,Err)
-  !CALL CMISSSolverOutputTypeSet(ProblemUserNumber,CMISSControlLoopNode,1,CMISSSolverTimingOutput,Err)
-  !CALL CMISSSolverOutputTypeSet(ProblemUserNumber,CMISSControlLoopNode,1,CMISSSolverSolverOutput,Err)
-  CALL CMISSSolverOutputTypeSet(ProblemUserNumber,CMISSControlLoopNode,1,CMISSSolverSolverMatrixOutput,Err)
+  CALL CMISSSolverTypeInitialise(Solver,Err)
+  CALL CMISSProblemSolversCreateStart(Problem,Err)
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
+  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
   !Finish the creation of the problem solver
-  CALL CMISSProblemSolversCreateFinish(ProblemUserNumber,Err)
+  CALL CMISSProblemSolversCreateFinish(Problem,Err)
 
   !Start the creation of the problem solver equations
-  CALL CMISSProblemSolverEquationsCreateStart(ProblemUserNumber,Err)
+  CALL CMISSSolverTypeInitialise(Solver,Err)
+  CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
+  CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
+  !Get the solve equations
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
+  CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
   !Set the solver equations sparsity
-  CALL CMISSSolverEquationsSparsityTypeSet(ProblemUserNumber,CMISSControlLoopNode,1,CMISSSolverEquationsSparseMatrices,Err)
-  !CALL CMISSSolverEquationsSparsityTypeSet(ProblemUserNumber,CMISSControlLoopNode,1,CMISSSolverEquationsFullMatrices,Err)  
+  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
+  !CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices,Err)  
   !Add in the equations set
-  CALL CMISSSolverEquationsEquationsSetAdd(ProblemUserNumber,CMISSControlLoopNode,1,RegionUserNumber,EquationsSetUserNumber, &
-    & EquationsSetIndex,Err)
+  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
-  CALL CMISSProblemSolverEquationsCreateFinish(ProblemUserNumber,Err)
+  CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
 
   !Solve the problem
-  CALL CMISSProblemSolve(ProblemUserNumber,Err)
+  CALL CMISSProblemSolve(Problem,Err)
 
+  EXPORT_FIELD=.TRUE.
+  IF(EXPORT_FIELD) THEN
+    CALL CMISSFieldsTypeInitialise(Fields,Err)
+    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
+    CALL CMISSFieldIONodesExport(Fields,"NewLaplace","FORTRAN",Err)
+    CALL CMISSFieldIOElementsExport(Fields,"NewLaplace","FORTRAN",Err)
+    CALL CMISSFieldsTypeFinalise(Fields,Err)
+  ENDIF
+  
   !Finialise CMISS
   CALL CMISSFinalise(Err)
- 
+
   WRITE(*,'(A)') "Program successfully completed."
   
   STOP
   
-END PROGRAM NUMBERLAPLACEEXAMPLE
+END PROGRAM LAPLACEEXAMPLE
