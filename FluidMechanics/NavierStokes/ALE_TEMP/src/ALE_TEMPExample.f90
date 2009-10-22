@@ -737,7 +737,7 @@ PROGRAM NavierStokesFlow
   CALL PROBLEM_CONTROL_LOOP_GET(PROBLEM,CONTROL_LOOP_NODE,CONTROL_LOOP,ERR,ERROR,*999)
   !Set the times
   !start, end, delta t 
-  CALL CONTROL_LOOP_TIMES_SET(CONTROL_LOOP,0.0_DP,20.0_DP,1.0_DP,ERR,ERROR,*999)
+  CALL CONTROL_LOOP_TIMES_SET(CONTROL_LOOP,0.0_DP,10.0_DP,1.0_DP,ERR,ERROR,*999)
   CALL CONTROL_LOOP_TIME_OUTPUT_SET(CONTROL_LOOP,1,ERR,ERROR,*999)
   !Finish creating the problem control
   CALL PROBLEM_CONTROL_LOOP_CREATE_FINISH(PROBLEM,ERR,ERROR,*999)
@@ -878,7 +878,7 @@ PROGRAM NavierStokesFlow
 !Finalise CMISS
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-!   CALL CMISS_FINALISE(ERR,ERROR,*999)
+!    CALL CMISS_FINALISE(ERR,ERROR,*999)
    WRITE(*,'(A)') "Program successfully completed."
 
    STOP
