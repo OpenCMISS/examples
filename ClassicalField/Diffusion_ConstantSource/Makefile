@@ -65,7 +65,7 @@ endif
 
 EXAMPLE_PATH=ClassicalField/
 
-EXAMPLE_NAME = Diffusion
+EXAMPLE_NAME = Diffusion_ConstantSource
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 
