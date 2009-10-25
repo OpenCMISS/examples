@@ -89,11 +89,13 @@ buildExample("FluidMechanics/Stokes/TESTING_ELEMENTS/quad/Cubic/DirectSolver/Tra
 #buildExample("FiniteElasticity/MixedBoundaryConditions")
 #buildExample("FiniteElasticity/TriCubicAxialExtension")
 
+#buildExample("LinearElasticity/2DAnalytic1")
 #buildExample("LinearElasticity/2DPlaneStressLagrangeBasis")
-#buildExample("LinearElasticity/2DPlaneStressLagrangeBasisAnalytic")
+#buildExample("LinearElasticity/3DAnalytic1")
 #buildExample("LinearElasticity/3DLagrangeBasis")
-#buildExample("LinearElasticity/3DLagrangeBasisAnisotropicFibreField")
 #buildExample("LinearElasticity/3DCubicHermiteBasis")
+#buildExample("LinearElasticity/3DLagrangeBasisAnisotropicFibreField")
+
 
 # TODO Group them
 #buildExample("LagrangeSimplexMesh")

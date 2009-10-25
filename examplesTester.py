@@ -122,11 +122,13 @@ testExample(id='1',path="FluidMechanics/Stokes/TESTING_ELEMENTS/hex/Quadratic/It
 #testExample(id='1',path="FiniteElasticity/MixedBoundaryConditions",nodes='1',input='4\n4\n0\n1')
 #testExample(id='1',path="FiniteElasticity/TriCubicAxialExtension",nodes='1',input='4\n4\n0\n1')
 
+#testExample(id='1',path="LinearElasticity/2DAnalytic1",nodes='1',input='4\n4\n0\n1')
 #testExample(id='1',path="LinearElasticity/2DPlaneStressLagrangeBasis",nodes='1',input='4\n4\n0\n1')
-#testExample(id='1',path="LinearElasticity/2DPlaneStressLagrangeBasisAnalytic",nodes='1',input='4\n4\n0\n1')
+#testExample(id='1',path="LinearElasticity/3DAnalytic1",nodes='1',input='4\n4\n0\n1')
 #testExample(id='1',path="LinearElasticity/3DLagrangeBasis",nodes='1',input='4\n4\n0\n1')
-#testExample(id='1',path="LinearElasticity/3DLagrangeBasisAnisotropicFibreField",nodes='1',input='4\n4\n0\n1')
 #testExample(id='1',path="LinearElasticity/3DCubicHermiteBasis",nodes='1',input='4\n4\n0\n1')
+#testExample(id='1',path="LinearElasticity/3DLagrangeBasisAnisotropicFibreField",nodes='1',input='4\n4\n0\n1')
+
 
 # TODO Group them
 #testExample(id='1',path="LagrangeSimplexMesh",nodes='1',input='4\n4\n0\n1')
