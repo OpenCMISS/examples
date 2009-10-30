@@ -10,16 +10,16 @@ if not os.path.isdir(logDir):
   os.mkdir(logDir);
 compiler = sys.argv[1];
 os.putenv('HOME', '/home/autotest')
-os.putenv('PATH', os.environ['PATH']+':'+cwd+'/../../../opencmissextras/cm/external/x86_64-linux-debug-'+compiler+'/bin')
+os.putenv('PATH', os.environ['PATH']+':'+cwd+'/../../../opencmissextras/cm/external/x86_64-linux-debug/mpich2/'+compiler+'/bin')
 os.system('mpd &')
-f = open(logDir+'/failedBuilds',"r")
-failedbuilds = f.read()
+f = open(logDir+'/successBuilds',"r")
+successbuilds = f.read()
 f.close()
-os.remove(logDir+'/failedBuilds')
+os.remove(logDir+'/successBuilds')
 
 def testExample(id, path, nodes, input=None, args=None) :
-   global compiler,logDir,failedbuilds;
-   if (failedbuilds.find(path)==-1) :
+   global compiler,logDir,successbuilds;
+   if (failedbuilds.find(path)!=-1) :
      newDir = logDir
      for folder in path.split('/') :
        newDir = newDir + '/' + folder
