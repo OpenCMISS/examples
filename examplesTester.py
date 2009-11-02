@@ -19,7 +19,7 @@ os.remove(logDir+'/successBuilds')
 
 def testExample(id, path, nodes, input=None, args=None) :
    global compiler,logDir,successbuilds;
-   if (successBuilds.find(path)!=-1) :
+   if (successbuilds.find(path)!=-1) :
      newDir = logDir
      for folder in path.split('/') :
        newDir = newDir + '/' + folder
