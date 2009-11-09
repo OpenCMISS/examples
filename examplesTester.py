@@ -28,7 +28,7 @@ def testExample(id, path, nodes, input=None, args=None) :
      os.chdir(path)
      if os.path.exists(newDir + "/test"+id+"-" + compiler) :
        os.remove(newDir + "/test"+id+"-" + compiler)
-     execPath='bin/x86_64-linux/'+path.rpartition('/')[2]+'Example-debug-'+compiler
+     execPath='bin/x86_64-linux/mpich2/'+compiler+'/'+path.rpartition('/')[2]+'Example-debug'
      if nodes == '1' :
        if input != None :
          inputPipe = subprocess.Popen(["echo", input], stdout=subprocess.PIPE)
@@ -63,22 +63,24 @@ def testExample(id, path, nodes, input=None, args=None) :
    return;
 
 #testExample(id='1', path="ClassicalField/AnalyticLaplace", nodes='1')
-#testExample(id='1', path="ClassicalField/Diffusion", nodes='1',input='4\n4\n0\n1')
+testExample(id='1', path="ClassicalField/AdvectionDiffusion", nodes='1')
+testExample(id='1', path="ClassicalField/Diffusion", nodes='1')
+testExample(id='1', path="ClassicalField/DiffusionConstantSource", nodes='1')
 #testExample(id='1', path="ClassicalField/Helmholtz", nodes='1',input='4\n4\n0\n1')
 #testExample(id='1', path="ClassicalField/Laplace", nodes='1',args='4 4 0 1') 
 #testExample(id='2', path="ClassicalField/Laplace", nodes='2',args='4 4 0 2')
-#testExample(id='1', path="ClassicalField/NonlinearPoisson",nodes='1',input='4\n4\n0\n1')
+testExample(id='1', path="ClassicalField/NonlinearPoisson",nodes='1',input='4\n4\n0\n1')
 testExample(id='1', path="ClassicalField/NewLaplace", nodes='1',args='4 4 0 1') 
 testExample(id='2', path="ClassicalField/NumberLaplace", nodes='1',args='4 4 0 1')
 
 #testExample(id='1',path="Bioelectrics/Monodomain",nodes='1',input='4\n4\n0\n1')
   
-testExample(id='1',path="FluidMechanics/Stokes/ALE",nodes='1',input='\n')
-testExample(id='1',path="FluidMechanics/Stokes/Static",nodes='1',input='\n')
-testExample(id='1',path="FluidMechanics/Stokes/Dynamic",nodes='1',input='\n')
-testExample(id='1',path="FluidMechanics/NavierStokes/ALE",nodes='1',input='\n')
-testExample(id='1',path="FluidMechanics/NavierStokes/Static",nodes='1',input='\n')
-testExample(id='1',path="FluidMechanics/NavierStokes/Dynamic",nodes='1',input='\n')
+#testExample(id='1',path="FluidMechanics/Stokes/ALE",nodes='1',input='\n')
+#testExample(id='1',path="FluidMechanics/Stokes/Static",nodes='1',input='\n')
+#testExample(id='1',path="FluidMechanics/Stokes/Dynamic",nodes='1',input='\n')
+#testExample(id='1',path="FluidMechanics/NavierStokes/ALE",nodes='1',input='\n')
+#testExample(id='1',path="FluidMechanics/NavierStokes/Static",nodes='1',input='\n')
+#testExample(id='1',path="FluidMechanics/NavierStokes/Dynamic",nodes='1',input='\n')
 
 
 #testExample(id='1',path="FluidMechanics/Darcy/ConvergenceStudy",nodes='1',input='4\n4\n0\n1')

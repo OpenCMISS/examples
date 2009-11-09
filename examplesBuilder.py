@@ -53,22 +53,24 @@ def buildLibrary() :
 libSuccess = buildLibrary()
 
 #buildExample("ClassicalField/AnalyticLaplace")
-#buildExample("ClassicalField/Diffusion")
+buildExample("ClassicalField/AdvectionDiffusion")
+buildExample("ClassicalField/Diffusion")
+buildExample("ClassicalField/DiffusionConstantSource")
 #buildExample("ClassicalField/Helmholtz")
 #buildExample("ClassicalField/Laplace")
-#buildExample("ClassicalField/NonlinearPoisson")
+buildExample("ClassicalField/NonlinearPoisson")
 buildExample("ClassicalField/NewLaplace")
 buildExample("ClassicalField/NumberLaplace")
 
 #buildExample("Bioelectrics/Monodomain")
 
-buildExample("FluidMechanics/Stokes/ALE")
-buildExample("FluidMechanics/Stokes/Static")
-buildExample("FluidMechanics/Stokes/Dynamic")
+#buildExample("FluidMechanics/Stokes/ALE")
+#buildExample("FluidMechanics/Stokes/Static")
+#buildExample("FluidMechanics/Stokes/Dynamic")
 
-buildExample("FluidMechanics/NavierStokes/ALE")
-buildExample("FluidMechanics/NavierStokes/Static")
-buildExample("FluidMechanics/NavierStokes/Dynamic")
+#buildExample("FluidMechanics/NavierStokes/ALE")
+#buildExample("FluidMechanics/NavierStokes/Static")
+#buildExample("FluidMechanics/NavierStokes/Dynamic")
 
 
 #buildExample("FluidMechanics/Darcy/ConvergenceStudy")
