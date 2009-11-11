@@ -46,13 +46,17 @@
 
 #include "opencmiss.h"
 
+#define STRING_SIZE 20
+
+#define REGION_USER_NUMBER 1
+
 int main() 
 {
   /* int WorldCoordinateSystemUserNumber;
      int WorldRegionUserNumber; */
   CMISSCoordinateSystemType *WorldCoordinateSystem=NULL;
-  CMISSRegionType *WorldRegion=NULL;
-  char Label[20];
+  CMISSRegionType *WorldRegion=NULL,*Region=NULL;
+  char Label[STRING_SIZE];
   int Err;
 
   /* Err = CMISSInitialiseNum(&WorldCoordinateSystemUserNumber,&WorldRegionUserNumber); */
@@ -60,18 +64,18 @@ int main()
   if(CMISSInitialise(&WorldCoordinateSystem,&WorldRegion) == CMISSNoError)
     {
 
-      if(CMISSRegionLabelGet(WorldRegion,20,Label) == CMISSNoError)
-	{
-	  printf("The region label is currently '%s'.\n",Label);
+      Err = CMISSRegionLabelGet(WorldRegion,STRING_SIZE,Label);
+      printf("The world region label is '%s'.\n",Label);
 
-	  if(CMISSRegionLabelSet(WorldRegion,20,"Testing") == CMISSNoError)
-	    {
-	      if(CMISSRegionLabelGet(WorldRegion,20,Label) == CMISSNoError)
-		{
-		  printf("The region label is now '%s'.\n",Label);
-		}
-	    }
-	}
+      Err = CMISSRegionTypeInitialise(&Region);
+      Err = CMISSRegionCreateStart(REGION_USER_NUMBER,WorldRegion,Region);
+      Err = CMISSRegionLabelSet(Region,8,"Testing");
+      Err = CMISSRegionCreateFinish(Region);
+
+      Err = CMISSRegionLabelGet(Region,STRING_SIZE,Label);	       
+      printf("The region label is '%s'.\n",Label);
+
+      Err = CMISSRegionTypeFinalise(&Region);
 
       Err = CMISSFinalise();
     }
