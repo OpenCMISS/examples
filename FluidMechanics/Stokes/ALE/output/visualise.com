@@ -1,5 +1,13 @@
-gfx read node './output/cmgui.exnode'
-gfx read elem './output/cmgui.exelem'
+#Read in the sequence of nodal positions.
+for $i (1..5)
+  {
+	 $filename = sprintf("./output/TIME_STEP_%04d.exnode", $i);
+	 print "Reading $filename time $i\n";
+	 gfx read node "$filename" time $i;
+  }
+
+#Read in the element description
+gfx read elem ./output/TIME_STEP_0001.exelem;
 gfx create window 1
 
 gfx cre spectrum flow
@@ -17,3 +25,10 @@ gfx modify window 1 background colour 1 1 1
 
 gfx define faces egroup OpenCMISS
 gfx modify g_element OpenCMISS surfaces select_on material default selected_material default_selected data general spectrum pressure
+
+#Set the timekeeper playing
+gfx timekeeper default play speed 1 skip;
+gfx create time_editor
+
+gfx edit scene
+gfx edit spectrum

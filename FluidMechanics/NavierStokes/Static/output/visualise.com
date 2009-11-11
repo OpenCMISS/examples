@@ -1,5 +1,5 @@
-gfx read node './output/cmgui.exnode'
-gfx read elem './output/cmgui.exelem'
+gfx read node './output/STATICSOLUTION.exnode'
+gfx read elem './output/STATICSOLUTION.exelem'
 gfx create window 1
 
 gfx cre spectrum flow
