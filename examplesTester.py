@@ -10,8 +10,8 @@ if not os.path.isdir(logDir):
   os.mkdir(logDir);
 compiler = sys.argv[1];
 os.putenv('HOME', '/home/autotest')
-os.putenv('PATH', os.environ['PATH']+':'+cwd+'/../../../opencmissextras/cm/external/x86_64-linux-debug/mpich2/'+compiler+'/bin')
-os.system('mpd &')
+mpidir = cwd+'/../../../opencmissextras/cm/external/x86_64-linux-debug/mpich2/'+compiler+'/bin'
+os.system('python ' + mpidir + '/mpd.py &')
 f = open(logDir+'/successBuilds',"r")
 successbuilds = f.read()
 f.close()
@@ -48,9 +48,9 @@ def testExample(id, path, nodes, input=None, args=None) :
          f.close()
          err = os.waitpid(execCommand.pid, 0)[1]
        elif args==None :
-         err=os.system('mpiexec -n ' + nodes + ' ' + execPath +" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+         err=os.system('python ' + mpidir + '/mpiexec.py -n ' + nodes + ' ' + execPath +" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
        else :
-         err=os.system('mpiexec -n ' + nodes + " " + execPath + ' ' + args+" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+         err=os.system('python ' + mpidir + '/mpiexec.py -n ' + nodes + " " + execPath + ' ' + args+" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
      if not os.path.exists(execPath) :
        err=-1
      if err==0 :
@@ -75,12 +75,12 @@ testExample(id='2', path="ClassicalField/NumberLaplace", nodes='1',args='4 4 0 1
 
 #testExample(id='1',path="Bioelectrics/Monodomain",nodes='1',input='4\n4\n0\n1')
   
-#testExample(id='1',path="FluidMechanics/Stokes/ALE",nodes='1',input='\n')
-#testExample(id='1',path="FluidMechanics/Stokes/Static",nodes='1',input='\n')
-#testExample(id='1',path="FluidMechanics/Stokes/Dynamic",nodes='1',input='\n')
-#testExample(id='1',path="FluidMechanics/NavierStokes/ALE",nodes='1',input='\n')
-#testExample(id='1',path="FluidMechanics/NavierStokes/Static",nodes='1',input='\n')
-#testExample(id='1',path="FluidMechanics/NavierStokes/Dynamic",nodes='1',input='\n')
+testExample(id='1',path="FluidMechanics/Stokes/ALE",nodes='1',input='\n')
+testExample(id='1',path="FluidMechanics/Stokes/Static",nodes='1',input='\n')
+testExample(id='1',path="FluidMechanics/Stokes/Dynamic",nodes='1',input='\n')
+testExample(id='1',path="FluidMechanics/NavierStokes/ALE",nodes='1',input='\n')
+testExample(id='1',path="FluidMechanics/NavierStokes/Static",nodes='1',input='\n')
+testExample(id='1',path="FluidMechanics/NavierStokes/Dynamic",nodes='1',input='\n')
 
 
 #testExample(id='1',path="FluidMechanics/Darcy/ConvergenceStudy",nodes='1',input='4\n4\n0\n1')
@@ -109,5 +109,5 @@ testExample(id='2', path="ClassicalField/NumberLaplace", nodes='1',args='4 4 0 1
 #testExample(id='1',path="SimplexMesh",nodes='1',input='4\n4\n0\n1')
 #testExample(id='1',path="TwoRegions",nodes='1',input='4\n4\n0\n1')
 
-os.system('mpdallexit')
+os.system('python ' + mpidir + '/mpdallexit.py')
 

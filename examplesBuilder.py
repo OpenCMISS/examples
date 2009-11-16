@@ -64,13 +64,13 @@ buildExample("ClassicalField/NumberLaplace")
 
 #buildExample("Bioelectrics/Monodomain")
 
-#buildExample("FluidMechanics/Stokes/ALE")
-#buildExample("FluidMechanics/Stokes/Static")
-#buildExample("FluidMechanics/Stokes/Dynamic")
+buildExample("FluidMechanics/Stokes/ALE")
+buildExample("FluidMechanics/Stokes/Static")
+buildExample("FluidMechanics/Stokes/Dynamic")
 
-#buildExample("FluidMechanics/NavierStokes/ALE")
-#buildExample("FluidMechanics/NavierStokes/Static")
-#buildExample("FluidMechanics/NavierStokes/Dynamic")
+buildExample("FluidMechanics/NavierStokes/ALE")
+buildExample("FluidMechanics/NavierStokes/Static")
+buildExample("FluidMechanics/NavierStokes/Dynamic")
 
 
 #buildExample("FluidMechanics/Darcy/ConvergenceStudy")
