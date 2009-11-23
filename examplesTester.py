@@ -62,7 +62,7 @@ def testExample(id, path, nodes, input=None, args=None) :
      print "Testing %s%s: <a class='fail'>failed</a> due to build failure<br>" %(path,id)
    return;
 
-#testExample(id='1', path="ClassicalField/AnalyticLaplace", nodes='1')
+testExample(id='1', path="ClassicalField/AnalyticLaplace", nodes='1')
 testExample(id='1', path="ClassicalField/AdvectionDiffusion", nodes='1')
 testExample(id='1', path="ClassicalField/Diffusion", nodes='1')
 testExample(id='1', path="ClassicalField/DiffusionConstantSource", nodes='1')
