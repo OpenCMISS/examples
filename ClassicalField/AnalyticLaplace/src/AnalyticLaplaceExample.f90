@@ -182,8 +182,8 @@ CONTAINS
    CALL TEST_FRAMEWORK_GRADIENT_VALUE_GET(X_VALUES,Y_VALUES,VALUE)
    CALL TEST_FRAMEWORK_ASSERT_EQUALS(4.0_CMISSDP,VALUE,1.0_CMISSDP,Err)
    IF (Err/=0) THEN
-     WRITE(*,'(A,F)') "Analytic Laplace Example Testcase2 - bicubic Hermite failure: Convergence should be around 4.0, but it was ", &
-       & VALUE
+     WRITE(*,'(A,F3.5)') "Analytic Laplace Example Testcase2 - bicubic Hermite failure: Convergence should be around 4.0" &
+       & //", but it was ", VALUE
    ENDIF
    WRITE(*,'(A)') "Analytic Laplace Example Testcase2 - bicubic Hermite is successfully completed."
 
@@ -354,8 +354,8 @@ CONTAINS
     CALL CMISSEquationsSetTypeInitialise(EQUATIONS_SET,Err)
     CALL CMISSEquationsSetCreateStart(1,REGION,GEOMETRIC_FIELD,EQUATIONS_SET,Err)
     !Set the equations set to be a standard Laplace problem
-    CALL CMISSEquationsSetSpecificationSet(EQUATIONS_SET,CMISSEquationsSetClassicalFieldClass,CMISSEquationsSetLaplaceEquationType, &
-      & CMISSEquationsSetStandardLaplaceSubtype,Err)
+    CALL CMISSEquationsSetSpecificationSet(EQUATIONS_SET,CMISSEquationsSetClassicalFieldClass, &
+      & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,Err)
     !Finish creating the equations set
     CALL CMISSEquationsSetCreateFinish(EQUATIONS_SET,Err)
   
@@ -399,27 +399,27 @@ CONTAINS
     !Finish creating the problem control
     CALL CMISSProblemControlLoopCreateFinish(PROBLEM,Err)
 
-	!Start the creation of the problem solvers
-	CALL CMISSSolverTypeInitialise(Solver,Err)
-	CALL CMISSProblemSolversCreateStart(Problem,Err)
-	CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
-	!Finish the creation of the problem solver
-	CALL CMISSProblemSolversCreateFinish(Problem,Err)
+    !Start the creation of the problem solvers
+    CALL CMISSSolverTypeInitialise(Solver,Err)
+    CALL CMISSProblemSolversCreateStart(Problem,Err)
+    CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
+    !Finish the creation of the problem solver
+    CALL CMISSProblemSolversCreateFinish(Problem,Err)
 
-	!Start the creation of the problem solver equations
-	CALL CMISSSolverTypeInitialise(Solver,Err)
-	CALL CMISSSolverEquationsTypeInitialise(Solver_Equations,Err)
-	CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
-	!Get the solve equations
-	CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
-	CALL CMISSSolverSolverEquationsGet(Solver,Solver_Equations,Err)
-	!Set the solver equations sparsity
-	CALL CMISSSolverEquationsSparsityTypeSet(Solver_Equations,CMISSSolverEquationsSparseMatrices,Err)
-	!CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices,Err)
-	!Add in the equations set
-	CALL CMISSSolverEquationsEquationsSetAdd(Solver_Equations,Equations_Set,EquationsSetIndex,Err)
-	!Finish the creation of the problem solver equations
-	CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+    !Start the creation of the problem solver equations
+    CALL CMISSSolverTypeInitialise(Solver,Err)
+    CALL CMISSSolverEquationsTypeInitialise(Solver_Equations,Err)
+    CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
+    !Get the solve equations
+    CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
+    CALL CMISSSolverSolverEquationsGet(Solver,Solver_Equations,Err)
+    !Set the solver equations sparsity
+    CALL CMISSSolverEquationsSparsityTypeSet(Solver_Equations,CMISSSolverEquationsSparseMatrices,Err)
+    !CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices,Err)
+    !Add in the equations set
+    CALL CMISSSolverEquationsEquationsSetAdd(Solver_Equations,Equations_Set,EquationsSetIndex,Err)
+    !Finish the creation of the problem solver equations
+    CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
 
     !Solve the problem
     CALL CMISSProblemSolve(PROBLEM,Err)
