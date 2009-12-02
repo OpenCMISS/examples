@@ -45,7 +45,7 @@
 !<
 
 !> Main program
-PROGRAM 3DLagrangeBasis
+PROGRAM LinearElasticity3DLagrangeBasis
 
   USE OPENCMISS
   USE MPI
@@ -657,6 +657,6 @@ CONTAINS
     RETURN 1
   END SUBROUTINE FLAG_ERROR
 
-END PROGRAM 3DLagrangeBasis
+END PROGRAM LinearElasticity3DLagrangeBasis
 
 
