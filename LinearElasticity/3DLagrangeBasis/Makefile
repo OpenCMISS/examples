@@ -67,5 +67,5 @@ EXAMPLE_PATH = LinearElasticity/
 
 EXAMPLE_NAME = 3DLagrangeBasis
 
-include $(GLOBAL_ROOT)/ExampleMakefile
+include $(GLOBAL_ROOT)/NewExampleMakefile
 
