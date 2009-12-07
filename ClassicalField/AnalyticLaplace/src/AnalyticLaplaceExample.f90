@@ -371,6 +371,7 @@ CONTAINS
     ELSE
       ANALYTIC_FUNCTION=CMISSEquationsSetLaplaceEquationTwoDim2
     ENDIF
+    CALL CMISSFieldTypeInitialise(ANALYTIC_FIELD,Err)
     CALL CMISSEquationsSetAnalyticCreateStart(EQUATIONS_SET,ANALYTIC_FUNCTION,3,ANALYTIC_FIELD,Err)
     !Finish the equations set analtyic field variables
     CALL CMISSEquationsSetAnalyticCreateFinish(EQUATIONS_SET,Err)
