@@ -80,6 +80,8 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopNode=0
   INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumber=12
   INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumber=14
+
 
   !Program types
   
@@ -98,7 +100,7 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField,IndependentField,AnalyticField
+  TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField,IndependentField,AnalyticField,SourceField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
   TYPE(CMISSMeshType) :: Mesh
@@ -237,8 +239,10 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
   CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,EquationsSet,Err)
   !Set the equations set to be a standard Laplace problem
+!   CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
+!     & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetNoSourceStaticAdvecDiffSubtype,Err)
   CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetNoSourceStaticAdvecDiffSubtype,Err)
+    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetConstantSourceStaticAdvecDiffSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
@@ -253,6 +257,13 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,MaterialsFieldUserNumber,MaterialsField,Err)
   !Finish the equations set dependent field variables
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
+
+  !Create the equations set source field variables
+  CALL CMISSFieldTypeInitialise(SourceField,Err)
+  CALL CMISSEquationsSetSourceCreateStart(EquationsSet,SourceFieldUserNumber,SourceField,Err)
+  !Finish the equations set dependent field variables
+  CALL CMISSEquationsSetSourceCreateFinish(EquationsSet,Err)
+
 
   !Create the equations set independent field variables
   CALL CMISSFieldTypeInitialise(IndependentField,Err)
@@ -307,8 +318,10 @@ CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
   !Set the problem to be a no source static advection Diffusion problem
+!   CALL CMISSProblemSpecificationSet(Problem,CMISSProblemClassicalFieldClass,CMISSProblemAdvectionDiffusionEquationType, &
+!     & CMISSProblemNoSourceStaticAdvecDiffSubtype,Err)
   CALL CMISSProblemSpecificationSet(Problem,CMISSProblemClassicalFieldClass,CMISSProblemAdvectionDiffusionEquationType, &
-    & CMISSProblemNoSourceStaticAdvecDiffSubtype,Err)
+    & CMISSProblemLinearSourceStaticAdvecDiffSubtype,Err)
   !Finish the creation of a problem.
   CALL CMISSProblemCreateFinish(Problem,Err)
 
@@ -364,7 +377,7 @@ CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
   CALL CMISSProblemSolve(Problem,Err)
 
  !Output Analytic analysis
-  Call CMISSAnalyticAnalysisOutput(DependentField,"DiffusionAnalytics",Err)
+  Call CMISSAnalyticAnalysisOutput(DependentField,"StaticAdvectionDiffusionAnalytics",Err)
 
   EXPORT_FIELD=.TRUE.
   IF(EXPORT_FIELD) THEN
