@@ -48,7 +48,7 @@
 !<
 
 !> Main program
-PROGRAM ADVECTIONDIFFUSIONEXAMPLE
+PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
 
   USE OPENCMISS
   USE MPI
@@ -79,6 +79,8 @@ PROGRAM ADVECTIONDIFFUSIONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=11
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopNode=0
   INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=13
+
   !Program types
   
   !Program variables
@@ -96,7 +98,7 @@ PROGRAM ADVECTIONDIFFUSIONEXAMPLE
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField,IndependentField
+  TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField,IndependentField,AnalyticField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
   TYPE(CMISSMeshType) :: Mesh
@@ -258,6 +260,18 @@ PROGRAM ADVECTIONDIFFUSIONEXAMPLE
   !Finish the equations set dependent field variables
   CALL CMISSEquationsSetIndependentCreateFinish(EquationsSet,Err)
 
+  !Create the equations set analytic field variables
+  CALL CMISSFieldTypeInitialise(AnalyticField,Err)
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN  
+    CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSEquationsSetAdvectionDiffusionTwoDim1,&
+      & AnalyticFieldUserNumber,AnalyticField,Err)
+  ELSE
+    WRITE(*,'(A)') "Three dimensions is not implemented."
+    STOP
+  ENDIF
+  !Finish the equations set analytic field variables
+  CALL CMISSEquationsSetAnalyticCreateFinish(EquationsSet,Err)
+
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
   CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
@@ -271,28 +285,28 @@ PROGRAM ADVECTIONDIFFUSIONEXAMPLE
   !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
   
-  !Create the equations set boundary conditions
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-  !Set the first node to 0.0 and the last node to 1.0
-  FirstNodeNumber=1
-  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)
-  ELSE
-    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
-  ENDIF
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
-    & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDeludelnVariableType,1,LastNodeNumber,1, &
-    & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
-  !Finish the creation of the equations set boundary conditions
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
-
+!   !Create the equations set boundary conditions
+!   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+!   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
+!   !Set the first node to 0.0 and the last node to 1.0
+!   FirstNodeNumber=1
+!   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+!     LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)
+!   ELSE
+!     LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
+!   ENDIF
+!   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
+!     & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+!   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDeludelnVariableType,1,LastNodeNumber,1, &
+!     & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
+!   !Finish the creation of the equations set boundary conditions
+!   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
+CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
 
   !Create the problem
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
-  !Set the problem to be a No Source Diffusion problem
+  !Set the problem to be a no source static advection Diffusion problem
   CALL CMISSProblemSpecificationSet(Problem,CMISSProblemClassicalFieldClass,CMISSProblemAdvectionDiffusionEquationType, &
     & CMISSProblemNoSourceStaticAdvecDiffSubtype,Err)
   !Finish the creation of a problem.
@@ -349,12 +363,15 @@ PROGRAM ADVECTIONDIFFUSIONEXAMPLE
   !Solve the problem
   CALL CMISSProblemSolve(Problem,Err)
 
+ !Output Analytic analysis
+  Call CMISSAnalyticAnalysisOutput(DependentField,"DiffusionAnalytics",Err)
+
   EXPORT_FIELD=.TRUE.
   IF(EXPORT_FIELD) THEN
     CALL CMISSFieldsTypeInitialise(Fields,Err)
     CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"AdvectionDiffusion","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"AdvectionDiffusion","FORTRAN",Err)
+    CALL CMISSFieldIONodesExport(Fields,"StaticAdvectionDiffusion","FORTRAN",Err)
+    CALL CMISSFieldIOElementsExport(Fields,"StaticAdvectionDiffusion","FORTRAN",Err)
     CALL CMISSFieldsTypeFinalise(Fields,Err)
 
   ENDIF
@@ -364,4 +381,4 @@ PROGRAM ADVECTIONDIFFUSIONEXAMPLE
   
   STOP
 
-END PROGRAM ADVECTIONDIFFUSIONEXAMPLE
+END PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
