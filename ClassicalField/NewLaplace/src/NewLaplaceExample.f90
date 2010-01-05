@@ -114,8 +114,10 @@ PROGRAM LAPLACEEXAMPLE
   
   !Generic CMISS variables
   
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
   INTEGER(CMISSIntg) :: EquationsSetIndex
   INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
+  INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain
   INTEGER(CMISSIntg) :: Err
   
 #ifdef WIN32
@@ -131,11 +133,18 @@ PROGRAM LAPLACEEXAMPLE
 
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
+
+  CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,(/1,2,3,4,5/),"Diagnostics",(/"FIELD_MAPPINGS_CALCULATE", &
+    & "SOLVER_MAPPING_CALCULATE"/),Err)
+
+  !Get the computational nodes information
+  CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
+  CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
   
   NUMBER_GLOBAL_X_ELEMENTS=2
   NUMBER_GLOBAL_Y_ELEMENTS=2
   NUMBER_GLOBAL_Z_ELEMENTS=0
-  NUMBER_OF_DOMAINS=1
+  NUMBER_OF_DOMAINS=NumberOfComputationalNodes
     
   !Broadcast the number of elements in the X & Y directions and the number of partitions to the other computational nodes
   CALL MPI_BCAST(NUMBER_GLOBAL_X_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
@@ -219,7 +228,7 @@ PROGRAM LAPLACEEXAMPLE
   ENDIF
   !Finish creating the field
   CALL CMISSFieldCreateFinish(GeometricField,Err)
-       
+
   !Update the geometric field parameters
   CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
   
@@ -261,10 +270,16 @@ PROGRAM LAPLACEEXAMPLE
   ELSE
     LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
   ENDIF
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
-    & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,LastNodeNumber,1, &
-    & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
+  CALL CMISSDecompositionNodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
+  CALL CMISSDecompositionNodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
+  IF(FirstNodeDomain==ComputationalNodeNumber) THEN
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
+      & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+  ENDIF
+  IF(LastNodeDomain==ComputationalNodeNumber) THEN
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,LastNodeNumber,1, &
+      & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
+  ENDIF
   !Finish the creation of the equations set boundary conditions
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
   
