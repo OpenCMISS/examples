@@ -47,8 +47,8 @@
 !> Main program
 PROGRAM LinearElasticity3DLagrangeBasis
 
-  USE OPENCMISS
   USE MPI
+  USE OPENCMISS
 
 #ifdef WIN32
   USE IFQWIN
@@ -57,105 +57,37 @@ PROGRAM LinearElasticity3DLagrangeBasis
   IMPLICIT NONE
 
   !Test program parameters
+
+  REAL(CMISSDP), PARAMETER :: ORIGIN(3)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)
+
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
-  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=4
-  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
-  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
-  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=8
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=9
-  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: MaterialFieldUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
   !Program types
-  !Element Node Types for prescribing Nodal positions
-  !ELEMENTS(:) 					#TYPE(ELEMENT_TYPE)
-  !  MESH_COMP(:) 				#TYPE(ELEMENT_NODES_TYPE)
-  !    ELEMENT					#TYPE(MESH_ELEMENTS_TYPE)
-  !    ELEM_NODE_NUMBERS(:)		#INTEGER(CMISSIntg),ALLOCATABLE
-  !    DERIV(8)					#TYPE(NODE_COORDINATES_TYPE)
-  !      NODE_COORDINATES(:)	#REAL(CMISSDP),ALLOCATABLE 
-  TYPE NODE_COORDINATES_TYPE
-    REAL(CMISSDP),ALLOCATABLE :: NODE_COORDINATES(:)
-  END TYPE NODE_COORDINATES_TYPE
-  TYPE ELEMENT_NODES_TYPE
-    TYPE(CMISSMeshElementsType) :: ELEMENT
-    INTEGER(CMISSIntg),ALLOCATABLE :: ELEM_NODE_NUMBERS(:)
-    TYPE(NODE_COORDINATES_TYPE) :: DERIV(8)
-  END TYPE ELEMENT_NODES_TYPE
-  TYPE ELEMENT_TYPE
-    TYPE(ELEMENT_NODES_TYPE),POINTER :: MESH_COMP(:)
-  END TYPE ELEMENT_TYPE
-  TYPE(ELEMENT_TYPE), POINTER :: ELEMENTS(:)
-
-  !Boundary Condition Types
-  !DISP_BC 								#TYPE(BC_MESH_COMP)
-  !  MESH_COMP(:) 						#TYPE(BC_ELEMENT_NODES_TYPE)
-  !    NUMBER_OF_BC_NODES_IN_DERIV(8)	#INTEGER(CMISSIntg)
-  !    DERIV(8)							#TYPE(BC_NODE_COORDINATES_TYPE)
-  !      NODE_NUMBER(:)					#INTEGER(CMISSIntg),ALLOCATABLE
-  !      NODE_COORDINATES(:)			#REAL(CMISSDP),ALLOCATABLE 
-  TYPE BC_NODE_COORDINATES_TYPE
-    INTEGER(CMISSIntg),ALLOCATABLE :: NODE_NUMBER(:)
-    REAL(CMISSDP),ALLOCATABLE :: NODE_COORDINATES(:)
-  END TYPE BC_NODE_COORDINATES_TYPE
-  TYPE BC_ELEMENT_NODES_TYPE
-    INTEGER(CMISSIntg) :: NUMBER_OF_BC_NODES_IN_DERIV(8)
-    TYPE(BC_NODE_COORDINATES_TYPE) :: DERIV(8)
-  END TYPE BC_ELEMENT_NODES_TYPE
-  TYPE BC_MESH_COMP
-    TYPE(BC_ELEMENT_NODES_TYPE),POINTER :: MESH_COMP(:)
-  END TYPE BC_MESH_COMP
-  TYPE(BC_MESH_COMP), POINTER :: DISP_BC,FORCE_BC
 
   !Program variables
-  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
-  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
-  INTEGER(CMISSIntg) :: MPI_IERROR
-  INTEGER(CMISSIntg) :: NUMBER_COMPUTATIONAL_NODES,MY_COMPUTATIONAL_NODE_NUMBER
-  INTEGER(CMISSIntg) :: CS_USER_NUMBER, REGION_USER_NUMBER, BASIS_USER_NUMBER, MESH_USER_NUMBER, DECOMPOSITION_USER_NUMBER
-  INTEGER(CMISSIntg) :: FIELD_USER_NUMBER,EQUATION_SET_USER_NUMBER, PROBLEM_USER_NUMBER
-  INTEGER(CMISSIntg) :: NUMBER_OF_MESH_COMPS,NUMBER_OF_XI,NUMBER_OF_NODES,NUMBER_OF_ELEMENTS,NUMBER_OF_DERIV
-  INTEGER(CMISSIntg) :: NUMBER_OF_FIELD_VARIABLES,NUMBER_OF_BC_NODES,NUMBER_OF_FIELD_COMPS
-  INTEGER(CMISSIntg) :: MESH_COMP_IDX,FIELD_COMP_IDX,FIELD_DERIVATIVE_IDX,SOLVER_IDX,EQUATION_SET_IDX,np,xi,ne,nu
-  INTEGER(CMISSIntg) :: NUMBER_OF_GLOBAL_DEPENDENT_DOFS
-  INTEGER(CMISSIntg),ALLOCATABLE :: XI_INTERPOLATION(:,:),NUMBER_OF_GAUSS_POINTS(:),MESH_COMP_NUMBER_OF_ELEMENT_NODES(:)
 
-  REAL(CMISSDP) :: l,w,h
-  REAL(CMISSDP), POINTER :: FIELD_DATA(:)
-  REAL(CMISSDP),ALLOCATABLE :: MATE_PARA(:)
-
-  LOGICAL :: EXPORT_FIELD
-
-  CHARACTER(LEN=255) :: ERROR
-
-  !CMISS variables
-  TYPE(CMISSBasisType),ALLOCATABLE :: Basis_xyz(:)
-  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
-  TYPE(CMISSCoordinateSystemType) :: CoordinateSystem,WorldCoordinateSystem
-  TYPE(CMISSDecompositionType) :: Decomposition
-  TYPE(CMISSEquationsType) :: Equations
-  TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialField
-  TYPE(CMISSFieldsType) :: Fields
-  TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
-  TYPE(CMISSMeshType) :: Mesh
-  TYPE(CMISSNodesType) :: Nodes
-  TYPE(CMISSProblemType) :: Problem
-  TYPE(CMISSRegionType) :: Region,WorldRegion
-  TYPE(CMISSSolverType) :: Solver
-  TYPE(CMISSSolverEquationsType) :: SolverEquations
-
-  !Generic CMISS variables 
-  INTEGER(CMISSIntg) :: Err
-
-  !WIN32 Variables
+  TYPE(CMISSRegionType) :: World_Region
+  TYPE(CMISSCoordinateSystemType) :: WorldCoordinateSystem
+  
 #ifdef WIN32
   !Quickwin type
   LOGICAL :: QUICKWIN_STATUS=.FALSE.
   TYPE(WINDOWCONFIG) :: QUICKWIN_WINDOW_CONFIG
 #endif
+
+  !Generic CMISS variables
+  INTEGER(CMISSIntg) :: Err
+
+  CHARACTER(LEN=255) :: ERROR
 
 #ifdef WIN32
   !Initialise QuickWin
@@ -167,474 +99,47 @@ PROGRAM LinearElasticity3DLagrangeBasis
   !If attempt fails set with system estimated values
   IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
 #endif
-
-
-  !=================================================================================================================================
-
-  !Intialise OpenCMISS
-  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
-
-  !=BROADCAST PARAMETERS TO COMPUTATIONAL NODES====================================================================================
-  NUMBER_GLOBAL_X_ELEMENTS=2
-  NUMBER_GLOBAL_Y_ELEMENTS=2
-  NUMBER_GLOBAL_Z_ELEMENTS=0
-  NUMBER_OF_DOMAINS=1
-  NUMBER_OF_XI = 3
-  NUMBER_OF_ELEMENTS = 1
-  NUMBER_OF_NODES = 8
-    
-  !Broadcast the number of elements in the X & Y directions and the number of partitions to the other computational nodes
-  CALL MPI_BCAST(NUMBER_GLOBAL_X_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_GLOBAL_Y_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_GLOBAL_Z_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_OF_DOMAINS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-
-  !=CREATE COORDINATE SYSTEM=======================================================================================================
-  !Start the creation of a new 3D RC coordinate system
-  CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemTypeSet(CoordinateSystem,CMISSCOORDINATERECTANGULARCARTESIANTYPE,Err)
-  CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,NUMBER_OF_XI,Err)
-  CALL CMISSCoordinateSystemOriginSet(CoordinateSystem,(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/),Err)
-  CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
-
-  !=CREATE REGION==================================================================================================================
-  !Create Region and set CS to newly created 3D RC CS
-  CALL CMISSRegionTypeInitialise(Region,Err)
-  CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegion,Region,Err)
-  CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
-  CALL CMISSRegionCreateFinish(Region,Err)
-
-  !=CREATE BASIS ==================================================================================================================
-  ALLOCATE(Basis_xyz(NUMBER_OF_XI),STAT=Err)
-  IF(Err/=0) CALL FLAG_ERROR("Could not allocate Basis_xyz",Err,ERROR,*999)
-  ALLOCATE(XI_INTERPOLATION(NUMBER_OF_XI,NUMBER_OF_XI),STAT=Err)
-  IF(Err/=0) CALL FLAG_ERROR("Could not allocate XI_INTERPOLATION",Err,ERROR,*999)
-  !-=MODIFIY-HERE-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-  !Prescribe Interpolation in each direction
-  !NOTE if you change interpolation you need to change Boundary Conditions
-  XI_INTERPOLATION(1,:) = &
-    & (/CMISSBasisLinearLagrangeInterpolation,CMISSBasisLinearLagrangeInterpolation,CMISSBasisLinearLagrangeInterpolation/)
-  XI_INTERPOLATION(2,:) = &
-    & (/CMISSBasisLinearLagrangeInterpolation,CMISSBasisLinearLagrangeInterpolation,CMISSBasisLinearLagrangeInterpolation/)
-  XI_INTERPOLATION(3,:) = &
-    & (/CMISSBasisLinearLagrangeInterpolation,CMISSBasisLinearLagrangeInterpolation,CMISSBasisLinearLagrangeInterpolation/)
-  !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-  ALLOCATE(NUMBER_OF_GAUSS_POINTS(NUMBER_OF_XI),STAT=Err)
-  IF(Err/=0) CALL FLAG_ERROR("Could not allocate NUMBER_OF_GAUSS_POINTS",Err,ERROR,*999)
-  !-=MODIFIY-HERE-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-  !Prescribe Number of Gauss Points
-  !NOTE:: Num of Gauss points must be the same across X,Y & Z coordinates and be sufficient to accurately integrate the hightest order interpolation being used
-  NUMBER_OF_GAUSS_POINTS(:) = (/4,4,4/)
-  !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-  DO xi=1,NUMBER_OF_XI
-    BASIS_USER_NUMBER = xi
-    CALL CMISSBasisTypeInitialise(Basis_xyz(xi),Err)
-    CALL CMISSBasisCreateStart(BASIS_USER_NUMBER,Basis_xyz(xi),Err)
-    CALL CMISSBasisTypeSet(Basis_xyz(xi),CMISSBasisLagrangeHermiteTPType,Err)
-    CALL CMISSBasisNumberOfXiSet(Basis_xyz(xi),NUMBER_OF_XI,Err)
-    CALL CMISSBasisInterpolationXiSet(Basis_xyz(xi),XI_INTERPOLATION(xi,:),Err)
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis_xyz(xi),NUMBER_OF_GAUSS_POINTS,Err)
-    CALL CMISSBasisCreateFinish(Basis_xyz(xi),Err)
-  ENDDO !xi
-
-  !=MANUAL MESH CREATION===========================================================================================================
-
-  !=NODE CREATION==================================================================================================================
-  !Create nodes in REGION and set initial coordinates to 0,0,0
-  CALL CMISSNodesTypeInitialise(NODES,Err)
-  CALL CMISSNodesCreateStart(REGION,NUMBER_OF_NODES,NODES,Err)
-  CALL CMISSNodesCreateFinish(NODES,Err)
   
-  !=CREATE MESH====================================================================================================================
-  !Create a mesh with xi number of coordinates
-  MESH_USER_NUMBER = 1
-  NUMBER_OF_MESH_COMPS = NUMBER_OF_XI
-  CALL CMISSMeshTypeInitialise(Mesh,Err)
-  CALL CMISSMeshCreateStart(MESH_USER_NUMBER,REGION,NUMBER_OF_XI,MESH,Err)
-  CALL CMISSMeshNumberOfElementsSet(MESH,NUMBER_OF_ELEMENTS,Err)
-  CALL CMISSMeshNumberOfComponentsSet(MESH,NUMBER_OF_MESH_COMPS,Err)
+  !Intialise cmiss
+  CALL CMISSInitialise(WorldCoordinateSystem,World_Region,Err)
 
-  ALLOCATE(ELEMENTS(NUMBER_OF_ELEMENTS),STAT=Err)
-  IF(Err/=0) CALL FLAG_ERROR("Could not allocate MATE_PARA",Err,ERROR,*999)
-  DO ne=1,NUMBER_OF_ELEMENTS
-    ALLOCATE(ELEMENTS(ne)%MESH_COMP(NUMBER_OF_MESH_COMPS),STAT=Err)
-    IF(Err/=0) CALL FLAG_ERROR("Could not allocate ELEMENT(ne)%MESH_COMP",Err,ERROR,*999)
-  ENDDO !ne
-  ALLOCATE(MESH_COMP_NUMBER_OF_ELEMENT_NODES(NUMBER_OF_MESH_COMPS),STAT=Err)
-  IF(Err/=0) CALL FLAG_ERROR("Could not allocate MESH_COMP_NUMBER_OF_ELEMENT_NODES",Err,ERROR,*999)
-  DO xi=1,NUMBER_OF_XI
-    MESH_COMP_IDX=xi
-    IF (XI_INTERPOLATION(1,1)<=3) THEN
-      MESH_COMP_NUMBER_OF_ELEMENT_NODES(MESH_COMP_IDX)=PRODUCT(XI_INTERPOLATION(xi,:)+1)
-      NUMBER_OF_DERIV = 1
-    ELSEIF (XI_INTERPOLATION(1,1)==4) THEN
-      MESH_COMP_NUMBER_OF_ELEMENT_NODES(MESH_COMP_IDX)=(2**NUMBER_OF_XI)
-      NUMBER_OF_DERIV = 2**NUMBER_OF_XI
-    ELSE
-      CALL FLAG_ERROR("This example is only setup for Lagrange and cubic hermite bases",Err,ERROR,*999)
-    ENDIF
-  ENDDO !xi
-  DO ne=1,NUMBER_OF_ELEMENTS
-    DO xi=1,NUMBER_OF_XI
-      MESH_COMP_IDX=xi
-      ALLOCATE(ELEMENTS(ne)%MESH_COMP(MESH_COMP_IDX)%ELEM_NODE_NUMBERS(MESH_COMP_NUMBER_OF_ELEMENT_NODES(MESH_COMP_IDX)),STAT=Err)
-      IF(Err/=0) CALL FLAG_ERROR("Could not allocate ELEMENT(ne)%MESH_COMP(MESH_COMP_IDX)%ELEM_NODE_NUMBERS",Err,ERROR,*999)
-      ELEMENTS(ne)%MESH_COMP(MESH_COMP_IDX)%ELEM_NODE_NUMBERS = 0
-    ENDDO !xi
-  ENDDO !ne
-!  !-=MODIFIY-HERE-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-!  !Prescribe Element node numbers
-  ELEMENTS(1)%MESH_COMP(1)%ELEM_NODE_NUMBERS(:) = (/1,2,3,4,5,6,7,8/)
-  ELEMENTS(1)%MESH_COMP(2)%ELEM_NODE_NUMBERS(:) = (/1,2,3,4,5,6,7,8/)
-  ELEMENTS(1)%MESH_COMP(3)%ELEM_NODE_NUMBERS(:) = (/1,2,3,4,5,6,7,8/)
-!  !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-!  !!TODO:: When diagnostics are on - MESH_TOPOLOGY_ELEMENTS_ELEMENT_NODES_SET trys to output MESH%TOPOLOGY(1)%PTR%ELEMENTS%ELEMENTS(1)%MESH_ELEMENT_NODES which are only allocated when the MESH_TOPOLOGY_ELEMENTS_CREATE_FINISH command is given
-  DO xi=1,NUMBER_OF_XI
-    MESH_COMP_IDX=xi
-    DO ne=1,NUMBER_OF_ELEMENTS
-      CALL CMISSMeshElementsCreateStart(MESH,MESH_COMP_IDX,Basis_xyz(xi),ELEMENTS(ne)%MESH_COMP(MESH_COMP_IDX)%ELEMENT,Err)
-      CALL CMISSMeshElementsNodesSet(ELEMENTS(ne)%MESH_COMP(MESH_COMP_IDX)%ELEMENT,ne, & 
-        & ELEMENTS(ne)%MESH_COMP(MESH_COMP_IDX)%ELEM_NODE_NUMBERS(:),Err)
-      CALL CMISSMeshElementsCreateFinish(ELEMENTS(ne)%MESH_COMP(MESH_COMP_IDX)%ELEMENT,Err)
-    ENDDO !ne
-  ENDDO !xi
-  CALL CMISSMeshCreateFinish(MESH,Err)
 
-  !=CREATE DECOMPOSITION===========================================================================================================
-  !Create mesh decomposition dividing mesh into number_of_domains for parallel solving
-  DECOMPOSITION_USER_NUMBER = 1
-  CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
-  CALL CMISSDecompositionCreateStart(DECOMPOSITION_USER_NUMBER,MESH,DECOMPOSITION,Err)
-  CALL CMISSDecompositionTypeSet(DECOMPOSITION,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(DECOMPOSITION,NUMBER_OF_DOMAINS,Err)
-  CALL CMISSDecompositionCreateFinish(DECOMPOSITION,Err)
+  CALL RUN_LINEAR_ELASTICITY_PROBLEM(1,1,1,CMISSBasisLinearLagrangeInterpolation,CMISSSolverLinearDirectSolveType)
+  CALL RUN_LINEAR_ELASTICITY_PROBLEM(1,1,1,CMISSBasisLinearLagrangeInterpolation,CMISSSolverLinearIterativeSolveType)
+  !CALL RUN_LINEAR_ELASTICITY_PROBLEM(1,1,1,CMISSBasisQuadraticLagrangeInterpolation,CMISSSolverLinearDirectSolveType)
+  !CALL RUN_LINEAR_ELASTICITY_PROBLEM(1,1,1,CMISSBasisQuadraticLagrangeInterpolation,CMISSSolverLinearIterativeSolveType)
+  !CALL RUN_LINEAR_ELASTICITY_PROBLEM(1,1,1,CMISSBasisCubicLagrangeInterpolation,CMISSSolverLinearDirectSolveType)
+  !CALL RUN_LINEAR_ELASTICITY_PROBLEM(1,1,1,CMISSBasisCubicLagrangeInterpolation,CMISSSolverLinearIterativeSolveType)
+  !CALL RUN_LINEAR_ELASTICITY_PROBLEM(1,1,1,MixedInterpolation,CMISSSolverLinearDirectSolveType)
 
-  !=CREATE GEOMETRIC FIELD=========================================================================================================
-  !Start to create a default (geometric) field on the region
-  FIELD_USER_NUMBER = 1
-  NUMBER_OF_FIELD_VARIABLES = 1 !Geometric Field Coordinates
-  NUMBER_OF_FIELD_COMPS = NUMBER_OF_XI
-  CALL CMISSFieldTypeInitialise(GeometricField,Err)
-  CALL CMISSFieldCreateStart(FIELD_USER_NUMBER,REGION,GeometricField,Err)
-  CALL CMISSFieldMeshDecompositionSet(GeometricField,DECOMPOSITION,Err)
-  CALL CMISSFieldTypeSet(GeometricField,CMISSFieldGeometricType,Err)
-  CALL CMISSFieldNumberOfVariablesSet(GeometricField,NUMBER_OF_FIELD_VARIABLES,Err)
-  CALL CMISSFieldNumberOfComponentsSet(GeometricField,CMISSFieldUVariableType,NUMBER_OF_FIELD_COMPS,Err)
-  DO xi=1,NUMBER_OF_XI
-    MESH_COMP_IDX = xi
-    FIELD_COMP_IDX = xi
-    CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,FIELD_COMP_IDX,MESH_COMP_IDX,Err)
-  ENDDO !xi
-  CALL CMISSFieldCreateFinish(GeometricField,Err)
-  !Initialize node coordinates
-  DO ne=1,NUMBER_OF_ELEMENTS
-    DO xi=1,NUMBER_OF_XI
-      MESH_COMP_IDX=xi
-      DO nu=1,NUMBER_OF_DERIV
-        ALLOCATE(ELEMENTS(ne)%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_COORDINATES&
-          &(MESH_COMP_NUMBER_OF_ELEMENT_NODES(MESH_COMP_IDX)),STAT=Err)
-        IF(Err/=0) CALL FLAG_ERROR("Could not allocate ELEMENT(ne)%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_COORDINATES", & 
-          & Err,ERROR,*999)
-        ELEMENTS(ne)%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_COORDINATES = 0.0_CMISSDP
-      ENDDO
-    ENDDO
-  ENDDO
-  !-=MODIFIY-HERE-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-  !Prescribe node coordinates
-  l = 120.0_CMISSDP
-  w = 160.0_CMISSDP
-  h = 10.0_CMISSDP
-  ELEMENTS(1)%MESH_COMP(1)%DERIV(1)%NODE_COORDINATES = (/0.0_CMISSDP,l,0.0_CMISSDP,l,0.0_CMISSDP,l,0.0_CMISSDP,l/)
-  ELEMENTS(1)%MESH_COMP(2)%DERIV(1)%NODE_COORDINATES = (/0.0_CMISSDP,0.0_CMISSDP,w,w,0.0_CMISSDP,0.0_CMISSDP,w,w/)
-  ELEMENTS(1)%MESH_COMP(3)%DERIV(1)%NODE_COORDINATES = (/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,h,h,h,h/)
-  !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=
-  DO xi=1,NUMBER_OF_XI
-    MESH_COMP_IDX = xi
-    FIELD_COMP_IDX = xi
-    DO ne=1,NUMBER_OF_ELEMENTS
-      DO nu=1,NUMBER_OF_DERIV
-        DO np=1,MESH_COMP_NUMBER_OF_ELEMENT_NODES(MESH_COMP_IDX) !Can also loop using nu
-           CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,nu, &
-            & ELEMENTS(ne)%MESH_COMP(MESH_COMP_IDX)%ELEM_NODE_NUMBERS(np),FIELD_COMP_IDX, &
-            & ELEMENTS(ne)%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_COORDINATES(np),Err)
-        ENDDO !np
-      ENDDO !nu
-    ENDDO !ne
-  ENDDO !xi
-
-  !=CREATE DEPENDENT FIELD=========================================================================================================
-  !Create a dependent field
-  FIELD_USER_NUMBER = 2
-  NUMBER_OF_FIELD_VARIABLES = 2 !Dependent Field Displacement Coordinates & Force 
-  NUMBER_OF_FIELD_COMPS = NUMBER_OF_XI
-  CALL CMISSFieldTypeInitialise(DependentField,Err)
-  CALL CMISSFieldCreateStart(FIELD_USER_NUMBER,REGION,DependentField,Err)
-  CALL CMISSFieldTypeSet(DependentField,CMISSFieldGeneralType,Err)
-  CALL CMISSFieldMeshDecompositionSet(DependentField,DECOMPOSITION,Err)
-  CALL CMISSFieldGeometricFieldSet(DependentField,GeometricField,Err)
-  CALL CMISSFieldDependentTypeSet(DependentField,CMISSFieldDependentType,Err)
-  CALL CMISSFieldNumberOfVariablesSet(DependentField,NUMBER_OF_FIELD_VARIABLES,Err)
-  CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldUVariableType,NUMBER_OF_FIELD_COMPS,Err)
-  DO xi=1,NUMBER_OF_XI
-    MESH_COMP_IDX = xi
-    FIELD_COMP_IDX = xi
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,FIELD_COMP_IDX,MESH_COMP_IDX,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,FIELD_COMP_IDX,MESH_COMP_IDX,Err)
-  ENDDO !xi
-  CALL CMISSFieldCreateFinish(DependentField,Err)
-
-  !=CREATE MATERIAL FIELD==========================================================================================================
-  !!TODO:: Set Material Field Interpolation to constant element based interpolation when field i/o and cmgui allows for this
-  !Create a material field for a general 2D isotropic material
-  FIELD_USER_NUMBER = 3
-  NUMBER_OF_FIELD_VARIABLES = 1
-  !-=MODIFIY-HERE-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-  !Prescribe material properties E1,E2,E3 & v13,v23,v12
-  NUMBER_OF_FIELD_COMPS = 6 !Young's Modulus & Poisson's Ratio
-  ALLOCATE(MATE_PARA(NUMBER_OF_FIELD_COMPS),STAT=Err)
-  IF(Err/=0) CALL FLAG_ERROR("Could not allocate MATE_PARA",Err,ERROR,*999)
-  MATE_PARA = (/30E6_CMISSDP,30E6_CMISSDP,30E6_CMISSDP,0.25_CMISSDP,0.25_CMISSDP,0.25_CMISSDP/)
-  !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-  CALL CMISSFieldTypeInitialise(MaterialField,Err)
-  CALL CMISSFieldCreateStart(FIELD_USER_NUMBER,REGION,MaterialField,Err)
-  CALL CMISSFieldTypeSet(MaterialField,CMISSFieldMaterialType,Err)
-  CALL CMISSFieldMeshDecompositionSet(MaterialField,DECOMPOSITION,Err)
-  CALL CMISSFieldGeometricFieldSet(MaterialField,GeometricField,Err)
-  CALL CMISSFieldNumberOfVariablesSet(MaterialField,NUMBER_OF_FIELD_VARIABLES,Err)
-  CALL CMISSFieldNumberOfComponentsSet(MaterialField,CMISSFieldUVariableType,NUMBER_OF_FIELD_COMPS,Err)
-  DO xi=1,NUMBER_OF_XI
-    MESH_COMP_IDX = xi
-    DO FIELD_COMP_IDX=1,NUMBER_OF_FIELD_COMPS
-      CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,FIELD_COMP_IDX,MESH_COMP_IDX,Err)
-    ENDDO !FIELD_COMP_IDX
-  ENDDO !xi
-  CALL CMISSFieldCreateFinish(MaterialField,Err)
-  FIELD_DERIVATIVE_IDX = 1
-  DO xi=1,NUMBER_OF_XI
-    MESH_COMP_IDX = xi
-    DO ne=1,NUMBER_OF_ELEMENTS
-      DO np=1,MESH_COMP_NUMBER_OF_ELEMENT_NODES(MESH_COMP_IDX) !Can also loop using nu
-        DO FIELD_COMP_IDX=1,NUMBER_OF_FIELD_COMPS
-          CALL CMISSFieldParameterSetUpdateNode(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-            & FIELD_DERIVATIVE_IDX,ELEMENTS(ne)%MESH_COMP(MESH_COMP_IDX)%ELEM_NODE_NUMBERS(np),FIELD_COMP_IDX, &
-            & MATE_PARA(FIELD_COMP_IDX),Err)
-        ENDDO !FIELD_COMP_IDX
-      ENDDO !np
-    ENDDO !ne
-  ENDDO !xi
-
-  !=CREATE EQUATIONS SET===========================================================================================================
-  !Create a Elasticity Class, Linear Elasticity type, no subtype, EquationsSet
-  EQUATION_SET_USER_NUMBER = 1
-  CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(EQUATION_SET_USER_NUMBER,REGION,GeometricField,EquationsSet,Err)
-  !Set the equations set to be a Elasticity Class, Linear Elasticity type, no subtype, EquationsSet
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetElasticityClass,CMISSEquationsSetLinearElasticityType, &
-    & CMISSEquationsSetThreeDimensionalSubtype,Err)
-  CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
-  !Create the equations set dependent field variables
-  FIELD_USER_NUMBER = 2 !Dependent Field
-  CALL CMISSEquationsSetDependentCreateStart(EquationsSet,FIELD_USER_NUMBER,DependentField,Err)
-  CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
-  !Create the equations set material field variables
-  FIELD_USER_NUMBER = 3 !Material Field
-  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,FIELD_USER_NUMBER,MaterialField,Err)
-  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
-
-  !=CREATE EQUATIONS SET EQUATION==================================================================================================
-  !Create the equations set equations
-  CALL CMISSEquationsTypeInitialise(Equations,Err)
-  CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
-  CALL CMISSEquationsSparsityTypeSet(EQUATIONS,CMISSEquationsFullMatrices,Err)
-                                              !CMISSEquationsSparseMatrices=1 !<Use sparse matrices for the equations.
-                                              !CMISSEquationsFullMatrices=2 !<Use fully populated matrices for the equations. 
-  CALL CMISSEquationsOutputTypeSet(EQUATIONS,CMISSEquationsTimingOutput,Err)
-                                            !CMISSEquationsNoOutput !<No output from the equations.
-                                            !CMISSEquationsTimingOutput !<Timing information output.
-                                            !CMISSEquationsMatrixOutput !<All below and equation matrices output.
-                                            !CMISSEquationsElementMatrixOutput !<All below and element matrices output.
-  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
-
-  !=PRESCRIBE BOUNDARY CONDITIONS==================================================================================================
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-  !Allocate Memory for Displacement & Force BC
-  NULLIFY(DISP_BC,FORCE_BC)
-  ALLOCATE(DISP_BC,STAT=Err)
-  IF(Err/=0) CALL FLAG_ERROR("Could not allocate DISP_BC",Err,ERROR,*999)
-  ALLOCATE(FORCE_BC,STAT=Err)
-  IF(Err/=0) CALL FLAG_ERROR("Could not allocate FORCE_BC",Err,ERROR,*999)
-  ALLOCATE(DISP_BC%MESH_COMP(MESH_COMP_IDX),STAT=Err)
-  IF(Err/=0) CALL FLAG_ERROR("Could not allocate DISP_BC%MESH_COMP",Err,ERROR,*999)
-  ALLOCATE(FORCE_BC%MESH_COMP(MESH_COMP_IDX),STAT=Err)
-  IF(Err/=0) CALL FLAG_ERROR("Could not allocate FORCE_BC%MESH_COMP",Err,ERROR,*999)
-  !Initialize Number of Displacement & Force BC
-  DO xi=1,NUMBER_OF_XI
-    MESH_COMP_IDX=xi
-    DISP_BC%MESH_COMP(MESH_COMP_IDX)%NUMBER_OF_BC_NODES_IN_DERIV=0
-    FORCE_BC%MESH_COMP(MESH_COMP_IDX)%NUMBER_OF_BC_NODES_IN_DERIV=0
-  ENDDO
-  !-=MODIFIY-HERE-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-  !Prescribe Number of BC & thier DERIV
-  DISP_BC%MESH_COMP(1)%NUMBER_OF_BC_NODES_IN_DERIV(1)=4
-  DISP_BC%MESH_COMP(2)%NUMBER_OF_BC_NODES_IN_DERIV=DISP_BC%MESH_COMP(1)%NUMBER_OF_BC_NODES_IN_DERIV
-  DISP_BC%MESH_COMP(3)%NUMBER_OF_BC_NODES_IN_DERIV=DISP_BC%MESH_COMP(1)%NUMBER_OF_BC_NODES_IN_DERIV
-  FORCE_BC%MESH_COMP(1)%NUMBER_OF_BC_NODES_IN_DERIV(1)=4
-  !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-  DO xi=1,NUMBER_OF_XI
-    MESH_COMP_IDX=xi
-    DO nu=1,NUMBER_OF_DERIV
-      !Displacement BC
-      NUMBER_OF_BC_NODES = DISP_BC%MESH_COMP(MESH_COMP_IDX)%NUMBER_OF_BC_NODES_IN_DERIV(nu)
-      IF(NUMBER_OF_BC_NODES/=0) THEN
-        ALLOCATE(DISP_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_NUMBER(NUMBER_OF_BC_NODES),STAT=Err)
-        IF(Err/=0) CALL FLAG_ERROR("Could not allocate DISP_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_NUMBER",Err,ERROR,*999)
-        ALLOCATE(DISP_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_COORDINATES(NUMBER_OF_BC_NODES),STAT=Err)
-        IF(Err/=0) CALL FLAG_ERROR("Could not allocate DISP_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_COORDINATES",Err,ERROR,*999)
-        !Initialize Displacement BC Derivative_Node_Numbers & Node Coordinates
-        DISP_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_NUMBER=0
-        DISP_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_COORDINATES=0.0_CMISSDP
-      ENDIF
-      !Force BC
-      NUMBER_OF_BC_NODES = FORCE_BC%MESH_COMP(MESH_COMP_IDX)%NUMBER_OF_BC_NODES_IN_DERIV(nu)
-      IF(NUMBER_OF_BC_NODES/=0) THEN
-        ALLOCATE(FORCE_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_NUMBER(NUMBER_OF_BC_NODES),STAT=Err)
-        IF(Err/=0) CALL FLAG_ERROR("Could not allocate FORCE_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_NUMBER",Err,ERROR,*999)
-        ALLOCATE(FORCE_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_COORDINATES(NUMBER_OF_BC_NODES),STAT=Err)
-        IF(Err/=0) CALL FLAG_ERROR("Could not allocate FORCE_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_COORDINATES", &
-          & Err,ERROR,*999)
-        !Initialize Displacement BC Derivative_Node_Numbers & Node Coordinates
-        FORCE_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_NUMBER=0
-        FORCE_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_COORDINATES=0.0_CMISSDP
-      ENDIF
-    ENDDO !nu
-  ENDDO !xi
-  !-=MODIFIY-HERE-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-  !Prescribe Displacement BC Derivative Node Numbers & Node Coordinates
-  DISP_BC%MESH_COMP(1)%DERIV(1)%NODE_NUMBER(:)=(/1,3,5,7/)
-  DISP_BC%MESH_COMP(2)=DISP_BC%MESH_COMP(1)
-  DISP_BC%MESH_COMP(3)=DISP_BC%MESH_COMP(1)
-  !Prescribe Force BC Derivative Node Numbers & Node Coordinates
-  FORCE_BC%MESH_COMP(1)%DERIV(1)%NODE_NUMBER(:)=(/2,4,6,8/)
-  FORCE_BC%MESH_COMP(1)%DERIV(1)%NODE_COORDINATES(:)=400.0_CMISSDP
-  !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-  DO xi=1,NUMBER_OF_XI
-    MESH_COMP_IDX=xi
-    FIELD_COMP_IDX=xi
-    DO nu=1,NUMBER_OF_DERIV
-      !Displacement BC
-      NUMBER_OF_BC_NODES = DISP_BC%MESH_COMP(MESH_COMP_IDX)%NUMBER_OF_BC_NODES_IN_DERIV(nu)
-      IF(NUMBER_OF_BC_NODES/=0) THEN
-        DO np=1,NUMBER_OF_BC_NODES
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,nu, &
-            & DISP_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_NUMBER(np),FIELD_COMP_IDX,CMISSBoundaryConditionFixed, &
-            & DISP_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_COORDINATES(np),Err)
-        ENDDO !np
-      ENDIF
-      !Force BC
-      NUMBER_OF_BC_NODES = FORCE_BC%MESH_COMP(MESH_COMP_IDX)%NUMBER_OF_BC_NODES_IN_DERIV(nu)
-      IF(NUMBER_OF_BC_NODES/=0) THEN
-        DO np=1,NUMBER_OF_BC_NODES
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,nu, &
-            & FORCE_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_NUMBER(np),FIELD_COMP_IDX,CMISSBoundaryConditionFixed, &
-            & FORCE_BC%MESH_COMP(MESH_COMP_IDX)%DERIV(nu)%NODE_COORDINATES(np),Err)
-        ENDDO !np
-      ENDIF
-    ENDDO !nu
-  ENDDO !xi
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
-  
-  !=CREATE PROBLEM=================================================================================================================
-  !Create the problem
-  PROBLEM_USER_NUMBER=1
-  CALL CMISSProblemTypeInitialise(Problem,Err)
-  CALL CMISSProblemCreateStart(PROBLEM_USER_NUMBER,PROBLEM,Err)
-  !Set the problem to be a elasticity class, linear elasticity type with no subtype.
-  CALL CMISSProblemSpecificationSet(PROBLEM,CMISSProblemElasticityClass,CMISSProblemLinearElasticityType, &
-    & CMISSProblemNoSubtype,Err)
-  CALL CMISSProblemCreateFinish(PROBLEM,Err)
-
-  !=CREATE PROBLEM CONTROL LOOP====================================================================================================
-  !Create the problem control loop
-   CALL CMISSProblemControlLoopCreateStart(PROBLEM,Err)
-   CALL CMISSProblemControlLoopCreateFinish(PROBLEM,Err)
-
-  !=CREATE PROBLEM SOLVER==========================================================================================================
-  !Start the creation of the problem solvers
-  SOLVER_IDX = 1
-  CALL CMISSSolverTypeInitialise(Solver,Err)
-  CALL CMISSProblemSolversCreateStart(PROBLEM,Err)
-  CALL CMISSProblemSolverGet(PROBLEM,CMISSControlLoopNode,SOLVER_IDX,SOLVER,Err)
-  CALL CMISSSolverLibraryTypeSet(SOLVER,CMISSSolverPETScLibrary,Err)
-                                       !CMISSSolverCMISSLibrary     !<CMISS (internal) solver library.
-                                       !CMISSSolverPETScLibrary     !<PETSc solver library.
-                                       !CMISSSolverMUMPSLibrary     !<MUMPS solver library.
-                                       !CMISSSolverSuperLULibrary   !<SuperLU solver library.
-                                       !CMISSSolverSpoolesLULibrary !<SPOOLES solver library.
-                                       !CMISSSolverUMFPACKLibrary   !<UMFPACK solver library.
-                                       !CMISSSolverLUSOLLibrary     !<LUSOL solver library.
-                                       !CMISSSolverESSLLibrary      !<ESSL solver library.
-                                       !CMISSSolverLAPACKLibrary    !<LAPACK solver library.
-                                       !CMISSSolverTAOLibrary       !<TAO solver library.
-                                       !CMISSSolverHypreLibrary     !<Hypre solver library.
-  CALL CMISSSolverLinearTypeSet(SOLVER,CMISSSolverLinearDirectSolveType,Err)
-                                      !CMISSSolverLinearDirectSolveType    !<Direct linear solver type.
-                                      !CMISSSolverLinearIterativeSolveType !<Iterative linear solver type.
-  !CALL CMISSSolverLinearDirectTypeSet(SOLVER,CMISSSolverDirectLU,Err)
-                                            !CMISSSolverDirectLU       !<LU direct linear solver.
-                                            !CMISSSolverDirectCholesky !<Cholesky direct linear solver.
-                                            !CMISSSolverDirectSVD      !<SVD direct linear solver.
-  CALL CMISSSolverOutputTypeSet(SOLVER,CMISSSolverSolverMatrixOutput,Err)
-                                      !CMISSSolverNoOutput !<No output from the solver routines. \see OPENCMISS_SolverOutputTypes,OPENCMISS
-                                      !CMISSSolverProgressOutput !<Progress output from solver routines.
-                                      !CMISSSolverTimingOutput !<Timing output from the solver routines plus below.
-                                      !CMISSSolverSolverOutput !<Solver specific output from the solver routines plus below.
-                                      !CMISSSolverSolverMatrixOutput !<Solver matrices output from the solver routines plus below.
-  CALL CMISSProblemSolversCreateFinish(PROBLEM,Err)
-
-  !=CREATE PROBLEM SOLVER EQUATIONS================================================================================================
-  !Create the problem solver equations
-  CALL CMISSSolverTypeInitialise(Solver,Err)
-  CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
-  CALL CMISSProblemSolverEquationsCreateStart(PROBLEM,Err)
-  CALL CMISSProblemSolverGet(PROBLEM,CMISSControlLoopNode,SOLVER_IDX,SOLVER,Err)
-  CALL CMISSSolverSolverEquationsGet(SOLVER,SolverEquations,Err)
-  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
-                                                          !CMISSSolverEquationsSparseMatrices !<Use sparse solver matrices.
-                                                          !CMISSSolverEquationsFullMatrices !<Use fully populated solver matrices.
-  EQUATION_SET_IDX = 1 !Initialize index of the equations set that has been added 
-                        !(Variable is returned from PROBLEM_SolverEquations_EquationsSet_ADD)
-  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EQUATION_SET_IDX,Err)
-  CALL CMISSProblemSolverEquationsCreateFinish(PROBLEM,Err)
-
-  !=SOLVE PROBLEM==================================================================================================================
-  !Solve the problem
-  CALL CMISSProblemSolve(PROBLEM,Err)
-
-  !=OUTPUT SOLUTION================================================================================================================
-  !!TODO:: Output reaction forces in ipnode files
-  EXPORT_FIELD=.TRUE.
-  IF(EXPORT_FIELD) THEN
-    CALL CMISSFieldsTypeInitialise(Fields,Err)
-    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"LinearElasticity3DLagrangeBasisExample","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"LinearElasticity3DLagrangeBasisExample","FORTRAN",Err)
-    CALL CMISSFieldsTypeFinalise(Fields,Err)
-  ENDIF
-
-  !================================================================================================================================
-
-  !Finialise OpenCMISS
   CALL CMISSFinalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
   
   STOP
-999 WRITE(*,'(A)') ERROR
-  STOP 1
 
 CONTAINS
+
+  !
+  !================================================================================================================================
+  !  
+    !>Check if the convergence of linear langrange interpolation is expected.
+  SUBROUTINE RUN_LINEAR_ELASTICITY_PROBLEM(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
+    & NUMBER_GLOBAL_Z_ELEMENTS,InterpolationType,SolverType)
+
+    !Argument variables
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_X_ELEMENTS !<Number of global X elements
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Y_ELEMENTS !<Number of global Y elements
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Z_ELEMENTS !<Number of global Z elements
+    INTEGER(CMISSIntg), INTENT(IN) :: InterpolationType !<Type of Interpolation
+    INTEGER(CMISSIntg), INTENT(IN) :: SolverType !<Type of Solver
+
+    CALL LINEAR_ELASTICITY_GENERIC(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,InterpolationType, & 
+      & SolverType)
+    
+    CALL LINEAR_ELASTICITY_GENERIC_CLEAN(1,1,2,3,1,1)
+
+  END SUBROUTINE RUN_LINEAR_ELASTICITY_PROBLEM
 
   !
   !================================================================================================================================
@@ -656,6 +161,581 @@ CONTAINS
 
     RETURN 1
   END SUBROUTINE FLAG_ERROR
+
+  !
+  !================================================================================================================================
+  !
+    
+  SUBROUTINE LINEAR_ELASTICITY_GENERIC(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, &
+    & InterpolationType,SolverType)
+    !Argument variables 
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_X_ELEMENTS !<number of elements on x axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Y_ELEMENTS !<number of elements on y axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Z_ELEMENTS !<number of elements on z axis
+    INTEGER(CMISSIntg), INTENT(IN) :: InterpolationType !<Type of Interpolation
+    INTEGER(CMISSIntg), INTENT(IN) :: SolverType !<Type of Solver
+    !Local Variables
+    !Program types
+
+    TYPE(CMISSBasisType) :: Basis(3)
+    TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
+    TYPE(CMISSCoordinateSystemType) :: CoordinateSystem
+    TYPE(CMISSDecompositionType) :: Decomposition
+    TYPE(CMISSEquationsType) :: Equations
+    TYPE(CMISSEquationsSetType) :: EquationsSet
+    TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialField
+    TYPE(CMISSFieldsType) :: Fields
+    TYPE(CMISSMeshType) :: Mesh
+    TYPE(CMISSNodesType) :: Nodes
+    TYPE(CMISSProblemType) :: Problem
+    TYPE(CMISSRegionType) :: Region
+    TYPE(CMISSSolverType) :: Solver
+    TYPE(CMISSSolverEquationsType) :: SolverEquations
+
+    !Element Node Types for prescribing Nodal positions
+    !Elements(:) 					#TYPE(ElementType)
+    !  MeshComponent(:) 				#TYPE(ElementNodesType)
+    !    Element					#TYPE(Mesh_Elements_TYPE)
+    !    ElementNodeNumbers(:)		#INTEGER(CMISSIntg),ALLOCATABLE
+    !    Derivative(8)					#TYPE(NodeCoordinatesType)
+    !      NodeCoordinates(:)	#REAL(CMISSDP),ALLOCATABLE 
+    TYPE NodeCoordinatesType
+      REAL(CMISSDP),ALLOCATABLE :: NodeCoordinates(:)
+    END TYPE NodeCoordinatesType
+    TYPE ElementNodesType
+      TYPE(CMISSMeshElementsType) :: Element
+      INTEGER(CMISSIntg),ALLOCATABLE :: ElementNodeNumbers(:)
+      TYPE(NodeCoordinatesType) :: Derivative(8)
+    END TYPE ElementNodesType
+    TYPE ElementType
+      TYPE(ElementNodesType),POINTER :: MeshComponent(:)
+    END TYPE ElementType
+    TYPE(ElementType), POINTER :: Elements(:)
+
+    !Boundary Condition Types
+    !DisplacementBC 								#TYPE(BC_MeshComponent)
+    !  MeshComponent(:) 						#TYPE(BC_ElementNodesType)
+    !    NumberOfBCNodesForDerivative(8)	#INTEGER(CMISSIntg)
+    !    Derivative(8)							#TYPE(BC_NodeCoordinatesType)
+    !      NodeNumber(:)					#INTEGER(CMISSIntg),ALLOCATABLE
+    !      NodeCoordinates(:)			#REAL(CMISSDP),ALLOCATABLE 
+    TYPE BC_NodeCoordinatesType
+      INTEGER(CMISSIntg),ALLOCATABLE :: NodeNumber(:)
+      REAL(CMISSDP),ALLOCATABLE :: NodeCoordinates(:)
+    END TYPE BC_NodeCoordinatesType
+    TYPE BC_ElementNodesType
+      INTEGER(CMISSIntg) :: NumberOfBCNodesForDerivative(8)
+      TYPE(BC_NodeCoordinatesType) :: Derivative(8)
+    END TYPE BC_ElementNodesType
+    TYPE BC_MeshComponent
+      TYPE(BC_ElementNodesType),POINTER :: MeshComponent(:)
+    END TYPE BC_MeshComponent
+    TYPE(BC_MeshComponent), POINTER :: DisplacementBC,ForceBC
+
+    !Program variables
+
+    INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
+    INTEGER(CMISSIntg) :: MPI_IERROR
+    INTEGER(CMISSIntg) :: BasisUserNumber
+    INTEGER(CMISSIntg) :: NumberOfMeshComponents,NumberOfXi,NumberOfNodes,NumberOfElements,NumberOfDerivatives
+    INTEGER(CMISSIntg) :: NumberOfFieldVariables,NumberOfBCNodes,NumberOfFieldComponents
+    INTEGER(CMISSIntg) :: MeshComponentIdx,FieldComponentIdx,FieldDerivativeIdx,SolverIdx,EquationSetIdx,np,xi,ne,nu
+    INTEGER(CMISSIntg) :: Interpolation(3,3),NumberOfGaussPoints(3)
+    INTEGER(CMISSIntg),ALLOCATABLE :: MeshComponentNumberOfElementNodes(:)
+    
+    REAL(CMISSDP) :: l,w,h,MaterialParameters(6)
+
+    LOGICAL :: EXPORT_FIELD
+
+    CHARACTER(LEN=255) :: ERROR
+
+    !=BROADCAST PARAMETERS TO COMPUTATIONAL NODES====================================================================================
+    NUMBER_OF_DOMAINS=1
+    NumberOfXi = 3
+    NumberOfElements = 1
+    NumberOfNodes = 8
+      
+    !Broadcast the number of Elements in the X & Y directions and the number of partitions to the other computational nodes
+    CALL MPI_BCAST(NUMBER_GLOBAL_X_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
+    CALL MPI_BCAST(NUMBER_GLOBAL_Y_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
+    CALL MPI_BCAST(NUMBER_GLOBAL_Z_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
+    CALL MPI_BCAST(NUMBER_OF_DOMAINS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
+
+    !=CREATE COORDINATE SYSTEM=====================================================================================================
+    !Start the creation of a new RC coordinate system
+    CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
+    CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
+    CALL CMISSCoordinateSystemTypeSet(CoordinateSystem,CMISSCoordinateRectangularCartesianType,Err)
+    CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,NumberOfXi,Err)
+    CALL CMISSCoordinateSystemOriginSet(CoordinateSystem,ORIGIN,Err)
+    CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
+
+    !=CREATE REGION==================================================================================================================
+    !Create Region and set CS to newly created 3D RC CS
+    CALL CMISSRegionTypeInitialise(Region,Err)
+    CALL CMISSRegionCreateStart(RegionUserNumber,World_Region,Region,Err)
+    CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
+    CALL CMISSRegionCreateFinish(Region,Err)
+
+    !=CREATE BASIS ==================================================================================================================
+    !-=MODIFIY-HERE-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    !Prescribe Interpolation in each direction
+    !NOTE if you change interpolation you need to change Boundary Conditions
+    Interpolation(1,:) = InterpolationType
+    Interpolation(2,:) = InterpolationType
+    Interpolation(3,:) = InterpolationType
+    !Prescribe Number of Gauss Points
+    !NOTE:: Num of Gauss points must be the same across X,Y & Z coordinates and be sufficient to accurately integrate the hightest order interpolation being used
+    NumberOfGaussPoints = (/4,4,4/)
+    !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    DO xi=1,NumberOfXi
+      BasisUserNumber = xi
+      CALL CMISSBasisTypeInitialise(Basis(xi),Err)
+      CALL CMISSBasisCreateStart(BasisUserNumber,Basis(xi),Err)
+      CALL CMISSBasisTypeSet(Basis(xi),CMISSBasisLagrangeHermiteTPType,Err)
+      CALL CMISSBasisNumberOfXiSet(Basis(xi),NumberOfXi,Err)
+      CALL CMISSBasisInterpolationXiSet(Basis(xi),Interpolation(xi,1:NumberOfXi),Err)
+      CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis(xi),NumberOfGaussPoints(1:NumberOfXi),Err)
+      CALL CMISSBasisCreateFinish(Basis(xi),Err)
+    ENDDO !xi
+
+    !=MANUAL Mesh CREATION===========================================================================================================
+
+    !=NODE CREATION==================================================================================================================
+    !Create nodes in REGION and set initial coordinates to 0,0,0
+    CALL CMISSNodesTypeInitialise(NODES,Err)
+    CALL CMISSNodesCreateStart(REGION,NumberOfNodes,NODES,Err)
+    CALL CMISSNodesCreateFinish(NODES,Err)
+    
+    !=CREATE MESH====================================================================================================================
+    !Create a Mesh with xi number of coordinates
+    NumberOfMeshComponents = NumberOfXi
+    CALL CMISSMeshTypeInitialise(Mesh,Err)
+    CALL CMISSMeshCreateStart(MeshUserNumber,REGION,NumberOfXi,Mesh,Err)
+    CALL CMISSMeshNumberOfElementsSet(Mesh,NumberOfElements,Err)
+    CALL CMISSMeshNumberOfComponentsSet(Mesh,NumberOfMeshComponents,Err)
+
+    ALLOCATE(Elements(NumberOfElements),STAT=Err)
+    IF(Err/=0) CALL FLAG_ERROR("Could not allocate Elements",Err,ERROR,*999)
+    DO ne=1,NumberOfElements
+      ALLOCATE(Elements(ne)%MeshComponent(NumberOfMeshComponents),STAT=Err)
+      IF(Err/=0) CALL FLAG_ERROR("Could not allocate Element(ne)%MeshComponent",Err,ERROR,*999)
+    ENDDO !ne
+    ALLOCATE(MeshComponentNumberOfElementNodes(NumberOfMeshComponents),STAT=Err)
+    IF(Err/=0) CALL FLAG_ERROR("Could not allocate MeshComponentNumberOfElementNodes",Err,ERROR,*999)
+    DO xi=1,NumberOfXi
+      MeshComponentIdx=xi
+      IF (Interpolation(1,1)<=3) THEN !Linear/quadratic/cubic Lagrange Interpolation
+        MeshComponentNumberOfElementNodes(MeshComponentIdx)=PRODUCT(Interpolation(xi,:)+1)
+        NumberOfDerivatives = 1
+      ELSEIF (Interpolation(1,1)==4) THEN !CubicHermite Interpolation
+        MeshComponentNumberOfElementNodes(MeshComponentIdx)=(2**NumberOfXi)
+        NumberOfDerivatives = 2**NumberOfXi
+      ELSE
+        CALL FLAG_ERROR("This example is only setup for Lagrange and cubic hermite bases",Err,ERROR,*999)
+      ENDIF
+    ENDDO !xi
+    DO ne=1,NumberOfElements
+      DO xi=1,NumberOfXi
+        MeshComponentIdx=xi
+        ALLOCATE(Elements(ne)%MeshComponent(MeshComponentIdx)%ElementNodeNumbers(MeshComponentNumberOfElementNodes(MeshComponentIdx)),STAT=Err)
+        IF(Err/=0) CALL FLAG_ERROR("Could not allocate Element(ne)%MeshComponent(MeshComponentIdx)%ElementNodeNumbers",Err,ERROR,*999)
+        Elements(ne)%MeshComponent(MeshComponentIdx)%ElementNodeNumbers = 0
+      ENDDO !xi
+    ENDDO !ne
+    !-=MODIFIY-HERE-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    !Prescribe Element node numbers
+    SELECT CASE(InterpolationType)
+    CASE(CMISSBasisLinearLagrangeInterpolation)
+      Elements(1)%MeshComponent(1)%ElementNodeNumbers(:) = (/1,2,3,4,5,6,7,8/)
+      Elements(1)%MeshComponent(2)%ElementNodeNumbers(:) = (/1,2,3,4,5,6,7,8/)
+      Elements(1)%MeshComponent(3)%ElementNodeNumbers(:) = (/1,2,3,4,5,6,7,8/)
+    CASE(CMISSBasisQuadraticLagrangeInterpolation)
+      DO np=1,27
+        Elements(1)%MeshComponent(1)%ElementNodeNumbers(np) = np
+        Elements(1)%MeshComponent(2)%ElementNodeNumbers(np) = np
+        Elements(1)%MeshComponent(3)%ElementNodeNumbers(np) = np
+      ENDDO
+    CASE(CMISSBasisCubicLagrangeInterpolation)
+      DO np=1,64
+        Elements(1)%MeshComponent(1)%ElementNodeNumbers(np) = np
+        Elements(1)%MeshComponent(2)%ElementNodeNumbers(np) = np
+        Elements(1)%MeshComponent(3)%ElementNodeNumbers(np) = np
+      ENDDO
+    END SELECT
+    !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    !!TODO:: When diagnostics are on - Mesh_TOPOLOGY_Elements_Element_NODES_SET trys to output Mesh%TOPOLOGY(1)%PTR%Elements%Elements(1)%Mesh_Element_NODES which are only allocated when the Mesh_TOPOLOGY_Elements_CREATE_FINISH command is given
+    DO xi=1,NumberOfXi
+      MeshComponentIdx=xi
+      DO ne=1,NumberOfElements
+        CALL CMISSMeshElementsCreateStart(Mesh,MeshComponentIdx,Basis(xi),Elements(ne)%MeshComponent(MeshComponentIdx)%Element,Err)
+        CALL CMISSMeshElementsNodesSet(Elements(ne)%MeshComponent(MeshComponentIdx)%Element,ne, & 
+          & Elements(ne)%MeshComponent(MeshComponentIdx)%ElementNodeNumbers(:),Err)
+        CALL CMISSMeshElementsCreateFinish(Elements(ne)%MeshComponent(MeshComponentIdx)%Element,Err)
+      ENDDO !ne
+    ENDDO !xi
+    CALL CMISSMeshCreateFinish(Mesh,Err)
+
+    !=CREATE Decomposition===========================================================================================================
+    !Create Mesh Decomposition dividing Mesh into number_of_domains for parallel solving
+    CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
+    CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
+    CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
+    CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NUMBER_OF_DOMAINS,Err)
+    CALL CMISSDecompositionCreateFinish(Decomposition,Err)
+
+    !=CREATE GEOMETRIC FIELD=========================================================================================================
+    !Start to create a default (geometric) field on the region
+    NumberOfFieldVariables = 1 !Geometric Field Coordinates
+    NumberOfFieldComponents = NumberOfXi
+    CALL CMISSFieldTypeInitialise(GeometricField,Err)
+    CALL CMISSFieldCreateStart(GeometricFieldUserNumber,REGION,GeometricField,Err)
+    CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
+    CALL CMISSFieldTypeSet(GeometricField,CMISSFieldGeometricType,Err)
+    CALL CMISSFieldNumberOfVariablesSet(GeometricField,NumberOfFieldVariables,Err)
+    CALL CMISSFieldNumberOfComponentsSet(GeometricField,CMISSFieldUVariableType,NumberOfFieldComponents,Err)
+    DO xi=1,NumberOfXi
+      MeshComponentIdx = xi
+      FieldComponentIdx = xi
+      CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,FieldComponentIdx,MeshComponentIdx,Err)
+    ENDDO !xi
+    CALL CMISSFieldCreateFinish(GeometricField,Err)
+    !Initialize node coordinates
+    DO ne=1,NumberOfElements
+      DO xi=1,NumberOfXi
+        MeshComponentIdx=xi
+        DO nu=1,NumberOfDerivatives
+          ALLOCATE(Elements(ne)%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates&
+            &(MeshComponentNumberOfElementNodes(MeshComponentIdx)),STAT=Err)
+          IF(Err/=0) CALL FLAG_ERROR("Could not allocate Element(ne)%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates", & 
+            & Err,ERROR,*999)
+          Elements(ne)%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates = 0.0_CMISSDP
+        ENDDO
+      ENDDO
+    ENDDO
+    !-=MODIFIY-HERE-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    !Prescribe node coordinates
+    l = 120.0_CMISSDP
+    w = 160.0_CMISSDP
+    h = 10.0_CMISSDP
+    SELECT CASE(InterpolationType)
+    CASE(CMISSBasisLinearLagrangeInterpolation)
+      Elements(1)%MeshComponent(1)%Derivative(1)%NodeCoordinates = (/0.0_CMISSDP,l,0.0_CMISSDP,l,0.0_CMISSDP,l,0.0_CMISSDP,l/)
+      Elements(1)%MeshComponent(2)%Derivative(1)%NodeCoordinates = (/0.0_CMISSDP,0.0_CMISSDP,w,w,0.0_CMISSDP,0.0_CMISSDP,w,w/)
+      Elements(1)%MeshComponent(3)%Derivative(1)%NodeCoordinates = (/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,h,h,h,h/)
+    CASE(CMISSBasisQuadraticLagrangeInterpolation)
+      Elements(1)%MeshComponent(1)%Derivative(1)%NodeCoordinates = (/0.0_CMISSDP,l/2.0_CMISSDP,l,0.0_CMISSDP,l,0.0_CMISSDP,l,0.0_CMISSDP,l/)
+      Elements(1)%MeshComponent(2)%Derivative(1)%NodeCoordinates = (/0.0_CMISSDP,0.0_CMISSDP,w,w,0.0_CMISSDP,0.0_CMISSDP,w,w/)
+      Elements(1)%MeshComponent(3)%Derivative(1)%NodeCoordinates = (/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,h,h,h,h/)
+    CASE(CMISSBasisCubicLagrangeInterpolation)
+
+    END SELECT
+    !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=
+    DO xi=1,NumberOfXi
+      MeshComponentIdx = xi
+      FieldComponentIdx = xi
+      DO ne=1,NumberOfElements
+        DO nu=1,NumberOfDerivatives
+          DO np=1,MeshComponentNumberOfElementNodes(MeshComponentIdx) !Can also loop using nu
+             CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,nu, &
+              & Elements(ne)%MeshComponent(MeshComponentIdx)%ElementNodeNumbers(np),FieldComponentIdx, &
+              & Elements(ne)%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates(np),Err)
+          ENDDO !np
+        ENDDO !nu
+      ENDDO !ne
+    ENDDO !xi
+
+    !=CREATE DEPENDENT FIELD=========================================================================================================
+    !Create a dependent field
+    NumberOfFieldVariables = 2 !Dependent Field Displacement Coordinates & Force 
+    NumberOfFieldComponents = NumberOfXi
+    CALL CMISSFieldTypeInitialise(DependentField,Err)
+    CALL CMISSFieldCreateStart(DependentFieldUserNumber,REGION,DependentField,Err)
+    CALL CMISSFieldTypeSet(DependentField,CMISSFieldGeneralType,Err)
+    CALL CMISSFieldMeshDecompositionSet(DependentField,Decomposition,Err)
+    CALL CMISSFieldGeometricFieldSet(DependentField,GeometricField,Err)
+    CALL CMISSFieldDependentTypeSet(DependentField,CMISSFieldDependentType,Err)
+    CALL CMISSFieldNumberOfVariablesSet(DependentField,NumberOfFieldVariables,Err)
+    CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldUVariableType,NumberOfFieldComponents,Err)
+    DO xi=1,NumberOfXi
+      MeshComponentIdx = xi
+      FieldComponentIdx = xi
+      CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,FieldComponentIdx,MeshComponentIdx,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,FieldComponentIdx,MeshComponentIdx,Err)
+    ENDDO !xi
+    CALL CMISSFieldCreateFinish(DependentField,Err)
+
+    !=CREATE MATERIAL FIELD==========================================================================================================
+    !!TODO:: Set Material Field Interpolation to constant Element based interpolation when field i/o and cmgui allows for this
+    NumberOfFieldVariables = 1
+    !-=MODIFIY-HERE-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    SELECT CASE(NumberOfXi)
+    CASE(1)
+      !Prescribe material properties Area,E1
+      NumberOfFieldComponents = 2 !Young's Modulus & Poisson's Ratio
+      MaterialParameters = (/w*h,10.0E3_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)
+    CASE(2)
+      !Prescribe material properties h,E1,v12
+      NumberOfFieldComponents = 3 !Young's Modulus & Poisson's Ratio
+      MaterialParameters = (/h,10.0E3_CMISSDP,0.3_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)
+    CASE(3)
+      !Prescribe material properties E1,E2,E3 & v13,v23,v12
+      NumberOfFieldComponents = 6 !Young's Modulus & Poisson's Ratio
+      MaterialParameters = (/10.0E3_CMISSDP,10.0E3_CMISSDP,10.0E3_CMISSDP,0.3_CMISSDP,0.3_CMISSDP,0.3_CMISSDP/)
+    END SELECT
+    !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    CALL CMISSFieldTypeInitialise(MaterialField,Err)
+    CALL CMISSFieldCreateStart(MaterialFieldUserNumber,REGION,MaterialField,Err)
+    CALL CMISSFieldTypeSet(MaterialField,CMISSFieldMaterialType,Err)
+    CALL CMISSFieldMeshDecompositionSet(MaterialField,Decomposition,Err)
+    CALL CMISSFieldGeometricFieldSet(MaterialField,GeometricField,Err)
+    CALL CMISSFieldNumberOfVariablesSet(MaterialField,NumberOfFieldVariables,Err)
+    CALL CMISSFieldNumberOfComponentsSet(MaterialField,CMISSFieldUVariableType,NumberOfFieldComponents,Err)
+    DO xi=1,NumberOfXi
+      MeshComponentIdx = xi
+      DO FieldComponentIdx=1,NumberOfFieldComponents
+        CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,FieldComponentIdx,MeshComponentIdx,Err)
+      ENDDO !FieldComponentIdx
+    ENDDO !xi
+    CALL CMISSFieldCreateFinish(MaterialField,Err)
+    FieldDerivativeIdx = 1
+    DO xi=1,NumberOfXi
+      MeshComponentIdx = xi
+      DO ne=1,NumberOfElements
+        DO np=1,MeshComponentNumberOfElementNodes(MeshComponentIdx) !Can also loop using nu
+          DO FieldComponentIdx=1,NumberOfFieldComponents
+            CALL CMISSFieldParameterSetUpdateNode(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+              & FieldDerivativeIdx,Elements(ne)%MeshComponent(MeshComponentIdx)%ElementNodeNumbers(np),FieldComponentIdx, &
+              & MaterialParameters(FieldComponentIdx),Err)
+          ENDDO !FieldComponentIdx
+        ENDDO !np
+      ENDDO !ne
+    ENDDO !xi
+
+    !=CREATE EQUATIONS SET===========================================================================================================
+    !Create a Elasticity Class, Linear Elasticity type, no subtype, EquationsSet
+    CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
+    CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,REGION,GeometricField,EquationsSet,Err)
+    !Set the equations set to be a Elasticity Class, Linear Elasticity type, no subtype, EquationsSet
+    CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetElasticityClass,CMISSEquationsSetLinearElasticityType, &
+      & CMISSEquationsSetThreeDimensionalSubtype,Err)
+    CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
+    !Create the equations set dependent field variables
+    CALL CMISSEquationsSetDependentCreateStart(EquationsSet,DependentFieldUserNumber,DependentField,Err)
+    CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
+    !Create the equations set material field variables
+    CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,MaterialFieldUserNumber,MaterialField,Err)
+    CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
+
+    !=CREATE EQUATIONS SET EQUATION==================================================================================================
+    !Create the equations set equations
+    CALL CMISSEquationsTypeInitialise(Equations,Err)
+    CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
+    CALL CMISSEquationsSparsityTypeSet(EQUATIONS,CMISSEquationsFullMatrices,Err)
+                                                !CMISSEquationsSparseMatrices=1 !<Use sparse matrices for the equations.
+                                                !CMISSEquationsFullMatrices=2 !<Use fully populated matrices for the equations. 
+    CALL CMISSEquationsOutputTypeSet(EQUATIONS,CMISSEquationsTimingOutput,Err)
+                                              !CMISSEquationsNoOutput !<No output from the equations.
+                                              !CMISSEquationsTimingOutput !<Timing information output.
+                                              !CMISSEquationsMatrixOutput !<All below and equation matrices output.
+                                              !CMISSEquationsElementMatrixOutput !<All below and Element matrices output.
+    CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
+
+    !=PRESCRIBE BOUNDARY CONDITIONS==================================================================================================
+    CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+    CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
+    !Allocate Memory for Displacement & Force BC
+    NULLIFY(DisplacementBC,ForceBC)
+    ALLOCATE(DisplacementBC,STAT=Err)
+    IF(Err/=0) CALL FLAG_ERROR("Could not allocate DisplacementBC",Err,ERROR,*999)
+    ALLOCATE(ForceBC,STAT=Err)
+    IF(Err/=0) CALL FLAG_ERROR("Could not allocate ForceBC",Err,ERROR,*999)
+    ALLOCATE(DisplacementBC%MeshComponent(MeshComponentIdx),STAT=Err)
+    IF(Err/=0) CALL FLAG_ERROR("Could not allocate DisplacementBC%MeshComponent",Err,ERROR,*999)
+    ALLOCATE(ForceBC%MeshComponent(MeshComponentIdx),STAT=Err)
+    IF(Err/=0) CALL FLAG_ERROR("Could not allocate ForceBC%MeshComponent",Err,ERROR,*999)
+    !Initialize Number of Displacement & Force BC
+    DO xi=1,NumberOfXi
+      MeshComponentIdx=xi
+      DisplacementBC%MeshComponent(MeshComponentIdx)%NumberOfBCNodesForDerivative=0
+      ForceBC%MeshComponent(MeshComponentIdx)%NumberOfBCNodesForDerivative=0
+    ENDDO
+    !-=MODIFIY-HERE-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    !Prescribe Number of BC & thier Derivatives
+    DisplacementBC%MeshComponent(1)%NumberOfBCNodesForDerivative(1)=4
+    DisplacementBC%MeshComponent(2)%NumberOfBCNodesForDerivative=DisplacementBC%MeshComponent(1)%NumberOfBCNodesForDerivative
+    DisplacementBC%MeshComponent(3)%NumberOfBCNodesForDerivative=DisplacementBC%MeshComponent(1)%NumberOfBCNodesForDerivative
+    ForceBC%MeshComponent(1)%NumberOfBCNodesForDerivative(1)=4
+    !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    DO xi=1,NumberOfXi
+      MeshComponentIdx=xi
+      DO nu=1,NumberOfDerivatives
+        !Displacement BC
+        NumberOfBCNodes = DisplacementBC%MeshComponent(MeshComponentIdx)%NumberOfBCNodesForDerivative(nu)
+        IF(NumberOfBCNodes/=0) THEN
+          ALLOCATE(DisplacementBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeNumber(NumberOfBCNodes),STAT=Err)
+          IF(Err/=0) CALL FLAG_ERROR("Could not allocate DisplacementBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeNumber",Err,ERROR,*999)
+          ALLOCATE(DisplacementBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates(NumberOfBCNodes),STAT=Err)
+          IF(Err/=0) CALL FLAG_ERROR("Could not allocate DisplacementBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates",Err,ERROR,*999)
+          !Initialize Displacement BC Derivativesative_NodeNumbers & Node Coordinates
+          DisplacementBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeNumber=0
+          DisplacementBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates=0.0_CMISSDP
+        ENDIF
+        !Force BC
+        NumberOfBCNodes = ForceBC%MeshComponent(MeshComponentIdx)%NumberOfBCNodesForDerivative(nu)
+        IF(NumberOfBCNodes/=0) THEN
+          ALLOCATE(ForceBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeNumber(NumberOfBCNodes),STAT=Err)
+          IF(Err/=0) CALL FLAG_ERROR("Could not allocate ForceBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeNumber",Err,ERROR,*999)
+          ALLOCATE(ForceBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates(NumberOfBCNodes),STAT=Err)
+          IF(Err/=0) CALL FLAG_ERROR("Could not allocate ForceBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates", &
+            & Err,ERROR,*999)
+          !Initialize Displacement BC Derivativesative_NodeNumbers & Node Coordinates
+          ForceBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeNumber=0
+          ForceBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates=0.0_CMISSDP
+        ENDIF
+      ENDDO !nu
+    ENDDO !xi
+    !-=MODIFIY-HERE-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    !Prescribe Displacement BC Derivativesative Node Numbers & Node Coordinates
+    DisplacementBC%MeshComponent(1)%Derivative(1)%NodeNumber(:)=(/1,3,5,7/)
+    DisplacementBC%MeshComponent(2)=DisplacementBC%MeshComponent(1)
+    DisplacementBC%MeshComponent(3)=DisplacementBC%MeshComponent(1)
+    !Prescribe Force BC Derivativesative Node Numbers & Node Coordinates
+    ForceBC%MeshComponent(1)%Derivative(1)%NodeNumber(:)=(/2,4,6,8/)
+    ForceBC%MeshComponent(1)%Derivative(1)%NodeCoordinates(:)=400.0_CMISSDP
+    !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    DO xi=1,NumberOfXi
+      MeshComponentIdx=xi
+      FieldComponentIdx=xi
+      DO nu=1,NumberOfDerivatives
+        !Displacement BC
+        NumberOfBCNodes = DisplacementBC%MeshComponent(MeshComponentIdx)%NumberOfBCNodesForDerivative(nu)
+        IF(NumberOfBCNodes/=0) THEN
+          DO np=1,NumberOfBCNodes
+            CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,nu, &
+              & DisplacementBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeNumber(np),FieldComponentIdx,CMISSBoundaryConditionFixed, &
+              & DisplacementBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates(np),Err)
+          ENDDO !np
+        ENDIF
+        !Force BC
+        NumberOfBCNodes = ForceBC%MeshComponent(MeshComponentIdx)%NumberOfBCNodesForDerivative(nu)
+        IF(NumberOfBCNodes/=0) THEN
+          DO np=1,NumberOfBCNodes
+            CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,nu, &
+              & ForceBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeNumber(np),FieldComponentIdx,CMISSBoundaryConditionFixed, &
+              & ForceBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates(np),Err)
+          ENDDO !np
+        ENDIF
+      ENDDO !nu
+    ENDDO !xi
+    CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
+    
+    !=CREATE Problem=================================================================================================================
+    !Create the Problem
+    CALL CMISSProblemTypeInitialise(Problem,Err)
+    CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
+    !Set the Problem to be a elasticity class, linear elasticity type with no subtype.
+    CALL CMISSProblemSpecificationSet(Problem,CMISSProblemElasticityClass,CMISSProblemLinearElasticityType, &
+      & CMISSProblemNoSubtype,Err)
+    CALL CMISSProblemCreateFinish(Problem,Err)
+
+    !=CREATE Problem CONTROL LOOP====================================================================================================
+    !Create the Problem control loop
+     CALL CMISSProblemControlLoopCreateStart(Problem,Err)
+     CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
+
+    !=CREATE Problem SOLVER==========================================================================================================
+    !Start the creation of the Problem solvers
+    SolverIdx = 1
+    CALL CMISSSolverTypeInitialise(Solver,Err)
+    CALL CMISSProblemSolversCreateStart(Problem,Err)
+    CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverIdx,SOLVER,Err)
+    CALL CMISSSolverLibraryTypeSet(SOLVER,CMISSSolverPETScLibrary,Err)
+                                         !CMISSSolverCMISSLibrary     !<CMISS (internal) solver library.
+                                         !CMISSSolverPETScLibrary     !<PETSc solver library.
+                                         !CMISSSolverMUMPSLibrary     !<MUMPS solver library.
+                                         !CMISSSolverSuperLULibrary   !<SuperLU solver library.
+                                         !CMISSSolverSpoolesLULibrary !<SPOOLES solver library.
+                                         !CMISSSolverUMFPACKLibrary   !<UMFPACK solver library.
+                                         !CMISSSolverLUSOLLibrary     !<LUSOL solver library.
+                                         !CMISSSolverESSLLibrary      !<ESSL solver library.
+                                         !CMISSSolverLAPACKLibrary    !<LAPACK solver library.
+                                         !CMISSSolverTAOLibrary       !<TAO solver library.
+                                         !CMISSSolverHypreLibrary     !<Hypre solver library.
+    CALL CMISSSolverLinearTypeSet(SOLVER,CMISSSolverLinearDirectSolveType,Err)
+                                        !CMISSSolverLinearDirectSolveType    !<Direct linear solver type.
+                                        !CMISSSolverLinearIterativeSolveType !<Iterative linear solver type.
+    !CALL CMISSSolverLinearDirectTypeSet(SOLVER,CMISSSolverDirectLU,Err)
+                                              !CMISSSolverDirectLU       !<LU direct linear solver.
+                                              !CMISSSolverDirectCholesky !<Cholesky direct linear solver.
+                                              !CMISSSolverDirectSVD      !<SVD direct linear solver.
+    CALL CMISSSolverOutputTypeSet(SOLVER,CMISSSolverSolverMatrixOutput,Err)
+                                        !CMISSSolverNoOutput !<No output from the solver routines. \see OPENCMISS_SolverOutputTypes,OPENCMISS
+                                        !CMISSSolverProgressOutput !<Progress output from solver routines.
+                                        !CMISSSolverTimingOutput !<Timing output from the solver routines plus below.
+                                        !CMISSSolverSolverOutput !<Solver specific output from the solver routines plus below.
+                                        !CMISSSolverSolverMatrixOutput !<Solver matrices output from the solver routines plus below.
+    CALL CMISSProblemSolversCreateFinish(Problem,Err)
+
+    !=CREATE Problem SOLVER EQUATIONS================================================================================================
+    !Create the Problem solver equations
+    CALL CMISSSolverTypeInitialise(Solver,Err)
+    CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
+    CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
+    CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverIdx,SOLVER,Err)
+    CALL CMISSSolverSolverEquationsGet(SOLVER,SolverEquations,Err)
+    CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
+                                                            !CMISSSolverEquationsSparseMatrices !<Use sparse solver matrices.
+                                                            !CMISSSolverEquationsFullMatrices !<Use fully populated solver matrices.
+    EquationSetIdx = 1 !Initialize index of the equations set that has been added 
+                          !(Variable is returned from Problem_SolverEquations_EquationsSet_ADD)
+    CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationSetIdx,Err)
+    CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+    !=SOLVE Problem==================================================================================================================
+    !Solve the Problem
+    CALL CMISSProblemSolve(Problem,Err)
+
+    !=OUTPUT SOLUTION================================================================================================================
+    !!TODO:: Output reaction forces in ipnode files
+    EXPORT_FIELD=.TRUE.
+    IF(EXPORT_FIELD) THEN
+      CALL CMISSFieldsTypeInitialise(Fields,Err)
+      CALL CMISSFieldsTypeCreate(Region,Fields,Err)
+      CALL CMISSFieldIONodesExport(Fields,"LinearElasticity3DLinearLagrangeBasisExample","FORTRAN",Err)
+      CALL CMISSFieldIOElementsExport(Fields,"LinearElasticity3DLinearLagrangeBasisExample","FORTRAN",Err)
+      CALL CMISSFieldsTypeFinalise(Fields,Err)
+    ENDIF
+
+    RETURN
+999 WRITE(*,'(A)') ERROR
+    STOP 1
+
+  END SUBROUTINE LINEAR_ELASTICITY_GENERIC
+
+  !
+  !================================================================================================================================
+  !  
+
+  SUBROUTINE LINEAR_ELASTICITY_GENERIC_CLEAN(CoordinateSystemUserNumber,RegionUserNumber,BasisUserNumber1, &
+    & BasisUserNumber2,BasisUserNumber3,ProblemUserNumber)
+
+    !Argument variables
+    INTEGER(CMISSIntg), INTENT(IN) :: CoordinateSystemUserNumber
+    INTEGER(CMISSIntg), INTENT(IN) :: RegionUserNumber
+    INTEGER(CMISSIntg), INTENT(IN) :: BasisUserNumber1
+    INTEGER(CMISSIntg), INTENT(IN) :: BasisUserNumber2
+    INTEGER(CMISSIntg), INTENT(IN) :: BasisUserNumber3
+    INTEGER(CMISSIntg), INTENT(IN) :: ProblemUserNumber
+
+    CALL CMISSProblemDestroy(ProblemUserNumber,Err)
+    CALL CMISSBasisDestroy(BasisUserNumber1,Err)
+    CALL CMISSBasisDestroy(BasisUserNumber2,Err)
+    CALL CMISSBasisDestroy(BasisUserNumber3,Err)
+    CALL CMISSRegionDestroy(RegionUserNumber,Err)
+    CALL CMISSCoordinateSystemDestroy(CoordinateSystemUserNumber,Err)
+
+  END SUBROUTINE LINEAR_ELASTICITY_GENERIC_CLEAN
 
 END PROGRAM LinearElasticity3DLagrangeBasis
 

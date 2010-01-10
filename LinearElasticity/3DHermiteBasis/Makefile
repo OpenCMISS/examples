@@ -65,7 +65,7 @@ endif
 
 EXAMPLE_PATH = LinearElasticity/
 
-EXAMPLE_NAME = 3DCubicHermiteBasis
+EXAMPLE_NAME = 3DHermiteBasis
 
-include $(GLOBAL_ROOT)/ExampleMakefile
+include $(GLOBAL_ROOT)/NewExampleMakefile
 
