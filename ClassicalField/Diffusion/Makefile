@@ -67,5 +67,5 @@ EXAMPLE_PATH=ClassicalField/
 
 EXAMPLE_NAME = Diffusion
 
-include $(GLOBAL_ROOT)/ExampleMakefile
+include $(GLOBAL_ROOT)/NewExampleMakefile
 
