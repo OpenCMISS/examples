@@ -97,7 +97,6 @@ PROGRAM DIFFUSIONEXAMPLE
     !CMISS variables
 
   TYPE(CMISSBasisType) :: Basis
-  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
   TYPE(CMISSCoordinateSystemType) :: CoordinateSystem,WorldCoordinateSystem
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
@@ -112,7 +111,7 @@ PROGRAM DIFFUSIONEXAMPLE
   TYPE(CMISSSolverType) :: Solver, LinearSolver
   TYPE(CMISSSolverEquationsType) :: SolverEquations
 
-  LOGICAL :: EXPORT_FIELD,IMPORT_FIELD
+  LOGICAL :: EXPORT_FIELD
 
 #ifdef WIN32
   !Quickwin type
@@ -122,8 +121,8 @@ PROGRAM DIFFUSIONEXAMPLE
   
   !Generic CMISS variables
   
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
   INTEGER(CMISSIntg) :: EquationsSetIndex
-  INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
   INTEGER(CMISSIntg) :: Err
 
   
@@ -141,10 +140,14 @@ PROGRAM DIFFUSIONEXAMPLE
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
+  !Get the computational nodes information
+  CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
+  CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
+
   NUMBER_GLOBAL_X_ELEMENTS=80
   NUMBER_GLOBAL_Y_ELEMENTS=80
   NUMBER_GLOBAL_Z_ELEMENTS=0
-  NUMBER_OF_DOMAINS=1
+  NUMBER_OF_DOMAINS=NumberOfComputationalNodes
 
   !Set all diganostic levels on for testing
 
@@ -154,80 +157,73 @@ PROGRAM DIFFUSIONEXAMPLE
   CALL MPI_BCAST(NUMBER_OF_DOMAINS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
 
   !Start the creation of a new RC coordinate system
-    CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
-    CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
-    IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-      !Set the coordinate system to be 2D
-      CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,2,Err)
-    ELSE
-      !Set the coordinate system to be 3D
-      CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,3,Err)
-    ENDIF
-    !Finish the creation of the coordinate system
-    CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
-
+  CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+    !Set the coordinate system to be 2D
+    CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,2,Err)
+  ELSE
+    !Set the coordinate system to be 3D
+    CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,3,Err)
+  ENDIF
+  !Finish the creation of the coordinate system
+  CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
+  
 
   !Start the creation of the region
-    CALL CMISSRegionTypeInitialise(Region,Err)
-    CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegion,Region,Err)
-    !Set the regions coordinate system to the 2D RC coordinate system that we have created
-    CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
-    !Finish the creation of the region
-    CALL CMISSRegionCreateFinish(Region,Err)
+  CALL CMISSRegionTypeInitialise(Region,Err)
+  CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  !Set the regions coordinate system to the 2D RC coordinate system that we have created
+  CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
+  !Finish the creation of the region
+  CALL CMISSRegionCreateFinish(Region,Err)
+  
+  !Start the creation of a basis (default is trilinear lagrange)
+  CALL CMISSBasisTypeInitialise(Basis,Err)
+  CALL CMISSBasisCreateStart(BasisUserNumber,Basis,Err)
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+    !Set the basis to be a bilinear Lagrange basis
+    !CALL CMISSBasisTypeSet(Basis,CMISSBasisLagrangeHermiteTPType,Err)
+    CALL CMISSBasisNumberOfXiSet(Basis,2,Err)
+    !CALL CMISSBasisInterpolationXiSet(Basis,(/2,2/),Err)
+    !CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,(/4,4/),Err) 
+  ELSE
+    !Set the basis to be a trilinear Lagrange basis
+    CALL CMISSBasisNumberOfXiSet(Basis,3,Err)
+  ENDIF
+  !Finish the creation of the basis
+  CALL CMISSBasisCreateFinish(BASIS,Err)
 
-!   FILE="DiffusionExample"
-!   METHOD="FORTRAN"
-!   IMPORT_FIELD=.FALSE.
-!   IF(IMPORT_FIELD) THEN
-!      CALL FIELD_IO_FIELDS_IMPORT(FILE, METHOD, REGION, MESH, 1, DECOMPOSITION, 1,  &
-!       & DECOMPOSITION_CALCULATED_TYPE, FIELD_U_VARIABLE_TYPE, FIELD_ARITHMETIC_MEAN_SCALING, ERR, ERROR, *999)
-!   ELSE
-    !Start the creation of a basis (default is trilinear lagrange)
-    CALL CMISSBasisTypeInitialise(Basis,Err)
-    CALL CMISSBasisCreateStart(BasisUserNumber,Basis,Err)
-    IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-      !Set the basis to be a bilinear Lagrange basis
-       !CALL CMISSBasisTypeSet(Basis,CMISSBasisLagrangeHermiteTPType,Err)
-       CALL CMISSBasisNumberOfXiSet(Basis,2,Err)
-       !CALL CMISSBasisInterpolationXiSet(Basis,(/2,2/),Err)
-       !CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,(/4,4/),Err) 
-    ELSE
-      !Set the basis to be a trilinear Lagrange basis
-      CALL CMISSBasisNumberOfXiSet(Basis,3,Err)
-    ENDIF
-    !Finish the creation of the basis
-    CALL CMISSBasisCreateFinish(BASIS,Err)
-
-!     !Start the creation of a generated mesh in the region
-    CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
-    CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
-    !Set up a regular x*y*z mesh
-    CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
-    !Set the default basis
-    CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,Basis,Err)   
-    !Define the mesh on the region
-    IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-      CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/WIDTH,HEIGHT/),Err)
-      CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS/),Err)
-    ELSE
-      CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/WIDTH,HEIGHT,LENGTH/),Err)
-      CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
-        & NUMBER_GLOBAL_Z_ELEMENTS/),Err)
-    ENDIF    
-    !Finish the creation of a generated mesh in the region
-    CALL CMISSMeshTypeInitialise(Mesh,Err)
-    CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
-
-    !Create a decomposition
-    CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
-    CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
-    !Set the decomposition to be a general decomposition with the specified number of domains
-    CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
-    CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NUMBER_OF_DOMAINS,Err)
-    !Finish the decomposition
-    CALL CMISSDecompositionCreateFinish(Decomposition,Err)
-
-!!Start to create a default (geometric) field on the region
+  !Start the creation of a generated mesh in the region
+  CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
+  CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
+  !Set up a regular x*y*z mesh
+  CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
+  !Set the default basis
+  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,Basis,Err)   
+  !Define the mesh on the region
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/WIDTH,HEIGHT/),Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS/),Err)
+  ELSE
+    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/WIDTH,HEIGHT,LENGTH/),Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
+      & NUMBER_GLOBAL_Z_ELEMENTS/),Err)
+  ENDIF
+  !Finish the creation of a generated mesh in the region
+  CALL CMISSMeshTypeInitialise(Mesh,Err)
+  CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
+  
+  !Create a decomposition
+  CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
+  CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
+  !Set the decomposition to be a general decomposition with the specified number of domains
+  CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
+  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NUMBER_OF_DOMAINS,Err)
+  !Finish the decomposition
+  CALL CMISSDecompositionCreateFinish(Decomposition,Err)
+  
+  !Start to create a default (geometric) field on the region
   CALL CMISSFieldTypeInitialise(GeometricField,Err)
   CALL CMISSFieldCreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
   !Set the decomposition to use
@@ -240,13 +236,10 @@ PROGRAM DIFFUSIONEXAMPLE
   ENDIF
   !Finish creating the field
   CALL CMISSFieldCreateFinish(GeometricField,Err)
-
-       
-    !Update the geometric field parameters
-    CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
-!  ENDIF
-
-  !IF(.NOT.ASSOCIATED(GEOMETRIC_FIELD)) GEOMETRIC_FIELD=>REGION%FIELDS%FIELDS(1)%PTR
+  
+  
+  !Update the geometric field parameters
+  CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
   
   !Create the equations_set
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
@@ -278,11 +271,12 @@ PROGRAM DIFFUSIONEXAMPLE
     WRITE(*,'(A)') "Three dimensions is not implemented."
     STOP
   ENDIF
+  
   !Finish the equations set analytic field variables
   CALL CMISSEquationsSetAnalyticCreateFinish(EquationsSet,Err)
   
 
-!   !Create the equations set equations
+  !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
   CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
   !Set the equations matrices sparsity type
@@ -336,20 +330,7 @@ PROGRAM DIFFUSIONEXAMPLE
   !Create the equations set boundary conditions
 !   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
 !   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-!   !Set the first node to 0.0 and the last node to 1.0
-!   FirstNodeNumber=1
-!   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-!     LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)
-!   ELSE
-!     LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
-!   ENDIF
-!   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
-!     & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-!   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDeludelnVariableType,1,LastNodeNumber,1, &
-!     & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
-!   !Finish the creation of the equations set boundary conditions
-!   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
- CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
+  CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
 
   !Create the problem
   CALL CMISSProblemTypeInitialise(Problem,Err)
@@ -359,17 +340,6 @@ PROGRAM DIFFUSIONEXAMPLE
     & CMISSProblemNoSourceDiffusionSubtype,Err)
   !Finish the creation of a problem.
   CALL CMISSProblemCreateFinish(Problem,Err)
-
-
-  !Create the problem control
-!   NULLIFY(CONTROL_LOOP)
-!   CALL PROBLEM_CONTROL_LOOP_CREATE_START(PROBLEM,ERR,ERROR,*999)
-!   !Get the control loop
-!   CALL PROBLEM_CONTROL_LOOP_GET(PROBLEM,CONTROL_LOOP_NODE,CONTROL_LOOP,ERR,ERROR,*999)
-!   !Set the times
-!   CALL CONTROL_LOOP_TIMES_SET(CONTROL_LOOP,0.0_DP,1.0_DP,0.1_DP,ERR,ERROR,*999)
-!   !Finish creating the problem control
-!   CALL PROBLEM_CONTROL_LOOP_CREATE_FINISH(PROBLEM,ERR,ERROR,*999)
 
   !Create the problem control
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
@@ -420,10 +390,9 @@ PROGRAM DIFFUSIONEXAMPLE
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
 
   !Solve the problem
-!  CALL PROBLEM_SOLVE(PROBLEM,ERR,ERROR,*999)
   CALL CMISSProblemSolve(Problem,Err)
 
- !Output Analytic analysis
+  !Output Analytic analysis
   Call CMISSAnalyticAnalysisOutput(DependentField,"DiffusionAnalytics",Err)
 
 
