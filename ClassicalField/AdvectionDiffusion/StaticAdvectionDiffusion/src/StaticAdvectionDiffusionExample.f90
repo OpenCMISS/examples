@@ -64,7 +64,8 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
 
   REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: WIDTH=2.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP 
+  REAL(CMISSDP), POINTER :: GEOMETRIC_PARAMETERS(:)
   
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
@@ -139,8 +140,8 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  NUMBER_GLOBAL_X_ELEMENTS=10
-  NUMBER_GLOBAL_Y_ELEMENTS=20
+  NUMBER_GLOBAL_X_ELEMENTS=5
+  NUMBER_GLOBAL_Y_ELEMENTS=10
   NUMBER_GLOBAL_Z_ELEMENTS=0
   NUMBER_OF_DOMAINS=1
 
@@ -259,15 +260,30 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
 
   !Create the equations set source field variables
+  !For comparison withe analytical solution used here, the source field must be set to the following:
+  !f(x,y) = 2.0*tanh(-0.1E1+Alpha*(TanPhi*x-y))*(1.0-pow(tanh(-0.1E1+Alpha*(TanPhi*x-y)),2.0))*Alpha*Alpha*TanPhi*TanPhi
+  !+2.0*tanh(-0.1E1+Alpha*(TanPhi*x-y))*(1.0-pow(tanh(-0.1E1+Alpha*(TanPhi*x-y)),2.0))*Alpha*Alpha
+  !-Peclet*(-sin(6.0*y)*(1.0-pow(tanh(-0.1E1+Alpha*(TanPhi*x-y)),2.0))*Alpha*TanPhi+cos(6.0*x)*(1.0-pow(tanh(-0.1E1+Alpha*(TanPhi*x-y)),2.0))*Alpha)
   CALL CMISSFieldTypeInitialise(SourceField,Err)
   CALL CMISSEquationsSetSourceCreateStart(EquationsSet,SourceFieldUserNumber,SourceField,Err)
+  CALL CMISSFieldComponentInterpolationSet(SourceField,CMISSFieldUVariableType,1,CMISSFieldNodeBasedInterpolation,Err)
   !Finish the equations set dependent field variables
   CALL CMISSEquationsSetSourceCreateFinish(EquationsSet,Err)
 
-
+  CALL CMISSFieldParameterSetDataGet(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,GEOMETRIC_PARAMETERS,Err)
   !Create the equations set independent field variables
   CALL CMISSFieldTypeInitialise(IndependentField,Err)
   CALL CMISSEquationsSetIndependentCreateStart(EquationsSet,IndependentFieldUserNumber,IndependentField,Err)
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+  !For comparison withe analytical solution used here, the independent field must be set to the following:
+  !w(x,y)=(sin 6y,cos 6x) FIELD_U_VARIABLE_TYPE,1,FIELD_NODE_BASED_INTERPOLATION
+  CALL CMISSFieldComponentInterpolationSet(IndependentField,CMISSFieldUVariableType,1,CMISSFieldNodeBasedInterpolation,Err) 
+  CALL CMISSFieldComponentInterpolationSet(IndependentField,CMISSFieldUVariableType,2,CMISSFieldNodeBasedInterpolation,Err)
+  !Loop over nodes to set the appropriate function value
+!    DO
+
+!    ENDDO
+  ENDIF
   !Finish the equations set dependent field variables
   CALL CMISSEquationsSetIndependentCreateFinish(EquationsSet,Err)
 
@@ -313,6 +329,17 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
 !   !Finish the creation of the equations set boundary conditions
 !   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
 CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
+
+  EXPORT_FIELD=.TRUE.
+  IF(EXPORT_FIELD) THEN
+    CALL CMISSFieldsTypeInitialise(Fields,Err)
+    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
+    CALL CMISSFieldIONodesExport(Fields,"StaticAdvectionDiffusionInitial","FORTRAN",Err)
+    CALL CMISSFieldIOElementsExport(Fields,"StaticAdvectionDiffusionInitial","FORTRAN",Err)
+    CALL CMISSFieldsTypeFinalise(Fields,Err)
+
+  ENDIF
+
 
   !Create the problem
   CALL CMISSProblemTypeInitialise(Problem,Err)
