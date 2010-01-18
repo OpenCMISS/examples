@@ -628,7 +628,7 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
     ENDDO
   ENDIF
   !Finish the creation of the equations set boundary conditions
-
+  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetNavierStokes,Err)
   !
   !================================================================================================================================
   !
