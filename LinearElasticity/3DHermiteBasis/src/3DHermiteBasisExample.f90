@@ -267,7 +267,8 @@ PROGRAM LinearElasticity3DCubicHermiteBasis
   DO ne=1,NumberOfElements
     DO xi=1,NumberOfXi
       MeshComponentIdx=xi
-      ALLOCATE(Elements(ne)%MeshComponent(MeshComponentIdx)%ElementNodeNumbers(MeshComponentNumberOfElementNodes(MeshComponentIdx)),STAT=Err)
+      ALLOCATE(Elements(ne)%MeshComponent(MeshComponentIdx)%ElementNodeNumbers(MeshComponentNumberOfElementNodes(MeshComponentIdx &
+              & )),STAT=Err)
       IF(Err/=0) CALL FLAG_ERROR("Could not allocate Element(ne)%MeshComponent(MeshComponentIdx)%ElementNodeNumbers",Err,ERROR,*999)
       Elements(ne)%MeshComponent(MeshComponentIdx)%ElementNodeNumbers = 0
     ENDDO !xi
@@ -321,7 +322,7 @@ PROGRAM LinearElasticity3DCubicHermiteBasis
       DO nu=1,NumberOfDerivatives
         ALLOCATE(Elements(ne)%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates&
           &(MeshComponentNumberOfElementNodes(MeshComponentIdx)),STAT=Err)
-        IF(Err/=0) CALL FLAG_ERROR("Could not allocate Element(ne)%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates", & 
+        IF(Err/=0) CALL FLAG_ERROR("Could not allocate Element(ne)%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates",&
           & Err,ERROR,*999)
         Elements(ne)%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates = 0.0_CMISSDP
       ENDDO
@@ -487,9 +488,11 @@ PROGRAM LinearElasticity3DCubicHermiteBasis
       NumberOfBCNodes = DisplacementBC%MeshComponent(MeshComponentIdx)%NumberOfBCNodesForDerivative(nu)
       IF(NumberOfBCNodes/=0) THEN
         ALLOCATE(DisplacementBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeNumber(NumberOfBCNodes),STAT=Err)
-        IF(Err/=0) CALL FLAG_ERROR("Could not allocate DisplacementBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeNumber",Err,ERROR,*999)
+        IF(Err/=0) CALL FLAG_ERROR("Could not allocate DisplacementBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeNumber", &
+            & Err,ERROR,*999)
         ALLOCATE(DisplacementBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates(NumberOfBCNodes),STAT=Err)
-        IF(Err/=0) CALL FLAG_ERROR("Could not allocate DisplacementBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates",Err,ERROR,*999)
+        IF(Err/=0) CALL FLAG_ERROR("Could not allocate DisplacementBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%&
+            &NodeCoordinates",Err,ERROR,*999)
         !Initialize Displacement BC Derivativesative_NodeNumbers & Node Coordinates
         DisplacementBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeNumber=0
         DisplacementBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates=0.0_CMISSDP
@@ -498,7 +501,8 @@ PROGRAM LinearElasticity3DCubicHermiteBasis
       NumberOfBCNodes = ForceBC%MeshComponent(MeshComponentIdx)%NumberOfBCNodesForDerivative(nu)
       IF(NumberOfBCNodes/=0) THEN
         ALLOCATE(ForceBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeNumber(NumberOfBCNodes),STAT=Err)
-        IF(Err/=0) CALL FLAG_ERROR("Could not allocate ForceBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeNumber",Err,ERROR,*999)
+        IF(Err/=0) CALL FLAG_ERROR("Could not allocate ForceBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeNumber", &
+            & Err,ERROR,*999)
         ALLOCATE(ForceBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates(NumberOfBCNodes),STAT=Err)
         IF(Err/=0) CALL FLAG_ERROR("Could not allocate ForceBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates", &
           & Err,ERROR,*999)
@@ -530,8 +534,8 @@ PROGRAM LinearElasticity3DCubicHermiteBasis
       IF(NumberOfBCNodes/=0) THEN
         DO np=1,NumberOfBCNodes
           CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,nu, &
-            & DisplacementBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeNumber(np),FieldComponentIdx,CMISSBoundaryConditionFixed, &
-            & DisplacementBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates(np),Err)
+            & DisplacementBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeNumber(np),FieldComponentIdx, &
+            & CMISSBoundaryConditionFixed,DisplacementBC%MeshComponent(MeshComponentIdx)%Derivative(nu)%NodeCoordinates(np),Err)
         ENDDO !np
       ENDIF
       !Force BC
