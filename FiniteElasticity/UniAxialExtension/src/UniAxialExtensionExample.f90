@@ -77,7 +77,7 @@ PROGRAM UNIAXIALEXTENSIONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshDimensions=3
   INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshComponents=1
   INTEGER(CMISSIntg), PARAMETER :: TotalNumberOfElements=1
-  INTEGER(CMISSIntg), PARAMETER :: MeshComponenetNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: MeshComponentNumber=1
 
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
@@ -209,7 +209,7 @@ PROGRAM UNIAXIALEXTENSIONEXAMPLE
   CALL CMISSNodesCreateFinish(Nodes,Err)
 
   CALL CMISSMeshElementsTypeInitialise(Elements,Err)
-  CALL CMISSMeshElementsCreateStart(Mesh,MeshComponenetNumber,Basis,Elements,Err)
+  CALL CMISSMeshElementsCreateStart(Mesh,MeshComponentNumber,Basis,Elements,Err)
   CALL CMISSMeshElementsNodesSet(Elements,1,(/1,2,3,4,5,6,7,8/),Err)
   CALL CMISSMeshElementsCreateFinish(Elements,Err)
 
@@ -229,9 +229,9 @@ PROGRAM UNIAXIALEXTENSIONEXAMPLE
   CALL CMISSFieldTypeSet(GeometricField,CMISSFieldGeometricType,Err)  
   CALL CMISSFieldNumberOfVariablesSet(GeometricField,FieldGeometryNumberOfVariables,Err)
   CALL CMISSFieldNumberOfComponentsSet(GeometricField,CMISSFieldUVariableType,FieldGeometryNumberOfComponents,Err)  
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,MeshComponenetNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,MeshComponenetNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,MeshComponenetNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,MeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,MeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,MeshComponentNumber,Err)
   CALL CMISSFieldCreateFinish(GeometricField,Err)
 
   !node 1
@@ -275,9 +275,9 @@ PROGRAM UNIAXIALEXTENSIONEXAMPLE
   CALL CMISSFieldGeometricFieldSet(FibreField,GeometricField,Err)
   CALL CMISSFieldNumberOfVariablesSet(FibreField,FieldFibreNumberOfVariables,Err)
   CALL CMISSFieldNumberOfComponentsSet(FibreField,CMISSFieldUVariableType,FieldFibreNumberOfComponents,Err)  
-  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,1,MeshComponenetNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,2,MeshComponenetNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,3,MeshComponenetNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,1,MeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,2,MeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,3,MeshComponentNumber,Err)
   CALL CMISSFieldCreateFinish(FibreField,Err)
 
   !Create a material field and attach it to the geometric field  
@@ -288,8 +288,8 @@ PROGRAM UNIAXIALEXTENSIONEXAMPLE
   CALL CMISSFieldGeometricFieldSet(MaterialField,GeometricField,Err)
   CALL CMISSFieldNumberOfVariablesSet(MaterialField,FieldMaterialNumberOfVariables,Err)
   CALL CMISSFieldNumberOfComponentsSet(MaterialField,CMISSFieldUVariableType,FieldMaterialNumberOfComponents,Err)  
-  CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,1,MeshComponenetNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,2,MeshComponenetNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,1,MeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,2,MeshComponentNumber,Err)
   CALL CMISSFieldCreateFinish(MaterialField,Err)
 
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively.
@@ -306,13 +306,13 @@ PROGRAM UNIAXIALEXTENSIONEXAMPLE
   CALL CMISSFieldNumberOfVariablesSet(DependentField,FieldDependentNumberOfVariables,Err)
   CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldUVariableType,FieldDependentNumberOfComponents,Err)
   CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelUDelNVariableType,FieldDependentNumberOfComponents,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,1,MeshComponenetNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,2,MeshComponenetNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,3,MeshComponenetNumber,Err)  
+  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,1,MeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,2,MeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,3,MeshComponentNumber,Err)  
   CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldUVariableType,4,CMISSFieldElementBasedInterpolation,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,1,MeshComponenetNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,2,MeshComponenetNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,3,MeshComponenetNumber,Err)  
+  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,1,MeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,2,MeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,3,MeshComponentNumber,Err)  
   CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldDelUDelNVariableType,4,CMISSFieldElementBasedInterpolation,Err)
   CALL CMISSFieldCreateFinish(DependentField,Err)  
 
