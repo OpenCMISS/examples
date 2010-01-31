@@ -285,7 +285,6 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 ! 
 !   !Program variables
 ! 
-  INTEGER(CMISSIntg) :: EquationsSetIndexSolid  
   INTEGER(CMISSIntg) :: NumberOfSolidDomains
 ! 
 !   !CMISS variables
@@ -298,7 +297,6 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   TYPE(CMISSEquationsSetType) :: EquationsSetSolid
   TYPE(CMISSFieldType) :: GeometricFieldSolid,FibreFieldSolid,MaterialFieldSolid,DependentFieldSolid
   TYPE(CMISSFieldsType) :: FieldsSolid
-  TYPE(CMISSProblemType) :: ProblemSolid
   TYPE(CMISSRegionType) :: RegionSolid
   TYPE(CMISSSolverType) :: SolverSolid
   TYPE(CMISSSolverEquationsType) :: SolverEquationsSolid
