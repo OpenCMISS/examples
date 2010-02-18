@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os, sys
+from time import strftime
 
 cwd = os.getcwd();
 logDir = cwd + "/../../build/logs";
@@ -9,7 +10,7 @@ if not os.path.isdir(logDir):
   os.mkdir(cwd + "/../../build")
   os.mkdir(logDir);
 compiler = sys.argv[1];
-f = open(logDir+'/successBuilds',"w")
+f = open(logDir+'/build.log',"a")
 
 def buildExample(path) :
    global compiler,logDir,libSuccess;
@@ -24,12 +25,14 @@ def buildExample(path) :
        os.remove(newDir + "/build-" + compiler)
      err=os.system("make COMPILER=" + compiler + " > " + newDir + "/build-" + compiler +" 2>&1")
      if err==0 :
-       f.write(path+'\n')
+       f.write(compiler+'_'+path+'_build|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
        print "Building %s: <a class='success' href='%slogs_x86_64-linux/%s/build-%s'>success</a><br>" %(path,rootUrl,path,compiler)
      else :
+       f.write(compiler+'_'+path+'_build|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
        print "Building %s: <a class='fail' href='%slogs_x86_64-linux/%s/build-%s'>failed</a><br>" %(path,rootUrl,path,compiler)
      os.chdir(cwd)
    else :
+     f.write(compiler+'_'+path+'_build|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
      print "Building %s: <a class='fail'>failed</a> due to library build failure<br>" %(path)
    return;
 
@@ -41,10 +44,12 @@ def buildLibrary() :
      os.remove(newDir + "/build-" + compiler)
    err=os.system("make COMPILER=" + compiler + " > " + newDir + "/build-" + compiler +" 2>&1")
    if err==0 :
+     f.write(compiler+'_library_build|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
      print "Building OpenCMISS Library: <a class='success' href='%slogs_x86_64-linux/build-%s'>success</a><br>" %(rootUrl,compiler)
      os.chdir(cwd)
      return 0;
    else :
+     f.write(compiler+'_library_build|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
      print "Building OpenCMISS Library: <a class='fail' href='%slogs_x86_64-linux/build-%s'>failed</a><br>" %(rootUrl,compiler)
      os.chdir(cwd)
      return -1;
