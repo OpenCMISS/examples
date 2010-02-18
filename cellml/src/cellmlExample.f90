@@ -1,7 +1,7 @@
 !> \file
 !> $Id: cellml.f90 $
 !> \author David Nickerson <nickerso@users.sourceforge.net>
-!> \brief An example deomonstrating and testing the implementation of the openCMISS(cellml) API.
+!> \brief An example demonstrating and testing the implementation of the openCMISS(cellml) API.
 !>
 !> \section LICENSE
 !>
