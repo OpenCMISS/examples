@@ -236,7 +236,7 @@ PROGRAM MIXEDBOUNDARYCONDITIONSEXAMPLE
   !Create the equations_set
   CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,EquationsSet,Err)
   CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetElasticityClass, &
-    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetIsotropicExponentialSubtype,Err)
+    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetMooneyRivlinSubtype,Err)
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
   !Create the dependent field
@@ -251,7 +251,7 @@ PROGRAM MIXEDBOUNDARYCONDITIONSEXAMPLE
 
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively.
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,1.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,6.0_CMISSDP,Err)
 
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
