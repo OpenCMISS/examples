@@ -77,8 +77,12 @@ PROGRAM MONODOMAINEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=9
   INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumber=10
   INTEGER(CMISSIntg), PARAMETER :: CellMLUserNumber=11
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=12
-  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: CellMLModelsFieldUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: CellMLStateFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: CellMLParametersFieldUserNumber=15
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=16
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=17
 
   !Program types
   
@@ -101,6 +105,7 @@ PROGRAM MONODOMAINEXAMPLE
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
   TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField,SourceField
+  TYPE(CMISSFieldType) :: CellMLModelsField,CellMLStateField,CellMLIntermediateField,CellMLParametersField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
   TYPE(CMISSMeshType) :: Mesh
@@ -263,6 +268,42 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSCellMLCreateStart(CellMLUserNumber,SourceField,CellML,Err)
   !Finish the CellML environment
   CALL CMISSCellMLCreateFinish(CellML,Err)
+
+  !Start the creation of CellML models
+  CALL CMISSCellMLModelsCreateStart(CellML,Err)
+  !Import a Hodgkin-Huxley model from a file
+  !CALL CMISSCellMLModelImport(1,CellML,"hodgkin_huyxley_1952_variant01.cellml",Err)
+  !Finish the creation of CellML models
+  CALL CMISSCellMLModelsCreateFinish(CellML,Err)
+
+  !Start the creation of the CellML models field
+  CALL CMISSCellMLModelsFieldCreateStart(CellMLModelsFieldUserNumber,CellML,CellMLModelsField,Err)
+  !Finish the creation of the CellML models field
+  CALL CMISSCellMLModelsFieldCreateFinish(CellML,Err)
+
+  !Start the creation of the CellML state field
+  CALL CMISSCellMLStateFieldCreateStart(CellMLStateFieldUserNumber,CellML,CellMLStateField,Err)
+  !Finish the creation of the CellML state field
+  CALL CMISSCellMLStateFieldCreateFinish(CellML,Err)
+
+!!TODO: There should be intermediate and intermediate field
+  !Start the creation of the CellML intermediate field
+  CALL CMISSCellMLIntermediateFieldCreateStart(CellMLIntermediateFieldUserNumber,CellML,CellMLIntermediateField,Err)
+  !Finish the creation of the CellML intermediate field
+  CALL CMISSCellMLIntermediateFieldCreateFinish(CellML,Err)
+  
+  !Start the creation of CellML parameters
+  CALL CMISSCellMLParametersCreateStart(CellML,Err)
+  !Finish the creation of CellML parameters
+  CALL CMISSCellMLParametersCreateFinish(CellML,Err)
+  
+  !Start the creation of CellML parameters field
+  CALL CMISSCellMLParametersFieldCreateStart(CellMLParametersFieldUserNumber,CellML,CellMLParametersField,Err)
+  !Finish the creation of CellML parameters
+  CALL CMISSCellMLParametersFieldCreateFinish(CellML,Err)
+  
+  !Generate the CellML
+  CALL CMISSCellMLGenerate(CellML,Err)
   
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
@@ -348,8 +389,8 @@ PROGRAM MONODOMAINEXAMPLE
   IF(EXPORT_FIELD) THEN
     CALL CMISSFieldsTypeInitialise(Fields,Err)
     CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"NewLaplace","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"NewLaplace","FORTRAN",Err)
+    CALL CMISSFieldIONodesExport(Fields,"MonodomainExample","FORTRAN",Err)
+    CALL CMISSFieldIOElementsExport(Fields,"MonodomainExample","FORTRAN",Err)
     CALL CMISSFieldsTypeFinalise(Fields,Err)
   ENDIF
   
