@@ -158,6 +158,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 
   REAL(CMISSDP) :: INITIAL_FIELD_DARCY(3)
   REAL(CMISSDP) :: INITIAL_FIELD_MAT_PROPERTIES(3)
+  REAL(CMISSDP) :: INITIAL_FIELD_SOLID(4)
   REAL(CMISSDP) :: DIVERGENCE_TOLERANCE
   REAL(CMISSDP) :: RELATIVE_TOLERANCE
   REAL(CMISSDP) :: ABSOLUTE_TOLERANCE
@@ -335,13 +336,20 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   NUMBER_OF_ELEMENT_NODES_GEOMETRY=CM%EN_M
   NUMBER_OF_ELEMENT_NODES_VELOCITY=CM%EN_V
   NUMBER_OF_ELEMENT_NODES_PRESSURE=CM%EN_P
+!   !Set domain dimensions
+!   DOMAIN_X1 = -5.0_CMISSDP
+!   DOMAIN_X2 =  5.0_CMISSDP
+!   DOMAIN_Y1 = -5.0_CMISSDP
+!   DOMAIN_Y2 =  5.0_CMISSDP
+!   DOMAIN_Z1 = -5.0_CMISSDP
+!   DOMAIN_Z2 =  5.0_CMISSDP
   !Set domain dimensions
-  DOMAIN_X1 = -5.0_CMISSDP
-  DOMAIN_X2 =  5.0_CMISSDP
-  DOMAIN_Y1 = -5.0_CMISSDP
-  DOMAIN_Y2 =  5.0_CMISSDP
-  DOMAIN_Z1 = -5.0_CMISSDP
-  DOMAIN_Z2 =  5.0_CMISSDP
+  DOMAIN_X1 =  0.0_CMISSDP
+  DOMAIN_X2 =  1.0_CMISSDP
+  DOMAIN_Y1 =  0.0_CMISSDP
+  DOMAIN_Y2 =  1.0_CMISSDP
+  DOMAIN_Z1 =  0.0_CMISSDP
+  DOMAIN_Z2 =  1.0_CMISSDP
   !Set geometric tolerance
   GEOMETRY_TOLERANCE = 1.0E-12_CMISSDP
   !Set initial values
@@ -351,6 +359,10 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   INITIAL_FIELD_MAT_PROPERTIES(1)=0.0_CMISSDP
   INITIAL_FIELD_MAT_PROPERTIES(2)=0.0_CMISSDP
   INITIAL_FIELD_MAT_PROPERTIES(3)=0.0_CMISSDP
+  INITIAL_FIELD_SOLID(1)=1.0_CMISSDP
+  INITIAL_FIELD_SOLID(2)=1.0_CMISSDP
+  INITIAL_FIELD_SOLID(3)=1.0_CMISSDP
+  INITIAL_FIELD_SOLID(4)=1.0_CMISSDP
   !Set material parameters
   POROSITY_PARAM_DARCY=0.3_CMISSDP
   PERM_OVER_VIS_PARAM_DARCY=1.0_CMISSDP
@@ -369,7 +381,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   EQUATIONS_MAT_PROPERTIES_OUTPUT=CMISSEquationsNoOutput
   !Set time parameter
   LINEAR_SOLVER_DARCY_START_TIME=0.0_CMISSDP
-  LINEAR_SOLVER_DARCY_STOP_TIME=0.1250_CMISSDP 
+  LINEAR_SOLVER_DARCY_STOP_TIME=0.250_CMISSDP 
   LINEAR_SOLVER_DARCY_TIME_INCREMENT=0.125_CMISSDP
   !Set result output parameter
   LINEAR_SOLVER_DARCY_OUTPUT_FREQUENCY=1
@@ -415,10 +427,11 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 !   DIAG_ROUTINE_LIST(1)="PROBLEM_SOLVER_EQUATIONS_SOLVE"
 !   DIAG_ROUTINE_LIST(1)="SOLVER_NEWTON_SOLVE"
 !   DIAG_ROUTINE_LIST(2)="SOLVER_NEWTON_LINESEARCH_SOLVE"
-  DIAG_ROUTINE_LIST(1)="SOLVER_SOLUTION_UPDATE"
+!   DIAG_ROUTINE_LIST(1)="SOLVER_SOLUTION_UPDATE"
+  DIAG_ROUTINE_LIST(1)="FINITE_ELASTICITY_FINITE_ELEMENT_RESIDUAL_EVALUATE"
 
   !CMISSAllDiagType/CMISSInDiagType/CMISSFromDiagType
-  CALL CMISSDiagnosticsSetOn(CMISSInDiagType,DIAG_LEVEL_LIST,"Diagnostics",DIAG_ROUTINE_LIST,Err)
+!   CALL CMISSDiagnosticsSetOn(CMISSInDiagType,DIAG_LEVEL_LIST,"Diagnostics",DIAG_ROUTINE_LIST,Err)
 
   !CMISSAllTimingType/CMISSInTimingType/CMISSFromTimingType
   !TIMING_ROUTINE_LIST(1)="PROBLEM_FINITE_ELEMENT_CALCULATE"
@@ -575,8 +588,6 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 
   !MESH
   !All types of physics utilize the same "mesh", but may be represented on individual mesh components.
-  !We have chosen to represent the finite elasticity on the same mesh as the (Darcy) geometry,
-  !  but something must have gone wrong here: We get 'Zero Determinant for matrix A' for the elasticity solution
 
   TotalNumberOfSolidNodes = NUMBER_OF_NODES_GEOMETRY
   TOTAL_NUMBER_OF_ALL_NODES = TOTAL_NUMBER_OF_NODES + TotalNumberOfSolidNodes
@@ -726,6 +737,19 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   CALL CMISSFieldComponentMeshComponentSet(GeometricFieldSolid,CMISSFieldUVariableType,2,SolidMeshComponenetNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(GeometricFieldSolid,CMISSFieldUVariableType,3,SolidMeshComponenetNumber,Err)
   CALL CMISSFieldCreateFinish(GeometricFieldSolid,Err)
+
+!---
+  !Update the geometric field parameters
+  DO NODE_NUMBER=1,NUMBER_OF_NODES_GEOMETRY
+    DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+      VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)
+      CALL CMISSFieldParameterSetUpdateNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+        & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+    ENDDO
+  ENDDO
+  CALL CMISSFieldParameterSetUpdateStart(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
+  CALL CMISSFieldParameterSetUpdateFinish(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
+!---
 
   !Create a fibre field and attach it to the geometric field  
   CALL CMISSFieldTypeInitialise(FibreFieldSolid,Err)
@@ -891,6 +915,12 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !
   CALL CMISSEquationsSetDependentCreateStart(EquationsSetSolid,FieldDependentSolidUserNumber,DependentFieldSolid,Err) 
   CALL CMISSEquationsSetDependentCreateFinish(EquationsSetSolid,Err)
+
+  !Initialise dependent field (solid displacement and pressure)
+  DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS +1
+    CALL CMISSFieldComponentValuesInitialise(DependentFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+      & COMPONENT_NUMBER,INITIAL_FIELD_SOLID(COMPONENT_NUMBER),Err)
+  ENDDO
 
   ! end Solid
   !--------------------------------------------------------------------------------------------------------------------------------
@@ -1267,19 +1297,6 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
     WRITE(*,'(A)') "Field exported!"
   ENDIF
 
-
-  !--------------------------------------------------------------------------------------------------------------------------------
-  ! Solid
-
-  !Output solution  
-  CALL CMISSFieldsTypeInitialise(FieldsSolid,Err)
-  CALL CMISSFieldsTypeCreate(Region,FieldsSolid,Err)
-  CALL CMISSFieldIONodesExport(FieldsSolid,"UniaxialExtension","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(FieldsSolid,"UniaxialExtension","FORTRAN",Err)
-  CALL CMISSFieldsTypeFinalise(FieldsSolid,Err)
-
-  ! end Solid
-  !--------------------------------------------------------------------------------------------------------------------------------
 
   !Finialise CMISS
 !   CALL CMISSFinalise(Err)
