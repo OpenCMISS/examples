@@ -96,6 +96,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDarcy=12
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberMatProperties=13
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumberSolid=15
 
   INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: SolverMatPropertiesUserNumber=1
@@ -207,6 +208,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   TYPE(CMISSFieldType) :: MaterialsFieldMatProperties
 !   TYPE(CMISSFieldType) :: IndependentFieldDarcy
 !   TYPE(CMISSFieldType) :: IndependentFieldMatProperties
+  TYPE(CMISSFieldType) :: IndependentFieldSolid
   !Boundary conditions
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDarcy
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsMatProperties 
@@ -255,7 +257,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   INTEGER(CMISSIntg) :: BASIS_NUMBER_SOLID
 ! 
   INTEGER(CMISSIntg) :: TotalNumberOfSolidNodes
-  INTEGER(CMISSIntg) :: NumberOfSolidMeshComponents
+!   INTEGER(CMISSIntg) :: NumberOfSolidMeshComponents
   INTEGER(CMISSIntg) :: SolidMeshComponenetNumber
 ! 
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometrySolidUserNumber=1
@@ -288,7 +290,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   TYPE(CMISSEquationsType) :: EquationsSolid
   TYPE(CMISSEquationsSetType) :: EquationsSetSolid
   TYPE(CMISSFieldType) :: GeometricFieldSolid,FibreFieldSolid,MaterialFieldSolid,DependentFieldSolid
-  TYPE(CMISSFieldsType) :: FieldsSolid
+!   TYPE(CMISSFieldsType) :: FieldsSolid
   TYPE(CMISSSolverType) :: SolverSolid !,LinearSolverSolid
   TYPE(CMISSSolverEquationsType) :: SolverEquationsSolid
   TYPE(CMISSMeshElementsType) :: MeshElementsSolid
@@ -592,8 +594,9 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   TotalNumberOfSolidNodes = NUMBER_OF_NODES_GEOMETRY
   TOTAL_NUMBER_OF_ALL_NODES = TOTAL_NUMBER_OF_NODES + TotalNumberOfSolidNodes
 
-  NumberOfSolidMeshComponents = 1
-  MESH_NUMBER_OF_ALL_COMPONENTS = MESH_NUMBER_OF_COMPONENTS + NumberOfSolidMeshComponents
+!   NumberOfSolidMeshComponents = 1
+!   MESH_NUMBER_OF_ALL_COMPONENTS = MESH_NUMBER_OF_COMPONENTS + NumberOfSolidMeshComponents
+  MESH_NUMBER_OF_ALL_COMPONENTS = MESH_NUMBER_OF_COMPONENTS
 
   !Start the creation of mesh nodes
   CALL CMISSNodesTypeInitialise(Nodes,Err)
@@ -653,21 +656,21 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   ! Solid: Specify Solid Mesh Component
 
 !   !Simply inherit ...
-!   MeshElementsSolid=MeshElementsGeometry
-!   SolidMeshComponenetNumber=MESH_COMPONENT_NUMBER_GEOMETRY
+  MeshElementsSolid=MeshElementsGeometry
+  SolidMeshComponenetNumber=MESH_COMPONENT_NUMBER_GEOMETRY
 
 
   !... or specify:
-  SolidMeshComponenetNumber=MESH_COMPONENT_NUMBER_PRESSURE+1
-
-  CALL CMISSMeshElementsCreateStart(Mesh,SolidMeshComponenetNumber,BasisSolid,MeshElementsSolid,Err)
-
-  DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
-    CALL CMISSMeshElementsNodesSet(MeshElementsSolid,ELEMENT_NUMBER,CM%M(ELEMENT_NUMBER, &
-      & 1:NUMBER_OF_ELEMENT_NODES_GEOMETRY),Err)
-  ENDDO
-
-  CALL CMISSMeshElementsCreateFinish(MeshElementsSolid,Err)
+!   SolidMeshComponenetNumber=MESH_COMPONENT_NUMBER_PRESSURE+1
+! 
+!   CALL CMISSMeshElementsCreateStart(Mesh,SolidMeshComponenetNumber,BasisSolid,MeshElementsSolid,Err)
+! 
+!   DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
+!     CALL CMISSMeshElementsNodesSet(MeshElementsSolid,ELEMENT_NUMBER,CM%M(ELEMENT_NUMBER, &
+!       & 1:NUMBER_OF_ELEMENT_NODES_GEOMETRY),Err)
+!   ENDDO
+! 
+!   CALL CMISSMeshElementsCreateFinish(MeshElementsSolid,Err)
 
   ! end Solid
   !--------------------------------------------------------------------------------------------------------------------------------
@@ -952,6 +955,24 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   CALL CMISSFieldComponentValuesInitialise(MaterialsFieldMatProperties,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
     & MaterialsFieldUserNumberMatPropertiesPermOverVis,PERM_OVER_VIS_PARAM_MAT_PROPERTIES,Err)
 
+
+  !
+  !================================================================================================================================
+  !
+
+  !INDEPENDENT FIELDS
+
+  !Create the equations set independent field variables for the solid
+  CALL CMISSFieldTypeInitialise(IndependentFieldSolid,Err)
+  CALL CMISSEquationsSetIndependentCreateStart(EquationsSetSolid,IndependentFieldUserNumberSolid, & 
+    & IndependentFieldSolid,Err)
+  !Set the mesh component to be used by the field components.
+  DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+    CALL CMISSFieldComponentMeshComponentSet(IndependentFieldSolid,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
+      & MESH_COMPONENT_NUMBER_GEOMETRY,Err)
+  ENDDO
+  !Finish the equations set independent field variables
+  CALL CMISSEquationsSetIndependentCreateFinish(EquationsSetSolid,Err)
 
   !
   !================================================================================================================================
