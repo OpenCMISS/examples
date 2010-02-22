@@ -44,7 +44,7 @@ def logExample(path) :
    if os.path.exists(newDir + "/history.html") :
      os.remove(newDir + "/history.html")
    f = open(newDir + "/history.html","w")
-   f.write("<h1>Testing Status:</h1>\n")
+   f.write("<h2>Testing Status:</h2>\n")
    f.write("<table><tr><td/><td>Status</td><td>Latest Execution Time</td></tr>\n")
    f.write("<tr><td><b>Intel Build</b></td><td/><td/></tr>")
    f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/build-intel'>OpenCMISS Library</a></td>")

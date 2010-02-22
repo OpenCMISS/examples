@@ -40,7 +40,7 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example FluidMechanics/NavierStokes/Static/src/StaticExample.f90
+!> \example FluidMechanics/Stokes/RUNTIME_SCRATCH/AnalyticNavierStokes/src/AnalyticNavierStokesExample.f90
 !! Example program to solve an analytic static Navier-Stokes equation using OpenCMISS calls.
 !! \par Latest Builds:
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FluidMechanics/NavierStokes/Static/build-intel'>Linux Intel Build</a>

@@ -42,9 +42,7 @@
 
 !> \example ClassicalField/NonlinearPoisson/src/NonlinearPoissonExample.f90
 !! Example program to solve a nonlinear Poisson equation using openCMISS calls.
-!! \par Latest Builds:
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/NonlinearPoisson/build-intel'>Linux Intel Build</a>
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/NonlinearPoisson/build-gnu'>Linux GNU Build</a>
+!! \htmlinclude ClassicalField/NonlinearPoisson/history.html
 !<
 
 !> Main program

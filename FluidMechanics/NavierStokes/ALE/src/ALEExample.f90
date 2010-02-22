@@ -42,9 +42,7 @@
 
 !> \example FluidMechanics/NavierStokes/ALE/src/ALEExample.f90
 !! Example program to solve a ALE Navier-Stokes equation using OpenCMISS calls.
-!! \par Latest Builds:
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FluidMechanics/NavierStokes/ALE/build-intel'>Linux Intel Build</a>
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FluidMechanics/NavierStokes/ALE/build-intel'>Linux GNU Build</a>
+!! \htmlinclude FluidMechanics/NavierStokes/ALE/history.html
 !!
 !<
 

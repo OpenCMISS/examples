@@ -40,7 +40,7 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example FluidMechanics/Stokes/Static/src/StaticExample.f90
+!> \example FluidMechanics/Stokes/RUNTIME_SCRATCH/AnalyticStokes/src/AnalyticStokesExample.f90
 !! Example program to solve an analytic static Stokes equation using OpenCMISS calls.
 !! \par Latest Builds:
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FluidMechanics/Stokes/Static/build-intel'>Linux Intel Build</a>

@@ -40,7 +40,7 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/Diffusion/src/DiffusionExample.f90
+!> \example ClassicalField/AdvectionDiffusion/StaticAdvectionDiffusion/src/StaticAdvectionDiffusionExample.f90
 !! Example program to solve a diffusion equation using openCMISS calls.
 !! \par Latest Builds:
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/Diffusion/build-intel'>Linux Intel Build</a>
