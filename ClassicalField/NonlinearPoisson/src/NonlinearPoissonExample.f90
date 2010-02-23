@@ -60,7 +60,7 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   !Test program parameters
 
   REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: WIDTH=2.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: WIDTH=1.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -129,8 +129,8 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
   
-  NUMBER_GLOBAL_X_ELEMENTS=10
-  NUMBER_GLOBAL_Y_ELEMENTS=10
+  NUMBER_GLOBAL_X_ELEMENTS=20
+  NUMBER_GLOBAL_Y_ELEMENTS=20
   NUMBER_GLOBAL_Z_ELEMENTS=0
   CALL MPI_COMM_SIZE(MPI_COMM_WORLD,NUMBER_OF_DOMAINS,MPI_IERROR)
 
@@ -261,7 +261,7 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   !Set the equations set output
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsTimingOutput,Err)
-  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsMatrixOutput,Err)
+  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsMatrixOutput,Err)
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsElementMatrixOutput,Err)
   !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
@@ -293,7 +293,7 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
-  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
   !Set the Jacobian type
   !CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
   CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianFDCalculated,Err)
@@ -322,7 +322,7 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   CALL CMISSProblemSolve(Problem,Err)
 
   !Output Analytic analysis
-  Call CMISSAnalyticAnalysisOutput(DependentField,"",Err)
+  Call CMISSAnalyticAnalysisOutput(DependentField,"AnalyticOutputFile",Err)
     
   EXPORT_FIELD=.TRUE.
   IF(EXPORT_FIELD) THEN
