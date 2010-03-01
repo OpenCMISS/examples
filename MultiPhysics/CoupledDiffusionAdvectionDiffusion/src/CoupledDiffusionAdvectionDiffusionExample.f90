@@ -93,6 +93,7 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumberDiffusion=11
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberAdvectionDiffusion=12
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDiffusion=13
+  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumberAdvectionDiffusion=15
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=14
 
   INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
@@ -211,6 +212,7 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
   TYPE(CMISSFieldType) :: MaterialsFieldDiffusion
   TYPE(CMISSFieldType) :: SourceFieldAdvectionDiffusion
   TYPE(CMISSFieldType) :: SourceFieldDiffusion
+  TYPE(CMISSFieldType) :: InDependentFieldAdvectionDiffusion
   !Boundary conditions
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsAdvectionDiffusion
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDiffusion
@@ -755,6 +757,13 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
   !
   !================================================================================================================================
   !
+
+  !Create the equations set independent field variables
+  CALL CMISSFieldTypeInitialise(IndependentFieldAdvectionDiffusion,Err)
+  CALL CMISSEquationsSetIndependentCreateStart(EquationsSetAdvectionDiffusion,IndependentFieldUserNumberAdvectionDiffusion,&
+    & IndependentFieldAdvectionDiffusion,Err)
+  !Finish the equations set dependent field variables
+  CALL CMISSEquationsSetIndependentCreateFinish(EquationsSetAdvectionDiffusion,Err)
 
   !SOURCE FIELDS
 
