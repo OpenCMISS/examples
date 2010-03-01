@@ -1,7 +1,7 @@
 !> \file
-!> $Id: CoupledSourceDiffusionDiffusionExample.f90 20 2009-05-28 20:22:52Z chrm76 $
+!> $Id: CoupledDiffusionAdvectionDiffusionExample.f90 20 2009-05-28 20:22:52Z chrm76 $
 !> \authors Andrew Cookson
-!> \brief This is an example program to solve a coupled diffusion-diffusion equation using openCMISS calls.
+!> \brief This is an example program to solve a coupled diffusion & advection-diffusion equation using openCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -54,7 +54,7 @@
 
 !> Main program
 
-PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
+PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
 
   !
   !================================================================================================================================
@@ -85,19 +85,19 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=3
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=4
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
-  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberDiffusionOne=6
-  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberDiffusionTwo=7
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDiffusionOne=8
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDiffusionTwo=9
-  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumberDiffusionOne=10
-  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumberDiffusionTwo=11
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDiffusionOne=12
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDiffusionTwo=13
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberAdvectionDiffusion=6
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberDiffusion=7
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberAdvectionDiffusion=8
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDiffusion=9
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumberAdvectionDiffusion=10
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumberDiffusion=11
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberAdvectionDiffusion=12
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDiffusion=13
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=14
 
   INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: SolverDiffusionOneUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: SolverDiffusionTwoUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: SolverAdvectionDiffusionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: SolverDiffusionUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPorosity=1
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPermOverVis=2
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberMatPropertiesPorosity=1     !??? 3 ???
@@ -135,50 +135,50 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
   INTEGER(CMISSIntg) :: TOTAL_NUMBER_OF_ELEMENTS
   INTEGER(CMISSIntg) :: MAXIMUM_ITERATIONS
   INTEGER(CMISSIntg) :: RESTART_VALUE
-  INTEGER(CMISSIntg) :: NUMBER_OF_FIXED_WALL_NODES_DIFFUSION_ONE
-  INTEGER(CMISSIntg) :: NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE
-  INTEGER(CMISSIntg) :: NUMBER_OF_FIXED_WALL_NODES_DIFFUSION_TWO
-  INTEGER(CMISSIntg) :: NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO
-  INTEGER(CMISSIntg) :: EQUATIONS_DIFFUSION_ONE_OUTPUT
-  INTEGER(CMISSIntg) :: EQUATIONS_DIFFUSION_TWO_OUTPUT
+  INTEGER(CMISSIntg) :: NUMBER_OF_FIXED_WALL_NODES_ADVECTION_DIFFUSION
+  INTEGER(CMISSIntg) :: NUMBER_OF_INLET_WALL_NODES_ADVECTION_DIFFUSION
+  INTEGER(CMISSIntg) :: NUMBER_OF_FIXED_WALL_NODES_DIFFUSION
+  INTEGER(CMISSIntg) :: NUMBER_OF_INLET_WALL_NODES_DIFFUSION
+  INTEGER(CMISSIntg) :: EQUATIONS_ADVECTION_DIFFUSION_OUTPUT
+  INTEGER(CMISSIntg) :: EQUATIONS_DIFFUSION_OUTPUT
   INTEGER(CMISSIntg) :: COMPONENT_NUMBER
   INTEGER(CMISSIntg) :: NODE_NUMBER
   INTEGER(CMISSIntg) :: ELEMENT_NUMBER
   INTEGER(CMISSIntg) :: NODE_COUNTER
   INTEGER(CMISSIntg) :: CONDITION
 
-  INTEGER(CMISSIntg) :: LINEAR_SOLVER_DIFFUSION_OUTPUT_FREQUENCY
-  INTEGER(CMISSIntg) :: LINEAR_SOLVER_DIFFUSION_ONE_OUTPUT_TYPE
-  INTEGER(CMISSIntg) :: LINEAR_SOLVER_DIFFUSION_TWO_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: LINEAR_SOLVER_ADVECTION_DIFFUSION_OUTPUT_FREQUENCY
+  INTEGER(CMISSIntg) :: LINEAR_SOLVER_ADVECTION_DIFFUSION_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: LINEAR_SOLVER_DIFFUSION_OUTPUT_TYPE
 
 
   REAL(CMISSDP) :: DOMAIN_X1, DOMAIN_X2, DOMAIN_Y1, DOMAIN_Y2, DOMAIN_Z1, DOMAIN_Z2
   REAL(CMISSDP) :: GEOMETRY_TOLERANCE
 
-  INTEGER, ALLOCATABLE, DIMENSION(:):: FIXED_WALL_NODES_DIFFUSION_ONE
-  INTEGER, ALLOCATABLE, DIMENSION(:):: INLET_WALL_NODES_DIFFUSION_ONE
-  INTEGER, ALLOCATABLE, DIMENSION(:):: FIXED_WALL_NODES_DIFFUSION_TWO
-  INTEGER, ALLOCATABLE, DIMENSION(:):: INLET_WALL_NODES_DIFFUSION_TWO
+  INTEGER, ALLOCATABLE, DIMENSION(:):: FIXED_WALL_NODES_ADVECTION_DIFFUSION
+  INTEGER, ALLOCATABLE, DIMENSION(:):: INLET_WALL_NODES_ADVECTION_DIFFUSION
+  INTEGER, ALLOCATABLE, DIMENSION(:):: FIXED_WALL_NODES_DIFFUSION
+  INTEGER, ALLOCATABLE, DIMENSION(:):: INLET_WALL_NODES_DIFFUSION
 
-  REAL(CMISSDP) :: INITIAL_FIELD_DIFFUSION_ONE
-  REAL(CMISSDP) :: INITIAL_FIELD_DIFFUSION_TWO
-  REAL(CMISSDP) :: BOUNDARY_CONDITIONS_DIFFUSION_ONE
-  REAL(CMISSDP) :: BOUNDARY_CONDITIONS_DIFFUSION_TWO
+  REAL(CMISSDP) :: INITIAL_FIELD_ADVECTION_DIFFUSION
+  REAL(CMISSDP) :: INITIAL_FIELD_DIFFUSION
+  REAL(CMISSDP) :: BOUNDARY_CONDITIONS_ADVECTION_DIFFUSION
+  REAL(CMISSDP) :: BOUNDARY_CONDITIONS_DIFFUSION
   REAL(CMISSDP) :: DIVERGENCE_TOLERANCE
   REAL(CMISSDP) :: RELATIVE_TOLERANCE
   REAL(CMISSDP) :: ABSOLUTE_TOLERANCE
   REAL(CMISSDP) :: LINESEARCH_ALPHA
   REAL(CMISSDP) :: VALUE
 
-  REAL(CMISSDP) :: LINEAR_SOLVER_DIFFUSION_START_TIME
-  REAL(CMISSDP) :: LINEAR_SOLVER_DIFFUSION_STOP_TIME
-  REAL(CMISSDP) :: LINEAR_SOLVER_DIFFUSION_TIME_INCREMENT
+  REAL(CMISSDP) :: LINEAR_SOLVER_ADVECTION_DIFFUSION_START_TIME
+  REAL(CMISSDP) :: LINEAR_SOLVER_ADVECTION_DIFFUSION_STOP_TIME
+  REAL(CMISSDP) :: LINEAR_SOLVER_ADVECTION_DIFFUSION_TIME_INCREMENT
 
   LOGICAL :: EXPORT_FIELD_IO
-  LOGICAL :: LINEAR_SOLVER_DIFFUSION_ONE_DIRECT_FLAG
-  LOGICAL :: LINEAR_SOLVER_DIFFUSION_TWO_DIRECT_FLAG
-  LOGICAL :: INLET_WALL_NODES_DIFFUSION_ONE_FLAG
-  LOGICAL :: INLET_WALL_NODES_DIFFUSION_TWO_FLAG
+  LOGICAL :: LINEAR_SOLVER_ADVECTION_DIFFUSION_DIRECT_FLAG
+  LOGICAL :: LINEAR_SOLVER_DIFFUSION_DIRECT_FLAG
+  LOGICAL :: INLET_WALL_NODES_ADVECTION_DIFFUSION_FLAG
+  LOGICAL :: INLET_WALL_NODES_DIFFUSION_FLAG
   !CMISS variables
 
   !Regions
@@ -205,33 +205,33 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
   TYPE(CMISSFieldsType) :: Fields
   !Field types
   TYPE(CMISSFieldType) :: GeometricField
-  TYPE(CMISSFieldType) :: DependentFieldDiffusionOne
-  TYPE(CMISSFieldType) :: DependentFieldDiffusionTwo
-  TYPE(CMISSFieldType) :: MaterialsFieldDiffusionOne
-  TYPE(CMISSFieldType) :: MaterialsFieldDiffusionTwo
-  TYPE(CMISSFieldType) :: SourceFieldDiffusionOne
-  TYPE(CMISSFieldType) :: SourceFieldDiffusionTwo
+  TYPE(CMISSFieldType) :: DependentFieldAdvectionDiffusion
+  TYPE(CMISSFieldType) :: DependentFieldDiffusion
+  TYPE(CMISSFieldType) :: MaterialsFieldAdvectionDiffusion
+  TYPE(CMISSFieldType) :: MaterialsFieldDiffusion
+  TYPE(CMISSFieldType) :: SourceFieldAdvectionDiffusion
+  TYPE(CMISSFieldType) :: SourceFieldDiffusion
   !Boundary conditions
-  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDiffusionOne
-  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDiffusionTwo
+  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsAdvectionDiffusion
+  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDiffusion
   !Equations sets
-  TYPE(CMISSEquationsSetType) :: EquationsSetDiffusionOne
-  TYPE(CMISSEquationsSetType) :: EquationsSetDiffusionTwo
+  TYPE(CMISSEquationsSetType) :: EquationsSetAdvectionDiffusion
+  TYPE(CMISSEquationsSetType) :: EquationsSetDiffusion
   !Equations
-  TYPE(CMISSEquationsType) :: EquationsDiffusionOne
-  TYPE(CMISSEquationsType) :: EquationsDiffusionTwo
+  TYPE(CMISSEquationsType) :: EquationsAdvectionDiffusion
+  TYPE(CMISSEquationsType) :: EquationsDiffusion
   !Problems
   TYPE(CMISSProblemType) :: Problem
   !Control loops
   TYPE(CMISSControlLoopType) :: ControlLoop
   !Solvers
-  TYPE(CMISSSolverType) :: SolverDiffusionOne
-  TYPE(CMISSSolverType) :: SolverDiffusionTwo
-  TYPE(CMISSSolverType) :: LinearSolverDiffusionOne
-  TYPE(CMISSSolverType) :: LinearSolverDiffusionTwo
+  TYPE(CMISSSolverType) :: SolverAdvectionDiffusion
+  TYPE(CMISSSolverType) :: SolverDiffusion
+  TYPE(CMISSSolverType) :: LinearSolverAdvectionDiffusion
+  TYPE(CMISSSolverType) :: LinearSolverDiffusion
   !Solver equations
-  TYPE(CMISSSolverEquationsType) :: SolverEquationsDiffusionOne
-  TYPE(CMISSSolverEquationsType) :: SolverEquationsDiffusionTwo
+  TYPE(CMISSSolverEquationsType) :: SolverEquationsAdvectionDiffusion
+  TYPE(CMISSSolverEquationsType) :: SolverEquationsDiffusion
 
 #ifdef WIN32
   !Quickwin type
@@ -323,32 +323,28 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
   !Set geometric tolerance
   GEOMETRY_TOLERANCE = 1.0E-12_CMISSDP
   !Set initial values
-  INITIAL_FIELD_DIFFUSION_ONE=0.0_CMISSDP
-  INITIAL_FIELD_DIFFUSION_TWO=0.0_CMISSDP
+  INITIAL_FIELD_ADVECTION_DIFFUSION=0.0_CMISSDP
+  INITIAL_FIELD_DIFFUSION=0.0_CMISSDP
   !Set initial boundary conditions
-  INLET_WALL_NODES_DIFFUSION_ONE_FLAG=.TRUE.
-  INLET_WALL_NODES_DIFFUSION_TWO_FLAG=.TRUE.
-  IF(INLET_WALL_NODES_DIFFUSION_ONE_FLAG) THEN
-    NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE=36
-    ALLOCATE(INLET_WALL_NODES_DIFFUSION_ONE(NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE))
-    INLET_WALL_NODES_DIFFUSION_ONE=(/1,5,73,109,145,181,3,7,75,111,147,183,&
+  INLET_WALL_NODES_ADVECTION_DIFFUSION_FLAG=.TRUE.
+  INLET_WALL_NODES_DIFFUSION_FLAG=.TRUE.
+  IF(INLET_WALL_NODES_ADVECTION_DIFFUSION_FLAG) THEN
+    NUMBER_OF_INLET_WALL_NODES_ADVECTION_DIFFUSION=36
+    ALLOCATE(INLET_WALL_NODES_ADVECTION_DIFFUSION(NUMBER_OF_INLET_WALL_NODES_ADVECTION_DIFFUSION))
+    INLET_WALL_NODES_ADVECTION_DIFFUSION=(/1,5,73,109,145,181,3,7,75,111,147,183,&
      & 25,27,85,121,157,193,37,39,91,127,163,199,49,51,97,133,169,205,61,63,103,139,175,211/)
     !Set initial boundary conditions
-    BOUNDARY_CONDITIONS_DIFFUSION_ONE=1.0_CMISSDP
+    BOUNDARY_CONDITIONS_ADVECTION_DIFFUSION=1.0_CMISSDP
   ENDIF  !Set material parameters
-  IF(INLET_WALL_NODES_DIFFUSION_TWO_FLAG) THEN
-    NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO=36
-    ALLOCATE(INLET_WALL_NODES_DIFFUSION_TWO(NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO))
-    INLET_WALL_NODES_DIFFUSION_TWO=(/1,5,73,109,145,181,3,7,75,111,147,183,&
+  IF(INLET_WALL_NODES_DIFFUSION_FLAG) THEN
+    NUMBER_OF_INLET_WALL_NODES_DIFFUSION=36
+    ALLOCATE(INLET_WALL_NODES_DIFFUSION(NUMBER_OF_INLET_WALL_NODES_DIFFUSION))
+    INLET_WALL_NODES_DIFFUSION=(/1,5,73,109,145,181,3,7,75,111,147,183,&
      & 25,27,85,121,157,193,37,39,91,127,163,199,49,51,97,133,169,205,61,63,103,139,175,211/)
     !Set initial boundary conditions
-    BOUNDARY_CONDITIONS_DIFFUSION_TWO=1.0_CMISSDP
+    BOUNDARY_CONDITIONS_DIFFUSION=1.0_CMISSDP
   ENDIF  !Set material parameters
 
-
-
-
-    BOUNDARY_CONDITIONS_DIFFUSION_TWO=2.0_CMISSDP
   !Set material parameters
   !Set number of Gauss points (Mind that also material field may be interpolated)
   BASIS_XI_GAUSS_GEOMETRY=3 !4
@@ -356,20 +352,20 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
   BASIS_XI_GAUSS_CONC_TWO=3 !4
   !Set output parameter
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
-  LINEAR_SOLVER_DIFFUSION_ONE_OUTPUT_TYPE=CMISSSolverProgressOutput
-  LINEAR_SOLVER_DIFFUSION_TWO_OUTPUT_TYPE=CMISSSolverSolverOutput
+  LINEAR_SOLVER_ADVECTION_DIFFUSION_OUTPUT_TYPE=CMISSSolverProgressOutput
+  LINEAR_SOLVER_DIFFUSION_OUTPUT_TYPE=CMISSSolverSolverOutput
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
-  EQUATIONS_DIFFUSION_ONE_OUTPUT=CMISSEquationsNoOutput
-  EQUATIONS_DIFFUSION_TWO_OUTPUT=CMISSEquationsNoOutput
+  EQUATIONS_ADVECTION_DIFFUSION_OUTPUT=CMISSEquationsNoOutput
+  EQUATIONS_DIFFUSION_OUTPUT=CMISSEquationsNoOutput
   !Set time parameter
-  LINEAR_SOLVER_DIFFUSION_START_TIME=0.0_CMISSDP
-  LINEAR_SOLVER_DIFFUSION_STOP_TIME=0.250_CMISSDP 
-  LINEAR_SOLVER_DIFFUSION_TIME_INCREMENT=0.125_CMISSDP
+  LINEAR_SOLVER_ADVECTION_DIFFUSION_START_TIME=0.0_CMISSDP
+  LINEAR_SOLVER_ADVECTION_DIFFUSION_STOP_TIME=0.250_CMISSDP 
+  LINEAR_SOLVER_ADVECTION_DIFFUSION_TIME_INCREMENT=0.125_CMISSDP
   !Set result output parameter
-  LINEAR_SOLVER_DIFFUSION_OUTPUT_FREQUENCY=1
+  LINEAR_SOLVER_ADVECTION_DIFFUSION_OUTPUT_FREQUENCY=1
   !Set solver parameters
-  LINEAR_SOLVER_DIFFUSION_ONE_DIRECT_FLAG=.FALSE.
-  LINEAR_SOLVER_DIFFUSION_TWO_DIRECT_FLAG=.FALSE.
+  LINEAR_SOLVER_ADVECTION_DIFFUSION_DIRECT_FLAG=.FALSE.
+  LINEAR_SOLVER_DIFFUSION_DIRECT_FLAG=.FALSE.
 
   RELATIVE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-05_CMISSDP
   ABSOLUTE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-10_CMISSDP
@@ -654,22 +650,23 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
   !EQUATIONS SETS
 
   !Create the equations set for diffusion_one
-  CALL CMISSEquationsSetTypeInitialise(EquationsSetDiffusionOne,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDiffusionOne,Region,GeometricField,EquationsSetDiffusionOne,Err)
+  CALL CMISSEquationsSetTypeInitialise(EquationsSetAdvectionDiffusion,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberAdvectionDiffusion,Region,GeometricField,&
+    & EquationsSetAdvectionDiffusion,Err)
   !Set the equations set to be a linear source diffusion problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetDiffusionOne,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetLinearSourceDiffusionSubtype,Err)
+  CALL CMISSEquationsSetSpecificationSet(EquationsSetAdvectionDiffusion,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetLinearSourceAdvectionDiffusionSubtype,Err)
   !Finish creating the equations set
-  CALL CMISSEquationsSetCreateFinish(EquationsSetDiffusionOne,Err)
+  CALL CMISSEquationsSetCreateFinish(EquationsSetAdvectionDiffusion,Err)
 
   !Create the equations set for diffusion_two
-  CALL CMISSEquationsSetTypeInitialise(EquationsSetDiffusionTwo,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDiffusionTwo,Region,GeometricField,EquationsSetDiffusionTwo,Err)
+  CALL CMISSEquationsSetTypeInitialise(EquationsSetDiffusion,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDiffusion,Region,GeometricField,EquationsSetDiffusion,Err)
   !Set the equations set to be a constant source diffusion problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetDiffusionTwo,CMISSEquationsSetClassicalFieldClass, &
+  CALL CMISSEquationsSetSpecificationSet(EquationsSetDiffusion,CMISSEquationsSetClassicalFieldClass, &
     & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetConstantSourceDiffusionSubtype,Err)
   !Finish creating the equations set
-  CALL CMISSEquationsSetCreateFinish(EquationsSetDiffusionTwo,Err)
+  CALL CMISSEquationsSetCreateFinish(EquationsSetDiffusion,Err)
 
 ! 
 
@@ -680,9 +677,9 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
   !DEPENDENT FIELDS
 
   !Create the equations set dependent field variables for ALE Darcy
-  CALL CMISSFieldTypeInitialise(DependentFieldDiffusionOne,Err)
-  CALL CMISSEquationsSetDependentCreateStart(EquationsSetDiffusionOne,DependentFieldUserNumberDiffusionOne, & 
-    & DependentFieldDiffusionOne,Err)
+  CALL CMISSFieldTypeInitialise(DependentFieldAdvectionDiffusion,Err)
+  CALL CMISSEquationsSetDependentCreateStart(EquationsSetAdvectionDiffusion,DependentFieldUserNumberAdvectionDiffusion, & 
+    & DependentFieldAdvectionDiffusion,Err)
   !Set the mesh component to be used by the field components.
 !   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
 !     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionOne,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
@@ -691,16 +688,16 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
 !       & MESH_COMPONENT_NUMBER_CONC_ONE,Err)
 !   ENDDO
   !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetDependentCreateFinish(EquationsSetDiffusionOne,Err)
+  CALL CMISSEquationsSetDependentCreateFinish(EquationsSetAdvectionDiffusion,Err)
 
   !Initialise dependent field (concentration one components)
-  CALL CMISSFieldComponentValuesInitialise(DependentFieldDiffusionOne,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,INITIAL_FIELD_DIFFUSION_ONE,Err)
+  CALL CMISSFieldComponentValuesInitialise(DependentFieldAdvectionDiffusion,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+    & 1,INITIAL_FIELD_ADVECTION_DIFFUSION,Err)
 
 
-  CALL CMISSFieldTypeInitialise(DependentFieldDiffusionTwo,Err)
-  CALL CMISSEquationsSetDependentCreateStart(EquationsSetDiffusionTwo,DependentFieldUserNumberDiffusionTwo, & 
-    & DependentFieldDiffusionTwo,Err)
+  CALL CMISSFieldTypeInitialise(DependentFieldDiffusion,Err)
+  CALL CMISSEquationsSetDependentCreateStart(EquationsSetDiffusion,DependentFieldUserNumberDiffusion, & 
+    & DependentFieldDiffusion,Err)
   !Set the mesh component to be used by the field components.
 !   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
 !     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionTwo,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
@@ -709,11 +706,11 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
 !       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
 !   ENDDO
   !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetDependentCreateFinish(EquationsSetDiffusionTwo,Err)
+  CALL CMISSEquationsSetDependentCreateFinish(EquationsSetDiffusion,Err)
 
   !Initialise dependent field (concentration one components)
-  CALL CMISSFieldComponentValuesInitialise(DependentFieldDiffusionTwo,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,INITIAL_FIELD_DIFFUSION_TWO,Err)
+  CALL CMISSFieldComponentValuesInitialise(DependentFieldDiffusioN,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+    & 1,INITIAL_FIELD_DIFFUSION,Err)
 
   !
   !================================================================================================================================
@@ -721,17 +718,17 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
 
   !MATERIALS FIELDS
 
-  CALL CMISSFieldTypeInitialise(MaterialsFieldDiffusionOne,Err)
-  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDiffusionOne, &
-    & MaterialsFieldUserNumberDiffusionOne,MaterialsFieldDiffusionOne,Err)
+  CALL CMISSFieldTypeInitialise(MaterialsFieldAdvectionDiffusion,Err)
+  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetAdvectionDiffusion, &
+    & MaterialsFieldUserNumberAdvectionDiffusion,MaterialsFieldAdvectionDiffusion,Err)
   !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDiffusionOne,Err)
+  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetAdvectionDiffusion,Err)
 
-  CALL CMISSFieldTypeInitialise(MaterialsFieldDiffusionTwo,Err)
-  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDiffusionTwo,&
-    & MaterialsFieldUserNumberDiffusionTwo,MaterialsFieldDiffusionTwo,Err)
+  CALL CMISSFieldTypeInitialise(MaterialsFieldDiffusion,Err)
+  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDiffusion,&
+    & MaterialsFieldUserNumberDiffusion,MaterialsFieldDiffusion,Err)
   !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDiffusionTwo,Err)
+  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDiffusion,Err)
 
 !   CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDiffusionOne,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
 !     & MaterialsFieldUserNumberDiffusionOne,POROSITY_PARAM_MAT_PROPERTIES,Err)
@@ -763,15 +760,16 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
 
    !create the equations set source field variables for both equations sets 
   !Create the equations set source field variables
-  CALL CMISSFieldTypeInitialise(SourceFieldDiffusionOne,Err)
-  CALL CMISSEquationsSetSourceCreateStart(EquationsSetDiffusionOne,SourceFieldUserNumberDiffusionOne,SourceFieldDiffusionOne,Err)
+  CALL CMISSFieldTypeInitialise(SourceFieldAdvectionDiffusion,Err)
+  CALL CMISSEquationsSetSourceCreateStart(EquationsSetAdvectionDiffusion,SourceFieldUserNumberAdvectionDiffusion,&
+    & SourceFieldAdvectionDiffusion,Err)
   !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetSourceCreateFinish(EquationsSetDiffusionOne,Err)
+  CALL CMISSEquationsSetSourceCreateFinish(EquationsSetAdvectionDiffusion,Err)
   !Create the equations set source field variables
-  CALL CMISSFieldTypeInitialise(SourceFieldDiffusionTwo,Err)
-  CALL CMISSEquationsSetSourceCreateStart(EquationsSetDiffusionTwo,SourceFieldUserNumberDiffusionTwo,SourceFieldDiffusionTwo,Err)
+  CALL CMISSFieldTypeInitialise(SourceFieldDiffusion,Err)
+  CALL CMISSEquationsSetSourceCreateStart(EquationsSetDiffusion,SourceFieldUserNumberDiffusion,SourceFieldDiffusion,Err)
   !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetSourceCreateFinish(EquationsSetDiffusionTwo,Err)
+  CALL CMISSEquationsSetSourceCreateFinish(EquationsSetDiffusion,Err)
   !
   !================================================================================================================================
   !
@@ -781,28 +779,28 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
   WRITE(*,'(A)') "Creating equations set equations."
 
   !Create the equations set equations
-  CALL CMISSEquationsTypeInitialise(EquationsDiffusionOne,Err)
-  CALL CMISSEquationsSetEquationsCreateStart(EquationsSetDiffusionOne,EquationsDiffusionOne,Err)
+  CALL CMISSEquationsTypeInitialise(EquationsAdvectionDiffusion,Err)
+  CALL CMISSEquationsSetEquationsCreateStart(EquationsSetAdvectionDiffusion,EquationsAdvectionDiffusion,Err)
   !Set the equations matrices sparsity type
-  CALL CMISSEquationsSparsityTypeSet(EquationsDiffusionOne,CMISSEquationsSparseMatrices,Err)
+  CALL CMISSEquationsSparsityTypeSet(EquationsAdvectionDiffusion,CMISSEquationsSparseMatrices,Err)
 !   !Set the equations lumping type
 !   CALL CMISSEquationsLumpingTypeSet(EquationsDarcy,CMISSEquationsUnlumpedMatrices,Err)
   !Set the equations set output
-  CALL CMISSEquationsOutputTypeSet(EquationsDiffusionOne,EQUATIONS_DIFFUSION_ONE_OUTPUT,Err)
+  CALL CMISSEquationsOutputTypeSet(EquationsAdvectionDiffusion,EQUATIONS_ADVECTION_DIFFUSION_OUTPUT,Err)
   !Finish the equations set equations
-  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetDiffusionOne,Err)
+  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetAdvectionDiffusion,Err)
 
   !Create the equations set equations
-  CALL CMISSEquationsTypeInitialise(EquationsDiffusionTwo,Err)
-  CALL CMISSEquationsSetEquationsCreateStart(EquationsSetDiffusionTwo,EquationsDiffusionTwo,Err)
+  CALL CMISSEquationsTypeInitialise(EquationsDiffusion,Err)
+  CALL CMISSEquationsSetEquationsCreateStart(EquationsSetDiffusion,EquationsDiffusion,Err)
   !Set the equations matrices sparsity type
-  CALL CMISSEquationsSparsityTypeSet(EquationsDiffusionTwo,CMISSEquationsSparseMatrices,Err)
+  CALL CMISSEquationsSparsityTypeSet(EquationsDiffusion,CMISSEquationsSparseMatrices,Err)
 !   !Set the equations lumping type
 !   CALL CMISSEquationsLumpingTypeSet(EquationsDarcy,CMISSEquationsUnlumpedMatrices,Err)
   !Set the equations set output
-  CALL CMISSEquationsOutputTypeSet(EquationsDiffusionTwo,EQUATIONS_DIFFUSION_TWO_OUTPUT,Err)
+  CALL CMISSEquationsOutputTypeSet(EquationsDiffusion,EQUATIONS_DIFFUSION_OUTPUT,Err)
   !Finish the equations set equations
-  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetDiffusionTwo,Err)
+  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetDiffusion,Err)
 
   !
   !================================================================================================================================
@@ -812,37 +810,37 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
 
   !BOUNDARY CONDITIONS
   !Start the creation of the equations set boundary conditions for diffusion_one
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDiffusionOne,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDiffusionOne,BoundaryConditionsDiffusionOne,Err)
-  IF(INLET_WALL_NODES_DIFFUSION_ONE_FLAG) THEN
-    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE
-      NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_ONE(NODE_COUNTER)
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsAdvectionDiffusion,Err)
+  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetAdvectionDiffusion,BoundaryConditionsAdvectionDiffusion,Err)
+  IF(INLET_WALL_NODES_ADVECTION_DIFFUSION_FLAG) THEN
+    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_ADVECTION_DIFFUSION
+      NODE_NUMBER=INLET_WALL_NODES_ADVECTION_DIFFUSION(NODE_COUNTER)
       CONDITION=CMISSBoundaryConditionFixed
 !       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
         VALUE=0.1_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusionOne,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsAdvectionDiffusion,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
           & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
 !       ENDDO
     ENDDO
   ENDIF
   !Finish the creation of the equations set boundary conditions for diffusion_one
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDiffusionOne,Err)
+  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetAdvectionDiffusion,Err)
   !Start the creation of the equations set boundary conditions for diffusion_two
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDiffusionTwo,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDiffusionTwo,BoundaryConditionsDiffusionTwo,Err)
-  IF(INLET_WALL_NODES_DIFFUSION_TWO_FLAG) THEN
-    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO
-      NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_TWO(NODE_COUNTER)
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDiffusion,Err)
+  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDiffusion,BoundaryConditionsDiffusion,Err)
+  IF(INLET_WALL_NODES_DIFFUSION_FLAG) THEN
+    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION
+      NODE_NUMBER=INLET_WALL_NODES_DIFFUSION(NODE_COUNTER)
       CONDITION=CMISSBoundaryConditionFixed
 !       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
         VALUE=0.2_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusionTwo,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
           & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_TWO,CONDITION,VALUE,Err)
 !       ENDDO
     ENDDO
   ENDIF
   !Finish the creation of the equations set boundary conditions for diffusion_two
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDiffusionTwo,Err)
+  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDiffusion,Err)
   !
   !
   !================================================================================================================================
@@ -856,8 +854,8 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
   CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
   !Set the problem to be a coupled diffusion-diffusion problem
-  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemMultiPhysicsClass,CMISSProblemDiffusionDiffusionType, &
-    & CMISSProblemCoupledSourceDiffusionDiffusionSubtype,Err)
+  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemMultiPhysicsClass,CMISSProblemDiffusionAdvectionDiffusionType, &
+    & CMISSProblemCoupledSourceDiffusionAdvecDiffusionSubtype,Err)
   !Finish the creation of a problem.
   CALL CMISSProblemCreateFinish(Problem,Err)
   !Start the creation of the problem control loop
@@ -865,10 +863,10 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
   !Get the control loop
   CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
   !Set the times
-  CALL CMISSControlLoopTimesSet(ControlLoop,LINEAR_SOLVER_DIFFUSION_START_TIME,LINEAR_SOLVER_DIFFUSION_STOP_TIME, & 
-    & LINEAR_SOLVER_DIFFUSION_TIME_INCREMENT,Err)
+  CALL CMISSControlLoopTimesSet(ControlLoop,LINEAR_SOLVER_ADVECTION_DIFFUSION_START_TIME,&
+    & LINEAR_SOLVER_ADVECTION_DIFFUSION_STOP_TIME,LINEAR_SOLVER_ADVECTION_DIFFUSION_TIME_INCREMENT,Err)
   !Set the output timing
-  CALL CMISSControlLoopTimeOutputSet(ControlLoop,LINEAR_SOLVER_DIFFUSION_OUTPUT_FREQUENCY,Err)
+  CALL CMISSControlLoopTimeOutputSet(ControlLoop,LINEAR_SOLVER_ADVECTION_DIFFUSION_OUTPUT_FREQUENCY,Err)
   !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
 
@@ -882,42 +880,42 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
   !SOLVERS
 
   !Start the creation of the problem solvers
-  CALL CMISSSolverTypeInitialise(SolverDiffusionOne,Err)
-  CALL CMISSSolverTypeInitialise(SolverDiffusionTwo,Err)
-  CALL CMISSSolverTypeInitialise(LinearSolverDiffusionOne,Err)
-  CALL CMISSSolverTypeInitialise(LinearSolverDiffusionTwo,Err)
+  CALL CMISSSolverTypeInitialise(SolverAdvectionDiffusion,Err)
+  CALL CMISSSolverTypeInitialise(SolverDiffusion,Err)
+  CALL CMISSSolverTypeInitialise(LinearSolverAdvectionDiffusion,Err)
+  CALL CMISSSolverTypeInitialise(LinearSolverDiffusion,Err)
   CALL CMISSProblemSolversCreateStart(Problem,Err)
   !Get the deformation-dependent material properties solver
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverDiffusionOneUserNumber,SolverDiffusionOne,Err)
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverAdvectionDiffusionUserNumber,SolverAdvectionDiffusion,Err)
   WRITE(*,'(A)') "Solver one got."
   !Set the output type
-  CALL CMISSSolverOutputTypeSet(SolverDiffusionOne,LINEAR_SOLVER_DIFFUSION_ONE_OUTPUT_TYPE,Err)
+  CALL CMISSSolverOutputTypeSet(SolverAdvectionDiffusion,LINEAR_SOLVER_ADVECTION_DIFFUSION_OUTPUT_TYPE,Err)
   !Set the solver settings
 !  IF(LINEAR_SOLVER_DIFFUSION_ONE_DIRECT_FLAG) THEN
 !    CALL CMISSSolverLinearTypeSet(LinearSolverDiffusionOne,CMISSSolverLinearDirectSolveType,Err)
 !    CALL CMISSSolverLibraryTypeSet(LinearSolverDiffusionOne,CMISSSolverMUMPSLibrary,Err)
 !  ELSE
 !    CALL CMISSSolverLinearTypeSet(LinearSolverDiffusionOne,CMISSSolverLinearIterativeSolveType,Err)
-   CALL CMISSSolverDynamicLinearSolverGet(SolverDiffusionOne,LinearSolverDiffusionOne,Err)
-    CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolverDiffusionOne,MAXIMUM_ITERATIONS,Err)
+   CALL CMISSSolverDynamicLinearSolverGet(SolverAdvectionDiffusion,LinearSolverAdvectionDiffusion,Err)
+    CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolverAdvectionDiffusion,MAXIMUM_ITERATIONS,Err)
 !    CALL CMISSSolverLinearIterativeDivergenceToleranceSet(LinearSolverDiffusionOne,DIVERGENCE_TOLERANCE,Err)
 !    CALL CMISSSolverLinearIterativeRelativeToleranceSet(LinearSolverDiffusionOne,RELATIVE_TOLERANCE,Err)
 !    CALL CMISSSolverLinearIterativeAbsoluteToleranceSet(LinearSolverDiffusionOne,ABSOLUTE_TOLERANCE,Err)
 !    CALL CMISSSolverLinearIterativeGMRESRestartSet(LinearSolverDiffusionOne,RESTART_VALUE,Err)
 !  ENDIF
   !Get the Darcy solver
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverDiffusionTwoUserNumber,SolverDiffusionTwo,Err)
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverDiffusionUserNumber,SolverDiffusion,Err)
   WRITE(*,'(A)') "Solver two got."
   !Set the output type
-  CALL CMISSSolverOutputTypeSet(SolverDiffusionTwo,LINEAR_SOLVER_DIFFUSION_TWO_OUTPUT_TYPE,Err)
+  CALL CMISSSolverOutputTypeSet(SolverDiffusion,LINEAR_SOLVER_DIFFUSION_OUTPUT_TYPE,Err)
   !Set the solver settings
 !  IF(LINEAR_SOLVER_DIFFUSION_ONE_DIRECT_FLAG) THEN
 !    CALL CMISSSolverLinearTypeSet(LinearSolverDiffusionOne,CMISSSolverLinearDirectSolveType,Err)
 !    CALL CMISSSolverLibraryTypeSet(LinearSolverDiffusionOne,CMISSSolverMUMPSLibrary,Err)
 !  ELSE
 !    CALL CMISSSolverLinearTypeSet(LinearSolverDiffusionOne,CMISSSolverLinearIterativeSolveType,Err)
-   CALL CMISSSolverDynamicLinearSolverGet(SolverDiffusionTwo,LinearSolverDiffusionTwo,Err)
-    CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolverDiffusionTwo,MAXIMUM_ITERATIONS,Err)
+   CALL CMISSSolverDynamicLinearSolverGet(SolverDiffusion,LinearSolverDiffusion,Err)
+    CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolverDiffusion,MAXIMUM_ITERATIONS,Err)
 !    CALL CMISSSolverLinearIterativeDivergenceToleranceSet(LinearSolverDiffusionOne,DIVERGENCE_TOLERANCE,Err)
 !    CALL CMISSSolverLinearIterativeRelativeToleranceSet(LinearSolverDiffusionOne,RELATIVE_TOLERANCE,Err)
 !    CALL CMISSSolverLinearIterativeAbsoluteToleranceSet(LinearSolverDiffusionOne,ABSOLUTE_TOLERANCE,Err)
@@ -937,25 +935,25 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
   !SOLVER EQUATIONS
 
   !Start the creation of the problem solver equations
-  CALL CMISSSolverTypeInitialise(SolverDiffusionOne,Err)
-  CALL CMISSSolverTypeInitialise(SolverDiffusionTwo,Err)
-  CALL CMISSSolverEquationsTypeInitialise(SolverEquationsDiffusionOne,Err)
-  CALL CMISSSolverEquationsTypeInitialise(SolverEquationsDiffusionTwo,Err)
+  CALL CMISSSolverTypeInitialise(SolverAdvectionDiffusion,Err)
+  CALL CMISSSolverTypeInitialise(SolverDiffusion,Err)
+  CALL CMISSSolverEquationsTypeInitialise(SolverEquationsAdvectionDiffusion,Err)
+  CALL CMISSSolverEquationsTypeInitialise(SolverEquationsDiffusion,Err)
 
 
   CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
   !
   !Get the diffusion_one solver equations
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverDiffusionOneUserNumber,SolverDiffusionOne,Err)
-  CALL CMISSSolverSolverEquationsGet(SolverDiffusionOne,SolverEquationsDiffusionOne,Err)
-  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsDiffusionOne,CMISSSolverEquationsSparseMatrices,Err)
-  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsDiffusionOne,EquationsSetDiffusionOne,EquationsSetIndex,Err)
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverAdvectionDiffusionUserNumber,SolverAdvectionDiffusion,Err)
+  CALL CMISSSolverSolverEquationsGet(SolverAdvectionDiffusion,SolverEquationsAdvectionDiffusion,Err)
+  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsAdvectionDiffusion,CMISSSolverEquationsSparseMatrices,Err)
+  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsAdvectionDiffusion,EquationsSetAdvectionDiffusion,EquationsSetIndex,Err)
   WRITE(*,'(A)') "Solver one equations got."
   !Get the diffusion_two equations
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverDiffusionTwoUserNumber,SolverDiffusionTwo,Err)
-  CALL CMISSSolverSolverEquationsGet(SolverDiffusionTwo,SolverEquationsDiffusionTwo,Err)
-  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsDiffusionTwo,CMISSSolverEquationsSparseMatrices,Err)
-  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsDiffusionTwo,EquationsSetDiffusionTwo,EquationsSetIndex,Err)
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverDiffusionUserNumber,SolverDiffusion,Err)
+  CALL CMISSSolverSolverEquationsGet(SolverDiffusion,SolverEquationsDiffusion,Err)
+  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsDiffusion,CMISSSolverEquationsSparseMatrices,Err)
+  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsDiffusion,EquationsSetDiffusion,EquationsSetIndex,Err)
 WRITE(*,'(A)') "Solver two equations got."
  !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
@@ -987,8 +985,8 @@ WRITE(*,'(A)') "Solver two equations got."
     WRITE(*,'(A)') "Exporting fields..."
     CALL CMISSFieldsTypeInitialise(Fields,Err)
     CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"CoupledSourceDiffusionDiffusion","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"CoupledSourceDiffusionDiffusion","FORTRAN",Err)
+    CALL CMISSFieldIONodesExport(Fields,"CoupledSourceDiffusionAdvectionDiffusion","FORTRAN",Err)
+    CALL CMISSFieldIOElementsExport(Fields,"CoupledSourceDiffusionAdvectionDiffusion","FORTRAN",Err)
     CALL CMISSFieldsTypeFinalise(Fields,Err)
     WRITE(*,'(A)') "Field exported!"
   ENDIF
@@ -1001,4 +999,4 @@ WRITE(*,'(A)') "Solver two equations got."
   
   STOP
 
-END PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
+END PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
