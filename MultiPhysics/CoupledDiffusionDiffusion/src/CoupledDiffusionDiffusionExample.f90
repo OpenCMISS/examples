@@ -86,7 +86,7 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=4
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberDiffusionOne=6
-  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberDiffusionTwo=42
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberDiffusionTwo=7
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDiffusionOne=8
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDiffusionTwo=9
   INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumberDiffusionOne=10
@@ -742,6 +742,8 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
 
   !EQUATIONS
 
+  WRITE(*,'(A)') "Creating equations set equations."
+
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(EquationsDiffusionOne,Err)
   CALL CMISSEquationsSetEquationsCreateStart(EquationsSetDiffusionOne,EquationsDiffusionOne,Err)
@@ -773,17 +775,15 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
 !--------------------------------------------------------------------------------------------------------------------------------
 
   !BOUNDARY CONDITIONS
-  !Start the creation of the equations set boundary conditions for Darcy
+  !Start the creation of the equations set boundary conditions for diffusion_one
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDiffusionOne,Err)
   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDiffusionOne,BoundaryConditionsDiffusionOne,Err)
-
-  !Prescribe boundary conditions (absolute nodal parameters)
+  !Finish the creation of the equations set boundary conditions for diffusion_one
+  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDiffusionOne,Err)
+  !Start the creation of the equations set boundary conditions for diffusion_two
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDiffusionTwo,Err)
   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDiffusionTwo,BoundaryConditionsDiffusionTwo,Err)
-
-  !Finish the creation of the equations set boundary conditions for Darcy
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDiffusionOne,Err)
-  !Finish the creation of the equations set boundary conditions for the solid
+  !Finish the creation of the equations set boundary conditions for diffusion_two
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDiffusionTwo,Err)
   !
 
@@ -791,6 +791,7 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
   !================================================================================================================================
   !
 
+  WRITE(*,'(A)') "start creation of a problem"
   !PROBLEMS
 
   !Start the creation of a problem.
@@ -819,6 +820,8 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
   !================================================================================================================================
   !
 
+
+  WRITE(*,'(A)') "Start creation of problem solvers."
   !SOLVERS
 
   !Start the creation of the problem solvers
@@ -829,6 +832,7 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
   CALL CMISSProblemSolversCreateStart(Problem,Err)
   !Get the deformation-dependent material properties solver
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverDiffusionOneUserNumber,SolverDiffusionOne,Err)
+  WRITE(*,'(A)') "Solver one got."
   !Set the output type
   CALL CMISSSolverOutputTypeSet(SolverDiffusionOne,LINEAR_SOLVER_DIFFUSION_ONE_OUTPUT_TYPE,Err)
   !Set the solver settings
@@ -846,8 +850,9 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
 !  ENDIF
   !Get the Darcy solver
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverDiffusionTwoUserNumber,SolverDiffusionTwo,Err)
+  WRITE(*,'(A)') "Solver two got."
   !Set the output type
-  CALL CMISSSolverOutputTypeSet(SolverDiffusionTwo,LINEAR_SOLVER_DIFFUSION_ONE_OUTPUT_TYPE,Err)
+!  CALL CMISSSolverOutputTypeSet(Solver,LINEAR_SOLVER_DIFFUSION_ONE_OUTPUT_TYPE,Err)
   !Set the solver settings
 !  IF(LINEAR_SOLVER_DIFFUSION_ONE_DIRECT_FLAG) THEN
 !    CALL CMISSSolverLinearTypeSet(LinearSolverDiffusionOne,CMISSSolverLinearDirectSolveType,Err)
@@ -870,11 +875,13 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
   !================================================================================================================================
   !
 
+
+  WRITE(*,'(A)') "Start creation of the problem solver equations."
   !SOLVER EQUATIONS
 
   !Start the creation of the problem solver equations
-  CALL CMISSSolverTypeInitialise(LinearSolverDiffusionOne,Err)
-  CALL CMISSSolverTypeInitialise(LinearSolverDiffusionOne,Err)
+  CALL CMISSSolverTypeInitialise(SolverDiffusionOne,Err)
+  CALL CMISSSolverTypeInitialise(SolverDiffusionTwo,Err)
 !  CALL CMISSSolverTypeInitialise(SolverSolid,Err)
   CALL CMISSSolverEquationsTypeInitialise(SolverEquationsDiffusionOne,Err)
   CALL CMISSSolverEquationsTypeInitialise(SolverEquationsDiffusionTwo,Err)
@@ -883,15 +890,17 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
   CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
   !
   !Get the diffusion_one solver equations
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverDiffusionOneUserNumber,LinearSolverDiffusionOne,Err)
-  CALL CMISSSolverSolverEquationsGet(LinearSolverDiffusionOne,SolverEquationsDiffusionOne,Err)
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverDiffusionOneUserNumber,SolverDiffusionOne,Err)
+  CALL CMISSSolverSolverEquationsGet(SolverDiffusionOne,SolverEquationsDiffusionOne,Err)
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsDiffusionOne,CMISSSolverEquationsSparseMatrices,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsDiffusionOne,EquationsSetDiffusionOne,EquationsSetIndex,Err)
+  WRITE(*,'(A)') "Solver one equations got."
   !Get the diffusion_two equations
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverDiffusionTwoUserNumber,LinearSolverDiffusionTwo,Err)
-  CALL CMISSSolverSolverEquationsGet(LinearSolverDiffusionTwo,SolverEquationsDiffusionTwo,Err)
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverDiffusionTwoUserNumber,SolverDiffusionTwo,Err)
+  CALL CMISSSolverSolverEquationsGet(SolverDiffusionTwo,SolverEquationsDiffusionTwo,Err)
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsDiffusionTwo,CMISSSolverEquationsSparseMatrices,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsDiffusionTwo,EquationsSetDiffusionTwo,EquationsSetIndex,Err)
+WRITE(*,'(A)') "Solver two equations got."
 !   !Get the finite elasticity solver equations
 !   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverSolidUserNumber,SolverSolid,Err)
 !   CALL CMISSSolverSolverEquationsGet(SolverSolid,SolverEquationsSolid,Err)
