@@ -79,7 +79,7 @@ buildExample("FluidMechanics/NavierStokes/Dynamic")
 
 
 #buildExample("FluidMechanics/Darcy/ConvergenceStudy")
-#buildExample("FluidMechanics/Darcy/FiveSpotProblem")
+buildExample("FluidMechanics/Darcy/QuasistaticMaterial")
 #buildExample("FluidMechanics/Darcy/VenousCompartment")
 
 #buildExample("FiniteElasticity/UniAxialExtension")

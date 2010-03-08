@@ -93,7 +93,7 @@ testExample(id='1',path="FluidMechanics/NavierStokes/Dynamic",nodes='1',input='\
 
 
 #testExample(id='1',path="FluidMechanics/Darcy/ConvergenceStudy",nodes='1',input='4\n4\n0\n1')
-#testExample(id='1',path="FluidMechanics/Darcy/FiveSpotProblem",nodes='1',input='4\n4\n0\n1')
+testExample(id='1',path="FluidMechanics/Darcy/QuasistaticMaterial",nodes='1',input='\n')
 #testExample(id='1',path="FluidMechanics/Darcy/VenousCompartment",nodes='1',input='4\n4\n0\n1')
 
 #testExample(id='1',path="FiniteElasticity/UniAxialExtension",nodes='1',input='4\n4\n0\n1')

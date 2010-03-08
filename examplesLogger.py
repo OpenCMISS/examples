@@ -104,3 +104,5 @@ logExample(path="FluidMechanics/Stokes/Dynamic")
 logExample(path="FluidMechanics/NavierStokes/ALE")
 logExample(path="FluidMechanics/NavierStokes/Static")
 logExample(path="FluidMechanics/NavierStokes/Dynamic")
+
+logExample(path="FluidMechanics/Darcy/QuasistaticMaterial")
