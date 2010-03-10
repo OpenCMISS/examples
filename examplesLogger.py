@@ -91,7 +91,7 @@ def logExample(path) :
    return;
 
 logExample(path="ClassicalField/AnalyticLaplace")
-logExample(path="ClassicalField/AdvectionDiffusion")
+#logExample(path="ClassicalField/AdvectionDiffusion")
 logExample(path="ClassicalField/Diffusion")
 logExample(path="ClassicalField/DiffusionConstantSource")
 logExample(path="ClassicalField/NonlinearPoisson")
