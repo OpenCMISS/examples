@@ -59,6 +59,7 @@ libSuccess = buildLibrary()
 
 buildExample("ClassicalField/AnalyticLaplace")
 #buildExample("ClassicalField/AdvectionDiffusion")
+buildExample("ClassicalField/AdvectionDiffusion/AdvectionDiffusionIO")
 buildExample("ClassicalField/Diffusion")
 buildExample("ClassicalField/DiffusionConstantSource")
 #buildExample("ClassicalField/Helmholtz")

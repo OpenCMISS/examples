@@ -73,6 +73,7 @@ def testExample(id, path, nodes, input=None, args=None, expectedFile=None, actua
 
 testExample(id='1', path="ClassicalField/AnalyticLaplace", nodes='1')
 #testExample(id='1', path="ClassicalField/AdvectionDiffusion", nodes='1')
+testExample(id='1', path="ClassicalField/AdvectionDiffusion/AdvectionDiffusionIO", nodes='1')
 testExample(id='1', path="ClassicalField/Diffusion", nodes='1')
 testExample(id='1', path="ClassicalField/DiffusionConstantSource", nodes='1')
 #testExample(id='1', path="ClassicalField/Helmholtz", nodes='1',input='4\n4\n0\n1')
