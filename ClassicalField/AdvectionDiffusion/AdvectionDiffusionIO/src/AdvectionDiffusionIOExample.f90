@@ -591,39 +591,9 @@ PROGRAM ADVECTIONDIFFUSIONIOEXAMPLE
   !Finish the creation of the equations set boundary conditions
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetAdvecDiff,Err)  
 
-
-
-!   !Create the equations set boundary conditions
-!   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsAdvecDiff,Err)
-!   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditionsAdvecDiff,Err)
-!   !Set the first node to 0.0 and the last node to 1.0
-!   FirstNodeNumber=1
-!   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-!     LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)
-!   ELSE
-!     LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
-!   ENDIF
-!   CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsAdvecDiff,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
-!     & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-!   CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsAdvecDiff,CMISSFieldDeludelnVariableType,1,LastNodeNumber,1, &
-!     & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
-!   !Finish the creation of the equations set boundary conditions
-!   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
-
   !
   !================================================================================================================================
   !
-  EXPORT_FIELD_IO=.TRUE.
-  IF(EXPORT_FIELD_IO) THEN
-    WRITE(*,'(A)') "Exporting fields..."
-    CALL CMISSFieldsTypeInitialise(Fields,Err)
-    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"AdvectionDiffusionIOFirst","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"AdvectionDiffusionIOFirst","FORTRAN",Err)
-    CALL CMISSFieldsTypeFinalise(Fields,Err)
-    WRITE(*,'(A)') "Field exported!"
-  ENDIF
-  !PROBLEMS
 
   !Start the creation of a problem.
   CALL CMISSProblemTypeInitialise(Problem,Err)
