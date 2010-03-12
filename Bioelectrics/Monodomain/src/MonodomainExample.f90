@@ -265,6 +265,7 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSEquationsSetSourceCreateFinish(EquationsSet,Err)
 
   !Create the CellML environment for the source field
+  CALL CMISSCellMLTypeInitialise(CellML,Err)
   CALL CMISSCellMLCreateStart(CellMLUserNumber,SourceField,CellML,Err)
   !Finish the CellML environment
   CALL CMISSCellMLCreateFinish(CellML,Err)
