@@ -153,7 +153,9 @@ PROGRAM LAPLACEEXAMPLE
   IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
 #endif
 
+
   !Intialise cmiss
+  PRINT *, 'Initialising World Region...'
   NULLIFY(WORLD_REGION)
   CALL CMISS_INITIALISE(WORLD_REGION,ERR,ERROR,*999)
   
@@ -173,6 +175,7 @@ PROGRAM LAPLACEEXAMPLE
   !CALL TIMING_SET_ON(IN_TIMING_TYPE,.TRUE.,"",TIMING_ROUTINE_LIST,ERR,ERROR,*999)
   
   !Calculate the start times
+  PRINT *, 'Setting CPU Timer...'
   CALL CPU_TIMER(USER_CPU,START_USER_TIME,ERR,ERROR,*999)
   CALL CPU_TIMER(SYSTEM_CPU,START_SYSTEM_TIME,ERR,ERROR,*999)
   
@@ -187,7 +190,7 @@ PROGRAM LAPLACEEXAMPLE
   NUMBER_GLOBAL_X_ELEMENTS=2
   NUMBER_GLOBAL_Y_ELEMENTS=2
   NUMBER_GLOBAL_Z_ELEMENTS=0
-  NUMBER_OF_DOMAINS=2
+  NUMBER_OF_DOMAINS=1
   
 !  !Read in the number of elements in the X & Y directions, and the number of partitions on the master node (number 0)
 !  IF(MY_COMPUTATIONAL_NODE_NUMBER==0) THEN
@@ -213,11 +216,11 @@ PROGRAM LAPLACEEXAMPLE
       CALL GET_COMMAND_ARGUMENT(4,BUFFER)
       READ(BUFFER,*) NUMBER_OF_DOMAINS
     ELSE
-      !TODO more detailed error message
-      CALL FLAG_ERROR("Incorrect number of argements.",ERR,ERROR,*999)
+      CALL FLAG_ERROR("Incorrect number of arguments.",ERR,ERROR,*999)
     ENDIF
   ENDIF
   
+  PRINT *, 'Broadcasting Example Information...'
   !Broadcast the number of elements in the X & Y directions and the number of partitions to the other computational nodes
   CALL MPI_BCAST(NUMBER_GLOBAL_X_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
   CALL MPI_ERROR_CHECK("MPI_BCAST",MPI_IERROR,ERR,ERROR,*999)
@@ -232,6 +235,7 @@ PROGRAM LAPLACEEXAMPLE
     & ERR,ERROR,*999)
   CALL WRITE_STRING_VALUE(GENERAL_OUTPUT_TYPE,"  My computational node number = ",MY_COMPUTATIONAL_NODE_NUMBER,ERR,ERROR,*999)
 
+  PRINT *, 'Building Coordinate System...'
   !Start the creation of a new RC coordinate system
   NULLIFY(COORDINATE_SYSTEM)
   CALL COORDINATE_SYSTEM_CREATE_START(1,COORDINATE_SYSTEM,ERR,ERROR,*999)
@@ -245,13 +249,19 @@ PROGRAM LAPLACEEXAMPLE
   !Finish the creation of the coordinate system
   CALL COORDINATE_SYSTEM_CREATE_FINISH(COORDINATE_SYSTEM,ERR,ERROR,*999)
 
+  PRINT *, 'Building Region(s)...'
   !Start the creation of the region
   NULLIFY(REGION)
+  PRINT *, ' START'
   CALL REGION_CREATE_START(1,WORLD_REGION,REGION,ERR,ERROR,*999)
+  PRINT *, ' DAD'
+  
   !Set the regions coordinate system to the 2D RC coordinate system that we have created
   CALL REGION_COORDINATE_SYSTEM_SET(REGION,COORDINATE_SYSTEM,ERR,ERROR,*999)
+  PRINT *, ' DAD2'
   !Finish the creation of the region
   CALL REGION_CREATE_FINISH(REGION,ERR,ERROR,*999)
+  PRINT *, ' DAD3'
 
   FILE="LaplaceExample"
   METHOD="FORTRAN"
@@ -273,6 +283,7 @@ PROGRAM LAPLACEEXAMPLE
     !Finish the creation of the basis
     CALL BASIS_CREATE_FINISH(BASIS,ERR,ERROR,*999)
     
+    PRINT *, 'Building Generated Mesh...'
     !Start the creation of a generated mesh in the region
     NULLIFY(GENERATED_MESH)
     NULLIFY(MESH)
@@ -296,6 +307,7 @@ PROGRAM LAPLACEEXAMPLE
     !Finish the creation of a generated mesh in the region
     CALL GENERATED_MESH_CREATE_FINISH(GENERATED_MESH,1,MESH,ERR,ERROR,*999) 
 
+    PRINT *, 'Building Mesh Decomposition...'
     !Create a decomposition
     NULLIFY(DECOMPOSITION)
     CALL DECOMPOSITION_CREATE_START(1,MESH,DECOMPOSITION,ERR,ERROR,*999)
@@ -326,6 +338,7 @@ PROGRAM LAPLACEEXAMPLE
 
   IF(.NOT.ASSOCIATED(GEOMETRIC_FIELD)) GEOMETRIC_FIELD=>REGION%FIELDS%FIELDS(1)%PTR
   
+  PRINT *, 'Building Equation Sets...'
   !Create the equations_set
   NULLIFY(EQUATIONS_SET)
   CALL EQUATIONS_SET_CREATE_START(1,REGION,GEOMETRIC_FIELD,EQUATIONS_SET,ERR,ERROR,*999)
@@ -335,12 +348,14 @@ PROGRAM LAPLACEEXAMPLE
   !Finish creating the equations set
   CALL EQUATIONS_SET_CREATE_FINISH(EQUATIONS_SET,ERR,ERROR,*999)
 
+  PRINT *, 'Building Dependent Field...'
   !Create the equations set dependent field variables
   NULLIFY(DEPENDENT_FIELD)
   CALL EQUATIONS_SET_DEPENDENT_CREATE_START(EQUATIONS_SET,2,DEPENDENT_FIELD,ERR,ERROR,*999)
   !Finish the equations set dependent field variables
   CALL EQUATIONS_SET_DEPENDENT_CREATE_FINISH(EQUATIONS_SET,ERR,ERROR,*999)
 
+  PRINT *, 'Building Equations...'
   !Create the equations set equations
   NULLIFY(EQUATIONS)
   CALL EQUATIONS_SET_EQUATIONS_CREATE_START(EQUATIONS_SET,EQUATIONS,ERR,ERROR,*999)
@@ -397,6 +412,7 @@ PROGRAM LAPLACEEXAMPLE
   !  & BOUNDARY_CONDITION_FIXED,1.0_DP,ERR,ERROR,*999)
   CALL EQUATIONS_SET_BOUNDARY_CONDITIONS_CREATE_FINISH(EQUATIONS_SET,ERR,ERROR,*999)
   
+  PRINT *, 'Building Problem...'
   !Create the problem
   NULLIFY(PROBLEM)
   CALL PROBLEM_CREATE_START(1,PROBLEM,ERR,ERROR,*999)
@@ -411,6 +427,7 @@ PROGRAM LAPLACEEXAMPLE
   !Finish creating the problem control loop
   CALL PROBLEM_CONTROL_LOOP_CREATE_FINISH(PROBLEM,ERR,ERROR,*999)
 
+  PRINT *, 'Building Solver...'
   !Start the creation of the problem solvers
   NULLIFY(SOLVER)
   CALL PROBLEM_SOLVERS_CREATE_START(PROBLEM,ERR,ERROR,*999)
@@ -437,6 +454,7 @@ PROGRAM LAPLACEEXAMPLE
   !Finish the problem solver equations
   CALL PROBLEM_SOLVER_EQUATIONS_CREATE_FINISH(PROBLEM,ERR,ERROR,*999)
 
+  PRINT *, 'Solving Problem...'
   !Solve the problem
   CALL PROBLEM_SOLVE(PROBLEM,ERR,ERROR,*999)
 
