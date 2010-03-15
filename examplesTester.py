@@ -19,7 +19,7 @@ successbuilds = f.read()
 f.close()
 f = open(logDir+'/build.log',"a")
 
-def testExample(id, path, nodes, input=None, args=None, expectedFile=None, actualFile=None) :
+def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=None) :
    global compiler,logDir,successbuilds,f;
    index = successbuilds.find(compiler+'_'+path)
    index = successbuilds.find('|',index)
@@ -55,8 +55,12 @@ def testExample(id, path, nodes, input=None, args=None, expectedFile=None, actua
          err=os.system('python ' + mpidir + '/mpiexec.py -n ' + nodes + ' ' + execPath +" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
        else :
          err=os.system('python ' + mpidir + '/mpiexec.py -n ' + nodes + " " + execPath + ' ' + args+" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
-     if expectedFile != None and actualFile != None :
-       err=os.system(ndiff + ' --tolerance=1e-10 ' + expectedFile + ' ' + actualFile + ' >> '  + newDir + "/test" + id + "-" + compiler + " 2>&1")
+     if err==0 and ndiffDir != None and outputDir != None :
+     	for outputFile in os.listdir(ndiffDir) :
+		if outputFile!='.svn' :
+       			error=os.system(ndiff + ' --tolerance=1e-10 ' + ndiffDir +'/'+outputFile + ' ' + outputDir +'/'+outputFile + ' >> '  + newDir + "/test" + id + "-" + compiler + " 2>&1")
+			if err==0 :
+				err=error
      if not os.path.exists(execPath) :
        err=-1
      if err==0 :
