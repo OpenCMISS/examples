@@ -140,7 +140,7 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  NUMBER_GLOBAL_X_ELEMENTS=500
+  NUMBER_GLOBAL_X_ELEMENTS=50
   NUMBER_GLOBAL_Y_ELEMENTS=100
   NUMBER_GLOBAL_Z_ELEMENTS=0
   NUMBER_OF_DOMAINS=1
@@ -277,8 +277,8 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
   !For comparison withe analytical solution used here, the independent field must be set to the following:
   !w(x,y)=(sin 6y,cos 6x) FIELD_U_VARIABLE_TYPE,1,FIELD_NODE_BASED_INTERPOLATION
-  CALL CMISSFieldComponentInterpolationSet(IndependentField,CMISSFieldUVariableType,1,CMISSFieldNodeBasedInterpolation,Err) 
-  CALL CMISSFieldComponentInterpolationSet(IndependentField,CMISSFieldUVariableType,2,CMISSFieldNodeBasedInterpolation,Err)
+!   CALL CMISSFieldComponentInterpolationSet(IndependentField,CMISSFieldUVariableType,1,CMISSFieldNodeBasedInterpolation,Err) 
+!   CALL CMISSFieldComponentInterpolationSet(IndependentField,CMISSFieldUVariableType,2,CMISSFieldNodeBasedInterpolation,Err)
   !Loop over nodes to set the appropriate function value
 !    DO
 
