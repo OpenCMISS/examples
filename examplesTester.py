@@ -75,7 +75,7 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
      print "Testing %s%s: <a class='fail'>failed</a> due to build failure<br>" %(path,id)
    return;
 
-testExample(id='1', path="ClassicalField/AnalyticLaplace", nodes='1')
+testExample(id='1', path="ClassicalField/AnalyticLaplace", nodes='1', ndiffDir='expected_files', outputDir='.')
 #testExample(id='1', path="ClassicalField/AdvectionDiffusion", nodes='1')
 testExample(id='1', path="ClassicalField/AdvectionDiffusion/AdvectionDiffusionIO", nodes='1')
 testExample(id='1', path="ClassicalField/AdvectionDiffusion/StaticAdvectionDiffusion", nodes='1')
