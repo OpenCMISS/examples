@@ -129,8 +129,8 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
   
-  NUMBER_GLOBAL_X_ELEMENTS=20
-  NUMBER_GLOBAL_Y_ELEMENTS=20
+  NUMBER_GLOBAL_X_ELEMENTS=100
+  NUMBER_GLOBAL_Y_ELEMENTS=100
   NUMBER_GLOBAL_Z_ELEMENTS=0
   CALL MPI_COMM_SIZE(MPI_COMM_WORLD,NUMBER_OF_DOMAINS,MPI_IERROR)
 
@@ -292,11 +292,11 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
-  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
+  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
   !Set the Jacobian type
-  !CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
-  CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianFDCalculated,Err)
+  CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
+  !CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianFDCalculated,Err)
   !Get the associated linear solver
   CALL CMISSSolverNewtonLinearSolverGet(Solver,LinearSolver,Err)
   CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolver,300,Err)
@@ -322,7 +322,7 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   CALL CMISSProblemSolve(Problem,Err)
 
   !Output Analytic analysis
-  Call CMISSAnalyticAnalysisOutput(DependentField,"AnalyticOutputFile",Err)
+  !Call CMISSAnalyticAnalysisOutput(DependentField,"",Err)
     
   EXPORT_FIELD=.TRUE.
   IF(EXPORT_FIELD) THEN

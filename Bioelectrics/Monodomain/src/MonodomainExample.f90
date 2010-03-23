@@ -273,7 +273,7 @@ PROGRAM MONODOMAINEXAMPLE
   !Start the creation of CellML models
   CALL CMISSCellMLModelsCreateStart(CellML,Err)
   !Import a Hodgkin-Huxley model from a file
-  !CALL CMISSCellMLModelImport(1,CellML,"hodgkin_huyxley_1952_variant01.cellml",Err)
+  CALL CMISSCellMLModelImport(1,CellML,"hodgkin_huyxley_1952_variant01.cellml",Err)
   !Finish the creation of CellML models
   CALL CMISSCellMLModelsCreateFinish(CellML,Err)
 

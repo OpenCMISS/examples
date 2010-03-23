@@ -132,15 +132,14 @@ PROGRAM LAPLACEEXAMPLE
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,(/1,2,3,4,5/),"Diagnostics",(/"FIELD_MAPPINGS_CALCULATE", &
-    & "SOLVER_MAPPING_CALCULATE"/),Err)
+  CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,(/1,2,3,4,5/),"Diagnostics",(/"FIELD_MAPPINGS_CALCULATE"/),Err)
 
   !Get the computational nodes information
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
   
-  NUMBER_GLOBAL_X_ELEMENTS=2
-  NUMBER_GLOBAL_Y_ELEMENTS=2
+  NUMBER_GLOBAL_X_ELEMENTS=5
+  NUMBER_GLOBAL_Y_ELEMENTS=5
   NUMBER_GLOBAL_Z_ELEMENTS=0
   NUMBER_OF_DOMAINS=NumberOfComputationalNodes
     
@@ -304,6 +303,8 @@ PROGRAM LAPLACEEXAMPLE
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
   CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
+  CALL CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearDirectSolveType,Err)
+  CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverMUMPSLibrary,Err)
   !Finish the creation of the problem solver
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
 

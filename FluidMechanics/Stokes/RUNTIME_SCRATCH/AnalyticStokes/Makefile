@@ -5,7 +5,7 @@
 # $Id: Makefile 27 2007-07-24 16:52:51Z cpb $
 #
 #----------------------------------------------------------------------------------------------------------------------------------
-# Makefile for compiling OpenCMISS examples
+# Makefile for compiling openCMISS examples
 #
 # Original by Chris Bradley adapted from the CMISS Makefile by Karl Tomlinson 
 # Changes:
@@ -55,15 +55,38 @@ MAKEFLAGS = --no-builtin-rules --warn-undefined-variables
 #----------------------------------------------------------------------------------------------------------------------------------
 
 ifndef OPENCMISS_ROOT
-  OPENCMISS_ROOT := ../..
-  GLOBAL_ROOT := $(CURDIR)/../..
+  OPENCMISS_ROOT := ../../../..
+  GLOBAL_ROOT := $(CURDIR)/../../../..
 else
   GLOBAL_ROOT := ${OPENCMISS_ROOT}/cm
 endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_NAME = MoreComplexMesh
+EXAMPLE_PATH=FluidMechanics/Stokes/RUNTIME_SCRATCH/
+
+EXAMPLE_NAME = AnalyticStokes
 
 include $(GLOBAL_ROOT)/NewExampleMakefile
 
+# customisation begins here ---
+MAIN_OBJECT_DIR = $(GLOBAL_ROOT)/object/$(LIB_ARCH_DIR)$(MT_SUFFIX)$(DEBUG_SUFFIX)$(PROF_SUFFIX)/$(MPI)/$(COMPILER)
+MAIN_SOURCE_DIR = $(GLOBAL_ROOT)/src
+
+# let's assume fluid_mechanics_IO_routines has been built in main_object, copy them over
+# redefine preliminaries
+preliminaries: $(OBJECT_DIR) $(EXE_DIR)
+	cp $(MAIN_OBJECT_DIR)/fluid_mechanics_IO_routines.o $(OBJECT_DIR)
+	cp $(MAIN_OBJECT_DIR)/fluid_mechanics_io_routines.mod $(OBJECT_DIR)
+
+info:
+	@echo "OBJECTS:"
+	@echo $(OBJECTS)
+	@echo "OBJECT_DIR:"
+	@echo $(OBJECT_DIR)
+	@echo "MAIN_OBJECT_DIR:"
+	@echo $(MAIN_OBJECT_DIR)
+	@echo "EXAMPLE_SOURCE_DIR:"
+	@echo $(EXAMPLE_SOURCE_DIR)
+	@echo "MAIN_SOURCE_DIR:"
+	@echo $(MAIN_SOURCE_DIR)

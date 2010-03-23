@@ -862,7 +862,8 @@ PROGRAM STOKESALEEXAMPLE
   !Get the moving mesh solver
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverMovingMeshUserNumber,LinearSolverMovingMesh,Err)
   !Set the output type
-  CALL CMISSSolverOutputTypeSet(LinearSolverMovingMesh,LINEAR_SOLVER_MOVING_MESH_OUTPUT_TYPE,Err)
+  !CALL CMISSSolverOutputTypeSet(LinearSolverMovingMesh,LINEAR_SOLVER_MOVING_MESH_OUTPUT_TYPE,Err)
+  CALL CMISSSolverOutputTypeSet(LinearSolverMovingMesh,4,Err)
   !Set the solver settings
   IF(LINEAR_SOLVER_MOVING_MESH_DIRECT_FLAG) THEN
     CALL CMISSSolverLinearTypeSet(LinearSolverMovingMesh,CMISSSolverLinearDirectSolveType,Err)
