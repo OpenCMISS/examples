@@ -801,8 +801,8 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !Create the equations_set
   CALL CMISSEquationsSetCreateStart(EquationSetSolidUserNumber,Region,FibreFieldSolid,EquationsSetSolid,Err)
   CALL CMISSEquationsSetSpecificationSet(EquationsSetSolid,CMISSEquationsSetElasticityClass, &
-    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetNoSubtype,Err)
-!     & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetMooneyRivlinSubtype,Err)
+!     & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetNoSubtype,Err)
+    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetMooneyRivlinSubtype,Err)
   CALL CMISSEquationsSetCreateFinish(EquationsSetSolid,Err)
 
   ! end Solid
