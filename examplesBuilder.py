@@ -80,7 +80,7 @@ buildExample("FluidMechanics/NavierStokes/Static")
 buildExample("FluidMechanics/NavierStokes/Dynamic")
 
 
-#buildExample("FluidMechanics/Darcy/ConvergenceStudy")
+buildExample("FluidMechanics/Darcy/Static")
 buildExample("FluidMechanics/Darcy/QuasistaticMaterial")
 #buildExample("FluidMechanics/Darcy/VenousCompartment")
 
