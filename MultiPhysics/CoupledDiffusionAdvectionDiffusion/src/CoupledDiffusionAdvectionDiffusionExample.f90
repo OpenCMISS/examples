@@ -627,25 +627,31 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
   !Set the scaling to use
   CALL CMISSFieldScalingTypeSet(GeometricField,CMISSFieldNoScaling,Err)
   !Set the mesh component to be used by the field components.
+!     CALL CMISSFieldNumberOfVariablesSet(GeometricField,2,Err)
+!     CALL CMISSFieldVariableTypesSet(GeometricField,&
+!      & (/CMISSFieldUVariableType,CMISSFieldVVariableType/),Err)
+
 
   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
     CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_GEOMETRY,Err)
+!    CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldVVariableType,COMPONENT_NUMBER, & 
+!      & MESH_COMPONENT_NUMBER_GEOMETRY,Err)
   ENDDO
-
+   WRITE(*,'(A)') "now finishing creating geometric field"
   !Finish creating the field
   CALL CMISSFieldCreateFinish(GeometricField,Err)
   !Update the geometric field parameters
-  DO NODE_NUMBER=1,NUMBER_OF_NODES_GEOMETRY
-    DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-      VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)
-      CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-        & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
-    ENDDO
-  ENDDO
-  CALL CMISSFieldParameterSetUpdateStart(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
-  CALL CMISSFieldParameterSetUpdateFinish(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
-  WRITE(*,'(A)') "geometric field made"
+!   DO NODE_NUMBER=1,NUMBER_OF_NODES_GEOMETRY
+!     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+!       VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)
+!       CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldVVariableType,CMISSFieldValuesSetType, & 
+!         & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+!     ENDDO
+!   ENDDO
+!   CALL CMISSFieldParameterSetUpdateStart(GeometricField,CMISSFieldVVariableType,CMISSFieldValuesSetType,Err)
+!   CALL CMISSFieldParameterSetUpdateFinish(GeometricField,CMISSFieldVVariableType,CMISSFieldValuesSetType,Err)
+!   WRITE(*,'(A)') "geometric field made"
   !
   !================================================================================================================================
   !
@@ -668,7 +674,12 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
     CALL CMISSFieldNumberOfVariablesSet(DependentField,4,Err)
     CALL CMISSFieldVariableTypesSet(DependentField,&
      & (/CMISSFieldUVariableType,CMISSFieldDelUDelNVariableType,CMISSFieldVVariableType,CMISSFieldDelVDelNVariableType/),Err)
-  WRITE(*,'(A)') "set number of variables"
+   WRITE(*,'(A)') "set number of variables"
+!     CALL CMISSFieldNumberOfVariablesSet(DependentField,2,Err)
+!     CALL CMISSFieldVariableTypesSet(DependentField,&
+!      & (/CMISSFieldVVariableType,CMISSFieldDelVDelNVariableType/),Err)
+
+
     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldUVariableType,1,Err)
     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelUDelNVariableType,1,Err)
      CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,1, & 
