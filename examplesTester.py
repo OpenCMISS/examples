@@ -99,7 +99,7 @@ testExample(id='1',path="FluidMechanics/NavierStokes/Dynamic",nodes='1',input='\
 
 
 testExample(id='1',path="FluidMechanics/Darcy/Static",nodes='1',input='\n')
-testExample(id='1',path="FluidMechanics/Darcy/QuasistaticMaterial",nodes='1',input='\n',expectedFile="expected_results/TIME_STEP_0003.exnode",actualFile="output/TIME_STEP_0003.exnode")
+testExample(id='1',path="FluidMechanics/Darcy/QuasistaticMaterial",nodes='1',input='\n',ndiffDir="expected_results",outputDir="output")
 #testExample(id='1',path="FluidMechanics/Darcy/VenousCompartment",nodes='1',input='4\n4\n0\n1')
 
 #testExample(id='1',path="FiniteElasticity/UniAxialExtension",nodes='1',input='4\n4\n0\n1')
