@@ -184,7 +184,7 @@ PROGRAM LAPLACEEXAMPLE
     CALL CMISSBasisNumberOfXiSet(Basis,3,Err)
   ENDIF
   !Finish the creation of the basis
-  CALL CMISSBasisCreateFinish(BASIS,Err)
+  CALL CMISSBasisCreateFinish(Basis,Err)
    
   !Start the creation of a generated mesh in the region
   CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
