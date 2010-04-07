@@ -42,9 +42,7 @@
 
 !> \example FluidMechanics/Stokes/ALE/src/ALEExample.f90
 !! Example program to solve a ALE Stokes equation using OpenCMISS calls.
-!! \par Latest Builds:
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FluidMechanics/Stokes/ALE/build-intel'>Linux Intel Build</a>
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FluidMechanics/Stokes/ALE/build-intel'>Linux GNU Build</a>
+!! \htmlinclude FluidMechanics/Stokes/ALE/history.html
 !!
 !<
 
@@ -864,7 +862,8 @@ PROGRAM STOKESALEEXAMPLE
   !Get the moving mesh solver
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverMovingMeshUserNumber,LinearSolverMovingMesh,Err)
   !Set the output type
-  CALL CMISSSolverOutputTypeSet(LinearSolverMovingMesh,LINEAR_SOLVER_MOVING_MESH_OUTPUT_TYPE,Err)
+  !CALL CMISSSolverOutputTypeSet(LinearSolverMovingMesh,LINEAR_SOLVER_MOVING_MESH_OUTPUT_TYPE,Err)
+  CALL CMISSSolverOutputTypeSet(LinearSolverMovingMesh,4,Err)
   !Set the solver settings
   IF(LINEAR_SOLVER_MOVING_MESH_DIRECT_FLAG) THEN
     CALL CMISSSolverLinearTypeSet(LinearSolverMovingMesh,CMISSSolverLinearDirectSolveType,Err)

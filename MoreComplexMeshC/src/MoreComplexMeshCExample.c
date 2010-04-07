@@ -54,8 +54,8 @@ int main()
 {
   /* int WorldCoordinateSystemUserNumber;
      int WorldRegionUserNumber; */
-  CMISSCoordinateSystemType *WorldCoordinateSystem=NULL;
-  CMISSRegionType *WorldRegion=NULL,*Region=NULL;
+  CMISSCoordinateSystemType WorldCoordinateSystem=(CMISSCoordinateSystemType)NULL;
+  CMISSRegionType WorldRegion=(CMISSRegionType)NULL,Region=(CMISSRegionType)NULL;
   char Label[STRING_SIZE];
   int Err;
 

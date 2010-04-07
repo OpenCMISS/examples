@@ -664,7 +664,8 @@ PROGRAM DARCYANALYTICEXAMPLE
   !Set the equations matrices sparsity type
   CALL CMISSEquationsSparsityTypeSet(EquationsDarcy,CMISSEquationsSparseMatrices,Err)
   !Set the equations set output
-  CALL CMISSEquationsOutputTypeSet(EquationsDarcy,EQUATIONS_DARCY_OUTPUT,Err)
+  !CALL CMISSEquationsOutputTypeSet(EquationsDarcy,EQUATIONS_DARCY_OUTPUT,Err)
+  CALL CMISSEquationsOutputTypeSet(EquationsDarcy,1,Err)
   !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetDarcy,Err)
 

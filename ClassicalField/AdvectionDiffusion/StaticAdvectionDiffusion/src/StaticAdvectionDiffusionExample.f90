@@ -40,7 +40,7 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/Diffusion/src/DiffusionExample.f90
+!> \example ClassicalField/AdvectionDiffusion/StaticAdvectionDiffusion/src/StaticAdvectionDiffusionExample.f90
 !! Example program to solve a diffusion equation using openCMISS calls.
 !! \par Latest Builds:
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/Diffusion/build-intel'>Linux Intel Build</a>
@@ -140,8 +140,8 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  NUMBER_GLOBAL_X_ELEMENTS=20
-  NUMBER_GLOBAL_Y_ELEMENTS=40
+  NUMBER_GLOBAL_X_ELEMENTS=50
+  NUMBER_GLOBAL_Y_ELEMENTS=100
   NUMBER_GLOBAL_Z_ELEMENTS=0
   NUMBER_OF_DOMAINS=1
 
@@ -277,8 +277,8 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
   !For comparison withe analytical solution used here, the independent field must be set to the following:
   !w(x,y)=(sin 6y,cos 6x) FIELD_U_VARIABLE_TYPE,1,FIELD_NODE_BASED_INTERPOLATION
-  CALL CMISSFieldComponentInterpolationSet(IndependentField,CMISSFieldUVariableType,1,CMISSFieldNodeBasedInterpolation,Err) 
-  CALL CMISSFieldComponentInterpolationSet(IndependentField,CMISSFieldUVariableType,2,CMISSFieldNodeBasedInterpolation,Err)
+!   CALL CMISSFieldComponentInterpolationSet(IndependentField,CMISSFieldUVariableType,1,CMISSFieldNodeBasedInterpolation,Err) 
+!   CALL CMISSFieldComponentInterpolationSet(IndependentField,CMISSFieldUVariableType,2,CMISSFieldNodeBasedInterpolation,Err)
   !Loop over nodes to set the appropriate function value
 !    DO
 
@@ -330,15 +330,15 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
 !   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
 CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
 
-  EXPORT_FIELD=.TRUE.
-  IF(EXPORT_FIELD) THEN
-    CALL CMISSFieldsTypeInitialise(Fields,Err)
-    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"StaticAdvectionDiffusionInitial","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"StaticAdvectionDiffusionInitial","FORTRAN",Err)
-    CALL CMISSFieldsTypeFinalise(Fields,Err)
-
-  ENDIF
+!   EXPORT_FIELD=.TRUE.
+!   IF(EXPORT_FIELD) THEN
+!     CALL CMISSFieldsTypeInitialise(Fields,Err)
+!     CALL CMISSFieldsTypeCreate(Region,Fields,Err)
+!     CALL CMISSFieldIONodesExport(Fields,"StaticAdvectionDiffusionInitial","FORTRAN",Err)
+!     CALL CMISSFieldIOElementsExport(Fields,"StaticAdvectionDiffusionInitial","FORTRAN",Err)
+!     CALL CMISSFieldsTypeFinalise(Fields,Err)
+! 
+!   ENDIF
 
 
   !Create the problem

@@ -43,9 +43,7 @@
 !> \example ClassicalField/AnalyticLaplace/src/AnalyticLaplaceExample.f90
 !! Example illustrating the use of openCMISS to solve the Laplace problem and check with its Analytic Solution.
 !! 
-!! \par Latest Builds:
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/AnalyticLaplace/build-intel'>Linux Intel Build</a>
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/AnalyticLaplace/build-gnu'>Linux GNU Build</a>
+!! \htmlinclude ClassicalField/AnalyticLaplace/history.html
 !< 
 
 !> Main program

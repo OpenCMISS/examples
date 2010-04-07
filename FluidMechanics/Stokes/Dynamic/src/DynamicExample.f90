@@ -42,9 +42,7 @@
 
 !> \example FluidMechanics/Stokes/Dynamic/src/DynamicExample.f90
 !! Example program to solve a dynamic Stokes equation using OpenCMISS calls.
-!! \par Latest Builds:
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FluidMechanics/Stokes/Dynamic/build-intel'>Linux Intel Build</a>
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FluidMechanics/Stokes/Dynamic/build-intel'>Linux GNU Build</a>
+!! \htmlinclude FluidMechanics/Stokes/Dynamic/history.html
 !!
 !<
 

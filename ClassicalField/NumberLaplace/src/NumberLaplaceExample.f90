@@ -42,9 +42,7 @@
 
 !> \example ClassicalField/NumberLaplace/src/NumberLaplaceExample.f90
 !! Example program to solve a Laplace equation using openCMISS calls with objects accessed by user number.
-!! \par Latest Builds:
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/Laplace/build-intel'>Linux Intel Build</a>
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/Laplace/build-gnu'>Linux GNU Build</a>
+!! \htmlinclude ClassicalField/NumberLaplace/history.html
 !!
 !<
 

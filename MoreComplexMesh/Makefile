@@ -5,7 +5,7 @@
 # $Id: Makefile 27 2007-07-24 16:52:51Z cpb $
 #
 #----------------------------------------------------------------------------------------------------------------------------------
-# Makefile for compiling openCMISS examples
+# Makefile for compiling OpenCMISS examples
 #
 # Original by Chris Bradley adapted from the CMISS Makefile by Karl Tomlinson 
 # Changes:
@@ -26,7 +26,7 @@
 # License for the specific language governing rights and limitations
 # under the License.
 #
-# The Original Code is openCMISS
+# The Original Code is OpenCMISS
 #
 # The Initial Developer of the Original Code is University of Auckland,
 # Auckland, New Zealand and University of Oxford, Oxford, United
@@ -65,5 +65,5 @@ endif
 
 EXAMPLE_NAME = MoreComplexMesh
 
-include $(GLOBAL_ROOT)/ExampleMakefile
+include $(GLOBAL_ROOT)/NewExampleMakefile
 

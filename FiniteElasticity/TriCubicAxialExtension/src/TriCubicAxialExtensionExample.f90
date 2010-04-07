@@ -59,45 +59,14 @@ PROGRAM TRICUBICAXIALEXTENSIONEXAMPLE
 
   IMPLICIT NONE
 
-  !Program variables
+  !Test program parameters
 
-  INTEGER(CMISSIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
-  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber,MPI_IERROR
-  INTEGER(CMISSIntg) :: EquationsSetIndex
-
-  TYPE(CMISSBasisType) :: Basis1,Basis2
-  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
-  TYPE(CMISSCoordinateSystemType) :: CoordinateSystem, WorldCoordinateSystem
-  TYPE(CMISSMeshType) :: Mesh
-  TYPE(CMISSDecompositionType) :: Decomposition
-  TYPE(CMISSEquationsType) :: Equations
-  TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldsType) :: Fields
-  TYPE(CMISSFieldType) :: GeometricField,FibreField,MaterialField,DependentField
-  TYPE(CMISSProblemType) :: Problem
-  TYPE(CMISSRegionType) :: Region,WorldRegion
-  TYPE(CMISSSolverType) :: Solver
-  TYPE(CMISSSolverEquationsType) :: SolverEquations
-  TYPE(CMISSNodesType) :: Nodes
-  TYPE(CMISSMeshElementsType) :: Elements,LinearElements
-
-#ifdef WIN32
-  !Quickwin type
-  LOGICAL :: QUICKWIN_STATUS=.FALSE.
-  TYPE(WINDOWCONFIG) :: QUICKWIN_WINDOW_CONFIG
-#endif
-
-  !Generic CMISS variables
-  INTEGER(CMISSIntg) :: Err
-
-  !parameters
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CubicBasisUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: LinearBasisUserNumber=2
-  INTEGER(CMISSIntg), PARAMETER :: NumberOfXiCoordinates=3
   INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: MeshComponentNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CubicMeshComponentNumber=1
   INTEGER(CMISSIntg), PARAMETER :: LinearMeshComponentNumber=2
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
@@ -107,15 +76,41 @@ PROGRAM TRICUBICAXIALEXTENSIONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
-  !local variables
-  INTEGER(CMISSIntg) :: NumberOfSpatialCoordinates
-  INTEGER(CMISSIntg) :: TotalNumberOfNodes
-  INTEGER(CMISSIntg) :: NumberOfMeshDimensions,NumberOfMeshComponents
-  INTEGER(CMISSIntg) :: TotalNumberOfElements
-  INTEGER(CMISSIntg) :: FieldGeometryNumberOfVariables,FieldGeometryNumberOfComponents
-  INTEGER(CMISSIntg) :: FieldFibreNumberOfVariables,FieldFibreNumberOfComponents
-  INTEGER(CMISSIntg) :: FieldMaterialNumberOfVariables,FieldMaterialNumberOfComponents
-  INTEGER(CMISSIntg) :: FieldDependentNumberOfVariables,FieldDependentNumberOfComponents
+  !Program types
+
+  !Program variables
+
+  INTEGER(CMISSIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
+  INTEGER(CMISSIntg) :: TotalNumberElements,TotalNumberNodes,NumberOfMeshDimensions
+  INTEGER(CMISSIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
+
+  !CMISS variables
+  TYPE(CMISSBasisType) :: CubicBasis, LinearBasis
+  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
+  TYPE(CMISSCoordinateSystemType) :: CoordinateSystem, WorldCoordinateSystem
+  TYPE(CMISSMeshType) :: Mesh
+  TYPE(CMISSDecompositionType) :: Decomposition
+  TYPE(CMISSEquationsType) :: Equations
+  TYPE(CMISSEquationsSetType) :: EquationsSet
+  TYPE(CMISSFieldType) :: GeometricField,FibreField,MaterialField,DependentField
+  TYPE(CMISSFieldsType) :: Fields
+  TYPE(CMISSProblemType) :: Problem
+  TYPE(CMISSRegionType) :: Region,WorldRegion
+  TYPE(CMISSSolverType) :: Solver,LinearSolver
+  TYPE(CMISSSolverEquationsType) :: SolverEquations
+  TYPE(CMISSNodesType) :: Nodes
+  TYPE(CMISSMeshElementsType) :: CubicElements,LinearElements
+
+#ifdef WIN32
+  !Quickwin type
+  LOGICAL :: QUICKWIN_STATUS=.FALSE.
+  TYPE(WINDOWCONFIG) :: QUICKWIN_WINDOW_CONFIG
+#endif
+
+  !Generic CMISS variables
+  INTEGER(CMISSIntg) :: Err
 
 #ifdef WIN32
   !Initialise QuickWin
@@ -131,8 +126,8 @@ PROGRAM TRICUBICAXIALEXTENSIONEXAMPLE
   !Intialise cmiss
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  !Set diagnostics on
-  CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,(/1,2,3,4,5/),"Diagnostics",(/"PROBLEM_FINITE_ELEMENT_CALCULATE"/),Err)
+  !Set all diganostic levels on for testing
+  !CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,(/1,2,3,4,5/),"Diagnostics",(/"PROBLEM_RESIDUAL_EVALUATE"/),Err)
 
   !Get the number of computational nodes and this computational node number
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -149,69 +144,56 @@ PROGRAM TRICUBICAXIALEXTENSIONEXAMPLE
   CALL MPI_BCAST(NumberGlobalZElements,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
   CALL MPI_BCAST(NumberOfDomains,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
 
-  !Create a CS - default is 3D rectangular cartesian CS with 0,0,0 as origin
-  NumberOfSpatialCoordinates=3
+  !Create a 3D rectangular cartesian coordinate system
   CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
   CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemTypeSet(CoordinateSystem,CMISSCoordinateRectangularCartesianType,Err)
-  CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,NumberOfSpatialCoordinates,Err)
-  CALL CMISSCoordinateSystemOriginSet(CoordinateSystem,(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/),Err)
   CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
 
-  !Create a region and assign the CS to the region
+  !Create a region and assign the coordinate system to the region
   CALL CMISSRegionTypeInitialise(Region,Err)
   CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegion,Region,Err)
   CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
   CALL CMISSRegionCreateFinish(Region,Err)
 
-  !Define basis functions (1 - tri-cubic Hermite ; 2 - tri-linear Lagrange)
-  CALL CMISSBasisTypeInitialise(Basis1,Err)
-  CALL CMISSBasisCreateStart(BasisUserNumber,Basis1,Err)
-  CALL CMISSBasisTypeSet(Basis1,CMISSBasisLagrangeHermiteTPType,Err)
-  CALL CMISSBasisNumberOfXiSet(Basis1,NumberOfXiCoordinates,Err)
-  CALL CMISSBasisInterpolationXiSet(Basis1,(/CMISSBasisCubicHermiteInterpolation, &
+  !Define basis functions - tri-linear Lagrange and tri-cubic Lagrange
+  CALL CMISSBasisTypeInitialise(LinearBasis,Err)
+  CALL CMISSBasisCreateStart(LinearBasisUserNumber,LinearBasis,Err)
+  CALL CMISSBasisQuadratureNumberOfGaussXiSet(LinearBasis, &
+    & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)
+  CALL CMISSBasisCreateFinish(LinearBasis,Err)
+
+  CALL CMISSBasisTypeInitialise(CubicBasis,Err)
+  CALL CMISSBasisCreateStart(CubicBasisUserNumber,CubicBasis,Err)
+  CALL CMISSBasisInterpolationXiSet(CubicBasis,(/CMISSBasisCubicHermiteInterpolation, &
     & CMISSBasisCubicHermiteInterpolation,CMISSBasisCubicHermiteInterpolation/),Err)
-  CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis1, &
+  CALL CMISSBasisQuadratureNumberOfGaussXiSet(CubicBasis, &
     & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)
-  CALL CMISSBasisCreateFinish(Basis1,Err)
+  CALL CMISSBasisCreateFinish(CubicBasis,Err)
 
-  CALL CMISSBasisTypeInitialise(Basis2,Err)
-  CALL CMISSBasisCreateStart(LinearBasisUserNumber,Basis2,Err)
-  CALL CMISSBasisTypeSet(Basis2,CMISSBasisLagrangeHermiteTPType,Err)
-  CALL CMISSBasisNumberOfXiSet(Basis2,NumberOfXiCoordinates,Err)
-  CALL CMISSBasisInterpolationXiSet(Basis2,(/CMISSBasisLinearLagrangeInterpolation, &
-    & CMISSBasisLinearLagrangeInterpolation,CMISSBasisLinearLagrangeInterpolation/),Err)
-  CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis2, &
-    & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)
-  CALL CMISSBasisCreateFinish(Basis2,Err)
-
-  !Create a mesh
+  !Create a mesh with two components, cubic hermite for geometry and linear lagrange
+  !for hydrostatic pressure, fibre angles and material properties
+  TotalNumberElements=1
   NumberOfMeshDimensions=3
-  NumberOfMeshComponents=2
-  TotalNumberOfElements=1
   CALL CMISSMeshTypeInitialise(Mesh,Err)
   CALL CMISSMeshCreateStart(MeshUserNumber,Region,NumberOfMeshDimensions,Mesh,Err)
-  CALL CMISSMeshNumberOfComponentsSet(Mesh,NumberOfMeshComponents,Err)
-  CALL CMISSMeshNumberOfElementsSet(Mesh,TotalNumberOfElements,Err)
-
+  CALL CMISSMeshNumberOfComponentsSet(Mesh,2,Err)
+  CALL CMISSMeshNumberOfElementsSet(Mesh,TotalNumberElements,Err)
   !define nodes for the mesh
-  TotalNumberOfNodes=8
+  TotalNumberNodes=8
   CALL CMISSNodesTypeInitialise(Nodes,Err)
-  CALL CMISSNodesCreateStart(Region,TotalNumberOfNodes,Nodes,Err)
+  CALL CMISSNodesCreateStart(Region,TotalNumberNodes,Nodes,Err)
   CALL CMISSNodesCreateFinish(Nodes,Err)
-
-  !Cubic Hermite - Geometry
-  CALL CMISSMeshElementsTypeInitialise(Elements,Err)
-  CALL CMISSMeshElementsCreateStart(Mesh,MeshComponentNumber,Basis1,Elements,Err)
-  CALL CMISSMeshElementsNodesSet(Elements,1,(/1,2,3,4,5,6,7,8/),Err)
-  CALL CMISSMeshElementsCreateFinish(Elements,Err)
-
-  !Linear Lagrange - Hydrostatic pressure, Fibre angles and Material properties
+  !cubic Hermite component
+  CALL CMISSMeshElementsTypeInitialise(CubicElements,Err)
+  CALL CMISSMeshElementsCreateStart(Mesh,CubicMeshComponentNumber,CubicBasis,CubicElements,Err)
+  CALL CMISSMeshElementsNodesSet(CubicElements,1,(/1,2,3,4,5,6,7,8/),Err)
+  CALL CMISSMeshElementsCreateFinish(CubicElements,Err)
+  !linear Lagrange component
   CALL CMISSMeshElementsTypeInitialise(LinearElements,Err)
-  CALL CMISSMeshElementsCreateStart(Mesh,LinearMeshComponentNumber,Basis2,LinearElements,Err)
+  CALL CMISSMeshElementsCreateStart(Mesh,LinearMeshComponentNumber,LinearBasis,LinearElements,Err)
   CALL CMISSMeshElementsNodesSet(LinearElements,1,(/1,2,3,4,5,6,7,8/),Err)
   CALL CMISSMeshElementsCreateFinish(LinearElements,Err)
-
+  !finish mesh creation
   CALL CMISSMeshCreateFinish(Mesh,Err)
 
   !Create a decomposition
@@ -222,18 +204,13 @@ PROGRAM TRICUBICAXIALEXTENSIONEXAMPLE
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
 
   !Create a field to put the geometry (defualt is geometry)
-  FieldGeometryNumberOfVariables=1
-  FieldGeometryNumberOfComponents=3
   CALL CMISSFieldTypeInitialise(GeometricField,Err)
   CALL CMISSFieldCreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
   CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
-  CALL CMISSFieldTypeSet(GeometricField,CMISSFieldGeometricType,Err)  
-  CALL CMISSFieldNumberOfVariablesSet(GeometricField,FieldGeometryNumberOfVariables,Err)
-  CALL CMISSFieldNumberOfComponentsSet(GeometricField,CMISSFieldUVariableType,FieldGeometryNumberOfComponents,Err)  
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,MeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,MeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,MeshComponentNumber,Err)
-  CALL CMISSFieldScalingTypeSetAndLock(GeometricField,CMISSFieldUnitScaling,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,CubicMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,CubicMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,CubicMeshComponentNumber,Err)
+  CALL CMISSFieldScalingTypeSet(GeometricField,CMISSFieldUnitScaling,Err)
   CALL CMISSFieldCreateFinish(GeometricField,Err)
 
   !Set node parameters
@@ -318,81 +295,61 @@ PROGRAM TRICUBICAXIALEXTENSIONEXAMPLE
   CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,5,8,3,1.0_CMISSDP,Err)
 
   !Create a fibre field and attach it to the geometric field
-  FieldFibreNumberOfVariables=1
-  FieldFibreNumberOfComponents=3
   CALL CMISSFieldTypeInitialise(FibreField,Err)
   CALL CMISSFieldCreateStart(FieldFibreUserNumber,Region,FibreField,Err)
   CALL CMISSFieldTypeSet(FibreField,CMISSFieldFibreType,Err)
-  CALL CMISSFieldMeshDecompositionSet(FibreField,Decomposition,Err)        
+  CALL CMISSFieldMeshDecompositionSet(FibreField,Decomposition,Err)
   CALL CMISSFieldGeometricFieldSet(FibreField,GeometricField,Err)
-  CALL CMISSFieldNumberOfVariablesSet(FibreField,FieldFibreNumberOfVariables,Err)
-  CALL CMISSFieldNumberOfComponentsSet(FibreField,CMISSFieldUVariableType,FieldFibreNumberOfComponents,Err)  
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,1,LinearMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,2,LinearMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,3,LinearMeshComponentNumber,Err)
   CALL CMISSFieldCreateFinish(FibreField,Err)
 
-  !Create a material field and attach it to the geometric field
-  FieldMaterialNumberOfVariables=1
-  FieldMaterialNumberOfComponents=2
-  CALL CMISSFieldTypeInitialise(MaterialField,Err)
-  CALL CMISSFieldCreateStart(FieldMaterialUserNumber,Region,MaterialField,Err)
-  CALL CMISSFieldTypeSet(MaterialField,CMISSFieldMaterialType,Err)
-  CALL CMISSFieldMeshDecompositionSet(MaterialField,Decomposition,Err)        
-  CALL CMISSFieldGeometricFieldSet(MaterialField,GeometricField,Err)
-  CALL CMISSFieldNumberOfVariablesSet(MaterialField,FieldMaterialNumberOfVariables,Err)
-  CALL CMISSFieldNumberOfComponentsSet(MaterialField,CMISSFieldUVariableType,FieldMaterialNumberOfComponents,Err)  
-  CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,1,LinearMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,2,LinearMeshComponentNumber,Err)
-  CALL CMISSFieldCreateFinish(MaterialField,Err)
+  !Create the equations_set
+  CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,EquationsSet,Err)
+  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetElasticityClass, &
+    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetMooneyRivlinSubtype,Err)
+  CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
-  !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 3.0 respectively.
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,4.0_CMISSDP,Err)
-
-  !Create a dependent field with two variables and four components
-  FieldDependentNumberOfVariables=2
-  FieldDependentNumberOfComponents=4
+  !Create the dependent field with 2 variables and 4 components (3 displacement, 1 pressure)
   CALL CMISSFieldTypeInitialise(DependentField,Err)
   CALL CMISSFieldCreateStart(FieldDependentUserNumber,Region,DependentField,Err)
   CALL CMISSFieldTypeSet(DependentField,CMISSFieldGeneralType,Err)
   CALL CMISSFieldMeshDecompositionSet(DependentField,Decomposition,Err)
   CALL CMISSFieldGeometricFieldSet(DependentField,GeometricField,Err)
   CALL CMISSFieldDependentTypeSet(DependentField,CMISSFieldDependentType,Err)
-  CALL CMISSFieldNumberOfVariablesSet(DependentField,FieldDependentNumberOfVariables,Err)
-  CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldUVariableType,FieldDependentNumberOfComponents, &
-    & Err)
-  CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelUDelNVariableType,FieldDependentNumberOfComponents, &
-    & Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,1,MeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,2,MeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,3,MeshComponentNumber,Err)
+  CALL CMISSFieldNumberOfVariablesSet(DependentField,2,Err)
+  CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldUVariableType,4,Err)
+  CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelUDelNVariableType,4,Err)
+  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,1,CubicMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,2,CubicMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,3,CubicMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,4,LinearMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,1,MeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,2,MeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,3,MeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,1,CubicMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,2,CubicMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,3,CubicMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,4,LinearMeshComponentNumber,Err)
-  CALL CMISSFieldScalingTypeSetAndLock(DependentField,CMISSFieldUnitScaling,Err)
+  CALL CMISSFieldScalingTypeSet(DependentField,CMISSFieldUnitScaling,Err)
   CALL CMISSFieldCreateFinish(DependentField,Err)
-
-  !Create the EquationsSet
-  CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,EquationsSet,Err)
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetElasticityClass, &
-    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetMooneyRivlinSubtype,Err)
-  CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
   CALL CMISSEquationsSetDependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)
   CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
 
+  !Create the material field
+  CALL CMISSFieldTypeInitialise(MaterialField,Err)
   CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,FieldMaterialUserNumber,MaterialField,Err)
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
+
+  !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 4.0 respectively.
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,4.0_CMISSDP,Err)
 
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
   CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
   CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
   CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
-  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)   
+  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
 
   !Initialise dependent field from undeformed geometry and displacement bcs and set hydrostatic pressure
   CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
@@ -622,19 +579,21 @@ PROGRAM TRICUBICAXIALEXTENSIONEXAMPLE
 
   !Create the problem solvers
   CALL CMISSSolverTypeInitialise(Solver,Err)
+  CALL CMISSSolverTypeInitialise(LinearSolver,Err)
   CALL CMISSProblemSolversCreateStart(Problem,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
   CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianFDCalculated,Err)
+  CALL CMISSSolverNewtonLinearSolverGet(Solver,LinearSolver,Err)
+  CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearDirectSolveType,Err)
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
 
   !Create the problem solver equations
   CALL CMISSSolverTypeInitialise(Solver,Err)
   CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
-  CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)   
+  CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
   CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
-  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
 
@@ -648,7 +607,7 @@ PROGRAM TRICUBICAXIALEXTENSIONEXAMPLE
   CALL CMISSFieldIOElementsExport(Fields,"TriCubicAxialExtension","FORTRAN",Err)
   CALL CMISSFieldsTypeFinalise(Fields,Err)
 
-  !CALL CMISSFinalise(Err)
+  CALL CMISSFinalise(Err)
 
   WRITE(*,'(A)') "Program completed."
 
