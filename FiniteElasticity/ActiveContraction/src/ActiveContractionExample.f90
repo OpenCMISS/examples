@@ -68,10 +68,14 @@ PROGRAM ActiveContractionExample
   INTEGER(CMISSIntg), PARAMETER :: FieldFibreUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldGPUserNumber=5
+
   INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
   REAL(CMISSDP), PARAMETER :: START_TIME = 0.0, END_TIME = 10, DT = 1  ! ms
+
+  LOGICAL, PARAMETER :: TEST_GAUSS_POINT_FIELD = .TRUE.
 
   !Program types
 
@@ -80,8 +84,9 @@ PROGRAM ActiveContractionExample
   INTEGER(CMISSIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
   INTEGER(CMISSIntg) :: EquationsSetIndex  
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
-  INTEGER(CMISSIntg) :: D, I, y_idx,z_idx,NodeNumber1,Node1Domain
+  INTEGER(CMISSIntg) :: D, E, I, y_idx,z_idx,NodeNumber1,Node1Domain
 
+  REAL(CMISSDP) :: TMP
 
   !CMISS variables
   TYPE(CMISSBasisType) :: Basis
@@ -91,7 +96,7 @@ PROGRAM ActiveContractionExample
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,FibreField,MaterialField,DependentField
+  TYPE(CMISSFieldType) :: GeometricField,FibreField,MaterialField,DependentField, GPfield
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh
   TYPE(CMISSProblemType) :: Problem
@@ -180,6 +185,54 @@ PROGRAM ActiveContractionExample
   CALL CMISSFieldMeshDecompositionSet(FibreField,Decomposition,Err)        
   CALL CMISSFieldGeometricFieldSet(FibreField,GeometricField,Err)
   CALL CMISSFieldCreateFinish(FibreField,Err)
+
+ ! create the gauss point based field, for testing
+  IF(TEST_GAUSS_POINT_FIELD) THEN
+  WRITE(*,*) '---------<TESTING GAUSS POINT FIELD>---------'
+  CALL CMISSFieldTypeInitialise(GPfield,Err)
+  CALL CMISSFieldCreateStart(FieldGPUserNumber,Region,GPfield,Err)
+  CALL CMISSFieldTypeSet(GPfield,CMISSFieldGeneralType,Err) ! ?
+  CALL CMISSFieldMeshDecompositionSet(GPfield,Decomposition,Err)        
+  CALL CMISSFieldGeometricFieldSet(GPfield,GeometricField,Err)
+
+  CALL CMISSFieldNumberOfComponentsSet(GPfield,CMISSFieldUVariableType,2,Err)
+
+
+
+  ! FOR COMPONENTS
+  CALL CMISSFieldComponentInterpolationSet(GPfield,CMISSFieldUVariableType,1,CMISSFieldGaussPointBasedInterpolation,Err) ! GP based
+  CALL CMISSFieldComponentInterpolationSet(GPfield,CMISSFieldUVariableType,2,CMISSFieldGaussPointBasedInterpolation,Err) ! GP based
+
+  CALL CMISSFieldCreateFinish(GPfield,Err)
+
+  CALL CMISSFieldComponentValuesInitialise(GPfield,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,3.14_CMISSDP,Err) ! init!
+  CALL CMISSFieldComponentValuesInitialise(GPfield,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,2.17_CMISSDP,Err) ! init!
+  CALL CMISSFieldComponentValuesInitialise(GPfield,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,4.14_CMISSDP,Err) ! set to const
+
+  ! test gauss point field
+  D=0;
+  DO E=1,NumberGlobalXElements*NumberGlobalYElements*NumberGlobalZElements
+  DO I=1,8
+    CALL CMISSFieldParameterSetGetGaussPoint(GPfield,CMISSFieldUVariableType,CMISSFieldValuesSetType,E,I,1,TMP,Err)
+    CALL CMISSFieldParameterSetUpdateGaussPoint(GPfield,CMISSFieldUVariableType,CMISSFieldValuesSetType,E,I,1,TMP+D,Err)
+    CALL CMISSFieldParameterSetGetGaussPoint(GPfield,CMISSFieldUVariableType,CMISSFieldValuesSetType,E,I,2,TMP,Err)
+    CALL CMISSFieldParameterSetUpdateGaussPoint(GPfield,CMISSFieldUVariableType,CMISSFieldValuesSetType,E,I,2,TMP+D,Err)
+    D=D+1
+  ENDDO
+  ENDDO
+
+  D=0;
+  DO E=1,NumberGlobalXElements*NumberGlobalYElements*NumberGlobalZElements
+  DO I=1,8
+    CALL CMISSFieldParameterSetGetGaussPoint(GPfield,CMISSFieldUVariableType,CMISSFieldValuesSetType,E,I,1,TMP,Err)
+    WRITE(*,*) 'COMPONENT 1 ELEMENT ',E,', GP ', I, ' = ',TMP, ' Should = ', 3.14 + 1 + D
+    CALL CMISSFieldParameterSetGetGaussPoint(GPfield,CMISSFieldUVariableType,CMISSFieldValuesSetType,E,I,2,TMP,Err)
+    WRITE(*,*) 'COMPONENT 2 ELEMENT ',E,', GP ', I, ' = ',TMP, ' Should = ', 2.17 + D
+    D=D+1;
+  ENDDO
+  ENDDO
+  WRITE(*,*) '---------</TESTING GAUSS POINT FIELD>---------'
+  ENDIF  ! TEST GP FIELD
 
   !Create the equations_set
   CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,EquationsSet,Err)
