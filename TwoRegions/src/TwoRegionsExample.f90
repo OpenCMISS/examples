@@ -295,6 +295,66 @@ PROGRAM TWOREGIONSEXAMPLE
   CALL CMISSMeshTypeInitialise(Mesh2,Err)
   CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh2,Mesh2UserNumber,Mesh2,Err)
 
+  !Create an interface between the two meshes
+  CALL CMISSInterfaceTypeInitialise(Interface,Err)
+  CALL CMISSInterfaceCreateStart(InterfaceUserNumber,WorldRegion,Interface,Err)
+  !Add in the two meshes
+  CALL CMISSInterfaceMeshAdd(Interface,Mesh1,Mesh1Index,Err)
+  CALL CMISSInterfaceMeshAdd(Interface,Mesh2,Mesh2Index,Err)
+  !Finish creating the interface
+  CALL CMISSInterfaceCreateFinish(INTERFACE,Err)
+
+  !Start the creation of a (bi)-linear-Lagrange basis
+  CALL CMISSBasisTypeInitialise(InterfaceBasis,Err)
+  CALL CMISSBasisCreateStart(InterfaceBasisUserNumber,InterfaceBasis,Err)
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+    !Set the basis to be a linear Lagrange basis
+    CALL CMISSBasisNumberOfXiSet(InterfaceBasis,1,Err)
+    CALL CMISSBasisInterpolationXiSet(InterfaceBasis,(/CMISSBasisLinearLagrangeInterpolation/),Err)
+  ELSE
+    !Set the basis to be a bilinear Lagrange basis
+    CALL CMISSBasisNumberOfXiSet(InterfaceBasis,2,Err)
+    CALL CMISSBasisInterpolationXiSet(InterfaceBasis,(/CMISSBasisQuadraticLagrangeInterpolation, &
+      & CMISSBasisQuadraticLagrangeInterpolation/),Err)
+  ENDIF
+  !Finish the creation of the basis
+  CALL CMISSBasisCreateFinish(InterfaceBasis,Err)
+  
+  !Start the creation of a generated mesh for the interface
+  CALL CMISSGeneratedMeshTypeInitialise(InterfaceGeneratedMesh,Err)
+  CALL CMISSGeneratedMeshCreateStart(InterfaceGeneratedMeshUserNumber,Interface,InterfaceGeneratedMesh,Err)
+  !Set up a regular x*y*z mesh
+  CALL CMISSGeneratedMeshTypeSet(InterfaceGeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
+  !Set the default basis
+  CALL CMISSGeneratedMeshBasisSet(InterfaceGeneratedMesh,InterfaceBasis,Err)   
+  !Define the mesh on the interface
+  CALL CMISSGeneratedMeshOriginSet(InterfaceGeneratedMesh,(/WIDTH,0.0_CMISSDP,0.0_CMISSDP/),Err)
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+    CALL CMISSGeneratedMeshExtentSet(InterfaceGeneratedMesh,(/WIDTH,HEIGHT,0.0_CMISSDP/),Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(InterfaceGeneratedMesh,(/NUMBER_GLOBAL_Y_ELEMENTS/),Err)
+  ELSE
+    CALL CMISSGeneratedMeshExtentSet(InterfaceGeneratedMesh,(/WIDTH,HEIGHT,LENGTH/),Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(InterfaceGeneratedMesh,(/NUMBER_GLOBAL_Y_ELEMENTS, &
+      & NUMBER_GLOBAL_Z_ELEMENTS/),Err)
+  ENDIF    
+  !Finish the creation of a generated mesh in interface
+  CALL CMISSMeshTypeInitialise(InterfaceMesh,Err)
+  CALL CMISSGeneratedMeshCreateFinish(InterfaceGeneratedMesh,InterfaceMeshUserNumber,InterfaceMesh,Err)
+
+  !Couple the interface meshes
+  CALL CMISSInterfaceMeshesConnectivityCreateStart(Interface,Err)
+! <<>> CALL COMMAND TO ADD MESHES CONNECTIVITY INFORMATION <<>> Dave + Sebo april 7.
+!      CMISSInterfaceMeshesConnectivityMeshAdd()
+!      CMISSInterfaceMeshesConnectivityElementsAdd()
+!      CMISSInterfaceMeshesConnectivityXiPoint()
+  CALL CMISSInterfaceMeshesConnectivityCreateFinish(Err)
+
+
+
+
+
+
+
   !Create a decomposition for mesh1
   CALL CMISSDecompositionTypeInitialise(Decomposition1,Err)
   CALL CMISSDecompositionCreateStart(Decomposition1UserNumber,Mesh1,Decomposition1,Err)
@@ -313,6 +373,15 @@ PROGRAM TWOREGIONSEXAMPLE
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition2,Err)
   
+  !Create a decomposition for the interface mesh
+  CALL CMISSDecompositionTypeInitialise(InterfaceDecomposition,Err)
+  CALL CMISSDecompositionCreateStart(InterfaceDecompositionUserNumber,InterfaceMesh,InterfaceDecomposition,Err)
+  !Set the decomposition to be a general decomposition with the specified number of domains
+  CALL CMISSDecompositionTypeSet(InterfaceDecomposition,CMISSDecompositionCalculatedType,Err)
+  CALL CMISSDecompositionNumberOfDomainsSet(InterfaceDecomposition,NUMBER_OF_DOMAINS,Err)
+  !Finish the decomposition
+  CALL CMISSDecompositionCreateFinish(InterfaceDecomposition,Err)
+
   !Start to create a default (geometric) field on the first region
   CALL CMISSFieldTypeInitialise(GeometricField1,Err)
   CALL CMISSFieldCreateStart(GeometricField1UserNumber,Region1,GeometricField1,Err)
@@ -431,61 +500,7 @@ PROGRAM TWOREGIONSEXAMPLE
   ENDIF
   !Finish the creation of the equations set boundary conditions
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet2,Err)
-  
-  !Create an interface between the two meshes
-  CALL CMISSInterfaceTypeInitialise(Interface,Err)
-  CALL CMISSInterfaceCreateStart(InterfaceUserNumber,WorldRegion,Interface,Err)
-  !Add in the two meshes
-  CALL CMISSInterfaceMeshAdd(Interface,Mesh1,Mesh1Index,Err)
-  CALL CMISSInterfaceMeshAdd(Interface,Mesh2,Mesh2Index,Err)
-  !Finish creating the interface
-  CALL CMISSInterfaceCreateFinish(INTERFACE,Err)
-
-  !Start the creation of a (bi)-linear-Lagrange basis
-  CALL CMISSBasisTypeInitialise(InterfaceBasis,Err)
-  CALL CMISSBasisCreateStart(InterfaceBasisUserNumber,InterfaceBasis,Err)
-  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    !Set the basis to be a linear Lagrange basis
-    CALL CMISSBasisNumberOfXiSet(InterfaceBasis,1,Err)
-    CALL CMISSBasisInterpolationXiSet(InterfaceBasis,(/CMISSBasisLinearLagrangeInterpolation/),Err)
-  ELSE
-    !Set the basis to be a bilinear Lagrange basis
-    CALL CMISSBasisNumberOfXiSet(InterfaceBasis,2,Err)
-    CALL CMISSBasisInterpolationXiSet(InterfaceBasis,(/CMISSBasisQuadraticLagrangeInterpolation, &
-      & CMISSBasisQuadraticLagrangeInterpolation/),Err)
-  ENDIF
-  !Finish the creation of the basis
-  CALL CMISSBasisCreateFinish(InterfaceBasis,Err)
-  
-  !Start the creation of a generated mesh for the interface
-  CALL CMISSGeneratedMeshTypeInitialise(InterfaceGeneratedMesh,Err)
-  CALL CMISSGeneratedMeshCreateStart(InterfaceGeneratedMeshUserNumber,Interface,InterfaceGeneratedMesh,Err)
-  !Set up a regular x*y*z mesh
-  CALL CMISSGeneratedMeshTypeSet(InterfaceGeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
-  !Set the default basis
-  CALL CMISSGeneratedMeshBasisSet(InterfaceGeneratedMesh,InterfaceBasis,Err)   
-  !Define the mesh on the interface
-  CALL CMISSGeneratedMeshOriginSet(InterfaceGeneratedMesh,(/WIDTH,0.0_CMISSDP,0.0_CMISSDP/),Err)
-  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    CALL CMISSGeneratedMeshExtentSet(InterfaceGeneratedMesh,(/WIDTH,HEIGHT,0.0_CMISSDP/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(InterfaceGeneratedMesh,(/NUMBER_GLOBAL_Y_ELEMENTS/),Err)
-  ELSE
-    CALL CMISSGeneratedMeshExtentSet(InterfaceGeneratedMesh,(/WIDTH,HEIGHT,LENGTH/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(InterfaceGeneratedMesh,(/NUMBER_GLOBAL_Y_ELEMENTS, &
-      & NUMBER_GLOBAL_Z_ELEMENTS/),Err)
-  ENDIF    
-  !Finish the creation of a generated mesh in interface
-  CALL CMISSMeshTypeInitialise(InterfaceMesh,Err)
-  CALL CMISSGeneratedMeshCreateFinish(InterfaceGeneratedMesh,InterfaceMeshUserNumber,InterfaceMesh,Err)
-
-  !Create a decomposition for the interface mesh
-  CALL CMISSDecompositionTypeInitialise(InterfaceDecomposition,Err)
-  CALL CMISSDecompositionCreateStart(InterfaceDecompositionUserNumber,InterfaceMesh,InterfaceDecomposition,Err)
-  !Set the decomposition to be a general decomposition with the specified number of domains
-  CALL CMISSDecompositionTypeSet(InterfaceDecomposition,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(InterfaceDecomposition,NUMBER_OF_DOMAINS,Err)
-  !Finish the decomposition
-  CALL CMISSDecompositionCreateFinish(InterfaceDecomposition,Err)
+ 
 
   !Start to create a default (geometric) field on the Interface
   CALL CMISSFieldTypeInitialise(InterfaceGeometricField,Err)
@@ -504,10 +519,7 @@ PROGRAM TWOREGIONSEXAMPLE
   !Update the geometric field parameters for the interface field
   CALL CMISSGeneratedMeshGeometricParametersCalculate(InterfaceGeometricField,InterfaceGeneratedMesh,Err)
   
-  !Couple the interface meshes
-  CALL CMISSInterfaceMeshesConnectivityTypeInitialise(InterfaceMeshesConnectivity,Err)
-  CALL CMISSInterfaceMeshesConnectivityCreateStart(Interface,InterfaceMeshesConnectivity,Err)
-  CALL CMISSInterfaceMeshesConnectivityCreateFinish(InterfaceMeshesConnectivity,Err)
+! <<  ACCESS LATER  >>>
   
   !Create an interface condition between the two meshes
   CALL CMISSInterfaceConditionTypeInitialise(InterfaceCondition,Err)
