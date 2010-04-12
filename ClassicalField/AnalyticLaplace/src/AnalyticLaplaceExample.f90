@@ -436,7 +436,7 @@ CONTAINS
     INTEGER(CMISSIntg), INTENT(IN) :: ProblemUserNumber
 
     CALL CMISSProblemDestroy(ProblemUserNumber,Err)
-    CALL CMISSGeneratedMeshDestroy(GeneratedMeshUserNumber,Err)
+    CALL CMISSGeneratedMeshDestroy(RegionUserNumber,GeneratedMeshUserNumber,Err)
     CALL CMISSBasisDestroy(BasisUserNumber,Err)
     CALL CMISSRegionDestroy(RegionUserNumber,Err)
     CALL CMISSCoordinateSystemDestroy(CoordinateSystemUserNumber,Err)
