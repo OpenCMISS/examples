@@ -158,7 +158,7 @@ PROGRAM TWOREGIONSEXAMPLE
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
   !Set error handling mode
-  !CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
  
   !Set diganostics for testing
   !CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,(/1,2,3,4,5/),"Diagnostics",(/"FIELD_MAPPINGS_CALCULATE", &
@@ -353,13 +353,12 @@ PROGRAM TWOREGIONSEXAMPLE
   CALL CMISSGeneratedMeshCreateFinish(InterfaceGeneratedMesh,InterfaceMeshUserNumber,InterfaceMesh,Err)
 
   !Couple the interface meshes
-  PRINT *, ' == >> CREATING INTERFACE MESHES CONNECTIVITY << == '
-!  CALL CMISSInterfaceMeshesConnectivityCreateStart(Interface,Err)
+  CALL CMISSInterfaceMeshesConnectivityCreateStart(Interface,InterfaceMeshesConnectivity,Err)
 ! <<>> CALL COMMAND TO ADD MESHES CONNECTIVITY INFORMATION <<>> Dave + Sebo april 7.
 !      CMISSInterfaceMeshesConnectivityMeshAdd()
 !      CMISSInterfaceMeshesConnectivityElementsAdd()
 !      CMISSInterfaceMeshesConnectivityXiPoint()
-!  CALL CMISSInterfaceMeshesConnectivityCreateFinish(Err)
+  CALL CMISSInterfaceMeshesConnectivityCreateFinish(InterfaceMeshesConnectivity,Err)
 
 
 
@@ -548,23 +547,26 @@ PROGRAM TWOREGIONSEXAMPLE
 ! <<  ACCESS LATER  >>>
   
   !Create an interface condition between the two meshes
-  PRINT *, ' == >> CREATING INTERFACE CONDITIONS << == '
-!   CALL CMISSInterfaceConditionTypeInitialise(InterfaceCondition,Err)
-!   CALL CMISSInterfaceConditionCreateStart(InterfaceConditionUserNumber,Interface,InterfaceCondition,Err)
-!   !Specify the method for the interface condition
-!   CALL CMISSInterfaceConditionMethodSet(InterfaceCondition,CMISSInterfaceConditionLagrangeMultipliers,Err)
-!   !Specify the type of interface condition operator
-!   CALL CMISSInterfaceConditionOperatorSet(InterfaceCondition,CMISSInterfaceConditionTestOperator,Err)
-!   !Add in the equations sets
-!   CALL CMISSInterfaceConditionEquationsSetAdd(InterfaceCondition,Mesh1Index,EquationsSet1,Err)
-!   CALL CMISSInterfaceConditionEquationsSetAdd(InterfaceCondition,Mesh2Index,EquationsSet2,Err)
-!   !Finish creating the interface condition
-!   CALL CMISSInterfaceConditionCreateFinish(InterfaceCondition,Err)
+  CALL CMISSInterfaceConditionTypeInitialise(InterfaceCondition,Err)
+  CALL CMISSInterfaceConditionCreateStart(InterfaceConditionUserNumber,Interface,InterfaceGeometricField, &
+    & InterfaceCondition,Err)
+  !Specify the method for the interface condition
+  CALL CMISSInterfaceConditionMethodSet(InterfaceCondition,CMISSInterfaceConditionLagrangeMultipliers,Err)
+  !Specify the type of interface condition operator
+  CALL CMISSInterfaceConditionOperatorSet(InterfaceCondition,CMISSInterfaceConditionFieldContinuityOperator,Err)
+  !Add in the dependent variables
+  CALL CMISSInterfaceConditionDependentVariableAdd(InterfaceCondition,Mesh1Index,DependentField1, &
+    & CMISSFieldUVariableType,Err)
+  CALL CMISSInterfaceConditionDependentVariableAdd(InterfaceCondition,Mesh2Index,DependentField2, &
+    & CMISSFieldUVariableType,Err)
+  !Finish creating the interface condition
+  CALL CMISSInterfaceConditionCreateFinish(InterfaceCondition,Err)
 
   !Create the Lagrange multipliers field
   PRINT *, ' == >> CREATING INTERFACE LAGRANGE FIELD << == '
   CALL CMISSFieldTypeInitialise(LagrangeField,Err)
-  CALL CMISSInterfaceConditionLagrangeFieldCreateStart(InterfaceCondition,LagrangeFieldUserNumber,LagrangeField,Err)
+  CALL CMISSInterfaceConditionLagrangeFieldCreateStart(InterfaceCondition,LagrangeFieldUserNumber, &
+    & LagrangeField,Err)
   !Finish the Lagrange multipliers field
   CALL CMISSInterfaceConditionLagrangeFieldCreateFinish(InterfaceCondition,Err)
 
@@ -620,7 +622,8 @@ PROGRAM TWOREGIONSEXAMPLE
   !Add in the second equations set
   CALL CMISSSolverEquationsEquationsSetAdd(CoupledSolverEquations,EquationsSet2,EquationsSet2Index,Err)
   !Add in the interface condition
-  CALL CMISSSolverEquationsInterfaceConditionAdd(CoupledSolverEquations,InterfaceCondition,InterfaceConditionIndex,Err)
+  CALL CMISSSolverEquationsInterfaceConditionAdd(CoupledSolverEquations,InterfaceCondition, &
+    & InterfaceConditionIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(CoupledProblem,Err)
 
