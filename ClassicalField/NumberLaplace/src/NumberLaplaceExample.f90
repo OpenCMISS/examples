@@ -157,20 +157,21 @@ PROGRAM NUMBERLAPLACEEXAMPLE
   !Start the creation of a generated mesh in the region
   CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,RegionUserNumber,Err)
   !Set up a regular x*y*z mesh
-  CALL CMISSGeneratedMeshTypeSet(GeneratedMeshUserNumber,CMISSGeneratedMeshRegularMeshType,Err)
+  CALL CMISSGeneratedMeshTypeSet(RegionUserNumber,GeneratedMeshUserNumber,CMISSGeneratedMeshRegularMeshType,Err)
   !Set the default basis
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMeshUserNumber,BasisUserNumber,Err)
+  CALL CMISSGeneratedMeshBasisSet(RegionUserNumber,GeneratedMeshUserNumber,BasisUserNumber,Err)
   !Define the mesh on the region
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMeshUserNumber,(/WIDTH,HEIGHT/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMeshUserNumber,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS/),Err)
+    CALL CMISSGeneratedMeshExtentSet(RegionUserNumber,GeneratedMeshUserNumber,(/WIDTH,HEIGHT/),Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(RegionUserNumber,GeneratedMeshUserNumber, &
+      & (/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS/),Err)
   ELSE
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMeshUserNumber,(/WIDTH,HEIGHT,LENGTH/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMeshUserNumber,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
-      & NUMBER_GLOBAL_Z_ELEMENTS/),Err)
+    CALL CMISSGeneratedMeshExtentSet(RegionUserNumber,GeneratedMeshUserNumber,(/WIDTH,HEIGHT,LENGTH/),Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(RegionUserNumber,GeneratedMeshUserNumber, &
+      & (/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS/),Err)
   ENDIF
   !Finish the creation of a generated mesh in the region
-  CALL CMISSGeneratedMeshCreateFinish(GeneratedMeshUserNumber,MeshUserNumber,Err)
+  CALL CMISSGeneratedMeshCreateFinish(RegionUserNumber,GeneratedMeshUserNumber,MeshUserNumber,Err)
   
   !Create a decomposition
   CALL CMISSDecompositionCreateStart(DecompositionUserNumber,RegionUserNumber,MeshUserNumber,Err)
