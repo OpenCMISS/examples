@@ -40,9 +40,9 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/NumberLaplace/src/NumberLaplaceExample.f90
-!! Example program to solve a Laplace equation using openCMISS calls with objects accessed by user number.
-!! \htmlinclude ClassicalField/NumberLaplace/history.html
+!> \example ClassicalField/Laplace/NumberLaplace/src/NumberLaplaceExample.f90
+!! Example program to solve a Laplace equation using OpenCMISS calls with objects accessed by user number.
+!! \htmlinclude ClassicalField/Laplace/NumberLaplace/history.html
 !!
 !<
 

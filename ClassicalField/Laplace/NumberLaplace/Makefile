@@ -5,7 +5,7 @@
 # $Id: Makefile 27 2007-07-24 16:52:51Z cpb $
 #
 #----------------------------------------------------------------------------------------------------------------------------------
-# Makefile for compiling openCMISS examples
+# Makefile for compiling OpenCMISS examples
 #
 # Original by Chris Bradley adapted from the CMISS Makefile by Karl Tomlinson 
 # Changes:
@@ -54,15 +54,18 @@ MAKEFLAGS = --no-builtin-rules --warn-undefined-variables
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-
-OPENCMISS_ROOT := ../../..
-GLOBAL_ROOT := $(CURDIR)/../../..
+ifndef OPENCMISS_ROOT
+  OPENCMISS_ROOT := ../../..
+  GLOBAL_ROOT := $(CURDIR)/../../..
+else
+  GLOBAL_ROOT := ${OPENCMISS_ROOT}/cm
+endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_PATH=ClassicalField/
+EXAMPLE_PATH=ClassicalField/Laplace/
 
-EXAMPLE_NAME = Laplace
+EXAMPLE_NAME = NumberLaplace
 
-include $(GLOBAL_ROOT)/ExampleMakefile
+include $(GLOBAL_ROOT)/NewExampleMakefile
 

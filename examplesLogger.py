@@ -90,15 +90,15 @@ def logExample(path) :
    f.close()
    return;
 
-logExample(path="ClassicalField/AnalyticLaplace")
 #logExample(path="ClassicalField/AdvectionDiffusion")
 logExample(path="ClassicalField/AdvectionDiffusion/AdvectionDiffusionIO")
 logExample(path="ClassicalField/AdvectionDiffusion/StaticAdvectionDiffusion")
 logExample(path="ClassicalField/Diffusion")
 logExample(path="ClassicalField/DiffusionConstantSource")
 logExample(path="ClassicalField/NonlinearPoisson")
-logExample(path="ClassicalField/NewLaplace") 
-logExample(path="ClassicalField/NumberLaplace")
+logExample(path="ClassicalField/Laplace/AnalyticLaplace")
+logExample(path="ClassicalField/Laplace/Laplace") 
+logExample(path="ClassicalField/Laplace/NumberLaplace")
   
 logExample(path="FluidMechanics/Stokes/ALE")
 logExample(path="FluidMechanics/Stokes/Static")

@@ -57,17 +57,16 @@ def buildLibrary() :
    
 libSuccess = buildLibrary()
 
-buildExample("ClassicalField/AnalyticLaplace")
 #buildExample("ClassicalField/AdvectionDiffusion")
 buildExample("ClassicalField/AdvectionDiffusion/AdvectionDiffusionIO")
 buildExample("ClassicalField/AdvectionDiffusion/StaticAdvectionDiffusion")
 buildExample("ClassicalField/Diffusion")
 buildExample("ClassicalField/DiffusionConstantSource")
 #buildExample("ClassicalField/Helmholtz")
-#buildExample("ClassicalField/Laplace")
 buildExample("ClassicalField/NonlinearPoisson")
-buildExample("ClassicalField/NewLaplace")
-buildExample("ClassicalField/NumberLaplace")
+buildExample("ClassicalField/Laplace/AnalyticLaplace")
+buildExample("ClassicalField/Laplace/Laplace")
+buildExample("ClassicalField/Laplace/NumberLaplace")
 
 #buildExample("Bioelectrics/Monodomain")
 

@@ -121,12 +121,12 @@ PROGRAM TWOREGIONSEXAMPLE
   TYPE(CMISSEquationsSetType) :: EquationsSet1,EquationsSet2
   TYPE(CMISSFieldType) :: GeometricField1,GeometricField2,InterfaceGeometricField,DependentField1, &
     & DependentField2,LagrangeField
-  TYPE(CMISSFieldsType) :: Fields1,Fields2
+  TYPE(CMISSFieldsType) :: Fields1,Fields2,InterfaceFields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh1,GeneratedMesh2,InterfaceGeneratedMesh
   TYPE(CMISSInterfaceType) :: Interface
   TYPE(CMISSInterfaceConditionType) :: InterfaceCondition
   TYPE(CMISSInterfaceEquationsType) :: InterfaceEquations
-  TYPE(CMISSInterfaceMeshesConnectivityType) :: InterfaceMeshesConnectivity
+  TYPE(CMISSInterfaceMeshConnectivityType) :: InterfaceMeshConnectivity
   TYPE(CMISSMeshType) :: Mesh1,Mesh2,InterfaceMesh
   TYPE(CMISSProblemType) :: CoupledProblem
   TYPE(CMISSRegionType) :: Region1,Region2,WorldRegion
@@ -353,12 +353,12 @@ PROGRAM TWOREGIONSEXAMPLE
   CALL CMISSGeneratedMeshCreateFinish(InterfaceGeneratedMesh,InterfaceMeshUserNumber,InterfaceMesh,Err)
 
   !Couple the interface meshes
-  CALL CMISSInterfaceMeshesConnectivityCreateStart(Interface,InterfaceMeshesConnectivity,Err)
+!  CALL CMISSInterfaceMeshConnectivityCreateStart(Interface,InterfaceMeshConnectivity,Err)
 ! <<>> CALL COMMAND TO ADD MESHES CONNECTIVITY INFORMATION <<>> Dave + Sebo april 7.
-!      CMISSInterfaceMeshesConnectivityMeshAdd()
-!      CMISSInterfaceMeshesConnectivityElementsAdd()
-!      CMISSInterfaceMeshesConnectivityXiPoint()
-  CALL CMISSInterfaceMeshesConnectivityCreateFinish(InterfaceMeshesConnectivity,Err)
+!      CMISSInterfaceMeshConnectivityMeshAdd()
+!      CMISSInterfaceMeshConnectivityElementsAdd()
+!      CMISSInterfaceMeshConnectivityXiPoint()
+!  CALL CMISSInterfaceMeshConnectivityCreateFinish(InterfaceMeshConnectivity,Err)
 
 
 
@@ -642,6 +642,11 @@ PROGRAM TWOREGIONSEXAMPLE
     CALL CMISSFieldIONodesExport(Fields2,"TwoRegion_2","FORTRAN",Err)
     CALL CMISSFieldIOElementsExport(Fields2,"TwoRegion_2","FORTRAN",Err)
     CALL CMISSFieldsTypeFinalise(Fields2,Err)
+    CALL CMISSFieldsTypeInitialise(InterfaceFields,Err)
+    CALL CMISSFieldsTypeCreate(Interface,InterfaceFields,Err)
+    CALL CMISSFieldIONodesExport(InterfaceFields,"TwoRegion_Interface","FORTRAN",Err)
+    CALL CMISSFieldIOElementsExport(InterfaceFields,"TwoRegion_Interface","FORTRAN",Err)
+    CALL CMISSFieldsTypeFinalise(InterfaceFields,Err)
   ENDIF
     
   !Finialise CMISS

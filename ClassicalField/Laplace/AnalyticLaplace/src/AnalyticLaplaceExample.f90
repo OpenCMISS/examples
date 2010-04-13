@@ -1,7 +1,7 @@
 !> \file
 !> $Id: AnalyticLaplaceExample.f90 20 2007-05-28 20:22:52Z cpb $
 !> \author Chris Bradley
-!> \brief This is an example program to solve an Analytic Laplace equation using openCMISS calls.
+!> \brief This is an example program to solve an Analytic Laplace equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -17,7 +17,7 @@
 !> License for the specific language governing rights and limitations
 !> under the License.
 !>
-!> The Original Code is openCMISS
+!> The Original Code is OpenCMISS
 !>
 !> The Initial Developer of the Original Code is University of Auckland,
 !> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -40,10 +40,10 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/AnalyticLaplace/src/AnalyticLaplaceExample.f90
-!! Example illustrating the use of openCMISS to solve the Laplace problem and check with its Analytic Solution.
+!> \example ClassicalField/Laplace/AnalyticLaplace/src/AnalyticLaplaceExample.f90
+!! Example illustrating the use of OpenCMISS to solve the Laplace problem and check with its Analytic Solution.
 !! 
-!! \htmlinclude ClassicalField/AnalyticLaplace/history.html
+!! \htmlinclude ClassicalField/Laplace/AnalyticLaplace/history.html
 !< 
 
 !> Main program

@@ -75,18 +75,16 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
      print "Testing %s%s: <a class='fail'>failed</a> due to build failure<br>" %(path,id)
    return;
 
-testExample(id='1', path="ClassicalField/AnalyticLaplace", nodes='1', ndiffDir='expected_files', outputDir='.')
 #testExample(id='1', path="ClassicalField/AdvectionDiffusion", nodes='1')
 testExample(id='1', path="ClassicalField/AdvectionDiffusion/AdvectionDiffusionIO", nodes='1')
 testExample(id='1', path="ClassicalField/AdvectionDiffusion/StaticAdvectionDiffusion", nodes='1')
 testExample(id='1', path="ClassicalField/Diffusion", nodes='1')
 testExample(id='1', path="ClassicalField/DiffusionConstantSource", nodes='1')
 #testExample(id='1', path="ClassicalField/Helmholtz", nodes='1',input='4\n4\n0\n1')
-#testExample(id='1', path="ClassicalField/Laplace", nodes='1',args='4 4 0 1') 
-#testExample(id='2', path="ClassicalField/Laplace", nodes='2',args='4 4 0 2')
 testExample(id='1', path="ClassicalField/NonlinearPoisson",nodes='1',input='4\n4\n0\n1')
-testExample(id='1', path="ClassicalField/NewLaplace", nodes='1',args='4 4 0 1') 
-testExample(id='2', path="ClassicalField/NumberLaplace", nodes='1',args='4 4 0 1')
+testExample(id='1', path="ClassicalField/Laplace/AnalyticLaplace", nodes='1', ndiffDir='expected_files', outputDir='.')
+testExample(id='1', path="ClassicalField/Laplace/Laplace", nodes='1',args='4 4 0 1') 
+testExample(id='2', path="ClassicalField/Laplace/NumberLaplace", nodes='1',args='4 4 0 1')
 
 #testExample(id='1',path="Bioelectrics/Monodomain",nodes='1',input='4\n4\n0\n1')
   

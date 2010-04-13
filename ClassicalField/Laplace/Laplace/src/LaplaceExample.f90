@@ -1,5 +1,5 @@
 !> \file
-!> $Id: NewLaplaceExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id: LaplaceExample.f90 20 2007-05-28 20:22:52Z cpb $
 !> \author Chris Bradley
 !> \brief This is an example program to solve a Laplace equation using OpenCMISS calls.
 !>
@@ -40,9 +40,9 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/NewLaplace/src/NewLaplaceExample.f90
+!> \example ClassicalField/Laplace/Laplace/src/NewLaplaceExample.f90
 !! Example program to solve a Laplace equation using OpenCMISS calls.
-!! \htmlinclude ClassicalField/NewLaplace/history.html
+!! \htmlinclude ClassicalField/Laplace/Laplace/history.html
 !!
 !<
 
