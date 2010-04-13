@@ -46,10 +46,6 @@ PROGRAM ActiveContractionExample
   USE OPENCMISS
   USE MPI
 
-#ifdef WIN32
-  USE IFQWIN
-#endif
-
   IMPLICIT NONE
 
   !Test program parameters
@@ -68,14 +64,16 @@ PROGRAM ActiveContractionExample
   INTEGER(CMISSIntg), PARAMETER :: FieldFibreUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=4
-  INTEGER(CMISSIntg), PARAMETER :: FieldGPUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: FieldGPUserNumber=5 ! temp/test
+  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumber=6
+
 
   INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
-  REAL(CMISSDP), PARAMETER :: START_TIME = 0.0, END_TIME = 10, DT = 1  ! ms
+  REAL(CMISSDP), PARAMETER :: START_TIME = 0.0, END_TIME = 10.0, DT = 1.0  ! ms
 
-  LOGICAL, PARAMETER :: TEST_GAUSS_POINT_FIELD = .TRUE.
+  LOGICAL, PARAMETER :: TEST_GAUSS_POINT_FIELD = .FALSE.
 
   !Program types
 
@@ -96,7 +94,7 @@ PROGRAM ActiveContractionExample
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,FibreField,MaterialField,DependentField, GPfield
+  TYPE(CMISSFieldType) :: GeometricField,FibreField,MaterialField,DependentField, GPfield, IndependentField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh
   TYPE(CMISSProblemType) :: Problem
@@ -255,6 +253,10 @@ PROGRAM ActiveContractionExample
    CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,I,1.0_CMISSDP,Err)
   END DO
 
+  ! create independent field
+  CALL CMISSEquationsSetIndependentCreateStart(EquationsSet,IndependentFieldUserNumber,IndependentField,Err)
+  CALL CMISSEquationsSetIndependentCreateFinish(EquationsSet,Err)
+
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
   CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
@@ -305,8 +307,7 @@ PROGRAM ActiveContractionExample
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
    CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
 
-!   CALL CMISSControlLoopTypeSet(ControlLoop,CMISSProblemControlTimeLoopType,Err)  ! TODO: REMOVE HACK, MAKE PROPER SUBTYPE + SETUP
-   CALL CMISSControlLoopTimesSet(ControlLoop, START_TIME, END_TIME, DT, Err) ! set begin/end timings
+   CALL CMISSControlLoopTimesSet(ControlLoop, START_TIME - DT, END_TIME, DT, Err) ! set begin/end timings  . START AT -DT TO SOLVE FOR 0 AS WELL
    CALL CMISSControlLoopTimeOutputSet(ControlLoop,1,Err)    !Set the output timing
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
 
