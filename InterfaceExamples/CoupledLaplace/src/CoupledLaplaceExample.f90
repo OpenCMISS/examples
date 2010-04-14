@@ -357,12 +357,11 @@ PROGRAM COUPLEDLAPLACE
   !Couple the interface meshes
   PRINT *, ' == >> CREATING INTERFACE MESHES CONNECTIVITY << == '
   CALL CMISSInterfaceMeshConnectivityTypeInitialise(InterfaceMeshConnectivity,Err)
-  CALL CMISSInterfaceMeshConnectivityCreateStart(Interface,InterfaceMeshConnectivity,Err)
+  CALL CMISSInterfaceMeshConnectivityCreateStart(Interface,InterfaceMesh,InterfaceMeshConnectivity,Err)
+  CALL CMISSInterfaceMeshConnectivityElementNumberElementsSet(InterfaceMeshConnectivity,1,1,5,Err)
+!  CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,1,1,1,1,(/ 0, 0, 0/),Err)
   STOP
-!  CALL CMISSInterfaceMeshConnectivityMeshAdd(InterfaceMeshConnectivity,Err)
-! <<>> CALL COMMAND TO ADD MESHES CONNECTIVITY INFORMATION <<>> Dave + Sebo april 7.
-!      CMISSInterfaceMeshConnectivityMeshAdd()
-!      CMISSInterfaceMeshConnectivityElementsAdd()
+
 !      CMISSInterfaceMeshConnectivityXiPoint()
   CALL CMISSInterfaceMeshConnectivityCreateFinish(InterfaceMeshConnectivity,Err)
 
