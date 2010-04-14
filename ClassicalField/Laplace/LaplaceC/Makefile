@@ -63,6 +63,8 @@ endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
+EXAMPLE_PATH=ClassicalField/Laplace/
+
 EXAMPLE_NAME = LaplaceC
 
 include $(GLOBAL_ROOT)/ExampleMakefileC
