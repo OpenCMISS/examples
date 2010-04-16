@@ -431,6 +431,7 @@ PROGRAM NAVIERSTOKESDYNAMICEXAMPLE
 
   !Start the creation of mesh nodes
   CALL CMISSNodesTypeInitialise(Nodes,Err)
+  CALL CMISSMeshTypeInitialise(Mesh,Err)
   CALL CMISSNodesCreateStart(Region,TOTAL_NUMBER_OF_NODES,Nodes,Err)
   CALL CMISSNodesCreateFinish(Nodes,Err)
   !Start the creation of the mesh
