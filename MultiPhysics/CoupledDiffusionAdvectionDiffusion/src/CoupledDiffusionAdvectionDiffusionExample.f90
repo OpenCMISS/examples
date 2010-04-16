@@ -386,6 +386,7 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
 
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
   !
   !================================================================================================================================
   !
@@ -626,40 +627,51 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
   CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
   !Set the scaling to use
   CALL CMISSFieldScalingTypeSet(GeometricField,CMISSFieldNoScaling,Err)
-  !Set the mesh component to be used by the field components.
-!     CALL CMISSFieldNumberOfVariablesSet(GeometricField,2,Err)
-!     CALL CMISSFieldVariableTypesSet(GeometricField,&
-!      & (/CMISSFieldUVariableType,CMISSFieldVVariableType/),Err)
-
 
   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
     CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_GEOMETRY,Err)
-!    CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldVVariableType,COMPONENT_NUMBER, & 
-!      & MESH_COMPONENT_NUMBER_GEOMETRY,Err)
   ENDDO
    WRITE(*,'(A)') "now finishing creating geometric field"
   !Finish creating the field
   CALL CMISSFieldCreateFinish(GeometricField,Err)
   !Update the geometric field parameters
-!   DO NODE_NUMBER=1,NUMBER_OF_NODES_GEOMETRY
-!     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-!       VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)
-!       CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldVVariableType,CMISSFieldValuesSetType, & 
-!         & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
-!     ENDDO
-!   ENDDO
-!   CALL CMISSFieldParameterSetUpdateStart(GeometricField,CMISSFieldVVariableType,CMISSFieldValuesSetType,Err)
-!   CALL CMISSFieldParameterSetUpdateFinish(GeometricField,CMISSFieldVVariableType,CMISSFieldValuesSetType,Err)
-!   WRITE(*,'(A)') "geometric field made"
+  DO NODE_NUMBER=1,NUMBER_OF_NODES_GEOMETRY
+    DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+      VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)
+      CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+        & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+    ENDDO
+  ENDDO
+  CALL CMISSFieldParameterSetUpdateStart(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
+  CALL CMISSFieldParameterSetUpdateFinish(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
+  WRITE(*,'(A)') "geometric field made"
   !
   !================================================================================================================================
   !
+ !
+  !================================================================================================================================
+  !
+  !EQUATIONS SETS
 
+  !Create the equations set for diffusion_one
+  CALL CMISSEquationsSetTypeInitialise(EquationsSetAdvectionDiffusion,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberAdvectionDiffusion,Region,GeometricField,&
+    & EquationsSetAdvectionDiffusion,Err)
+  !Set the equations set to be a linear source diffusion problem
+  CALL CMISSEquationsSetSpecificationSet(EquationsSetAdvectionDiffusion,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetCoupledSourceDiffusionAdvecDiffusionSubtype,Err)
+  !Finish creating the equations set
+  CALL CMISSEquationsSetCreateFinish(EquationsSetAdvectionDiffusion,Err)
 
-
-! 
-
+  !Create the equations set for diffusion_two
+  CALL CMISSEquationsSetTypeInitialise(EquationsSetDiffusion,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDiffusion,Region,GeometricField,EquationsSetDiffusion,Err)
+  !Set the equations set to be a constant source diffusion problem
+  CALL CMISSEquationsSetSpecificationSet(EquationsSetDiffusion,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetCoupledSourceDiffusionAdvecDiffusionSubtype,Err)
+  !Finish creating the equations set
+  CALL CMISSEquationsSetCreateFinish(EquationsSetDiffusion,Err)
   !-------------------------------------------------------------------------------------
   ! DEPENDENT FIELD: Shared. We're gonna create the dependent field manually for now
   ! U & DEL_U_DEL_N: Advection-diffusion
@@ -671,55 +683,33 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
     CALL CMISSFieldMeshDecompositionSet(DependentField,Decomposition,Err)
     CALL CMISSFieldGeometricFieldSet(DependentField,GeometricField,Err) 
     CALL CMISSFieldDependentTypeSet(DependentField,CMISSFieldDependentType,Err) 
-    CALL CMISSFieldNumberOfVariablesSet(DependentField,4,Err)
-    CALL CMISSFieldVariableTypesSet(DependentField,&
-     & (/CMISSFieldUVariableType,CMISSFieldDelUDelNVariableType,CMISSFieldVVariableType,CMISSFieldDelVDelNVariableType/),Err)
+!     CALL CMISSFieldNumberOfVariablesSet(DependentField,4,Err)
+!     CALL CMISSFieldVariableTypesSet(DependentField,&
+!      & (/CMISSFieldUVariableType,CMISSFieldDelUDelNVariableType,CMISSFieldVVariableType,CMISSFieldDelVDelNVariableType/),Err)
    WRITE(*,'(A)') "set number of variables"
 !     CALL CMISSFieldNumberOfVariablesSet(DependentField,2,Err)
 !     CALL CMISSFieldVariableTypesSet(DependentField,&
 !      & (/CMISSFieldVVariableType,CMISSFieldDelVDelNVariableType/),Err)
 
 
-    CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldUVariableType,1,Err)
-    CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelUDelNVariableType,1,Err)
-     CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,1, & 
-       & MESH_COMPONENT_NUMBER_CONC_ONE,Err)
-     CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,1, & 
-       & MESH_COMPONENT_NUMBER_CONC_ONE,Err)
-  WRITE(*,'(A)') "advec-diff vars set"
-    ! -- Diffusion
-    CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldVVariableType,1,Err)
-    CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelVDelNVariableType,1,Err)
-     CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldVVariableType,1, & 
-       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
-     CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelVDelNVariableType,1, & 
-       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
+!     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldUVariableType,1,Err)
+!     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelUDelNVariableType,1,Err)
+!      CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,1, & 
+!        & MESH_COMPONENT_NUMBER_CONC_ONE,Err)
+!      CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,1, & 
+!        & MESH_COMPONENT_NUMBER_CONC_ONE,Err)
+!   WRITE(*,'(A)') "advec-diff vars set"
+!     ! -- Diffusion
+!     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldVVariableType,1,Err)
+!     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelVDelNVariableType,1,Err)
+!      CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldVVariableType,1, & 
+!        & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
+!      CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelVDelNVariableType,1, & 
+!        & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
   WRITE(*,'(A)') "diff vars set"
   CALL CMISSFieldCreateFinish(DependentField,Err)
   WRITE(*,'(A)') "field created"
-  !
-  !================================================================================================================================
-  !
-  !EQUATIONS SETS
-
-  !Create the equations set for diffusion_one
-  CALL CMISSEquationsSetTypeInitialise(EquationsSetAdvectionDiffusion,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberAdvectionDiffusion,Region,GeometricField,&
-    & EquationsSetAdvectionDiffusion,Err)
-  !Set the equations set to be a linear source diffusion problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetAdvectionDiffusion,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetLinearSourceAdvectionDiffusionSubtype,Err)
-  !Finish creating the equations set
-  CALL CMISSEquationsSetCreateFinish(EquationsSetAdvectionDiffusion,Err)
-
-  !Create the equations set for diffusion_two
-  CALL CMISSEquationsSetTypeInitialise(EquationsSetDiffusion,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDiffusion,Region,GeometricField,EquationsSetDiffusion,Err)
-  !Set the equations set to be a constant source diffusion problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetDiffusion,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetConstantSourceDiffusionSubtype,Err)
-  !Finish creating the equations set
-  CALL CMISSEquationsSetCreateFinish(EquationsSetDiffusion,Err)
+ 
 
 
 !   !DEPENDENT FIELDS
@@ -756,13 +746,13 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
   !-------------------------------------------------------------------------------------
   ! INITIALISE DEPENDENT FIELDS
 
-  !Initialise dependent field (concentration one components)
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,INITIAL_FIELD_ADVECTION_DIFFUSION,Err)
-
-  !Initialise dependent field (concentration two components)
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldVVariableType,CMISSFieldValuesSetType, & 
-    & 1,INITIAL_FIELD_DIFFUSION,Err)
+!   !Initialise dependent field (concentration one components)
+!   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!     & 1,INITIAL_FIELD_ADVECTION_DIFFUSION,Err)
+! 
+!   !Initialise dependent field (concentration two components)
+!   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldVVariableType,CMISSFieldValuesSetType, & 
+!     & 1,INITIAL_FIELD_DIFFUSION,Err)
 
 
 
