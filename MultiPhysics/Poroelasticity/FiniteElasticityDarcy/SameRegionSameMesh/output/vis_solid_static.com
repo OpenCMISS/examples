@@ -1,5 +1,5 @@
-gfx read node './SOLID_TIME_STE.exnode'
-gfx read elem './SOLID_TIME_STE.exelem'
+gfx read node './output/S_TIMESTP_0001.exnode'
+gfx read elem './output/S_TIMESTP_0001.exelem'
 gfx create window 1
 
 gfx cre spectrum flow

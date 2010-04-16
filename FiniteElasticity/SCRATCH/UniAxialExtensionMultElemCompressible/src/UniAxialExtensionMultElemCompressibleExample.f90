@@ -88,8 +88,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=6
 
   INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: SolverSolidUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: SolverFiniteElasticityUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: NonlinearSolverSolidUserNumber=1
 
   !Program types
 
@@ -118,8 +117,8 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   INTEGER(CMISSIntg) :: ELEMENT_NUMBER
   INTEGER(CMISSIntg) :: CONDITION
 
-  INTEGER(CMISSIntg) :: LINEAR_SOLVER_FINITE_ELASTICITY_OUTPUT_TYPE
-  INTEGER(CMISSIntg) :: NONLINEAR_SOLVER_FINITE_ELASTICITY_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: LINEAR_SOLVER_SOLID_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: NONLINEAR_SOLVER_SOLID_OUTPUT_TYPE
 
   REAL(CMISSDP) :: COORD_X, COORD_Y, COORD_Z
   REAL(CMISSDP) :: DOMAIN_X1, DOMAIN_X2, DOMAIN_Y1, DOMAIN_Y2, DOMAIN_Z1, DOMAIN_Z2
@@ -132,7 +131,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   REAL(CMISSDP) :: VALUE
 
   LOGICAL :: EXPORT_FIELD_IO
-  LOGICAL :: LINEAR_SOLVER_FINITE_ELASTICITY_DIRECT_FLAG
+  LOGICAL :: LINEAR_SOLVER_SOLID_DIRECT_FLAG
 
   !CMISS variables
 
@@ -161,8 +160,8 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !Control loops
   TYPE(CMISSControlLoopType) :: ControlLoop
   !Solvers
-!   TYPE(CMISSSolverType) :: NonlinearSolverFiniteElasticity
-!   TYPE(CMISSSolverType) :: LinearSolverFiniteElasticity
+  TYPE(CMISSSolverType) :: NonlinearSolverSolid
+  TYPE(CMISSSolverType) :: LinearSolverSolid
 
 #ifdef WIN32
   !Quickwin type
@@ -224,7 +223,6 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   TYPE(CMISSEquationsType) :: EquationsSolid
   TYPE(CMISSEquationsSetType) :: EquationsSetSolid
   TYPE(CMISSFieldType) :: GeometricFieldSolid,FibreFieldSolid,MaterialFieldSolid,DependentFieldSolid
-  TYPE(CMISSSolverType) :: SolverSolid !,LinearSolverSolid
   TYPE(CMISSSolverEquationsType) :: SolverEquationsSolid
   TYPE(CMISSMeshElementsType) :: MeshElementsSolid
 
@@ -278,11 +276,11 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   BASIS_XI_GAUSS_GEOMETRY=3 !4
   !Set output parameter
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
-  LINEAR_SOLVER_FINITE_ELASTICITY_OUTPUT_TYPE=CMISSSolverNoOutput
-  NONLINEAR_SOLVER_FINITE_ELASTICITY_OUTPUT_TYPE=CMISSSolverNoOutput
+  LINEAR_SOLVER_SOLID_OUTPUT_TYPE=CMISSSolverNoOutput
+  NONLINEAR_SOLVER_SOLID_OUTPUT_TYPE=CMISSSolverProgressOutput
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
   !Set solver parameters
-  LINEAR_SOLVER_FINITE_ELASTICITY_DIRECT_FLAG=.FALSE.
+  LINEAR_SOLVER_SOLID_DIRECT_FLAG=.TRUE.
   RELATIVE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-05_CMISSDP
   ABSOLUTE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-10_CMISSDP
   DIVERGENCE_TOLERANCE=1.0E5_CMISSDP !default: 1.0E5
@@ -720,66 +718,68 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 
   !SOLVERS
 
-  !Start the creation of the problem solvers
-  CALL CMISSSolverTypeInitialise(SolverSolid,Err)
-  CALL CMISSProblemSolversCreateStart(Problem,Err)
-
 !---Customary: begin
 
-  !Get the finite elasticity solver
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverSolidUserNumber,SolverSolid,Err)
-  CALL CMISSSolverOutputTypeSet(SolverSolid,CMISSSolverProgressOutput,Err)
-  CALL CMISSSolverNewtonJacobianCalculationTypeSet(SolverSolid,CMISSSolverNewtonJacobianFDCalculated,Err)
-
-!   CALL CMISSSolverNonLinearTypeSet(SolverSolid,CMISSSolverNonlinearNewton,Err)
-!   CALL CMISSSolverLibraryTypeSet(SolverSolid,CMISSSolverPETScLibrary,Err)
-
-!   CALL CMISSSolverNewtonLinearSolverGet(SolverSolid,LinearSolverSolid,Err)
+!   !Start the creation of the problem solvers
+!   CALL CMISSSolverTypeInitialise(NonlinearSolverSolid,Err)
+!   CALL CMISSSolverTypeInitialise(LinearSolverSolid,Err)
+!   CALL CMISSProblemSolversCreateStart(Problem,Err)
+! 
+!   !Get the finite elasticity solver
+!   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,NonlinearSolverSolidUserNumber,NonlinearSolverSolid,Err)
+!   CALL CMISSSolverOutputTypeSet(NonlinearSolverSolid,CMISSSolverProgressOutput,Err)
+!   CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolverSolid,CMISSSolverNewtonJacobianFDCalculated,Err)
+! 
+!   CALL CMISSSolverNonLinearTypeSet(NonlinearSolverSolid,CMISSSolverNonlinearNewton,Err)
+!   CALL CMISSSolverLibraryTypeSet(NonlinearSolverSolid,CMISSSolverPETScLibrary,Err)
+! 
+!   CALL CMISSSolverNewtonLinearSolverGet(NonlinearSolverSolid,LinearSolverSolid,Err)
 !   CALL CMISSSolverLinearTypeSet(LinearSolverSolid,CMISSSolverLinearDirectSolveType,Err)
+! 
+!   !Finish the creation of the problem solver
+!   CALL CMISSProblemSolversCreateFinish(Problem,Err)
 
 !---Customary: end
 
-!---tob
-!   !SOLVERS
-! 
-!   !Start the creation of the problem solvers
-!   CALL CMISSSolverTypeInitialise(NonlinearSolverFiniteElasticity,Err)
-!   CALL CMISSSolverTypeInitialise(LinearSolverFiniteElasticity,Err)
-!   CALL CMISSProblemSolversCreateStart(Problem,Err)
-!   !Get the nonlinear static solver
-!   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverFiniteElasticityUserNumber,NonlinearSolverFiniteElasticity,Err)
-!   !Set the nonlinear Jacobian type
-!   CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolverFiniteElasticity,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
-!   CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolverFiniteElasticity,CMISSSolverNewtonJacobianFDCalculated,Err)
-!   !Set the output type
-!   CALL CMISSSolverOutputTypeSet(NonlinearSolverFiniteElasticity,NONLINEAR_SOLVER_FINITE_ELASTICITY_OUTPUT_TYPE,Err)
-!   !Set the solver settings
-!   CALL CMISSSolverNewtonAbsoluteToleranceSet(NonlinearSolverFiniteElasticity,ABSOLUTE_TOLERANCE,Err)
-!   CALL CMISSSolverNewtonRelativeToleranceSet(NonlinearSolverFiniteElasticity,RELATIVE_TOLERANCE,Err)
-!   !Get the nonlinear linear solver
-!   CALL CMISSSolverNewtonLinearSolverGet(NonlinearSolverFiniteElasticity,LinearSolverFiniteElasticity,Err)
-!   !Set the output type
-!   CALL CMISSSolverOutputTypeSet(LinearSolverFiniteElasticity,LINEAR_SOLVER_FINITE_ELASTICITY_OUTPUT_TYPE,Err)
-! 
-! 
-!   !Set the solver settings
-!   IF(LINEAR_SOLVER_FINITE_ELASTICITY_DIRECT_FLAG) THEN
-!     CALL CMISSSolverLinearTypeSet(LinearSolverFiniteElasticity,CMISSSolverLinearDirectSolveType,Err)
-!     CALL CMISSSolverLibraryTypeSet(LinearSolverFiniteElasticity,CMISSSolverMUMPSLibrary,Err)
-!   ELSE
-!     CALL CMISSSolverLinearTypeSet(LinearSolverFiniteElasticity,CMISSSolverLinearIterativeSolveType,Err)
-!     CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolverFiniteElasticity,MAXIMUM_ITERATIONS,Err)
-!     CALL CMISSSolverLinearIterativeDivergenceToleranceSet(LinearSolverFiniteElasticity,DIVERGENCE_TOLERANCE,Err)
-!     CALL CMISSSolverLinearIterativeRelativeToleranceSet(LinearSolverFiniteElasticity,RELATIVE_TOLERANCE,Err)
-!     CALL CMISSSolverLinearIterativeAbsoluteToleranceSet(LinearSolverFiniteElasticity,ABSOLUTE_TOLERANCE,Err)
-!     CALL CMISSSolverLinearIterativeGMRESRestartSet(LinearSolverFiniteElasticity,RESTART_VALUE,Err)
-!   ENDIF
-!   !Finish the creation of the problem solver
-!   CALL CMISSProblemSolversCreateFinish(Problem,Err)
-!---toe
 
+!---tob
+
+  !Start the creation of the problem solvers
+  CALL CMISSSolverTypeInitialise(NonlinearSolverSolid,Err)
+  CALL CMISSSolverTypeInitialise(LinearSolverSolid,Err)
+  CALL CMISSProblemSolversCreateStart(Problem,Err)
+  !Get the nonlinear static solver
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,NonlinearSolverSolidUserNumber,NonlinearSolverSolid,Err)
+  !Set the nonlinear Jacobian type
+  CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolverSolid,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
+  CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolverSolid,CMISSSolverNewtonJacobianFDCalculated,Err)
+  !Set the output type
+  CALL CMISSSolverOutputTypeSet(NonlinearSolverSolid,NONLINEAR_SOLVER_SOLID_OUTPUT_TYPE,Err)
+  !Set the solver settings
+  CALL CMISSSolverNewtonAbsoluteToleranceSet(NonlinearSolverSolid,ABSOLUTE_TOLERANCE,Err)
+  CALL CMISSSolverNewtonRelativeToleranceSet(NonlinearSolverSolid,RELATIVE_TOLERANCE,Err)
+  !Get the nonlinear linear solver
+  CALL CMISSSolverNewtonLinearSolverGet(NonlinearSolverSolid,LinearSolverSolid,Err)
+  !Set the output type
+  CALL CMISSSolverOutputTypeSet(LinearSolverSolid,LINEAR_SOLVER_SOLID_OUTPUT_TYPE,Err)
+
+
+  !Set the solver settings
+  IF(LINEAR_SOLVER_SOLID_DIRECT_FLAG) THEN
+    CALL CMISSSolverLinearTypeSet(LinearSolverSolid,CMISSSolverLinearDirectSolveType,Err)
+    CALL CMISSSolverLibraryTypeSet(LinearSolverSolid,CMISSSolverMUMPSLibrary,Err)
+  ELSE
+    CALL CMISSSolverLinearTypeSet(LinearSolverSolid,CMISSSolverLinearIterativeSolveType,Err)
+    CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolverSolid,MAXIMUM_ITERATIONS,Err)
+    CALL CMISSSolverLinearIterativeDivergenceToleranceSet(LinearSolverSolid,DIVERGENCE_TOLERANCE,Err)
+    CALL CMISSSolverLinearIterativeRelativeToleranceSet(LinearSolverSolid,RELATIVE_TOLERANCE,Err)
+    CALL CMISSSolverLinearIterativeAbsoluteToleranceSet(LinearSolverSolid,ABSOLUTE_TOLERANCE,Err)
+    CALL CMISSSolverLinearIterativeGMRESRestartSet(LinearSolverSolid,RESTART_VALUE,Err)
+  ENDIF
   !Finish the creation of the problem solver
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
+!---toe
+
 
   !
   !================================================================================================================================
@@ -788,14 +788,14 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !SOLVER EQUATIONS
 
   !Start the creation of the problem solver equations
-  CALL CMISSSolverTypeInitialise(SolverSolid,Err)
+  CALL CMISSSolverTypeInitialise(NonlinearSolverSolid,Err)
   CALL CMISSSolverEquationsTypeInitialise(SolverEquationsSolid,Err)
 
   CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
   !
   !Get the finite elasticity solver equations
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverSolidUserNumber,SolverSolid,Err)
-  CALL CMISSSolverSolverEquationsGet(SolverSolid,SolverEquationsSolid,Err)
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,NonlinearSolverSolidUserNumber,NonlinearSolverSolid,Err)
+  CALL CMISSSolverSolverEquationsGet(NonlinearSolverSolid,SolverEquationsSolid,Err)
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsSolid,CMISSSolverEquationsSparseMatrices,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsSolid,EquationsSetSolid,EquationsSetIndex,Err)
   !
