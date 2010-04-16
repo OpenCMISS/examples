@@ -110,6 +110,8 @@ PROGRAM ActiveContractionExample
   !Intialise cmiss
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+
   !Set all diganostic levels on for testing
   !CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,(/1,2,3,4,5/),"Diagnostics",(/"PROBLEM_RESIDUAL_EVALUATE"/),Err)
 

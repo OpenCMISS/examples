@@ -306,6 +306,8 @@ PROGRAM DARCYDYNAMICEXAMPLE
 
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+
   !
   !================================================================================================================================
   !
@@ -449,6 +451,7 @@ PROGRAM DARCYDYNAMICEXAMPLE
   CALL CMISSNodesCreateStart(Region,TOTAL_NUMBER_OF_NODES,Nodes,Err)
   CALL CMISSNodesCreateFinish(Nodes,Err)
   !Start the creation of the mesh
+  CALL CMISSMeshTypeInitialise(Mesh,Err)
   CALL CMISSMeshCreateStart(MeshUserNumber,Region,NUMBER_OF_DIMENSIONS,Mesh,Err)
   !Set number of mesh elements
   CALL CMISSMeshNumberOfElementsSet(Mesh,TOTAL_NUMBER_OF_ELEMENTS,Err)

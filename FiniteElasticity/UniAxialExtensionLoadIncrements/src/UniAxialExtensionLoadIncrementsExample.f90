@@ -152,6 +152,8 @@ PROGRAM UNIAXIALEXTENSIONLOADINCREMENTSEXAMPLE
   !Intialise cmiss
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+
   WRITE(*,'(A)') "Program starting."
 
   !Set all diganostic levels on for testing
