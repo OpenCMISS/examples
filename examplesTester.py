@@ -96,6 +96,7 @@ testExample(id='1',path="FluidMechanics/NavierStokes/Static",nodes='1',input='\n
 testExample(id='1',path="FluidMechanics/NavierStokes/Dynamic",nodes='1',input='\n')
 
 
+testExample(id='1',path="FluidMechanics/Darcy/Analytic",nodes='1',input='\n')
 testExample(id='1',path="FluidMechanics/Darcy/Static",nodes='1',input='\n')
 testExample(id='1',path="FluidMechanics/Darcy/QuasistaticMaterial",nodes='1',input='\n',ndiffDir="expected_results",outputDir="output")
 #testExample(id='1',path="FluidMechanics/Darcy/VenousCompartment",nodes='1',input='4\n4\n0\n1')
@@ -111,6 +112,10 @@ testExample(id='1',path="FluidMechanics/Darcy/QuasistaticMaterial",nodes='1',inp
 #testExample(id='1',path="LinearElasticity/3DLagrangeBasis",nodes='1',input='4\n4\n0\n1')
 #testExample(id='1',path="LinearElasticity/3DCubicHermiteBasis",nodes='1',input='4\n4\n0\n1')
 #testExample(id='1',path="LinearElasticity/3DLagrangeBasisAnisotropicFibreField",nodes='1',input='4\n4\n0\n1')
+
+testExample(id='1',path="MultiPhysics/Poroelasticity/FiniteElasticityDarcy/Standard",nodes='1',input='\n')
+testExample(id='1',path="MultiPhysics/Poroelasticity/FiniteElasticityDarcy/SameRegionSameMesh",nodes='1',input='\n')
+testExample(id='1',path="MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDarcySharedVars",nodes='1',input='\n')
 
 
 # TODO Group them
