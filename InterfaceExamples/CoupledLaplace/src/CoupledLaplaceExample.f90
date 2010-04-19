@@ -64,6 +64,7 @@ PROGRAM COUPLEDLAPLACE
   REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: WIDTH=2.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
+  REAL(CMISSDP) :: XI(1)
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystem1UserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystem2UserNumber=2
@@ -359,7 +360,9 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSInterfaceMeshConnectivityTypeInitialise(InterfaceMeshConnectivity,Err)
   CALL CMISSInterfaceMeshConnectivityCreateStart(Interface,InterfaceMesh,InterfaceMeshConnectivity,Err)
   CALL CMISSInterfaceMeshConnectivityElementNumberElementsSet(InterfaceMeshConnectivity,1,1,5,Err)
-!  CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,1,1,1,1,(/ 0, 0, 0/),Err)
+  CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,1,1,1,1,XI,Err)
+!(InterfaceMeshConnectivity,InterfaceElementNumber, & 
+!     &  CoupledMeshIndexNumber,CoupledMeshElementNumber,LocalNodeNumber,ComponentNumber,Xi,Err)
   STOP
 
 !      CMISSInterfaceMeshConnectivityXiPoint()
