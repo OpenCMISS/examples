@@ -292,17 +292,18 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   WRITE(*,*)'1=POLYNOM, 2=EXP, 3=COS/SIN:'
 !   READ(*,*) 
 
-  IF(COMMAND_ARGUMENT_COUNT()==2) THEN
-    CALL GET_COMMAND_ARGUMENT(1,BUFFER)
-    READ(BUFFER,*) INPUT_TYPE
-    CALL GET_COMMAND_ARGUMENT(2,BUFFER)
-    READ(BUFFER,*) OUTPUT_STRING
-  ELSE
-    !TODO more detailed error message
-    WRITE(*,*)'INPUT ERROR!!!'
-  ENDIF
+! ! !   IF(COMMAND_ARGUMENT_COUNT()==2) THEN
+! ! !     CALL GET_COMMAND_ARGUMENT(1,BUFFER)
+! ! !     READ(BUFFER,*) INPUT_TYPE
+! ! !     CALL GET_COMMAND_ARGUMENT(2,BUFFER)
+! ! !     READ(BUFFER,*) OUTPUT_STRING
+! ! !   ELSE
+! ! !     !TODO more detailed error message
+! ! !     WRITE(*,*)'INPUT ERROR!!!'
+! ! !   ENDIF
 
-
+  INPUT_TYPE=1
+  OUTPUT_STRING='test'
 
   IF(INPUT_TYPE==1.AND.NUMBER_OF_DIMENSIONS==2) ANALYTICAL_TYPE=CMISSEquationsSetStokesTwoDim1
   IF(INPUT_TYPE==2.AND.NUMBER_OF_DIMENSIONS==2) ANALYTICAL_TYPE=CMISSEquationsSetStokesTwoDim2
@@ -460,6 +461,7 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
 
   !Start the creation of mesh nodes
   CALL CMISSNodesTypeInitialise(Nodes,Err)
+  CALL CMISSMeshTypeInitialise(Mesh,Err)
   CALL CMISSNodesCreateStart(Region,TOTAL_NUMBER_OF_NODES,Nodes,Err)
   CALL CMISSNodesCreateFinish(Nodes,Err)
   !Start the creation of the mesh
