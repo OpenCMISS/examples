@@ -386,7 +386,7 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
 
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+  !CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
   !
   !================================================================================================================================
   !
@@ -551,6 +551,7 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
   CALL CMISSNodesCreateStart(Region,TOTAL_NUMBER_OF_ALL_NODES,Nodes,Err)
   CALL CMISSNodesCreateFinish(Nodes,Err)
   !Start the creation of the mesh
+  CALL CMISSMeshTypeInitialise(Mesh,Err)
   CALL CMISSMeshCreateStart(MeshUserNumber,Region,NUMBER_OF_DIMENSIONS,Mesh,Err)
   !Set number of mesh elements
   CALL CMISSMeshNumberOfElementsSet(Mesh,TOTAL_NUMBER_OF_ELEMENTS,Err)
@@ -683,63 +684,69 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
     CALL CMISSFieldMeshDecompositionSet(DependentField,Decomposition,Err)
     CALL CMISSFieldGeometricFieldSet(DependentField,GeometricField,Err) 
     CALL CMISSFieldDependentTypeSet(DependentField,CMISSFieldDependentType,Err) 
-!     CALL CMISSFieldNumberOfVariablesSet(DependentField,4,Err)
-!     CALL CMISSFieldVariableTypesSet(DependentField,&
-!      & (/CMISSFieldUVariableType,CMISSFieldDelUDelNVariableType,CMISSFieldVVariableType,CMISSFieldDelVDelNVariableType/),Err)
+     CALL CMISSFieldNumberOfVariablesSet(DependentField,4,Err)
+     CALL CMISSFieldVariableTypesSet(DependentField,&
+      & (/CMISSFieldUVariableType,CMISSFieldDelUDelNVariableType,CMISSFieldVVariableType,CMISSFieldDelVDelNVariableType/),Err)
    WRITE(*,'(A)') "set number of variables"
 !     CALL CMISSFieldNumberOfVariablesSet(DependentField,2,Err)
 !     CALL CMISSFieldVariableTypesSet(DependentField,&
 !      & (/CMISSFieldVVariableType,CMISSFieldDelVDelNVariableType/),Err)
-
-
-!     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldUVariableType,1,Err)
-!     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelUDelNVariableType,1,Err)
-!      CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,1, & 
-!        & MESH_COMPONENT_NUMBER_CONC_ONE,Err)
-!      CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,1, & 
-!        & MESH_COMPONENT_NUMBER_CONC_ONE,Err)
-!   WRITE(*,'(A)') "advec-diff vars set"
+     CALL CMISSFieldDimensionSet(DependentField,CMISSFieldUVariableType, &
+                   & CMISSFieldScalarDimensionType,Err)
+     CALL CMISSFieldDimensionSet(DependentField,CMISSFieldDelUDelNVariableType, &
+                   & CMISSFieldScalarDimensionType,Err)
+     CALL CMISSFieldDimensionSet(DependentField,CMISSFieldVVariableType, &
+                   & CMISSFieldScalarDimensionType,Err)
+     CALL CMISSFieldDimensionSet(DependentField,CMISSFieldDelVDelNVariableType, &
+                   & CMISSFieldScalarDimensionType,Err)
+     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldUVariableType,1,Err)
+     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelUDelNVariableType,1,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,1, & 
+        & MESH_COMPONENT_NUMBER_CONC_ONE,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,1, & 
+        & MESH_COMPONENT_NUMBER_CONC_ONE,Err)
+   WRITE(*,'(A)') "advec-diff vars set"
 !     ! -- Diffusion
-!     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldVVariableType,1,Err)
-!     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelVDelNVariableType,1,Err)
-!      CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldVVariableType,1, & 
-!        & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
-!      CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelVDelNVariableType,1, & 
-!        & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
+     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldVVariableType,1,Err)
+     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelVDelNVariableType,1,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldVVariableType,1, & 
+        & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelVDelNVariableType,1, & 
+        & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
   WRITE(*,'(A)') "diff vars set"
   CALL CMISSFieldCreateFinish(DependentField,Err)
   WRITE(*,'(A)') "field created"
  
 
 
-!   !DEPENDENT FIELDS
-! 
-!   !Create the equations set dependent field variables for ALE Darcy
-!   CALL CMISSFieldTypeInitialise(DependentFieldAdvectionDiffusion,Err)
-!   CALL CMISSEquationsSetDependentCreateStart(EquationsSetAdvectionDiffusion,DependentFieldUserNumberAdvectionDiffusion, & 
-!     & DependentFieldAdvectionDiffusion,Err)
-!   !Set the mesh component to be used by the field components.
-! !   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-! !     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionOne,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
-! !       & MESH_COMPONENT_NUMBER_CONC_ONE,Err)
-! !     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionOne,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
-! !       & MESH_COMPONENT_NUMBER_CONC_ONE,Err)
-! !   ENDDO
-!   !Finish the equations set dependent field variables
-!   CALL CMISSEquationsSetDependentCreateFinish(EquationsSetAdvectionDiffusion,Err)
-! 
-!   CALL CMISSFieldTypeInitialise(DependentFieldDiffusion,Err)
-!   CALL CMISSEquationsSetDependentCreateStart(EquationsSetDiffusion,DependentFieldUserNumberDiffusion, & 
-!     & DependentFieldDiffusion,Err)
-!   !Set the mesh component to be used by the field components.
-! !   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-! !     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionTwo,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
-! !       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
-! !     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionTwo,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
-! !       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
-! !   ENDDO
-!   !Finish the equations set dependent field variables
-!   CALL CMISSEquationsSetDependentCreateFinish(EquationsSetDiffusion,Err)
+  !DEPENDENT FIELDS
+
+  !Create the equations set dependent field variables for ALE Darcy
+!  CALL CMISSFieldTypeInitialise(DependentField,Err)
+  CALL CMISSEquationsSetDependentCreateStart(EquationsSetAdvectionDiffusion,DependentFieldUserNumber, & 
+    & DependentField,Err)
+  !Set the mesh component to be used by the field components.
+!   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+!     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionOne,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
+!       & MESH_COMPONENT_NUMBER_CONC_ONE,Err)
+!     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionOne,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
+!       & MESH_COMPONENT_NUMBER_CONC_ONE,Err)
+!   ENDDO
+  !Finish the equations set dependent field variables
+  CALL CMISSEquationsSetDependentCreateFinish(EquationsSetAdvectionDiffusion,Err)
+
+!  CALL CMISSFieldTypeInitialise(DependentFieldDiffusion,Err)
+  CALL CMISSEquationsSetDependentCreateStart(EquationsSetDiffusion,DependentFieldUserNumber, & 
+    & DependentField,Err)
+  !Set the mesh component to be used by the field components.
+!   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+!     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionTwo,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
+!       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
+!     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionTwo,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
+!       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
+!   ENDDO
+  !Finish the equations set dependent field variables
+  CALL CMISSEquationsSetDependentCreateFinish(EquationsSetDiffusion,Err)
 
 
 
