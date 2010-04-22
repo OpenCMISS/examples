@@ -37,7 +37,10 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
        if input != None :
          inputPipe = subprocess.Popen(["echo", input], stdout=subprocess.PIPE)
          f1 = open(newDir + "/test" + id + "-" + compiler,"w")
-         execCommand = subprocess.Popen([execPath], stdin=inputPipe.stdout, stdout=f1,stderr=f1)
+         execArgs = [execPath]
+         if args != None :
+           execArgs.extends(args.split(' '))
+         execCommand = subprocess.Popen(args=execArgs, stdin=inputPipe.stdout, stdout=f1,stderr=f1)
          f1.close()
          err = os.waitpid(execCommand.pid, 0)[1]
        elif args==None :
@@ -48,7 +51,10 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
        if input != None :
          inputPipe = subprocess.Popen(["echo", input], stdout=subprocess.PIPE)
          f1 = open(newDir + "/test" + id + "-" + compiler,"w")
-         execCommand = subprocess.Popen(["mpiexec","-n",nodes,execPath], stdin=inputPipe.stdout, stdout=f1,stderr=subprocess.PIPE)
+         execArgs = ["mpiexec","-n",nodes,execPath]
+         if args != None :
+           execArgs.extends(args.split(' '))
+         execCommand = subprocess.Popen(args=execArgs, stdin=inputPipe.stdout, stdout=f1,stderr=subprocess.PIPE)
          f1.close()
          err = os.waitpid(execCommand.pid, 0)[1]
        elif args==None :
