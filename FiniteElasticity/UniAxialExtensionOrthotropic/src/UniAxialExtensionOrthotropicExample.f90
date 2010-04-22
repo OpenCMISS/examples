@@ -102,7 +102,6 @@ PROGRAM UNIAXIALEXTENSIONORTHOTROPICEXAMPLE
 
   INTEGER(CMISSIntg), PARAMETER :: DerivativeUserNumber=1
 
-
   !Program types
 
 
@@ -136,6 +135,7 @@ PROGRAM UNIAXIALEXTENSIONORTHOTROPICEXAMPLE
   TYPE(CMISSNodesType) :: Nodes
   TYPE(CMISSMeshElementsType) :: ElementsU
   TYPE(CMISSMeshElementsType) :: ElementsP
+  TYPE(CMISSControlLoopType) :: ControlLoop
 
   !REAL(CMISSDP), POINTER :: FieldData(:)
 
@@ -387,7 +387,7 @@ PROGRAM UNIAXIALEXTENSIONORTHOTROPICEXAMPLE
   CALL CMISSFieldCreateFinish(FibreField,Err)
 
   !Rotation Angles (radians)
-  FibreFieldAngle=(/0,0,0/)
+  FibreFieldAngle=(/1,2,3/)
   DO node_idx=1,TotalNumberOfNodes
     DO component_idx=1,FieldFibreNumberOfComponents
       CALL CMISSFieldParameterSetUpdateNode(FibreField,CMISSFieldUVariableType,CMISSFieldValuesSetType,DerivativeUserNumber, &
@@ -486,15 +486,24 @@ PROGRAM UNIAXIALEXTENSIONORTHOTROPICEXAMPLE
   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,22,1,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,25,1,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
   !Fix nodes 3,6,9,12,15,18,21,24,27 at x=1.1
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,3,1,CMISSBoundaryConditionFixed,1.1_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,6,1,CMISSBoundaryConditionFixed,1.1_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,9,1,CMISSBoundaryConditionFixed,1.1_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,12,1,CMISSBoundaryConditionFixed,1.1_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,15,1,CMISSBoundaryConditionFixed,1.1_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,18,1,CMISSBoundaryConditionFixed,1.1_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,21,1,CMISSBoundaryConditionFixed,1.1_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,24,1,CMISSBoundaryConditionFixed,1.1_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,27,1,CMISSBoundaryConditionFixed,1.1_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,3,1,CMISSBoundaryConditionFixedIncremented, &
+    & 1.1_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,6,1,CMISSBoundaryConditionFixedIncremented, &
+    & 1.1_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,9,1,CMISSBoundaryConditionFixedIncremented, &
+    & 1.1_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,12,1,CMISSBoundaryConditionFixedIncremented, &
+    & 1.1_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,15,1,CMISSBoundaryConditionFixedIncremented, &
+    & 1.1_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,18,1,CMISSBoundaryConditionFixedIncremented, &
+    & 1.1_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,21,1,CMISSBoundaryConditionFixedIncremented, &
+    & 1.1_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,24,1,CMISSBoundaryConditionFixedIncremented, &
+    & 1.1_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,27,1,CMISSBoundaryConditionFixedIncremented, &
+    & 1.1_CMISSDP,Err)
 
   !Fix nodes 1,2,3,10,11,12,19,20,21 at y=0
   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,2,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
@@ -529,6 +538,9 @@ PROGRAM UNIAXIALEXTENSIONORTHOTROPICEXAMPLE
 
   !Create the problem control loop
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
+  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
+  CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
+  CALL CMISSControlLoopMaximumIterationsSet(ControlLoop,5,Err)
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
 
   !Create the problem solvers
