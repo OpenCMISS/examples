@@ -39,7 +39,7 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
          f1 = open(newDir + "/test" + id + "-" + compiler,"w")
          execArgs = [execPath]
          if args != None :
-           execArgs.extends(args.split(' '))
+           execArgs.extend(args.split(' '))
          execCommand = subprocess.Popen(args=execArgs, stdin=inputPipe.stdout, stdout=f1,stderr=f1)
          f1.close()
          err = os.waitpid(execCommand.pid, 0)[1]
@@ -53,7 +53,7 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
          f1 = open(newDir + "/test" + id + "-" + compiler,"w")
          execArgs = ["mpiexec","-n",nodes,execPath]
          if args != None :
-           execArgs.extends(args.split(' '))
+           execArgs.extend(args.split(' '))
          execCommand = subprocess.Popen(args=execArgs, stdin=inputPipe.stdout, stdout=f1,stderr=subprocess.PIPE)
          f1.close()
          err = os.waitpid(execCommand.pid, 0)[1]
