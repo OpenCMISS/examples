@@ -64,7 +64,8 @@ PROGRAM COUPLEDLAPLACE
   REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: WIDTH=2.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
-  REAL(CMISSDP) :: XI(1)
+  REAL(CMISSDP) :: XI(2)
+  INTEGER(CMISSIntg) :: I 
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystem1UserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystem2UserNumber=2
@@ -122,7 +123,7 @@ PROGRAM COUPLEDLAPLACE
   TYPE(CMISSEquationsSetType) :: EquationsSet1,EquationsSet2
   TYPE(CMISSFieldType) :: GeometricField1,GeometricField2,InterfaceGeometricField,DependentField1, &
     & DependentField2,LagrangeField
-  TYPE(CMISSFieldsType) :: Fields1,Fields2
+  TYPE(CMISSFieldsType) :: Fields1,Fields2, Fields3
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh1,GeneratedMesh2,InterfaceGeneratedMesh
   TYPE(CMISSInterfaceType) :: Interface
   TYPE(CMISSInterfaceConditionType) :: InterfaceCondition
@@ -320,16 +321,9 @@ PROGRAM COUPLEDLAPLACE
   PRINT *, ' == >> CREATING INTERFACE BASIS << == '
   CALL CMISSBasisTypeInitialise(InterfaceBasis,Err)
   CALL CMISSBasisCreateStart(InterfaceBasisUserNumber,InterfaceBasis,Err)
-  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    !Set the basis to be a linear Lagrange basis
-    CALL CMISSBasisNumberOfXiSet(InterfaceBasis,1,Err)
-    CALL CMISSBasisInterpolationXiSet(InterfaceBasis,(/CMISSBasisLinearLagrangeInterpolation/),Err)
-  ELSE
-    !Set the basis to be a bilinear Lagrange basis
-    CALL CMISSBasisNumberOfXiSet(InterfaceBasis,2,Err)
-    CALL CMISSBasisInterpolationXiSet(InterfaceBasis,(/CMISSBasisQuadraticLagrangeInterpolation, &
-      & CMISSBasisQuadraticLagrangeInterpolation/),Err)
-  ENDIF
+  !Set the basis to be a linear Lagrange basis
+  CALL CMISSBasisNumberOfXiSet(InterfaceBasis,1,Err)
+  CALL CMISSBasisInterpolationXiSet(InterfaceBasis,(/CMISSBasisLinearLagrangeInterpolation/),Err)
   !Finish the creation of the basis
   CALL CMISSBasisCreateFinish(InterfaceBasis,Err)
   
@@ -359,19 +353,45 @@ PROGRAM COUPLEDLAPLACE
   PRINT *, ' == >> CREATING INTERFACE MESHES CONNECTIVITY << == '
   CALL CMISSInterfaceMeshConnectivityTypeInitialise(InterfaceMeshConnectivity,Err)
   CALL CMISSInterfaceMeshConnectivityCreateStart(Interface,InterfaceMesh,InterfaceMeshConnectivity,Err)
-  CALL CMISSInterfaceMeshConnectivityElementNumberElementsSet(InterfaceMeshConnectivity,1,1,5,Err)
-  CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,1,1,1,1,XI,Err)
-!(InterfaceMeshConnectivity,InterfaceElementNumber, & 
-!     &  CoupledMeshIndexNumber,CoupledMeshElementNumber,LocalNodeNumber,ComponentNumber,Xi,Err)
-  STOP
-
-!      CMISSInterfaceMeshConnectivityXiPoint()
+  ! Setting the map for element 1
+  CALL CMISSInterfaceMeshConnectivityElementNumberElementsSet(InterfaceMeshConnectivity,1,Mesh1Index,1,Err)
+  XI = (/ 1.0_CMISSDP , 0.0_CMISSDP /)
+  DO I = 1,2
+     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,Mesh1Index,2,1,I,XI,Err)
+  END DO
+  XI = (/ 1.0_CMISSDP , 1.0_CMISSDP /)
+  DO I = 1,2
+     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,Mesh1Index,2,2,I,XI,Err)
+  END DO
+  CALL CMISSInterfaceMeshConnectivityElementNumberElementsSet(InterfaceMeshConnectivity,1,Mesh2Index,1,Err)
+  XI = (/ 0.0_CMISSDP , 0.0_CMISSDP /)
+  DO I = 1,2
+     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,Mesh2Index,1,1,I,XI,Err)
+  END DO
+  XI = (/ 0.0_CMISSDP , 0.5_CMISSDP /)
+  DO I = 1,2
+     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,Mesh2Index,1,2,I,XI,Err)
+  END DO
+  ! Setting the map for element 2
+  CALL CMISSInterfaceMeshConnectivityElementNumberElementsSet(InterfaceMeshConnectivity,2,Mesh1Index,1,Err)
+  XI = (/ 1.0_CMISSDP , 0.0_CMISSDP /)
+  DO I = 1,2
+     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,2,Mesh1Index,4,1,I,XI,Err)
+  END DO
+  XI = (/ 1.0_CMISSDP , 1.0_CMISSDP /)
+  DO I = 1,2
+     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,2,Mesh1Index,4,2,I,XI,Err)
+  END DO
+  CALL CMISSInterfaceMeshConnectivityElementNumberElementsSet(InterfaceMeshConnectivity,2,Mesh2Index,1,Err)
+  XI = (/ 0.0_CMISSDP , 0.5_CMISSDP /)
+  DO I = 1,2
+     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,2,Mesh2Index,1,1,I,XI,Err)
+  END DO
+  XI = (/ 0.0_CMISSDP , 1.0_CMISSDP /)
+  DO I = 1,2
+     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,2,Mesh2Index,1,2,I,XI,Err)
+  END DO
   CALL CMISSInterfaceMeshConnectivityCreateFinish(InterfaceMeshConnectivity,Err)
-
-
-
-
-
 
 
   !Create a decomposition for mesh1
@@ -552,10 +572,24 @@ PROGRAM COUPLEDLAPLACE
   !Update the geometric field parameters for the interface field
   CALL CMISSGeneratedMeshGeometricParametersCalculate(InterfaceGeometricField,InterfaceGeneratedMesh,Err)
   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ! <<  ACCESS LATER  >>>
   
   !Create an interface condition between the two meshes
-  PRINT *, ' == >> CREATING INTERFACE CONDITIONS << == '
+!  PRINT *, ' == >> CREATING INTERFACE CONDITIONS << == '
 !   CALL CMISSInterfaceConditionTypeInitialise(InterfaceCondition,Err)
 !   CALL CMISSInterfaceConditionCreateStart(InterfaceConditionUserNumber,Interface,InterfaceCondition,Err)
 !   !Specify the method for the interface condition
@@ -569,22 +603,22 @@ PROGRAM COUPLEDLAPLACE
 !   CALL CMISSInterfaceConditionCreateFinish(InterfaceCondition,Err)
 
   !Create the Lagrange multipliers field
-  PRINT *, ' == >> CREATING INTERFACE LAGRANGE FIELD << == '
-  CALL CMISSFieldTypeInitialise(LagrangeField,Err)
-  CALL CMISSInterfaceConditionLagrangeFieldCreateStart(InterfaceCondition,LagrangeFieldUserNumber,LagrangeField,Err)
+!  PRINT *, ' == >> CREATING INTERFACE LAGRANGE FIELD << == '
+!  CALL CMISSFieldTypeInitialise(LagrangeField,Err)
+!  CALL CMISSInterfaceConditionLagrangeFieldCreateStart(InterfaceCondition,LagrangeFieldUserNumber,LagrangeField,Err)
   !Finish the Lagrange multipliers field
-  CALL CMISSInterfaceConditionLagrangeFieldCreateFinish(InterfaceCondition,Err)
+!  CALL CMISSInterfaceConditionLagrangeFieldCreateFinish(InterfaceCondition,Err)
 
   !Create the interface condition equations
-  PRINT *, ' == >> CREATING INTERFACE EQUATIONS << == '
-  CALL CMISSInterfaceEquationsTypeInitialise(InterfaceEquations,Err)
-  CALL CMISSInterfaceConditionEquationsCreateStart(InterfaceCondition,InterfaceEquations,Err)
+!  PRINT *, ' == >> CREATING INTERFACE EQUATIONS << == '
+!  CALL CMISSInterfaceEquationsTypeInitialise(InterfaceEquations,Err)
+!  CALL CMISSInterfaceConditionEquationsCreateStart(InterfaceCondition,InterfaceEquations,Err)
   !Set the interface equations sparsity
-  CALL CMISSInterfaceEquationsSparsitySet(InterfaceEquations,CMISSEquationsSparseMatrices,Err)
+!  CALL CMISSInterfaceEquationsSparsitySet(InterfaceEquations,CMISSEquationsSparseMatrices,Err)
   !Set the interface equations output
-  CALL CMISSInterfaceEquationsOutputTypeSet(InterfaceEquations,CMISSEquationsTimingOutput,Err)
+!  CALL CMISSInterfaceEquationsOutputTypeSet(InterfaceEquations,CMISSEquationsTimingOutput,Err)
   !Finish creating the interface equations
-  CALL CMISSInterfaceConditionEquationsCreateFinish(InterfaceCondition,Err)
+!  CALL CMISSInterfaceConditionEquationsCreateFinish(InterfaceCondition,Err)
   
   !Start the creation of a coupled problem.
   CALL CMISSProblemTypeInitialise(CoupledProblem,Err)
@@ -627,27 +661,32 @@ PROGRAM COUPLEDLAPLACE
   !Add in the second equations set
   CALL CMISSSolverEquationsEquationsSetAdd(CoupledSolverEquations,EquationsSet2,EquationsSet2Index,Err)
   !Add in the interface condition
-  CALL CMISSSolverEquationsInterfaceConditionAdd(CoupledSolverEquations,InterfaceCondition,InterfaceConditionIndex,Err)
+!  CALL CMISSSolverEquationsInterfaceConditionAdd(CoupledSolverEquations,InterfaceCondition,InterfaceConditionIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(CoupledProblem,Err)
 
   !Solve the problem
   CALL CMISSProblemSolve(CoupledProblem,Err)
 
-  EXPORT_FIELD=.TRUE.
-  IF(EXPORT_FIELD) THEN
-    CALL CMISSFieldsTypeInitialise(Fields1,Err)
-    CALL CMISSFieldsTypeCreate(Region1,Fields1,Err)
-    CALL CMISSFieldIONodesExport(Fields1,"TwoRegion_1","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields1,"TwoRegion_1","FORTRAN",Err)
-    CALL CMISSFieldsTypeFinalise(Fields1,Err)
-    CALL CMISSFieldsTypeInitialise(Fields2,Err)
-    CALL CMISSFieldsTypeCreate(Region2,Fields2,Err)
-    CALL CMISSFieldIONodesExport(Fields2,"TwoRegion_2","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields2,"TwoRegion_2","FORTRAN",Err)
-    CALL CMISSFieldsTypeFinalise(Fields2,Err)
-  ENDIF
+
+  CALL CMISSFieldsTypeInitialise(Fields1,Err)
+  CALL CMISSFieldsTypeCreate(Region1,Fields1,Err)
+  CALL CMISSFieldIONodesExport(Fields1,"TwoRegion1","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields1,"TwoRegion1","FORTRAN",Err)
+  CALL CMISSFieldsTypeFinalise(Fields1,Err)
+
+  CALL CMISSFieldsTypeInitialise(Fields2,Err)
+  CALL CMISSFieldsTypeCreate(Region2,Fields2,Err)
+  CALL CMISSFieldIONodesExport(Fields2,"TwoRegion2","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields2,"TwoRegion2","FORTRAN",Err)
+  CALL CMISSFieldsTypeFinalise(Fields2,Err)
     
+  CALL CMISSFieldsTypeInitialise(Fields3,Err)
+  CALL CMISSFieldsTypeCreate(Interface,Fields3,Err)
+  CALL CMISSFieldIONodesExport(Fields3,"TwoRegion3","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields3,"TwoRegion3","FORTRAN",Err)
+  CALL CMISSFieldsTypeFinalise(Fields3,Err)
+
   !Finialise CMISS
   !CALL CMISSFinalise(Err)
 
