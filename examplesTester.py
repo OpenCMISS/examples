@@ -69,6 +69,9 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
 				err=error
      if not os.path.exists(execPath) :
        err=-1
+     outputfile = open(newDir + "/test" + id + "-" + compiler, 'r')
+     if "ERROR:" in outputfile.read() :
+       err=-1
      if err==0 :
        f.write(compiler+'_'+path+'_test|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
        print "Testing %s%s: <a class='success' href='%slogs_x86_64-linux/%s/test%s-%s'>success</a><br>" %(path,id,rootUrl,path,id,compiler)
