@@ -63,7 +63,7 @@ endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_PATH=ClassicalField/
+EXAMPLE_PATH=ClassicalField/SCRATCH/
 
 EXAMPLE_NAME = LinearPoisson
 
