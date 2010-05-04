@@ -87,7 +87,7 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   !Program variables
 
   INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
-  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS!!,NumberOfNeumann,Id
+  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
   REAL(CMISSDP) :: C_PARAM_POISSON
 
   INTEGER(CMISSIntg) :: MPI_IERROR
@@ -281,7 +281,7 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   !Create the equations set analytic field variables
   CALL CMISSFieldTypeInitialise(AnalyticField,Err)
 
-  CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSTestCase1, &
+  CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSTestCaseNeumann, &
     & AnalyticFieldUserNumber,AnalyticField,Err)
 
 !Finish the equations set analytic field variables
