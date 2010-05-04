@@ -279,14 +279,14 @@ PROGRAM ActiveContractionExample
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
 
-  !Set x=0 nodes to no x displacment in xyz
+
   DO z_idx=1,NumberGlobalZElements+1
     DO y_idx=1,NumberGlobalYElements+1
       !x=0 nodes
       NodeNumber1=1+(y_idx-1)*(NumberGlobalXElements+1)+(z_idx-1)*(NumberGlobalXElements+1)*(NumberGlobalYElements+1)
       CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber1,1,Node1Domain,Err)
       IF(Node1Domain==ComputationalNodeNumber) THEN
-       DO D=1,3
+       DO D=1,1 ! just fix left face x position
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,NodeNumber1,D, &
           & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
        ENDDO
