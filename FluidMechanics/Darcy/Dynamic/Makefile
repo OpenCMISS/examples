@@ -65,7 +65,7 @@ endif
 
 EXAMPLE_PATH=FluidMechanics/Darcy/
 
-EXAMPLE_NAME = DynamicTemp
+EXAMPLE_NAME = Dynamic
 
 include $(GLOBAL_ROOT)/NewExampleMakefile
 
