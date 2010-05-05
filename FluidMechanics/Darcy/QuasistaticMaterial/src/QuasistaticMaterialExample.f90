@@ -303,7 +303,7 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   !Set output parameter
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
   LINEAR_SOLVER_MAT_PROPERTIES_OUTPUT_TYPE=CMISSSolverNoOutput
-  LINEAR_SOLVER_DARCY_OUTPUT_TYPE=CMISSSolverSolverOutput
+  LINEAR_SOLVER_DARCY_OUTPUT_TYPE=CMISSSolverProgressOutput
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
   EQUATIONS_DARCY_OUTPUT=CMISSEquationsNoOutput
   EQUATIONS_MAT_PROPERTIES_OUTPUT=CMISSEquationsNoOutput
@@ -880,8 +880,8 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   !Get the deformation-dependent material properties solver
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverMatPropertiesUserNumber,LinearSolverMatProperties,Err)
   !Set the output type
-  !CALL CMISSSolverOutputTypeSet(LinearSolverMatProperties,LINEAR_SOLVER_MAT_PROPERTIES_OUTPUT_TYPE,Err)
-  CALL CMISSSolverOutputTypeSet(LinearSolverMatProperties,4,Err)
+  CALL CMISSSolverOutputTypeSet(LinearSolverMatProperties,LINEAR_SOLVER_MAT_PROPERTIES_OUTPUT_TYPE,Err)
+!   CALL CMISSSolverOutputTypeSet(LinearSolverMatProperties,4,Err)
   !Set the solver settings
   IF(LINEAR_SOLVER_MAT_PROPERTIES_DIRECT_FLAG) THEN
     CALL CMISSSolverLinearTypeSet(LinearSolverMatProperties,CMISSSolverLinearDirectSolveType,Err)
