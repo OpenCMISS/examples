@@ -96,7 +96,6 @@ buildExample("FluidMechanics/Darcy/QuasistaticMaterial")
 #buildExample("LinearElasticity/3DCubicHermiteBasis")
 #buildExample("LinearElasticity/3DLagrangeBasisAnisotropicFibreField")
 
-buildExample("MultiPhysics/Poroelasticity/FiniteElasticityDarcy/Standard")
 buildExample("MultiPhysics/Poroelasticity/FiniteElasticityDarcy/SameRegionSameMesh")
 buildExample("MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDarcySharedVars")
 
