@@ -113,3 +113,4 @@ logExample(path="FluidMechanics/Darcy/QuasistaticMaterial")
 
 logExample(path="MultiPhysics/Poroelasticity/FiniteElasticityDarcy/SameRegionSameMesh")
 logExample(path="MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDarcySharedVars")
+logExample(path="MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDarcySharedVarsTimeBCs")

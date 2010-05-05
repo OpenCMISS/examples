@@ -124,6 +124,7 @@ testExample(id='1',path="FluidMechanics/Darcy/QuasistaticMaterial",nodes='1',inp
 
 testExample(id='1',path="MultiPhysics/Poroelasticity/FiniteElasticityDarcy/SameRegionSameMesh",nodes='1',input='\n')
 testExample(id='1',path="MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDarcySharedVars",nodes='1',input='\n')
+testExample(id='1',path="MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDarcySharedVarsTimeBCs",nodes='1',input='\n')
 
 
 # TODO Group them

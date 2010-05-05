@@ -98,6 +98,7 @@ buildExample("FluidMechanics/Darcy/QuasistaticMaterial")
 
 buildExample("MultiPhysics/Poroelasticity/FiniteElasticityDarcy/SameRegionSameMesh")
 buildExample("MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDarcySharedVars")
+buildExample("MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDarcySharedVarsTimeBCs")
 
 # TODO Group them
 #buildExample("LagrangeSimplexMesh")

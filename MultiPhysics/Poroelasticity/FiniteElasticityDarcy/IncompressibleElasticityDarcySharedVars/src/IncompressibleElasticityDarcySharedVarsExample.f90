@@ -99,9 +99,9 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumberSolid=15
 
   INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: SolverMatPropertiesUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: SolverDarcyUserNumber=2
-  INTEGER(CMISSIntg), PARAMETER :: SolverSolidUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: SolverSolidUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: SolverMatPropertiesUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: SolverDarcyUserNumber=3
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPorosity=1
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPermOverVis=2
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberMatPropertiesPorosity=1     !??? 3 ???
@@ -382,8 +382,8 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !Set result output parameter
   LINEAR_SOLVER_DARCY_OUTPUT_FREQUENCY=1
   !Set solver parameters
-  LINEAR_SOLVER_MAT_PROPERTIES_DIRECT_FLAG=.FALSE.
-  LINEAR_SOLVER_DARCY_DIRECT_FLAG=.FALSE.
+  LINEAR_SOLVER_MAT_PROPERTIES_DIRECT_FLAG=.TRUE.
+  LINEAR_SOLVER_DARCY_DIRECT_FLAG=.TRUE.
   RELATIVE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-05_CMISSDP
   ABSOLUTE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-10_CMISSDP
   DIVERGENCE_TOLERANCE=1.0E5_CMISSDP !default: 1.0E5
@@ -1157,10 +1157,10 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
       END IF
       !
       IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) THEN
-        !z-velocity
-        VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
+!         !z-velocity
+!         VALUE = 1.0_CMISSDP
+!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
+!           & NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
       END IF
     END DO
   END IF
@@ -1213,42 +1213,10 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !SOLVERS
 
   !Start the creation of the problem solvers
+  CALL CMISSSolverTypeInitialise(SolverSolid,Err)
   CALL CMISSSolverTypeInitialise(LinearSolverMatProperties,Err)
   CALL CMISSSolverTypeInitialise(LinearSolverDarcy,Err)
-  CALL CMISSSolverTypeInitialise(SolverSolid,Err)
   CALL CMISSProblemSolversCreateStart(Problem,Err)
-  !Get the deformation-dependent material properties solver
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverMatPropertiesUserNumber,LinearSolverMatProperties,Err)
-  !Set the output type
-  CALL CMISSSolverOutputTypeSet(LinearSolverMatProperties,LINEAR_SOLVER_MAT_PROPERTIES_OUTPUT_TYPE,Err)
-  !Set the solver settings
-  IF(LINEAR_SOLVER_MAT_PROPERTIES_DIRECT_FLAG) THEN
-    CALL CMISSSolverLinearTypeSet(LinearSolverMatProperties,CMISSSolverLinearDirectSolveType,Err)
-    CALL CMISSSolverLibraryTypeSet(LinearSolverMatProperties,CMISSSolverMUMPSLibrary,Err)
-  ELSE
-    CALL CMISSSolverLinearTypeSet(LinearSolverMatProperties,CMISSSolverLinearIterativeSolveType,Err)
-    CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolverMatProperties,MAXIMUM_ITERATIONS,Err)
-    CALL CMISSSolverLinearIterativeDivergenceToleranceSet(LinearSolverMatProperties,DIVERGENCE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeRelativeToleranceSet(LinearSolverMatProperties,RELATIVE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeAbsoluteToleranceSet(LinearSolverMatProperties,ABSOLUTE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeGMRESRestartSet(LinearSolverMatProperties,RESTART_VALUE,Err)
-  ENDIF
-  !Get the Darcy solver
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverDarcyUserNumber,LinearSolverDarcy,Err)
-  !Set the output type
-  CALL CMISSSolverOutputTypeSet(LinearSolverDarcy,LINEAR_SOLVER_DARCY_OUTPUT_TYPE,Err)
-  !Set the solver settings
-  IF(LINEAR_SOLVER_DARCY_DIRECT_FLAG) THEN
-    CALL CMISSSolverLinearTypeSet(LinearSolverDarcy,CMISSSolverLinearDirectSolveType,Err)
-    CALL CMISSSolverLibraryTypeSet(LinearSolverDarcy,CMISSSolverMUMPSLibrary,Err)
-  ELSE
-    CALL CMISSSolverLinearTypeSet(LinearSolverDarcy,CMISSSolverLinearIterativeSolveType,Err)
-    CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolverDarcy,MAXIMUM_ITERATIONS,Err)
-    CALL CMISSSolverLinearIterativeDivergenceToleranceSet(LinearSolverDarcy,DIVERGENCE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeRelativeToleranceSet(LinearSolverDarcy,RELATIVE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeAbsoluteToleranceSet(LinearSolverDarcy,ABSOLUTE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeGMRESRestartSet(LinearSolverDarcy,RESTART_VALUE,Err)
-  ENDIF
 
   !--------------------------------------------------------------------------------------------------------------------------------
   ! Solid
@@ -1267,6 +1235,40 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   ! end Solid
   !--------------------------------------------------------------------------------------------------------------------------------
 
+  !Get the deformation-dependent material properties solver
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverMatPropertiesUserNumber,LinearSolverMatProperties,Err)
+  !Set the output type
+  CALL CMISSSolverOutputTypeSet(LinearSolverMatProperties,LINEAR_SOLVER_MAT_PROPERTIES_OUTPUT_TYPE,Err)
+  !Set the solver settings
+  IF(LINEAR_SOLVER_MAT_PROPERTIES_DIRECT_FLAG) THEN
+    CALL CMISSSolverLinearTypeSet(LinearSolverMatProperties,CMISSSolverLinearDirectSolveType,Err)
+    CALL CMISSSolverLibraryTypeSet(LinearSolverMatProperties,CMISSSolverMUMPSLibrary,Err)
+  ELSE
+    CALL CMISSSolverLinearTypeSet(LinearSolverMatProperties,CMISSSolverLinearIterativeSolveType,Err)
+    CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolverMatProperties,MAXIMUM_ITERATIONS,Err)
+    CALL CMISSSolverLinearIterativeDivergenceToleranceSet(LinearSolverMatProperties,DIVERGENCE_TOLERANCE,Err)
+    CALL CMISSSolverLinearIterativeRelativeToleranceSet(LinearSolverMatProperties,RELATIVE_TOLERANCE,Err)
+    CALL CMISSSolverLinearIterativeAbsoluteToleranceSet(LinearSolverMatProperties,ABSOLUTE_TOLERANCE,Err)
+    CALL CMISSSolverLinearIterativeGMRESRestartSet(LinearSolverMatProperties,RESTART_VALUE,Err)
+  ENDIF
+
+  !Get the Darcy solver
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverDarcyUserNumber,LinearSolverDarcy,Err)
+  !Set the output type
+  CALL CMISSSolverOutputTypeSet(LinearSolverDarcy,LINEAR_SOLVER_DARCY_OUTPUT_TYPE,Err)
+  !Set the solver settings
+  IF(LINEAR_SOLVER_DARCY_DIRECT_FLAG) THEN
+    CALL CMISSSolverLinearTypeSet(LinearSolverDarcy,CMISSSolverLinearDirectSolveType,Err)
+    CALL CMISSSolverLibraryTypeSet(LinearSolverDarcy,CMISSSolverMUMPSLibrary,Err)
+  ELSE
+    CALL CMISSSolverLinearTypeSet(LinearSolverDarcy,CMISSSolverLinearIterativeSolveType,Err)
+    CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolverDarcy,MAXIMUM_ITERATIONS,Err)
+    CALL CMISSSolverLinearIterativeDivergenceToleranceSet(LinearSolverDarcy,DIVERGENCE_TOLERANCE,Err)
+    CALL CMISSSolverLinearIterativeRelativeToleranceSet(LinearSolverDarcy,RELATIVE_TOLERANCE,Err)
+    CALL CMISSSolverLinearIterativeAbsoluteToleranceSet(LinearSolverDarcy,ABSOLUTE_TOLERANCE,Err)
+    CALL CMISSSolverLinearIterativeGMRESRestartSet(LinearSolverDarcy,RESTART_VALUE,Err)
+  ENDIF
+
   !Finish the creation of the problem solver
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
 
@@ -1277,15 +1279,20 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !SOLVER EQUATIONS
 
   !Start the creation of the problem solver equations
+  CALL CMISSSolverTypeInitialise(SolverSolid,Err)
   CALL CMISSSolverTypeInitialise(LinearSolverMatProperties,Err)
   CALL CMISSSolverTypeInitialise(LinearSolverDarcy,Err)
-  CALL CMISSSolverTypeInitialise(SolverSolid,Err)
+  CALL CMISSSolverEquationsTypeInitialise(SolverEquationsSolid,Err)
   CALL CMISSSolverEquationsTypeInitialise(SolverEquationsMatProperties,Err)
   CALL CMISSSolverEquationsTypeInitialise(SolverEquationsDarcy,Err)
-  CALL CMISSSolverEquationsTypeInitialise(SolverEquationsSolid,Err)
 
   CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
   !
+  !Get the finite elasticity solver equations
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverSolidUserNumber,SolverSolid,Err)
+  CALL CMISSSolverSolverEquationsGet(SolverSolid,SolverEquationsSolid,Err)
+  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsSolid,CMISSSolverEquationsSparseMatrices,Err)
+  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsSolid,EquationsSetSolid,EquationsSetIndex,Err)
   !Get the deformation-dependent material properties solver equations
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverMatPropertiesUserNumber,LinearSolverMatProperties,Err)
   CALL CMISSSolverSolverEquationsGet(LinearSolverMatProperties,SolverEquationsMatProperties,Err)
@@ -1296,11 +1303,6 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   CALL CMISSSolverSolverEquationsGet(LinearSolverDarcy,SolverEquationsDarcy,Err)
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsDarcy,CMISSSolverEquationsSparseMatrices,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsDarcy,EquationsSetDarcy,EquationsSetIndex,Err)
-  !Get the finite elasticity solver equations
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverSolidUserNumber,SolverSolid,Err)
-  CALL CMISSSolverSolverEquationsGet(SolverSolid,SolverEquationsSolid,Err)
-  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsSolid,CMISSSolverEquationsSparseMatrices,Err)
-  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsSolid,EquationsSetSolid,EquationsSetIndex,Err)
   !
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
