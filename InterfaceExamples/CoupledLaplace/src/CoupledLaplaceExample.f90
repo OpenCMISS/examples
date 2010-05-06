@@ -1,7 +1,7 @@
 !> \file
-!> $Id: TwoRegionsExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id: CoupledLaplaceExample.f90 20 2007-05-28 20:22:52Z cpb $
 !> \author Chris Bradley
-!> \brief This is an example program which sets up a field in two regions using openCMISS calls.
+!> \brief This is an example program which solves a weakly coupled Laplace equation in two regions using openCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -40,11 +40,11 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example TwoRegions/src/TwoRegionsExample.f90
+!> \example InterfaceExamples/CoupledLaplace/src/CoupledLaplaceExample.f90
 !! Example program which sets up a field in two regions using OpenCMISS calls.
 !! \par Latest Builds:
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/TwoRegions/build-intel'>Linux Intel Build</a>
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/TwoRegions/build-gnu'>Linux GNU Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/InterfaceExamples/CoupledLaplace/build-intel'>Linux Intel Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/InterfaceExamples/CoupledLaplace/build-gnu'>Linux GNU Build</a>
 !<
 
 !> Main program
@@ -104,8 +104,6 @@ PROGRAM COUPLEDLAPLACE
   
   INTEGER(CMISSIntg) :: MPI_IERROR
 
-  LOGICAL :: EXPORT_FIELD
-  
   INTEGER(CMISSIntg) :: EquationsSet1Index,EquationsSet2Index
   INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
   INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain
@@ -123,7 +121,7 @@ PROGRAM COUPLEDLAPLACE
   TYPE(CMISSEquationsSetType) :: EquationsSet1,EquationsSet2
   TYPE(CMISSFieldType) :: GeometricField1,GeometricField2,InterfaceGeometricField,DependentField1, &
     & DependentField2,LagrangeField
-  TYPE(CMISSFieldsType) :: Fields1,Fields2, Fields3
+  TYPE(CMISSFieldsType) :: Fields1,Fields2,InterfaceFields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh1,GeneratedMesh2,InterfaceGeneratedMesh
   TYPE(CMISSInterfaceType) :: Interface
   TYPE(CMISSInterfaceConditionType) :: InterfaceCondition
@@ -393,7 +391,6 @@ PROGRAM COUPLEDLAPLACE
   END DO
   CALL CMISSInterfaceMeshConnectivityCreateFinish(InterfaceMeshConnectivity,Err)
 
-
   !Create a decomposition for mesh1
   PRINT *, ' == >> CREATING MESH(1) DECOMPOSITION << == '
   CALL CMISSDecompositionTypeInitialise(Decomposition1,Err)
@@ -571,56 +568,44 @@ PROGRAM COUPLEDLAPLACE
 
   !Update the geometric field parameters for the interface field
   CALL CMISSGeneratedMeshGeometricParametersCalculate(InterfaceGeometricField,InterfaceGeneratedMesh,Err)
-  
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-! <<  ACCESS LATER  >>>
-  
   !Create an interface condition between the two meshes
-!  PRINT *, ' == >> CREATING INTERFACE CONDITIONS << == '
-!   CALL CMISSInterfaceConditionTypeInitialise(InterfaceCondition,Err)
-!   CALL CMISSInterfaceConditionCreateStart(InterfaceConditionUserNumber,Interface,InterfaceCondition,Err)
-!   !Specify the method for the interface condition
-!   CALL CMISSInterfaceConditionMethodSet(InterfaceCondition,CMISSInterfaceConditionLagrangeMultipliers,Err)
-!   !Specify the type of interface condition operator
-!   CALL CMISSInterfaceConditionOperatorSet(InterfaceCondition,CMISSInterfaceConditionTestOperator,Err)
-!   !Add in the equations sets
-!   CALL CMISSInterfaceConditionEquationsSetAdd(InterfaceCondition,Mesh1Index,EquationsSet1,Err)
-!   CALL CMISSInterfaceConditionEquationsSetAdd(InterfaceCondition,Mesh2Index,EquationsSet2,Err)
-!   !Finish creating the interface condition
-!   CALL CMISSInterfaceConditionCreateFinish(InterfaceCondition,Err)
+  PRINT *, ' == >> CREATING INTERFACE CONDITIONS << == '
+  CALL CMISSInterfaceConditionTypeInitialise(InterfaceCondition,Err)
+  CALL CMISSInterfaceConditionCreateStart(InterfaceConditionUserNumber,Interface,InterfaceGeometricField, &
+    & InterfaceCondition,Err)
+  !Specify the method for the interface condition
+  CALL CMISSInterfaceConditionMethodSet(InterfaceCondition,CMISSInterfaceConditionLagrangeMultipliers,Err)
+  !Specify the type of interface condition operator
+  CALL CMISSInterfaceConditionOperatorSet(InterfaceCondition,CMISSInterfaceConditionFieldContinuityOperator,Err)
+  !Add in the dependent variables
+  CALL CMISSInterfaceConditionDependentVariableAdd(InterfaceCondition,Mesh1Index,DependentField1, &
+    & CMISSFieldUVariableType,Err)
+  CALL CMISSInterfaceConditionDependentVariableAdd(InterfaceCondition,Mesh2Index,DependentField2, &
+    & CMISSFieldUVariableType,Err)
+  !Finish creating the interface condition
+  CALL CMISSInterfaceConditionCreateFinish(InterfaceCondition,Err)
 
   !Create the Lagrange multipliers field
-!  PRINT *, ' == >> CREATING INTERFACE LAGRANGE FIELD << == '
-!  CALL CMISSFieldTypeInitialise(LagrangeField,Err)
-!  CALL CMISSInterfaceConditionLagrangeFieldCreateStart(InterfaceCondition,LagrangeFieldUserNumber,LagrangeField,Err)
+  PRINT *, ' == >> CREATING INTERFACE LAGRANGE FIELD << == '
+  CALL CMISSFieldTypeInitialise(LagrangeField,Err)
+  CALL CMISSInterfaceConditionLagrangeFieldCreateStart(InterfaceCondition,LagrangeFieldUserNumber,LagrangeField,Err)
   !Finish the Lagrange multipliers field
-!  CALL CMISSInterfaceConditionLagrangeFieldCreateFinish(InterfaceCondition,Err)
+  CALL CMISSInterfaceConditionLagrangeFieldCreateFinish(InterfaceCondition,Err)
 
   !Create the interface condition equations
-!  PRINT *, ' == >> CREATING INTERFACE EQUATIONS << == '
-!  CALL CMISSInterfaceEquationsTypeInitialise(InterfaceEquations,Err)
-!  CALL CMISSInterfaceConditionEquationsCreateStart(InterfaceCondition,InterfaceEquations,Err)
+  PRINT *, ' == >> CREATING INTERFACE EQUATIONS << == '
+  CALL CMISSInterfaceEquationsTypeInitialise(InterfaceEquations,Err)
+  CALL CMISSInterfaceConditionEquationsCreateStart(InterfaceCondition,InterfaceEquations,Err)
   !Set the interface equations sparsity
-!  CALL CMISSInterfaceEquationsSparsitySet(InterfaceEquations,CMISSEquationsSparseMatrices,Err)
+  CALL CMISSInterfaceEquationsSparsitySet(InterfaceEquations,CMISSEquationsSparseMatrices,Err)
   !Set the interface equations output
-!  CALL CMISSInterfaceEquationsOutputTypeSet(InterfaceEquations,CMISSEquationsTimingOutput,Err)
+  CALL CMISSInterfaceEquationsOutputTypeSet(InterfaceEquations,CMISSEquationsTimingOutput,Err)
   !Finish creating the interface equations
-!  CALL CMISSInterfaceConditionEquationsCreateFinish(InterfaceCondition,Err)
+  CALL CMISSInterfaceConditionEquationsCreateFinish(InterfaceCondition,Err)
   
   !Start the creation of a coupled problem.
+  PRINT *, ' == >> CREATING PROBLEM << == '
   CALL CMISSProblemTypeInitialise(CoupledProblem,Err)
   CALL CMISSProblemCreateStart(CoupledProblemUserNumber,CoupledProblem,Err)
   !Set the problem to be a standard Laplace problem
@@ -630,11 +615,13 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSProblemCreateFinish(CoupledProblem,Err)
 
   !Start the creation of the problem control loop for the coupled problem
+  PRINT *, ' == >> CREATING PROBLEM CONTROL LOOP << == '
   CALL CMISSProblemControlLoopCreateStart(CoupledProblem,Err)
   !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(CoupledProblem,Err)
  
   !Start the creation of the problem solver for the coupled problem
+  PRINT *, ' == >> CREATING PROBLEM SOLVERS << == '
   CALL CMISSSolverTypeInitialise(CoupledSolver,Err)
   CALL CMISSProblemSolversCreateStart(CoupledProblem,Err)
   CALL CMISSProblemSolverGet(CoupledProblem,CMISSControlLoopNode,1,CoupledSolver,Err)
@@ -647,6 +634,7 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSProblemSolversCreateFinish(CoupledProblem,Err)
 
   !Start the creation of the problem solver equations for the coupled problem
+  PRINT *, ' == >> CREATING PROBLEM SOLVER EQUATIONS << == '
   CALL CMISSSolverTypeInitialise(CoupledSolver,Err)
   CALL CMISSSolverEquationsTypeInitialise(CoupledSolverEquations,Err)
   CALL CMISSProblemSolverEquationsCreateStart(CoupledProblem,Err)
@@ -661,34 +649,34 @@ PROGRAM COUPLEDLAPLACE
   !Add in the second equations set
   CALL CMISSSolverEquationsEquationsSetAdd(CoupledSolverEquations,EquationsSet2,EquationsSet2Index,Err)
   !Add in the interface condition
-!  CALL CMISSSolverEquationsInterfaceConditionAdd(CoupledSolverEquations,InterfaceCondition,InterfaceConditionIndex,Err)
+  CALL CMISSSolverEquationsInterfaceConditionAdd(CoupledSolverEquations,InterfaceCondition,InterfaceConditionIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(CoupledProblem,Err)
 
   !Solve the problem
+  PRINT *, ' == >> SOLVING PROBLEM << == '
   CALL CMISSProblemSolve(CoupledProblem,Err)
 
-
+  !Export the fields
+  PRINT *, ' == >> EXPORTING FIELDS << == '
   CALL CMISSFieldsTypeInitialise(Fields1,Err)
   CALL CMISSFieldsTypeCreate(Region1,Fields1,Err)
-  CALL CMISSFieldIONodesExport(Fields1,"TwoRegion1","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields1,"TwoRegion1","FORTRAN",Err)
+  CALL CMISSFieldIONodesExport(Fields1,"TwoRegion_1","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields1,"TwoRegion_1","FORTRAN",Err)
   CALL CMISSFieldsTypeFinalise(Fields1,Err)
-
   CALL CMISSFieldsTypeInitialise(Fields2,Err)
   CALL CMISSFieldsTypeCreate(Region2,Fields2,Err)
-  CALL CMISSFieldIONodesExport(Fields2,"TwoRegion2","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields2,"TwoRegion2","FORTRAN",Err)
+  CALL CMISSFieldIONodesExport(Fields2,"TwoRegion_2","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields2,"TwoRegion_2","FORTRAN",Err)
   CALL CMISSFieldsTypeFinalise(Fields2,Err)
-    
-  CALL CMISSFieldsTypeInitialise(Fields3,Err)
-  CALL CMISSFieldsTypeCreate(Interface,Fields3,Err)
-  CALL CMISSFieldIONodesExport(Fields3,"TwoRegion3","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields3,"TwoRegion3","FORTRAN",Err)
-  CALL CMISSFieldsTypeFinalise(Fields3,Err)
-
+  CALL CMISSFieldsTypeInitialise(InterfaceFields,Err)
+  CALL CMISSFieldsTypeCreate(INTERFACE,InterfaceFields,Err)
+  CALL CMISSFieldIONodesExport(InterfaceFields,"TwoRegion_Interface","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(InterfaceFields,"TwoRegion_Interface","FORTRAN",Err)
+  CALL CMISSFieldsTypeFinalise(InterfaceFields,Err)
+  
   !Finialise CMISS
-  !CALL CMISSFinalise(Err)
+  CALL CMISSFinalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
 
