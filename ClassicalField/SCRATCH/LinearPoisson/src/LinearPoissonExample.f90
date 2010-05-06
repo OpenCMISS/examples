@@ -76,6 +76,7 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=10
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=11
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumber=13
  
   INTEGER(CMISSIntg), PARAMETER :: CONSTANT_MATERIALS_COMPONENT=3 !! For 3D this is 4
   REAL(CMISSDP) :: DIVERGENCE_TOLERANCE
@@ -101,7 +102,7 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField,AnalyticField
+  TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField,AnalyticField,SourceField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
   TYPE(CMISSMeshType) :: Mesh
@@ -276,17 +277,28 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
 
   CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-    & CONSTANT_MATERIALS_COMPONENT,C_PARAM_POISSON,Err)
+    & 1,C_PARAM_POISSON,Err)
+
 
   !Create the equations set analytic field variables
   CALL CMISSFieldTypeInitialise(AnalyticField,Err)
-
   CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSTestCaseNeumann, &
     & AnalyticFieldUserNumber,AnalyticField,Err)
 
 !Finish the equations set analytic field variables
   CALL CMISSEquationsSetAnalyticCreateFinish(EquationsSet,Err)
   
+
+  !Create the equations set source field variables for Poisson
+  CALL CMISSFieldTypeInitialise(SourceField,Err)
+  CALL CMISSEquationsSetSourceCreateStart(EquationsSet,SourceFieldUserNumber, & 
+    & SourceField,Err)
+!   !Set the mesh component to be used by the field components.
+!   CALL CMISSFieldComponentMeshComponentSet(SourceFieldPoisson,CMISSFieldUVariableType,MESH_COMPONENT_NUMBER_SPACE, & 
+!     & MESH_COMPONENT_NUMBER_PRESSURE,Err)
+  !Finish the equations set source field variables
+  CALL CMISSEquationsSetSourceCreateFinish(EquationsSet,Err)
+
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
   CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
@@ -295,7 +307,7 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   !Set the equations set output
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsTimingOutput,Err)
-  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsMatrixOutput,Err)
+!   CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsMatrixOutput,Err)
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsElementMatrixOutput,Err)
   !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
@@ -327,7 +339,7 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
-  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
+!   CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
   !Set the Jacobian type
   !CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
   !CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianFDCalculated,Err)
