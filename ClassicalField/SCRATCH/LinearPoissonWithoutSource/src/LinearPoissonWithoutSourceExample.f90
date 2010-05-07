@@ -140,7 +140,7 @@ PROGRAM NONLINEARPOISSONEXAMPLE
 #endif
 
   !Set material parameter (constant added to all dofs)
-  C_PARAM_POISSON=8.0_CMISSDP  !For 2D
+  C_PARAM_POISSON=0.0_CMISSDP  !For 2D
 
 
   !Initialise OpenCMISS
