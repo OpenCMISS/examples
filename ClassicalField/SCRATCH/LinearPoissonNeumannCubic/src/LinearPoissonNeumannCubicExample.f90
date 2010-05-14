@@ -283,7 +283,8 @@ PROGRAM LINEARPOISSONEXAMPLE
 
   !Create the equations set analytic field variables
   CALL CMISSFieldTypeInitialise(AnalyticField,Err)
-  CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSTestCaseMixedNeumannDirichlet_3, &
+  CALL
+CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSTestCaseNeumannCubic, &
     & AnalyticFieldUserNumber,AnalyticField,Err)
 
 !Finish the equations set analytic field variables
