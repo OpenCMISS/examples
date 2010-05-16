@@ -59,12 +59,13 @@ def logExample(path) :
    else :
      f.write("<td><font color='red'>Fail</font></td>")
    f.write("<td>"+intelexamplelog[2]+"</td></tr>")
-   f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/"+path+"/test1-intel'>Example Test</a></td>")
-   if(inteltestlog[1].startswith('success')) :
-     f.write("<td><font color='green'>Success</font></td>")
-   else :
-     f.write("<td><font color='red'>Fail</font></td>")
-   f.write("<td>"+inteltestlog[2]+"</td></tr>")
+   if(len(inteltestlog)>1) :
+     f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/"+path+"/test1-intel'>Example Test</a></td>")
+     if(inteltestlog[1].startswith('success')) :
+       f.write("<td><font color='green'>Success</font></td>")
+     else :
+       f.write("<td><font color='red'>Fail</font></td>")
+     f.write("<td>"+inteltestlog[2]+"</td></tr>")
    
    f.write("<tr><td><b>GNU Build</b></td><td/><td/></tr>")
    f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/build-gnu'>OpenCMISS Library</a></td>")
@@ -79,12 +80,13 @@ def logExample(path) :
    else :
      f.write("<td><font color='red'>Fail</font></td>")
    f.write("<td>"+gnuexamplelog[2]+"</td></tr>")
-   f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/"+path+"/test1-gnu'>Example Test</a></td>")
-   if(gnutestlog[1].startswith('success')) :
-     f.write("<td><font color='green'>Success</font></td>")
-   else :
-     f.write("<td><font color='red'>Fail</font></td>")
-   f.write("<td>"+gnutestlog[2]+"</td></tr>")
+   if(len(gnutestlog)>1) :
+     f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/"+path+"/test1-gnu'>Example Test</a></td>")
+     if(gnutestlog[1].startswith('success')) :
+       f.write("<td><font color='green'>Success</font></td>")
+     else :
+       f.write("<td><font color='red'>Fail</font></td>")
+     f.write("<td>"+gnutestlog[2]+"</td></tr>")
    
    f.write("</table>")
    f.close()
