@@ -352,7 +352,7 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSInterfaceMeshConnectivityTypeInitialise(InterfaceMeshConnectivity,Err)
   CALL CMISSInterfaceMeshConnectivityCreateStart(Interface,InterfaceMesh,InterfaceMeshConnectivity,Err)
   ! Setting the map for element 1
-  CALL CMISSInterfaceMeshConnectivityElementNumberElementsSet(InterfaceMeshConnectivity,1,Mesh1Index,1,Err)
+  CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,1,Mesh1Index,2,Err)
   XI = (/ 1.0_CMISSDP , 0.0_CMISSDP /)
   DO I = 1,2
      CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,Mesh1Index,2,1,I,XI,Err)
@@ -361,7 +361,7 @@ PROGRAM COUPLEDLAPLACE
   DO I = 1,2
      CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,Mesh1Index,2,2,I,XI,Err)
   END DO
-  CALL CMISSInterfaceMeshConnectivityElementNumberElementsSet(InterfaceMeshConnectivity,1,Mesh2Index,1,Err)
+  CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,1,Mesh2Index,1,Err)
   XI = (/ 0.0_CMISSDP , 0.0_CMISSDP /)
   DO I = 1,2
      CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,Mesh2Index,1,1,I,XI,Err)
@@ -371,7 +371,7 @@ PROGRAM COUPLEDLAPLACE
      CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,Mesh2Index,1,2,I,XI,Err)
   END DO
   ! Setting the map for element 2
-  CALL CMISSInterfaceMeshConnectivityElementNumberElementsSet(InterfaceMeshConnectivity,2,Mesh1Index,1,Err)
+  CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,2,Mesh1Index,4,Err)
   XI = (/ 1.0_CMISSDP , 0.0_CMISSDP /)
   DO I = 1,2
      CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,2,Mesh1Index,4,1,I,XI,Err)
@@ -380,7 +380,7 @@ PROGRAM COUPLEDLAPLACE
   DO I = 1,2
      CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,2,Mesh1Index,4,2,I,XI,Err)
   END DO
-  CALL CMISSInterfaceMeshConnectivityElementNumberElementsSet(InterfaceMeshConnectivity,2,Mesh2Index,1,Err)
+  CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,2,Mesh2Index,1,Err)
   XI = (/ 0.0_CMISSDP , 0.5_CMISSDP /)
   DO I = 1,2
      CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,2,Mesh2Index,1,1,I,XI,Err)
