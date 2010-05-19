@@ -63,6 +63,8 @@ endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
+USEFIELDML = true
+
 EXAMPLE_PATH=FluidMechanics/NavierStokes/
 
 EXAMPLE_NAME = Static
@@ -80,6 +82,10 @@ preliminaries: $(OBJECT_DIR) $(EXE_DIR)
 	cp $(MAIN_OBJECT_DIR)/fluid_mechanics_io_routines.mod $(OBJECT_DIR)
 
 info:
+	@echo "FIELDML_LIB_PATH:"
+	@echo $(FIELDML_LIB_PATH)
+	@echo "USEFIELDML:"
+	@echo $(USEFIELDML)
 	@echo "OBJECTS:"
 	@echo $(OBJECTS)
 	@echo "OBJECT_DIR:"
