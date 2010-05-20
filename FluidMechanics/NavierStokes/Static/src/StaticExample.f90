@@ -183,7 +183,7 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   
   TYPE(C_PTR) :: parseHandle
 
-  INTEGER(CMISSIntg) :: i, j
+  INTEGER(CMISSIntg) :: i
 
   INTEGER(CMISSIntg) :: meshHandle, spaceHandle, velocityHandle, pressureHandle, connectivityHandle, layoutHandle
   INTEGER(CMISSIntg) :: basisType, nodeDomainHandle, dofsHandle, dofsVariableHandle
@@ -285,7 +285,7 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !================================================================================================================================
   !
   
-  parseHandle = Fieldml_ParseFile( filename//".xml"//C_NULL_CHAR )
+  parseHandle = Fieldml_CreateFromFile( filename//".xml"//C_NULL_CHAR )
   
   meshHandle = Fieldml_GetNamedObjectHandle( parseHandle, "test_mesh.domain"//C_NULL_CHAR )
   spaceHandle = Fieldml_GetNamedObjectHandle( parseHandle, "test_mesh.coordinates"//C_NULL_CHAR )
