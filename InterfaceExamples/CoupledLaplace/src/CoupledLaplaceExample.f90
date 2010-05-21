@@ -578,10 +578,10 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSInterfaceConditionMethodSet(InterfaceCondition,CMISSInterfaceConditionLagrangeMultipliers,Err)
   !Specify the type of interface condition operator
   CALL CMISSInterfaceConditionOperatorSet(InterfaceCondition,CMISSInterfaceConditionFieldContinuityOperator,Err)
-  !Add in the dependent variables
-  CALL CMISSInterfaceConditionDependentVariableAdd(InterfaceCondition,Mesh1Index,DependentField1, &
+  !Add in the dependent variables from the equations sets
+  CALL CMISSInterfaceConditionDependentVariableAdd(InterfaceCondition,Mesh1Index,EquationsSet1, &
     & CMISSFieldUVariableType,Err)
-  CALL CMISSInterfaceConditionDependentVariableAdd(InterfaceCondition,Mesh2Index,DependentField2, &
+  CALL CMISSInterfaceConditionDependentVariableAdd(InterfaceCondition,Mesh2Index,EquationsSet2, &
     & CMISSFieldUVariableType,Err)
   !Finish creating the interface condition
   CALL CMISSInterfaceConditionCreateFinish(InterfaceCondition,Err)
@@ -600,7 +600,7 @@ PROGRAM COUPLEDLAPLACE
   !Set the interface equations sparsity
   CALL CMISSInterfaceEquationsSparsitySet(InterfaceEquations,CMISSEquationsSparseMatrices,Err)
   !Set the interface equations output
-  CALL CMISSInterfaceEquationsOutputTypeSet(InterfaceEquations,CMISSEquationsTimingOutput,Err)
+  CALL CMISSInterfaceEquationsOutputTypeSet(InterfaceEquations,CMISSEquationsMatrixOutput,Err)
   !Finish creating the interface equations
   CALL CMISSInterfaceConditionEquationsCreateFinish(InterfaceCondition,Err)
   
