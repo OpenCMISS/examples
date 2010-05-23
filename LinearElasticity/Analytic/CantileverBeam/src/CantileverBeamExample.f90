@@ -61,10 +61,10 @@ PROGRAM ANALYTIC_LINEAR_ELASTICITYEXAMPLE
 
   !Test program parameters
 
-  REAL(CMISSDP), PARAMETER :: ORIGIN(3)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)
-  REAL(CMISSDP), PARAMETER :: LENGTH=20.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: WIDTH=20.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: HEIGHT=5.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: ORIGIN(3)=(/0.0_CMISSDP,-1.0_CMISSDP,-1.0_CMISSDP/)
+  REAL(CMISSDP), PARAMETER :: LENGTH=5.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: WIDTH=2.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: HEIGHT=2.0_CMISSDP
 
   INTEGER(CMISSIntg), PARAMETER :: NumberOfDomains=1
 
@@ -124,12 +124,10 @@ PROGRAM ANALYTIC_LINEAR_ELASTICITYEXAMPLE
   WRITE(*,'(A)') "Program starting."
 
   !Set all diganostic levels on for testing
-  !CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,(/1,2,3,4,5/),"Diagnostics",(/"PROBLEM_FINITE_ELEMENT_CALCULATE"/),Err)
+  CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,(/1,2,3,4,5/),"Diagnostics",(/"PROBLEM_FINITE_ELEMENT_CALCULATE"/),Err)
 
-  CALL ANALYTIC_LINEAR_ELASTICITY_TESTCASE_LINEAR_LAGRANGE_EXPORT(1,0,0,"LinearLagrange")
-  CALL ANALYTIC_LINEAR_ELASTICITY_TESTCASE_LINEAR_LAGRANGE_EXPORT(1,1,0,"BiLinearLagrange")
-  CALL ANALYTIC_LINEAR_ELASTICITY_TESTCASE_LINEAR_LAGRANGE_EXPORT(1,1,1,"TriLinearLagrange")
-  !CALL ANALYTIC_LINEAR_ELASTICITY_TESTCASE_QUADRATIC_LAGRANGE_EXPORT(1,0,0,"QuadraticLagrange")
+  CALL ANALYTIC_LINEAR_ELASTICITY_TESTCASE_LINEAR_LAGRANGE_EXPORT(2,2,2,"TriLinearLagrange")
+
   CALL CMISSFinalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
@@ -163,57 +161,7 @@ CONTAINS
       & GeneratedMeshUserNumber,ProblemUserNumber)
 
   END SUBROUTINE ANALYTIC_LINEAR_ELASTICITY_TESTCASE_LINEAR_LAGRANGE_EXPORT
-
-  !
-  !================================================================================================================================
-  !  
-    !>Check if the convergence of quadratic langrange interpolation is expected.
-  SUBROUTINE ANALYTIC_LINEAR_ELASTICITY_TESTCASE_QUADRATIC_LAGRANGE_EXPORT(NumberGlobalXElements,NumberGlobalYElements, &
-    & NumberGlobalZElements,OutputFilename)
-
-    !Argument variables
-    INTEGER(CMISSIntg), INTENT(IN) :: NumberGlobalXElements !<initial number of elements per axis
-    INTEGER(CMISSIntg), INTENT(IN) :: NumberGlobalYElements !<final number of elements per axis
-    INTEGER(CMISSIntg), INTENT(IN) :: NumberGlobalZElements !<increment interval number of elements per axis
-    CHARACTER(LEN=*), INTENT(IN) :: OutputFilename !<The Error condition string
-    !Local Variables
-    TYPE(CMISSFieldType) :: DependentField
-
-    CALL ANALYTIC_LINEAR_ELASTICITY_GENERIC(NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements, &
-      & CMISSBasisQuadraticLagrangeInterpolation,DependentField)
-
-    CALL CMISSAnalyticAnalysisOutput(DependentField,OutputFilename,Err)
-    
-    CALL ANALYTIC_LINEAR_ELASTICITY_GENERIC_CLEAN(CoordinateSystemUserNumber,RegionUserNumber,BasisUserNumber, &
-      & GeneratedMeshUserNumber,ProblemUserNumber)
-
-  END SUBROUTINE ANALYTIC_LINEAR_ELASTICITY_TESTCASE_QUADRATIC_LAGRANGE_EXPORT
-
-  !
-  !================================================================================================================================
-  !  
-    !>Check if the convergence of cubic langrange interpolation is expected.
-  SUBROUTINE ANALYTIC_LINEAR_ELASTICITY_TESTCASE_CUBIC_LAGRANGE_EXPORT(NumberGlobalXElements,NumberGlobalYElements, &
-    & NumberGlobalZElements,OutputFilename)
-
-    !Argument variables
-    INTEGER(CMISSIntg), INTENT(IN) :: NumberGlobalXElements !<initial number of elements per axis
-    INTEGER(CMISSIntg), INTENT(IN) :: NumberGlobalYElements !<final number of elements per axis
-    INTEGER(CMISSIntg), INTENT(IN) :: NumberGlobalZElements !<increment interval number of elements per axis
-    CHARACTER(LEN=*), INTENT(IN) :: OutputFilename !<The Error condition string
-    !Local Variables
-    TYPE(CMISSFieldType) :: DependentField
-
-    CALL ANALYTIC_LINEAR_ELASTICITY_GENERIC(NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements, &
-      & CMISSBasisCubicLagrangeInterpolation,DependentField)
-
-    CALL CMISSAnalyticAnalysisOutput(DependentField,OutputFilename,Err)
-    
-    CALL ANALYTIC_LINEAR_ELASTICITY_GENERIC_CLEAN(CoordinateSystemUserNumber,RegionUserNumber,BasisUserNumber, &
-      & GeneratedMeshUserNumber,ProblemUserNumber)
-
-  END SUBROUTINE ANALYTIC_LINEAR_ELASTICITY_TESTCASE_CUBIC_LAGRANGE_EXPORT
-
+  
   !
   !================================================================================================================================
   !   
@@ -250,28 +198,28 @@ CONTAINS
     TYPE(CMISSSolverType) :: Solver
     TYPE(CMISSSolverEquationsType) :: SolverEquations
 
-    IF((NumberGlobalYElements == 0) .AND. (NumberGlobalZElements == 0)) THEN
-      NumberOfXi = 1
-      EquationSetSubtype = CMISSEquationsSetOneDimensionalSubtype
-      AnalyticFunction=CMISSEquationsSetLinearElasticityOneDim1
-      !Prescribe material properties Area,E1
-      FieldMaterialNumberOfComponents = 2 !Young's Modulus & Poisson's Ratio
-      MaterialParameters = (/WIDTH*HEIGHT,10.0E3_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)
-    ELSEIF (NumberGlobalZElements == 0) THEN
-      NumberOfXi = 2
-      EquationSetSubtype = CMISSEquationsSetPlaneStressSubtype
-      AnalyticFunction=CMISSEquationsSetLinearElasticityTwoDim1
-      !Prescribe material properties h,E1,v12
-      FieldMaterialNumberOfComponents = 3 !Young's Modulus & Poisson's Ratio
-      MaterialParameters = (/HEIGHT,10.0E3_CMISSDP,0.3_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)
-    ELSE
+!    IF((NumberGlobalYElements == 0) .AND. (NumberGlobalZElements == 0)) THEN
+!      NumberOfXi = 1
+!      EquationSetSubtype = CMISSEquationsSetOneDimensionalSubtype
+!      AnalyticFunction=CMISSEquationsSetLinearElasticityOneDim1
+!      !Prescribe material properties Area,E1
+!      FieldMaterialNumberOfComponents = 2 !Young's Modulus & Poisson's Ratio
+!      MaterialParameters = (/WIDTH*HEIGHT,10.0E3_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)
+!    ELSEIF (NumberGlobalZElements == 0) THEN
+!      NumberOfXi = 2
+!      EquationSetSubtype = CMISSEquationsSetPlaneStressSubtype
+!      AnalyticFunction=CMISSEquationsSetLinearElasticityTwoDim1
+!      !Prescribe material properties h,E1,v12
+!      FieldMaterialNumberOfComponents = 3 !Young's Modulus & Poisson's Ratio
+!      MaterialParameters = (/HEIGHT,10.0E3_CMISSDP,0.3_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)
+!    ELSE
       NumberOfXi = 3
       EquationSetSubtype = CMISSEquationsSetThreeDimensionalSubtype
-      AnalyticFunction=CMISSEquationsSetLinearElasticityThreeDim1
+      AnalyticFunction=CMISSEquationsSetLinearElasticityThreeDim2
       !Prescribe material properties E1,E2,E3 & v13,v23,v12
       FieldMaterialNumberOfComponents = 6 !Young's Modulus & Poisson's Ratio
-      MaterialParameters = (/10.0E3_CMISSDP,10.0E3_CMISSDP,10.0E3_CMISSDP,0.3_CMISSDP,0.3_CMISSDP,0.3_CMISSDP/)
-    ENDIF
+      MaterialParameters = (/10.0E3_CMISSDP,10.0E3_CMISSDP,10.0E3_CMISSDP,0.45_CMISSDP,0.45_CMISSDP,0.45_CMISSDP/)
+!    ENDIF
     Interpolation = (/InterpolationSpecifications,InterpolationSpecifications,InterpolationSpecifications/)
     NumberOfElements = (/NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements/)
     MeshDimensions = (/LENGTH,WIDTH,HEIGHT/)
