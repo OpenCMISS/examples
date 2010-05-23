@@ -92,7 +92,7 @@ buildExample("FluidMechanics/Darcy/QuasistaticMaterial")
 #buildExample("FiniteElasticity/MixedBoundaryConditions")
 #buildExample("FiniteElasticity/TriCubicAxialExtension")
 
-#buildExample("LinearElasticity/2DExtensionPlaneStressLagrangeBasis")
+buildExample("LinearElasticity/2DExtensionPlaneStressLagrangeBasis")
 buildExample("LinearElasticity/3DExtensionLagrangeBasis")
 buildExample("LinearElasticity/3DExtensionHermiteBasis")
 buildExample("LinearElasticity/Analytic/Extension")
