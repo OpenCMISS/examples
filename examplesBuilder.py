@@ -94,8 +94,8 @@ buildExample("FluidMechanics/Darcy/QuasistaticMaterial")
 
 #buildExample("LinearElasticity/2DAnalytic1")
 #buildExample("LinearElasticity/2DPlaneStressLagrangeBasis")
-#buildExample("LinearElasticity/3DAnalytic1")
-#buildExample("LinearElasticity/3DLagrangeBasis")
+buildExample("LinearElasticity/3DLagrangeBasis")
+buildExample("LinearElasticity/Analytic/Extension/ExtensionExample")
 #buildExample("LinearElasticity/3DCubicHermiteBasis")
 #buildExample("LinearElasticity/3DLagrangeBasisAnisotropicFibreField")
 

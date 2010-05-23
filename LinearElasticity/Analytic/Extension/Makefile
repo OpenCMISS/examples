@@ -63,9 +63,8 @@ endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_PATH = LinearElasticity/
-
-EXAMPLE_NAME = Analytic
+EXAMPLE_PATH = LinearElasticity/Analytic/
+EXAMPLE_NAME = Extension
 
 include $(GLOBAL_ROOT)/NewExampleMakefile
 
