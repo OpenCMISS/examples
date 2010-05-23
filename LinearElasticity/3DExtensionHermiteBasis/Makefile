@@ -65,7 +65,7 @@ endif
 
 EXAMPLE_PATH = LinearElasticity/
 
-EXAMPLE_NAME = 3DLagrangeBasisAnisotropicFibreField
+EXAMPLE_NAME = 3DExtensionHermiteBasis
 
-include $(GLOBAL_ROOT)/ExampleMakefile
+include $(GLOBAL_ROOT)/NewExampleMakefile
 

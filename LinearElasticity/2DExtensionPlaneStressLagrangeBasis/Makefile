@@ -65,7 +65,7 @@ endif
 
 EXAMPLE_PATH = LinearElasticity/
 
-EXAMPLE_NAME = 3DLagrangeBasis
+EXAMPLE_NAME = 2DExtensionPlaneStressLagrangeBasis
 
 include $(GLOBAL_ROOT)/NewExampleMakefile
 
