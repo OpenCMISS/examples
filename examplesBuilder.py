@@ -95,7 +95,7 @@ buildExample("FluidMechanics/Darcy/QuasistaticMaterial")
 #buildExample("LinearElasticity/2DExtensionPlaneStressLagrangeBasis")
 buildExample("LinearElasticity/3DExtensionLagrangeBasis")
 buildExample("LinearElasticity/3DExtensionHermiteBasis")
-buildExample("LinearElasticity/Analytic/Extension/ExtensionExample")
+buildExample("LinearElasticity/Analytic/Extension")
 
 buildExample("MultiPhysics/Poroelasticity/FiniteElasticityDarcy/SameRegionSameMesh")
 buildExample("MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDarcySharedVars")
