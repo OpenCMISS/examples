@@ -92,29 +92,8 @@ def logExample(path) :
    f.close()
    return;
 
-#logExample(path="ClassicalField/AdvectionDiffusion")
-logExample(path="ClassicalField/AdvectionDiffusion/AdvectionDiffusionIO")
-logExample(path="ClassicalField/AdvectionDiffusion/StaticAdvectionDiffusion")
-logExample(path="ClassicalField/Diffusion")
-logExample(path="ClassicalField/Diffusion/LinearConvergenceTest")
-logExample(path="ClassicalField/Diffusion/QuadraticConvergenceTest")
-logExample(path="ClassicalField/Diffusion/CubicConvergenceTest")
-logExample(path="ClassicalField/DiffusionConstantSource")
-logExample(path="ClassicalField/NonlinearPoisson")
-logExample(path="ClassicalField/Laplace/AnalyticLaplace")
-logExample(path="ClassicalField/Laplace/Laplace") 
-logExample(path="ClassicalField/Laplace/NumberLaplace")
-  
-logExample(path="FluidMechanics/Stokes/ALE")
-logExample(path="FluidMechanics/Stokes/Static")
-logExample(path="FluidMechanics/Stokes/Dynamic")
-logExample(path="FluidMechanics/NavierStokes/ALE")
-logExample(path="FluidMechanics/NavierStokes/Static")
-logExample(path="FluidMechanics/NavierStokes/Dynamic")
-logExample(path="FluidMechanics/Darcy/Analytic")
-logExample(path="FluidMechanics/Darcy/Static")
-logExample(path="FluidMechanics/Darcy/QuasistaticMaterial")
-
-logExample(path="MultiPhysics/Poroelasticity/FiniteElasticityDarcy/SameRegionSameMesh")
-logExample(path="MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDarcySharedVars")
-logExample(path="MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDarcySharedVarsTimeBCs")
+for log in logs :
+  if log.startswith('intel_') :
+    paths=log.split('|');
+    if(paths[0].endswith('_build') and (not log.startswith('intel_library_build')))  :
+      logExample(path=paths[0].replace('intel_','').replace('_build',''));
