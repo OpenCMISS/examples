@@ -254,6 +254,8 @@ PROGRAM ActiveContractionExample
   DO I=1,7
    CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,I,1.0_CMISSDP,Err)
   END DO
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldVVariableType,CMISSFieldValuesSetType,1,2.0_CMISSDP,Err) ! activate at time 2. TODO: inhomogeneous
+
 
   ! create independent field
   CALL CMISSEquationsSetIndependentCreateStart(EquationsSet,IndependentFieldUserNumber,IndependentField,Err)
