@@ -181,9 +181,9 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !FieldML parsing variables
   !CPL
   
-  TYPE(C_PTR) :: parseHandle
+  TYPE(C_PTR) :: fieldmlHandle
 
-  INTEGER(CMISSIntg) :: i
+  INTEGER(CMISSIntg) :: i, j
 
   INTEGER(CMISSIntg) :: meshHandle, spaceHandle, velocityHandle, pressureHandle, connectivityHandle, layoutHandle
   INTEGER(CMISSIntg) :: basisType, nodeDomainHandle, dofsHandle, dofsVariableHandle
@@ -285,18 +285,20 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !================================================================================================================================
   !
   
-  parseHandle = Fieldml_CreateFromFile( filename//".xml"//C_NULL_CHAR )
+  fieldmlHandle = Fieldml_CreateFromFile( filename//".xml"//C_NULL_CHAR )
   
-  meshHandle = Fieldml_GetNamedObjectHandle( parseHandle, "test_mesh.domain"//C_NULL_CHAR )
-  spaceHandle = Fieldml_GetNamedObjectHandle( parseHandle, "test_mesh.coordinates"//C_NULL_CHAR )
-  velocityHandle = Fieldml_GetNamedObjectHandle( parseHandle, "test_mesh.velocity"//C_NULL_CHAR )
-  pressureHandle = Fieldml_GetNamedObjectHandle( parseHandle, "test_mesh.pressure"//C_NULL_CHAR )
+  err = Fieldml_SetDebug( fieldmlHandle, 1 )
+  
+  meshHandle = Fieldml_GetNamedObject( fieldmlHandle, "test_mesh.domain"//C_NULL_CHAR )
+  spaceHandle = Fieldml_GetNamedObject( fieldmlHandle, "test_mesh.coordinates"//C_NULL_CHAR )
+  velocityHandle = Fieldml_GetNamedObject( fieldmlHandle, "test_mesh.velocity"//C_NULL_CHAR )
+  pressureHandle = Fieldml_GetNamedObject( fieldmlHandle, "test_mesh.pressure"//C_NULL_CHAR )
 
-  CALL FieldmlInput_GetMeshInfo( parseHandle, meshHandle, meshXiDimensions, meshElementCount, nodeDomainHandle, err )
+  CALL FieldmlInput_GetMeshInfo( fieldmlHandle, meshHandle, meshXiDimensions, meshElementCount, nodeDomainHandle, err )
   
-  meshNodeCount = Fieldml_GetEnsembleDomainElementCount( parseHandle, nodeDomainHandle )
+  meshNodeCount = Fieldml_GetEnsembleDomainElementCount( fieldmlHandle, nodeDomainHandle )
   
-  CALL FieldmlInput_GetCoordinateSystemInfo( parseHandle, spaceHandle, coordinateType, coordinateCount, err )
+  CALL FieldmlInput_GetCoordinateSystemInfo( fieldmlHandle, spaceHandle, coordinateType, coordinateCount, err )
   
   !COORDINATE SYSTEM
 
@@ -328,14 +330,14 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !
 
   !BASES
-  BASIS_NUMBER_SPACE = FieldmlInput_GetComponentBasis( parseHandle, spaceHandle, 1, err )
-  BASIS_NUMBER_VELOCITY = FieldmlInput_GetComponentBasis( parseHandle, velocityHandle, 1, err )
-  BASIS_NUMBER_PRESSURE = FieldmlInput_GetComponentBasis( parseHandle, pressureHandle, 1, err )
+  BASIS_NUMBER_SPACE = FieldmlInput_GetComponentBasis( fieldmlHandle, spaceHandle, 1, err )
+  BASIS_NUMBER_VELOCITY = FieldmlInput_GetComponentBasis( fieldmlHandle, velocityHandle, 1, err )
+  BASIS_NUMBER_PRESSURE = FieldmlInput_GetComponentBasis( fieldmlHandle, pressureHandle, 1, err )
   
-  CALL FieldmlInput_GetBasisHandles( parseHandle, meshHandle, basisUserNumbers, err )
+  CALL FieldmlInput_GetBasisHandles( fieldmlHandle, meshHandle, basisUserNumbers, err )
   
   DO i = 1, SIZE( basisUserNumbers )
-    CALL FieldmlInput_GetBasisInfo( parseHandle, meshHandle, basisUserNumbers(i), basisType, basisInterpolations, err )
+    CALL FieldmlInput_GetBasisInfo( fieldmlHandle, meshHandle, basisUserNumbers(i), basisType, basisInterpolations, err )
     
     CALL CMISSBasisCreateStart( basisUserNumbers(i), err )
     CALL CMISSBasisTypeSet( basisUserNumbers(i), basisType, err )
@@ -382,18 +384,18 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   
   
   DO i = 1, SIZE( basisUserNumbers )
-    CALL FieldmlInput_GetBasisConnectivityInfo( parseHandle, meshHandle, basisUserNumbers( i ), connectivityHandle, layoutHandle, &
-      & err )
+    CALL FieldmlInput_GetBasisConnectivityInfo( fieldmlHandle, meshHandle, basisUserNumbers( i ), connectivityHandle, &
+      & layoutHandle, err )
     
-    basisNodeCount = Fieldml_GetEnsembleDomainElementCount( parseHandle, layoutHandle )
+    basisNodeCount = Fieldml_GetEnsembleDomainElementCount( fieldmlHandle, layoutHandle )
     
     ALLOCATE( basisConnectivity( meshElementCount, basisNodeCount ) )
     
-    CALL FieldmlInput_ReadRawData( parseHandle, connectivityHandle, basisConnectivity, err )
+    CALL FieldmlInput_ReadRawData( fieldmlHandle, connectivityHandle, basisConnectivity, err )
     
     CALL CMISSMeshElementsCreateStart( RegionUserNumber, meshHandle, i, basisUserNumbers( i ), err )
     DO ELEMENT_NUMBER = 1, meshElementCount
-      CALL CMISSMeshElementsNodesSet( RegionUserNumber, meshHandle, i, ELEMENT_NUMBER,&
+      CALL CMISSMeshElementsNodesSet( RegionUserNumber, meshHandle, i, ELEMENT_NUMBER, &
         & basisConnectivity(ELEMENT_NUMBER,1:basisNodeCount), err )
     ENDDO
     CALL CMISSMeshElementsCreateFinish( RegionUserNumber, meshHandle, i, err )
@@ -431,10 +433,10 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   CALL CMISSFieldScalingTypeSet(GeometricField,CMISSFieldNoScaling, err )
   !Set the mesh component to be used by the field components.
   
-  domainHandle = Fieldml_GetValueDomain( parseHandle, spaceHandle )
-  domainComponentHandle = Fieldml_GetDomainComponentEnsemble( parseHandle, domainHandle )
+  domainHandle = Fieldml_GetValueDomain( fieldmlHandle, spaceHandle )
+  domainComponentHandle = Fieldml_GetDomainComponentEnsemble( fieldmlHandle, domainHandle )
   
-  fieldDimensions = Fieldml_GetEnsembleDomainElementCount( parseHandle, domainComponentHandle )
+  fieldDimensions = Fieldml_GetEnsembleDomainElementCount( fieldmlHandle, domainComponentHandle )
   
   DO COMPONENT_NUMBER=1,fieldDimensions
     CALL CMISSFieldComponentMeshComponentSet( GeometricField,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
@@ -444,11 +446,11 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   CALL CMISSFieldCreateFinish( GeometricField, err )
   !Update the geometric field parameters
 
-  dofsHandle = Fieldml_GetNamedObjectHandle( parseHandle, "test_mesh.node.coordinates"//C_NULL_CHAR )
+  dofsHandle = Fieldml_GetNamedObject( fieldmlHandle, "test_mesh.node.coordinates"//C_NULL_CHAR )
 
   ALLOCATE( fieldValues2( meshNodeCount, fieldDimensions ) )
     
-  CALL FieldmlInput_ReadRawData( parseHandle, dofsHandle, fieldValues2, err )
+  CALL FieldmlInput_ReadRawData( fieldmlHandle, dofsHandle, fieldValues2, err )
 
   DO NODE_NUMBER=1,meshNodeCount
     DO COMPONENT_NUMBER=1,fieldDimensions
@@ -683,22 +685,22 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
 
   !OUTPUT
   
-  dofsVariableHandle = Fieldml_GetNamedObjectHandle( parseHandle, "test_mesh.nodal_dofs"//C_NULL_CHAR )
+  dofsVariableHandle = Fieldml_GetNamedObject( fieldmlHandle, "test_mesh.nodal_dofs"//C_NULL_CHAR )
 
-  dofsHandle = Fieldml_GetNamedObjectHandle( parseHandle, "test_mesh.node.velocity"//C_NULL_CHAR )
+  dofsHandle = Fieldml_GetNamedObject( fieldmlHandle, "test_mesh.node.velocity"//C_NULL_CHAR )
   IF( dofsHandle == FML_INVALID_HANDLE ) THEN
-    domainHandle = Fieldml_GetNamedObjectHandle( parseHandle, "library.velocity.rc.1d"//C_NULL_CHAR )
-    dofsHandle = Fieldml_CreateContinuousParameters( parseHandle, "test_mesh.node.velocity"//C_NULL_CHAR, domainHandle )
+    domainHandle = Fieldml_GetNamedObject( fieldmlHandle, "library.velocity.rc.1d"//C_NULL_CHAR )
+    dofsHandle = Fieldml_CreateContinuousParameters( fieldmlHandle, "test_mesh.node.velocity"//C_NULL_CHAR, domainHandle )
   ENDIF
   
-  domainHandle = Fieldml_GetValueDomain( parseHandle, velocityHandle )
-  domainComponentHandle = Fieldml_GetDomainComponentEnsemble( parseHandle, domainHandle )
+  domainHandle = Fieldml_GetValueDomain( fieldmlHandle, velocityHandle )
+  domainComponentHandle = Fieldml_GetDomainComponentEnsemble( fieldmlHandle, domainHandle )
   
-  err = Fieldml_SetParameterDataDescription( parseHandle, dofsHandle, DESCRIPTION_SEMIDENSE )
-  err = Fieldml_AddSemidenseIndex( parseHandle, dofsHandle, domainComponentHandle, 0 )
-  err = Fieldml_AddSemidenseIndex( parseHandle, dofsHandle, nodeDomainHandle, 0 )
-  err = Fieldml_SetParameterDataLocation( parseHandle, dofsHandle, LOCATION_FILE )
-  err = Fieldml_SetParameterFileData( parseHandle, dofsHandle, filename//"_solution.dat"//C_NULL_CHAR, TYPE_LINES, 0 )
+  err = Fieldml_SetParameterDataDescription( fieldmlHandle, dofsHandle, DESCRIPTION_SEMIDENSE )
+  err = Fieldml_AddSemidenseIndex( fieldmlHandle, dofsHandle, domainComponentHandle, 0 )
+  err = Fieldml_AddSemidenseIndex( fieldmlHandle, dofsHandle, nodeDomainHandle, 0 )
+  err = Fieldml_SetParameterDataLocation( fieldmlHandle, dofsHandle, LOCATION_FILE )
+  err = Fieldml_SetParameterFileData( fieldmlHandle, dofsHandle, filename//"_solution.dat"//C_NULL_CHAR, TYPE_LINES, 0 )
   
   fieldDimensions = 3
 
@@ -712,11 +714,11 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
     ENDDO
   ENDDO
   
-  CALL FieldmlOutput_WriteRawData( parseHandle, dofsHandle, fieldValues2, 0, err )
+  CALL FieldmlOutput_WriteRawData( fieldmlHandle, dofsHandle, fieldValues2, 0, err )
 
   DEALLOCATE( fieldValues2 )
   
-  err = Fieldml_SetAlias( parseHandle, velocityHandle, dofsVariableHandle, dofsHandle )
+  err = Fieldml_SetAlias( fieldmlHandle, velocityHandle, dofsVariableHandle, dofsHandle )
 
 
 
@@ -724,16 +726,16 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
 
 
 
-  dofsHandle = Fieldml_GetNamedObjectHandle( parseHandle, "test_mesh.node.pressure"//C_NULL_CHAR )
+  dofsHandle = Fieldml_GetNamedObject( fieldmlHandle, "test_mesh.node.pressure"//C_NULL_CHAR )
   IF( dofsHandle == FML_INVALID_HANDLE ) THEN
-    domainHandle = Fieldml_GetNamedObjectHandle( parseHandle, "library.pressure"//C_NULL_CHAR )
-    dofsHandle = Fieldml_CreateContinuousParameters( parseHandle, "test_mesh.node.pressure"//C_NULL_CHAR, domainHandle )
+    domainHandle = Fieldml_GetNamedObject( fieldmlHandle, "library.pressure"//C_NULL_CHAR )
+    dofsHandle = Fieldml_CreateContinuousParameters( fieldmlHandle, "test_mesh.node.pressure"//C_NULL_CHAR, domainHandle )
   ENDIF
   
-  err = Fieldml_SetParameterDataDescription( parseHandle, dofsHandle, DESCRIPTION_SEMIDENSE )
-  err = Fieldml_AddSemidenseIndex( parseHandle, dofsHandle, nodeDomainHandle, 0 )
-  err = Fieldml_SetParameterDataLocation( parseHandle, dofsHandle, LOCATION_FILE )
-  err = Fieldml_SetParameterFileData( parseHandle, dofsHandle, filename//"_solution.dat"//C_NULL_CHAR, TYPE_LINES, 125 )
+  err = Fieldml_SetParameterDataDescription( fieldmlHandle, dofsHandle, DESCRIPTION_SEMIDENSE )
+  err = Fieldml_AddSemidenseIndex( fieldmlHandle, dofsHandle, nodeDomainHandle, 0 )
+  err = Fieldml_SetParameterDataLocation( fieldmlHandle, dofsHandle, LOCATION_FILE )
+  err = Fieldml_SetParameterFileData( fieldmlHandle, dofsHandle, filename//"_solution.dat"//C_NULL_CHAR, TYPE_LINES, 125 )
   
   fieldDimensions = 1
 
@@ -751,11 +753,11 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
     fieldValues1(NODE_NUMBER) = VALUE
   ENDDO
   
-  CALL FieldmlOutput_WriteRawData( parseHandle, dofsHandle, fieldValues1, 1, err )
+  CALL FieldmlOutput_WriteRawData( fieldmlHandle, dofsHandle, fieldValues1, 1, err )
 
   DEALLOCATE( fieldValues1 )
   
-  err = Fieldml_SetAlias( parseHandle, pressureHandle, dofsVariableHandle, dofsHandle )
+  err = Fieldml_SetAlias( fieldmlHandle, pressureHandle, dofsVariableHandle, dofsHandle )
 
 
 
@@ -767,7 +769,7 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
 
 
 
-  err = Fieldml_WriteFile( parseHandle, filename//"_out.xml"//C_NULL_CHAR )
+  err = Fieldml_WriteFile( fieldmlHandle, filename//"_out.xml"//C_NULL_CHAR )
   
   EXPORT_FIELD_IO=.TRUE.
   IF(EXPORT_FIELD_IO) THEN
