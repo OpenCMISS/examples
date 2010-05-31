@@ -138,18 +138,15 @@ PROGRAM LAPLACEEXAMPLE
 
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
-  CALL CMISSErrorHandlingModeSet(CMISSTrapError, Err)
-  IF(ComputationalNodeNumber==0) WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSInitialise'
+!  CALL CMISSErrorHandlingModeSet(CMISSTrapError, Err)
 
-  !new
-  CALL CMISSComputationalWorkGroupTypeInitialise(WorldWorkGroup, ERR) !NULLIFY
+  !overite the default work group
+  CALL CMISSComputationalWorkGroupTypeInitialise(WorldWorkGroup, ERR) 
   CALL CMISSComputationalWorkGroupCreateStart(WorldWorkGroupUserNumber, WorldWorkGroup, 0, ERR)
     CALL CMISSComputationalWorkGroupSubgroupAdd(LocalWorkGroupsUserNumber(1), WorldWorkGroup, 1 ,LocalWorkGroups(1),ERR)
     CALL CMISSComputationalWorkGroupSubgroupAdd(LocalWorkGroupsUserNumber(2), WorldWorkGroup, 1, LocalWorkGroups(2), ERR)
   CALL CMISSComputationalWorkGroupCreateFinish(WorldWorkGroup, ERR)
   CALL CMISSComputationalWorkGroupGetLocalGroup(MyLocalWorkGroup, ERR)
-  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSComputationalWorkGroupCreateFinish'
-  CALL CMISSComputationalWorkGroupWait(ERR)
 
 
   !CALL CMISSDiagnosticsSetOn(CMISSAllDiagType,(/1,2,3,4,5/),"Diagnostics",(/"FIELD_MAPPINGS_CALCULATE"/),Err)
