@@ -131,17 +131,15 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   INTEGER(CMISSIntg) :: EquationsSetIndex
   INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
   INTEGER(CMISSIntg) :: Err
+
+  INTEGER(CMISSIntg) :: dimensions, i
   
   !FieldML variables
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: filename = "StaticAdvectionDiffusion"
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_advection_diffusion"
 
-  INTEGER(C_INT) :: real1DHandle, xiHandle
-  INTEGER(CMISSIntg) :: i, nodeCount, elementCount, dimensions, componentCount
   TYPE(FieldmlInfoType) :: fieldmlInfo
 
-  
-  TYPE(CMISSMeshElementsType) :: meshElements
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -423,43 +421,7 @@ CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
     CALL CMISSFieldIOElementsExport(Fields,"StaticAdvectionDiffusion","FORTRAN",Err)
     CALL CMISSFieldsTypeFinalise(Fields,Err)
     
-    fieldmlInfo%fmlHandle = Fieldml_Create()
-    
-    CALL CMISSNumberOfNodesGet( Region, nodeCount, err )
-    
-    fieldmlInfo%nodesHandle = Fieldml_CreateEnsembleDomain( fieldmlInfo%fmlHandle, "advection.nodes"//NUL, FML_INVALID_HANDLE )
-    err = Fieldml_SetContiguousBoundsCount( fieldmlInfo%fmlHandle, fieldmlInfo%nodesHandle, nodeCount )
-    err = Fieldml_SetMarkup( fieldmlInfo%fmlHandle, fieldmlInfo%nodesHandle, "geometric"//NUL, "point"//NUL )
-    
-    CALL CMISSMeshNumberOfElementsGet( Mesh, elementCount, err )
-
-    CALL FieldmlUtil_GetXiEnsemble( fieldmlInfo%fmlHandle, dimensions, xiHandle, err )
-    fieldmlInfo%meshHandle = Fieldml_CreateMeshDomain( fieldmlInfo%fmlHandle, "advection.mesh"//NUL, xiHandle )
-    err = Fieldml_SetContiguousBoundsCount( fieldmlInfo%fmlHandle, fieldmlInfo%meshHandle, elementCount )
-
-    fieldmlInfo%xiHandle = Fieldml_GetMeshXiDomain( fieldmlInfo%fmlHandle, fieldmlInfo%meshHandle )
-    fieldmlInfo%elementsHandle = Fieldml_GetMeshElementDomain( fieldmlInfo%fmlHandle, fieldmlInfo%meshHandle )
-    
-    CALL FieldmlUtil_GetGenericDomain( fieldmlInfo%fmlHandle, 1, real1DHandle, err )
-    fieldmlInfo%nodeDofsHandle = Fieldml_CreateContinuousVariable( fieldmlInfo%fmlHandle, "advection.dofs.node"//NUL, &
-      & real1DHandle )
-    fieldmlInfo%elementDofsHandle = Fieldml_CreateContinuousVariable( fieldmlInfo%fmlHandle, "advection.dofs.element"//NUL, & 
-      & real1DHandle )
-    fieldmlInfo%constantDofsHandle = Fieldml_CreateContinuousVariable( fieldmlInfo%fmlHandle, "advection.dofs.constant"//NUL, & 
-      & real1DHandle )
-
-    CALL CMISSMeshNumberOfComponentsGet( mesh, componentCount, err )
-    ALLOCATE( fieldmlInfo%componentHandles( componentCount ) )
-    DO i = 1, componentCount
-      CALL CMISSMeshElementsGet( mesh, i, meshElements, err )
-      CALL FieldmlOutput_AddConnectivity( fieldmlInfo, baseName, i, meshElements, err )
-    ENDDO
-    
-    IF( dimensions == 2 ) THEN
-      err = Fieldml_SetMeshDefaultShape( fieldmlInfo%fmlHandle, fieldmlInfo%meshHandle, "library.shape.square"//NUL )
-    ELSE
-      err = Fieldml_SetMeshDefaultShape( fieldmlInfo%fmlHandle, fieldmlInfo%meshHandle, "library.shape.cube"//NUL )
-    ENDIF
+    CALL FieldmlOutput_Start( Region, Mesh, dimensions, basename, fieldmlInfo, err )
 
     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".geometric", region, mesh, GeometricField, err )
 
@@ -471,11 +433,9 @@ CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
 
     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".materials", region, mesh, MaterialsField, err )
 
-!    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".analytic", region, mesh, AnalyticField, err )
-
-    err = Fieldml_WriteFile( fieldmlInfo%fmlHandle, filename//".xml"//NUL )
-
-    err = Fieldml_Destroy( fieldmlInfo%fmlHandle )
+    !CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".analytic", region, mesh, AnalyticField, err )
+    
+    CALL FieldmlOutput_Finish( fieldmlInfo, filename, err )
 
   ENDIF
 
