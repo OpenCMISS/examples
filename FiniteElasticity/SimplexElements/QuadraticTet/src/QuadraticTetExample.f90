@@ -231,7 +231,7 @@ PROGRAM QUADRATICTETEXAMPLE
   !Geometry (and displacement) nodes
   CALL CMISSMeshElementsTypeInitialise(ElementsQuad,Err)
   CALL CMISSMeshElementsCreateStart(Mesh,MeshComponentNumberQuad,BasisQuad,ElementsQuad,Err)
-  CALL CMISSMeshElementsNodesSet(ElementsQuad,1,(/1,2,3,5,6,7,8,10,9,4/),Err)
+  CALL CMISSMeshElementsNodesSet(ElementsQuad,1,(/1,5,2,7,6,3,8,10,9,4/),Err)
   CALL CMISSMeshElementsCreateFinish(ElementsQuad,Err)
   !Pressure nodes
   CALL CMISSMeshElementsTypeInitialise(ElementsLin,Err)
@@ -302,7 +302,7 @@ PROGRAM QUADRATICTETEXAMPLE
   CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,10,2,0.0_CMISSDP,Err)  
   CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,10,3,0.5_CMISSDP,Err)
 
-  !Create a fibre field and attach it to the geometric field  
+  !Create a fibre field and attach it to the geometric field
   CALL CMISSFieldTypeInitialise(FibreField,Err)
   CALL CMISSFieldCreateStart(FieldFibreUserNumber,Region,FibreField,Err)
   CALL CMISSFieldTypeSet(FibreField,CMISSFieldFibreType,Err)
