@@ -161,8 +161,8 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
  
   !Set diganostics for testing
-  CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,(/1,2,3,4,5/),"Diagnostics",(/"FIELD_MAPPINGS_CALCULATE", &
-    & "SOLVER_MAPPING_CALCULATE"/),Err)
+  CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,(/1,2,3,4,5/),"Diagnostics",(/"SOLVER_MAPPING_CALCULATE         ", &
+    & "SOLVER_MATRIX_STRUCTURE_CALCULATE"/),Err)
   
   !Get the computational nodes information
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -538,9 +538,9 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet2,BoundaryConditions2,Err)
   !Set the last node to 1.0
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)
+    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS*2+1)*(NUMBER_GLOBAL_Y_ELEMENTS*2+1)
   ELSE
-    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
+    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS*2+1)*(NUMBER_GLOBAL_Y_ELEMENTS*2+1)*(NUMBER_GLOBAL_Z_ELEMENTS*2+1)
   ENDIF
   CALL CMISSDecompositionNodeDomainGet(Decomposition2,LastNodeNumber,1,LastNodeDomain,Err)
   IF(LastNodeDomain==ComputationalNodeNumber) THEN
@@ -630,6 +630,8 @@ PROGRAM COUPLEDLAPLACE
   !CALL CMISSSolverOutputTypeSet(CoupledSolver,CMISSSolverTimingOutput,Err)
   !CALL CMISSSolverOutputTypeSet(CoupledSolver,CMISSSolverSolverOutput,Err)
   CALL CMISSSolverOutputTypeSet(CoupledSolver,CMISSSolverSolverMatrixOutput,Err)
+  CALL CMISSSolverLinearTypeSet(CoupledSolver,CMISSSolverLinearDirectSolveType,Err)
+  CALL CMISSSolverLibraryTypeSet(CoupledSolver,CMISSSolverMUMPSLibrary,Err)
   !Finish the creation of the problem solver
   CALL CMISSProblemSolversCreateFinish(CoupledProblem,Err)
 
