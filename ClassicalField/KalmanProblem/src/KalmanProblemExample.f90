@@ -52,7 +52,6 @@ PROGRAM LAPLACEEXAMPLE
   USE OPENCMISS
   USE MPI
 
-
 #ifdef WIN32
   USE IFQWIN
 #endif
@@ -75,6 +74,8 @@ PROGRAM LAPLACEEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=8
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=9
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: WorldWorkGroupUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER, DIMENSION(2) :: LocalWorkGroupsUserNumber=(/12,13/)
  
   !Program types
   
@@ -117,6 +118,12 @@ PROGRAM LAPLACEEXAMPLE
   INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
   INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain
   INTEGER(CMISSIntg) :: Err
+
+  !new
+  TYPE(CMISSComputationalWorkGroupType):: WorldWorkGroup
+  TYPE(CMISSComputationalWorkGroupType):: LocalWorkGroups(2)
+  TYPE(CMISSComputationalWorkGroupType):: MyLocalWorkGroup
+
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -125,26 +132,40 @@ PROGRAM LAPLACEEXAMPLE
   QUICKWIN_WINDOW_CONFIG%MODE=QWIN$SCROLLDOWN
   !Set the window parameters
   QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
-  !If attempt fails set with system estimated values
+  !If attempt fails set with system estvalues
   IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
 #endif
 
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
+!  CALL CMISSErrorHandlingModeSet(CMISSTrapError, Err)
 
-!  CALL CMISSDiagnosticsSetOn(CMISSAllDiagType,(/1,2,3,4,5/),"Diagnostics",(/"FIELD_MAPPINGS_CALCULATE"/),Err)
+  !overite the default work group
+!  CALL CMISSComputationalWorkGroupTypeInitialise(WorldWorkGroup, ERR) 
+!  CALL CMISSComputationalWorkGroupCreateStart(WorldWorkGroupUserNumber, WorldWorkGroup, 0, ERR)
+!    CALL CMISSComputationalWorkGroupSubgroupAdd(LocalWorkGroupsUserNumber(1), WorldWorkGroup, 1 ,LocalWorkGroups(1),ERR)
+!    CALL CMISSComputationalWorkGroupSubgroupAdd(LocalWorkGroupsUserNumber(2), WorldWorkGroup, 1, LocalWorkGroups(2), ERR)
+!  CALL CMISSComputationalWorkGroupCreateFinish(WorldWorkGroup, ERR)
+
+  CALL CMISSComputationalWorkGroupGetLocalGroup(MyLocalWorkGroup, ERR)
+
+
+  CALL CMISSDiagnosticsSetOn(CMISSAllDiagType,(/1,2,3,4,5/),"Diagnostics",(/"FIELD_MAPPINGS_CALCULATE"/),Err)
 
   !Get the computational nodes information
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
   
-  NUMBER_GLOBAL_X_ELEMENTS=5
-  NUMBER_GLOBAL_Y_ELEMENTS=5
-  NUMBER_GLOBAL_Z_ELEMENTS=0
-  NUMBER_OF_DOMAINS=NumberOfComputationalNodes
+  !IF(ComputationalNodeNumber==0) THEN
+    NUMBER_GLOBAL_X_ELEMENTS=5
+    NUMBER_GLOBAL_Y_ELEMENTS=5
+    NUMBER_GLOBAL_Z_ELEMENTS=0
+    NUMBER_OF_DOMAINS=NumberOfComputationalNodes
+  !ENDIF
     
   !Broadcast the number of elements in the X & Y directions and the number of partitions to the other computational nodes
   CALL MPI_BCAST(NUMBER_GLOBAL_X_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
+  !CALL MPI_BCAST(NUMBER_GLOBAL_X_ELEMENTS,1,MPI_INTEGER,0,MyLocalWorkGroup%COMPUTATIONAL_WORK_GROUP%COMP_ENV%MPI_COMM,MPI_IERROR)
   CALL MPI_BCAST(NUMBER_GLOBAL_Y_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
   CALL MPI_BCAST(NUMBER_GLOBAL_Z_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
   CALL MPI_BCAST(NUMBER_OF_DOMAINS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
@@ -161,6 +182,8 @@ PROGRAM LAPLACEEXAMPLE
   ENDIF
   !Finish the creation of the coordinate system
   CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSCoordinateSystemCreateFinish'
+  CALL CMISSComputationalWorkGroupWait(ERR)         
 
   !Start the creation of the region
   CALL CMISSRegionTypeInitialise(Region,Err)
@@ -169,6 +192,8 @@ PROGRAM LAPLACEEXAMPLE
   CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
   !Finish the creation of the region
   CALL CMISSRegionCreateFinish(Region,Err)
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSRegionCreateFinish'
+  CALL CMISSComputationalWorkGroupWait(ERR)         
 
   !Start the creation of a basis (default is trilinear lagrange)
   CALL CMISSBasisTypeInitialise(Basis,Err)
@@ -182,6 +207,8 @@ PROGRAM LAPLACEEXAMPLE
   ENDIF
   !Finish the creation of the basis
   CALL CMISSBasisCreateFinish(Basis,Err)
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSBasisCreateFinish'
+  CALL CMISSComputationalWorkGroupWait(ERR)        
    
   !Start the creation of a generated mesh in the region
   CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
@@ -202,16 +229,23 @@ PROGRAM LAPLACEEXAMPLE
   !Finish the creation of a generated mesh in the region
   CALL CMISSMeshTypeInitialise(Mesh,Err)
   CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSGeneratedMeshCreateFinish'
+  CALL CMISSComputationalWorkGroupWait(ERR)        
 
   !Create a decomposition
   CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
   CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NUMBER_OF_DOMAINS,Err)
+  !CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NUMBER_OF_DOMAINS,Err)
+  !new
+!  CALL CMISSDecompositionWorkGroupSet(Decomposition,WorldWorkGroup,Err)
+  CALL CMISSDecompositionWorkGroupSet(Decomposition,MyLocalWorkGroup,Err)
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
-  
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSDecompositionCreateFinish'
+  CALL CMISSComputationalWorkGroupWait(ERR)        
+
   !Start to create a default (geometric) field on the region
   CALL CMISSFieldTypeInitialise(GeometricField,Err)
   CALL CMISSFieldCreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
@@ -225,24 +259,30 @@ PROGRAM LAPLACEEXAMPLE
   ENDIF
   !Finish creating the field
   CALL CMISSFieldCreateFinish(GeometricField,Err)
-
   !Update the geometric field parameters
   CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
-  
+  IF(ComputationalNodeNumber==0) WRITE(*,*) 'RANK ',ComputationalNodeNumber,':after CMISSGeneratedMeshGeometricParametersCalculate'
+            
+
   !Create the equations_set
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,EquationsSet,Err)
+  !default is CMISSEquationsSetLaplaceEquationType
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,EquationsSet,Err) 
   !Set the equations set to be a standard Laplace problem
   CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
     & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSEquationsSetCreateFinish'
+          
 
   !Create the equations set dependent field variables
   CALL CMISSFieldTypeInitialise(DependentField,Err)
   CALL CMISSEquationsSetDependentCreateStart(EquationsSet,DependentFieldUserNumber,DependentField,Err)
   !Finish the equations set dependent field variables
   CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSEquationsSetDependentCreateFinish'
+          
 
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
@@ -256,6 +296,8 @@ PROGRAM LAPLACEEXAMPLE
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsElementMatrixOutput,Err)
   !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSEquationsSetEquationsCreateFinish'
+          
 
   !Start the creation of the equations set boundary conditions
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
@@ -279,20 +321,29 @@ PROGRAM LAPLACEEXAMPLE
   ENDIF
   !Finish the creation of the equations set boundary conditions
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after & 
+    & CMISSEquationsSetBoundaryConditionsCreateFinish'
+          
   
   !Start the creation of a problem.
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
   !Set the problem to be a standard Laplace problem
-  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemClassicalFieldClass,CMISSProblemLaplaceEquationType, &
-    & CMISSProblemStandardLaplaceSubtype,Err)
+! CALL CMISSProblemSpecificationSet(Problem,CMISSProblemClassicalFieldClass,CMISSProblemLaplaceEquationType, &
+!    & CMISSProblemStandardLaplaceSubtype,Err)
+  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemOptimisationClass,CMISSProblemOptimisationKalmanType, &
+    & CMISSProblemOptimisationKalmanSamplingSubtype,Err)
   !Finish the creation of a problem.
   CALL CMISSProblemCreateFinish(Problem,Err)
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSProblemCreateFinish'
+          
 
   !Start the creation of the problem control loop
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
   !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSProblemControlLoopCreateFinish'
+          
  
   !Start the creation of the problem solvers
   CALL CMISSSolverTypeInitialise(Solver,Err)
@@ -307,6 +358,8 @@ PROGRAM LAPLACEEXAMPLE
   CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverMUMPSLibrary,Err)
   !Finish the creation of the problem solver
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSProblemSolversCreateFinish'
+          
 
   !Start the creation of the problem solver equations
   CALL CMISSSolverTypeInitialise(Solver,Err)
@@ -322,24 +375,35 @@ PROGRAM LAPLACEEXAMPLE
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSProblemSolverEquationsCreateFinish'
+          
 
   !Solve the problem
   CALL CMISSProblemSolve(Problem,Err)
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSProblemSolve'
+
 
   EXPORT_FIELD=.TRUE.
   IF(EXPORT_FIELD) THEN
     CALL CMISSFieldsTypeInitialise(Fields,Err)
     CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"NewLaplace","FORTRAN",Err)
+    CALL CMISSFieldIONodesExport(Fields,"KalmanProblem","FORTRAN",Err)
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSFieldIONodesExport'
+          
     CALL CMISSFieldIOElementsExport(Fields,"NewLaplace","FORTRAN",Err)
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSFieldIOElementsExport'
+          
     CALL CMISSFieldsTypeFinalise(Fields,Err)
   ENDIF
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSFieldsTypeFinalise'
+          
   
   !Finialise CMISS
-  CALL CMISSFinalise(Err)
+  !CALL CMISSFinalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
   
   STOP
-  
+999   WRITE(*,'(A)') "Program failed."
+  STOP
 END PROGRAM LAPLACEEXAMPLE

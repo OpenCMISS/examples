@@ -149,7 +149,7 @@ PROGRAM LAPLACEEXAMPLE
   CALL CMISSComputationalWorkGroupGetLocalGroup(MyLocalWorkGroup, ERR)
 
 
-  !CALL CMISSDiagnosticsSetOn(CMISSAllDiagType,(/1,2,3,4,5/),"Diagnostics",(/"FIELD_MAPPINGS_CALCULATE"/),Err)
+  CALL CMISSDiagnosticsSetOn(CMISSAllDiagType,(/1,2,3,4,5/),"Diagnostics",(/"FIELD_MAPPINGS_CALCULATE"/),Err)
 
   !Get the computational nodes information
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -395,7 +395,7 @@ PROGRAM LAPLACEEXAMPLE
           
   
   !Finialise CMISS
-  CALL CMISSFinalise(Err)
+!  CALL CMISSFinalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
   
