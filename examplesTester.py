@@ -109,6 +109,7 @@ testExample(id='1',path="FluidMechanics/NavierStokes/Dynamic",nodes='1',input='\
 
 
 testExample(id='1',path="FluidMechanics/Darcy/Analytic",nodes='1',input='\n',args='3 test')
+testExample(id='1',path="FluidMechanics/Darcy/Analytic",nodes='1',input='\n',args='1 test1',ndiffDir="expected_results",outputDir=".")
 testExample(id='1',path="FluidMechanics/Darcy/Static",nodes='1',input='\n')
 testExample(id='1',path="FluidMechanics/Darcy/QuasistaticMaterial",nodes='1',input='\n',ndiffDir="expected_results",outputDir="output")
 #testExample(id='1',path="FluidMechanics/Darcy/QuasistaticMaterial",nodes='1',input='\n')
