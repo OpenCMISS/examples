@@ -118,6 +118,7 @@ testExample(id='1',path="FluidMechanics/Darcy/QuasistaticMaterial",nodes='1',inp
 #testExample(id='1',path="FiniteElasticity/TwoElementTriLinear",nodes='1',input='4\n4\n0\n1')
 #testExample(id='1',path="FiniteElasticity/MixedBoundaryConditions",nodes='1',input='4\n4\n0\n1')
 #testExample(id='1',path="FiniteElasticity/TriCubicAxialExtension",nodes='1',input='4\n4\n0\n1')
+testExample(id='1',path="FiniteElasticity/SimplexElements/LargeQuadraticTet",nodes='1',input='\n')
 
 #testExample(id='1',path="LinearElasticity/2DAnalytic1",nodes='1',input='4\n4\n0\n1')
 #testExample(id='1',path="LinearElasticity/2DPlaneStressLagrangeBasis",nodes='1',input='4\n4\n0\n1')
