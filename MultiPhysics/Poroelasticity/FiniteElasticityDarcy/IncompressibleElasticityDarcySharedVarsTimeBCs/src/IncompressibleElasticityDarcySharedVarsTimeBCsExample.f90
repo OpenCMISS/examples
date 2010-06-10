@@ -99,9 +99,11 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumberSolid=15
 
   INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: SolverSolidUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: SolverMatPropertiesUserNumber=2
-  INTEGER(CMISSIntg), PARAMETER :: SolverDarcyUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: ControlLoopSolidNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: ControlLoopFluidNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: SolverSolidIndex=1
+  INTEGER(CMISSIntg), PARAMETER :: SolverMatPropertiesIndex=1
+  INTEGER(CMISSIntg), PARAMETER :: SolverDarcyIndex=2
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPorosity=1
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPermOverVis=2
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberMatPropertiesPorosity=1     !??? 3 ???
@@ -1242,7 +1244,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   ! Solid
 
   !Get the finite elasticity solver
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverSolidUserNumber,SolverSolid,Err)
+  CALL CMISSProblemSolverGet(Problem,(/ControlLoopSolidNumber,CMISSControlLoopNode/),SolverSolidIndex,SolverSolid,Err)
   CALL CMISSSolverOutputTypeSet(SolverSolid,CMISSSolverProgressOutput,Err)
   CALL CMISSSolverNewtonJacobianCalculationTypeSet(SolverSolid,CMISSSolverNewtonJacobianFDCalculated,Err)
 
@@ -1256,7 +1258,8 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !--------------------------------------------------------------------------------------------------------------------------------
 
   !Get the deformation-dependent material properties solver
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverMatPropertiesUserNumber,LinearSolverMatProperties,Err)
+  CALL CMISSProblemSolverGet(Problem,(/ControlLoopFluidNumber,CMISSControlLoopNode/),SolverMatPropertiesIndex, &
+      & LinearSolverMatProperties,Err)
   !Set the output type
   CALL CMISSSolverOutputTypeSet(LinearSolverMatProperties,LINEAR_SOLVER_MAT_PROPERTIES_OUTPUT_TYPE,Err)
   !Set the solver settings
@@ -1273,7 +1276,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   ENDIF
 
   !Get the Darcy solver
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverDarcyUserNumber,LinearSolverDarcy,Err)
+  CALL CMISSProblemSolverGet(Problem,(/ControlLoopFluidNumber,CMISSControlLoopNode/),SolverDarcyIndex,LinearSolverDarcy,Err)
   !Set the output type
   CALL CMISSSolverOutputTypeSet(LinearSolverDarcy,LINEAR_SOLVER_DARCY_OUTPUT_TYPE,Err)
   !Set the solver settings
@@ -1310,19 +1313,20 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
   !
   !Get the finite elasticity solver equations
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverSolidUserNumber,SolverSolid,Err)
+  CALL CMISSProblemSolverGet(Problem,(/ControlLoopSolidNumber,CMISSControlLoopNode/),SolverSolidIndex,SolverSolid,Err)
   CALL CMISSSolverSolverEquationsGet(SolverSolid,SolverEquationsSolid,Err)
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsSolid,CMISSSolverEquationsSparseMatrices,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsSolid,EquationsSetSolid,EquationsSetIndex,Err)
   !
   !Get the deformation-dependent material properties solver equations
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverMatPropertiesUserNumber,LinearSolverMatProperties,Err)
+  CALL CMISSProblemSolverGet(Problem,(/ControlLoopFluidNumber,CMISSControlLoopNode/),SolverMatPropertiesIndex, &
+      & LinearSolverMatProperties,Err)
   CALL CMISSSolverSolverEquationsGet(LinearSolverMatProperties,SolverEquationsMatProperties,Err)
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsMatProperties,CMISSSolverEquationsSparseMatrices,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsMatProperties,EquationsSetMatProperties,EquationsSetIndex,Err)
   !
   !Get the Darcy solver equations
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverDarcyUserNumber,LinearSolverDarcy,Err)
+  CALL CMISSProblemSolverGet(Problem,(/ControlLoopFluidNumber,CMISSControlLoopNode/),SolverDarcyIndex,LinearSolverDarcy,Err)
   CALL CMISSSolverSolverEquationsGet(LinearSolverDarcy,SolverEquationsDarcy,Err)
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsDarcy,CMISSSolverEquationsSparseMatrices,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsDarcy,EquationsSetDarcy,EquationsSetIndex,Err)
