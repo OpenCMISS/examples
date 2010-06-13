@@ -94,6 +94,7 @@ PROGRAM COUPLEDLAPLACE
   INTEGER(CMISSIntg), PARAMETER :: InterfaceConditionUserNumber=25
   INTEGER(CMISSIntg), PARAMETER :: LagrangeFieldUserNumber=26
   INTEGER(CMISSIntg), PARAMETER :: CoupledProblemUserNumber=27
+  INTEGER(CMISSIntg), PARAMETER :: InterfaceMappingBasisUserNumber=28
  
   !Program types
   
@@ -113,7 +114,7 @@ PROGRAM COUPLEDLAPLACE
 
   !CMISS variables
 
-  TYPE(CMISSBasisType) :: Basis1,Basis2,InterfaceBasis
+  TYPE(CMISSBasisType) :: Basis1,Basis2,InterfaceBasis,InterfaceMappingBasis
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions1,BoundaryConditions2
   TYPE(CMISSCoordinateSystemType) :: CoordinateSystem1,CoordinateSystem2,WorldCoordinateSystem
   TYPE(CMISSDecompositionType) :: Decomposition1,Decomposition2,InterfaceDecomposition
@@ -324,6 +325,16 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSBasisInterpolationXiSet(InterfaceBasis,(/CMISSBasisLinearLagrangeInterpolation/),Err)
   !Finish the creation of the basis
   CALL CMISSBasisCreateFinish(InterfaceBasis,Err)
+
+  !Start the creation of a (bi)-linear-Lagrange basis
+  PRINT *, ' == >> CREATING INTERFACE BASIS << == '
+  CALL CMISSBasisTypeInitialise(InterfaceMappingBasis,Err)
+  CALL CMISSBasisCreateStart(InterfaceMappingBasisUserNumber,InterfaceMappingBasis,Err)
+  !Set the basis to be a linear Lagrange basis
+  CALL CMISSBasisNumberOfXiSet(InterfaceMappingBasis,1,Err)
+  CALL CMISSBasisInterpolationXiSet(InterfaceMappingBasis,(/CMISSBasisLinearLagrangeInterpolation/),Err)
+  !Finish the creation of the basis
+  CALL CMISSBasisCreateFinish(InterfaceMappingBasis,Err)
   
   !Start the creation of a generated mesh for the interface
   PRINT *, ' == >> CREATING INTERFACE GENERATED MESH << == '
@@ -351,6 +362,7 @@ PROGRAM COUPLEDLAPLACE
   PRINT *, ' == >> CREATING INTERFACE MESHES CONNECTIVITY << == '
   CALL CMISSInterfaceMeshConnectivityTypeInitialise(InterfaceMeshConnectivity,Err)
   CALL CMISSInterfaceMeshConnectivityCreateStart(Interface,InterfaceMesh,InterfaceMeshConnectivity,Err)
+  CALL CMISSInterfaceMeshConnectivitySetBasis(InterfaceMeshConnectivity,InterfaceMappingBasis,Err)
   ! Setting the map for element 1
   CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,1,Mesh1Index,2,Err)
   XI = (/ 1.0_CMISSDP , 0.0_CMISSDP /)
