@@ -140,8 +140,8 @@ PROGRAM LAPLACEEXAMPLE
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
   
-  NUMBER_GLOBAL_X_ELEMENTS=5
-  NUMBER_GLOBAL_Y_ELEMENTS=5
+  NUMBER_GLOBAL_X_ELEMENTS=2
+  NUMBER_GLOBAL_Y_ELEMENTS=2
   NUMBER_GLOBAL_Z_ELEMENTS=0
   NUMBER_OF_DOMAINS=NumberOfComputationalNodes
     
