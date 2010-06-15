@@ -76,6 +76,7 @@ PROGRAM LAPLACEEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=10
   INTEGER(CMISSIntg), PARAMETER :: WorldWorkGroupUserNumber=11
   INTEGER(CMISSIntg), PARAMETER, DIMENSION(2) :: LocalWorkGroupsUserNumber=(/12,13/)
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber_Kalman=14
  
   !Program types
   
@@ -100,10 +101,10 @@ PROGRAM LAPLACEEXAMPLE
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
   TYPE(CMISSMeshType) :: Mesh
-  TYPE(CMISSProblemType) :: Problem
+  TYPE(CMISSProblemType) :: Problem, Problem_Kalman
   TYPE(CMISSRegionType) :: Region,WorldRegion
-  TYPE(CMISSSolverType) :: Solver
-  TYPE(CMISSSolverEquationsType) :: SolverEquations
+  TYPE(CMISSSolverType) :: Solver, Solver_Kalman
+  TYPE(CMISSSolverEquationsType) :: SolverEquations, SolverEquations_Kalman
 
 #ifdef WIN32
   !Quickwin type
@@ -329,10 +330,10 @@ PROGRAM LAPLACEEXAMPLE
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
   !Set the problem to be a standard Laplace problem
-! CALL CMISSProblemSpecificationSet(Problem,CMISSProblemClassicalFieldClass,CMISSProblemLaplaceEquationType, &
-!    & CMISSProblemStandardLaplaceSubtype,Err)
-  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemOptimisationClass,CMISSProblemOptimisationKalmanType, &
-    & CMISSProblemOptimisationKalmanSamplingSubtype,Err)
+  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemClassicalFieldClass,CMISSProblemLaplaceEquationType, &
+    & CMISSProblemStandardLaplaceSubtype,Err)
+  !CALL CMISSProblemSpecificationSet(Problem,CMISSProblemOptimisationClass,CMISSProblemOptimisationKalmanType, &
+  !  & CMISSProblemOptimisationKalmanSamplingSubtype,Err)
   !Finish the creation of a problem.
   CALL CMISSProblemCreateFinish(Problem,Err)
   WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSProblemCreateFinish'
@@ -376,10 +377,65 @@ PROGRAM LAPLACEEXAMPLE
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
   WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSProblemSolverEquationsCreateFinish'
+
+          
+!------------------ create a Kalman problem, storing the Laplace problem in its problem list --------- !
+  !Start the creation of a problem.
+  CALL CMISSProblemTypeInitialise(Problem_Kalman,Err)
+  CALL CMISSProblemCreateStart(ProblemUserNumber_Kalman,Problem_Kalman,Err)
+  !Set the problem to be a standard Laplace problem
+! CALL CMISSProblemSpecificationSet(Problem,CMISSProblemClassicalFieldClass,CMISSProblemLaplaceEquationType, &
+!    & CMISSProblemStandardLaplaceSubtype,Err)
+  CALL CMISSProblemSpecificationSet(Problem_Kalman,CMISSProblemOptimisationClass,CMISSProblemOptimisationKalmanType, &
+    & CMISSProblemOptimisationKalmanSamplingSubtype,Err)
+  !Finish the creation of a problem.
+  CALL CMISSProblemCreateFinish(Problem_Kalman,Err)
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSProblemCreateFinish'
           
 
+  !Start the creation of the problem control loop
+  CALL CMISSProblemControlLoopCreateStart(Problem_Kalman,Err)
+  !Finish creating the problem control loop
+  CALL CMISSProblemControlLoopCreateFinish(Problem_Kalman,Err)
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSProblemControlLoopCreateFinish'
+          
+ 
+  !Start the creation of the problem solvers
+  CALL CMISSSolverTypeInitialise(Solver_Kalman,Err)
+  CALL CMISSProblemSolversCreateStart(Problem_Kalman,Err)
+  CALL CMISSProblemSolverGet(Problem_Kalman,CMISSControlLoopNode,1,Solver_Kalman,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
+  CALL CMISSSolverOutputTypeSet(Solver_Kalman,CMISSSolverSolverMatrixOutput,Err)
+  CALL CMISSSolverLinearTypeSet(Solver_Kalman,CMISSSolverLinearDirectSolveType,Err)
+  CALL CMISSSolverLibraryTypeSet(Solver_Kalman,CMISSSolverMUMPSLibrary,Err)
+  !Finish the creation of the problem solver
+  CALL CMISSProblemSolversCreateFinish(Problem_Kalman,Err)
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSProblemSolversCreateFinish'
+
+  !Start the creation of the problem solver equations
+  CALL CMISSSolverTypeInitialise(Solver_Kalman,Err)
+  CALL CMISSSolverEquationsTypeInitialise(SolverEquations_Kalman,Err)
+  CALL CMISSProblemSolverEquationsCreateStart(Problem_Kalman,Err)
+  !Get the solve equations
+  CALL CMISSProblemSolverGet(Problem_Kalman,CMISSControlLoopNode,1,Solver_Kalman,Err)
+  CALL CMISSSolverSolverEquationsGet(Solver_Kalman,SolverEquations_Kalman,Err)
+  !Set the solver equations sparsity
+  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations_Kalman,CMISSSolverEquationsSparseMatrices,Err)
+  !CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices,Err)  
+  !Add in the equations set
+  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations_Kalman,EquationsSet,EquationsSetIndex,Err)
+  !Finish the creation of the problem solver equations
+  CALL CMISSProblemSolverEquationsCreateFinish(Problem_Kalman,Err)
+  WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSProblemSolverEquationsCreateFinish'
+!-------end of----- create a kalman problem, storing the laplace problem in its problem list --------- !
+
+
   !Solve the problem
-  CALL CMISSProblemSolve(Problem,Err)
+!  CALL CMISSProblemSolve(Problem,Err)
+  CALL CMISSProblemSolve(Problem_Kalman,Err)
   WRITE(*,*) 'RANK ',ComputationalNodeNumber,': after CMISSProblemSolve'
 
 
