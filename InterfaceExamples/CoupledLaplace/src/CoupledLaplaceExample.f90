@@ -347,10 +347,10 @@ PROGRAM COUPLEDLAPLACE
   !Define the mesh on the interface
   CALL CMISSGeneratedMeshOriginSet(InterfaceGeneratedMesh,(/WIDTH,0.0_CMISSDP,0.0_CMISSDP/),Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    CALL CMISSGeneratedMeshExtentSet(InterfaceGeneratedMesh,(/WIDTH,HEIGHT,0.0_CMISSDP/),Err)
+    CALL CMISSGeneratedMeshExtentSet(InterfaceGeneratedMesh,(/0.0_CMISSDP,HEIGHT,0.0_CMISSDP/),Err)
     CALL CMISSGeneratedMeshNumberOfElementsSet(InterfaceGeneratedMesh,(/NUMBER_GLOBAL_Y_ELEMENTS/),Err)
   ELSE
-    CALL CMISSGeneratedMeshExtentSet(InterfaceGeneratedMesh,(/WIDTH,HEIGHT,LENGTH/),Err)
+    CALL CMISSGeneratedMeshExtentSet(InterfaceGeneratedMesh,(/0.0_CMISSDP,HEIGHT,LENGTH/),Err)
     CALL CMISSGeneratedMeshNumberOfElementsSet(InterfaceGeneratedMesh,(/NUMBER_GLOBAL_Y_ELEMENTS, &
       & NUMBER_GLOBAL_Z_ELEMENTS/),Err)
   ENDIF    
