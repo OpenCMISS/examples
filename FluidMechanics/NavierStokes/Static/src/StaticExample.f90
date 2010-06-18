@@ -60,6 +60,7 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   USE FLUID_MECHANICS_IO_ROUTINES
   USE MPI
   USE FIELDML_INPUT_ROUTINES
+  USE FIELDML_UTIL_ROUTINES
   USE FIELDML_OUTPUT_ROUTINES
   USE FIELDML_API
 
@@ -79,6 +80,7 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=3
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=4
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberNavierStokes=6
@@ -92,18 +94,26 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesMu=1
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesRho=2
 
-  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: filename = "HEX-M2-V2-P1_FE"
+  INTEGER(CMISSIntg), PARAMETER :: basisNumberTrilinear=1
+  INTEGER(CMISSIntg), PARAMETER :: basisNumberTriquadratic=2
+
+  INTEGER(CMISSIntg), PARAMETER :: gaussQuadrature(3) = (/3,3,3/)
+
+  CHARACTER(KIND=C_CHAR), PARAMETER :: NUL = C_NULL_CHAR
+
+  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: inputFilename = "HEX-M2-V2-P1_FE.xml"
+
+  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputDirectory = "output"
+  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputFilename = outputDirectory//"/HEX-M2-V2-P1_FE_out.xml"
+
+CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   !Program types
 
   !Program variables
 
-  INTEGER(CMISSIntg) :: BASIS_NUMBER_SPACE
-  INTEGER(CMISSIntg) :: BASIS_NUMBER_VELOCITY
-  INTEGER(CMISSIntg) :: BASIS_NUMBER_PRESSURE
   INTEGER(CMISSIntg) :: BASIS_XI_GAUSS_SPACE
   INTEGER(CMISSIntg) :: BASIS_XI_GAUSS_VELOCITY
   INTEGER(CMISSIntg) :: BASIS_XI_GAUSS_PRESSURE
-  INTEGER(CMISSIntg) :: MESH_NUMBER_OF_COMPONENTS
   INTEGER(CMISSIntg) :: MESH_COMPONENT_NUMBER_SPACE
   INTEGER(CMISSIntg) :: MESH_COMPONENT_NUMBER_VELOCITY
   INTEGER(CMISSIntg) :: MESH_COMPONENT_NUMBER_PRESSURE
@@ -116,7 +126,6 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   INTEGER(CMISSIntg) :: EQUATIONS_NAVIER_STOKES_OUTPUT
   INTEGER(CMISSIntg) :: COMPONENT_NUMBER
   INTEGER(CMISSIntg) :: NODE_NUMBER
-  INTEGER(CMISSIntg) :: ELEMENT_NUMBER
   INTEGER(CMISSIntg) :: NODE_COUNTER
   INTEGER(CMISSIntg) :: CONDITION
 
@@ -177,26 +186,13 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !Solver equations
   TYPE(CMISSSolverEquationsType) :: SolverEquationsNavierStokes
   
-  
   !FieldML parsing variables
-  !CPL
+  TYPE(FieldmlInfoType) :: fieldmlInfo, outputInfo
   
-  TYPE(C_PTR) :: fieldmlHandle
-
-  INTEGER(CMISSIntg) :: i, j
-
-  INTEGER(CMISSIntg) :: meshHandle, spaceHandle, velocityHandle, pressureHandle, connectivityHandle, layoutHandle
-  INTEGER(CMISSIntg) :: basisType, nodeDomainHandle, dofsHandle, dofsVariableHandle
+  INTEGER(CMISSIntg) :: spaceHandle, velocityHandle, pressureHandle, meshComponentCount
   
-  INTEGER(CMISSIntg), ALLOCATABLE :: basisUserNumbers(:)
-  INTEGER(CMISSIntg), ALLOCATABLE :: basisConnectivity(:,:), basisInterpolations(:)
-  REAL(CMISSDP), ALLOCATABLE :: fieldValues2(:,:), fieldValues1(:)
-
-  INTEGER(CMISSIntg) :: meshXiDimensions, fieldDimensions, domainHandle, domainComponentHandle
-  INTEGER(CMISSIntg) :: meshElementCount, meshNodeCount, basisNodeCount
-  INTEGER(CMISSIntg) :: coordinateType, coordinateCount
-  
-  LOGICAL :: nodeExists
+  INTEGER(CMISSIntg) :: domainHandle, nodeCount, elementCount
+  INTEGER(CMISSIntg) :: coordinateType, coordinateCount, xiDimensions
   
 #ifdef WIN32
   !Quickwin type
@@ -285,20 +281,18 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !================================================================================================================================
   !
   
-  fieldmlHandle = Fieldml_CreateFromFile( filename//".xml"//C_NULL_CHAR )
-  
-  err = Fieldml_SetDebug( fieldmlHandle, 1 )
-  
-  meshHandle = Fieldml_GetNamedObject( fieldmlHandle, "test_mesh.domain"//C_NULL_CHAR )
-  spaceHandle = Fieldml_GetNamedObject( fieldmlHandle, "test_mesh.coordinates"//C_NULL_CHAR )
-  velocityHandle = Fieldml_GetNamedObject( fieldmlHandle, "test_mesh.velocity"//C_NULL_CHAR )
-  pressureHandle = Fieldml_GetNamedObject( fieldmlHandle, "test_mesh.pressure"//C_NULL_CHAR )
+  CALL FieldmlInput_InitializeFromFile( fieldmlInfo, inputFilename, err )
 
-  CALL FieldmlInput_GetMeshInfo( fieldmlHandle, meshHandle, meshXiDimensions, meshElementCount, nodeDomainHandle, err )
+  CALL FieldmlInput_SetDofVariables( fieldmlInfo, "test_mesh.nodal_dofs", "test_mesh.element_dofs", &
+    & "test_mesh.constant_dofs", err )
   
-  meshNodeCount = Fieldml_GetEnsembleDomainElementCount( fieldmlHandle, nodeDomainHandle )
+  spaceHandle = Fieldml_GetNamedObject( fieldmlInfo%fmlHandle, "test_mesh.coordinates"//NUL )
+  velocityHandle = Fieldml_GetNamedObject( fieldmlInfo%fmlHandle, "test_mesh.velocity"//NUL )
+  pressureHandle = Fieldml_GetNamedObject( fieldmlInfo%fmlHandle, "test_mesh.pressure"//NUL )
+
+  CALL FieldmlInput_GetMeshInfo( fieldmlInfo, "test_mesh.domain", err )
   
-  CALL FieldmlInput_GetCoordinateSystemInfo( fieldmlHandle, spaceHandle, coordinateType, coordinateCount, err )
+  CALL FieldmlInput_GetCoordinateSystemInfo( fieldmlInfo%fmlHandle, spaceHandle, coordinateType, coordinateCount, err )
   
   !COORDINATE SYSTEM
 
@@ -330,80 +324,40 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !
 
   !BASES
-  BASIS_NUMBER_SPACE = FieldmlInput_GetComponentBasis( fieldmlHandle, spaceHandle, 1, err )
-  BASIS_NUMBER_VELOCITY = FieldmlInput_GetComponentBasis( fieldmlHandle, velocityHandle, 1, err )
-  BASIS_NUMBER_PRESSURE = FieldmlInput_GetComponentBasis( fieldmlHandle, pressureHandle, 1, err )
+  CALL FieldmlInput_CreateBasis( fieldmlInfo, basisNumberTrilinear, "test_mesh.trilinear_lagrange", gaussQuadrature, err )
+  CALL FieldmlInput_CreateBasis( fieldmlInfo, basisNumberTriquadratic, "test_mesh.triquadratic_lagrange", gaussQuadrature, &
+    & err )
   
-  CALL FieldmlInput_GetBasisHandles( fieldmlHandle, meshHandle, basisUserNumbers, err )
-  
-  DO i = 1, SIZE( basisUserNumbers )
-    CALL FieldmlInput_GetBasisInfo( fieldmlHandle, meshHandle, basisUserNumbers(i), basisType, basisInterpolations, err )
-    
-    CALL CMISSBasisCreateStart( basisUserNumbers(i), err )
-    CALL CMISSBasisTypeSet( basisUserNumbers(i), basisType, err )
-    CALL CMISSBasisNumberOfXiSet( basisUserNumbers(i), size( basisInterpolations ), err )
-    CALL CMISSBasisInterpolationXiSet( basisUserNumbers(i), basisInterpolations, err )
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet( basisUserNumbers(i), (/3,3,3/), err ) !CPL MUST FIX
-    CALL CMISSBasisCreateFinish( basisUserNumbers(i), err )
-    
-    IF( ALLOCATED( basisInterpolations ) ) THEN
-      DEALLOCATE( basisInterpolations )
-    ENDIF
-    
-    IF( basisUserNumbers(i) == BASIS_NUMBER_SPACE ) THEN
-      MESH_COMPONENT_NUMBER_SPACE = i
-    END IF
-    IF( basisUserNumbers(i) == BASIS_NUMBER_VELOCITY ) THEN
-      MESH_COMPONENT_NUMBER_VELOCITY = i
-    END IF
-    IF( basisUserNumbers(i) == BASIS_NUMBER_PRESSURE ) THEN
-      MESH_COMPONENT_NUMBER_PRESSURE = i
-    END IF
-  ENDDO
-  
-  MESH_NUMBER_OF_COMPONENTS = SIZE( basisUserNumbers )
   
   !
   !================================================================================================================================
   !
 
   !MESH
-
-  !Start the creation of mesh nodes
+  
+  meshComponentCount = 2
+  
+  nodeCount = Fieldml_GetEnsembleDomainElementCount( fieldmlInfo%fmlHandle, fieldmlInfo%nodesHandle )
   CALL CMISSNodesTypeInitialise( Nodes, err )
-  CALL CMISSNodesCreateStart( Region, meshNodeCount, Nodes, err )
+  CALL CMISSNodesCreateStart( Region, nodeCount, nodes, err )
   CALL CMISSNodesCreateFinish( Nodes, err )
-  
-  !Start the creation of the mesh
-  CALL CMISSMeshCreateStart( meshHandle, Region, meshXiDimensions, Mesh, err )
-  !Set number of mesh elements
-  CALL CMISSMeshNumberOfElementsSet( Mesh, meshElementCount, err )
-  !Set number of mesh components
-  CALL CMISSMeshNumberOfComponentsSet( Mesh, MESH_NUMBER_OF_COMPONENTS, err )
-  !Specify spatial mesh component
-  
-  
-  DO i = 1, SIZE( basisUserNumbers )
-    CALL FieldmlInput_GetBasisConnectivityInfo( fieldmlHandle, meshHandle, basisUserNumbers( i ), connectivityHandle, &
-      & layoutHandle, err )
-    
-    basisNodeCount = Fieldml_GetEnsembleDomainElementCount( fieldmlHandle, layoutHandle )
-    
-    ALLOCATE( basisConnectivity( meshElementCount, basisNodeCount ) )
-    
-    CALL FieldmlInput_ReadRawData( fieldmlHandle, connectivityHandle, basisConnectivity, err )
-    
-    CALL CMISSMeshElementsCreateStart( RegionUserNumber, meshHandle, i, basisUserNumbers( i ), err )
-    DO ELEMENT_NUMBER = 1, meshElementCount
-      CALL CMISSMeshElementsNodesSet( RegionUserNumber, meshHandle, i, ELEMENT_NUMBER, &
-        & basisConnectivity(ELEMENT_NUMBER,1:basisNodeCount), err )
-    ENDDO
-    CALL CMISSMeshElementsCreateFinish( RegionUserNumber, meshHandle, i, err )
 
-    DEALLOCATE( basisConnectivity )
-
-  END DO
+  xiDimensions = Fieldml_GetDomainComponentCount( fieldmlInfo%fmlHandle, fieldmlInfo%xiHandle )
+  elementCount = Fieldml_GetEnsembleDomainElementCount( fieldmlInfo%fmlHandle, fieldmlInfo%elementsHandle )
+  CALL CMISSMeshTypeInitialise( Mesh, err )
+  CALL CMISSMeshCreateStart( MeshUserNumber, Region, xiDimensions, Mesh, err )
+  CALL CMISSMeshNumberOfElementsSet( Mesh, elementCount, err )
+  CALL CMISSMeshNumberOfComponentsSet( Mesh, meshComponentCount, err )
   
+  CALL FieldmlInput_CreateMeshComponent( fieldmlInfo, RegionUserNumber, MeshUserNumber, 1, &
+    & "test_mesh.template.triquadratic", err )
+  CALL FieldmlInput_CreateMeshComponent( fieldmlInfo, RegionUserNumber, MeshUserNumber, 2, &
+    & "test_mesh.template.trilinear", err )
+  
+  MESH_COMPONENT_NUMBER_SPACE = 1
+  MESH_COMPONENT_NUMBER_VELOCITY = 1
+  MESH_COMPONENT_NUMBER_PRESSURE = 2
+
   !Finish the creation of the mesh
   CALL CMISSMeshCreateFinish(Mesh, err )
 
@@ -421,50 +375,9 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,DomainUserNumber, err )
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition, err )
-
-  !Start to create a default (geometric) field on the region
-  CALL CMISSFieldTypeInitialise(GeometricField, err )
-  CALL CMISSFieldCreateStart(GeometricFieldUserNumber,Region,GeometricField, err )
-  !Set the field type
-  CALL CMISSFieldTypeSet(GeometricField,CMISSFieldGeometricType, err )
-  !Set the decomposition to use
-  CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition, err )
-  !Set the scaling to use
-  CALL CMISSFieldScalingTypeSet(GeometricField,CMISSFieldNoScaling, err )
-  !Set the mesh component to be used by the field components.
   
-  domainHandle = Fieldml_GetValueDomain( fieldmlHandle, spaceHandle )
-  domainComponentHandle = Fieldml_GetDomainComponentEnsemble( fieldmlHandle, domainHandle )
-  
-  fieldDimensions = Fieldml_GetEnsembleDomainElementCount( fieldmlHandle, domainComponentHandle )
-  
-  DO COMPONENT_NUMBER=1,fieldDimensions
-    CALL CMISSFieldComponentMeshComponentSet( GeometricField,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
-      & MESH_COMPONENT_NUMBER_SPACE, err )
-  ENDDO
-  !Finish creating the field
-  CALL CMISSFieldCreateFinish( GeometricField, err )
-  !Update the geometric field parameters
-
-  dofsHandle = Fieldml_GetNamedObject( fieldmlHandle, "test_mesh.node.coordinates"//C_NULL_CHAR )
-
-  ALLOCATE( fieldValues2( meshNodeCount, fieldDimensions ) )
-    
-  CALL FieldmlInput_ReadRawData( fieldmlHandle, dofsHandle, fieldValues2, err )
-
-  DO NODE_NUMBER=1,meshNodeCount
-    DO COMPONENT_NUMBER=1,fieldDimensions
-
-      VALUE=fieldValues2(NODE_NUMBER,COMPONENT_NUMBER)
-      CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-        & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE, err )
-    ENDDO
-  ENDDO
-  
-  DEALLOCATE( fieldValues2 )
-  
-  CALL CMISSFieldParameterSetUpdateStart(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, err )
-  CALL CMISSFieldParameterSetUpdateFinish(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, err )
+  CALL FieldmlInput_CreateField( fieldmlInfo, Region, Mesh, Decomposition, GeometricFieldUserNumber, GeometricField, &
+    & "test_mesh.coordinates", err )
 
   !
   !================================================================================================================================
@@ -685,92 +598,22 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
 
   !OUTPUT
   
-  dofsVariableHandle = Fieldml_GetNamedObject( fieldmlHandle, "test_mesh.nodal_dofs"//C_NULL_CHAR )
+    CALL FieldmlOutput_InitializeInfo( Region, Mesh, xiDimensions, outputDirectory, basename, outputInfo, err )
 
-  dofsHandle = Fieldml_GetNamedObject( fieldmlHandle, "test_mesh.node.velocity"//C_NULL_CHAR )
-  IF( dofsHandle == FML_INVALID_HANDLE ) THEN
-    domainHandle = Fieldml_GetNamedObject( fieldmlHandle, "library.velocity.rc.1d"//C_NULL_CHAR )
-    dofsHandle = Fieldml_CreateContinuousParameters( fieldmlHandle, "test_mesh.node.velocity"//C_NULL_CHAR, domainHandle )
-  ENDIF
-  
-  domainHandle = Fieldml_GetValueDomain( fieldmlHandle, velocityHandle )
-  domainComponentHandle = Fieldml_GetDomainComponentEnsemble( fieldmlHandle, domainHandle )
-  
-  err = Fieldml_SetParameterDataDescription( fieldmlHandle, dofsHandle, DESCRIPTION_SEMIDENSE )
-  err = Fieldml_AddSemidenseIndex( fieldmlHandle, dofsHandle, domainComponentHandle, 0 )
-  err = Fieldml_AddSemidenseIndex( fieldmlHandle, dofsHandle, nodeDomainHandle, 0 )
-  err = Fieldml_SetParameterDataLocation( fieldmlHandle, dofsHandle, LOCATION_FILE )
-  err = Fieldml_SetParameterFileData( fieldmlHandle, dofsHandle, filename//"_solution.dat"//C_NULL_CHAR, TYPE_LINES, 0 )
-  
-  fieldDimensions = 3
+    CALL FieldmlOutput_AddField( outputInfo, baseName//".geometric", region, mesh, GeometricField, err )
 
-  ALLOCATE( fieldValues2( meshNodeCount, fieldDimensions ) )
+    domainHandle = Fieldml_GetNamedObject( outputInfo%fmlHandle, "library.velocity.rc.3d"//NUL )
+    CALL FieldmlOutput_AddFieldComponents( outputInfo, domainHandle, baseName//".velocity", Mesh, DependentFieldNavierStokes, &
+      & (/1,2,3/), err )
     
-  DO NODE_NUMBER=1,meshNodeCount
-    DO COMPONENT_NUMBER=1,fieldDimensions
-      CALL CMISSFieldParameterSetGetNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-        & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE, err )
-      fieldValues2(NODE_NUMBER,COMPONENT_NUMBER) = VALUE
-    ENDDO
-  ENDDO
-  
-  CALL FieldmlOutput_WriteRawData( fieldmlHandle, dofsHandle, fieldValues2, 0, err )
-
-  DEALLOCATE( fieldValues2 )
-  
-  err = Fieldml_SetAlias( fieldmlHandle, velocityHandle, dofsVariableHandle, dofsHandle )
-
-
-
-
-
-
-
-  dofsHandle = Fieldml_GetNamedObject( fieldmlHandle, "test_mesh.node.pressure"//C_NULL_CHAR )
-  IF( dofsHandle == FML_INVALID_HANDLE ) THEN
-    domainHandle = Fieldml_GetNamedObject( fieldmlHandle, "library.pressure"//C_NULL_CHAR )
-    dofsHandle = Fieldml_CreateContinuousParameters( fieldmlHandle, "test_mesh.node.pressure"//C_NULL_CHAR, domainHandle )
-  ENDIF
-  
-  err = Fieldml_SetParameterDataDescription( fieldmlHandle, dofsHandle, DESCRIPTION_SEMIDENSE )
-  err = Fieldml_AddSemidenseIndex( fieldmlHandle, dofsHandle, nodeDomainHandle, 0 )
-  err = Fieldml_SetParameterDataLocation( fieldmlHandle, dofsHandle, LOCATION_FILE )
-  err = Fieldml_SetParameterFileData( fieldmlHandle, dofsHandle, filename//"_solution.dat"//C_NULL_CHAR, TYPE_LINES, 125 )
-  
-  fieldDimensions = 1
-
-  ALLOCATE( fieldValues1( meshNodeCount ) )
+    domainHandle = Fieldml_GetNamedObject( outputInfo%fmlHandle, "library.pressure"//NUL )
+    CALL FieldmlOutput_AddFieldComponents( outputInfo, domainHandle, baseName//".pressure", Mesh, DependentFieldNavierStokes, &
+      & (/4/), err )
     
-  DO NODE_NUMBER=1,meshNodeCount
-    CALL CMISSMeshNodeExists( mesh, MESH_COMPONENT_NUMBER_PRESSURE, NODE_NUMBER, nodeExists, err )
-    IF( nodeExists ) THEN
-      CALL CMISSFieldParameterSetGetNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-        & CMISSNoGlobalDerivative,NODE_NUMBER,4,VALUE, err )
-    ELSE
-      VALUE = 0
-    ENDIF
+    CALL FieldmlOutput_Write( outputInfo, outputFilename, err )
+    
+    CALL FieldmlUtil_FinalizeInfo( outputInfo )
 
-    fieldValues1(NODE_NUMBER) = VALUE
-  ENDDO
-  
-  CALL FieldmlOutput_WriteRawData( fieldmlHandle, dofsHandle, fieldValues1, 1, err )
-
-  DEALLOCATE( fieldValues1 )
-  
-  err = Fieldml_SetAlias( fieldmlHandle, pressureHandle, dofsVariableHandle, dofsHandle )
-
-
-
-
-
-
-
-
-
-
-
-  err = Fieldml_WriteFile( fieldmlHandle, filename//"_out.xml"//C_NULL_CHAR )
-  
   EXPORT_FIELD_IO=.TRUE.
   IF(EXPORT_FIELD_IO) THEN
     WRITE(*,'(A)') "Exporting fields..."
