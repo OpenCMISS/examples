@@ -135,7 +135,8 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   INTEGER(CMISSIntg) :: dimensions, i
   
   !FieldML variables
-  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: filename = "StaticAdvectionDiffusion"
+  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputDirectory = ""
+  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputFilename = "StaticAdvectionDiffusion.xml"
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_advection_diffusion"
 
   TYPE(FieldmlInfoType) :: fieldmlInfo
@@ -415,13 +416,13 @@ CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
 
   EXPORT_FIELD=.TRUE.
   IF(EXPORT_FIELD) THEN
-    CALL CMISSFieldsTypeInitialise(Fields,Err)
-    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"StaticAdvectionDiffusion","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"StaticAdvectionDiffusion","FORTRAN",Err)
-    CALL CMISSFieldsTypeFinalise(Fields,Err)
+    !CALL CMISSFieldsTypeInitialise(Fields,Err)
+    !CALL CMISSFieldsTypeCreate(Region,Fields,Err)
+    !CALL CMISSFieldIONodesExport(Fields,"StaticAdvectionDiffusion","FORTRAN",Err)
+    !CALL CMISSFieldIOElementsExport(Fields,"StaticAdvectionDiffusion","FORTRAN",Err)
+    !CALL CMISSFieldsTypeFinalise(Fields,Err)
     
-    CALL FieldmlOutput_Start( Region, Mesh, dimensions, basename, fieldmlInfo, err )
+    CALL FieldmlOutput_InitializeInfo( Region, Mesh, dimensions, outputDirectory, basename, fieldmlInfo, err )
 
     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".geometric", region, mesh, GeometricField, err )
 
@@ -435,7 +436,9 @@ CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
 
     !CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".analytic", region, mesh, AnalyticField, err )
     
-    CALL FieldmlOutput_Finish( fieldmlInfo, filename, err )
+    CALL FieldmlOutput_Write( fieldmlInfo, outputFilename, err )
+    
+    CALL FieldmlUtil_FinalizeInfo( fieldmlInfo )
 
   ENDIF
 
