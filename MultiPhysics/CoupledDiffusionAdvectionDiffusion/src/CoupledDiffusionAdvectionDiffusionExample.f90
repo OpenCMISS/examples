@@ -289,6 +289,16 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
   !================================================================================================================================
   !
 
+  !INITIALISE OPENCMISS
+
+  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
+
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+
+  !
+  !================================================================================================================================
+  !
+
   !PROBLEM CONTROL PANEL
 
   !Import cmHeart mesh information
@@ -377,16 +387,6 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
   RESTART_VALUE=30_CMISSIntg !default: 30
   LINESEARCH_ALPHA=1.0_CMISSDP
 
-
-  !
-  !================================================================================================================================
-  !
-
-  !INITIALISE OPENCMISS
-
-  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
-
-  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
   !
   !================================================================================================================================
   !

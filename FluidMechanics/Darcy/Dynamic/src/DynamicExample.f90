@@ -237,6 +237,16 @@ PROGRAM DARCYDYNAMICEXAMPLE
   !================================================================================================================================
   !
 
+  !INITIALISE OPENCMISS
+
+  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
+
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+
+  !
+  !================================================================================================================================
+  !
+
   !PROBLEM CONTROL PANEL
 
   !Import cmHeart mesh information
@@ -297,16 +307,6 @@ PROGRAM DARCYDYNAMICEXAMPLE
   DIVERGENCE_TOLERANCE=1.0E5_CMISSDP !default: 1.0E5
   MAXIMUM_ITERATIONS=10000_CMISSIntg !default: 100000
   RESTART_VALUE=30_CMISSIntg !default: 30
-
-  !
-  !================================================================================================================================
-  !
-
-  !INITIALISE OPENCMISS
-
-  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
-
-  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
 
   !
   !================================================================================================================================

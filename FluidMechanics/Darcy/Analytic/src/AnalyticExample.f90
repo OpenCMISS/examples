@@ -236,6 +236,16 @@ PROGRAM DARCYANALYTICEXAMPLE
 
   !PROBLEM CONTROL PANEL
 
+  !INITIALISE OPENCMISS
+
+  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
+
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+
+  !
+  !================================================================================================================================
+  !
+
   !Import cmHeart mesh information
   CALL FLUID_MECHANICS_IO_READ_CMHEART(CM,Err)  
   BASIS_NUMBER_GEOMETRY=CM%ID_M
@@ -324,15 +334,6 @@ PROGRAM DARCYANALYTICEXAMPLE
   IF(INPUT_TYPE==1.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMISSEquationsSetDarcyThreeDim1
   IF(INPUT_TYPE==2.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMISSEquationsSetDarcyThreeDim2
   IF(INPUT_TYPE==3.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMISSEquationsSetDarcyThreeDim3
-
-  !
-  !================================================================================================================================
-  !
-  !INITIALISE OPENCMISS
-
-  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
-
-  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
 
   !
   !================================================================================================================================

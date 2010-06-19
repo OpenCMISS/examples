@@ -228,6 +228,14 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !================================================================================================================================
   !
 
+  !INITIALISE OPENCMISS
+
+  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
+
+  !
+  !================================================================================================================================
+  !
+
   !PROBLEM CONTROL PANEL
 
   !Import cmHeart mesh information
@@ -311,14 +319,6 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   IF(INPUT_TYPE==1.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMISSEquationsSetStokesThreeDim1
   IF(INPUT_TYPE==2.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMISSEquationsSetStokesThreeDim2
   IF(INPUT_TYPE==3.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMISSEquationsSetStokesThreeDim3
-
-  !
-  !================================================================================================================================
-  !
-
-  !INITIALISE OPENCMISS
-
-  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
   !
   !================================================================================================================================

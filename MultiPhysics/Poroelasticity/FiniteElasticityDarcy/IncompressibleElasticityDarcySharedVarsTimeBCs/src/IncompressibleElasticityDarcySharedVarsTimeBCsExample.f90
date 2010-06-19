@@ -320,6 +320,16 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !================================================================================================================================
   !
 
+  !INITIALISE OPENCMISS
+
+  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
+
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+
+  !
+  !================================================================================================================================
+  !
+
   !PROBLEM CONTROL PANEL
 
   !Mind: To create sources and sink terms as well as regions of different permeability
@@ -396,16 +406,6 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   RESTART_VALUE=30_CMISSIntg !default: 30
   LINESEARCH_ALPHA=1.0_CMISSDP
 
-
-  !
-  !================================================================================================================================
-  !
-
-  !INITIALISE OPENCMISS
-
-  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
-
-  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
 
   !
   !================================================================================================================================

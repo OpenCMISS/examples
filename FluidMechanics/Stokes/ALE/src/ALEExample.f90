@@ -262,6 +262,14 @@ PROGRAM STOKESALEEXAMPLE
   !================================================================================================================================
   !
 
+  !INITIALISE OPENCMISS
+
+  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
+
+  !
+  !================================================================================================================================
+  !
+
   !PROBLEM CONTROL PANEL
 
   !Import cmHeart mesh information
@@ -364,14 +372,6 @@ PROGRAM STOKESALEEXAMPLE
   RESTART_VALUE=3000 !default: 30
   LINESEARCH_ALPHA=1.0
 
-
-  !
-  !================================================================================================================================
-  !
-
-  !INITIALISE OPENCMISS
-
-  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
   !
   !================================================================================================================================
