@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fieldml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Fieldml.xsd">
+ <Region name="HEX-M2-V2-P1_FE">
+
+  <EnsembleDomain name="test_mesh.nodes">
+   <markup>
+    <SimpleMapEntry key="geometric" value="point" />
+   </markup>
+   <bounds>
+    <ContiguousEnsembleBounds valueCount="125" />
+   </bounds>
+  </EnsembleDomain>
+
+
+  <MeshDomain name="test_mesh.domain" xiComponentDomain="library.ensemble.xi.3d">
+   <bounds>
+    <ContiguousEnsembleBounds valueCount="8" />
+   </bounds>
+   <shapes>
+    <SimpleMapEntry key="1" value="library.shape.cube" />
+    <SimpleMapEntry key="2" value="library.shape.cube" />
+    <SimpleMapEntry key="3" value="library.shape.cube" />
+    <SimpleMapEntry key="4" value="library.shape.cube" />
+    <SimpleMapEntry key="5" value="library.shape.cube" />
+    <SimpleMapEntry key="6" value="library.shape.cube" />
+    <SimpleMapEntry key="7" value="library.shape.cube" />
+    <SimpleMapEntry key="8" value="library.shape.cube" />
+   </shapes>
+            <pointConnectivity>
+                <SimpleMapEntry key="test_mesh.cube2x2x2_nodes" value="library.local_nodes.cube.2x2x2" />
+                <SimpleMapEntry key="test_mesh.cube3x3x3_nodes" value="library.local_nodes.cube.3x3x3" />
+            </pointConnectivity>
+  </MeshDomain>
+
+
+  <ContinuousVariableEvaluator name="test_mesh.nodal_dofs" valueDomain="library.coordinates.rc.1d">
+   <parameterDomains>
+    <entry value="test_mesh.nodes" />
+   </parameterDomains>
+  </ContinuousVariableEvaluator>
+
+
+  <ContinuousReferenceEvaluator evaluator="test_mesh.nodal_dofs" name="test_mesh.element_params.triquadratic_lagrange" valueDomain="library.real.1d">
+   <aliases>
+    <SimpleMapEntry key="test_mesh.nodes" value="test_mesh.cube3x3x3_nodes" />
+   </aliases>
+  </ContinuousReferenceEvaluator>
+
+
+  <ContinuousReferenceEvaluator evaluator="library.fem.triquadratic_lagrange" name="test_mesh.triquadratic_lagrange" valueDomain="library.real.1d">
+   <aliases>
+    <SimpleMapEntry key="library.xi.3d" value="test_mesh.domain.xi" />
+    <SimpleMapEntry key="library.parameters.triquadratic_lagrange" value="test_mesh.element_params.triquadratic_lagrange" />
+   </aliases>
+  </ContinuousReferenceEvaluator>
+
+
+  <ContinuousReferenceEvaluator evaluator="test_mesh.nodal_dofs" name="test_mesh.element_params.trilinear_lagrange" valueDomain="library.real.1d">
+   <aliases>
+    <SimpleMapEntry key="test_mesh.nodes" value="test_mesh.cube2x2x2_nodes" />
+   </aliases>
+  </ContinuousReferenceEvaluator>
+
+
+  <ContinuousReferenceEvaluator evaluator="library.fem.trilinear_lagrange" name="test_mesh.trilinear_lagrange"
+   valueDomain="library.real.1d">
+   <aliases>
+    <SimpleMapEntry key="library.xi.3d" value="test_mesh.domain.xi" />
+    <SimpleMapEntry key="library.parameters.trilinear_lagrange" value="test_mesh.element_params.trilinear_lagrange" />
+   </aliases>
+  </ContinuousReferenceEvaluator>
+
+
+  <ContinuousPiecewiseEvaluator indexDomain="test_mesh.domain.elements" name="test_mesh.template.trilinear"
+   valueDomain="library.coordinates.rc.1d">
+   <elementEvaluators>
+    <SimpleMapEntry key="1" value="test_mesh.trilinear_lagrange" />
+    <SimpleMapEntry key="2" value="test_mesh.trilinear_lagrange" />
+    <SimpleMapEntry key="3" value="test_mesh.trilinear_lagrange" />
+    <SimpleMapEntry key="4" value="test_mesh.trilinear_lagrange" />
+    <SimpleMapEntry key="5" value="test_mesh.trilinear_lagrange" />
+    <SimpleMapEntry key="6" value="test_mesh.trilinear_lagrange" />
+    <SimpleMapEntry key="7" value="test_mesh.trilinear_lagrange" />
+    <SimpleMapEntry key="8" value="test_mesh.trilinear_lagrange" />
+   </elementEvaluators>
+  </ContinuousPiecewiseEvaluator>
+
+
+  <ContinuousPiecewiseEvaluator indexDomain="test_mesh.domain.elements" name="test_mesh.template.triquadratic"
+   valueDomain="library.coordinates.rc.1d">
+   <elementEvaluators>
+    <SimpleMapEntry key="1" value="test_mesh.triquadratic_lagrange" />
+    <SimpleMapEntry key="2" value="test_mesh.triquadratic_lagrange" />
+    <SimpleMapEntry key="3" value="test_mesh.triquadratic_lagrange" />
+    <SimpleMapEntry key="4" value="test_mesh.triquadratic_lagrange" />
+    <SimpleMapEntry key="5" value="test_mesh.triquadratic_lagrange" />
+    <SimpleMapEntry key="6" value="test_mesh.triquadratic_lagrange" />
+    <SimpleMapEntry key="7" value="test_mesh.triquadratic_lagrange" />
+    <SimpleMapEntry key="8" value="test_mesh.triquadratic_lagrange" />
+   </elementEvaluators>
+  </ContinuousPiecewiseEvaluator>
+
+
+  <ContinuousParameters name="test_mesh.node.coordinates" valueDomain="library.coordinates.rc.1d">
+   <SemidenseData>
+    <denseIndexes>
+     <entry value="library.ensemble.rc.3d" />
+     <entry value="test_mesh.nodes" />
+    </denseIndexes>
+    <dataLocation>
+     <fileData file="HEX-M2-V2-P1_FE.C" type="lines" offset="1" />
+    </dataLocation>
+   </SemidenseData>
+  </ContinuousParameters>
+
+
+  <EnsembleParameters name="test_mesh.cube3x3x3_nodes" valueDomain="test_mesh.nodes">
+   <SemidenseData>
+    <denseIndexes>
+     <entry value="library.local_nodes.cube.3x3x3" />
+     <entry value="test_mesh.domain.elements" />
+    </denseIndexes>
+    <swizzle>
+     1 9 2 10 11 12 3 13 4 14 15 16 17 18 19 20 21 22 5 23 6 24 25 26 7 27 8
+            </swizzle>
+    <dataLocation>
+     <fileData file="HEX-M2-V2-P1_FE.M" type="lines" offset="1" />
+    </dataLocation>
+   </SemidenseData>
+  </EnsembleParameters>
+
+
+  <EnsembleParameters name="test_mesh.cube2x2x2_nodes" valueDomain="test_mesh.nodes">
+   <SemidenseData>
+    <denseIndexes>
+     <entry value="library.local_nodes.cube.2x2x2" />
+     <entry value="test_mesh.domain.elements" />
+    </denseIndexes>
+    <dataLocation>
+     <fileData file="HEX-M2-V2-P1_FE.M" type="lines" offset="17" />
+    </dataLocation>
+   </SemidenseData>
+  </EnsembleParameters>
+
+
+  <ContinuousAggregateEvaluator name="test_mesh.coordinates" valueDomain="library.coordinates.rc.3d">
+   <aliases>
+    <SimpleMapEntry key="test_mesh.nodal_dofs" value="test_mesh.node.coordinates" />
+   </aliases>
+   <sourceFields>
+    <SimpleMapEntry key="1" value="test_mesh.template.triquadratic" />
+    <SimpleMapEntry key="2" value="test_mesh.template.triquadratic" />
+    <SimpleMapEntry key="3" value="test_mesh.template.triquadratic" />
+   </sourceFields>
+   <markup>
+    <SimpleMapEntry key="field" value="true" />
+   </markup>
+  </ContinuousAggregateEvaluator>
+
+
+  <ContinuousAggregateEvaluator name="test_mesh.velocity" valueDomain="library.velocity.rc.3d">
+   <sourceFields>
+    <SimpleMapEntry key="1" value="test_mesh.template.triquadratic" />
+    <SimpleMapEntry key="2" value="test_mesh.template.triquadratic" />
+    <SimpleMapEntry key="3" value="test_mesh.template.triquadratic" />
+   </sourceFields>
+   <markup>
+    <SimpleMapEntry key="field" value="true" />
+   </markup>
+  </ContinuousAggregateEvaluator>
+
+
+  <ContinuousAggregateEvaluator name="test_mesh.pressure" valueDomain="library.pressure">
+   <sourceFields>
+    <SimpleMapEntry key="1" value="test_mesh.template.trilinear" />
+   </sourceFields>
+   <markup>
+    <SimpleMapEntry key="field" value="true" />
+   </markup>
+  </ContinuousAggregateEvaluator>
+
+ </Region>
+</fieldml>
