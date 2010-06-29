@@ -65,7 +65,7 @@ endif
 
 EXAMPLE_PATH=ClassicalField/Laplace/
 
-EXAMPLE_NAME = LaplaceEllipsoid
+EXAMPLE_NAME = Laplace
 
 include $(GLOBAL_ROOT)/NewExampleMakefile
 
