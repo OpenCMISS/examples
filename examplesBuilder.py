@@ -42,7 +42,7 @@ def buildLibrary() :
    os.chdir('..')
    if os.path.exists(newDir + "/build-" + compiler) :
      os.remove(newDir + "/build-" + compiler)
-   err=os.system("make COMPILER=" + compiler + " > " + newDir + "/build-" + compiler +" 2>&1")
+   err=os.system("make USEFIELDML=true COMPILER=" + compiler + " > " + newDir + "/build-" + compiler +" 2>&1")
    if err==0 :
      f.write(compiler+'_library_build|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
      print "Building OpenCMISS Library: <a class='success' href='%slogs_x86_64-linux/build-%s'>success</a><br>" %(rootUrl,compiler)
