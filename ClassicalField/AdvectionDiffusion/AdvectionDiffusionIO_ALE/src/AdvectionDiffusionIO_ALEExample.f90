@@ -1,7 +1,7 @@
 !> \file
 !> $Id: AdvectionDiffusionIOExample.f90 20 2007-05-28 20:22:52Z cpb $
 !> \author Chris Bradley
-!> \brief This is an example program to solve an advection-diffusion equation using openCMISS calls.
+!> \brief This is an example program to solve an ALE formulation of the advection-diffusion equation using openCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -40,7 +40,7 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/AdvectionDiffusion/AdvectionDiffusionIO/src/AdvectionDiffusionIOExample.f90
+!> \example ClassicalField/AdvectionDiffusion/AdvectionDiffusionIO/src/AdvectionDiffusionIO_ALEExample.f90
 !! Example program to solve a diffusion equation using openCMISS calls.
 !! \par Latest Builds:
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/Diffusion/build-intel'>Linux Intel Build</a>
@@ -48,7 +48,7 @@
 !<
 
 !> Main program
-PROGRAM ADVECTIONDIFFUSIONIOEXAMPLE
+PROGRAM ADVECTIONDIFFUSIONIOALEEXAMPLE
 
   !
   !================================================================================================================================
@@ -687,8 +687,8 @@ PROGRAM ADVECTIONDIFFUSIONIOEXAMPLE
     WRITE(*,'(A)') "Exporting fields..."
     CALL CMISSFieldsTypeInitialise(Fields,Err)
     CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"AdvectionDiffusionIO","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"AdvectionDiffusionIO","FORTRAN",Err)
+    CALL CMISSFieldIONodesExport(Fields,"AdvectionDiffusionIO_ALE","FORTRAN",Err)
+    CALL CMISSFieldIOElementsExport(Fields,"AdvectionDiffusionIO_ALE","FORTRAN",Err)
     CALL CMISSFieldsTypeFinalise(Fields,Err)
     WRITE(*,'(A)') "Field exported!"
   ENDIF
@@ -701,4 +701,4 @@ PROGRAM ADVECTIONDIFFUSIONIOEXAMPLE
   
   STOP
 
-END PROGRAM ADVECTIONDIFFUSIONIOEXAMPLE
+END PROGRAM ADVECTIONDIFFUSIONIOALEEXAMPLE
