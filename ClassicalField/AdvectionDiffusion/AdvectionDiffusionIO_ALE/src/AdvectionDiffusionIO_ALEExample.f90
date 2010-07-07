@@ -467,7 +467,7 @@ PROGRAM ADVECTIONDIFFUSIONIOALEEXAMPLE
 !   CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
 !     & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetNoSourceStaticAdvecDiffSubtype,Err)
   CALL CMISSEquationsSetSpecificationSet(EquationsSetAdvecDiff,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetNoSourceAdvectionDiffusionSubtype,Err)
+    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetNoSourceALEAdvectionDiffusionSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetAdvecDiff,Err)
 
@@ -602,7 +602,7 @@ PROGRAM ADVECTIONDIFFUSIONIOALEEXAMPLE
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
   !Set the problem to be a No Source Diffusion problem
   CALL CMISSProblemSpecificationSet(Problem,CMISSProblemClassicalFieldClass,CMISSProblemAdvectionDiffusionEquationType, &
-    & CMISSProblemNoSourceAdvectionDiffusionSubtype,Err)
+    & CMISSProblemNoSourceALEAdvectionDiffusionSubtype,Err)
   !Finish the creation of a problem.
   CALL CMISSProblemCreateFinish(Problem,Err)
   !Start the creation of the problem control loop
