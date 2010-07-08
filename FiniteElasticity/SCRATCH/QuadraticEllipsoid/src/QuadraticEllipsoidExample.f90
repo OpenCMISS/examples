@@ -60,14 +60,18 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
   IMPLICIT NONE
 
   !Test program parameters
-
+  
+  REAL(CMISSDP), PARAMETER :: PI=3.14159_CMISSDP
   REAL(CMISSDP), PARAMETER :: LONG_AXIS=2.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: SHORT_AXIS=1.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: WALL_THICKNESS=0.5_CMISSDP
   REAL(CMISSDP), PARAMETER :: CUTOFF_ANGLE=1.5708_CMISSDP
-  INTEGER(CMISSIntg), PARAMETER :: NumberGlobalXElements=4  ! X ==
-  INTEGER(CMISSIntg), PARAMETER :: NumberGlobalYElements=4  ! Y == 
-  INTEGER(CMISSIntg), PARAMETER :: NumberGlobalZElements=4  ! Z ==
+  REAL(CMISSDP), PARAMETER :: FIBRE_SLOPE_INTERSECTION=1.73205_CMISSDP !Slope of fibres in base endocardium = 60 degrees
+  REAL(CMISSDP), PARAMETER :: FIBRE_SLOPE_CHANGE=-3.4641_CMISSDP !Slope change of fibres from 60 to -60 degrees in transmural direction 
+  REAL(CMISSDP), PARAMETER :: SHEET_SLOPE_BASE_ENDO=1.0_CMISSDP !Slope of sheet at base endocardium 
+  INTEGER(CMISSIntg), PARAMETER :: NumberGlobalXElements=4  ! X ==NUMBER_GLOBAL_CIRCUMFERENTIAL_ELEMENTS
+  INTEGER(CMISSIntg), PARAMETER :: NumberGlobalYElements=4  ! Y ==NUMBER_GLOBAL_LONGITUDINAL_ELEMENTS
+  INTEGER(CMISSIntg), PARAMETER :: NumberGlobalZElements=4  ! Z ==NUMBER_GLOBAL_TRANSMURAL_ELEMENTS
   INTEGER(CMISSIntg), PARAMETER :: NumberOfDomains=1
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -80,7 +84,8 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
-
+  INTEGER(CMISSIntg), PARAMETER :: DerivativeUserNumber=1
+  
   INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshDimensions=3
   INTEGER(CMISSIntg), PARAMETER :: NumberOfXiCoordinates=3
   INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshComponents=2
@@ -115,6 +120,9 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
   INTEGER(CMISSIntg) :: MPI_IERROR
   INTEGER(CMISSIntg) :: EquationsSetIndex  
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  REAL(CMISSDP) :: FibreFieldAngle(3) 
+  REAL(CMISSDP) :: nu,theta,omega,XI3,XI3delta,XI2delta, zero
+  INTEGER(CMISSIntg) ::i,j,k,component_idx,node_idx,TOTAL_NUMBER_NODES_XI(3)
 
   !CMISS variables
 
@@ -294,11 +302,41 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
 
   !Set Fibre directions
 
-
-
-
-
-
+  node_idx=0  
+  !This is valid only for quadratic basis functions
+  TOTAL_NUMBER_NODES_XI(1)=NumberGlobalXElements*2
+  TOTAL_NUMBER_NODES_XI(2)=NumberGlobalYElements*2+1
+  TOTAL_NUMBER_NODES_XI(3)=NumberGlobalZElements*2+1
+   
+  XI2delta=(PI-CUTOFF_ANGLE)/(TOTAL_NUMBER_NODES_XI(2)-1)
+  XI3=0
+  XI3delta=(1.0)/(TOTAL_NUMBER_NODES_XI(3)-1)
+  zero=0
+  DO k=1, TOTAL_NUMBER_NODES_XI(3)
+     !Apex nodes
+     j=1
+     i=1
+     node_idx=node_idx+1
+     FibreFieldAngle=(/zero,zero,zero/) 
+     DO component_idx=1,FieldFibreNumberOfComponents
+        CALL CMISSFieldParameterSetUpdateNode(FibreField,CMISSFieldUVariableType,CMISSFieldValuesSetType,DerivativeUserNumber, &
+             & node_idx,component_idx,FibreFieldAngle(component_idx),Err)
+     ENDDO
+     theta=atan(FIBRE_SLOPE_CHANGE*XI3+FIBRE_SLOPE_INTERSECTION)
+     DO j=2, TOTAL_NUMBER_NODES_XI(2) 
+        nu=PI-XI2delta*(j-1)
+        omega=PI/2+cos(2*nu)*atan(SHEET_SLOPE_BASE_ENDO)*(-2*XI3+1)
+        DO i=1, TOTAL_NUMBER_NODES_XI(1)
+           node_idx=node_idx+1
+           FibreFieldAngle=(/theta,zero,omega/)
+           DO component_idx=1,FieldFibreNumberOfComponents
+              CALL CMISSFieldParameterSetUpdateNode(FibreField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+                   & DerivativeUserNumber, node_idx,component_idx,FibreFieldAngle(component_idx),Err)
+           ENDDO
+        ENDDO
+     ENDDO
+     XI3=XI3+XI3delta
+  ENDDO
 
   !Create a material field and attach it to the geometric field  
   CALL CMISSFieldTypeInitialise(MaterialField,Err)
