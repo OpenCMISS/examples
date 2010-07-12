@@ -1,5 +1,5 @@
-gfx read node QuadraticTriangleSimplex.part0.exnode
-gfx read element QuadraticTriangleSimplex.part0.exelem
+gfx read node CubicTriangleSimplex.part0.exnode
+gfx read element CubicTriangleSimplex.part0.exelem
 gfx define faces egroup "Region 2"
 gfx create window 1
 gfx modify window 1 view interest_point 1.0,0.5,0.0 eye_point 1.0,0.5,5.0 up_vector 0.0,1.0,0.0

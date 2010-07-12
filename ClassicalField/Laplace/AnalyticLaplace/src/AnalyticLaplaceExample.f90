@@ -96,9 +96,12 @@ PROGRAM ANALYTICLAPLACEEXAMPLE
   !Intialise cmiss
   CALL CMISSInitialise(WorldCoordinateSystem,WORLD_REGION,Err)
 
+  CALL ANALYTICLAPLACE_TESTCASE_BILINEAR_SIMPLEX_CONVERGENCE(2,6,2)
+  CALL ANALYTICLAPLACE_TESTCASE_LINEAR_SIMPLEX_EXPORT(2,2,0)
   CALL ANALYTICLAPLACE_TESTCASE_BILINEAR_LAGRANGE_CONVERGENCE(2,6,2)
+  CALL ANALYTICLAPLACE_TESTCASE_LINEAR_LAGRANGE_EXPORT(2,2,0)
   CALL ANALYTICLAPLACE_TESTCASE_BICUBIC_HERMITE_CONVERGENCE(2,10,2)
-  CALL ANALYTICLAPLACE_TESTCASE_BILINEAR_LAGRANGE_EXPORT(2,2,0)
+  CALL ANALYTICLAPLACE_TESTCASE_CUBIC_HERMITE_EXPORT(2,2,0)
 
   CALL CMISSFinalise(Err)
 
@@ -111,8 +114,33 @@ CONTAINS
   !
   !================================================================================================================================
   !  
-    !>Check if the convergence of bilinear langrange interpolation is expected.
-  SUBROUTINE ANALYTICLAPLACE_TESTCASE_BILINEAR_LAGRANGE_EXPORT(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
+
+  !>Export analytic analyis
+  SUBROUTINE ANALYTICLAPLACE_TESTCASE_CUBIC_HERMITE_EXPORT(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
+    & NUMBER_GLOBAL_Z_ELEMENTS)
+
+    !Argument variables
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_X_ELEMENTS !<initial number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Y_ELEMENTS !<final number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Z_ELEMENTS !<increment interval number of elements per axis
+    !Local Variables
+    TYPE(CMISSFieldType) :: FIELD
+
+    CALL ANALYTICLAPLACE_GENERIC(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,4, &
+      & FIELD)
+
+    CALL CMISSAnalyticAnalysisOutput(FIELD,"AnalyticLaplaceCubicHermite",Err)
+    
+    CALL ANALYTICLAPLACE_GENERIC_CLEAN(1,1,1,1,1)
+
+  END SUBROUTINE ANALYTICLAPLACE_TESTCASE_CUBIC_HERMITE_EXPORT
+  
+  !
+  !================================================================================================================================
+  !
+  
+  !>Export analytic analyis
+  SUBROUTINE ANALYTICLAPLACE_TESTCASE_LINEAR_LAGRANGE_EXPORT(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
     & NUMBER_GLOBAL_Z_ELEMENTS)
 
     !Argument variables
@@ -125,11 +153,62 @@ CONTAINS
     CALL ANALYTICLAPLACE_GENERIC(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,1, &
       & FIELD)
 
-    CALL CMISSAnalyticAnalysisOutput(FIELD,"AnalyticLaplaceBilinear",Err)
+    CALL CMISSAnalyticAnalysisOutput(FIELD,"AnalyticLaplaceLinearLagrange",Err)
     
     CALL ANALYTICLAPLACE_GENERIC_CLEAN(1,1,1,1,1)
 
-  END SUBROUTINE ANALYTICLAPLACE_TESTCASE_BILINEAR_LAGRANGE_EXPORT
+  END SUBROUTINE ANALYTICLAPLACE_TESTCASE_LINEAR_LAGRANGE_EXPORT
+  
+  !
+  !================================================================================================================================
+  !
+  
+  !>Export analytic analyis
+  SUBROUTINE ANALYTICLAPLACE_TESTCASE_LINEAR_SIMPLEX_EXPORT(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
+    & NUMBER_GLOBAL_Z_ELEMENTS)
+
+    !Argument variables
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_X_ELEMENTS !<initial number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Y_ELEMENTS !<final number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Z_ELEMENTS !<increment interval number of elements per axis
+    !Local Variables
+    TYPE(CMISSFieldType) :: FIELD
+
+    CALL ANALYTICLAPLACE_GENERIC(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,7, &
+      & FIELD)
+
+    CALL CMISSAnalyticAnalysisOutput(FIELD,"AnalyticLaplaceLinearSimplex",Err)
+    
+    CALL ANALYTICLAPLACE_GENERIC_CLEAN(1,1,1,1,1)
+
+  END SUBROUTINE ANALYTICLAPLACE_TESTCASE_LINEAR_SIMPLEX_EXPORT
+  
+  !
+  !================================================================================================================================
+  !   
+  
+  !>Check if the convergence of bilinear Simplex interpolation is expected.
+  SUBROUTINE ANALYTICLAPLACE_TESTCASE_BILINEAR_SIMPLEX_CONVERGENCE(NUMBER_OF_ELEMENTS_XI_START, &
+    & NUMBER_OF_ELEMENTS_XI_END,NUMBER_OF_ELEMENTS_XI_INTERVAL)
+  
+    !Argument variables
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_START !<initial number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_END !<final number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_INTERVAL !<increment interval number of elements per axis
+    !Local Variables
+    REAL(CMISSDP) :: VALUE
+    REAL(CMISSDP), ALLOCATABLE :: X_VALUES(:),Y_VALUES(:)
+    
+    CALL ANALYTICLAPLACE_GENERIC_CONVERGENCE(NUMBER_OF_ELEMENTS_XI_START,NUMBER_OF_ELEMENTS_XI_END, &
+      & NUMBER_OF_ELEMENTS_XI_INTERVAL,7,X_VALUES,Y_VALUES)
+    
+    CALL TEST_FRAMEWORK_GRADIENT_VALUE_GET(X_VALUES,Y_VALUES,VALUE)
+
+    CALL TEST_FRAMEWORK_ASSERT_EQUALS(2.0_CMISSDP,VALUE,0.5_CMISSDP,ERR)
+    
+    WRITE(*,'(A)') "Analytic Laplace Example Testcase1 - bilinear Simplex is successfully completed."
+    
+  END SUBROUTINE ANALYTICLAPLACE_TESTCASE_BILINEAR_SIMPLEX_CONVERGENCE
   
   !
   !================================================================================================================================
@@ -154,7 +233,7 @@ CONTAINS
 
     CALL TEST_FRAMEWORK_ASSERT_EQUALS(2.0_CMISSDP,VALUE,0.5_CMISSDP,ERR)
     
-    WRITE(*,'(A)') "Analytic Laplace Example Testcase1 - bilinear lagrange is successfully completed."
+    WRITE(*,'(A)') "Analytic Laplace Example Testcase2 - bilinear lagrange is successfully completed."
     
   END SUBROUTINE ANALYTICLAPLACE_TESTCASE_BILINEAR_LAGRANGE_CONVERGENCE
   
@@ -180,10 +259,10 @@ CONTAINS
    CALL TEST_FRAMEWORK_GRADIENT_VALUE_GET(X_VALUES,Y_VALUES,VALUE)
    CALL TEST_FRAMEWORK_ASSERT_EQUALS(4.0_CMISSDP,VALUE,1.0_CMISSDP,Err)
    IF (Err/=0) THEN
-     WRITE(*,'(A,F3.5)') "Analytic Laplace Example Testcase2 - bicubic Hermite failure: Convergence should be around 4.0" &
+     WRITE(*,'(A,F3.5)') "Analytic Laplace Example Testcase3 - bicubic Hermite failure: Convergence should be around 4.0" &
        & //", but it was ", VALUE
    ENDIF
-   WRITE(*,'(A)') "Analytic Laplace Example Testcase2 - bicubic Hermite is successfully completed."
+   WRITE(*,'(A)') "Analytic Laplace Example Testcase3 - bicubic Hermite is successfully completed."
 
   END SUBROUTINE ANALYTICLAPLACE_TESTCASE_BICUBIC_HERMITE_CONVERGENCE
   
@@ -288,6 +367,16 @@ CONTAINS
     !Start the creation of a basis (default is trilinear lagrange)
     CALL CMISSBasisTypeInitialise(Basis,Err)
     CALL CMISSBasisCreateStart(1,Basis,Err)
+    SELECT CASE(INTERPOLATION_SPECIFICATIONS)
+    CASE(CMISSBasisLinearLagrangeInterpolation,CMISSBasisQuadraticLagrangeInterpolation,CMISSBasisCubicLagrangeInterpolation, &
+      & CMISSBasisCubicHermiteInterpolation)
+      !Do nothing
+    CASE(CMISSBasisLinearSimplexInterpolation,CMISSBasisQuadraticSimplexInterpolation,CMISSBasisCubicSimplexInterpolation)
+      CALL CMISSBasisTypeSet(Basis,CMISSBasisSimplexType,Err)
+    CASE DEFAULT
+      WRITE(*,'(A)') "Invalid interpolation specification."
+      STOP
+    END SELECT
     IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
       !Set the basis to be a bilinear basis
       CALL CMISSBasisNumberOfXiSet(Basis,2,Err)
@@ -442,7 +531,5 @@ CONTAINS
     CALL CMISSCoordinateSystemDestroy(CoordinateSystemUserNumber,Err)
 
   END SUBROUTINE ANALYTICLAPLACE_GENERIC_CLEAN
-
-
 
 END PROGRAM ANALYTICLAPLACEEXAMPLE 

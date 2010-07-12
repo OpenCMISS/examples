@@ -123,8 +123,8 @@ PROGRAM QUADRATICTRIANGLESIMPLEXEXAMPLE
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
   
-  NUMBER_GLOBAL_X_ELEMENTS=2
-  NUMBER_GLOBAL_Y_ELEMENTS=2
+  NUMBER_GLOBAL_X_ELEMENTS=3
+  NUMBER_GLOBAL_Y_ELEMENTS=3
       
   !Broadcast the number of elements in the X & Y directions to the other computational nodes
   CALL MPI_BCAST(NUMBER_GLOBAL_X_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)

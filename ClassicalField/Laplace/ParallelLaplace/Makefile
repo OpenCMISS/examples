@@ -65,7 +65,7 @@ endif
 
 EXAMPLE_PATH=ClassicalField/Laplace/
 
-EXAMPLE_NAME = Laplace
+EXAMPLE_NAME = ParallelLaplace
 
 include $(GLOBAL_ROOT)/NewExampleMakefile
 

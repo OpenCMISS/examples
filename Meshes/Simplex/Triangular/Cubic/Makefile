@@ -63,9 +63,9 @@ endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_PATH=ClassicalField/Laplace/
+EXAMPLE_PATH = Meshes/Simplex/Triangular/
 
-EXAMPLE_NAME = Laplace
+EXAMPLE_NAME = Cubic
 
 include $(GLOBAL_ROOT)/NewExampleMakefile
 

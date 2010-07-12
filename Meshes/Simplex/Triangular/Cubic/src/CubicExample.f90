@@ -1,7 +1,7 @@
 !> \file
-!> $Id: LinearTriangleSimplexExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id: CubicTriangleSimplexExample.f90 20 2007-05-28 20:22:52Z cpb $
 !> \author Chris Bradley
-!> \brief This is an example program to set up a generated mesh of quadratic Simplex triangle elements.
+!> \brief This is an example program to set up a generated mesh of cubic Simplex triangle elements.
 !>
 !> \section LICENSE
 !>
@@ -40,14 +40,14 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example Meshes/Simplex/Triangle/Linear/src/LinearExample.f90
-!! Example program to to set up a generated mesh of quadratic Simplex triangle elements.
-!! \htmlinclude Meshes/Simplex/Triangle/Linear/history.html
+!> \example Meshes/Simplex/Triangle/Cubic/src/CubicExample.f90
+!! Example program to to set up a generated mesh of cubic Simplex triangle elements.
+!! \htmlinclude Meshes/Simplex/Triangle/Cubic/history.html
 !!
 !<
 
 !> Main program
-PROGRAM LINEARTRIANGLESIMPLEXEXAMPLE
+PROGRAM CUBICTRIANGLESIMPLEXEXAMPLE
 
   USE OPENCMISS
   USE MPI
@@ -117,16 +117,14 @@ PROGRAM LINEARTRIANGLESIMPLEXEXAMPLE
 
   CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
 
-  CALL CMISSDiagnosticsSetOn(CMISSInDiagType,(/1,2,3,4,5/),"Diagnostics", &
-    & (/"MESH_TOPOLOGY_ELEMENTS_ADJACENT_ELEMENTS_CALCULATE", &
-    &   "MESH_TOPOLOGY_BOUNDARY_CALCULATE                  "/),Err)
+  CALL CMISSDiagnosticsSetOn(CMISSInDiagType,(/1,2,3,4,5/),"Diagnostics",(/"MESH_TOPOLOGY_ELEMENTS_CREATE_FINISH"/),Err)
 
   !Get the computational nodes information
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
   
-  NUMBER_GLOBAL_X_ELEMENTS=3
-  NUMBER_GLOBAL_Y_ELEMENTS=3
+  NUMBER_GLOBAL_X_ELEMENTS=2
+  NUMBER_GLOBAL_Y_ELEMENTS=2
       
   !Broadcast the number of elements in the X & Y directions to the other computational nodes
   CALL MPI_BCAST(NUMBER_GLOBAL_X_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
@@ -155,9 +153,9 @@ PROGRAM LINEARTRIANGLESIMPLEXEXAMPLE
   CALL CMISSBasisTypeSet(Basis,CMISSBasisSimplexType,Err)
   !Set the basis to be a triangular basis
   CALL CMISSBasisNumberOfXiSet(Basis,2,Err)
-  !Set the interpolation to be linear
-  CALL CMISSBasisInterpolationXiSet(Basis,(/CMISSBasisLinearSimplexInterpolation, &
-    & CMISSBasisLinearSimplexInterpolation/),Err)
+  !Set the interpolation to be cubic
+  CALL CMISSBasisInterpolationXiSet(Basis,(/CMISSBasisCubicSimplexInterpolation, &
+    & CMISSBasisCubicSimplexInterpolation/),Err)
   !Finish the creation of the basis
   CALL CMISSBasisCreateFinish(Basis,Err)
    
@@ -201,8 +199,8 @@ PROGRAM LINEARTRIANGLESIMPLEXEXAMPLE
   !Export the fields
   CALL CMISSFieldsTypeInitialise(Fields,Err)
   CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-  CALL CMISSFieldIONodesExport(Fields,"LinearTriangleSimplex","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields,"LinearTriangleSimplex","FORTRAN",Err)
+  CALL CMISSFieldIONodesExport(Fields,"CubicTriangleSimplex","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields,"CubicTriangleSimplex","FORTRAN",Err)
   CALL CMISSFieldsTypeFinalise(Fields,Err)
   
   !Finialise CMISS
@@ -212,4 +210,4 @@ PROGRAM LINEARTRIANGLESIMPLEXEXAMPLE
   
   STOP
   
-END PROGRAM LINEARTRIANGLESIMPLEXEXAMPLE
+END PROGRAM CUBICTRIANGLESIMPLEXEXAMPLE
