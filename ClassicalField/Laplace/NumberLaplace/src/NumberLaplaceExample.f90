@@ -112,6 +112,8 @@ PROGRAM NUMBERLAPLACEEXAMPLE
   !Intialise cmiss
   CALL CMISSInitialise(WorldCoordinateSystemUserNumber,WorldRegionUserNumber,Err)
  
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+
   NUMBER_GLOBAL_X_ELEMENTS=2
   NUMBER_GLOBAL_Y_ELEMENTS=2
   NUMBER_GLOBAL_Z_ELEMENTS=0

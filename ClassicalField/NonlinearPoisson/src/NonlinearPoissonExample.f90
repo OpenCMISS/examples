@@ -135,8 +135,8 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   !Output to a file
   CALL CMISSOutputSetOn("NonlinearPoisson",Err)
   
-  NUMBER_GLOBAL_X_ELEMENTS=1
-  NUMBER_GLOBAL_Y_ELEMENTS=1
+  NUMBER_GLOBAL_X_ELEMENTS=5
+  NUMBER_GLOBAL_Y_ELEMENTS=5
   NUMBER_GLOBAL_Z_ELEMENTS=0
   CALL MPI_COMM_SIZE(MPI_COMM_WORLD,NUMBER_OF_DOMAINS,MPI_IERROR)
 
@@ -173,9 +173,9 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
     !Set the basis to be a bilinear Lagrange basis
     CALL CMISSBasisNumberOfXiSet(Basis,2,Err)
-    CALL CMISSBasisInterpolationXiSet(Basis,(/CMISSBasisQuadraticLagrangeInterpolation, &
-      & CMISSBasisQuadraticLagrangeInterpolation/),Err)
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,(/3,3/),Err)
+    !CALL CMISSBasisInterpolationXiSet(Basis,(/CMISSBasisQuadraticLagrangeInterpolation, &
+    !  & CMISSBasisQuadraticLagrangeInterpolation/),Err)
+    !CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,(/3,3/),Err)
     !CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,(/4,4/),Err)
     !CALL CMISSBasisInterpolationXiSet(Basis,(/CMISSBasisCubicLagrangeInterpolation, &
     !  & CMISSBasisCubicLagrangeInterpolation/),Err)
@@ -314,7 +314,7 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   !CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianFDCalculated,Err)
   !Get the associated linear solver
   CALL CMISSSolverNewtonLinearSolverGet(Solver,LinearSolver,Err)
-  CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolver,300,Err)
+  CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolver,500,Err)
   !Finish the creation of the problem solver
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
 

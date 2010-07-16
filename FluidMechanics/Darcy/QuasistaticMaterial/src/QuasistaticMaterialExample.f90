@@ -255,6 +255,16 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   !================================================================================================================================
   !
 
+  !INITIALISE OPENCMISS
+
+  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
+
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+
+  !
+  !================================================================================================================================
+  !
+
   !PROBLEM CONTROL PANEL
 
   !Import cmHeart mesh information
@@ -309,7 +319,8 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   EQUATIONS_MAT_PROPERTIES_OUTPUT=CMISSEquationsNoOutput
   !Set time parameter
   LINEAR_SOLVER_DARCY_START_TIME=0.0_CMISSDP
-  LINEAR_SOLVER_DARCY_STOP_TIME=5.0_CMISSDP 
+!   LINEAR_SOLVER_DARCY_STOP_TIME=5.0_CMISSDP 
+  LINEAR_SOLVER_DARCY_STOP_TIME=1.0_CMISSDP 
   LINEAR_SOLVER_DARCY_TIME_INCREMENT=0.125_CMISSDP
   !Set result output parameter
   LINEAR_SOLVER_DARCY_OUTPUT_FREQUENCY=1
@@ -323,16 +334,6 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   RESTART_VALUE=3000_CMISSIntg !default: 30
   LINESEARCH_ALPHA=1.0_CMISSDP
 
-
-  !
-  !================================================================================================================================
-  !
-
-  !INITIALISE OPENCMISS
-
-  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
-
-  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
 
   !
   !================================================================================================================================

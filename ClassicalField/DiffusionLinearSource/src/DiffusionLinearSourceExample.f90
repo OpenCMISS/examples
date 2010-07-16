@@ -64,8 +64,8 @@ PROGRAM DIFFUSIONCONSTANTSOURCEEXAMPLE
 
   !Test program parameters
 
-  REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: WIDTH=2.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP/2.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: WIDTH=2.0_CMISSDP/2.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
   
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -138,9 +138,9 @@ PROGRAM DIFFUSIONCONSTANTSOURCEEXAMPLE
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  NUMBER_GLOBAL_X_ELEMENTS=10
-  NUMBER_GLOBAL_Y_ELEMENTS=20
-  NUMBER_GLOBAL_Z_ELEMENTS=30
+  NUMBER_GLOBAL_X_ELEMENTS=4
+  NUMBER_GLOBAL_Y_ELEMENTS=8
+  NUMBER_GLOBAL_Z_ELEMENTS=16
   NUMBER_OF_DOMAINS=1
 
 
@@ -180,9 +180,9 @@ PROGRAM DIFFUSIONCONSTANTSOURCEEXAMPLE
     ELSE
       !Set the basis to be a trilinear Lagrange basis
       CALL CMISSBasisNumberOfXiSet(Basis,3,Err)
-!     CALL CMISSBasisInterpolationXiSet(Basis,(/2,2, & 
-!       & 2/),Err)                         
-!     CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,(/4,4,4/),Err)
+     CALL CMISSBasisInterpolationXiSet(Basis,(/2,2, & 
+       & 2/),Err)                         
+     CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,(/3,3,3/),Err)
     ENDIF
     !Finish the creation of the basis
     CALL CMISSBasisCreateFinish(BASIS,Err)
@@ -309,7 +309,7 @@ PROGRAM DIFFUSIONCONSTANTSOURCEEXAMPLE
   !Get the control loop
   CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
   !Set the times
-  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,1.0001_CMISSDP,0.01_CMISSDP,Err)
+  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,1.0001_CMISSDP,0.001_CMISSDP,Err)
   !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
 

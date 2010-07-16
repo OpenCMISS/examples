@@ -142,8 +142,8 @@ PROGRAM DIFFUSIONEXAMPLE
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
-  NUMBER_GLOBAL_X_ELEMENTS=80
-  NUMBER_GLOBAL_Y_ELEMENTS=80
+  NUMBER_GLOBAL_X_ELEMENTS=10
+  NUMBER_GLOBAL_Y_ELEMENTS=10
   NUMBER_GLOBAL_Z_ELEMENTS=0
   NUMBER_OF_DOMAINS=NumberOfComputationalNodes
 
@@ -183,14 +183,14 @@ PROGRAM DIFFUSIONEXAMPLE
     !Set the basis to be a bilinear Lagrange basis
     !CALL CMISSBasisTypeSet(Basis,CMISSBasisLagrangeHermiteTPType,Err)
     CALL CMISSBasisNumberOfXiSet(Basis,2,Err)
-    !CALL CMISSBasisInterpolationXiSet(Basis,(/2,2/),Err)
-    !CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,(/4,4/),Err) 
+!    CALL CMISSBasisInterpolationXiSet(Basis,(/3,3/),Err)
+!    CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,(/4,4/),Err) 
   ELSE
     !Set the basis to be a trilinear Lagrange basis
     CALL CMISSBasisNumberOfXiSet(Basis,3,Err)
   ENDIF
   !Finish the creation of the basis
-  CALL CMISSBasisCreateFinish(BASIS,Err)
+  CALL CMISSBasisCreateFinish(Basis,Err)
 
   !Start the creation of a generated mesh in the region
   CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
@@ -344,7 +344,7 @@ PROGRAM DIFFUSIONEXAMPLE
   !Get the control loop
   CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
   !Set the times
-  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,1.001_CMISSDP,0.05_CMISSDP,Err)
+  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,1.001_CMISSDP,0.001_CMISSDP,Err)
   !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
 
@@ -391,15 +391,15 @@ PROGRAM DIFFUSIONEXAMPLE
   CALL CMISSProblemSolve(Problem,Err)
 
   !Output Analytic analysis
-  Call CMISSAnalyticAnalysisOutput(DependentField,"DiffusionAnalytics",Err)
+  Call CMISSAnalyticAnalysisOutput(DependentField,"DiffusionAnalytics_x4_y4_q_T1",Err)
 
 
   EXPORT_FIELD=.TRUE.
   IF(EXPORT_FIELD) THEN
     CALL CMISSFieldsTypeInitialise(Fields,Err)
     CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"Diffusion","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"Diffusion","FORTRAN",Err)
+    CALL CMISSFieldIONodesExport(Fields,"Diffusion_x4_y4_q_T1","FORTRAN",Err)
+    CALL CMISSFieldIOElementsExport(Fields,"Diffusion_x4_y4_q_T1","FORTRAN",Err)
     CALL CMISSFieldsTypeFinalise(Fields,Err)
 
   ENDIF

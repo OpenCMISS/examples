@@ -59,12 +59,13 @@ def logExample(path) :
    else :
      f.write("<td><font color='red'>Fail</font></td>")
    f.write("<td>"+intelexamplelog[2]+"</td></tr>")
-   f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/"+path+"/test1-intel'>Example Test</a></td>")
-   if(inteltestlog[1].startswith('success')) :
-     f.write("<td><font color='green'>Success</font></td>")
-   else :
-     f.write("<td><font color='red'>Fail</font></td>")
-   f.write("<td>"+inteltestlog[2]+"</td></tr>")
+   if(len(inteltestlog)>1) :
+     f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/"+path+"/test1-intel'>Example Test</a></td>")
+     if(inteltestlog[1].startswith('success')) :
+       f.write("<td><font color='green'>Success</font></td>")
+     else :
+       f.write("<td><font color='red'>Fail</font></td>")
+     f.write("<td>"+inteltestlog[2]+"</td></tr>")
    
    f.write("<tr><td><b>GNU Build</b></td><td/><td/></tr>")
    f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/build-gnu'>OpenCMISS Library</a></td>")
@@ -79,38 +80,20 @@ def logExample(path) :
    else :
      f.write("<td><font color='red'>Fail</font></td>")
    f.write("<td>"+gnuexamplelog[2]+"</td></tr>")
-   f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/"+path+"/test1-gnu'>Example Test</a></td>")
-   if(gnutestlog[1].startswith('success')) :
-     f.write("<td><font color='green'>Success</font></td>")
-   else :
-     f.write("<td><font color='red'>Fail</font></td>")
-   f.write("<td>"+gnutestlog[2]+"</td></tr>")
+   if(len(gnutestlog)>1) :
+     f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/"+path+"/test1-gnu'>Example Test</a></td>")
+     if(gnutestlog[1].startswith('success')) :
+       f.write("<td><font color='green'>Success</font></td>")
+     else :
+       f.write("<td><font color='red'>Fail</font></td>")
+     f.write("<td>"+gnutestlog[2]+"</td></tr>")
    
    f.write("</table>")
    f.close()
    return;
 
-#logExample(path="ClassicalField/AdvectionDiffusion")
-logExample(path="ClassicalField/AdvectionDiffusion/AdvectionDiffusionIO")
-logExample(path="ClassicalField/AdvectionDiffusion/StaticAdvectionDiffusion")
-logExample(path="ClassicalField/Diffusion")
-logExample(path="ClassicalField/DiffusionConstantSource")
-logExample(path="ClassicalField/NonlinearPoisson")
-logExample(path="ClassicalField/Laplace/AnalyticLaplace")
-logExample(path="ClassicalField/Laplace/Laplace") 
-logExample(path="ClassicalField/Laplace/NumberLaplace")
-  
-logExample(path="FluidMechanics/Stokes/ALE")
-logExample(path="FluidMechanics/Stokes/Static")
-logExample(path="FluidMechanics/Stokes/Dynamic")
-logExample(path="FluidMechanics/NavierStokes/ALE")
-logExample(path="FluidMechanics/NavierStokes/Static")
-logExample(path="FluidMechanics/NavierStokes/Dynamic")
-
-logExample(path="FluidMechanics/Darcy/Analytic")
-logExample(path="FluidMechanics/Darcy/Static")
-logExample(path="FluidMechanics/Darcy/QuasistaticMaterial")
-
-logExample(path="MultiPhysics/Poroelasticity/FiniteElasticityDarcy/SameRegionSameMesh")
-logExample(path="MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDarcySharedVars")
-logExample(path="MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDarcySharedVarsTimeBCs")
+for log in logs :
+  if log.startswith('intel_') :
+    paths=log.split('|');
+    if(paths[0].endswith('_build') and (not log.startswith('intel_library_build')))  :
+      logExample(path=paths[0].replace('intel_','').replace('_build',''));

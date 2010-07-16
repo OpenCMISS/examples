@@ -236,6 +236,16 @@ PROGRAM DARCYANALYTICEXAMPLE
 
   !PROBLEM CONTROL PANEL
 
+  !INITIALISE OPENCMISS
+
+  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
+
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+
+  !
+  !================================================================================================================================
+  !
+
   !Import cmHeart mesh information
   CALL FLUID_MECHANICS_IO_READ_CMHEART(CM,Err)  
   BASIS_NUMBER_GEOMETRY=CM%ID_M
@@ -284,11 +294,11 @@ PROGRAM DARCYANALYTICEXAMPLE
   EQUATIONS_DARCY_OUTPUT=CMISSEquationsNoOutput
   !Set solver parameters
   LINEAR_SOLVER_DARCY_DIRECT_FLAG=.FALSE.
-  RELATIVE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-05_CMISSDP
-  ABSOLUTE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-10_CMISSDP
+  RELATIVE_TOLERANCE=1.0E-14_CMISSDP !default: 1.0E-05_CMISSDP
+  ABSOLUTE_TOLERANCE=1.0E-14_CMISSDP !default: 1.0E-10_CMISSDP
   DIVERGENCE_TOLERANCE=1.0E5_CMISSDP !default: 1.0E5
   MAXIMUM_ITERATIONS=10000_CMISSIntg !default: 100000
-  RESTART_VALUE=3000_CMISSIntg !default: 30
+  RESTART_VALUE=30_CMISSIntg !default: 30
   LINESEARCH_ALPHA=1.0_CMISSDP
 
   !
@@ -324,15 +334,6 @@ PROGRAM DARCYANALYTICEXAMPLE
   IF(INPUT_TYPE==1.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMISSEquationsSetDarcyThreeDim1
   IF(INPUT_TYPE==2.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMISSEquationsSetDarcyThreeDim2
   IF(INPUT_TYPE==3.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMISSEquationsSetDarcyThreeDim3
-
-  !
-  !================================================================================================================================
-  !
-  !INITIALISE OPENCMISS
-
-  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
-
-  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
 
   !
   !================================================================================================================================
