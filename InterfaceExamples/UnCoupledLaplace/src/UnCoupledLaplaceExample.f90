@@ -73,28 +73,20 @@ PROGRAM COUPLEDLAPLACE
   INTEGER(CMISSIntg), PARAMETER :: Region2UserNumber=4
   INTEGER(CMISSIntg), PARAMETER :: Basis1UserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: Basis2UserNumber=6
-  INTEGER(CMISSIntg), PARAMETER :: InterfaceBasisUserNumber=7
   INTEGER(CMISSIntg), PARAMETER :: GeneratedMesh1UserNumber=8
   INTEGER(CMISSIntg), PARAMETER :: GeneratedMesh2UserNumber=9
-  INTEGER(CMISSIntg), PARAMETER :: InterfaceGeneratedMeshUserNumber=10
   INTEGER(CMISSIntg), PARAMETER :: Mesh1UserNumber=11
   INTEGER(CMISSIntg), PARAMETER :: Mesh2UserNumber=12
-  INTEGER(CMISSIntg), PARAMETER :: InterfaceMeshUserNumber=13
   INTEGER(CMISSIntg), PARAMETER :: Decomposition1UserNumber=14
   INTEGER(CMISSIntg), PARAMETER :: Decomposition2UserNumber=15
-  INTEGER(CMISSIntg), PARAMETER :: InterfaceDecompositionUserNumber=16
   INTEGER(CMISSIntg), PARAMETER :: GeometricField1UserNumber=17
   INTEGER(CMISSIntg), PARAMETER :: GeometricField2UserNumber=18
-  INTEGER(CMISSIntg), PARAMETER :: InterfaceGeometricFieldUserNumber=19
   INTEGER(CMISSIntg), PARAMETER :: EquationsSet1UserNumber=20
   INTEGER(CMISSIntg), PARAMETER :: EquationsSet2UserNumber=21
   INTEGER(CMISSIntg), PARAMETER :: DependentField1UserNumber=22
   INTEGER(CMISSIntg), PARAMETER :: DependentField2UserNumber=23
-  INTEGER(CMISSIntg), PARAMETER :: InterfaceUserNumber=24
-  INTEGER(CMISSIntg), PARAMETER :: InterfaceConditionUserNumber=25
   INTEGER(CMISSIntg), PARAMETER :: LagrangeFieldUserNumber=26
   INTEGER(CMISSIntg), PARAMETER :: CoupledProblemUserNumber=27
-  INTEGER(CMISSIntg), PARAMETER :: InterfaceMappingBasisUserNumber=28
  
   !Program types
   
@@ -108,27 +100,22 @@ PROGRAM COUPLEDLAPLACE
   INTEGER(CMISSIntg) :: EquationsSet1Index,EquationsSet2Index
   INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
   INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain
-  INTEGER(CMISSIntg) :: InterfaceConditionIndex
   INTEGER(CMISSIntg) :: Mesh1Index,Mesh2Index
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
 
   !CMISS variables
 
-  TYPE(CMISSBasisType) :: Basis1,Basis2,InterfaceBasis,InterfaceMappingBasis
+  TYPE(CMISSBasisType) :: Basis1,Basis2
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions1,BoundaryConditions2
   TYPE(CMISSCoordinateSystemType) :: CoordinateSystem1,CoordinateSystem2,WorldCoordinateSystem
-  TYPE(CMISSDecompositionType) :: Decomposition1,Decomposition2,InterfaceDecomposition
+  TYPE(CMISSDecompositionType) :: Decomposition1,Decomposition2
   TYPE(CMISSEquationsType) :: Equations1,Equations2
   TYPE(CMISSEquationsSetType) :: EquationsSet1,EquationsSet2
-  TYPE(CMISSFieldType) :: GeometricField1,GeometricField2,InterfaceGeometricField,DependentField1, &
+  TYPE(CMISSFieldType) :: GeometricField1,GeometricField2,DependentField1, &
     & DependentField2,LagrangeField
-  TYPE(CMISSFieldsType) :: Fields1,Fields2,InterfaceFields
-  TYPE(CMISSGeneratedMeshType) :: GeneratedMesh1,GeneratedMesh2,InterfaceGeneratedMesh
-  TYPE(CMISSInterfaceType) :: Interface
-  TYPE(CMISSInterfaceConditionType) :: InterfaceCondition
-  TYPE(CMISSInterfaceEquationsType) :: InterfaceEquations
-  TYPE(CMISSInterfaceMeshConnectivityType) :: InterfaceMeshConnectivity
-  TYPE(CMISSMeshType) :: Mesh1,Mesh2,InterfaceMesh
+  TYPE(CMISSFieldsType) :: Fields1,Fields2
+  TYPE(CMISSGeneratedMeshType) :: GeneratedMesh1,GeneratedMesh2
+  TYPE(CMISSMeshType) :: Mesh1,Mesh2
   TYPE(CMISSProblemType) :: CoupledProblem
   TYPE(CMISSRegionType) :: Region1,Region2,WorldRegion
   TYPE(CMISSSolverType) :: CoupledSolver
@@ -306,106 +293,6 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSMeshTypeInitialise(Mesh2,Err)
   CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh2,Mesh2UserNumber,Mesh2,Err)
 
-  !Create an interface between the two meshes
-  PRINT *, ' == >> CREATING INTERFACE << == '
-  CALL CMISSInterfaceTypeInitialise(Interface,Err)
-  CALL CMISSInterfaceCreateStart(InterfaceUserNumber,WorldRegion,Interface,Err)
-!  CALL CMISSInterfaceLabelSet(Interface,"Interface",Err)
-!   !Set the regions coordinate system to the RC coordinate system that we have created
-!   CALL CMISSInterfaceCoordinateSystemSet(Interface,InterfaceCoordinateSystem,Err)
-  !Add in the two meshes
-  CALL CMISSInterfaceMeshAdd(Interface,Mesh1,Mesh1Index,Err)
-  CALL CMISSInterfaceMeshAdd(Interface,Mesh2,Mesh2Index,Err)
-  !Finish creating the interface
-  CALL CMISSInterfaceCreateFinish(INTERFACE,Err)
-
-  !Start the creation of a (bi)-linear-Lagrange basis
-  PRINT *, ' == >> CREATING INTERFACE BASIS << == '
-  CALL CMISSBasisTypeInitialise(InterfaceBasis,Err)
-  CALL CMISSBasisCreateStart(InterfaceBasisUserNumber,InterfaceBasis,Err)
-  !Set the basis to be a linear Lagrange basis
-  CALL CMISSBasisNumberOfXiSet(InterfaceBasis,1,Err)
-  CALL CMISSBasisInterpolationXiSet(InterfaceBasis,(/CMISSBasisLinearLagrangeInterpolation/),Err)
-  !Finish the creation of the basis
-  CALL CMISSBasisCreateFinish(InterfaceBasis,Err)
-
-  !Start the creation of a (bi)-linear-Lagrange basis
-  PRINT *, ' == >> CREATING INTERFACE BASIS << == '
-  CALL CMISSBasisTypeInitialise(InterfaceMappingBasis,Err)
-  CALL CMISSBasisCreateStart(InterfaceMappingBasisUserNumber,InterfaceMappingBasis,Err)
-  !Set the basis to be a linear Lagrange basis
-  CALL CMISSBasisNumberOfXiSet(InterfaceMappingBasis,1,Err)
-  CALL CMISSBasisInterpolationXiSet(InterfaceMappingBasis,(/CMISSBasisLinearLagrangeInterpolation/),Err)
-  !Finish the creation of the basis
-  CALL CMISSBasisCreateFinish(InterfaceMappingBasis,Err)
-  
-  !Start the creation of a generated mesh for the interface
-  PRINT *, ' == >> CREATING INTERFACE GENERATED MESH << == '
-  CALL CMISSGeneratedMeshTypeInitialise(InterfaceGeneratedMesh,Err)
-  CALL CMISSGeneratedMeshCreateStart(InterfaceGeneratedMeshUserNumber,Interface,InterfaceGeneratedMesh,Err)
-  !Set up a regular x*y*z mesh
-  CALL CMISSGeneratedMeshTypeSet(InterfaceGeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
-  !Set the default basis
-  CALL CMISSGeneratedMeshBasisSet(InterfaceGeneratedMesh,InterfaceBasis,Err)   
-  !Define the mesh on the interface
-  CALL CMISSGeneratedMeshOriginSet(InterfaceGeneratedMesh,(/WIDTH,0.0_CMISSDP,0.0_CMISSDP/),Err)
-  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    CALL CMISSGeneratedMeshExtentSet(InterfaceGeneratedMesh,(/0.0_CMISSDP,HEIGHT,0.0_CMISSDP/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(InterfaceGeneratedMesh,(/NUMBER_GLOBAL_Y_ELEMENTS/),Err)
-  ELSE
-    CALL CMISSGeneratedMeshExtentSet(InterfaceGeneratedMesh,(/0.0_CMISSDP,HEIGHT,LENGTH/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(InterfaceGeneratedMesh,(/NUMBER_GLOBAL_Y_ELEMENTS, &
-      & NUMBER_GLOBAL_Z_ELEMENTS/),Err)
-  ENDIF    
-  !Finish the creation of a generated mesh in interface
-  CALL CMISSMeshTypeInitialise(InterfaceMesh,Err)
-  CALL CMISSGeneratedMeshCreateFinish(InterfaceGeneratedMesh,InterfaceMeshUserNumber,InterfaceMesh,Err)
-
-  !Couple the interface meshes
-  PRINT *, ' == >> CREATING INTERFACE MESHES CONNECTIVITY << == '
-  CALL CMISSInterfaceMeshConnectivityTypeInitialise(InterfaceMeshConnectivity,Err)
-  CALL CMISSInterfaceMeshConnectivityCreateStart(Interface,InterfaceMesh,InterfaceMeshConnectivity,Err)
-  CALL CMISSInterfaceMeshConnectivitySetBasis(InterfaceMeshConnectivity,InterfaceMappingBasis,Err)
-  ! Setting the map for element 1
-  CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,1,Mesh1Index,2,Err)
-  XI = (/ 1.0_CMISSDP , 0.0_CMISSDP /)
-  DO I = 1,2
-     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,Mesh1Index,2,1,I,XI,Err)
-  END DO
-  XI = (/ 1.0_CMISSDP , 1.0_CMISSDP /)
-  DO I = 1,2
-     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,Mesh1Index,2,2,I,XI,Err)
-  END DO
-  CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,1,Mesh2Index,1,Err)
-  XI = (/ 0.0_CMISSDP , 0.0_CMISSDP /)
-  DO I = 1,2
-     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,Mesh2Index,1,1,I,XI,Err)
-  END DO
-  XI = (/ 0.0_CMISSDP , 0.5_CMISSDP /)
-  DO I = 1,2
-     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,Mesh2Index,1,2,I,XI,Err)
-  END DO
-  ! Setting the map for element 2
-  CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,2,Mesh1Index,4,Err)
-  XI = (/ 1.0_CMISSDP , 0.0_CMISSDP /)
-  DO I = 1,2
-     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,2,Mesh1Index,4,1,I,XI,Err)
-  END DO
-  XI = (/ 1.0_CMISSDP , 1.0_CMISSDP /)
-  DO I = 1,2
-     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,2,Mesh1Index,4,2,I,XI,Err)
-  END DO
-  CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,2,Mesh2Index,1,Err)
-  XI = (/ 0.0_CMISSDP , 0.5_CMISSDP /)
-  DO I = 1,2
-     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,2,Mesh2Index,1,1,I,XI,Err)
-  END DO
-  XI = (/ 0.0_CMISSDP , 1.0_CMISSDP /)
-  DO I = 1,2
-     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,2,Mesh2Index,1,2,I,XI,Err)
-  END DO
-  CALL CMISSInterfaceMeshConnectivityCreateFinish(InterfaceMeshConnectivity,Err)
-
   !Create a decomposition for mesh1
   PRINT *, ' == >> CREATING MESH(1) DECOMPOSITION << == '
   CALL CMISSDecompositionTypeInitialise(Decomposition1,Err)
@@ -426,16 +313,6 @@ PROGRAM COUPLEDLAPLACE
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition2,Err)
   
-  !Create a decomposition for the interface mesh
-  PRINT *, ' == >> CREATING INTERFACE DECOMPOSITION << == '
-  CALL CMISSDecompositionTypeInitialise(InterfaceDecomposition,Err)
-  CALL CMISSDecompositionCreateStart(InterfaceDecompositionUserNumber,InterfaceMesh,InterfaceDecomposition,Err)
-  !Set the decomposition to be a general decomposition with the specified number of domains
-  CALL CMISSDecompositionTypeSet(InterfaceDecomposition,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(InterfaceDecomposition,NUMBER_OF_DOMAINS,Err)
-  !Finish the decomposition
-  CALL CMISSDecompositionCreateFinish(InterfaceDecomposition,Err)
-
   !Start to create a default (geometric) field on the first region
   PRINT *, ' == >> CREATING MESH(1) GEOMETRIC FIELD << == '
   CALL CMISSFieldTypeInitialise(GeometricField1,Err)
@@ -564,61 +441,7 @@ PROGRAM COUPLEDLAPLACE
   ENDIF
   !Finish the creation of the equations set boundary conditions
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet2,Err)
- 
-
-  !Start to create a default (geometric) field on the Interface
-  PRINT *, ' == >> CREATING INTERFACE GEOMETRIC FIELD << == '
-  CALL CMISSFieldTypeInitialise(InterfaceGeometricField,Err)
-  CALL CMISSFieldCreateStart(InterfaceGeometricFieldUserNumber,Interface,InterfaceGeometricField,Err)
-  !Set the decomposition to use
-  CALL CMISSFieldMeshDecompositionSet(InterfaceGeometricField,InterfaceDecomposition,Err)
-  !Set the domain to be used by the field components.
-  CALL CMISSFieldComponentMeshComponentSet(InterfaceGeometricField,CMISSFieldUVariableType,1,1,Err)
-  CALL CMISSFieldComponentMeshComponentSet(InterfaceGeometricField,CMISSFieldUVariableType,2,1,Err)
-  IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
-    CALL CMISSFieldComponentMeshComponentSet(InterfaceGeometricField,CMISSFieldUVariableType,3,1,Err)
-  ENDIF
-  !Finish creating the first field
-  CALL CMISSFieldCreateFinish(InterfaceGeometricField,Err)
-
-  !Update the geometric field parameters for the interface field
-  CALL CMISSGeneratedMeshGeometricParametersCalculate(InterfaceGeometricField,InterfaceGeneratedMesh,Err)
-
-  !Create an interface condition between the two meshes
-  PRINT *, ' == >> CREATING INTERFACE CONDITIONS << == '
-  CALL CMISSInterfaceConditionTypeInitialise(InterfaceCondition,Err)
-  CALL CMISSInterfaceConditionCreateStart(InterfaceConditionUserNumber,Interface,InterfaceGeometricField, &
-    & InterfaceCondition,Err)
-  !Specify the method for the interface condition
-  CALL CMISSInterfaceConditionMethodSet(InterfaceCondition,CMISSInterfaceConditionLagrangeMultipliers,Err)
-  !Specify the type of interface condition operator
-  CALL CMISSInterfaceConditionOperatorSet(InterfaceCondition,CMISSInterfaceConditionFieldContinuityOperator,Err)
-  !Add in the dependent variables from the equations sets
-  CALL CMISSInterfaceConditionDependentVariableAdd(InterfaceCondition,Mesh1Index,EquationsSet1, &
-    & CMISSFieldUVariableType,Err)
-  CALL CMISSInterfaceConditionDependentVariableAdd(InterfaceCondition,Mesh2Index,EquationsSet2, &
-    & CMISSFieldUVariableType,Err)
-  !Finish creating the interface condition
-  CALL CMISSInterfaceConditionCreateFinish(InterfaceCondition,Err)
-
-  !Create the Lagrange multipliers field
-  PRINT *, ' == >> CREATING INTERFACE LAGRANGE FIELD << == '
-  CALL CMISSFieldTypeInitialise(LagrangeField,Err)
-  CALL CMISSInterfaceConditionLagrangeFieldCreateStart(InterfaceCondition,LagrangeFieldUserNumber,LagrangeField,Err)
-  !Finish the Lagrange multipliers field
-  CALL CMISSInterfaceConditionLagrangeFieldCreateFinish(InterfaceCondition,Err)
-
-  !Create the interface condition equations
-  PRINT *, ' == >> CREATING INTERFACE EQUATIONS << == '
-  CALL CMISSInterfaceEquationsTypeInitialise(InterfaceEquations,Err)
-  CALL CMISSInterfaceConditionEquationsCreateStart(InterfaceCondition,InterfaceEquations,Err)
-  !Set the interface equations sparsity
-  CALL CMISSInterfaceEquationsSparsitySet(InterfaceEquations,CMISSEquationsSparseMatrices,Err)
-  !Set the interface equations output
-  CALL CMISSInterfaceEquationsOutputTypeSet(InterfaceEquations,CMISSEquationsMatrixOutput,Err)
-  !Finish creating the interface equations
-  CALL CMISSInterfaceConditionEquationsCreateFinish(InterfaceCondition,Err)
-  
+   
   !Start the creation of a coupled problem.
   PRINT *, ' == >> CREATING PROBLEM << == '
   CALL CMISSProblemTypeInitialise(CoupledProblem,Err)
@@ -665,8 +488,6 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSSolverEquationsEquationsSetAdd(CoupledSolverEquations,EquationsSet1,EquationsSet1Index,Err)
   !Add in the second equations set
   CALL CMISSSolverEquationsEquationsSetAdd(CoupledSolverEquations,EquationsSet2,EquationsSet2Index,Err)
-  !Add in the interface condition
-  CALL CMISSSolverEquationsInterfaceConditionAdd(CoupledSolverEquations,InterfaceCondition,InterfaceConditionIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(CoupledProblem,Err)
 
@@ -686,11 +507,6 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSFieldIONodesExport(Fields2,"TwoRegion_2","FORTRAN",Err)
   CALL CMISSFieldIOElementsExport(Fields2,"TwoRegion_2","FORTRAN",Err)
   CALL CMISSFieldsTypeFinalise(Fields2,Err)
-  CALL CMISSFieldsTypeInitialise(InterfaceFields,Err)
-  CALL CMISSFieldsTypeCreate(INTERFACE,InterfaceFields,Err)
-  CALL CMISSFieldIONodesExport(InterfaceFields,"TwoRegion_Interface","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(InterfaceFields,"TwoRegion_Interface","FORTRAN",Err)
-  CALL CMISSFieldsTypeFinalise(InterfaceFields,Err)
   
   !Finialise CMISS
   CALL CMISSFinalise(Err)
