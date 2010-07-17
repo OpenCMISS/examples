@@ -381,7 +381,7 @@ PROGRAM COUPLEDLAPLACE
   DO I = 1,2
      CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,Mesh2Index,1,1,I,XI,Err)
   END DO
-  XI = (/ 0.0_CMISSDP , 0.5_CMISSDP /)
+  XI = (/ 0.0_CMISSDP , 1.0_CMISSDP /)
   DO I = 1,2
      CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,Mesh2Index,1,2,I,XI,Err)
   END DO
@@ -395,14 +395,14 @@ PROGRAM COUPLEDLAPLACE
   DO I = 1,2
      CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,2,Mesh1Index,4,2,I,XI,Err)
   END DO
-  CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,2,Mesh2Index,1,Err)
-  XI = (/ 0.0_CMISSDP , 0.5_CMISSDP /)
+  CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,2,Mesh2Index,3,Err)
+  XI = (/ 0.0_CMISSDP , 0.0_CMISSDP /)
   DO I = 1,2
-     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,2,Mesh2Index,1,1,I,XI,Err)
+     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,2,Mesh2Index,3,1,I,XI,Err)
   END DO
   XI = (/ 0.0_CMISSDP , 1.0_CMISSDP /)
   DO I = 1,2
-     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,2,Mesh2Index,1,2,I,XI,Err)
+     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,2,Mesh2Index,3,2,I,XI,Err)
   END DO
   CALL CMISSInterfaceMeshConnectivityCreateFinish(InterfaceMeshConnectivity,Err)
 
