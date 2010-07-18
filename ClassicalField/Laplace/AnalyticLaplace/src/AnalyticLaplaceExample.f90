@@ -260,7 +260,7 @@ CONTAINS
    CALL TEST_FRAMEWORK_GRADIENT_VALUE_GET(X_VALUES,Y_VALUES,VALUE)
    CALL TEST_FRAMEWORK_ASSERT_EQUALS(4.0_CMISSDP,VALUE,1.0_CMISSDP,Err)
    IF (Err/=0) THEN
-     WRITE(*,'(A,F3.5)') "Analytic Laplace Example Testcase3 - bicubic Hermite failure: Convergence should be around 4.0" &
+     WRITE(*,'(A,F6.3)') "Analytic Laplace Example Testcase3 - bicubic Hermite failure: Convergence should be around 4.0" &
        & //", but it was ", VALUE
    ENDIF
    WRITE(*,'(A)') "Analytic Laplace Example Testcase3 - bicubic Hermite is successfully completed."
