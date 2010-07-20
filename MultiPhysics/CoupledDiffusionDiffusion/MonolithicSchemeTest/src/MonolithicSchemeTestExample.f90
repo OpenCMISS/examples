@@ -1,7 +1,7 @@
 !> \file
-!> $Id: CoupledDiffusionAdvectionDiffusionExample.f90 20 2009-05-28 20:22:52Z chrm76 $
+!> $Id: MonolithicSchemeTestExample.f90 20 2009-05-28 20:22:52Z chrm76 $
 !> \authors Andrew Cookson
-!> \brief This is an example program to solve a coupled diffusion & advection-diffusion equation using openCMISS calls.
+!> \brief This is an example program to solve coupled multi-compartment diffusion equations in monolithic scheme using openCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -40,21 +40,21 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example MultiPhysics/CoupledDiffusionDiffusion/src/CoupledDiffusionDiffusionExample.f90
-!! Example program to solve coupled CoupledSourceDiffusionDiffusion equations using OpenCMISS calls.
+!> \example MultiPhysics/CoupledDiffusionDiffusion/MonolithicSchemeTest/src/MonolithicSchemeTestExample.f90
+!! Example program to solve coupled MonolithicSchemeTest equations using OpenCMISS calls.
 !! \par Latest Builds:
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/MultiPhysics/CoupledDiffusionDiffusion/build-intel'>Linux Intel Build</a>
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/MultiPhysics/CoupledDiffusionDiffusion/build-intel'>Linux GNU Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/MultiPhysics/CoupledDiffusionDiffusion/MonolithicSchemeTest/build-intel'>Linux Intel Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/MultiPhysics/CoupledDiffusionDiffusion/MonolithicSchemeTest/build-intel'>Linux GNU Build</a>
 !!
 !<
 
 ! ! 
-! !  This example considers a volume coupled diffusion & advection-diffusion problem - using a *shared* dependent field.
-! !  The equations are solved in a partitioned manner currently.
+! !  This example considers a volume coupled multi-compartment diffusion model, as a means of testing the monolithic assembly of
+! !  such a system of equations, for use in more complicated problem in future.
 
 !> Main program
 
-PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
+PROGRAM MONOLITHICSCHEMETESTEXAMPLE
 
   !
   !================================================================================================================================
@@ -86,7 +86,6 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=4
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=6   !combined diffusion & advection-diffusion
-!  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberDiffusion=7
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberAdvectionDiffusion=8
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDiffusion=9
   INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumberAdvectionDiffusion=10
@@ -112,6 +111,8 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
   !Program variables
 
   INTEGER(CMISSIntg) :: NUMBER_OF_DIMENSIONS
+
+  INTEGER(CMISSIntg) :: NUMBER_OF_COMPARTMENTS
   
   INTEGER(CMISSIntg) :: BASIS_TYPE
   INTEGER(CMISSIntg) :: BASIS_NUMBER_GEOMETRY
@@ -1029,8 +1030,8 @@ WRITE(*,'(A)') "Solver two equations got."
     WRITE(*,'(A)') "Exporting fields..."
     CALL CMISSFieldsTypeInitialise(Fields,Err)
     CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"CoupledSourceDiffusionAdvectionDiffusion","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"CoupledSourceDiffusionAdvectionDiffusion","FORTRAN",Err)
+    CALL CMISSFieldIONodesExport(Fields,"MonolithicMultiCompDiffusionTest","FORTRAN",Err)
+    CALL CMISSFieldIOElementsExport(Fields,"MonolithicMultiCompDiffusionTest","FORTRAN",Err)
     CALL CMISSFieldsTypeFinalise(Fields,Err)
     WRITE(*,'(A)') "Field exported!"
   ENDIF
@@ -1043,4 +1044,4 @@ WRITE(*,'(A)') "Solver two equations got."
   
   STOP
 
-END PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
+END PROGRAM MONOLITHICSCHEMETESTEXAMPLE
