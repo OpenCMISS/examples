@@ -249,13 +249,13 @@ PROGRAM COUPLEDLAPLACE
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
     !Set the basis to be a bilinear Lagrange basis
     CALL CMISSBasisNumberOfXiSet(Basis2,2,Err)
-    CALL CMISSBasisInterpolationXiSet(Basis2,(/CMISSBasisQuadraticLagrangeInterpolation, &
-      & CMISSBasisQuadraticLagrangeInterpolation/),Err)
+!    CALL CMISSBasisInterpolationXiSet(Basis2,(/CMISSBasisQuadraticLagrangeInterpolation, &
+!      & CMISSBasisQuadraticLagrangeInterpolation/),Err)
   ELSE
     !Set the basis to be a trilinear Lagrange basis
     CALL CMISSBasisNumberOfXiSet(Basis2,3,Err)
-    CALL CMISSBasisInterpolationXiSet(Basis2,(/CMISSBasisQuadraticLagrangeInterpolation, &
-      & CMISSBasisQuadraticLagrangeInterpolation,CMISSBasisQuadraticLagrangeInterpolation/),Err)
+!    CALL CMISSBasisInterpolationXiSet(Basis2,(/CMISSBasisQuadraticLagrangeInterpolation, &
+!      & CMISSBasisQuadraticLagrangeInterpolation,CMISSBasisQuadraticLagrangeInterpolation/),Err)
   ENDIF
   !Finish the creation of the basis
   CALL CMISSBasisCreateFinish(Basis2,Err)
@@ -554,6 +554,7 @@ PROGRAM COUPLEDLAPLACE
   !Set the last node to 1.0
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
     LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS*2+1)*(NUMBER_GLOBAL_Y_ELEMENTS*2+1)
+    LastNodeNumber=9
   ELSE
     LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS*2+1)*(NUMBER_GLOBAL_Y_ELEMENTS*2+1)*(NUMBER_GLOBAL_Z_ELEMENTS*2+1)
   ENDIF
