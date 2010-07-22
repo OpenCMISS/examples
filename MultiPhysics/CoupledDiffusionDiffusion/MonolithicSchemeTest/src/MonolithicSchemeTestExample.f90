@@ -565,6 +565,8 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
     CALL CMISSBasisCreateFinish(BasisConcTwo,Err)
   ENDIF
 
+    BasisConcThree=BasisGeometry
+
   !
   !================================================================================================================================
   !
@@ -704,13 +706,12 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   !================================================================================================================================
   !
   !EQUATIONS SETS
-
   !Create the equations set for diffusion_one
   CALL CMISSEquationsSetTypeInitialise(EquationsSetDiffusionOne,Err)
   CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDiffusionOne,Region,GeometricField,EquationsSetDiffusionOne,Err)
   !Set the equations set to be a constant source diffusion problem
   CALL CMISSEquationsSetSpecificationSet(EquationsSetDiffusionOne,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetCoupledSourceDiffusionDiffusionSubtype,Err)
+    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetMultiCompTransportDiffusionSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetDiffusionOne,Err)
   !Create the equations set for diffusion_two
@@ -718,7 +719,7 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDiffusionTwo,Region,GeometricField,EquationsSetDiffusionTwo,Err)
   !Set the equations set to be a constant source diffusion problem
   CALL CMISSEquationsSetSpecificationSet(EquationsSetDiffusionTwo,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetCoupledSourceDiffusionDiffusionSubtype,Err)
+    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetMultiCompTransportDiffusionSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetDiffusionTwo,Err)
   !Create the equations set for diffusion_three
@@ -726,7 +727,7 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDiffusionThree,Region,GeometricField,EquationsSetDiffusionThree,Err)
   !Set the equations set to be a constant source diffusion problem
   CALL CMISSEquationsSetSpecificationSet(EquationsSetDiffusionThree,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetCoupledSourceDiffusionDiffusionSubtype,Err)
+    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetMultiCompTransportDiffusionSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetDiffusionThree,Err)
 
@@ -833,13 +834,19 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   !-------------------------------------------------------------------------------------
   ! INITIALISE DEPENDENT FIELDS
 
+
 !   !Initialise dependent field (concentration one components)
-!   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-!     & 1,INITIAL_FIELD_ADVECTION_DIFFUSION,Err)
-! 
+!   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldU1VariableType,CMISSFieldValuesSetType, & 
+!     & 1,INITIAL_FIELD_DIFFUSION_ONE,Err)
+
 !   !Initialise dependent field (concentration two components)
-!   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldVVariableType,CMISSFieldValuesSetType, & 
-!     & 1,INITIAL_FIELD_DIFFUSION,Err)
+!   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldU2VariableType,CMISSFieldValuesSetType, & 
+!     & 1,INITIAL_FIELD_DIFFUSION_TWO,Err)
+
+!   !Initialise dependent field (concentration three components)
+!   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldU3VariableType,CMISSFieldValuesSetType, & 
+!     & 1,INITIAL_FIELD_DIFFUSION_THREE,Err)
+
 
 
 
@@ -1017,8 +1024,8 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
   !Set the problem to be a coupled diffusion-diffusion problem
-  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemMultiPhysicsClass,CMISSProblemDiffusionDiffusionType, &
-    & CMISSProblemCoupledSourceDiffusionDiffusionSubtype,Err)
+  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemMultiPhysicsClass,CMISSProblemMultiCompartmentTransportType, &
+    & CMISSProblemStandardMultiCompartmentTransportSubtype,Err)
   !Finish the creation of a problem.
   CALL CMISSProblemCreateFinish(Problem,Err)
   !Start the creation of the problem control loop
