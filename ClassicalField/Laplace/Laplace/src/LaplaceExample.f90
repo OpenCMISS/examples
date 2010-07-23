@@ -178,6 +178,7 @@ PROGRAM LAPLACEEXAMPLE
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
     !Set the basis to be a bilinear Lagrange basis
     CALL CMISSBasisNumberOfXiSet(Basis,2,Err)
+    CALL CMISSBasisInterpolationXiSet(Basis,[CMISSBasisQuadraticLagrangeInterpolation,CMISSBasisQuadraticLagrangeInterpolation],Err)
   ELSE
     !Set the basis to be a trilinear Lagrange basis
     CALL CMISSBasisNumberOfXiSet(Basis,3,Err)
