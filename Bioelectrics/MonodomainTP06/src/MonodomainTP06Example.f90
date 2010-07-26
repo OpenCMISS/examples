@@ -1,5 +1,5 @@
 !> \file
-!> $Id: MonodomainBuenoOrovioExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id: MonodomainTP06Example.f90 20 2007-05-28 20:22:52Z cpb $
 !> \author Ishani Roy & Sander Land
 !> \brief This is an example program to solve a Monodomain equation using OpenCMISS calls.
 !>
@@ -40,14 +40,13 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example MonodomainBuenoOrovioExample.f90
+!> \example MonodomainTP06Example.f90
 !! Example program to solve a Monodomain equation using OpenCMISS calls.
-!! \htmlinclude Monodomain/MonodomainBuenoOrovio/history.html
 !!
 !<
 
 !> Main program
-PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
+PROGRAM MONODOMAINTP06EXAMPLE
 
   USE OPENCMISS
   USE MPI
@@ -77,7 +76,7 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=10
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=11 
   INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumber=12
-
+  
   !Program types
   
   !Program variables
@@ -90,7 +89,7 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
   LOGICAL :: EXPORT_FIELD
 
 
-  REAL(CMISSDP), PARAMETER :: START_TIME = 0.0, END_TIME = 100.0, DT = 0.1, DX=0.2, ACTIV_R = 1.5+1e-6   ! ms ms ms mm mm
+  REAL(CMISSDP), PARAMETER :: START_TIME = 0.0, END_TIME = 100.0, DT = 0.1, DX=0.5, ACTIV_R = 1.5+1e-6   ! ms ms ms mm mm
   REAL(CMISSDP), PARAMETER  :: FiberD = 0.095298372513562, TransverseD = 0.0125758411473;
 
   REAL(CMISSDP) :: x,y,z,activ
@@ -150,8 +149,8 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
   NUMBER_GLOBAL_X_ELEMENTS= ROUND(WIDTH / DX)
   NUMBER_GLOBAL_Y_ELEMENTS= ROUND(HEIGHT / DX)
 
-!  NUMBER_GLOBAL_Z_ELEMENTS= ROUND(LENGTH / DX)
-  NUMBER_GLOBAL_Z_ELEMENTS= 0
+  NUMBER_GLOBAL_Z_ELEMENTS= ROUND(LENGTH / DX)
+!  NUMBER_GLOBAL_Z_ELEMENTS= 0
 
 
   WRITE(*,*) 'Solving on ', NUMBER_GLOBAL_X_ELEMENTS*NUMBER_GLOBAL_Y_ELEMENTS*MAX(NUMBER_GLOBAL_Z_ELEMENTS,1),' ELEMENTS'
@@ -251,7 +250,7 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
   !  & CMISSEquationsSetMonodomainEquationType,CMISSEquationsSetStandardMonodomainSubtype,Err)
   !Set the equations set to be a generalised Monodomain problem
   CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSProblemBioelectricsClass,&
-    & CMISSEquationsSetMonodomainSSEquationType,CMISSEquationsSetMonodomainBuenoOrovioSubtype,Err)
+    & CMISSEquationsSetMonodomainSSEquationType,CMISSEquationsSetMonodomainTenTusscher06Subtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
@@ -292,6 +291,8 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
   CALL CMISSEquationsSetIndependentCreateStart(EquationsSet,IndependentFieldUserNumber,IndependentField,Err)
   CALL CMISSEquationsSetIndependentCreateFinish(EquationsSet,Err)
 
+
+
   !Finish the equations set dependent field variables
   CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
 
@@ -321,7 +322,7 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
    ! & CMISSProblemStandardMonodomainSubtype,Err)
 
   CALL CMISSProblemSpecificationSet(Problem,CMISSProblemBioelectricsClass, &
-    & CMISSProblemMonodomainStrangSplittingEquationType,CMISSProblemMonodomainBuenoOrovioSubtype,Err)
+    & CMISSProblemMonodomainStrangSplittingEquationType,CMISSProblemMonodomainTenTusscher06Subtype,Err)
   !Finish the creation of a problem.
   CALL CMISSProblemCreateFinish(Problem,Err)
 
@@ -376,8 +377,8 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
   IF(EXPORT_FIELD) THEN
     CALL CMISSFieldsTypeInitialise(Fields,Err)
     CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"MonodomainBO","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"MonodomainBO","FORTRAN",Err)
+    CALL CMISSFieldIONodesExport(Fields,"MonodomainTP","FORTRAN",Err)
+    CALL CMISSFieldIOElementsExport(Fields,"MonodomainTP","FORTRAN",Err)
     CALL CMISSFieldsTypeFinalise(Fields,Err)
   ENDIF
   
@@ -396,4 +397,4 @@ INTEGER(CMISSIntg) FUNCTION ROUND(X)
   RETURN
 END FUNCTION ROUND
 
-END PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
+END PROGRAM MONODOMAINTP06EXAMPLE
