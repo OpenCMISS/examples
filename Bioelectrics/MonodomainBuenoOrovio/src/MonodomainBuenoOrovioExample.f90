@@ -272,7 +272,7 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
       z = 0
     END IF
     IF(x <= ACTIV_R .AND. y < ACTIV_R .AND. z < ACTIV_R) THEN 
-      activ = 2.0 ! double current. default not enough?
+      activ = 1.0 ! double current. default not enough?
     ELSE
       activ = 0.0
     END IF

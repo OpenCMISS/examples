@@ -89,7 +89,7 @@ PROGRAM MONODOMAINTP06EXAMPLE
   LOGICAL :: EXPORT_FIELD
 
 
-  REAL(CMISSDP), PARAMETER :: START_TIME = 0.0, END_TIME = 100.0, DT = 0.1, DX=0.5, ACTIV_R = 1.5+1e-6   ! ms ms ms mm mm
+  REAL(CMISSDP), PARAMETER :: START_TIME = 0.0, END_TIME = 150.0, DT = 0.1, DX=0.5, ACTIV_R = 1.5+1e-6   ! ms ms ms mm mm
   REAL(CMISSDP), PARAMETER  :: FiberD = 0.095298372513562, TransverseD = 0.0125758411473;
 
   REAL(CMISSDP) :: x,y,z,activ
@@ -271,7 +271,7 @@ PROGRAM MONODOMAINTP06EXAMPLE
       z = 0
     END IF
     IF(x <= ACTIV_R .AND. y < ACTIV_R .AND. z < ACTIV_R) THEN 
-      activ = 2.0 ! double current. default not enough?
+      activ = 1.0
     ELSE
       activ = 0.0
     END IF
