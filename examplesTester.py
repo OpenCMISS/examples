@@ -87,6 +87,7 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
 #testExample(id='1', path="ClassicalField/AdvectionDiffusion", nodes='1')
 testExample(id='1', path="ClassicalField/AdvectionDiffusion/AdvectionDiffusionIO", nodes='1')
 testExample(id='1', path="ClassicalField/AdvectionDiffusion/StaticAdvectionDiffusion", nodes='1')
+testExample(id='1', path="ClassicalField/AdvectionDiffusion/StaticAdvectionDiffusion_FieldML", nodes='1')
 testExample(id='1', path="ClassicalField/Diffusion", nodes='1')
 testExample(id='1', path="ClassicalField/Diffusion/LinearConvergenceTest", nodes='1', ndiffDir='expected_files', outputDir='.')
 testExample(id='1', path="ClassicalField/Diffusion/QuadraticConvergenceTest", nodes='1', ndiffDir='expected_files', outputDir='.')
@@ -105,6 +106,7 @@ testExample(id='1',path="FluidMechanics/Stokes/Static",nodes='1',input='\n')
 testExample(id='1',path="FluidMechanics/Stokes/Dynamic",nodes='1',input='\n')
 testExample(id='1',path="FluidMechanics/NavierStokes/ALE",nodes='1',input='\n')
 testExample(id='1',path="FluidMechanics/NavierStokes/Static",nodes='1',input='\n')
+testExample(id='1',path="FluidMechanics/NavierStokes/Statici_FieldML",nodes='1',input='\n')
 testExample(id='1',path="FluidMechanics/NavierStokes/Dynamic",nodes='1',input='\n')
 
 
