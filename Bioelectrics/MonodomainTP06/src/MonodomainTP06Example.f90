@@ -89,7 +89,7 @@ PROGRAM MONODOMAINTP06EXAMPLE
   LOGICAL :: EXPORT_FIELD
 
 
-  REAL(CMISSDP), PARAMETER :: START_TIME = 0.0, END_TIME = 150.0, DT = 0.1, DX=0.5, ACTIV_R = 1.5+1e-6   ! ms ms ms mm mm
+  REAL(CMISSDP), PARAMETER :: START_TIME = 0.0, END_TIME = 150.0, DT = 0.1, DX=0.2, ACTIV_R = 1.5+1e-6   ! ms ms ms mm mm
   REAL(CMISSDP), PARAMETER  :: FiberD = 0.095298372513562, TransverseD = 0.0125758411473;
 
   REAL(CMISSDP) :: x,y,z,activ
@@ -245,10 +245,6 @@ PROGRAM MONODOMAINTP06EXAMPLE
   !Create the equations_set
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
   CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,EquationsSet,Err)
-  !Set the equations set to be a standard Monodomain problem
-  !CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
-  !  & CMISSEquationsSetMonodomainEquationType,CMISSEquationsSetStandardMonodomainSubtype,Err)
-  !Set the equations set to be a generalised Monodomain problem
   CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSProblemBioelectricsClass,&
     & CMISSEquationsSetMonodomainSSEquationType,CMISSEquationsSetMonodomainTenTusscher06Subtype,Err)
   !Finish creating the equations set
@@ -275,7 +271,6 @@ PROGRAM MONODOMAINTP06EXAMPLE
     ELSE
       activ = 0.0
     END IF
-    !WRITE(*,*) N,'@',x,y,z, '->',activ
     CALL CMISSFieldParameterSetUpdateNode(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,1,activ,Err)
   END DO
   ! diffusion coefficient, related to conductivity by D = sigma/Xi Cm
@@ -303,7 +298,7 @@ PROGRAM MONODOMAINTP06EXAMPLE
   CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
   !Set the equations set output
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
-  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsTimingOutput,Err)
+  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsTimingOutput,Err)
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsMatrixOutput,Err)
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsElementMatrixOutput,Err)
   !Finish the equations set equations
@@ -318,9 +313,6 @@ PROGRAM MONODOMAINTP06EXAMPLE
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
   !Set the problem to be a standard Monodomain problem
-  !CALL CMISSProblemSpecificationSet(Problem,CMISSProblemClassicalFieldClass,CMISSProblemMonodomainEquationType, &
-   ! & CMISSProblemStandardMonodomainSubtype,Err)
-
   CALL CMISSProblemSpecificationSet(Problem,CMISSProblemBioelectricsClass, &
     & CMISSProblemMonodomainStrangSplittingEquationType,CMISSProblemMonodomainTenTusscher06Subtype,Err)
   !Finish the creation of a problem.
