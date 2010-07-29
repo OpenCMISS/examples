@@ -283,9 +283,13 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
   CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,FiberD,Err)
   CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,TransverseD,Err)
 
+  ! fiber direction unit vector
+  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,1.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,5,0.0_CMISSDP,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
-    CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,TransverseD,Err)
+    CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,6,0.0_CMISSDP,Err)
   END IF
+
 
   ! create/init independent field
   CALL CMISSFieldTypeInitialise(IndependentField,Err)
@@ -317,9 +321,6 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
   !Set the problem to be a standard Monodomain problem
-  !CALL CMISSProblemSpecificationSet(Problem,CMISSProblemClassicalFieldClass,CMISSProblemMonodomainEquationType, &
-   ! & CMISSProblemStandardMonodomainSubtype,Err)
-
   CALL CMISSProblemSpecificationSet(Problem,CMISSProblemBioelectricsClass, &
     & CMISSProblemMonodomainStrangSplittingEquationType,CMISSProblemMonodomainBuenoOrovioSubtype,Err)
   !Finish the creation of a problem.

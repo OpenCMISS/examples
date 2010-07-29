@@ -58,11 +58,10 @@ PROGRAM MONODOMAINTP06EXAMPLE
 
   IMPLICIT NONE
 
-  !Test program parameters
-
   REAL(CMISSDP), PARAMETER :: HEIGHT=7.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: WIDTH=20.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
+
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
@@ -89,7 +88,7 @@ PROGRAM MONODOMAINTP06EXAMPLE
   LOGICAL :: EXPORT_FIELD
 
 
-  REAL(CMISSDP), PARAMETER :: START_TIME = 0.0, END_TIME = 150.0, DT = 0.1, DX=0.2, ACTIV_R = 1.5+1e-6   ! ms ms ms mm mm
+  REAL(CMISSDP), PARAMETER :: START_TIME = 0.0, END_TIME = 75.0, DT = 0.1, DX=0.2, ACTIV_R = 1.5+1e-6   ! ms ms ms mm mm
   REAL(CMISSDP), PARAMETER  :: FiberD = 0.095298372513562, TransverseD = 0.0125758411473;
 
   REAL(CMISSDP) :: x,y,z,activ
@@ -259,6 +258,8 @@ PROGRAM MONODOMAINTP06EXAMPLE
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
   ! activation params: cube near (0,0,0) of size 1.5 mm 
   DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
+
+
     CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,1,x,Err)
     CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,2,y,Err)
     IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
@@ -277,8 +278,11 @@ PROGRAM MONODOMAINTP06EXAMPLE
   CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,FiberD,Err)
   CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,TransverseD,Err)
 
+  ! fiber direction unit vector
+  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,1.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,5,0.0_CMISSDP,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
-    CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,TransverseD,Err)
+    CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,6,0.0_CMISSDP,Err)
   END IF
 
   ! create/init independent field
