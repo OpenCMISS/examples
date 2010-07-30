@@ -157,7 +157,9 @@ PROGRAM PARALLELLAPLACEEXAMPLE
 
   CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
 
-  CALL CMISSDiagnosticsSetOn(CMISSInDiagType,(/1,2,3,4,5/),"Diagnostics",(/"SOLVER_MAPPING_CALCULATE"/),Err)
+  !CALL CMISSDiagnosticsSetOn(CMISSInDiagType,(/1,2,3,4,5/),"Diagnostics",(/"SOLVER_MAPPING_CALCULATE"/),Err)
+
+  CALL CMISSOutputSetOn("Testing",Err)
 
   !Get the computational nodes information
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
