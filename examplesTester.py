@@ -106,7 +106,7 @@ testExample(id='1',path="FluidMechanics/Stokes/Static",nodes='1',input='\n')
 testExample(id='1',path="FluidMechanics/Stokes/Dynamic",nodes='1',input='\n')
 testExample(id='1',path="FluidMechanics/NavierStokes/ALE",nodes='1',input='\n')
 testExample(id='1',path="FluidMechanics/NavierStokes/Static",nodes='1',input='\n')
-testExample(id='1',path="FluidMechanics/NavierStokes/Statici_FieldML",nodes='1',input='\n')
+testExample(id='1',path="FluidMechanics/NavierStokes/Static_FieldML",nodes='1',input='\n')
 testExample(id='1',path="FluidMechanics/NavierStokes/Dynamic",nodes='1',input='\n')
 
 
