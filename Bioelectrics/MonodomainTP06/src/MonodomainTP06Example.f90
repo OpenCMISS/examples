@@ -369,7 +369,7 @@ PROGRAM MONODOMAINTP06EXAMPLE
   !Solve the problem
   CALL CMISSProblemSolve(Problem,Err)
 
-  EXPORT_FIELD=.TRUE.
+  EXPORT_FIELD=.FALSE.
   IF(EXPORT_FIELD) THEN
     CALL CMISSFieldsTypeInitialise(Fields,Err)
     CALL CMISSFieldsTypeCreate(Region,Fields,Err)
