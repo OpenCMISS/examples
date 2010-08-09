@@ -19,6 +19,14 @@ successbuilds = f.read()
 f.close()
 f = open(logDir+'/build.log',"a")
 
+def insertTag(tag,filePath,isOpen) :
+  if (isOpen) :
+    logFile = open(filePath,"w")
+  else :
+    logFile = open(filePath,"a")
+  logFile.write(tag+"\n")
+  logFile.close()
+
 def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=None) :
    global compiler,logDir,successbuilds,f;
    index = successbuilds.find(compiler+'_'+path)
@@ -30,13 +38,12 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
        if not os.path.isdir(newDir):
          os.mkdir(newDir)
      os.chdir(path)
-     if os.path.exists(newDir + "/test"+id+"-" + compiler) :
-       os.remove(newDir + "/test"+id+"-" + compiler)
+     insertTag("<pre>",newDir + "/test" + id + "-" + compiler,True)
      execPath='bin/x86_64-linux/mpich2/'+compiler+'/'+path.rpartition('/')[2]+'Example-debug'
      if nodes == '1' :
        if input != None :
          inputPipe = subprocess.Popen(["echo", input], stdout=subprocess.PIPE)
-         f1 = open(newDir + "/test" + id + "-" + compiler,"w")
+         f1 = open(newDir + "/test" + id + "-" + compiler,"a")
          execArgs = [execPath]
          if args != None :
            execArgs.extend(args.split(' '))
@@ -69,6 +76,7 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
 				err=error
      if not os.path.exists(execPath) :
        err=-1
+     insertTag("</pre>",newDir + "/test" + id + "-" + compiler,False)
      outputfile = open(newDir + "/test" + id + "-" + compiler, 'r')
      if "ERROR:" in outputfile.read() :
        err=-1

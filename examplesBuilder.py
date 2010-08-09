@@ -12,6 +12,15 @@ if not os.path.isdir(logDir):
 compiler = sys.argv[1];
 f = open(logDir+'/build.log',"a")
 
+def insertTag(tag,filePath,isOpen) :
+  if (isOpen) :
+    logFile = open(filePath,"w")
+  else :
+    logFile = open(filePath,"a")
+  logFile.write(tag+"\n")
+  logFile.close()
+  
+
 def buildExample(path) :
    global compiler,logDir,libSuccess;
    if (libSuccess!=-1) :
@@ -23,7 +32,9 @@ def buildExample(path) :
      os.chdir(path)
      if os.path.exists(newDir + "/build-" + compiler) :
        os.remove(newDir + "/build-" + compiler)
-     err=os.system("make COMPILER=" + compiler + " > " + newDir + "/build-" + compiler +" 2>&1")
+     insertTag("<pre>",newDir + "/build-" + compiler,True)
+     err=os.system("make COMPILER=" + compiler + " >> " + newDir + "/build-" + compiler +" 2>&1")
+     insertTag("</pre>",newDir + "/build-" + compiler,False)
      if err==0 :
        f.write(compiler+'_'+path+'_build|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
        print "Building %s: <a class='success' href='%slogs_x86_64-linux/%s/build-%s'>success</a><br>" %(path,rootUrl,path,compiler)
@@ -42,7 +53,9 @@ def buildLibrary() :
    os.chdir('..')
    if os.path.exists(newDir + "/build-" + compiler) :
      os.remove(newDir + "/build-" + compiler)
-   err=os.system("make USEFIELDML=true COMPILER=" + compiler + " > " + newDir + "/build-" + compiler +" 2>&1")
+   insertTag("<pre>",newDir + "/build-" + compiler,True)
+   err=os.system("make USEFIELDML=true COMPILER=" + compiler + " >> " + newDir + "/build-" + compiler +" 2>&1")
+   insertTag("</pre>",newDir + "/build-" + compiler,False)
    if err==0 :
      f.write(compiler+'_library_build|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
      print "Building OpenCMISS Library: <a class='success' href='%slogs_x86_64-linux/build-%s'>success</a><br>" %(rootUrl,compiler)
