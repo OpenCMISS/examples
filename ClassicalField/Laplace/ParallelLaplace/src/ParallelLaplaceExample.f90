@@ -83,7 +83,7 @@ PROGRAM PARALLELLAPLACEEXAMPLE
   
   INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
   
-  CHARACTER(LEN=255) :: COMMAND_ARGUMENT
+  CHARACTER(LEN=255) :: COMMAND_ARGUMENT,Filename
 
   !CMISS variables
 
@@ -159,7 +159,10 @@ PROGRAM PARALLELLAPLACEEXAMPLE
 
   !CALL CMISSDiagnosticsSetOn(CMISSInDiagType,(/1,2,3,4,5/),"Diagnostics",(/"SOLVER_MAPPING_CALCULATE"/),Err)
 
-  CALL CMISSOutputSetOn("Testing",Err)
+  WRITE(Filename,'(A,"_",I0,"_",I0,"_",I0,"_",I0)') "Laplace",NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
+    & NUMBER_GLOBAL_Z_ELEMENTS,INTERPOLATION_TYPE
+  
+  CALL CMISSOutputSetOn(Filename,Err)
 
   !Get the computational nodes information
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -333,12 +336,13 @@ PROGRAM PARALLELLAPLACEEXAMPLE
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
 
-  !Compute Analytic analysis
-  CALL CMISSAnalyticAnalysisOutput(DependentField,"ParallelLaplace",Err)
-  
   !Solve the problem
   CALL CMISSProblemSolve(Problem,Err)
 
+  !Compute Analytic analysis
+  CALL CMISSAnalyticAnalysisOutput(DependentField,"ParallelLaplace",Err)
+  
+  !Export result
   CALL CMISSFieldsTypeInitialise(Fields,Err)
   CALL CMISSFieldsTypeCreate(Region,Fields,Err)
   CALL CMISSFieldIONodesExport(Fields,"ParallelLaplace","FORTRAN",Err)

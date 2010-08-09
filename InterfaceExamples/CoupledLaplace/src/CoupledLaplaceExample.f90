@@ -51,7 +51,6 @@
 PROGRAM COUPLEDLAPLACE
 
   USE OPENCMISS
-  USE MPI
   
 #ifdef WIN32
   USE IFQWIN
@@ -64,8 +63,6 @@ PROGRAM COUPLEDLAPLACE
   REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: WIDTH=2.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
-  REAL(CMISSDP) :: XI(2)
-  INTEGER(CMISSIntg) :: I 
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystem1UserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystem2UserNumber=2
@@ -100,10 +97,10 @@ PROGRAM COUPLEDLAPLACE
   
   !Program variables
 
-  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
-  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
-  
-  INTEGER(CMISSIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, &
+    & INTERPOLATION_TYPE
+  CHARACTER(LEN=255) :: COMMAND_ARGUMENT
 
   INTEGER(CMISSIntg) :: EquationsSet1Index,EquationsSet2Index
   INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
@@ -111,6 +108,8 @@ PROGRAM COUPLEDLAPLACE
   INTEGER(CMISSIntg) :: InterfaceConditionIndex
   INTEGER(CMISSIntg) :: Mesh1Index,Mesh2Index
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: y_element_idx,z_element_idx,mesh_local_y_node,mesh_local_z_node
+  REAL(CMISSDP) :: XI2(2),XI3(3)
 
   !CMISS variables
 
@@ -129,6 +128,7 @@ PROGRAM COUPLEDLAPLACE
   TYPE(CMISSInterfaceEquationsType) :: InterfaceEquations
   TYPE(CMISSInterfaceMeshConnectivityType) :: InterfaceMeshConnectivity
   TYPE(CMISSMeshType) :: Mesh1,Mesh2,InterfaceMesh
+  TYPE(CMISSNodesType) :: Nodes
   TYPE(CMISSProblemType) :: CoupledProblem
   TYPE(CMISSRegionType) :: Region1,Region2,WorldRegion
   TYPE(CMISSSolverType) :: CoupledSolver
@@ -155,6 +155,33 @@ PROGRAM COUPLEDLAPLACE
   IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
 #endif
 
+  NUMBER_OF_ARGUMENTS = COMMAND_ARGUMENT_COUNT()
+  IF(NUMBER_OF_ARGUMENTS == 4) THEN
+    CALL GET_COMMAND_ARGUMENT(1,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
+    IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 1.")
+    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*) NUMBER_GLOBAL_X_ELEMENTS
+    IF(NUMBER_GLOBAL_X_ELEMENTS<=0) CALL HANDLE_ERROR("Invalid number of X elements.")
+    CALL GET_COMMAND_ARGUMENT(2,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
+    IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 2.")
+    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*) NUMBER_GLOBAL_Y_ELEMENTS
+    IF(NUMBER_GLOBAL_Y_ELEMENTS<=0) CALL HANDLE_ERROR("Invalid number of Y elements.")
+    CALL GET_COMMAND_ARGUMENT(3,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
+    IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 3.")
+    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*) NUMBER_GLOBAL_Z_ELEMENTS
+    IF(NUMBER_GLOBAL_Y_ELEMENTS<0) CALL HANDLE_ERROR("Invalid number of Z elements.")
+    CALL GET_COMMAND_ARGUMENT(4,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
+    IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 4.")
+    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*) INTERPOLATION_TYPE
+    IF(INTERPOLATION_TYPE<=0.OR.INTERPOLATION_TYPE>3) CALL HANDLE_ERROR("Invalid Interpolation specification.")
+  ELSE IF(NUMBER_OF_ARGUMENTS == 0) THEN
+    NUMBER_GLOBAL_X_ELEMENTS=2
+    NUMBER_GLOBAL_Y_ELEMENTS=2
+    NUMBER_GLOBAL_Z_ELEMENTS=0
+    INTERPOLATION_TYPE=1
+  ELSE
+    CALL HANDLE_ERROR("Invalid number of arguments.")
+  ENDIF
+
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
@@ -162,24 +189,13 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
  
   !Set diganostics for testing
-  CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,(/1,2,3,4,5/),"Diagnostics",(/"SOLVER_MAPPING_CALCULATE         ", &
-    & "SOLVER_MATRIX_STRUCTURE_CALCULATE"/),Err)
+  !CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,[1,2,3,4,5],"Diagnostics",["SOLVER_MAPPING_CALCULATE         ", &
+  !  & "SOLVER_MATRIX_STRUCTURE_CALCULATE"],Err)
   
   !Get the computational nodes information
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
   
-  NUMBER_GLOBAL_X_ELEMENTS=2
-  NUMBER_GLOBAL_Y_ELEMENTS=2
-  NUMBER_GLOBAL_Z_ELEMENTS=0
-  NUMBER_OF_DOMAINS=NumberOfComputationalNodes
-    
-  !Broadcast the number of elements in the X & Y directions and the number of partitions to the other computational nodes
-  CALL MPI_BCAST(NUMBER_GLOBAL_X_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_GLOBAL_Y_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_GLOBAL_Z_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_OF_DOMAINS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-
   !Start the creation of a new RC coordinate system for the first region
   PRINT *, ' == >> CREATING COORDINATE SYSTEM(1) << == '
   CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem1,Err)
@@ -242,20 +258,18 @@ PROGRAM COUPLEDLAPLACE
   !Finish the creation of the basis
   CALL CMISSBasisCreateFinish(Basis1,Err)
    
-  !Start the creation of a bI/tri-quadratic-Lagrange basis
+  !Start the creation of a bI/tri-XXX-Lagrange basis
   PRINT *, ' == >> CREATING BASIS(2) << == '
   CALL CMISSBasisTypeInitialise(Basis2,Err)
   CALL CMISSBasisCreateStart(Basis2UserNumber,Basis2,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    !Set the basis to be a bilinear Lagrange basis
+    !Set the basis to be a bi-XXX Lagrange basis
     CALL CMISSBasisNumberOfXiSet(Basis2,2,Err)
-!    CALL CMISSBasisInterpolationXiSet(Basis2,(/CMISSBasisQuadraticLagrangeInterpolation, &
-!      & CMISSBasisQuadraticLagrangeInterpolation/),Err)
+    CALL CMISSBasisInterpolationXiSet(Basis2,[INTERPOLATION_TYPE,INTERPOLATION_TYPE],Err)
   ELSE
-    !Set the basis to be a trilinear Lagrange basis
+    !Set the basis to be a tri-XXX Lagrange basis
     CALL CMISSBasisNumberOfXiSet(Basis2,3,Err)
-!    CALL CMISSBasisInterpolationXiSet(Basis2,(/CMISSBasisQuadraticLagrangeInterpolation, &
-!      & CMISSBasisQuadraticLagrangeInterpolation,CMISSBasisQuadraticLagrangeInterpolation/),Err)
+    CALL CMISSBasisInterpolationXiSet(Basis2,[INTERPOLATION_TYPE,INTERPOLATION_TYPE,INTERPOLATION_TYPE],Err)
   ENDIF
   !Finish the creation of the basis
   CALL CMISSBasisCreateFinish(Basis2,Err)
@@ -270,13 +284,13 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSGeneratedMeshBasisSet(GeneratedMesh1,Basis1,Err)   
   !Define the mesh on the first region
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh1,(/WIDTH,HEIGHT/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh1,(/NUMBER_GLOBAL_X_ELEMENTS, &
-      & NUMBER_GLOBAL_Y_ELEMENTS/),Err)
+    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh1,[WIDTH,HEIGHT],Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh1,[NUMBER_GLOBAL_X_ELEMENTS, &
+      & NUMBER_GLOBAL_Y_ELEMENTS],Err)
   ELSE
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh1,(/WIDTH,HEIGHT,LENGTH/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh1,(/NUMBER_GLOBAL_X_ELEMENTS, &
-      & NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS/),Err)
+    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh1,[WIDTH,HEIGHT,LENGTH],Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh1,[NUMBER_GLOBAL_X_ELEMENTS, &
+      & NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS],Err)
   ENDIF    
   !Finish the creation of a generated mesh in the first region
   CALL CMISSMeshTypeInitialise(Mesh1,Err)
@@ -292,15 +306,15 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSGeneratedMeshBasisSet(GeneratedMesh2,Basis2,Err)   
   !Define the mesh on the second region
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    CALL CMISSGeneratedMeshOriginSet(GeneratedMesh2,(/WIDTH,0.0_CMISSDP/),Err)
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh2,(/WIDTH,HEIGHT/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh2,(/NUMBER_GLOBAL_X_ELEMENTS, &
-      & NUMBER_GLOBAL_Y_ELEMENTS/),Err)
+    CALL CMISSGeneratedMeshOriginSet(GeneratedMesh2,[WIDTH,0.0_CMISSDP],Err)
+    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh2,[WIDTH,HEIGHT],Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh2,[NUMBER_GLOBAL_X_ELEMENTS, &
+      & NUMBER_GLOBAL_Y_ELEMENTS],Err)
   ELSE
-    CALL CMISSGeneratedMeshOriginSet(GeneratedMesh2,(/WIDTH,0.0_CMISSDP,0.0_CMISSDP/),Err)
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh2,(/WIDTH,HEIGHT,LENGTH/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh2,(/NUMBER_GLOBAL_X_ELEMENTS, &
-      & NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS/),Err)
+    CALL CMISSGeneratedMeshOriginSet(GeneratedMesh2,[WIDTH,0.0_CMISSDP,0.0_CMISSDP],Err)
+    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh2,[WIDTH,HEIGHT,LENGTH],Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh2,[NUMBER_GLOBAL_X_ELEMENTS, &
+      & NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS],Err)
   ENDIF    
   !Finish the creation of a generated mesh in the second region
   CALL CMISSMeshTypeInitialise(Mesh2,Err)
@@ -310,32 +324,47 @@ PROGRAM COUPLEDLAPLACE
   PRINT *, ' == >> CREATING INTERFACE << == '
   CALL CMISSInterfaceTypeInitialise(Interface,Err)
   CALL CMISSInterfaceCreateStart(InterfaceUserNumber,WorldRegion,Interface,Err)
-!  CALL CMISSInterfaceLabelSet(Interface,"Interface",Err)
-!   !Set the regions coordinate system to the RC coordinate system that we have created
-!   CALL CMISSInterfaceCoordinateSystemSet(Interface,InterfaceCoordinateSystem,Err)
+  CALL CMISSInterfaceLabelSet(Interface,"Interface",Err)
   !Add in the two meshes
   CALL CMISSInterfaceMeshAdd(Interface,Mesh1,Mesh1Index,Err)
   CALL CMISSInterfaceMeshAdd(Interface,Mesh2,Mesh2Index,Err)
   !Finish creating the interface
-  CALL CMISSInterfaceCreateFinish(INTERFACE,Err)
+  CALL CMISSInterfaceCreateFinish(Interface,Err)
 
   !Start the creation of a (bi)-linear-Lagrange basis
   PRINT *, ' == >> CREATING INTERFACE BASIS << == '
   CALL CMISSBasisTypeInitialise(InterfaceBasis,Err)
   CALL CMISSBasisCreateStart(InterfaceBasisUserNumber,InterfaceBasis,Err)
-  !Set the basis to be a linear Lagrange basis
-  CALL CMISSBasisNumberOfXiSet(InterfaceBasis,1,Err)
-  CALL CMISSBasisInterpolationXiSet(InterfaceBasis,(/CMISSBasisLinearLagrangeInterpolation/),Err)
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN  
+    !Set the basis to be a linear Lagrange basis
+    CALL CMISSBasisNumberOfXiSet(InterfaceBasis,1,Err)
+    CALL CMISSBasisInterpolationXiSet(InterfaceBasis,[CMISSBasisLinearLagrangeInterpolation],Err)
+  ELSE
+    !Set the basis to be a bilinear Lagrange basis
+    CALL CMISSBasisNumberOfXiSet(InterfaceBasis,2,Err)
+    CALL CMISSBasisInterpolationXiSet(InterfaceBasis,[CMISSBasisLinearLagrangeInterpolation, &
+      & CMISSBasisLinearLagrangeInterpolation],Err)
+  ENDIF
   !Finish the creation of the basis
   CALL CMISSBasisCreateFinish(InterfaceBasis,Err)
 
   !Start the creation of a (bi)-linear-Lagrange basis
-  PRINT *, ' == >> CREATING INTERFACE BASIS << == '
+  PRINT *, ' == >> CREATING INTERFACE MAPPING BASIS << == '
   CALL CMISSBasisTypeInitialise(InterfaceMappingBasis,Err)
   CALL CMISSBasisCreateStart(InterfaceMappingBasisUserNumber,InterfaceMappingBasis,Err)
-  !Set the basis to be a linear Lagrange basis
-  CALL CMISSBasisNumberOfXiSet(InterfaceMappingBasis,1,Err)
-  CALL CMISSBasisInterpolationXiSet(InterfaceMappingBasis,(/CMISSBasisLinearLagrangeInterpolation/),Err)
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN  
+    !Set the basis to be a linear Lagrange basis
+    CALL CMISSBasisNumberOfXiSet(InterfaceMappingBasis,1,Err)
+    CALL CMISSBasisInterpolationXiSet(InterfaceMappingBasis,[CMISSBasisLinearLagrangeInterpolation],Err)
+    CALL CMISSBasisQuadratureNumberOfGaussXiSet(InterfaceMappingBasis,[INTERPOLATION_TYPE+1],Err)
+  ELSE
+    !Set the basis to be a bilinear Lagrange basis
+    CALL CMISSBasisNumberOfXiSet(InterfaceMappingBasis,2,Err)
+    CALL CMISSBasisInterpolationXiSet(InterfaceMappingBasis,[CMISSBasisLinearLagrangeInterpolation, &
+      & CMISSBasisLinearLagrangeInterpolation],Err)
+    CALL CMISSBasisQuadratureNumberOfGaussXiSet(InterfaceMappingBasis,[INTERPOLATION_TYPE+1, &
+      & INTERPOLATION_TYPE+1],Err)
+  ENDIF
   !Finish the creation of the basis
   CALL CMISSBasisCreateFinish(InterfaceMappingBasis,Err)
   
@@ -348,14 +377,14 @@ PROGRAM COUPLEDLAPLACE
   !Set the default basis
   CALL CMISSGeneratedMeshBasisSet(InterfaceGeneratedMesh,InterfaceBasis,Err)   
   !Define the mesh on the interface
-  CALL CMISSGeneratedMeshOriginSet(InterfaceGeneratedMesh,(/WIDTH,0.0_CMISSDP,0.0_CMISSDP/),Err)
+  CALL CMISSGeneratedMeshOriginSet(InterfaceGeneratedMesh,[WIDTH,0.0_CMISSDP,0.0_CMISSDP],Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    CALL CMISSGeneratedMeshExtentSet(InterfaceGeneratedMesh,(/0.0_CMISSDP,HEIGHT,0.0_CMISSDP/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(InterfaceGeneratedMesh,(/NUMBER_GLOBAL_Y_ELEMENTS/),Err)
+    CALL CMISSGeneratedMeshExtentSet(InterfaceGeneratedMesh,[0.0_CMISSDP,HEIGHT,0.0_CMISSDP],Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(InterfaceGeneratedMesh,[NUMBER_GLOBAL_Y_ELEMENTS],Err)
   ELSE
-    CALL CMISSGeneratedMeshExtentSet(InterfaceGeneratedMesh,(/0.0_CMISSDP,HEIGHT,LENGTH/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(InterfaceGeneratedMesh,(/NUMBER_GLOBAL_Y_ELEMENTS, &
-      & NUMBER_GLOBAL_Z_ELEMENTS/),Err)
+    CALL CMISSGeneratedMeshExtentSet(InterfaceGeneratedMesh,[0.0_CMISSDP,HEIGHT,LENGTH],Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(InterfaceGeneratedMesh,[NUMBER_GLOBAL_Y_ELEMENTS, &
+      & NUMBER_GLOBAL_Z_ELEMENTS],Err)
   ENDIF    
   !Finish the creation of a generated mesh in interface
   CALL CMISSMeshTypeInitialise(InterfaceMesh,Err)
@@ -366,44 +395,95 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSInterfaceMeshConnectivityTypeInitialise(InterfaceMeshConnectivity,Err)
   CALL CMISSInterfaceMeshConnectivityCreateStart(Interface,InterfaceMesh,InterfaceMeshConnectivity,Err)
   CALL CMISSInterfaceMeshConnectivitySetBasis(InterfaceMeshConnectivity,InterfaceMappingBasis,Err)
-  ! Setting the map for element 1
-  CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,1,Mesh1Index,2,Err)
-  XI = (/ 1.0_CMISSDP , 0.0_CMISSDP /)
-  DO I = 1,2
-     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,Mesh1Index,2,1,I,XI,Err)
-  END DO
-  XI = (/ 1.0_CMISSDP , 1.0_CMISSDP /)
-  DO I = 1,2
-     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,Mesh1Index,2,2,I,XI,Err)
-  END DO
-  CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,1,Mesh2Index,1,Err)
-  XI = (/ 0.0_CMISSDP , 0.0_CMISSDP /)
-  DO I = 1,2
-     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,Mesh2Index,1,1,I,XI,Err)
-  END DO
-  XI = (/ 0.0_CMISSDP , 1.0_CMISSDP /)
-  DO I = 1,2
-     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,1,Mesh2Index,1,2,I,XI,Err)
-  END DO
-  ! Setting the map for element 2
-  CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,2,Mesh1Index,4,Err)
-  XI = (/ 1.0_CMISSDP , 0.0_CMISSDP /)
-  DO I = 1,2
-     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,2,Mesh1Index,4,1,I,XI,Err)
-  END DO
-  XI = (/ 1.0_CMISSDP , 1.0_CMISSDP /)
-  DO I = 1,2
-     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,2,Mesh1Index,4,2,I,XI,Err)
-  END DO
-  CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,2,Mesh2Index,3,Err)
-  XI = (/ 0.0_CMISSDP , 0.0_CMISSDP /)
-  DO I = 1,2
-     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,2,Mesh2Index,3,1,I,XI,Err)
-  END DO
-  XI = (/ 0.0_CMISSDP , 1.0_CMISSDP /)
-  DO I = 1,2
-     CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,2,Mesh2Index,3,2,I,XI,Err)
-  END DO
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+    DO y_element_idx=1,NUMBER_GLOBAL_Y_ELEMENTS
+      !Map the interface element to the elements in mesh 1
+      CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,y_element_idx,Mesh1Index, &
+        y_element_idx*NUMBER_GLOBAL_X_ELEMENTS,Err)
+      XI2 = [ 1.0_CMISSDP, 0.0_CMISSDP ]
+      CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx,Mesh1Index, &
+        & y_element_idx*NUMBER_GLOBAL_X_ELEMENTS,1,1,XI2,Err)
+      XI2 = [ 1.0_CMISSDP, 1.0_CMISSDP ]
+      CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx,Mesh1Index, &
+        & y_element_idx*NUMBER_GLOBAL_X_ELEMENTS,2,1,XI2,Err)      
+      !Map the interface element to the elements in mesh 2
+      CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,y_element_idx,Mesh2Index, &
+        & 1+(y_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS,Err)
+      DO mesh_local_y_node = 1,INTERPOLATION_TYPE
+        XI2 = [ 0.0_CMISSDP, REAL(mesh_local_y_node-1,CMISSDP)/REAL(INTERPOLATION_TYPE,CMISSDP) ]
+        CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx,Mesh2Index, &
+          & 1+(y_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS,1,1,XI2,Err)
+        XI2 = [ 0.0_CMISSDP, REAL(mesh_local_y_node,CMISSDP)/REAL(INTERPOLATION_TYPE,CMISSDP) ]
+        CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx,Mesh2Index, &
+          & 1+(y_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS,2,1,XI2,Err)
+      ENDDO !mesh_local_y_node
+    ENDDO !y_element_idx
+  ELSE
+    DO y_element_idx=1,NUMBER_GLOBAL_Y_ELEMENTS
+      DO z_element_idx=1,NUMBER_GLOBAL_Z_ELEMENTS
+        !Map the interface element to the elements in mesh 1
+        CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity, &
+          & y_element_idx+(z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh1Index, &
+          y_element_idx*NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
+          & NUMBER_GLOBAL_Y_ELEMENTS,Err)
+        XI3 = [ 1.0_CMISSDP, 0.0_CMISSDP, 0.0_CMISSDP ]
+        CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
+          & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh1Index,y_element_idx* &
+          & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
+          & NUMBER_GLOBAL_Y_ELEMENTS,1,1,XI3,Err)
+        XI3 = [ 1.0_CMISSDP, 1.0_CMISSDP, 0.0_CMISSDP ]
+        CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
+          & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh1Index,y_element_idx* &
+          & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
+          & NUMBER_GLOBAL_Y_ELEMENTS,2,1,XI3,Err)
+        XI3 = [ 1.0_CMISSDP, 0.0_CMISSDP, 1.0_CMISSDP ]
+        CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
+          & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh1Index,y_element_idx* &
+          & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
+          & NUMBER_GLOBAL_Y_ELEMENTS,3,1,XI3,Err)
+        XI3 = [ 1.0_CMISSDP, 1.0_CMISSDP, 1.0_CMISSDP ]
+        CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
+          & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh1Index,y_element_idx* &
+          & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
+          & NUMBER_GLOBAL_Y_ELEMENTS,4,1,XI3,Err)
+        !Map the interface element to the elements in mesh 2
+        CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,y_element_idx,Mesh2Index, &
+          & 1+(y_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS,Err)
+        DO mesh_local_y_node = 1,INTERPOLATION_TYPE
+          DO mesh_local_z_node = 1,INTERPOLATION_TYPE
+            XI3 = [ 0.0_CMISSDP,  &
+              & REAL(mesh_local_y_node-1,CMISSDP)/REAL(INTERPOLATION_TYPE,CMISSDP), &
+              & REAL(mesh_local_z_node-1,CMISSDP)/REAL(INTERPOLATION_TYPE,CMISSDP) ]
+            CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
+              & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,y_element_idx* &
+              & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
+              & NUMBER_GLOBAL_Y_ELEMENTS,1,1,XI3,Err)
+            XI3 = [ 0.0_CMISSDP,  &
+              & REAL(mesh_local_y_node,CMISSDP)/REAL(INTERPOLATION_TYPE,CMISSDP), &
+              & REAL(mesh_local_z_node-1,CMISSDP)/REAL(INTERPOLATION_TYPE,CMISSDP) ]
+            CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
+              & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,y_element_idx* &
+              & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
+              & NUMBER_GLOBAL_Y_ELEMENTS,2,1,XI3,Err)
+            XI3 = [ 0.0_CMISSDP,  &
+              & REAL(mesh_local_y_node-1,CMISSDP)/REAL(INTERPOLATION_TYPE,CMISSDP), &
+              & REAL(mesh_local_z_node,CMISSDP)/REAL(INTERPOLATION_TYPE,CMISSDP) ]
+            CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
+              & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,y_element_idx* &
+              & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
+              & NUMBER_GLOBAL_Y_ELEMENTS,3,1,XI3,Err)
+            XI3 = [ 0.0_CMISSDP,  &
+              & REAL(mesh_local_y_node,CMISSDP)/REAL(INTERPOLATION_TYPE,CMISSDP), &
+              & REAL(mesh_local_z_node,CMISSDP)/REAL(INTERPOLATION_TYPE,CMISSDP) ]
+            CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
+              & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,y_element_idx* &
+              & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
+              & NUMBER_GLOBAL_Y_ELEMENTS,4,1,XI3,Err)
+          ENDDO !mesh_local_z_node
+        ENDDO !mesh_local_y_node
+      ENDDO !z_element_idx
+    ENDDO !y_element_idx
+  ENDIF
   CALL CMISSInterfaceMeshConnectivityCreateFinish(InterfaceMeshConnectivity,Err)
 
   !Create a decomposition for mesh1
@@ -412,7 +492,7 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSDecompositionCreateStart(Decomposition1UserNumber,Mesh1,Decomposition1,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL CMISSDecompositionTypeSet(Decomposition1,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition1,NUMBER_OF_DOMAINS,Err)
+  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition1,NumberOfComputationalNodes,Err)
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition1,Err)
 
@@ -422,7 +502,7 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSDecompositionCreateStart(Decomposition2UserNumber,Mesh2,Decomposition2,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL CMISSDecompositionTypeSet(Decomposition2,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition2,NUMBER_OF_DOMAINS,Err)
+  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition2,NumberOfComputationalNodes,Err)
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition2,Err)
   
@@ -432,7 +512,7 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSDecompositionCreateStart(InterfaceDecompositionUserNumber,InterfaceMesh,InterfaceDecomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL CMISSDecompositionTypeSet(InterfaceDecomposition,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(InterfaceDecomposition,NUMBER_OF_DOMAINS,Err)
+  CALL CMISSDecompositionNumberOfDomainsSet(InterfaceDecomposition,NumberOfComputationalNodes,Err)
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(InterfaceDecomposition,Err)
 
@@ -552,12 +632,9 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions2,Err)
   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet2,BoundaryConditions2,Err)
   !Set the last node to 1.0
-  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS*2+1)*(NUMBER_GLOBAL_Y_ELEMENTS*2+1)
-    LastNodeNumber=9
-  ELSE
-    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS*2+1)*(NUMBER_GLOBAL_Y_ELEMENTS*2+1)*(NUMBER_GLOBAL_Z_ELEMENTS*2+1)
-  ENDIF
+  CALL CMISSNodesTypeInitialise(Nodes,Err)
+  CALL CMISSRegionNodesGet(Region2,Nodes,Err)
+  CALL CMISSNodesNumberOfNodesGet(Nodes,LastNodeNumber,Err)
   CALL CMISSDecompositionNodeDomainGet(Decomposition2,LastNodeNumber,1,LastNodeDomain,Err)
   IF(LastNodeDomain==ComputationalNodeNumber) THEN
     CALL CMISSBoundaryConditionsSetNode(BoundaryConditions2,CMISSFieldUVariableType,1,LastNodeNumber,1, &
@@ -565,7 +642,6 @@ PROGRAM COUPLEDLAPLACE
   ENDIF
   !Finish the creation of the equations set boundary conditions
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet2,Err)
- 
 
   !Start to create a default (geometric) field on the Interface
   PRINT *, ' == >> CREATING INTERFACE GEOMETRIC FIELD << == '
@@ -679,18 +755,18 @@ PROGRAM COUPLEDLAPLACE
   PRINT *, ' == >> EXPORTING FIELDS << == '
   CALL CMISSFieldsTypeInitialise(Fields1,Err)
   CALL CMISSFieldsTypeCreate(Region1,Fields1,Err)
-  CALL CMISSFieldIONodesExport(Fields1,"TwoRegion_1","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields1,"TwoRegion_1","FORTRAN",Err)
+  CALL CMISSFieldIONodesExport(Fields1,"CoupledLaplace_1","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields1,"CoupledLaplace_1","FORTRAN",Err)
   CALL CMISSFieldsTypeFinalise(Fields1,Err)
   CALL CMISSFieldsTypeInitialise(Fields2,Err)
   CALL CMISSFieldsTypeCreate(Region2,Fields2,Err)
-  CALL CMISSFieldIONodesExport(Fields2,"TwoRegion_2","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields2,"TwoRegion_2","FORTRAN",Err)
+  CALL CMISSFieldIONodesExport(Fields2,"CoupledLaplace_2","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields2,"CoupledLaplace_2","FORTRAN",Err)
   CALL CMISSFieldsTypeFinalise(Fields2,Err)
   CALL CMISSFieldsTypeInitialise(InterfaceFields,Err)
   CALL CMISSFieldsTypeCreate(INTERFACE,InterfaceFields,Err)
-  CALL CMISSFieldIONodesExport(InterfaceFields,"TwoRegion_Interface","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(InterfaceFields,"TwoRegion_Interface","FORTRAN",Err)
+  CALL CMISSFieldIONodesExport(InterfaceFields,"CoupledLaplace_Interface","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(InterfaceFields,"CoupledLaplace_Interface","FORTRAN",Err)
   CALL CMISSFieldsTypeFinalise(InterfaceFields,Err)
   
   !Finialise CMISS
@@ -700,4 +776,15 @@ PROGRAM COUPLEDLAPLACE
 
   STOP
  
+CONTAINS
+
+  SUBROUTINE HANDLE_ERROR(ERROR_STRING)
+
+    CHARACTER(LEN=*), INTENT(IN) :: ERROR_STRING
+
+    WRITE(*,'(">>ERROR: ",A)') ERROR_STRING(1:LEN_TRIM(ERROR_STRING))
+    STOP
+
+  END SUBROUTINE HANDLE_ERROR
+     
 END PROGRAM COUPLEDLAPLACE
