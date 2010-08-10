@@ -92,7 +92,7 @@ PROGRAM COUPLEDLAPLACE
 
   INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
   INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, &
-    & INTERPOLATION_TYPE
+    & INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT
 
   INTEGER(CMISSIntg) :: EquationsSet1Index,EquationsSet2Index
@@ -243,6 +243,16 @@ PROGRAM COUPLEDLAPLACE
   !Finish the creation of the basis
   CALL CMISSBasisCreateFinish(Basis1,Err)
    
+  SELECT CASE(INTERPOLATION_TYPE)
+  CASE(1)
+    NUMBER_OF_GAUSS_XI=2
+  CASE(2)
+    NUMBER_OF_GAUSS_XI=3
+  CASE(3,4)
+    NUMBER_OF_GAUSS_XI=4
+  CASE DEFAULT
+    CALL HANDLE_ERROR("Invalid interpolation type.")
+  END SELECT
   !Start the creation of a bI/tri-XXX-Lagrange basis
   PRINT *, ' == >> CREATING BASIS(2) << == '
   CALL CMISSBasisTypeInitialise(Basis2,Err)
@@ -251,10 +261,13 @@ PROGRAM COUPLEDLAPLACE
     !Set the basis to be a bi-XXX Lagrange basis
     CALL CMISSBasisNumberOfXiSet(Basis2,2,Err)
     CALL CMISSBasisInterpolationXiSet(Basis2,[INTERPOLATION_TYPE,INTERPOLATION_TYPE],Err)
+    CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis2,[NUMBER_OF_GAUSS_XI,NUMBER_OF_GAUSS_XI],Err)
   ELSE
     !Set the basis to be a tri-XXX Lagrange basis
     CALL CMISSBasisNumberOfXiSet(Basis2,3,Err)
     CALL CMISSBasisInterpolationXiSet(Basis2,[INTERPOLATION_TYPE,INTERPOLATION_TYPE,INTERPOLATION_TYPE],Err)
+    CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis2,[NUMBER_OF_GAUSS_XI,NUMBER_OF_GAUSS_XI, &
+      & NUMBER_OF_GAUSS_XI],Err)
   ENDIF
   !Finish the creation of the basis
   CALL CMISSBasisCreateFinish(Basis2,Err)
