@@ -80,8 +80,9 @@ PROGRAM LAPLACEEXAMPLE
   
   !Program variables
 
-  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS,INTERPOLATION_TYPE
-  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS 
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, &
+    & INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT,Filename
 
   !CMISS variables
@@ -192,6 +193,16 @@ PROGRAM LAPLACEEXAMPLE
   !Finish the creation of the region
   CALL CMISSRegionCreateFinish(Region,Err)
 
+  SELECT CASE(INTERPOLATION_TYPE)
+  CASE(1)
+    NUMBER_OF_GAUSS_XI=2
+  CASE(2)
+    NUMBER_OF_GAUSS_XI=3
+  CASE(3,4)
+    NUMBER_OF_GAUSS_XI=4
+  CASE DEFAULT
+    CALL HANDLE_ERROR("Invalid interpolation type.")
+  END SELECT
   !Start the creation of a basis (default is trilinear lagrange)
   CALL CMISSBasisTypeInitialise(Basis,Err)
   CALL CMISSBasisCreateStart(BasisUserNumber,Basis,Err)
@@ -199,10 +210,13 @@ PROGRAM LAPLACEEXAMPLE
     !Set the basis to be a bilinear Lagrange basis
     CALL CMISSBasisNumberOfXiSet(Basis,2,Err)
     CALL CMISSBasisInterpolationXiSet(Basis,[INTERPOLATION_TYPE,INTERPOLATION_TYPE],Err)
+    CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,[NUMBER_OF_GAUSS_XI,NUMBER_OF_GAUSS_XI],Err)
   ELSE
     !Set the basis to be a trilinear Lagrange basis
     CALL CMISSBasisNumberOfXiSet(Basis,3,Err)
     CALL CMISSBasisInterpolationXiSet(Basis,[INTERPOLATION_TYPE,INTERPOLATION_TYPE,INTERPOLATION_TYPE],Err)
+    CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,[NUMBER_OF_GAUSS_XI,NUMBER_OF_GAUSS_XI, &
+      & NUMBER_OF_GAUSS_XI],Err)
   ENDIF
   !Finish the creation of the basis
   CALL CMISSBasisCreateFinish(Basis,Err)
