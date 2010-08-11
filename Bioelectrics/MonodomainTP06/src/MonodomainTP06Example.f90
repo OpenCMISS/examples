@@ -80,7 +80,7 @@ PROGRAM MONODOMAINTP06EXAMPLE
   
   !Program variables
 
-  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, N
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, N, D
   INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
   
   INTEGER(CMISSIntg) :: MPI_IERROR
@@ -88,7 +88,7 @@ PROGRAM MONODOMAINTP06EXAMPLE
   LOGICAL :: EXPORT_FIELD
 
 
-  REAL(CMISSDP), PARAMETER :: START_TIME = 0.0, END_TIME = 75.0, DT = 0.1, DX=0.2, ACTIV_R = 1.5+1e-6   ! ms ms ms mm mm
+  REAL(CMISSDP), PARAMETER :: START_TIME = 0.0, END_TIME = 75.0, DT = 0.05_CMISSDP, DX=0.2, ACTIV_R = 1.5+1e-6   ! ms ms ms mm mm
   REAL(CMISSDP), PARAMETER  :: FiberD = 0.095298372513562, TransverseD = 0.0125758411473;
 
   REAL(CMISSDP) :: x,y,z,activ
@@ -152,7 +152,8 @@ PROGRAM MONODOMAINTP06EXAMPLE
 !  NUMBER_GLOBAL_Z_ELEMENTS= 0
 
 
-  WRITE(*,*) 'Solving on ', NUMBER_GLOBAL_X_ELEMENTS*NUMBER_GLOBAL_Y_ELEMENTS*MAX(NUMBER_GLOBAL_Z_ELEMENTS,1),' ELEMENTS'
+  WRITE(*,*) '[',ComputationalNodeNumber,'] Solving ', NUMBER_GLOBAL_X_ELEMENTS*NUMBER_GLOBAL_Y_ELEMENTS*&
+             & MAX(NUMBER_GLOBAL_Z_ELEMENTS,1),' elements on ', NumberOfComputationalNodes,' processors'
   NUMBER_OF_DOMAINS=NumberOfComputationalNodes
     
   !Broadcast the number of elements in the X & Y directions and the number of partitions to the other computational nodes
@@ -244,7 +245,7 @@ PROGRAM MONODOMAINTP06EXAMPLE
   !Create the equations_set
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
   CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,EquationsSet,Err)
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSProblemBioelectricsClass,&
+  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetBioelectricsClass,&
     & CMISSEquationsSetMonodomainSSEquationType,CMISSEquationsSetMonodomainTenTusscher06Subtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
@@ -258,8 +259,8 @@ PROGRAM MONODOMAINTP06EXAMPLE
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
   ! activation params: cube near (0,0,0) of size 1.5 mm 
   DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
-
-
+   CALL CMISSDecompositionNodeDomainGet(Decomposition,N,1,D,Err)
+   IF(D==ComputationalNodeNumber) THEN
     CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,1,x,Err)
     CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,2,y,Err)
     IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
@@ -273,6 +274,7 @@ PROGRAM MONODOMAINTP06EXAMPLE
       activ = 0.0
     END IF
     CALL CMISSFieldParameterSetUpdateNode(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,1,activ,Err)
+   END IF
   END DO
   ! diffusion coefficient, related to conductivity by D = sigma/Xi Cm
   CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,FiberD,Err)
