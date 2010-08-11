@@ -99,7 +99,7 @@ PROGRAM COUPLEDLAPLACE
 
   INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
   INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, &
-    & INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI
+    & INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI,NUMBER_OF_NODE_XI
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT
 
   INTEGER(CMISSIntg) :: EquationsSet1Index,EquationsSet2Index
@@ -172,7 +172,7 @@ PROGRAM COUPLEDLAPLACE
     CALL GET_COMMAND_ARGUMENT(4,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
     IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 4.")
     READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*) INTERPOLATION_TYPE
-    IF(INTERPOLATION_TYPE<=0.OR.INTERPOLATION_TYPE>3) CALL HANDLE_ERROR("Invalid Interpolation specification.")
+    IF(INTERPOLATION_TYPE<=0.OR.INTERPOLATION_TYPE>4) CALL HANDLE_ERROR("Invalid Interpolation specification.")
   ELSE IF(NUMBER_OF_ARGUMENTS == 0) THEN
     NUMBER_GLOBAL_X_ELEMENTS=2
     NUMBER_GLOBAL_Y_ELEMENTS=2
@@ -369,14 +369,11 @@ PROGRAM COUPLEDLAPLACE
     !Set the basis to be a linear Lagrange basis
     CALL CMISSBasisNumberOfXiSet(InterfaceMappingBasis,1,Err)
     CALL CMISSBasisInterpolationXiSet(InterfaceMappingBasis,[CMISSBasisLinearLagrangeInterpolation],Err)
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(InterfaceMappingBasis,[INTERPOLATION_TYPE+1],Err)
   ELSE
     !Set the basis to be a bilinear Lagrange basis
     CALL CMISSBasisNumberOfXiSet(InterfaceMappingBasis,2,Err)
     CALL CMISSBasisInterpolationXiSet(InterfaceMappingBasis,[CMISSBasisLinearLagrangeInterpolation, &
       & CMISSBasisLinearLagrangeInterpolation],Err)
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(InterfaceMappingBasis,[INTERPOLATION_TYPE+1, &
-      & INTERPOLATION_TYPE+1],Err)
   ENDIF
   !Finish the creation of the basis
   CALL CMISSBasisCreateFinish(InterfaceMappingBasis,Err)
@@ -408,7 +405,17 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSInterfaceMeshConnectivityTypeInitialise(InterfaceMeshConnectivity,Err)
   CALL CMISSInterfaceMeshConnectivityCreateStart(Interface,InterfaceMesh,InterfaceMeshConnectivity,Err)
   CALL CMISSInterfaceMeshConnectivitySetBasis(InterfaceMeshConnectivity,InterfaceMappingBasis,Err)
-  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+  SELECT CASE(INTERPOLATION_TYPE)
+  CASE(1,4)
+    NUMBER_OF_NODE_XI=2
+  CASE(2)
+    NUMBER_OF_NODE_XI=3
+  CASE(3)
+    NUMBER_OF_NODE_XI=4
+  CASE DEFAULT
+    CALL HANDLE_ERROR("Invalid interpolation type.")
+  END SELECT
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN   
     DO y_element_idx=1,NUMBER_GLOBAL_Y_ELEMENTS
       !Map the interface element to the elements in mesh 1
       CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,y_element_idx,Mesh1Index, &
@@ -422,11 +429,11 @@ PROGRAM COUPLEDLAPLACE
       !Map the interface element to the elements in mesh 2
       CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,y_element_idx,Mesh2Index, &
         & 1+(y_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS,Err)
-      DO mesh_local_y_node = 1,INTERPOLATION_TYPE
-        XI2 = [ 0.0_CMISSDP, REAL(mesh_local_y_node-1,CMISSDP)/REAL(INTERPOLATION_TYPE,CMISSDP) ]
+      DO mesh_local_y_node = 1,NUMBER_OF_NODE_XI-1
+        XI2 = [ 0.0_CMISSDP, REAL(mesh_local_y_node-1,CMISSDP)/REAL(NUMBER_OF_NODE_XI-1,CMISSDP) ]
         CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx,Mesh2Index, &
           & 1+(y_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS,1,1,XI2,Err)
-        XI2 = [ 0.0_CMISSDP, REAL(mesh_local_y_node,CMISSDP)/REAL(INTERPOLATION_TYPE,CMISSDP) ]
+        XI2 = [ 0.0_CMISSDP, REAL(mesh_local_y_node,CMISSDP)/REAL(NUMBER_OF_NODE_XI-1,CMISSDP) ]
         CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx,Mesh2Index, &
           & 1+(y_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS,2,1,XI2,Err)
       ENDDO !mesh_local_y_node
@@ -462,32 +469,32 @@ PROGRAM COUPLEDLAPLACE
         !Map the interface element to the elements in mesh 2
         CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,y_element_idx,Mesh2Index, &
           & 1+(y_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS,Err)
-        DO mesh_local_y_node = 1,INTERPOLATION_TYPE
-          DO mesh_local_z_node = 1,INTERPOLATION_TYPE
+        DO mesh_local_y_node = 1,NUMBER_OF_NODE_XI-1
+          DO mesh_local_z_node = 1,NUMBER_OF_NODE_XI-1
             XI3 = [ 0.0_CMISSDP,  &
-              & REAL(mesh_local_y_node-1,CMISSDP)/REAL(INTERPOLATION_TYPE,CMISSDP), &
-              & REAL(mesh_local_z_node-1,CMISSDP)/REAL(INTERPOLATION_TYPE,CMISSDP) ]
+              & REAL(mesh_local_y_node-1,CMISSDP)/REAL(NUMBER_OF_NODE_XI-1,CMISSDP), &
+              & REAL(mesh_local_z_node-1,CMISSDP)/REAL(NUMBER_OF_NODE_XI-1,CMISSDP) ]
             CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
               & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,y_element_idx* &
               & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
               & NUMBER_GLOBAL_Y_ELEMENTS,1,1,XI3,Err)
             XI3 = [ 0.0_CMISSDP,  &
-              & REAL(mesh_local_y_node,CMISSDP)/REAL(INTERPOLATION_TYPE,CMISSDP), &
-              & REAL(mesh_local_z_node-1,CMISSDP)/REAL(INTERPOLATION_TYPE,CMISSDP) ]
+              & REAL(mesh_local_y_node,CMISSDP)/REAL(NUMBER_OF_NODE_XI-1,CMISSDP), &
+              & REAL(mesh_local_z_node-1,CMISSDP)/REAL(NUMBER_OF_NODE_XI-1,CMISSDP) ]
             CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
               & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,y_element_idx* &
               & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
               & NUMBER_GLOBAL_Y_ELEMENTS,2,1,XI3,Err)
             XI3 = [ 0.0_CMISSDP,  &
-              & REAL(mesh_local_y_node-1,CMISSDP)/REAL(INTERPOLATION_TYPE,CMISSDP), &
-              & REAL(mesh_local_z_node,CMISSDP)/REAL(INTERPOLATION_TYPE,CMISSDP) ]
+              & REAL(mesh_local_y_node-1,CMISSDP)/REAL(NUMBER_OF_NODE_XI-1,CMISSDP), &
+              & REAL(mesh_local_z_node,CMISSDP)/REAL(NUMBER_OF_NODE_XI-1,CMISSDP) ]
             CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
               & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,y_element_idx* &
               & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
               & NUMBER_GLOBAL_Y_ELEMENTS,3,1,XI3,Err)
             XI3 = [ 0.0_CMISSDP,  &
-              & REAL(mesh_local_y_node,CMISSDP)/REAL(INTERPOLATION_TYPE,CMISSDP), &
-              & REAL(mesh_local_z_node,CMISSDP)/REAL(INTERPOLATION_TYPE,CMISSDP) ]
+              & REAL(mesh_local_y_node,CMISSDP)/REAL(NUMBER_OF_NODE_XI-1,CMISSDP), &
+              & REAL(mesh_local_z_node,CMISSDP)/REAL(NUMBER_OF_NODE_XI-1,CMISSDP) ]
             CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
               & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,y_element_idx* &
               & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
