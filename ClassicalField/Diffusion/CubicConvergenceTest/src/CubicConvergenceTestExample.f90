@@ -340,6 +340,7 @@ PROGRAM DIFFUSIONEXAMPLE
   CALL CMISSProblemCreateFinish(Problem,Err)
 
   !Create the problem control
+  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
   !Get the control loop
   CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)

@@ -560,6 +560,7 @@ PROGRAM DIFFUSIONIOALEEXAMPLE
 
   !Create the problem control
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
+  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   !Get the control loop
   CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
   !Set the times

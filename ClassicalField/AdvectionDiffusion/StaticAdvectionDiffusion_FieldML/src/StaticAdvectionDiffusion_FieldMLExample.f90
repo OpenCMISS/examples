@@ -363,6 +363,7 @@ CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
 
   !Create the problem control
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
+  !CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   !Get the control loop
   !CALL CMISSProblemControlLoopGet(Problem,ControlLoopNode,ControlLoop,Err)
   !Set the times
