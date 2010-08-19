@@ -98,7 +98,6 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=14
   INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumberSolid=15
 
-  INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopSolidNumber=1
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopFluidNumber=2
   INTEGER(CMISSIntg), PARAMETER :: SolverSolidIndex=1
@@ -231,6 +230,8 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   TYPE(CMISSSolverEquationsType) :: SolverEquationsDarcy
   TYPE(CMISSSolverEquationsType) :: SolverEquationsMatProperties
 
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber,NodeDomainGeometry,NodeDomainVelocity
+
 #ifdef WIN32
   !Quickwin type
   LOGICAL :: QUICKWIN_STATUS=.FALSE.
@@ -325,6 +326,10 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
   CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+
+  !Get the computational nodes information
+  CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
+  CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
   !
   !================================================================================================================================
@@ -694,8 +699,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,DomainUserNumber,Err)
-  ! ??? Above, this should be: 'NumberOfDomains' rather than 'DomainUserNumber' ???
+  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
 
@@ -1077,29 +1081,31 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
     DO NODE_NUMBER=1_CMISSIntg,NUMBER_OF_NODES_GEOMETRY
       COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
       COORD_Y = CM%N(NODE_NUMBER,2_CMISSIntg)
+      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,MESH_COMPONENT_NUMBER_VELOCITY,NodeDomainVelocity,Err)
+      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,MESH_COMPONENT_NUMBER_GEOMETRY,NodeDomainGeometry,Err)
 
-      IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
+      IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomainVelocity ) THEN
         !x-velocity
         VALUE = 1.0_CMISSDP
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
           & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
-      IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
+      IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomainVelocity ) THEN
         !x-velocity
         VALUE = 1.0_CMISSDP
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
           & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
-      IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
+      IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomainVelocity ) THEN
         !y-velocity
         VALUE = 2.0_CMISSDP
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
           & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
-      IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
+      IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomainVelocity ) THEN
         !y-velocity
         VALUE = 2.0_CMISSDP
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
@@ -1111,77 +1117,82 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
       COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
       COORD_Y = CM%N(NODE_NUMBER,2_CMISSIntg)
       COORD_Z = CM%N(NODE_NUMBER,3_CMISSIntg)
+      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,MESH_COMPONENT_NUMBER_VELOCITY,NodeDomainVelocity,Err)
+      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,MESH_COMPONENT_NUMBER_GEOMETRY,NodeDomainGeometry,Err)
 
       IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
         !x-velocity: F L U I D
-        VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+        IF(ComputationalNodeNumber==NodeDomainVelocity) THEN
+          VALUE = 1.0_CMISSDP
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
+            & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+        ENDIF
 
         !x-position: S O L I D
-        VALUE = 1.0_CMISSDP * DOMAIN_X1
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1, &
-          & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+        IF(ComputationalNodeNumber==NodeDomainGeometry) THEN
+          VALUE = 1.0_CMISSDP * DOMAIN_X1
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1, &
+            & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+        ENDIF
       END IF
       !
       IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
         !x-velocity: F L U I D
-        VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
-
-        !x-position: S O L I D
-!         VALUE = 1.0_CMISSDP * DOMAIN_X2
-!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1, &
-!           & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+        IF(ComputationalNodeNumber==NodeDomainVelocity) THEN
+          VALUE = 1.0_CMISSDP
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
+            & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+        ENDIF
       END IF
       !
       IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
         !y-velocity: F L U I D
-        VALUE = 0.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+        IF(ComputationalNodeNumber==NodeDomainVelocity) THEN
+          VALUE = 0.0_CMISSDP
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
+            & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+        ENDIF
 
         !y-position: S O L I D
-        VALUE = 1.1_CMISSDP * DOMAIN_Y1
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1, &
-          & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionMovedWall,VALUE,Err)
+        IF(ComputationalNodeNumber==NodeDomainGeometry) THEN
+          VALUE = 1.1_CMISSDP * DOMAIN_Y1
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1, &
+            & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionMovedWall,VALUE,Err)
+        ENDIF
       END IF
       !
       IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
         !y-velocity: F L U I D
-        VALUE = 0.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+        IF(ComputationalNodeNumber==NodeDomainVelocity) THEN
+          VALUE = 0.0_CMISSDP
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
+            & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+        ENDIF
 
         !y-position: S O L I D
-        VALUE = 1.1_CMISSDP * DOMAIN_Y2
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1, &
-          & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionMovedWall,VALUE,Err)
+        IF(ComputationalNodeNumber==NodeDomainGeometry) THEN
+          VALUE = 1.1_CMISSDP * DOMAIN_Y2
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1, &
+            & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionMovedWall,VALUE,Err)
+        ENDIF
       END IF
       !
       IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) ) THEN
         !z-velocity: F L U I D
-        VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
-
-!         !z-position: S O L I D
-!         VALUE = 1.0_CMISSDP * DOMAIN_Z1
-!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1, &
-!           & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+        IF(ComputationalNodeNumber==NodeDomainVelocity) THEN
+          VALUE = 1.0_CMISSDP
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
+            & NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
+        ENDIF
       END IF
       !
       IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) THEN
-!         !z-velocity: F L U I D
-!         VALUE = -1.0_CMISSDP
-!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
-!           & NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
-
         !z-position: S O L I D
-        VALUE = 1.0_CMISSDP * DOMAIN_Z2
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1, &
-          & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+        IF(ComputationalNodeNumber==NodeDomainGeometry) THEN
+          VALUE = 1.0_CMISSDP * DOMAIN_Z2
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1, &
+            & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+        ENDIF
       END IF
     END DO
   END IF
