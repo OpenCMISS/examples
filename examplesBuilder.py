@@ -37,14 +37,14 @@ def buildExample(path) :
      insertTag("</pre>",newDir + "/build-" + compiler,False)
      if err==0 :
        f.write(compiler+'_'+path+'_build|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
-       print "Building %s: <a class='success' href='%slogs_x86_64-linux/%s/build-%s'>success</a><br>" %(path,rootUrl,path,compiler)
+       print "<a class='success' href='%slogs_x86_64-linux/%s/build-%s'>Pass</a>: building %s<br>" %(rootUrl,path,compiler,path)
      else :
        f.write(compiler+'_'+path+'_build|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
-       print "Building %s: <a class='fail' href='%slogs_x86_64-linux/%s/build-%s'>failed</a><br>" %(path,rootUrl,path,compiler)
+       print "<a class='fail' href='%slogs_x86_64-linux/%s/build-%s'>Fail</a>: building %s<br>" %(rootUrl,path,compiler,path)
      os.chdir(cwd)
    else :
      f.write(compiler+'_'+path+'_build|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
-     print "Building %s: <a class='fail'>failed</a> due to library build failure<br>" %(path)
+     print "<a class='fail'>Fail</a>: building %s failed due to library build failure<br>" %(path)
    return;
 
 def buildLibrary() :
@@ -58,12 +58,12 @@ def buildLibrary() :
    insertTag("</pre>",newDir + "/build-" + compiler,False)
    if err==0 :
      f.write(compiler+'_library_build|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
-     print "Building OpenCMISS Library: <a class='success' href='%slogs_x86_64-linux/build-%s'>success</a><br>" %(rootUrl,compiler)
+     print "<a class='success' href='%slogs_x86_64-linux/build-%s'>Pass</a>: building OpenCMISS Library<br>" %(rootUrl,compiler)
      os.chdir(cwd)
      return 0;
    else :
      f.write(compiler+'_library_build|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
-     print "Building OpenCMISS Library: <a class='fail' href='%slogs_x86_64-linux/build-%s'>failed</a><br>" %(rootUrl,compiler)
+     print "<a class='fail' href='%slogs_x86_64-linux/build-%s'>Fail</a>: building OpenCMISS Library<br>" %(rootUrl,compiler)
      os.chdir(cwd)
      return -1;
    

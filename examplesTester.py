@@ -82,14 +82,14 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
        err=-1
      if err==0 :
        f.write(compiler+'_'+path+'_test|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
-       print "Testing %s%s: <a class='success' href='%slogs_x86_64-linux/%s/test%s-%s'>success</a><br>" %(path,id,rootUrl,path,id,compiler)
+       print "<a class='success' href='%slogs_x86_64-linux/%s/test%s-%s'>Pass</a>: testing %s%s<br>" %(rootUrl,path,id,compiler,path,id)
      else :
        f.write(compiler+'_'+path+'_test|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
-       print "Testing %s%s: <a class='fail' href='%slogs_x86_64-linux/%s/test%s-%s'>failed</a><br>" %(path,id,rootUrl,path,id,compiler)
+       print "<a class='fail' href='%slogs_x86_64-linux/%s/test%s-%s'>Fail</a>: testing %s%s: <br>" %(rootUrl,path,id,compiler,path,id)
      os.chdir(cwd)
    else :
      f.write(compiler+'_'+path+'_test|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
-     print "Testing %s%s: <a class='fail'>failed</a> due to build failure<br>" %(path,id)
+     print "<a class='fail'>Fail</a>: testing %s%s failed due to build failure<br>" %(path,id)
    return;
 
 #testExample(id='1', path="ClassicalField/AdvectionDiffusion", nodes='1')
