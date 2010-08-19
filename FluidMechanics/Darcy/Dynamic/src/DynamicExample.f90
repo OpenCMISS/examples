@@ -855,7 +855,7 @@ PROGRAM DARCYDYNAMICEXAMPLE
   ENDIF
 
   !Finialise CMISS
-  CALL CMISSFinalise(Err)
+  !CALL CMISSFinalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
 
