@@ -57,7 +57,7 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
      else :
        if input != None :
          inputPipe = subprocess.Popen(["echo", input], stdout=subprocess.PIPE)
-         f1 = open(newDir + "/test" + id + "-" + compiler,"w")
+         f1 = open(newDir + "/test" + id + "-" + compiler,"a")
          execArgs = ["mpiexec","-n",nodes,execPath]
          if args != None :
            execArgs.extend(args.split(' '))
