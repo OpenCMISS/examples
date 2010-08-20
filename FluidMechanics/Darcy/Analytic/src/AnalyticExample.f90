@@ -783,7 +783,7 @@ PROGRAM DARCYANALYTICEXAMPLE
   ENDIF
 
   !Finialise CMISS
-!   CALL CMISSFinalise(Err)
+  CALL CMISSFinalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
 
