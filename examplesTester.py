@@ -51,9 +51,9 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
          f1.close()
          err = os.waitpid(execCommand.pid, 0)[1]
        elif args==None :
-         err=os.system(execPath +" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+         err=os.system(execPath +" >> " + newDir + "/test" + id + "-" + compiler + " 2>&1")
        else :
-         err=os.system(execPath + ' ' + args +" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+         err=os.system(execPath + ' ' + args +" >> " + newDir + "/test" + id + "-" + compiler + " 2>&1")
      else :
        if input != None :
          inputPipe = subprocess.Popen(["echo", input], stdout=subprocess.PIPE)
@@ -65,9 +65,9 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
          f1.close()
          err = os.waitpid(execCommand.pid, 0)[1]
        elif args==None :
-         err=os.system('python ' + mpidir + '/mpiexec.py -n ' + nodes + ' ' + execPath +" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+         err=os.system('python ' + mpidir + '/mpiexec.py -n ' + nodes + ' ' + execPath +" >> " + newDir + "/test" + id + "-" + compiler + " 2>&1")
        else :
-         err=os.system('python ' + mpidir + '/mpiexec.py -n ' + nodes + " " + execPath + ' ' + args+" > " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+         err=os.system('python ' + mpidir + '/mpiexec.py -n ' + nodes + " " + execPath + ' ' + args+" >> " + newDir + "/test" + id + "-" + compiler + " 2>&1")
      if err==0 and ndiffDir != None and outputDir != None :
      	for outputFile in os.listdir(ndiffDir) :
 		if outputFile!='.svn' :
