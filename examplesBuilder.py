@@ -88,9 +88,9 @@ if (compiler!="intel") :
 
   #buildExample("Bioelectrics/Monodomain")
 
-  buildExample("FluidMechanics/Stokes/ALE")
-  buildExample("FluidMechanics/Stokes/Static")
-  buildExample("FluidMechanics/Stokes/Dynamic")
+  buildExample("FluidMechanics/Stokes/RoutineCheck/ALE")
+  buildExample("FluidMechanics/Stokes/RoutineCheck/Static")
+  buildExample("FluidMechanics/Stokes/RoutineCheck/Dynamic")
 
   buildExample("FluidMechanics/NavierStokes/ALE")
   buildExample("FluidMechanics/NavierStokes/Static")

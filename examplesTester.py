@@ -109,9 +109,9 @@ testExample(id='2', path="ClassicalField/Laplace/NumberLaplace", nodes='1',args=
 
 #testExample(id='1',path="Bioelectrics/Monodomain",nodes='1',input='4\n4\n0\n1')
   
-testExample(id='1',path="FluidMechanics/Stokes/ALE",nodes='1',input='\n')
-testExample(id='1',path="FluidMechanics/Stokes/Static",nodes='1',input='\n')
-testExample(id='1',path="FluidMechanics/Stokes/Dynamic",nodes='1',input='\n')
+testExample(id='1',path="FluidMechanics/RoutineCheck/Stokes/ALE",nodes='1',input='\n')
+testExample(id='1',path="FluidMechanics/RoutineCheck/Stokes/Static",nodes='1',input='\n')
+testExample(id='1',path="FluidMechanics/RoutineCheck/Stokes/Dynamic",nodes='1',input='\n')
 testExample(id='1',path="FluidMechanics/NavierStokes/ALE",nodes='1',input='\n')
 testExample(id='1',path="FluidMechanics/NavierStokes/Static",nodes='1',input='\n')
 testExample(id='1',path="FluidMechanics/NavierStokes/Static_FieldML",nodes='1',input='\n')
