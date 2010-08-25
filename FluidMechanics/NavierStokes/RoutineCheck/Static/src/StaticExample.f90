@@ -233,6 +233,16 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !================================================================================================================================
   !
 
+  !CHECK COMPUTATIONAL NODE
+
+  !Get the computational nodes information
+  CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
+  CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
+
+  !
+  !================================================================================================================================
+  !
+
   !PROBLEM CONTROL PANEL
 
   !Import cmHeart mesh information
@@ -299,22 +309,9 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   RESTART_VALUE=3000 !default: 30
   LINESEARCH_ALPHA=1.0
 
-
   !
   !================================================================================================================================
   !
-
-  !CHECK COMPUTATIONAL NODE
-
-  !Get the computational nodes information
-  CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
-  CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
-
-  !
-  !================================================================================================================================
-  !
-
-!  WRITE(*,*)'!COORDINATE SYSTEM'
 
   !COORDINATE SYSTEM
 
@@ -330,8 +327,6 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !================================================================================================================================
   !
 
-!  WRITE(*,*)'!REGION'
-
   !REGION
 
   !Start the creation of a new region
@@ -345,8 +340,6 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !
   !================================================================================================================================
   !
-
-!  WRITE(*,*)'!BASES'
 
   !BASES
 
@@ -428,8 +421,6 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !================================================================================================================================
   !
 
-!  WRITE(*,*)'!MESH'
-
   !MESH
 
   !Start the creation of mesh nodes
@@ -490,8 +481,6 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !================================================================================================================================
   !
 
-!  WRITE(*,*)'!GEOMETRIC FIELD'
-
   !GEOMETRIC FIELD
 
   !Create a decomposition
@@ -534,8 +523,6 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !================================================================================================================================
   !
 
-!  WRITE(*,*)'!EQUATIONS SETS'
-
   !EQUATIONS SETS
 
   !Create the equations set for static Navier-Stokes
@@ -551,8 +538,6 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !
   !================================================================================================================================
   !
-
-!  WRITE(*,*)'!DEPENDENT FIELDS'
 
   !DEPENDENT FIELDS
 
@@ -586,8 +571,6 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !================================================================================================================================
   !
 
-!  WRITE(*,*)'!MATERIALS FIELDS'
-
   !MATERIALS FIELDS
 
   !Create the equations set materials field variables for static Navier-Stokes
@@ -606,8 +589,6 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !================================================================================================================================
   !
 
-!  WRITE(*,*)'!EQUATIONS'
-
   !EQUATIONS
 
 
@@ -625,8 +606,6 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !
   !================================================================================================================================
   !
-
-!  WRITE(*,*)'!BOUNDARY CONDITIONS'
 
   !BOUNDARY CONDITIONS
 
@@ -671,8 +650,6 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !================================================================================================================================
   !
 
-!  WRITE(*,*)'!PROBLEMS'
-
   !PROBLEMS
 
   !Start the creation of a problem.
@@ -692,8 +669,6 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !
   !================================================================================================================================
   !
-
-!  WRITE(*,*)'!SOLVERS'
 
   !SOLVERS
 
@@ -734,8 +709,6 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !
   !================================================================================================================================
   !
-
-!  WRITE(*,*)'!SOVLER EQUATIONS'
 
   !SOLVER EQUATIONS
 
@@ -784,7 +757,6 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
     WRITE(*,'(A)') "Field exported!"
   ENDIF
   
-
   !Finialise CMISS
   CALL CMISSFinalise(Err)
 

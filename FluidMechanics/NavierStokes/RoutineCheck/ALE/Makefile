@@ -63,7 +63,7 @@ endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_PATH=FluidMechanics/NavierStokes/
+EXAMPLE_PATH=FluidMechanics/NavierStokes/RoutineCheck/
 
 EXAMPLE_NAME = ALE
 
