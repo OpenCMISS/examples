@@ -92,9 +92,9 @@ if (compiler!="intel") :
   buildExample("FluidMechanics/Stokes/RoutineCheck/Static")
   buildExample("FluidMechanics/Stokes/RoutineCheck/Dynamic")
 
-  buildExample("FluidMechanics/NavierStokes/ALE")
-  buildExample("FluidMechanics/NavierStokes/Static")
-  buildExample("FluidMechanics/NavierStokes/Dynamic")
+  buildExample("FluidMechanics/NavierStokes/RoutineCheck/ALE")
+  buildExample("FluidMechanics/NavierStokes/RoutineCheck/Static")
+  buildExample("FluidMechanics/NavierStokes/RoutineCheck/Dynamic")
   buildExample("FluidMechanics/NavierStokes/Static_FieldML")
 
 

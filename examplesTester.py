@@ -109,13 +109,13 @@ testExample(id='2', path="ClassicalField/Laplace/NumberLaplace", nodes='1',args=
 
 #testExample(id='1',path="Bioelectrics/Monodomain",nodes='1',input='4\n4\n0\n1')
   
-testExample(id='1',path="FluidMechanics/RoutineCheck/Stokes/ALE",nodes='1',input='\n')
-testExample(id='1',path="FluidMechanics/RoutineCheck/Stokes/Static",nodes='1',input='\n')
-testExample(id='1',path="FluidMechanics/RoutineCheck/Stokes/Dynamic",nodes='1',input='\n')
-testExample(id='1',path="FluidMechanics/NavierStokes/ALE",nodes='1',input='\n')
-testExample(id='1',path="FluidMechanics/NavierStokes/Static",nodes='1',input='\n')
+testExample(id='1',path="FluidMechanics/Stokes/RoutineCheck/ALE",nodes='1',input='\n')
+testExample(id='1',path="FluidMechanics/Stokes/RoutineCheck/Static",nodes='1',input='\n')
+testExample(id='1',path="FluidMechanics/Stokes/RoutineCheck/Dynamic",nodes='1',input='\n')
+testExample(id='1',path="FluidMechanics/NavierStokes/RoutineCheck/ALE",nodes='1',input='\n')
+testExample(id='1',path="FluidMechanics/NavierStokes/RoutineCheck/Static",nodes='1',input='\n')
 testExample(id='1',path="FluidMechanics/NavierStokes/Static_FieldML",nodes='1',input='\n')
-testExample(id='1',path="FluidMechanics/NavierStokes/Dynamic",nodes='1',input='\n')
+testExample(id='1',path="FluidMechanics/NavierStokes/RoutineCheck/Dynamic",nodes='1',input='\n')
 
 
 testExample(id='1',path="FluidMechanics/Darcy/Analytic",nodes='1',input='\n',args='1 test1')
