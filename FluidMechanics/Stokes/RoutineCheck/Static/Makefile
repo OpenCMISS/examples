@@ -63,7 +63,7 @@ endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_PATH=FluidMechanics/Stokes/
+EXAMPLE_PATH=FluidMechanics/Stokes/RoutineCheck/
 
 EXAMPLE_NAME = Static
 

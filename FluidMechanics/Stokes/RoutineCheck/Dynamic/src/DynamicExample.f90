@@ -1,7 +1,7 @@
 !> \file
-!> $Id: StaticExample.f90 20 2009-10-28 20:22:52Z sebk $
+!> $Id: DynamicExample.f90 20 2009-10-28 20:22:52Z sebk $
 !> \author Sebastian Krittian
-!> \brief This is an example program to solve a static Stokes equation using OpenCMISS calls.
+!> \brief This is an example program to solve a dynamic Stokes equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -40,15 +40,15 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example FluidMechanics/Stokes/Static/src/StaticExample.f90
-!! Example program to solve a static Stokes equation using OpenCMISS calls.
-!! \htmlinclude FluidMechanics/Stokes/Static/history.html
+!> \example FluidMechanics/Stokes/Dynamic/src/DynamicExample.f90
+!! Example program to solve a dynamic Stokes equation using OpenCMISS calls.
+!! \htmlinclude FluidMechanics/Stokes/Dynamic/history.html
 !!
 !<
 
 !> Main program
 
-PROGRAM STOKESSTATICEXAMPLE
+PROGRAM STOKESDYNAMICEXAMPLE
 
   !
   !================================================================================================================================
@@ -81,11 +81,10 @@ PROGRAM STOKESSTATICEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberStokes=6
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberStokes=7
-  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumberStokes=8
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberStokes=9
-  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberStokes=8
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=9
 
-  INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: SolverStokesUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberStokesMu=1
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberStokesRho=2
@@ -133,10 +132,13 @@ PROGRAM STOKESSTATICEXAMPLE
   INTEGER(CMISSIntg) :: NODE_COUNTER
   INTEGER(CMISSIntg) :: CONDITION
 
+  INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_STOKES_OUTPUT_FREQUENCY
+  INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_STOKES_OUTPUT_TYPE
   INTEGER(CMISSIntg) :: LINEAR_SOLVER_STOKES_OUTPUT_TYPE
 
   INTEGER, ALLOCATABLE, DIMENSION(:):: FIXED_WALL_NODES_STOKES
   INTEGER, ALLOCATABLE, DIMENSION(:):: INLET_WALL_NODES_STOKES
+
 
   REAL(CMISSDP) :: INITIAL_FIELD_STOKES(3)
   REAL(CMISSDP) :: BOUNDARY_CONDITIONS_STOKES(3)
@@ -147,6 +149,11 @@ PROGRAM STOKESSTATICEXAMPLE
   REAL(CMISSDP) :: VALUE
   REAL(CMISSDP) :: MU_PARAM_STOKES
   REAL(CMISSDP) :: RHO_PARAM_STOKES
+
+  REAL(CMISSDP) :: DYNAMIC_SOLVER_STOKES_START_TIME
+  REAL(CMISSDP) :: DYNAMIC_SOLVER_STOKES_STOP_TIME
+  REAL(CMISSDP) :: DYNAMIC_SOLVER_STOKES_THETA
+  REAL(CMISSDP) :: DYNAMIC_SOLVER_STOKES_TIME_INCREMENT
 
   LOGICAL :: EXPORT_FIELD_IO
   LOGICAL :: LINEAR_SOLVER_STOKES_DIRECT_FLAG
@@ -192,6 +199,7 @@ PROGRAM STOKESSTATICEXAMPLE
   !Control loops
   TYPE(CMISSControlLoopType) :: ControlLoop
   !Solvers
+  TYPE(CMISSSolverType) :: DynamicSolverStokes
   TYPE(CMISSSolverType) :: LinearSolverStokes
   !Solver equations
   TYPE(CMISSSolverEquationsType) :: SolverEquationsStokes
@@ -203,7 +211,8 @@ PROGRAM STOKESSTATICEXAMPLE
 #endif
   
   !Generic CMISS variables
-  
+
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber,BoundaryNodeDomain
   INTEGER(CMISSIntg) :: EquationsSetIndex
   INTEGER(CMISSIntg) :: Err
   
@@ -230,10 +239,21 @@ PROGRAM STOKESSTATICEXAMPLE
   !================================================================================================================================
   !
 
+  !CHECK COMPUTATIONAL NODE
+
+  !Get the computational nodes information
+  CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
+  CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
+
+  !
+  !================================================================================================================================
+  !
+
   !PROBLEM CONTROL PANEL
 
   !Import cmHeart mesh information
   CALL FLUID_MECHANICS_IO_READ_CMHEART(CM,Err)  
+
   BASIS_NUMBER_SPACE=CM%ID_M
   BASIS_NUMBER_VELOCITY=CM%ID_V
   BASIS_NUMBER_PRESSURE=CM%ID_P
@@ -283,9 +303,17 @@ PROGRAM STOKESSTATICEXAMPLE
   BASIS_XI_GAUSS_PRESSURE=3
   !Set output parameter
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
+  DYNAMIC_SOLVER_STOKES_OUTPUT_TYPE=CMISSSolverNoOutput
   LINEAR_SOLVER_STOKES_OUTPUT_TYPE=CMISSSolverNoOutput
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
   EQUATIONS_STOKES_OUTPUT=CMISSEquationsNoOutput
+  !Set time parameter
+  DYNAMIC_SOLVER_STOKES_START_TIME=0.0_CMISSDP
+  DYNAMIC_SOLVER_STOKES_STOP_TIME=5.0_CMISSDP 
+  DYNAMIC_SOLVER_STOKES_TIME_INCREMENT=1.0_CMISSDP
+  DYNAMIC_SOLVER_STOKES_THETA=1.0_CMISSDP
+  !Set result output parameter
+  DYNAMIC_SOLVER_STOKES_OUTPUT_FREQUENCY=1
   !Set solver parameters
   LINEAR_SOLVER_STOKES_DIRECT_FLAG=.FALSE.
   RELATIVE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-05_CMISSDP
@@ -294,7 +322,6 @@ PROGRAM STOKESSTATICEXAMPLE
   MAXIMUM_ITERATIONS=100000 !default: 100000
   RESTART_VALUE=3000 !default: 30
   LINESEARCH_ALPHA=1.0
-
 
   !
   !================================================================================================================================
@@ -475,7 +502,7 @@ PROGRAM STOKESSTATICEXAMPLE
   CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,DomainUserNumber,Err)
+  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
 
@@ -512,12 +539,12 @@ PROGRAM STOKESSTATICEXAMPLE
 
   !EQUATIONS SETS
 
-  !Create the equations set for static Stokes
+  !Create the equations set for dynamic Stokes
   CALL CMISSEquationsSetTypeInitialise(EquationsSetStokes,Err)
   CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberStokes,Region,GeometricField,EquationsSetStokes,Err)
-  !Set the equations set to be a static Stokes problem
+  !Set the equations set to be a dynamic Stokes problem
   CALL CMISSEquationsSetSpecificationSet(EquationsSetStokes,CMISSEquationsSetFluidMechanicsClass, &
-    & CMISSEquationsSetStokesEquationType,CMISSEquationsSetStaticStokesSubtype,Err)
+    & CMISSEquationsSetStokesEquationType,CMISSEquationsSetTransientStokesSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetStokes,Err)
 
@@ -528,7 +555,7 @@ PROGRAM STOKESSTATICEXAMPLE
 
   !DEPENDENT FIELDS
 
-  !Create the equations set dependent field variables for static Stokes
+  !Create the equations set dependent field variables for dynamic Stokes
   CALL CMISSFieldTypeInitialise(DependentFieldStokes,Err)
   CALL CMISSEquationsSetDependentCreateStart(EquationsSetStokes,DependentFieldUserNumberStokes, & 
     & DependentFieldStokes,Err)
@@ -560,7 +587,7 @@ PROGRAM STOKESSTATICEXAMPLE
 
   !MATERIALS FIELDS
 
-  !Create the equations set materials field variables for static Stokes
+  !Create the equations set materials field variables for dynamic Stokes
   CALL CMISSFieldTypeInitialise(MaterialsFieldStokes,Err)
   CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetStokes,MaterialsFieldUserNumberStokes, & 
     & MaterialsFieldStokes,Err)
@@ -570,7 +597,6 @@ PROGRAM STOKESSTATICEXAMPLE
     & MaterialsFieldUserNumberStokesMu,MU_PARAM_STOKES,Err)
   CALL CMISSFieldComponentValuesInitialise(MaterialsFieldStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
     & MaterialsFieldUserNumberStokesRho,RHO_PARAM_STOKES,Err)
-
 
   !
   !================================================================================================================================
@@ -584,11 +610,12 @@ PROGRAM STOKESSTATICEXAMPLE
   CALL CMISSEquationsSetEquationsCreateStart(EquationsSetStokes,EquationsStokes,Err)
   !Set the equations matrices sparsity type
   CALL CMISSEquationsSparsityTypeSet(EquationsStokes,CMISSEquationsSparseMatrices,Err)
+  !Set the equations lumping type
+  CALL CMISSEquationsLumpingTypeSet(EquationsStokes,CMISSEquationsUnlumpedMatrices,Err)
   !Set the equations set output
   CALL CMISSEquationsOutputTypeSet(EquationsStokes,EQUATIONS_STOKES_OUTPUT,Err)
   !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetStokes,Err)
-
 
   !
   !================================================================================================================================
@@ -604,11 +631,14 @@ PROGRAM STOKESSTATICEXAMPLE
     DO NODE_COUNTER=1,NUMBER_OF_FIXED_WALL_NODES_STOKES
       NODE_NUMBER=FIXED_WALL_NODES_STOKES(NODE_COUNTER)
       CONDITION=CMISSBoundaryConditionFixedWall
-      DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-        VALUE=0.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsStokes,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
-      ENDDO
+      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
+      IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
+        DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+          VALUE=0.0_CMISSDP
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsStokes,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+            & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
+        ENDDO
+      ENDIF
     ENDDO
   ENDIF
   !Set velocity boundary conditions
@@ -616,15 +646,19 @@ PROGRAM STOKESSTATICEXAMPLE
     DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_STOKES
       NODE_NUMBER=INLET_WALL_NODES_STOKES(NODE_COUNTER)
       CONDITION=CMISSBoundaryConditionInletWall
-      DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-        VALUE=BOUNDARY_CONDITIONS_STOKES(COMPONENT_NUMBER)
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsStokes,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
-      ENDDO
+      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
+      IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
+        DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+          VALUE=BOUNDARY_CONDITIONS_STOKES(COMPONENT_NUMBER)
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsStokes,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+            & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
+        ENDDO
+      ENDIF
     ENDDO
   ENDIF
   !Finish the creation of the equations set boundary conditions
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetStokes,Err)
+
 
   !
   !================================================================================================================================
@@ -636,13 +670,20 @@ PROGRAM STOKESSTATICEXAMPLE
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
-  !Set the problem to be a static Stokes problem
+  !Set the problem to be a dynamic Stokes problem
   CALL CMISSProblemSpecificationSet(Problem,CMISSProblemFluidMechanicsClass,CMISSProblemStokesEquationType, &
-    & CMISSProblemStaticStokesSubtype,Err)
+    & CMISSProblemTransientStokesSubtype,Err)
   !Finish the creation of a problem.
   CALL CMISSProblemCreateFinish(Problem,Err)
   !Start the creation of the problem control loop
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
+  !Get the control loop
+  CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
+  !Set the times
+  CALL CMISSControlLoopTimesSet(ControlLoop,DYNAMIC_SOLVER_STOKES_START_TIME,DYNAMIC_SOLVER_STOKES_STOP_TIME, & 
+    & DYNAMIC_SOLVER_STOKES_TIME_INCREMENT,Err)
+  !Set the output timing
+  CALL CMISSControlLoopTimeOutputSet(ControlLoop,DYNAMIC_SOLVER_STOKES_OUTPUT_FREQUENCY,Err)
   !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
 
@@ -653,10 +694,18 @@ PROGRAM STOKESSTATICEXAMPLE
   !SOLVERS
 
   !Start the creation of the problem solvers
+  CALL CMISSSolverTypeInitialise(DynamicSolverStokes,Err)
   CALL CMISSSolverTypeInitialise(LinearSolverStokes,Err)
   CALL CMISSProblemSolversCreateStart(Problem,Err)
-  !Get the linear static solver
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverStokesUserNumber,LinearSolverStokes,Err)
+  !Get the dynamic dymamic solver
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverStokesUserNumber,DynamicSolverStokes,Err)
+  !Set the output type
+  CALL CMISSSolverOutputTypeSet(DynamicSolverStokes,DYNAMIC_SOLVER_STOKES_OUTPUT_TYPE,Err)
+  !Set theta
+  CALL CMISSSolverDynamicThetaSet(DynamicSolverStokes,DYNAMIC_SOLVER_STOKES_THETA,Err)
+!   CALL CMISSSolverDynamicDynamicSet(DynamicSolverStokes,.TRUE.,Err)
+  !Get the dynamic linear solver
+  CALL CMISSSolverDynamicLinearSolverGet(DynamicSolverStokes,LinearSolverStokes,Err)
   !Set the output type
   CALL CMISSSolverOutputTypeSet(LinearSolverStokes,LINEAR_SOLVER_STOKES_OUTPUT_TYPE,Err)
   !Set the solver settings
@@ -681,12 +730,13 @@ PROGRAM STOKESSTATICEXAMPLE
   !SOLVER EQUATIONS
 
   !Start the creation of the problem solver equations
-  CALL CMISSSolverTypeInitialise(LinearSolverStokes,Err)
+  CALL CMISSSolverTypeInitialise(DynamicSolverStokes,Err)
   CALL CMISSSolverEquationsTypeInitialise(SolverEquationsStokes,Err)
+
   CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
-  !Get the linear solver equations
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverStokesUserNumber,LinearSolverStokes,Err)
-  CALL CMISSSolverSolverEquationsGet(LinearSolverStokes,SolverEquationsStokes,Err)
+  !Get the dynamic solver equations
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverStokesUserNumber,DynamicSolverStokes,Err)
+  CALL CMISSSolverSolverEquationsGet(DynamicSolverStokes,SolverEquationsStokes,Err)
   !Set the solver equations sparsity
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsStokes,CMISSSolverEquationsSparseMatrices,Err)
   !Add in the equations set
@@ -719,17 +769,17 @@ PROGRAM STOKESSTATICEXAMPLE
     WRITE(*,'(A)') "Exporting fields..."
     CALL CMISSFieldsTypeInitialise(Fields,Err)
     CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"StaticStokes","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"StaticStokes","FORTRAN",Err)
+    CALL CMISSFieldIONodesExport(Fields,"DynamicStokes","FORTRAN",Err)
+    CALL CMISSFieldIOElementsExport(Fields,"DynamicStokes","FORTRAN",Err)
     CALL CMISSFieldsTypeFinalise(Fields,Err)
     WRITE(*,'(A)') "Field exported!"
   ENDIF
   
   !Finialise CMISS
-  CALL CMISSFinalise(Err)
+!   CALL CMISSFinalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
   
   STOP
 
-END PROGRAM STOKESSTATICEXAMPLE
+END PROGRAM STOKESDYNAMICEXAMPLE
