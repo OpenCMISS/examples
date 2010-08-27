@@ -84,7 +84,7 @@ PROGRAM NAVIERSTOKESDYNAMICEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberNavierStokes=8
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=9
 
-  INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: SolverNavierStokesUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesMu=1
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesRho=2
@@ -213,7 +213,8 @@ PROGRAM NAVIERSTOKESDYNAMICEXAMPLE
 #endif
   
   !Generic CMISS variables
-  
+
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber,BoundaryNodeDomain
   INTEGER(CMISSIntg) :: EquationsSetIndex
   INTEGER(CMISSIntg) :: Err
   
@@ -235,6 +236,16 @@ PROGRAM NAVIERSTOKESDYNAMICEXAMPLE
   !INITIALISE OPENCMISS
 
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
+
+  !
+  !================================================================================================================================
+  !
+
+  !CHECK COMPUTATIONAL NODE
+
+  !Get the computational nodes information
+  CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
+  CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
   !
   !================================================================================================================================
@@ -306,14 +317,13 @@ PROGRAM NAVIERSTOKESDYNAMICEXAMPLE
   !Set result output parameter
   DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY=1
   !Set solver parameters
-  LINEAR_SOLVER_NAVIER_STOKES_DIRECT_FLAG=.FALSE.
+  LINEAR_SOLVER_NAVIER_STOKES_DIRECT_FLAG=.TRUE.
   RELATIVE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-05_CMISSDP
   ABSOLUTE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-10_CMISSDP
   DIVERGENCE_TOLERANCE=1.0E20 !default: 1.0E5
   MAXIMUM_ITERATIONS=100000 !default: 100000
   RESTART_VALUE=3000 !default: 30
   LINESEARCH_ALPHA=1.0
-
 
   !
   !================================================================================================================================
@@ -494,7 +504,7 @@ PROGRAM NAVIERSTOKESDYNAMICEXAMPLE
   CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,DomainUserNumber,Err)
+  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
 
@@ -623,11 +633,14 @@ PROGRAM NAVIERSTOKESDYNAMICEXAMPLE
     DO NODE_COUNTER=1,NUMBER_OF_FIXED_WALL_NODES_NAVIER_STOKES
       NODE_NUMBER=FIXED_WALL_NODES_NAVIER_STOKES(NODE_COUNTER)
       CONDITION=CMISSBoundaryConditionFixedWall
-      DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-        VALUE=0.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
-      ENDDO
+      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
+      IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
+        DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+          VALUE=0.0_CMISSDP
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+            & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
+        ENDDO
+      ENDIF
     ENDDO
   ENDIF
   !Set velocity boundary conditions
@@ -635,11 +648,14 @@ PROGRAM NAVIERSTOKESDYNAMICEXAMPLE
     DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_NAVIER_STOKES
       NODE_NUMBER=INLET_WALL_NODES_NAVIER_STOKES(NODE_COUNTER)
       CONDITION=CMISSBoundaryConditionInletWall
-      DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-        VALUE=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER)
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
-      ENDDO
+      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
+      IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
+        DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+          VALUE=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER)
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+            & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
+        ENDDO
+      ENDIF
     ENDDO
   ENDIF
   !Finish the creation of the equations set boundary conditions
@@ -740,9 +756,9 @@ PROGRAM NAVIERSTOKESDYNAMICEXAMPLE
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
 
-  !
-  !================================================================================================================================
-  !
+  
+  ================================================================================================================================
+  
 
   !RUN SOLVERS
 
@@ -772,7 +788,7 @@ PROGRAM NAVIERSTOKESDYNAMICEXAMPLE
   ENDIF
   
   !Finialise CMISS
-  CALL CMISSFinalise(Err)
+!   CALL CMISSFinalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
   

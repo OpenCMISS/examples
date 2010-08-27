@@ -296,8 +296,8 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   BASIS_XI_GAUSS_PRESSURE=3
   !Set output parameter
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
-  LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISSSolverNoOutput
-  NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISSSolverNoOutput
+  LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISSSolverProgressOutput
+  NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISSSolverProgressOutput
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
   EQUATIONS_NAVIER_STOKES_OUTPUT=CMISSEquationsNoOutput
   !Set solver parameters
@@ -739,7 +739,7 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   WRITE(*,'(A)') "Solving problem..."
   CALL CMISSProblemSolve(Problem,Err)
   WRITE(*,'(A)') "Problem solved!"
-
+! 
   !
   !================================================================================================================================
   !
