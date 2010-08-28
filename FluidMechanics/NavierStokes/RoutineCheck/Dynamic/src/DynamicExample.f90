@@ -756,9 +756,9 @@ PROGRAM NAVIERSTOKESDYNAMICEXAMPLE
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
 
-  
-  ================================================================================================================================
-  
+ ! 
+ ! ================================================================================================================================
+ ! 
 
   !RUN SOLVERS
 
