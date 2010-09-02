@@ -510,12 +510,17 @@ PROGRAM STOKESSTATICEXAMPLE
   DO NODE_NUMBER=1,NUMBER_OF_NODES_SPACE
     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
       VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)
-      CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-        & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
+      IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
+        CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+          & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+      ENDIF
     ENDDO
   ENDDO
   CALL CMISSFieldParameterSetUpdateStart(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
   CALL CMISSFieldParameterSetUpdateFinish(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
+
+
 
   !
   !================================================================================================================================
