@@ -107,7 +107,6 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
 
 
 
-  TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: EquationsSetFieldDiffusion
   INTEGER(CMISSIntg) :: EquationsSetFieldUserNumberDiffusion
   INTEGER(CMISSIntg) :: icompartment,Ncompartments
 
@@ -260,6 +259,8 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   TYPE(CMISSBoundaryConditionsType), ALLOCATABLE, DIMENSION(:) :: BoundaryConditionsDiffusion
   TYPE(CMISSEquationsSetType), ALLOCATABLE, DIMENSION(:) :: EquationsSetDiffusion
   TYPE(CMISSEquationsType), ALLOCATABLE, DIMENSION(:) :: EquationsDiffusion
+  TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: EquationsSetFieldDiffusion
+
 !   TYPE(CMISSFieldType) :: SourceFieldDiffusionOne
 !   TYPE(CMISSFieldType) :: SourceFieldDiffusionTwo
 !   TYPE(CMISSFieldType) :: SourceFieldDiffusionThree
@@ -770,8 +771,10 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
     CALL CMISSEquationsSetCreateFinish(EquationsSetDiffusion(icompartment),Err)
     CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldDiffusion(icompartment),CMISSFieldUVariableType, &
       & CMISSFieldValuesSetType,1,icompartment,Err)
-    CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldDiffusion(icompartment),CMISSFieldUVariableType, &
+    CALL CMISSFieldParameterSetUpdateConstant(RegionUserNumber,EquationsSetFielduserNumberDiffusion,CMISSFieldUVariableType, &
       & CMISSFieldValuesSetType,2,Ncompartments,Err)
+!     CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldDiffusion(icompartment),CMISSFieldUVariableType, &
+!       & CMISSFieldValuesSetType,2,Ncompartments,Err)
   END DO 
     WRITE(*,'(A)') "equations set field created"
 ! CMISSEquationsSetCreateStartObj(EquationsSetUserNumber,Region,GeomFibreField,EquationsSetFieldUserNumber,& 
