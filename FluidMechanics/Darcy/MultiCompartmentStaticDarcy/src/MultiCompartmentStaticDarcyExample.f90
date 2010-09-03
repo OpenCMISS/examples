@@ -571,15 +571,16 @@ PROGRAM DARCYSTATICEXAMPLE
     !These two lines have to go into each example file:
     CALL CMISSEquationsSetTypeInitialise(EquationsSetDarcy(icomp),Err)
     CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDarcy,Region,GeometricField, &
-      & EquationsSetFieldDarcyUserNumber,EquationsSetFieldDarcy(icomp), &
-      & EquationsSetDarcy(icomp),Err)
+      & CMISSEquationsSetFluidMechanicsClass,CMISSEquationsSetDarcyEquationType,CMISSEquationsSetMultiCompartmentDarcySubtype, &
+      & EquationsSetFieldDarcyUserNumber,EquationsSetFieldDarcy(icomp),EquationsSetDarcy(icomp), &
+      & Err)
 
 !Create materials_field for coupling coefficients acccording to create_equations_set_field
 !  for first material field (auto-)create it, subsequently just pass it in as we do for the
 !  shared dependent field between daryc and elaasticy
 
-    CALL CMISSEquationsSetSpecificationSet(EquationsSetDarcy(icomp),CMISSEquationsSetFluidMechanicsClass, &
-      & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetMultiCompartmentDarcySubtype,Err)
+!     CALL CMISSEquationsSetSpecificationSet(EquationsSetDarcy(icomp),CMISSEquationsSetFluidMechanicsClass, &
+!       & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetMultiCompartmentDarcySubtype,Err)
     CALL CMISSEquationsSetCreateFinish(EquationsSetDarcy(icomp),Err)
 
     CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldDarcy(icomp),CMISSFieldUVariableType, &
