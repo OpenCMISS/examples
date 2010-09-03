@@ -759,9 +759,10 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
     CALL CMISSEquationsSetTypeInitialise(EquationsSetDiffusion(icompartment),Err)
        WRITE(*,'(A)') "equations set initialised"
     CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDiffusion,Region,GeometricField,&
-         & EquationsSetFieldUserNumberDiffusion,EquationsSetFieldDiffusion(icompartment),EquationsSetDiffusion(icompartment),&
          & CMISSEquationsSetClassicalFieldClass, &
-         & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetMultiCompTransportDiffusionSubtype,Err)
+         & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetMultiCompTransportDiffusionSubtype,&
+         & EquationsSetFieldUserNumberDiffusion,EquationsSetFieldDiffusion(icompartment),EquationsSetDiffusion(icompartment),&
+         & Err)
     WRITE(*,'(A)') "equations set create started"
     !Set the equations set to be a constant source diffusion problem
 !     CALL CMISSEquationsSetSpecificationSet(EquationsSetDiffusion(icompartment),CMISSEquationsSetClassicalFieldClass, &
