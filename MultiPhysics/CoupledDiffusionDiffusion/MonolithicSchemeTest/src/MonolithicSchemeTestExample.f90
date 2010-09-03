@@ -87,7 +87,7 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=3
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=4
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
-  INTEGER(CMISSIntg) :: DependentFieldUserNumber
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=6
   INTEGER(CMISSIntg) :: MaterialsFieldUserNumberDiffusion
 !   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDiffusionTwo=10
 !   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDiffusionThree=11
@@ -843,7 +843,7 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   !DEPENDENT FIELDS
 
   DO icompartment = 1,Ncompartments
-    DependentFieldUserNumber=300_CMISSIntg+icompartment
+    !DependentFieldUserNumber=300_CMISSIntg+icompartment
     CALL CMISSEquationsSetDependentCreateStart(EquationsSetDiffusion(icompartment),DependentFieldUserNumber,&
          & DependentField,Err)
     CALL CMISSEquationsSetDependentCreateFinish(EquationsSetDiffusion(icompartment),Err)
