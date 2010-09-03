@@ -770,10 +770,12 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
     WRITE(*,'(A)') "equations set specified"
     !Finish creating the equations set
     CALL CMISSEquationsSetCreateFinish(EquationsSetDiffusion(icompartment),Err)
-    CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldDiffusion(icompartment),CMISSFieldUVariableType, &
-      & CMISSFieldValuesSetType,1,icompartment,Err)
     CALL CMISSFieldParameterSetUpdateConstant(RegionUserNumber,EquationsSetFielduserNumberDiffusion,CMISSFieldUVariableType, &
+      & CMISSFieldValuesSetType,1,icompartment,Err)
+    CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldDiffusion(icompartment),CMISSFieldUVariableType, &
       & CMISSFieldValuesSetType,2,Ncompartments,Err)
+!     CALL CMISSFieldParameterSetUpdateConstant(RegionUserNumber,EquationsSetFielduserNumberDiffusion,CMISSFieldUVariableType, &
+!       & CMISSFieldValuesSetType,2,Ncompartments,Err)
 !     CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldDiffusion(icompartment),CMISSFieldUVariableType, &
 !       & CMISSFieldValuesSetType,2,Ncompartments,Err)
   END DO 

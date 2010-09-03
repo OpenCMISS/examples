@@ -87,7 +87,6 @@ PROGRAM DARCYSTATICEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberDarcy=6
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcy=7
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDarcy=8
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=9
 
   INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
@@ -218,6 +217,7 @@ PROGRAM DARCYSTATICEXAMPLE
 
   TYPE(CMISSFieldType), ALLOCATABLE :: EquationsSetFieldDarcy(:)
   INTEGER(CMISSIntg) :: EquationsSetFieldDarcyUserNumber
+  INTEGER(CMISSIntg) :: EquationsSetUserNumberDarcy
   INTEGER(CMISSIntg) :: icomp,Ncompartments
 
   
@@ -553,6 +553,7 @@ PROGRAM DARCYSTATICEXAMPLE
 
   DO icomp = 1,Ncompartments
     EquationsSetFieldDarcyUserNumber = 100_CMISSIntg + icomp
+    EquationsSetUserNumberDarcy = 200_CMISSIntg + icomp
 
     !Create the equations set field for Darcy - *** MULTIPLE COMPARTMENTS ***
     CALL CMISSFieldTypeInitialise(EquationsSetFieldDarcy(icomp),Err)
