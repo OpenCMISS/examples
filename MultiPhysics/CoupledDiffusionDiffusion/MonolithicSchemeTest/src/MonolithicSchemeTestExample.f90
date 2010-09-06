@@ -1008,7 +1008,7 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   !BOUNDARY CONDITIONS
 
 
-  DO
+  DO icompartment=1,Ncompartments
 
     CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDiffusion(icompartment),Err)
     CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDiffusion(icompartment),&
