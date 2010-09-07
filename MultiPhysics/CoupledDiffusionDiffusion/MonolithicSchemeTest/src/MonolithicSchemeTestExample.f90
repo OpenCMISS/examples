@@ -440,12 +440,12 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
   LINEAR_SOLVER_DIFFUSION_OUTPUT_TYPE=CMISSSolverSolverOutput
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
-  EQUATIONS_DIFFUSION_OUTPUT=CMISSEquationsNoOutput
+  EQUATIONS_DIFFUSION_OUTPUT=CMISSEquationsMatrixOutput
   EQUATIONS_DIFFUSION_TWO_OUTPUT=CMISSEquationsNoOutput
   EQUATIONS_DIFFUSION_THREE_OUTPUT=CMISSEquationsNoOutput
   !Set time parameter
   LINEAR_SOLVER_DIFFUSION_START_TIME=0.0_CMISSDP
-  LINEAR_SOLVER_DIFFUSION_STOP_TIME=1.0001_CMISSDP 
+  LINEAR_SOLVER_DIFFUSION_STOP_TIME=0.25_CMISSDP 
   LINEAR_SOLVER_DIFFUSION_TIME_INCREMENT=0.125_CMISSDP
   !Set result output parameter
   LINEAR_SOLVER_DIFFUSION_OUTPUT_FREQUENCY=1
@@ -495,16 +495,16 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   ALLOCATE (EquationsDiffusion(Ncompartments))
   FieldVariableType(1)=CMISSFieldUVariableType
   FieldVariableType(2)=CMISSFieldDelUDelNVariableType
-  FieldVariableType(3)=CMISSFieldVVariableType
-  FieldVariableType(4)=CMISSFieldDelVDelNVariableType
+!   FieldVariableType(3)=CMISSFieldVVariableType
+!   FieldVariableType(4)=CMISSFieldDelVDelNVariableType
 !   FieldVariableType(5)=CMISSFieldWVariableType
 !   FieldVariableType(6)=CMISSFieldDelWDelNVariableType
-  FieldVariableType(5)=CMISSFieldU1VariableType
-  FieldVariableType(6)=CMISSFieldDelU1DelNVariableType
-!   FieldVariableType(9)=CMISSFieldU2VariableType
-!   FieldVariableType(10)=CMISSFieldDelU2DelNVariableType
-!   FieldVariableType(11)=CMISSFieldU3VariableType
-!   FieldVariableType(12)=CMISSFieldDelU3DelNVariableType
+!   FieldVariableType(5)=CMISSFieldU1VariableType
+!   FieldVariableType(6)=CMISSFieldDelU1DelNVariableType
+  FieldVariableType(3)=CMISSFieldU2VariableType
+  FieldVariableType(4)=CMISSFieldDelU2DelNVariableType
+  FieldVariableType(5)=CMISSFieldU3VariableType
+  FieldVariableType(6)=CMISSFieldDelU3DelNVariableType
 !   FieldVariableType(13)=CMISSFieldU4VariableType
 !   FieldVariableType(14)=CMISSFieldDelU4DelNVariableType
 !   FieldVariableType(15)=CMISSFieldU5VariableType
@@ -1014,15 +1014,50 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
     CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDiffusion(icompartment),&
          &  BoundaryConditionsDiffusion(icompartment),Err)
 
-! !     IF(INLET_WALL_NODES_DIFFUSION_FLAG(icompartment)) THEN
-! !       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION(icompartment)
-! !         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION(icompartment,NODE_COUNTER)
-! !         CONDITION=CMISSBoundaryConditionFixed
-! !           VALUE=0.2_CMISSDP
-! !           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(icompartment),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-! !             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
-! !       ENDDO
-! !     ENDIF
+!     IF(INLET_WALL_NODES_DIFFUSION_FLAG(icompartment)) THEN
+!       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION(icompartment)
+!         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION(icompartment,NODE_COUNTER)
+!         CONDITION=CMISSBoundaryConditionFixed
+!           VALUE=0.2_CMISSDP
+!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(icompartment),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+!             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
+!       ENDDO
+!     ENDIF
+   IF(icompartment==1)THEN
+    IF(INLET_WALL_NODES_DIFFUSION_ONE_FLAG) THEN
+      DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE
+        NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_ONE(NODE_COUNTER)
+        CONDITION=CMISSBoundaryConditionFixed
+          VALUE=0.2_CMISSDP
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(1),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+            & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
+      ENDDO
+    ENDIF
+   ENDIF
+
+   IF(icompartment==2)THEN
+    IF(INLET_WALL_NODES_DIFFUSION_TWO_FLAG) THEN
+      DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO
+        NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_TWO(NODE_COUNTER)
+        CONDITION=CMISSBoundaryConditionFixed
+          VALUE=0.4_CMISSDP
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(2),CMISSFieldU2VariableType,CMISSNoGlobalDerivative, & 
+            & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
+      ENDDO
+    ENDIF
+   ENDIF
+
+   IF(icompartment==3)THEN
+    IF(INLET_WALL_NODES_DIFFUSION_THREE_FLAG) THEN
+      DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE
+        NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_THREE(NODE_COUNTER)
+        CONDITION=CMISSBoundaryConditionFixed
+          VALUE=0.6_CMISSDP
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(3),CMISSFieldU3VariableType,CMISSNoGlobalDerivative, & 
+            & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
+      ENDDO
+    ENDIF
+   ENDIF
 
 
 !NEED TO HARDCODE IN THE VARIABLE TYPE TO EQUATION SET NUMBER MAP EXPLICITLY INTO THE EXAMPLE FILE
@@ -1031,6 +1066,8 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
 
   ENDDO
   WRITE(*,'(A)') "Boundary conditions created."
+
+
 
   !
   !
