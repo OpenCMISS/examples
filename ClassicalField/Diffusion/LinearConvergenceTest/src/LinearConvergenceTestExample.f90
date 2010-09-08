@@ -78,7 +78,7 @@ PROGRAM DIFFUSIONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=11
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopNode=0
   INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=12
-
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=13
   !Program types
   
   !Program variables
@@ -99,7 +99,7 @@ PROGRAM DIFFUSIONEXAMPLE
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField,AnalyticField
+  TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField,AnalyticField,EquationsSetField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
   TYPE(CMISSMeshType) :: Mesh
@@ -238,11 +238,14 @@ PROGRAM DIFFUSIONEXAMPLE
   CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
   
   !Create the equations_set
+  CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,EquationsSet,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetNoSourceDiffusionSubtype,&
+    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSet,Err)
   !Set the equations set to be a standard Laplace problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetNoSourceDiffusionSubtype,Err)
+!   CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
+!     & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetNoSourceDiffusionSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
