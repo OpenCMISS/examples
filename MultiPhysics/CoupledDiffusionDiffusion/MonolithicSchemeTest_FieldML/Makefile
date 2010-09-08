@@ -26,7 +26,7 @@
 # License for the specific language governing rights and limitations
 # under the License.
 #
-# The Original Code is openCMISS
+# The Original Code is OpenCMISS
 #
 # The Initial Developer of the Original Code is University of Auckland,
 # Auckland, New Zealand and University of Oxford, Oxford, United
@@ -59,14 +59,36 @@ ifndef OPENCMISS_ROOT
   GLOBAL_ROOT := $(CURDIR)/../../../..
 else
   GLOBAL_ROOT := ${OPENCMISS_ROOT}/cm/branches/multicomp
+#  GLOBAL_ROOT := ${OPENCMISS_ROOT}/cm
 endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 USEFIELDML = true
 
-EXAMPLE_PATH=ClassicalField/AdvectionDiffusion/
+EXAMPLE_PATH=MultiPhysics/CoupledDiffusionDiffusion/
 
-EXAMPLE_NAME = StaticAdvectionDiffusion_FieldML
+EXAMPLE_NAME = MonolithicSchemeTest_FieldML
 
 include $(GLOBAL_ROOT)/NewExampleMakefile
 
+# customisation begins here ---
+MAIN_OBJECT_DIR = $(GLOBAL_ROOT)/object/$(LIB_ARCH_DIR)$(MT_SUFFIX)$(DEBUG_SUFFIX)$(PROF_SUFFIX)/$(MPI)/$(COMPILER)
+MAIN_SOURCE_DIR = $(GLOBAL_ROOT)/src
+
+# let's assume fluid_mechanics_IO_routines has been built in main_object, copy them over
+# redefine preliminaries
+preliminaries: $(OBJECT_DIR) $(EXE_DIR)
+	cp $(MAIN_OBJECT_DIR)/fluid_mechanics_IO_routines.o $(OBJECT_DIR)
+	cp $(MAIN_OBJECT_DIR)/fluid_mechanics_io_routines.mod $(OBJECT_DIR)
+
+info:
+	@echo "OBJECTS:"
+	@echo $(OBJECTS)
+	@echo "OBJECT_DIR:"
+	@echo $(OBJECT_DIR)
+	@echo "MAIN_OBJECT_DIR:"
+	@echo $(MAIN_OBJECT_DIR)
+	@echo "EXAMPLE_SOURCE_DIR:"
+	@echo $(EXAMPLE_SOURCE_DIR)
+	@echo "MAIN_SOURCE_DIR:"
+	@echo $(MAIN_SOURCE_DIR)
