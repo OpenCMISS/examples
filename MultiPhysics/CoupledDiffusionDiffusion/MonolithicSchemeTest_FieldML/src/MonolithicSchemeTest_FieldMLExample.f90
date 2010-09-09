@@ -1102,6 +1102,8 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".geometric", region, mesh, GeometricField, err )
 
     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".dependent", region, mesh, DependentField, err )
+    
+    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".equations_set_field", region, mesh, EquationsSetFieldDiffusion(1), err )
 
     !CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".source", region, mesh, SourceField, err )
 

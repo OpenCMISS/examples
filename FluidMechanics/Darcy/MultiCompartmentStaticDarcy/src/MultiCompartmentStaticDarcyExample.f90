@@ -86,7 +86,7 @@ PROGRAM DARCYSTATICEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=4
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberDarcy=6
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcy=7
+  INTEGER(CMISSIntg) :: MaterialsFieldUserNumberDarcy
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=9
 
   INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
@@ -180,7 +180,7 @@ PROGRAM DARCYSTATICEXAMPLE
   TYPE(CMISSFieldsType) :: Fields
   !Field types
   TYPE(CMISSFieldType) :: GeometricField
-  TYPE(CMISSFieldType), ALLOCATABLE :: DependentFieldDarcy(:)
+  TYPE(CMISSFieldType) :: DependentFieldDarcy
   TYPE(CMISSFieldType), ALLOCATABLE :: MaterialsFieldDarcy(:)
   !Boundary conditions
   TYPE(CMISSBoundaryConditionsType), ALLOCATABLE :: BoundaryConditionsDarcy(:)
@@ -189,7 +189,7 @@ PROGRAM DARCYSTATICEXAMPLE
   TYPE(CMISSEquationsSetType), ALLOCATABLE :: EquationsSetDarcy(:)
   TYPE(CMISSEquationsSetType) :: EquationsSetMatProperties
   !Equations
-  TYPE(CMISSEquationsType) :: EquationsDarcy
+  TYPE(CMISSEquationsType), ALLOCATABLE :: EquationsDarcy(:)
   !Problems
   TYPE(CMISSProblemType) :: Problem
   !Control loops
@@ -545,10 +545,11 @@ PROGRAM DARCYSTATICEXAMPLE
 
   IF(.NOT.ALLOCATED(EquationsSetFieldDarcy)) ALLOCATE(EquationsSetFieldDarcy(Ncompartments))
   IF(.NOT.ALLOCATED(EquationsSetDarcy)) ALLOCATE(EquationsSetDarcy(Ncompartments))
-  IF(.NOT.ALLOCATED(DependentFieldDarcy)) ALLOCATE(DependentFieldDarcy(Ncompartments))
+  !IF(.NOT.ALLOCATED(DependentFieldDarcy)) ALLOCATE(DependentFieldDarcy(Ncompartments))
   IF(.NOT.ALLOCATED(MaterialsFieldDarcy)) ALLOCATE(MaterialsFieldDarcy(Ncompartments))
   IF(.NOT.ALLOCATED(BoundaryConditionsDarcy)) ALLOCATE(BoundaryConditionsDarcy(Ncompartments))
   IF(.NOT.ALLOCATED(EquationsSetIndices)) ALLOCATE(EquationsSetIndices(Ncompartments))
+  IF(.NOT.ALLOCATED(EquationsDarcy)) ALLOCATE(EquationsDarcy(Ncompartments))
 
 
   DO icomp = 1,Ncompartments
@@ -589,39 +590,109 @@ PROGRAM DARCYSTATICEXAMPLE
     CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldDarcy(icomp),CMISSFieldUVariableType, &
       & CMISSFieldValuesSetType,2,Ncompartments,Err)
   ENDDO
-
+  write (*,*) "Equations set fields now created."
   !
   !================================================================================================================================
   !
 
   !DEPENDENT FIELDS
 
-  DO icomp = 1,Ncompartments
-    !Create the equations set dependent field variables for Static Darcy
-    CALL CMISSFieldTypeInitialise(DependentFieldDarcy(icomp),Err)
-    CALL CMISSEquationsSetDependentCreateStart(EquationsSetDarcy(icomp),DependentFieldUserNumberDarcy, & 
-      & DependentFieldDarcy(icomp),Err)
-    !Set the mesh component to be used by the field components.
-    DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy(icomp),CMISSFieldUVariableType,COMPONENT_NUMBER, & 
-        & MESH_COMPONENT_NUMBER_VELOCITY,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy(icomp),CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
-        & MESH_COMPONENT_NUMBER_VELOCITY,Err)
-    ENDDO
-    COMPONENT_NUMBER=NUMBER_OF_DIMENSIONS+1
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy(icomp),CMISSFieldUVariableType,COMPONENT_NUMBER, & 
-        & MESH_COMPONENT_NUMBER_PRESSURE,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy(icomp),CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
-        & MESH_COMPONENT_NUMBER_PRESSURE,Err)
-    !Finish the equations set dependent field variables
-    CALL CMISSEquationsSetDependentCreateFinish(EquationsSetDarcy(icomp),Err)
+!   DO icomp = 1,Ncompartments
+!     !Create the equations set dependent field variables for Static Darcy
+!     CALL CMISSFieldTypeInitialise(DependentFieldDarcy(icomp),Err)
+!     CALL CMISSEquationsSetDependentCreateStart(EquationsSetDarcy(icomp),DependentFieldUserNumberDarcy, & 
+!       & DependentFieldDarcy(icomp),Err)
+!     !Set the mesh component to be used by the field components.
+!     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+!       CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy(icomp),CMISSFieldUVariableType,COMPONENT_NUMBER, & 
+!         & MESH_COMPONENT_NUMBER_VELOCITY,Err)
+!       CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy(icomp),CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
+!         & MESH_COMPONENT_NUMBER_VELOCITY,Err)
+!     ENDDO
+!     COMPONENT_NUMBER=NUMBER_OF_DIMENSIONS+1
+!       CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy(icomp),CMISSFieldUVariableType,COMPONENT_NUMBER, & 
+!         & MESH_COMPONENT_NUMBER_PRESSURE,Err)
+!       CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy(icomp),CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
+!         & MESH_COMPONENT_NUMBER_PRESSURE,Err)
+!     !Finish the equations set dependent field variables
+!     CALL CMISSEquationsSetDependentCreateFinish(EquationsSetDarcy(icomp),Err)
+! 
+!     !Initialise dependent field (velocity components)
+!     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+!       CALL CMISSFieldComponentValuesInitialise(DependentFieldDarcy(icomp),CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!         & COMPONENT_NUMBER,INITIAL_FIELD_DARCY(COMPONENT_NUMBER),Err)
+!     ENDDO
+!   ENDDO
 
-    !Initialise dependent field (velocity components)
-    DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-      CALL CMISSFieldComponentValuesInitialise(DependentFieldDarcy(icomp),CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-        & COMPONENT_NUMBER,INITIAL_FIELD_DARCY(COMPONENT_NUMBER),Err)
-    ENDDO
-  ENDDO
+   CALL CMISSFieldTypeInitialise(DependentFieldDarcy,Err)
+ 
+
+    CALL CMISSFieldCreateStart(DependentFieldUserNumberDarcy,Region,DependentFieldDarcy,Err)
+
+    CALL CMISSFieldTypeSet(DependentFieldDarcy,CMISSFieldGeneralType,Err)  
+    CALL CMISSFieldMeshDecompositionSet(DependentFieldDarcy,Decomposition,Err)
+    CALL CMISSFieldGeometricFieldSet(DependentFieldDarcy,GeometricField,Err) 
+    CALL CMISSFieldDependentTypeSet(DependentFieldDarcy,CMISSFieldDependentType,Err) 
+     CALL CMISSFieldNumberOfVariablesSet(DependentFieldDarcy,6,Err)
+     CALL CMISSFieldVariableTypesSet(DependentFieldDarcy,&
+      & (/CMISSFieldUVariableType,CMISSFieldDelUDelNVariableType,CMISSFieldU2VariableType,&
+      & CMISSFieldDelU2DelNVariableType,CMISSFieldU3VariableType,CMISSFieldDelU3DelNVariableType/),Err)
+   WRITE(*,'(A)') "set number of variables"
+     CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldUVariableType, &
+                   & CMISSFieldVectorDimensionType,Err)
+     CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldDelUDelNVariableType, &
+                   & CMISSFieldVectorDimensionType,Err)
+     CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldU2VariableType, &
+                   & CMISSFieldVectorDimensionType,Err)
+     CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldDelU2DelNVariableType, &
+                   & CMISSFieldVectorDimensionType,Err)
+     CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldU3VariableType, &
+                   & CMISSFieldVectorDimensionType,Err)
+     CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldDelU3DelNVariableType, &
+                   & CMISSFieldVectorDimensionType,Err)
+
+     CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldUVariableType,4,Err)
+     CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldDelUDelNVariableType,4,Err)
+     CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldU2VariableType,4,Err)
+     CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldDelU2DelNVariableType,4,Err)
+     CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldU3VariableType,4,Err)
+     CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldDelU3DelNVariableType,4,Err)
+   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
+        & MESH_COMPONENT_NUMBER_VELOCITY,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelUDelNVariableType,COMPONENT_NUMBER, & 
+        & MESH_COMPONENT_NUMBER_VELOCITY,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldU2VariableType,COMPONENT_NUMBER, & 
+        & MESH_COMPONENT_NUMBER_VELOCITY,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelU2DelNVariableType,COMPONENT_NUMBER, & 
+        & MESH_COMPONENT_NUMBER_VELOCITY,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldU3VariableType,COMPONENT_NUMBER, & 
+        & MESH_COMPONENT_NUMBER_VELOCITY,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelU3DelNVariableType,COMPONENT_NUMBER, & 
+        & MESH_COMPONENT_NUMBER_VELOCITY,Err)
+     ENDDO
+     COMPONENT_NUMBER=NUMBER_OF_DIMENSIONS+1
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
+        & MESH_COMPONENT_NUMBER_PRESSURE,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelUDelNVariableType,COMPONENT_NUMBER, & 
+        & MESH_COMPONENT_NUMBER_PRESSURE,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldU2VariableType,COMPONENT_NUMBER, & 
+        & MESH_COMPONENT_NUMBER_PRESSURE,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelU2DelNVariableType,COMPONENT_NUMBER, & 
+        & MESH_COMPONENT_NUMBER_PRESSURE,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldU3VariableType,COMPONENT_NUMBER, & 
+        & MESH_COMPONENT_NUMBER_PRESSURE,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelU3DelNVariableType,COMPONENT_NUMBER, & 
+        & MESH_COMPONENT_NUMBER_PRESSURE,Err)
+    CALL CMISSFieldCreateFinish(DependentFieldDarcy,Err)
+   DO icomp=1,Ncompartments
+     
+     CALL CMISSEquationsSetDependentCreateStart(EquationsSetDarcy(icomp),DependentFieldUserNumberDarcy,DependentFieldDarcy,Err)
+     CALL CMISSEquationsSetDependentCreateFinish(EquationsSetDarcy(icomp),Err)
+
+   ENDDO
+
+
 
   !
   !================================================================================================================================
@@ -631,6 +702,7 @@ PROGRAM DARCYSTATICEXAMPLE
 
   DO icomp = 1,Ncompartments
     !Create the equations set materials field variables for Static Darcy
+    MaterialsFieldUserNumberDarcy = 400+icomp
     CALL CMISSFieldTypeInitialise(MaterialsFieldDarcy(icomp),Err)
     CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDarcy(icomp),MaterialsFieldUserNumberDarcy, & 
       & MaterialsFieldDarcy(icomp),Err)
@@ -650,12 +722,12 @@ PROGRAM DARCYSTATICEXAMPLE
 
   DO icomp = 1,Ncompartments
     !Create the equations set equations
-    CALL CMISSEquationsTypeInitialise(EquationsDarcy,Err)
-    CALL CMISSEquationsSetEquationsCreateStart(EquationsSetDarcy(icomp),EquationsDarcy,Err)
+    CALL CMISSEquationsTypeInitialise(EquationsDarcy(icomp),Err)
+    CALL CMISSEquationsSetEquationsCreateStart(EquationsSetDarcy(icomp),EquationsDarcy(icomp),Err)
     !Set the equations matrices sparsity type
-    CALL CMISSEquationsSparsityTypeSet(EquationsDarcy,CMISSEquationsSparseMatrices,Err)
+    CALL CMISSEquationsSparsityTypeSet(EquationsDarcy(icomp),CMISSEquationsSparseMatrices,Err)
     !Set the equations set output
-    CALL CMISSEquationsOutputTypeSet(EquationsDarcy,EQUATIONS_DARCY_OUTPUT,Err)
+    CALL CMISSEquationsOutputTypeSet(EquationsDarcy(icomp),EQUATIONS_DARCY_OUTPUT,Err)
     !Finish the equations set equations
     CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetDarcy(icomp),Err)
   ENDDO
@@ -671,91 +743,91 @@ PROGRAM DARCYSTATICEXAMPLE
     CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDarcy(icomp),Err)
     CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDarcy(icomp),BoundaryConditionsDarcy(icomp),Err)
 
-    !--- BCs on normal velocity only
-    CONDITION = CMISSBoundaryConditionMovedWall
-
-    IF( CM%D==2_CMISSIntg ) THEN
-      DO NODE_NUMBER=1_CMISSIntg,NUMBER_OF_NODES_GEOMETRY
-        COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
-        COORD_Y = CM%N(NODE_NUMBER,2_CMISSIntg)
-
-        IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
-          !x-velocity
-          VALUE = 1.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icomp),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-            & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
-        END IF
-        !
-        IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
-          !x-velocity
-          VALUE = 1.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icomp),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-            & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
-        END IF
-        !
-        IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
-          !y-velocity
-          VALUE = 2.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icomp),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-            & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
-        END IF
-        !
-        IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
-          !y-velocity
-          VALUE = 2.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icomp),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-            & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
-        END IF
-      END DO
-    ELSE IF( CM%D==3_CMISSIntg ) THEN
-      DO NODE_NUMBER=1_CMISSIntg,NUMBER_OF_NODES_GEOMETRY
-        COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
-        COORD_Y = CM%N(NODE_NUMBER,2_CMISSIntg)
-        COORD_Z = CM%N(NODE_NUMBER,3_CMISSIntg)
-
-        IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
-          !x-velocity
-          VALUE = 2.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icomp),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-            & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
-        END IF
-        !
-        IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
-          !x-velocity
-          VALUE = 1.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icomp),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-            & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
-        END IF
-        !
-        IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
-          !y-velocity
-          VALUE = 1.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icomp),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-            & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
-        END IF
-        !
-        IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
-          !y-velocity
-          VALUE = 2.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icomp),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-            & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
-        END IF
-        !
-        IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) ) THEN
-          !z-velocity
-          VALUE = 1.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icomp),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-            & NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
-        END IF
-        !
-        IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) THEN
-          !z-velocity
-          VALUE = 1.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icomp),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-            & NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
-        END IF
-      END DO
-    END IF
+!     !--- BCs on normal velocity only
+!     CONDITION = CMISSBoundaryConditionMovedWall
+! 
+!     IF( CM%D==2_CMISSIntg ) THEN
+!       DO NODE_NUMBER=1_CMISSIntg,NUMBER_OF_NODES_GEOMETRY
+!         COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
+!         COORD_Y = CM%N(NODE_NUMBER,2_CMISSIntg)
+! 
+!         IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
+!           !x-velocity
+!           VALUE = 1.0_CMISSDP
+!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icomp),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+!             & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+!         END IF
+!         !
+!         IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
+!           !x-velocity
+!           VALUE = 1.0_CMISSDP
+!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icomp),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+!             & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+!         END IF
+!         !
+!         IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
+!           !y-velocity
+!           VALUE = 2.0_CMISSDP
+!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icomp),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+!             & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+!         END IF
+!         !
+!         IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
+!           !y-velocity
+!           VALUE = 2.0_CMISSDP
+!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icomp),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+!             & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+!         END IF
+!       END DO
+!     ELSE IF( CM%D==3_CMISSIntg ) THEN
+!       DO NODE_NUMBER=1_CMISSIntg,NUMBER_OF_NODES_GEOMETRY
+!         COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
+!         COORD_Y = CM%N(NODE_NUMBER,2_CMISSIntg)
+!         COORD_Z = CM%N(NODE_NUMBER,3_CMISSIntg)
+! 
+!         IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
+!           !x-velocity
+!           VALUE = 2.0_CMISSDP
+!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icomp),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+!             & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+!         END IF
+!         !
+!         IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
+!           !x-velocity
+!           VALUE = 1.0_CMISSDP
+!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icomp),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+!             & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+!         END IF
+!         !
+!         IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
+!           !y-velocity
+!           VALUE = 1.0_CMISSDP
+!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icomp),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+!             & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+!         END IF
+!         !
+!         IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
+!           !y-velocity
+!           VALUE = 2.0_CMISSDP
+!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icomp),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+!             & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+!         END IF
+!         !
+!         IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) ) THEN
+!           !z-velocity
+!           VALUE = 1.0_CMISSDP
+!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icomp),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+!             & NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
+!         END IF
+!         !
+!         IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) THEN
+!           !z-velocity
+!           VALUE = 1.0_CMISSDP
+!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icomp),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+!             & NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
+!         END IF
+!       END DO
+!     END IF
 
     !Finish the creation of the equations set boundary conditions for Darcy
     CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDarcy(icomp),Err)
@@ -871,7 +943,7 @@ PROGRAM DARCYSTATICEXAMPLE
 
   IF (ALLOCATED(EquationsSetFieldDarcy)) DEALLOCATE(EquationsSetFieldDarcy)
   IF (ALLOCATED(EquationsSetDarcy)) DEALLOCATE(EquationsSetDarcy)
-  IF (ALLOCATED(DependentFieldDarcy)) DEALLOCATE(DependentFieldDarcy)
+!  IF (ALLOCATED(DependentFieldDarcy)) DEALLOCATE(DependentFieldDarcy)
   IF (ALLOCATED(MaterialsFieldDarcy)) DEALLOCATE(MaterialsFieldDarcy)
   IF (ALLOCATED(BoundaryConditionsDarcy)) DEALLOCATE(BoundaryConditionsDarcy)
   IF (ALLOCATED(EquationsSetIndices)) DEALLOCATE(EquationsSetIndices)
