@@ -185,7 +185,7 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
 #endif
   
   !Generic CMISS variables
-  
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber,BoundaryNodeDomain
   INTEGER(CMISSIntg) :: EquationsSetIndex
   INTEGER(CMISSIntg) :: Err
   
@@ -199,6 +199,25 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   !If attempt fails set with system estimated values
   IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
 #endif
+
+  !================================================================================================================================
+  !
+
+  !INITIALISE OPENCMISS
+
+  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
+
+  CALL CMISSOutputSetOn("Testing",Err)
+  !CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+
+  !================================================================================================================================
+  !
+
+  !CHECK COMPUTATIONAL NODE
+
+  !Get the computational nodes information
+  CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
+  CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
   !
   !================================================================================================================================
@@ -220,7 +239,7 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   NUMBER_OF_NODES_VELOCITY=3
   NUMBER_OF_NODES_AREA=3
   NUMBER_OF_NODES_PRESSURE=3
-  TOTAL_NUMBER_OF_NODES=3
+  TOTAL_NUMBER_OF_NODES=12
   TOTAL_NUMBER_OF_ELEMENTS=1
   NUMBER_OF_ELEMENT_NODES_SPACE=3
   NUMBER_OF_ELEMENT_NODES_VELOCITY=3
@@ -231,7 +250,7 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   INITIAL_FIELD_NAVIER_STOKES(2)=18.1_CMISSDP
   INITIAL_FIELD_NAVIER_STOKES(3)=10.0_CMISSDP
   !Set boundary conditions
-  OUTLET_WALL_NODES_NAVIER_STOKES_FLAG=.TRUE.
+  !OUTLET_WALL_NODES_NAVIER_STOKES_FLAG=.TRUE.
   INLET_WALL_NODES_NAVIER_STOKES_FLAG=.TRUE.
 
   IF(INLET_WALL_NODES_NAVIER_STOKES_FLAG) THEN
@@ -271,13 +290,13 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   EQUATIONS_NAVIER_STOKES_OUTPUT=CMISSEquationsNoOutput
   !Set time parameter
   DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME=0.0_CMISSDP
-  DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME=1.0_CMISSDP
-  DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT=0.2_CMISSDP
+  DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME=2.0_CMISSDP
+  DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT=1.0_CMISSDP
   DYNAMIC_SOLVER_NAVIER_STOKES_THETA=1.0_CMISSDP/2.0_CMISSDP
   !Set result output parameter
   DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY=1
   !Set solver parameters
-  LINEAR_SOLVER_NAVIER_STOKES_DIRECT_FLAG=.FALSE.
+  LINEAR_SOLVER_NAVIER_STOKES_DIRECT_FLAG=.TRUE.
   RELATIVE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-05_CMISSDP
   ABSOLUTE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-10_CMISSDP
   DIVERGENCE_TOLERANCE=1.0E20 !default: 1.0E5
@@ -285,17 +304,6 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   RESTART_VALUE=3000 !default: 30
   LINESEARCH_ALPHA=1.0
 
-
-  !
-  !================================================================================================================================
-  !
-
-  !INITIALISE OPENCMISS
-
-  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
-
-  CALL CMISSOutputSetOn("Testing",Err)
-  !CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
   !
   !================================================================================================================================
   !
@@ -446,7 +454,7 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   !Update the geometric field parameters
   DO NODE_NUMBER=1,NUMBER_OF_NODES_SPACE
     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-      VALUE=(NODE_NUMBER-1)*0.1
+      VALUE=(NODE_NUMBER-1)*0.5
       CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
         & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
@@ -645,7 +653,7 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   !Set the nonlinear Jacobian type
   CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
  !Set the nonlinear Jacobian type
-  !CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISSSolverNewtonJacobianFDCalculated,Err)
+!  CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISSSolverNewtonJacobianFDCalculated,Err)
    !Set the output type
   !CALL CMISSSolverOutputTypeSet(NonlinearSolverNavierStokes,NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE,Err)
   !Set the output type
@@ -702,8 +710,6 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   !Turn of PETSc error handling
   !CALL PETSC_ERRORHANDLING_SET_ON(ERR,ERROR,*999)
 
-  !CALL CMISSOutputSetOn("Output",Err)
-
   !Solve the problem
   WRITE(*,'(A)') "Solving problem..."
   CALL CMISSProblemSolve(Problem,Err)
@@ -727,7 +733,7 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   ENDIF
   
   !Finialise CMISS
-  CALL CMISSFinalise(Err)
+!  CALL CMISSFinalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
   
