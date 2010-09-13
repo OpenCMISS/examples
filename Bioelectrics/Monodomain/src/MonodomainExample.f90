@@ -274,6 +274,8 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSCellMLModelsCreateStart(CellML,Err)
   !Import a Noble 1998 model from a file
   CALL CMISSCellMLModelImport(1,CellML,"n98.xml",Err)
+  ! and import JRW 1998 from a file
+  CALL CMISSCellMLModelImport(1,CellML,"jrw-1998.xml",Err)
   !Finish the creation of CellML models
   CALL CMISSCellMLModelsCreateFinish(CellML,Err)
 
