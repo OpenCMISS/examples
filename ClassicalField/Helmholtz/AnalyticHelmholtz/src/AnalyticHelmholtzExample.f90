@@ -59,6 +59,10 @@ PROGRAM ANALYTICHELMHOLTZEXAMPLE
 
   IMPLICIT NONE
 
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
+
   !Test program parameters
 
   REAL(CMISSDP), PARAMETER :: ORIGIN(2)=(/-3.141592653579_CMISSDP/2, -3.141592653579_CMISSDP/2/)
@@ -365,10 +369,12 @@ CONTAINS
 
     !Create the equations set
     CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-    CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,EquationsSet,Err)
+      CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetHelmholtzEquationType,CMISSEquationsSetStandardHelmholtzSubtype,EquationsSetFieldUserNumber, &
+    & EquationsSetField,EquationsSet,Err)
     !Set the equations set to be a standard Helmholtz problem
-    CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
-      & CMISSEquationsSetHelmholtzEquationType,CMISSEquationsSetStandardHelmholtzSubtype,Err)
+    
     !Finish creating the equations set
     CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
   

@@ -59,6 +59,10 @@ PROGRAM ANALYTICLAPLACEEXAMPLE
 
   IMPLICIT NONE
 
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
+
   !Test program parameters
 
   REAL(CMISSDP), PARAMETER :: ORIGIN(2)=(/-3.141592653579_CMISSDP/2, -3.141592653579_CMISSDP/2/)
@@ -440,10 +444,12 @@ CONTAINS
 
     !Create the equations_set
     CALL CMISSEquationsSetTypeInitialise(EQUATIONS_SET,Err)
-    CALL CMISSEquationsSetCreateStart(1,REGION,GEOMETRIC_FIELD,EQUATIONS_SET,Err)
+      CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(1,REGION,GEOMETRIC_FIELD,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,EquationsSetFieldUserNumber,EquationsSetField, &
+    & EQUATIONS_SET,Err)
     !Set the equations set to be a standard Laplace problem
-    CALL CMISSEquationsSetSpecificationSet(EQUATIONS_SET,CMISSEquationsSetClassicalFieldClass, &
-      & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,Err)
+    
     !Finish creating the equations set
     CALL CMISSEquationsSetCreateFinish(EQUATIONS_SET,Err)
   
