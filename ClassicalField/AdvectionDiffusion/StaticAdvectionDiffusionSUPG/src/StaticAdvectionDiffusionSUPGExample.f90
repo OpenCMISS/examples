@@ -245,8 +245,7 @@ PROGRAM STATICADVECTIONDIFFUSIONSUPGEXAMPLE
     CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
   CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
     & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetConstantSourceStaticAdvecDiffSUPGSubtype,&
-    & EquationsSetFieldUserNumber,&
-    & EquationsSetField,EquationsSet,Err)
+    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSet,Err)
   !Set the equations set to be a standard Laplace problem
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)

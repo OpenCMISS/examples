@@ -468,8 +468,8 @@ PROGRAM ADVECTIONDIFFUSIONIOALEEXAMPLE
   CALL CMISSEquationsSetTypeInitialise(EquationsSetAdvecDiff,Err)
     CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
   CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberAdvecDiff,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetNoSourceStaticAdvecDiffSubtype,EquationsSetFieldUserNumber,&
-    & EquationsSetField,EquationsSetAdvecDiff,Err)
+    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetNoSourceALEAdvectionDiffusionSubtype,&
+    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSetAdvecDiff,Err)
   !Set the equations set to be a standard Laplace problem
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetAdvecDiff,Err)
