@@ -1,4 +1,5 @@
-# -*- makefile -*-
+#
+#-*- makefile -*-
 #
 # For use with GNU make.
 #
@@ -58,7 +59,7 @@ ifndef OPENCMISS_ROOT
   OPENCMISS_ROOT := ../../..
   GLOBAL_ROOT := $(CURDIR)/../../..
 else
-  GLOBAL_ROOT := ${OPENCMISS_ROOT}/cm
+  GLOBAL_ROOT := ${OPENCMISS_ROOT}/cm/branches/multicomp
 endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
