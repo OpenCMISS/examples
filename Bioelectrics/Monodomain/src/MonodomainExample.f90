@@ -95,6 +95,9 @@ PROGRAM MONODOMAINEXAMPLE
 
   LOGICAL :: EXPORT_FIELD
 
+  INTEGER(CMISSIntg) :: N
+  REAL(CMISSDP) :: CELL_TYPE
+
   !CMISS variables
 
   TYPE(CMISSBasisType) :: Basis
@@ -275,12 +278,22 @@ PROGRAM MONODOMAINEXAMPLE
   !Import a Noble 1998 model from a file
   CALL CMISSCellMLModelImport(1,CellML,"n98.xml",Err)
   ! and import JRW 1998 from a file
-  CALL CMISSCellMLModelImport(1,CellML,"jrw-1998.xml",Err)
+  CALL CMISSCellMLModelImport(2,CellML,"jrw-1998.xml",Err)
   !Finish the creation of CellML models
   CALL CMISSCellMLModelsCreateFinish(CellML,Err)
 
   !Start the creation of the CellML models field
+  CALL CMISSFieldTypeInitialise(CellMLModelsField,Err)
   CALL CMISSCellMLModelsFieldCreateStart(CellMLModelsFieldUserNumber,CellML,CellMLModelsField,Err)
+  ! set up the models field
+  DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
+    IF(N < 5) THEN
+        CELL_TYPE = 1
+    ELSE
+        CELL_TYPE = 2
+    ENDIF
+    CALL CMISSFieldParameterSetUpdateNode(CellMLModelsField, CMISSFieldUVariableType, CMISSFieldValuesSetType,1,N,1,CELL_TYPE,Err)
+  END DO
   !Finish the creation of the CellML models field
   CALL CMISSCellMLModelsFieldCreateFinish(CellML,Err)
 
@@ -308,6 +321,7 @@ PROGRAM MONODOMAINEXAMPLE
   !Generate the CellML
   CALL CMISSCellMLGenerate(CellML,Err)
   
+#ifdef UP_TO_HERE
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
   CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
@@ -387,6 +401,8 @@ PROGRAM MONODOMAINEXAMPLE
 
   !Solve the problem
   CALL CMISSProblemSolve(Problem,Err)
+
+#endif /* UP_TO_HERE */
 
   EXPORT_FIELD=.TRUE.
   IF(EXPORT_FIELD) THEN
