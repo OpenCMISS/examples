@@ -123,6 +123,11 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
   REAL(CMISSDP) :: FibreFieldAngle(3) 
   REAL(CMISSDP) :: nu,theta,omega,XI3,XI3delta,XI2delta, zero
   INTEGER(CMISSIntg) ::i,j,k,component_idx,node_idx,TOTAL_NUMBER_NODES_XI(3)
+  !For grabbing surfaces
+  INTEGER(CMISSIntg) :: InnerNormalXi,OuterNormalXi,TopNormalXi
+  INTEGER(CMISSIntg), ALLOCATABLE :: InnerSurfaceNodes(:)
+  INTEGER(CMISSIntg), ALLOCATABLE :: OuterSurfaceNodes(:)
+  INTEGER(CMISSIntg), ALLOCATABLE :: TopSurfaceNodes(:)
 
   !CMISS variables
 
@@ -409,6 +414,11 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
   !Prescribe boundary conditions (absolute nodal parameters)
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
+
+  !Grab the list of nodes on inner, outer and top surfaces
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshEllipsoidTopSurfaceType,TopSurfaceNodes,TopNormalXi,Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshEllipsoidInnerSurfaceType,InnerSurfaceNodes,InnerNormalXi,Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshEllipsoidOuterSurfaceType,OuterSurfaceNodes,OuterNormalXi,Err)
 
   ! LEAVE THESE FOR NOW - will fix later
 
