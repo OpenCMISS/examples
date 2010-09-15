@@ -97,6 +97,8 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberMatProperties=13
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=14
   INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumberSolid=15
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberDarcy=22
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberMatProperties=23
 
   INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopSolidNumber=1
@@ -211,6 +213,8 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 !   TYPE(CMISSFieldType) :: IndependentFieldDarcy
 !   TYPE(CMISSFieldType) :: IndependentFieldMatProperties
   TYPE(CMISSFieldType) :: IndependentFieldSolid
+  TYPE(CMISSFieldType) :: EquationsSetFieldDarcy
+  TYPE(CMISSFieldType) :: EquationsSetFieldMatProperties
   !Boundary conditions
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDarcy
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsMatProperties 
@@ -280,6 +284,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentFluidNumberOfComponents=4
 ! 
   INTEGER(CMISSIntg), PARAMETER :: EquationSetSolidUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldSolidUserNumber=25
 ! 
 !   !Program types
 ! 
@@ -292,7 +297,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsSolid
   TYPE(CMISSEquationsType) :: EquationsSolid
   TYPE(CMISSEquationsSetType) :: EquationsSetSolid
-  TYPE(CMISSFieldType) :: GeometricFieldSolid,FibreFieldSolid,MaterialFieldSolid,DependentFieldSolid
+  TYPE(CMISSFieldType) :: GeometricFieldSolid,FibreFieldSolid,MaterialFieldSolid,DependentFieldSolid,EquationsSetFieldSolid
 !   TYPE(CMISSFieldsType) :: FieldsSolid
   TYPE(CMISSSolverType) :: SolverSolid !,LinearSolverSolid
   TYPE(CMISSSolverEquationsType) :: SolverEquationsSolid
@@ -777,21 +782,27 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !EQUATIONS SETS
 
   !Create the equations set for ALE Darcy
+  CALL CMISSFieldTypeInitialise(EquationsSetFieldDarcy,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSetDarcy,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDarcy,Region,GeometricField,EquationsSetDarcy,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDarcy,Region,GeometricField,CMISSEquationsSetFluidMechanicsClass, &
+     & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetIncompressibleFiniteElasticityDarcySubtype,&
+     & EquationsSetFieldUserNumberDarcy,EquationsSetFieldDarcy,EquationsSetDarcy,Err)
   !Set the equations set to be a ALE Darcy problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetDarcy,CMISSEquationsSetFluidMechanicsClass, &
-!     & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetALEDarcySubtype,Err)
-    & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetIncompressibleFiniteElasticityDarcySubtype,Err)
+!   CALL CMISSEquationsSetSpecificationSet(EquationsSetDarcy,CMISSEquationsSetFluidMechanicsClass, &
+! !     & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetALEDarcySubtype,Err)
+!     & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetIncompressibleFiniteElasticityDarcySubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetDarcy,Err)
 
   !Create the equations set for deformation-dependent material properties
+  CALL CMISSFieldTypeInitialise(EquationsSetFieldMatProperties,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSetMatProperties,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberMatProperties,Region,GeometricField,EquationsSetMatProperties,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberMatProperties,Region,GeometricField,CMISSEquationsSetClassicalFieldClass,&
+     & CMISSEquationsSetGalerkinProjectionEquationType,CMISSEquationsSetMatPropertiesGalerkinProjectionSubtype,&
+     & EquationsSetFieldUserNumberMatProperties,EquationsSetFieldMatProperties,EquationsSetMatProperties,Err)
   !Set the equations set to be a deformation-dependent material properties problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetMatProperties,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetGalerkinProjectionEquationType,CMISSEquationsSetMatPropertiesGalerkinProjectionSubtype,Err)
+!   CALL CMISSEquationsSetSpecificationSet(EquationsSetMatProperties,CMISSEquationsSetClassicalFieldClass, &
+!     & CMISSEquationsSetGalerkinProjectionEquationType,CMISSEquationsSetMatPropertiesGalerkinProjectionSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetMatProperties,Err)
 
@@ -800,12 +811,16 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   ! Solid
 
   !Create the equations_set
-  CALL CMISSEquationsSetCreateStart(EquationSetSolidUserNumber,Region,FibreFieldSolid,EquationsSetSolid,Err)
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetSolid,CMISSEquationsSetElasticityClass, &
-!     & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetNoSubtype,Err)
-!     & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetMooneyRivlinSubtype,Err)
-!     & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetCompressibleFiniteElasticitySubtype,Err)
-    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetIncompressibleFiniteElasticityDarcySubtype,Err)
+  CALL CMISSFieldTypeInitialise(EquationsSetFieldSolid,Err)
+  CALL CMISSEquationsSetTypeInitialise(EquationsSetSolid,Err)
+  CALL CMISSEquationsSetCreateStart(EquationSetSolidUserNumber,Region,FibreFieldSolid,CMISSEquationsSetElasticityClass, &
+    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetIncompressibleFiniteElasticityDarcySubtype,&
+    & EquationsSetFieldSolidUserNumber,EquationsSetFieldSolid,EquationsSetSolid,Err)
+!   CALL CMISSEquationsSetSpecificationSet(EquationsSetSolid,CMISSEquationsSetElasticityClass, &
+! !     & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetNoSubtype,Err)
+! !     & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetMooneyRivlinSubtype,Err)
+! !     & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetCompressibleFiniteElasticitySubtype,Err)
+!     & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetIncompressibleFiniteElasticityDarcySubtype,Err)
   CALL CMISSEquationsSetCreateFinish(EquationsSetSolid,Err)
 
   ! end Solid

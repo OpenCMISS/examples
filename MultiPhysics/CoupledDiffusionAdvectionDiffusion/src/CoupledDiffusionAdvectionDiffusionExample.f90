@@ -95,6 +95,8 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDiffusion=13
   INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumberAdvectionDiffusion=15
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberAdvectionDiffusion=22
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberDiffusion=23
 
   INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: NumberOfUserDomains=1
@@ -214,6 +216,8 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
   TYPE(CMISSFieldType) :: SourceFieldAdvectionDiffusion
   TYPE(CMISSFieldType) :: SourceFieldDiffusion
   TYPE(CMISSFieldType) :: InDependentFieldAdvectionDiffusion
+  TYPE(CMISSFieldType) :: EquationsSetFieldAdvectionDiffusion
+  TYPE(CMISSFieldType) :: EquationsSetFieldDiffusion
   !Boundary conditions
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsAdvectionDiffusion
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDiffusion
@@ -656,21 +660,28 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
   !EQUATIONS SETS
 
   !Create the equations set for diffusion_one
+  CALL CMISSFieldTypeInitialise(EquationsSetFieldAdvectionDiffusion,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSetAdvectionDiffusion,Err)
   CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberAdvectionDiffusion,Region,GeometricField,&
-    & EquationsSetAdvectionDiffusion,Err)
+    & CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetCoupledSourceDiffusionAdvecDiffusionSubtype,&
+    & EquationsSetFieldUserNumberAdvectionDiffusion,EquationsSetFieldAdvectionDiffusion,EquationsSetAdvectionDiffusion,Err)
   !Set the equations set to be a linear source diffusion problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetAdvectionDiffusion,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetCoupledSourceDiffusionAdvecDiffusionSubtype,Err)
+!   CALL CMISSEquationsSetSpecificationSet(EquationsSetAdvectionDiffusion,CMISSEquationsSetClassicalFieldClass, &
+!     & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetCoupledSourceDiffusionAdvecDiffusionSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetAdvectionDiffusion,Err)
 
   !Create the equations set for diffusion_two
+  CALL CMISSFieldTypeInitialise(EquationsSetFieldDiffusion,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSetDiffusion,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDiffusion,Region,GeometricField,EquationsSetDiffusion,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDiffusion,Region,GeometricField,&
+    & CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetCoupledSourceDiffusionAdvecDiffusionSubtype,&
+    & EquationsSetFieldUserNumberDiffusion,EquationsSetFieldDiffusion,EquationsSetDiffusion,Err)
   !Set the equations set to be a constant source diffusion problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetDiffusion,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetCoupledSourceDiffusionAdvecDiffusionSubtype,Err)
+!   CALL CMISSEquationsSetSpecificationSet(EquationsSetDiffusion,CMISSEquationsSetClassicalFieldClass, &
+!     & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetCoupledSourceDiffusionAdvecDiffusionSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetDiffusion,Err)
   !-------------------------------------------------------------------------------------
