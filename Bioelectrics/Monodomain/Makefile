@@ -1,4 +1,5 @@
-# -*- makefile -*-
+#
+#-*- makefile -*-
 #
 # For use with GNU make.
 #

@@ -58,6 +58,10 @@ PROGRAM MONODOMAINTP06EXAMPLE
 
   IMPLICIT NONE
 
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
+
   REAL(CMISSDP), PARAMETER :: HEIGHT=7.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: WIDTH=20.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
@@ -244,9 +248,11 @@ PROGRAM MONODOMAINTP06EXAMPLE
   
   !Create the equations_set
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,EquationsSet,Err)
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetBioelectricsClass,&
-    & CMISSEquationsSetMonodomainSSEquationType,CMISSEquationsSetMonodomainTenTusscher06Subtype,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetBioelectricsClass, &
+    & CMISSEquationsSetMonodomainSSEquationType,CMISSEquationsSetMonodomainTenTusscher06Subtype,EquationsSetFieldUserNumber, &
+    & EquationsSetField,EquationsSet,Err)
+  
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 

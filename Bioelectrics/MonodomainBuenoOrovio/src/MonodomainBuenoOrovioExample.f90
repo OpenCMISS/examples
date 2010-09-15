@@ -59,6 +59,10 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
 
   IMPLICIT NONE
 
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
+
   !Test program parameters
 
   REAL(CMISSDP), PARAMETER :: HEIGHT=7.0_CMISSDP
@@ -245,13 +249,10 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
   
   !Create the equations_set
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,EquationsSet,Err)
-  !Set the equations set to be a standard Monodomain problem
-  !CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
-  !  & CMISSEquationsSetMonodomainEquationType,CMISSEquationsSetStandardMonodomainSubtype,Err)
-  !Set the equations set to be a generalised Monodomain problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSProblemBioelectricsClass,&
-    & CMISSEquationsSetMonodomainSSEquationType,CMISSEquationsSetMonodomainBuenoOrovioSubtype,Err)
+  CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSProblemBioelectricsClass, &
+    & CMISSEquationsSetMonodomainSSEquationType,CMISSEquationsSetMonodomainBuenoOrovioSubtype,EquationsSetFieldUserNumber, &
+    & EquationsSetField,EquationsSet,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 

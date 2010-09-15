@@ -60,6 +60,10 @@ PROGRAM DIFFUSIONIOALEEXAMPLE
 
   IMPLICIT NONE
 
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
+
   !Test program parameters
   
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -234,7 +238,9 @@ PROGRAM DIFFUSIONIOALEEXAMPLE
   BASIS_NUMBER_CONCENTRATION=CM%ID_V
   NUMBER_OF_DIMENSIONS=CM%D
   BASIS_TYPE=CM%IT_T
-  BASIS_XI_INTERPOLATION_SPACE=CM%IT_M
+!  BASIS_XI_INTERPOLATION_SPACE=CM%IT_M
+  BASIS_XI_INTERPOLATION_SPACE=CMISSBasisLinearLagrangeInterpolation
+
   BASIS_XI_INTERPOLATION_CONCENTRATION=CM%IT_V
   NUMBER_OF_NODES_SPACE=CM%N_M
   NUMBER_OF_NODES_CONCENTRATION=CM%N_V
@@ -465,10 +471,12 @@ PROGRAM DIFFUSIONIOALEEXAMPLE
   
   !Create the equations_set
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,EquationsSet,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetNoSourceALEDiffusionSubtype,EquationsSetFieldUserNumber, &
+    & EquationsSetField,EquationsSet,Err)
   !Set the equations set to be a standard Laplace problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetNoSourceALEDiffusionSubtype,Err)
+  
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
  !

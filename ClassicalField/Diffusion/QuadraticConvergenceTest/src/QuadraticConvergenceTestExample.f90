@@ -59,6 +59,10 @@ PROGRAM DIFFUSIONEXAMPLE
 
   IMPLICIT NONE
 
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
+
   !Test program parameters
 
   REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
@@ -241,10 +245,12 @@ PROGRAM DIFFUSIONEXAMPLE
   
   !Create the equations_set
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,EquationsSet,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetNoSourceDiffusionSubtype,EquationsSetFieldUserNumber, &
+    & EquationsSetField,EquationsSet,Err)
   !Set the equations set to be a standard Laplace problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetNoSourceDiffusionSubtype,Err)
+  
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
@@ -342,6 +348,7 @@ PROGRAM DIFFUSIONEXAMPLE
   !Create the problem control
   CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
+  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   !Get the control loop
   CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
   !Set the times

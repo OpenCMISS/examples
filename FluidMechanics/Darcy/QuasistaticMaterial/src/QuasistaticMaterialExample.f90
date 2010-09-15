@@ -95,6 +95,8 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDarcy=12
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberMatProperties=13
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberDarcy=21
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberMatProperties=22
 
   INTEGER(CMISSIntg), PARAMETER :: SolverMatPropertiesUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: SolverDarcyUserNumber=2
@@ -201,6 +203,8 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   TYPE(CMISSFieldType) :: DependentFieldMatProperties
   TYPE(CMISSFieldType) :: MaterialsFieldDarcy
   TYPE(CMISSFieldType) :: MaterialsFieldMatProperties
+  TYPE(CMISSFieldType) :: EquationsSetFieldDarcy
+  TYPE(CMISSFieldType) :: EquationsSetFieldMatProperties  
 !   TYPE(CMISSFieldType) :: IndependentFieldDarcy
 !   TYPE(CMISSFieldType) :: IndependentFieldMatProperties
   !Boundary conditions
@@ -588,20 +592,26 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   !EQUATIONS SETS
 
   !Create the equations set for ALE Darcy
+  CALL CMISSFieldTypeInitialise(EquationsSetFieldDarcy,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSetDarcy,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDarcy,Region,GeometricField,EquationsSetDarcy,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDarcy,Region,GeometricField,CMISSEquationsSetFluidMechanicsClass, &
+    & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetALEDarcySubtype,EquationsSetFieldUserNumberDarcy,&
+    & EquationsSetFieldDarcy,EquationsSetDarcy,Err)
   !Set the equations set to be a ALE Darcy problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetDarcy,CMISSEquationsSetFluidMechanicsClass, &
-    & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetALEDarcySubtype,Err)
+!   CALL CMISSEquationsSetSpecificationSet(EquationsSetDarcy,CMISSEquationsSetFluidMechanicsClass, &
+!     & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetALEDarcySubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetDarcy,Err)
 
   !Create the equations set for deformation-dependent material properties
+  CALL CMISSFieldTypeInitialise(EquationsSetFieldMatProperties,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSetMatProperties,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberMatProperties,Region,GeometricField,EquationsSetMatProperties,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberMatProperties,Region,GeometricField,CMISSEquationsSetClassicalFieldClass,&
+    & CMISSEquationsSetGalerkinProjectionEquationType,CMISSEquationsSetMatPropertiesGalerkinProjectionSubtype,&
+    & EquationsSetFieldUserNumberMatProperties,EquationsSetFieldMatProperties,EquationsSetMatProperties,Err)
   !Set the equations set to be a deformation-dependent material properties problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetMatProperties,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetGalerkinProjectionEquationType,CMISSEquationsSetMatPropertiesGalerkinProjectionSubtype,Err)
+!   CALL CMISSEquationsSetSpecificationSet(EquationsSetMatProperties,CMISSEquationsSetClassicalFieldClass, &
+!     & CMISSEquationsSetGalerkinProjectionEquationType,CMISSEquationsSetMatPropertiesGalerkinProjectionSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetMatProperties,Err)
 

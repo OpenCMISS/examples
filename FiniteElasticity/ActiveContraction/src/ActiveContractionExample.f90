@@ -48,6 +48,10 @@ PROGRAM ActiveContractionExample
 
   IMPLICIT NONE
 
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
+
   !Test program parameters
 
   REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
@@ -298,9 +302,11 @@ PROGRAM ActiveContractionExample
   ENDIF  ! TEST GP FIELD
 
   !Create the equations_set
-  CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,EquationsSet,Err)
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetElasticityClass, &
-    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetActiveContractionSubtype,Err) ! CHANGED
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSEquationsSetElasticityClass, &
+    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetActiveContractionSubtype,EquationsSetFieldUserNumber, &
+    & EquationsSetField,EquationsSet,Err)
+   ! CHANGED
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
   !Create the dependent field

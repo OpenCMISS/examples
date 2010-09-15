@@ -88,17 +88,36 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=4
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=6
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDiffusionOne=9
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDiffusionTwo=10
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDiffusionThree=11
-  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumberDiffusionOne=15
-  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumberDiffusionTwo=16
-  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumberDiffusionThree=17
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDiffusionOne=12
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDiffusionTwo=13
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDiffusionThree=14
+  INTEGER(CMISSIntg) :: MaterialsFieldUserNumberDiffusion
+!   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDiffusionTwo=10
+!   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDiffusionThree=11
+  INTEGER(CMISSIntg) :: SourceFieldUserNumberDiffusion
+!   INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumberDiffusionTwo=16
+!   INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumberDiffusionThree=17
+  INTEGER(CMISSIntg) :: EquationsSetUserNumberDiffusion
+!   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDiffusionTwo=13
+!   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDiffusionThree=14
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=20
+!!!!!!!!!!!!!!!!!!!EQUATIONS FIELD PARAMETERS
+  INTEGER(CMISSIntg), PARAMETER :: EquationsFieldDiffusionOne=33
+  INTEGER(CMISSIntg), PARAMETER :: EquationsFieldDiffusionTwo=34
+  INTEGER(CMISSIntg), PARAMETER :: EquationsFieldDiffusionThree=35
 
+
+
+
+
+  INTEGER(CMISSIntg) :: EquationsSetFieldUserNumberDiffusion
+  INTEGER(CMISSIntg) :: icompartment,Ncompartments
+
+  
+  !INTEGER(CMISSIntg), ALLOCATABLE, DIMENSION(:) :: 
+
+
+
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: NumberOfUserDomains=1
   INTEGER(CMISSIntg), PARAMETER :: SolverDiffusionUserNumber=1
@@ -153,7 +172,7 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   INTEGER(CMISSIntg) :: NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO
   INTEGER(CMISSIntg) :: NUMBER_OF_FIXED_WALL_NODES_DIFFUSION_THREE
   INTEGER(CMISSIntg) :: NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE
-  INTEGER(CMISSIntg) :: EQUATIONS_DIFFUSION_ONE_OUTPUT
+  INTEGER(CMISSIntg) :: EQUATIONS_DIFFUSION_OUTPUT
   INTEGER(CMISSIntg) :: EQUATIONS_DIFFUSION_TWO_OUTPUT
   INTEGER(CMISSIntg) :: EQUATIONS_DIFFUSION_THREE_OUTPUT
   INTEGER(CMISSIntg) :: COMPONENT_NUMBER
@@ -210,6 +229,9 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   TYPE(CMISSBasisType) :: BasisConcOne
   TYPE(CMISSBasisType) :: BasisConcTwo
   TYPE(CMISSBasisType) :: BasisConcThree
+  
+  !TYPE(CMISSBasisType), ALLOCATABLE, DIMENSION(:) :: BasicConc
+
   !Nodes
   TYPE(CMISSNodesType) :: Nodes
   !Elements
@@ -217,6 +239,8 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   TYPE(CMISSMeshElementsType) :: MeshElementsConcOne
   TYPE(CMISSMeshElementsType) :: MeshElementsConcTwo
   TYPE(CMISSMeshElementsType) :: MeshElementsConcThree
+
+  TYPE(CMISSMeshElementsType), ALLOCATABLE, DIMENSION(:) :: MeshElementsConc
   !Meshes
   TYPE(CMISSMeshType) :: Mesh
   !Decompositions
@@ -226,24 +250,32 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   !Field types
   TYPE(CMISSFieldType) :: GeometricField
   TYPE(CMISSFieldType) :: DependentField
-  TYPE(CMISSFieldType) :: MaterialsFieldDiffusionOne
-  TYPE(CMISSFieldType) :: MaterialsFieldDiffusionTwo
-  TYPE(CMISSFieldType) :: MaterialsFieldDiffusionThree
-  TYPE(CMISSFieldType) :: SourceFieldDiffusionOne
-  TYPE(CMISSFieldType) :: SourceFieldDiffusionTwo
-  TYPE(CMISSFieldType) :: SourceFieldDiffusionThree
-  !Boundary conditions
-  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDiffusionOne
-  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDiffusionTwo
-  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDiffusionThree
-  !Equations sets
-  TYPE(CMISSEquationsSetType) :: EquationsSetDiffusionOne
-  TYPE(CMISSEquationsSetType) :: EquationsSetDiffusionTwo
-  TYPE(CMISSEquationsSetType) :: EquationsSetDiffusionThree
-  !Equations
-  TYPE(CMISSEquationsType) :: EquationsDiffusionOne
-  TYPE(CMISSEquationsType) :: EquationsDiffusionTwo
-  TYPE(CMISSEquationsType) :: EquationsDiffusionThree
+!   TYPE(CMISSFieldType) :: MaterialsFieldDiffusionOne
+!   TYPE(CMISSFieldType) :: MaterialsFieldDiffusionTwo
+!   TYPE(CMISSFieldType) :: MaterialsFieldDiffusionThree
+  
+  TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: MaterialsFieldDiffusion
+  TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: SourceFieldDiffusion
+  TYPE(CMISSBoundaryConditionsType), ALLOCATABLE, DIMENSION(:) :: BoundaryConditionsDiffusion
+  TYPE(CMISSEquationsSetType), ALLOCATABLE, DIMENSION(:) :: EquationsSetDiffusion
+  TYPE(CMISSEquationsType), ALLOCATABLE, DIMENSION(:) :: EquationsDiffusion
+  TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: EquationsSetFieldDiffusion
+
+!   TYPE(CMISSFieldType) :: SourceFieldDiffusionOne
+!   TYPE(CMISSFieldType) :: SourceFieldDiffusionTwo
+!   TYPE(CMISSFieldType) :: SourceFieldDiffusionThree
+!   !Boundary conditions
+!   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDiffusionOne
+!   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDiffusionTwo
+!   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDiffusionThree
+!   !Equations sets
+!   TYPE(CMISSEquationsSetType) :: EquationsSetDiffusionOne
+!   TYPE(CMISSEquationsSetType) :: EquationsSetDiffusionTwo
+!   TYPE(CMISSEquationsSetType) :: EquationsSetDiffusionThree
+!   !Equations
+!   TYPE(CMISSEquationsType) :: EquationsDiffusionOne
+!   TYPE(CMISSEquationsType) :: EquationsDiffusionTwo
+!   TYPE(CMISSEquationsType) :: EquationsDiffusionThree
   !Problems
   TYPE(CMISSProblemType) :: Problem
   !Control loops
@@ -262,10 +294,17 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   
   !Generic CMISS variables
   
-  INTEGER(CMISSIntg) :: EquationsSetIndexOne
+  INTEGER(CMISSIntg) :: EquationsSetIndex
   INTEGER(CMISSIntg) :: EquationsSetIndexTwo
   INTEGER(CMISSIntg) :: EquationsSetIndexThree
   INTEGER(CMISSIntg) :: Err
+
+
+  !Array containing the field variable types that will be used (for ease of incorporating inside a loop)
+
+  INTEGER(CMISSIntg), ALLOCATABLE, DIMENSION(:) :: FieldVariableType
+
+
 
 
   INTEGER(CMISSIntg) :: DIAG_LEVEL_LIST(5)
@@ -313,7 +352,7 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
 
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+  !CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
 
   !
   !================================================================================================================================
@@ -401,12 +440,12 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
   LINEAR_SOLVER_DIFFUSION_OUTPUT_TYPE=CMISSSolverSolverOutput
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
-  EQUATIONS_DIFFUSION_ONE_OUTPUT=CMISSEquationsNoOutput
+  EQUATIONS_DIFFUSION_OUTPUT=CMISSEquationsMatrixOutput
   EQUATIONS_DIFFUSION_TWO_OUTPUT=CMISSEquationsNoOutput
   EQUATIONS_DIFFUSION_THREE_OUTPUT=CMISSEquationsNoOutput
   !Set time parameter
   LINEAR_SOLVER_DIFFUSION_START_TIME=0.0_CMISSDP
-  LINEAR_SOLVER_DIFFUSION_STOP_TIME=1.0001_CMISSDP 
+  LINEAR_SOLVER_DIFFUSION_STOP_TIME=0.25_CMISSDP 
   LINEAR_SOLVER_DIFFUSION_TIME_INCREMENT=0.125_CMISSDP
   !Set result output parameter
   LINEAR_SOLVER_DIFFUSION_OUTPUT_FREQUENCY=1
@@ -420,6 +459,9 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   RESTART_VALUE=30_CMISSIntg !default: 30
   LINESEARCH_ALPHA=1.0_CMISSDP
 
+
+  icompartment =1_CMISSIntg
+  Ncompartments=3_CMISSIntg
   !
   !================================================================================================================================
   !
@@ -433,18 +475,8 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   DIAG_LEVEL_LIST(5)=5
 
 !   DIAG_ROUTINE_LIST(1)="DIFFUSION_EQUATION_FINITE_ELEMENT_CALCULATE"
-!   DIAG_ROUTINE_LIST(2)="DARCY_EQUATION_PRE_SOLVE_STORE_REFERENCE_DATA"
-!   DIAG_ROUTINE_LIST(3)="DARCY_EQUATION_PRE_SOLVE_ALE_UPDATE_MESH"
-!   DIAG_ROUTINE_LIST(4)="DARCY_EQUATION_PRE_SOLVE_UPDATE_BOUNDARY_CONDITIONS"
-!   DIAG_ROUTINE_LIST(5)="DARCY_EQUATION_PRE_SOLVE_MAT_PROPERTIES"
-!   DIAG_ROUTINE_LIST(6)="GALERKIN_PROJECTION_FINITE_ELEMENT_CALCULATE"
-!   DIAG_ROUTINE_LIST(7)="FINITE_ELASTICITY_FINITE_ELEMENT_JACOBIAN_EVALUATE"
-!   DIAG_ROUTINE_LIST(8)="FINITE_ELASTICITY_FINITE_ELEMENT_RESIDUAL_EVALUATE"
-!   DIAG_ROUTINE_LIST(1)="PROBLEM_SOLVER_EQUATIONS_SOLVE"
-!   DIAG_ROUTINE_LIST(1)="SOLVER_NEWTON_SOLVE"
-!   DIAG_ROUTINE_LIST(2)="SOLVER_NEWTON_LINESEARCH_SOLVE"
-!   DIAG_ROUTINE_LIST(1)="SOLVER_SOLUTION_UPDATE"
-!  DIAG_ROUTINE_LIST(1)="FINITE_ELASTICITY_FINITE_ELEMENT_RESIDUAL_EVALUATE"
+!   DIAG_ROUTINE_LIST(2)="PROBLEM_SOLVER_EQUATIONS_SOLVE"
+!   DIAG_ROUTINE_LIST(3)="SOLVER_SOLUTION_UPDATE"
 
   !CMISSAllDiagType/CMISSInDiagType/CMISSFromDiagType
 !   CALL CMISSDiagnosticsSetOn(CMISSInDiagType,DIAG_LEVEL_LIST,"Diagnostics",DIAG_ROUTINE_LIST,Err)
@@ -453,12 +485,35 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   !TIMING_ROUTINE_LIST(1)="PROBLEM_FINITE_ELEMENT_CALCULATE"
   !CALL TIMING_SET_ON(IN_TIMING_TYPE,.TRUE.,"",TIMING_ROUTINE_LIST,ERR,ERROR,*999)
 
-  !
+  !ALLOCATE THE ARRAYS
+  ALLOCATE (EquationsSetDiffusion(Ncompartments))
+  ALLOCATE (EquationsSetFieldDiffusion(Ncompartments))
+  ALLOCATE (FieldVariableType(2*Ncompartments))
+  ALLOCATE (MaterialsFieldDiffusion(Ncompartments))
+  ALLOCATE (SourceFieldDiffusion(Ncompartments))
+  ALLOCATE (BoundaryConditionsDiffusion(Ncompartments))
+  ALLOCATE (EquationsDiffusion(Ncompartments))
+  FieldVariableType(1)=CMISSFieldUVariableType
+  FieldVariableType(2)=CMISSFieldDelUDelNVariableType
+!   FieldVariableType(3)=CMISSFieldVVariableType
+!   FieldVariableType(4)=CMISSFieldDelVDelNVariableType
+!   FieldVariableType(5)=CMISSFieldWVariableType
+!   FieldVariableType(6)=CMISSFieldDelWDelNVariableType
+!   FieldVariableType(5)=CMISSFieldU1VariableType
+!   FieldVariableType(6)=CMISSFieldDelU1DelNVariableType
+  FieldVariableType(3)=CMISSFieldU2VariableType
+  FieldVariableType(4)=CMISSFieldDelU2DelNVariableType
+  FieldVariableType(5)=CMISSFieldU3VariableType
+  FieldVariableType(6)=CMISSFieldDelU3DelNVariableType
+!   FieldVariableType(13)=CMISSFieldU4VariableType
+!   FieldVariableType(14)=CMISSFieldDelU4DelNVariableType
+!   FieldVariableType(15)=CMISSFieldU5VariableType
+!   FieldVariableType(16)=CMISSFieldDelU5DelNVariableType  
+
+!
   !================================================================================================================================
   !
-
   !COORDINATE SYSTEM
-
   !Start the creation of a new RC coordinate system
   CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
   CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
@@ -466,14 +521,11 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,NUMBER_OF_DIMENSIONS,Err)
   !Finish the creation of the coordinate system
   CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
-
   !
   !================================================================================================================================
   !
-
   !REGION
   !For a volume-coupled problem, both concentrations are based in the same region
-
   !Start the creation of a new region
   CALL CMISSRegionTypeInitialise(Region,Err)
   CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegion,Region,Err)
@@ -481,13 +533,10 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
   !Finish the creation of the region
   CALL CMISSRegionCreateFinish(Region,Err)
-
   !
   !================================================================================================================================
   !
-
   !BASES
-
   !Start the creation of new bases: Geometry
   MESH_NUMBER_OF_COMPONENTS=1
   CALL CMISSBasisTypeInitialise(BasisGeometry,Err)
@@ -510,70 +559,67 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   CALL CMISSBasisCreateFinish(BasisGeometry,Err)
   !
   !Start the creation of another basis: Concentration_One
-  IF(BASIS_XI_INTERPOLATION_CONC_ONE==BASIS_XI_INTERPOLATION_GEOMETRY) THEN
+!  IF(BASIS_XI_INTERPOLATION_CONC_ONE==BASIS_XI_INTERPOLATION_GEOMETRY) THEN
     BasisConcOne=BasisGeometry
-  ELSE
-    MESH_NUMBER_OF_COMPONENTS=MESH_NUMBER_OF_COMPONENTS+1
-    !Initialise a new velocity basis
-    CALL CMISSBasisTypeInitialise(BasisConcOne,Err)
-    !Start the creation of a basis
-    CALL CMISSBasisCreateStart(BASIS_NUMBER_CONC_ONE,BasisConcOne,Err)
-    !Set the basis type (Lagrange/Simplex)
-    CALL CMISSBasisTypeSet(BasisConcOne,BASIS_TYPE,Err)
-    !Set the basis xi number
-    CALL CMISSBasisNumberOfXiSet(BasisConcOne,NUMBER_OF_DIMENSIONS,Err)
-    !Set the basis xi interpolation and number of Gauss points
-    IF(NUMBER_OF_DIMENSIONS==2) THEN
-      CALL CMISSBasisInterpolationXiSet(BasisConcOne,(/BASIS_XI_INTERPOLATION_CONC_ONE,BASIS_XI_INTERPOLATION_CONC_ONE/),Err)
-      CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisConcOne,(/BASIS_XI_GAUSS_CONC_ONE,BASIS_XI_GAUSS_CONC_ONE/),Err)
-    ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-      CALL CMISSBasisInterpolationXiSet(BasisConcOne,(/BASIS_XI_INTERPOLATION_CONC_ONE,BASIS_XI_INTERPOLATION_CONC_ONE, & 
-        & BASIS_XI_INTERPOLATION_CONC_ONE/),Err)                         
-      CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisConcOne,(/BASIS_XI_GAUSS_CONC_ONE,BASIS_XI_GAUSS_CONC_ONE, & 
-        & BASIS_XI_GAUSS_CONC_ONE/),Err)
-    ENDIF
-    !Finish the creation of the basis
-    CALL CMISSBasisCreateFinish(BasisConcOne,Err)
-  ENDIF
+!  ELSE
+!     MESH_NUMBER_OF_COMPONENTS=MESH_NUMBER_OF_COMPONENTS+1
+!     !Initialise a new velocity basis
+!     CALL CMISSBasisTypeInitialise(BasisConcOne,Err)
+!     !Start the creation of a basis
+!     CALL CMISSBasisCreateStart(BASIS_NUMBER_CONC_ONE,BasisConcOne,Err)
+!     !Set the basis type (Lagrange/Simplex)
+!     CALL CMISSBasisTypeSet(BasisConcOne,BASIS_TYPE,Err)
+!     !Set the basis xi number
+!     CALL CMISSBasisNumberOfXiSet(BasisConcOne,NUMBER_OF_DIMENSIONS,Err)
+!     !Set the basis xi interpolation and number of Gauss points
+!     IF(NUMBER_OF_DIMENSIONS==2) THEN
+!       CALL CMISSBasisInterpolationXiSet(BasisConcOne,(/BASIS_XI_INTERPOLATION_CONC_ONE,BASIS_XI_INTERPOLATION_CONC_ONE/),Err)
+!       CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisConcOne,(/BASIS_XI_GAUSS_CONC_ONE,BASIS_XI_GAUSS_CONC_ONE/),Err)
+!     ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
+!       CALL CMISSBasisInterpolationXiSet(BasisConcOne,(/BASIS_XI_INTERPOLATION_CONC_ONE,BASIS_XI_INTERPOLATION_CONC_ONE, & 
+!         & BASIS_XI_INTERPOLATION_CONC_ONE/),Err)                         
+!       CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisConcOne,(/BASIS_XI_GAUSS_CONC_ONE,BASIS_XI_GAUSS_CONC_ONE, & 
+!         & BASIS_XI_GAUSS_CONC_ONE/),Err)
+!     ENDIF
+!     !Finish the creation of the basis
+!     CALL CMISSBasisCreateFinish(BasisConcOne,Err)
+!   ENDIF
   !
   !Start the creation of another basis: Concentration_Two
-  IF(BASIS_XI_INTERPOLATION_CONC_TWO==BASIS_XI_INTERPOLATION_GEOMETRY) THEN
+!  IF(BASIS_XI_INTERPOLATION_CONC_TWO==BASIS_XI_INTERPOLATION_GEOMETRY) THEN
     BasisConcTwo=BasisGeometry
-  ELSE IF(BASIS_XI_INTERPOLATION_CONC_TWO==BASIS_XI_INTERPOLATION_CONC_ONE) THEN
-    BasisConcTwo=BasisConcOne
-  ELSE
-    MESH_NUMBER_OF_COMPONENTS=MESH_NUMBER_OF_COMPONENTS+1
-    !Initialise a new concentration basis
-    CALL CMISSBasisTypeInitialise(BasisConcTwo,Err)
-    !Start the creation of a basis
-    CALL CMISSBasisCreateStart(BASIS_NUMBER_CONC_TWO,BasisConcTwo,Err)
-    !Set the basis type (Lagrange/Simplex)
-    CALL CMISSBasisTypeSet(BasisConcTwo,BASIS_TYPE,Err)
-    !Set the basis xi number
-    CALL CMISSBasisNumberOfXiSet(BasisConcTwo,NUMBER_OF_DIMENSIONS,Err)
-    !Set the basis xi interpolation and number of Gauss points
-    IF(NUMBER_OF_DIMENSIONS==2) THEN
-      CALL CMISSBasisInterpolationXiSet(BasisConcTwo,(/BASIS_XI_INTERPOLATION_CONC_TWO,BASIS_XI_INTERPOLATION_CONC_TWO/),Err)
-      CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisConcTwo,(/BASIS_XI_GAUSS_CONC_TWO,BASIS_XI_GAUSS_CONC_TWO/),Err)
-    ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-      CALL CMISSBasisInterpolationXiSet(BasisConcTwo,(/BASIS_XI_INTERPOLATION_CONC_TWO,BASIS_XI_INTERPOLATION_CONC_TWO, & 
-        & BASIS_XI_INTERPOLATION_CONC_TWO/),Err)                         
-      CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisConcTwo,(/BASIS_XI_GAUSS_CONC_TWO,BASIS_XI_GAUSS_CONC_TWO, & 
-        & BASIS_XI_GAUSS_CONC_TWO/),Err)
-    ENDIF
-    !Finish the creation of the basis
-    CALL CMISSBasisCreateFinish(BasisConcTwo,Err)
-  ENDIF
+!  ELSE IF(BASIS_XI_INTERPOLATION_CONC_TWO==BASIS_XI_INTERPOLATION_CONC_ONE) THEN
+!     BasisConcTwo=BasisConcOne
+!   ELSE
+!     MESH_NUMBER_OF_COMPONENTS=MESH_NUMBER_OF_COMPONENTS+1
+!     !Initialise a new concentration basis
+!     CALL CMISSBasisTypeInitialise(BasisConcTwo,Err)
+!     !Start the creation of a basis
+!     CALL CMISSBasisCreateStart(BASIS_NUMBER_CONC_TWO,BasisConcTwo,Err)
+!     !Set the basis type (Lagrange/Simplex)
+!     CALL CMISSBasisTypeSet(BasisConcTwo,BASIS_TYPE,Err)
+!     !Set the basis xi number
+!     CALL CMISSBasisNumberOfXiSet(BasisConcTwo,NUMBER_OF_DIMENSIONS,Err)
+!     !Set the basis xi interpolation and number of Gauss points
+!     IF(NUMBER_OF_DIMENSIONS==2) THEN
+!       CALL CMISSBasisInterpolationXiSet(BasisConcTwo,(/BASIS_XI_INTERPOLATION_CONC_TWO,BASIS_XI_INTERPOLATION_CONC_TWO/),Err)
+!       CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisConcTwo,(/BASIS_XI_GAUSS_CONC_TWO,BASIS_XI_GAUSS_CONC_TWO/),Err)
+!     ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
+!       CALL CMISSBasisInterpolationXiSet(BasisConcTwo,(/BASIS_XI_INTERPOLATION_CONC_TWO,BASIS_XI_INTERPOLATION_CONC_TWO, & 
+!         & BASIS_XI_INTERPOLATION_CONC_TWO/),Err)                         
+!       CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisConcTwo,(/BASIS_XI_GAUSS_CONC_TWO,BASIS_XI_GAUSS_CONC_TWO, & 
+!         & BASIS_XI_GAUSS_CONC_TWO/),Err)
+!     ENDIF
+!     !Finish the creation of the basis
+!     CALL CMISSBasisCreateFinish(BasisConcTwo,Err)
+!   ENDIF
 
     BasisConcThree=BasisGeometry
-
   !
   !================================================================================================================================
   !
-
   !MESH
   !All types of physics utilize the same "mesh", but may be represented on individual mesh components.
-
   TotalNumberOfSolidNodes = NUMBER_OF_NODES_GEOMETRY
   TOTAL_NUMBER_OF_ALL_NODES = TOTAL_NUMBER_OF_NODES + TotalNumberOfSolidNodes
 
@@ -609,7 +655,7 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   CALL CMISSMeshElementsCreateFinish(MeshElementsGeometry,Err)
   !Specify concentration one mesh component
 ! !  IF(BASIS_XI_INTERPOLATION_CONC_ONE==BASIS_XI_INTERPOLATION_GEOMETRY) THEN
-!     MeshElementsConcOne=MeshElementsGeometry
+     MeshElementsConcOne=MeshElementsGeometry
 ! !   ELSE
 ! !     MESH_COMPONENT_NUMBER_CONC_ONE=MESH_COMPONENT_NUMBER_GEOMETRY+1
 !      CALL CMISSMeshElementsCreateStart(Mesh,MESH_COMPONENT_NUMBER_CONC_ONE,BasisConcOne,MeshElementsConcOne,Err)
@@ -617,11 +663,11 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
 ! !       CALL CMISSMeshElementsNodesSet(MeshElementsConcOne,ELEMENT_NUMBER,CM%V(ELEMENT_NUMBER, & 
 ! !         & 1:NUMBER_OF_ELEMENT_NODES_CONC_ONE),Err)
 ! !     ENDDO
-!     CALL CMISSMeshElementsCreateFinish(MeshElementsConcOne,Err)
+ !    CALL CMISSMeshElementsCreateFinish(MeshElementsConcOne,Err)
 ! !  ENDIF
 !   !Specify concentration two mesh component
 ! !  IF(BASIS_XI_INTERPOLATION_CONC_TWO==BASIS_XI_INTERPOLATION_GEOMETRY) THEN
-!     MeshElementsConcTwo=MeshElementsGeometry
+     MeshElementsConcTwo=MeshElementsGeometry
 ! !    MESH_COMPONENT_NUMBER_CONC_TWO=MESH_COMPONENT_NUMBER_GEOMETRY
 ! !  ELSE IF(BASIS_XI_INTERPOLATION_CONC_TWO==BASIS_XI_INTERPOLATION_CONC_ONE) THEN
 ! !    MeshElementsConcTwo=MeshElementsConcOne
@@ -637,7 +683,7 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
 !  ! ENDIF
 !   !Specify concentration three mesh component
 ! !  IF(BASIS_XI_INTERPOLATION_CONC_THREE==BASIS_XI_INTERPOLATION_GEOMETRY) THEN
-!     MeshElementsConcThree=MeshElementsGeometry
+     MeshElementsConcThree=MeshElementsGeometry
 ! !    MESH_COMPONENT_NUMBER_CONC_THREE=MESH_COMPONENT_NUMBER_GEOMETRY
 ! !   ELSE IF(BASIS_XI_INTERPOLATION_CONC_THREE==BASIS_XI_INTERPOLATION_CONC_ONE) THEN
 ! !     MeshElementsConcThree=MeshElementsConcOne
@@ -654,13 +700,10 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
 
   !Finish the creation of the mesh
   CALL CMISSMeshCreateFinish(Mesh,Err)
-
   !
   !================================================================================================================================
   !
-
   !GEOMETRIC FIELD
-
   !Create a decomposition:
   !All mesh components share the same decomposition
   CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
@@ -702,35 +745,43 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   !
   !================================================================================================================================
   !
- !
-  !================================================================================================================================
-  !
-  !EQUATIONS SETS
-  !Create the equations set for diffusion_one
-  CALL CMISSEquationsSetTypeInitialise(EquationsSetDiffusionOne,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDiffusionOne,Region,GeometricField,EquationsSetDiffusionOne,Err)
-  !Set the equations set to be a constant source diffusion problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetDiffusionOne,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetMultiCompTransportDiffusionSubtype,Err)
-  !Finish creating the equations set
-  CALL CMISSEquationsSetCreateFinish(EquationsSetDiffusionOne,Err)
-  !Create the equations set for diffusion_two
-  CALL CMISSEquationsSetTypeInitialise(EquationsSetDiffusionTwo,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDiffusionTwo,Region,GeometricField,EquationsSetDiffusionTwo,Err)
-  !Set the equations set to be a constant source diffusion problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetDiffusionTwo,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetMultiCompTransportDiffusionSubtype,Err)
-  !Finish creating the equations set
-  CALL CMISSEquationsSetCreateFinish(EquationsSetDiffusionTwo,Err)
-  !Create the equations set for diffusion_three
-  CALL CMISSEquationsSetTypeInitialise(EquationsSetDiffusionThree,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDiffusionThree,Region,GeometricField,EquationsSetDiffusionThree,Err)
-  !Set the equations set to be a constant source diffusion problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetDiffusionThree,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetMultiCompTransportDiffusionSubtype,Err)
-  !Finish creating the equations set
-  CALL CMISSEquationsSetCreateFinish(EquationsSetDiffusionThree,Err)
+  !EQUATIONS SETS - USING NEW ARGUMENTS TO ALLOW FOR MULTI-COMPARTMENT MODELS
 
+
+      
+
+  DO icompartment = 1,Ncompartments
+
+    EquationsSetFieldUserNumberDiffusion = 100_CMISSIntg+icompartment
+    EquationsSetUserNumberDiffusion = 200_CMISSIntg+icompartment
+       CALL CMISSFieldTypeInitialise(EquationsSetFieldDiffusion(icompartment),Err)
+      WRITE(*,'(A)') "equations set field initialised"
+    CALL CMISSEquationsSetTypeInitialise(EquationsSetDiffusion(icompartment),Err)
+       WRITE(*,'(A)') "equations set initialised"
+    CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDiffusion,Region,GeometricField,&
+         & CMISSEquationsSetClassicalFieldClass, &
+         & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetMultiCompTransportDiffusionSubtype,&
+         & EquationsSetFieldUserNumberDiffusion,EquationsSetFieldDiffusion(icompartment),EquationsSetDiffusion(icompartment),&
+         & Err)
+    WRITE(*,'(A)') "equations set create started"
+    !Set the equations set to be a constant source diffusion problem
+!     CALL CMISSEquationsSetSpecificationSet(EquationsSetDiffusion(icompartment),CMISSEquationsSetClassicalFieldClass, &
+!       & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetMultiCompTransportDiffusionSubtype,Err)
+    WRITE(*,'(A)') "equations set specified"
+    !Finish creating the equations set
+    CALL CMISSEquationsSetCreateFinish(EquationsSetDiffusion(icompartment),Err)
+    CALL CMISSFieldParameterSetUpdateConstant(RegionUserNumber,EquationsSetFielduserNumberDiffusion,CMISSFieldUVariableType, &
+      & CMISSFieldValuesSetType,1,icompartment,Err)
+    CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldDiffusion(icompartment),CMISSFieldUVariableType, &
+      & CMISSFieldValuesSetType,2,Ncompartments,Err)
+!     CALL CMISSFieldParameterSetUpdateConstant(RegionUserNumber,EquationsSetFielduserNumberDiffusion,CMISSFieldUVariableType, &
+!       & CMISSFieldValuesSetType,2,Ncompartments,Err)
+!     CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldDiffusion(icompartment),CMISSFieldUVariableType, &
+!       & CMISSFieldValuesSetType,2,Ncompartments,Err)
+  END DO 
+    WRITE(*,'(A)') "equations set field created"
+! CMISSEquationsSetCreateStartObj(EquationsSetUserNumber,Region,GeomFibreField,EquationsSetFieldUserNumber,& 
+!               & EquationsSetFieldField,EquationsSet,Err)
   !-------------------------------------------------------------------------------------
   ! DEPENDENT FIELD: Shared. We're gonna create the dependent field manually for now
   ! U1 & DEL_U1_DEL_N: Diffusion-one
@@ -745,12 +796,12 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
     CALL CMISSFieldDependentTypeSet(DependentField,CMISSFieldDependentType,Err) 
      CALL CMISSFieldNumberOfVariablesSet(DependentField,6,Err)
      CALL CMISSFieldVariableTypesSet(DependentField,&
-      & (/CMISSFieldU1VariableType,CMISSFieldDelU1DelNVariableType,CMISSFieldU2VariableType,&
+      & (/CMISSFieldUVariableType,CMISSFieldDelUDelNVariableType,CMISSFieldU2VariableType,&
       & CMISSFieldDelU2DelNVariableType,CMISSFieldU3VariableType,CMISSFieldDelU3DelNVariableType/),Err)
    WRITE(*,'(A)') "set number of variables"
-     CALL CMISSFieldDimensionSet(DependentField,CMISSFieldU1VariableType, &
+     CALL CMISSFieldDimensionSet(DependentField,CMISSFieldUVariableType, &
                    & CMISSFieldScalarDimensionType,Err)
-     CALL CMISSFieldDimensionSet(DependentField,CMISSFieldDelU1DelNVariableType, &
+     CALL CMISSFieldDimensionSet(DependentField,CMISSFieldDelUDelNVariableType, &
                    & CMISSFieldScalarDimensionType,Err)
      CALL CMISSFieldDimensionSet(DependentField,CMISSFieldU2VariableType, &
                    & CMISSFieldScalarDimensionType,Err)
@@ -762,11 +813,11 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
                    & CMISSFieldScalarDimensionType,Err)
 
 
-     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldU1VariableType,1,Err)
-     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelU1DelNVariableType,1,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldU1VariableType,1, & 
+     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldUVariableType,1,Err)
+     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelUDelNVariableType,1,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,1, & 
         & MESH_COMPONENT_NUMBER_CONC_ONE,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelU1DelNVariableType,1, & 
+      CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,1, & 
         & MESH_COMPONENT_NUMBER_CONC_ONE,Err)
 
      CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldU2VariableType,1,Err)
@@ -791,43 +842,50 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
 
   !DEPENDENT FIELDS
 
+  DO icompartment = 1,Ncompartments
+    !DependentFieldUserNumber=300_CMISSIntg+icompartment
+    CALL CMISSEquationsSetDependentCreateStart(EquationsSetDiffusion(icompartment),DependentFieldUserNumber,&
+         & DependentField,Err)
+    CALL CMISSEquationsSetDependentCreateFinish(EquationsSetDiffusion(icompartment),Err)
 
-!  CALL CMISSFieldTypeInitialise(DependentFieldDiffusion,Err)
-  CALL CMISSEquationsSetDependentCreateStart(EquationsSetDiffusionOne,DependentFieldUserNumber, & 
-    & DependentField,Err)
-  !Set the mesh component to be used by the field components.
-!   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-!     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionTwo,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
-!       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
-!     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionTwo,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
-!       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
-!   ENDDO
-  !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetDependentCreateFinish(EquationsSetDiffusionOne,Err)
-!  CALL CMISSFieldTypeInitialise(DependentFieldDiffusion,Err)
-  CALL CMISSEquationsSetDependentCreateStart(EquationsSetDiffusionTwo,DependentFieldUserNumber, & 
-    & DependentField,Err)
-  !Set the mesh component to be used by the field components.
-!   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-!     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionTwo,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
-!       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
-!     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionTwo,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
-!       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
-!   ENDDO
-  !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetDependentCreateFinish(EquationsSetDiffusionTwo,Err)
-!  CALL CMISSFieldTypeInitialise(DependentFieldDiffusion,Err)
-  CALL CMISSEquationsSetDependentCreateStart(EquationsSetDiffusionThree,DependentFieldUserNumber, & 
-    & DependentField,Err)
-  !Set the mesh component to be used by the field components.
-!   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-!     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionTwo,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
-!       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
-!     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionTwo,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
-!       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
-!   ENDDO
-  !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetDependentCreateFinish(EquationsSetDiffusionThree,Err)
+  ENDDO
+! 
+! !  CALL CMISSFieldTypeInitialise(DependentFieldDiffusion,Err)
+!   CALL CMISSEquationsSetDependentCreateStart(EquationsSetDiffusionOne,DependentFieldUserNumber, & 
+!     & DependentField,Err)
+!   !Set the mesh component to be used by the field components.
+! !   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+! !     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionTwo,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
+! !       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
+! !     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionTwo,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
+! !       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
+! !   ENDDO
+!   !Finish the equations set dependent field variables
+!   CALL CMISSEquationsSetDependentCreateFinish(EquationsSetDiffusionOne,Err)
+! !  CALL CMISSFieldTypeInitialise(DependentFieldDiffusion,Err)
+!   CALL CMISSEquationsSetDependentCreateStart(EquationsSetDiffusionTwo,DependentFieldUserNumber, & 
+!     & DependentField,Err)
+!   !Set the mesh component to be used by the field components.
+! !   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+! !     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionTwo,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
+! !       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
+! !     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionTwo,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
+! !       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
+! !   ENDDO
+!   !Finish the equations set dependent field variables
+!   CALL CMISSEquationsSetDependentCreateFinish(EquationsSetDiffusionTwo,Err)
+! !  CALL CMISSFieldTypeInitialise(DependentFieldDiffusion,Err)
+!   CALL CMISSEquationsSetDependentCreateStart(EquationsSetDiffusionThree,DependentFieldUserNumber, & 
+!     & DependentField,Err)
+!   !Set the mesh component to be used by the field components.
+! !   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+! !     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionTwo,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
+! !       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
+! !     CALL CMISSFieldComponentMeshComponentSet(DependentFieldDiffusionTwo,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
+! !       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
+! !   ENDDO
+!   !Finish the equations set dependent field variables
+!   CALL CMISSEquationsSetDependentCreateFinish(EquationsSetDiffusionThree,Err)
 
 
 
@@ -848,40 +906,25 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
 !     & 1,INITIAL_FIELD_DIFFUSION_THREE,Err)
 
 
-
-
   !
   !================================================================================================================================
   !
 
   !MATERIALS FIELDS
 
-  CALL CMISSFieldTypeInitialise(MaterialsFieldDiffusionOne,Err)
-  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDiffusionOne,&
-    & MaterialsFieldUserNumberDiffusionOne,MaterialsFieldDiffusionOne,Err)
-  !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDiffusionOne,Err)
+  DO icompartment = 1,Ncompartments
+    MaterialsFieldUserNumberDiffusion = 400+icompartment
+    CALL CMISSFieldTypeInitialise(MaterialsFieldDiffusion(icompartment),Err)
+    CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDiffusion(icompartment),MaterialsFieldUserNumberDiffusion,&
+         & MaterialsFieldDiffusion(icompartment),Err)
+    CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDiffusion(icompartment),Err)
 
-  CALL CMISSFieldTypeInitialise(MaterialsFieldDiffusionTwo,Err)
-  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDiffusionTwo,&
-    & MaterialsFieldUserNumberDiffusionTwo,MaterialsFieldDiffusionTwo,Err)
-  !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDiffusionTwo,Err)
-
-  CALL CMISSFieldTypeInitialise(MaterialsFieldDiffusionThree,Err)
-  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDiffusionThree,&
-    & MaterialsFieldUserNumberDiffusionThree,MaterialsFieldDiffusionThree,Err)
-  !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDiffusionThree,Err)
-
+  END DO 
 
 !   CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDiffusionOne,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
 !     & MaterialsFieldUserNumberDiffusionOne,POROSITY_PARAM_MAT_PROPERTIES,Err)
 !   CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDiffusionTwo,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
 !     & MaterialsFieldUserNumberMatPropertiesPermOverVis,PERM_OVER_VIS_PARAM_MAT_PROPERTIES,Err)
-  !
-  !================================================================================================================================
-  !
 
   !
   !================================================================================================================================
@@ -890,23 +933,14 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   !SOURCE FIELDS
 
    !create the equations set source field variables for both equations sets 
-  !Create the equations set source field variables
-  !Create the equations set source field variables
-  CALL CMISSFieldTypeInitialise(SourceFieldDiffusionOne,Err)
-  CALL CMISSEquationsSetSourceCreateStart(EquationsSetDiffusionOne,SourceFieldUserNumberDiffusionOne,SourceFieldDiffusionOne,Err)
-  !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetSourceCreateFinish(EquationsSetDiffusionOne,Err)
+  DO icompartment = 1,Ncompartments
+    SourceFieldUserNumberDiffusion=700_CMISSIntg+icompartment
+    CALL CMISSFieldTypeInitialise(SourceFieldDiffusion(icompartment),Err)
+    CALL CMISSEquationsSetSourceCreateStart(EquationsSetDiffusion(icompartment),SourceFieldUserNumberDiffusion,&
+         & SourceFieldDiffusion(icompartment),Err)
+    CALL CMISSEquationsSetSourceCreateFinish(EquationsSetDiffusion(icompartment),Err)
 
-  CALL CMISSFieldTypeInitialise(SourceFieldDiffusionTwo,Err)
-  CALL CMISSEquationsSetSourceCreateStart(EquationsSetDiffusionTwo,SourceFieldUserNumberDiffusionTwo,SourceFieldDiffusionTwo,Err)
-  !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetSourceCreateFinish(EquationsSetDiffusionTwo,Err)
-
-  CALL CMISSFieldTypeInitialise(SourceFieldDiffusionThree,Err)
-  CALL CMISSEquationsSetSourceCreateStart(EquationsSetDiffusionThree,SourceFieldUserNumberDiffusionThree,&
-        & SourceFieldDiffusionThree,Err)
-  !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetSourceCreateFinish(EquationsSetDiffusionThree,Err)
+  END DO 
 
   !
   !================================================================================================================================
@@ -916,99 +950,123 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
 
   WRITE(*,'(A)') "Creating equations set equations."
 
-  !Create the equations set equations
-  CALL CMISSEquationsTypeInitialise(EquationsDiffusionOne,Err)
-  CALL CMISSEquationsSetEquationsCreateStart(EquationsSetDiffusionOne,EquationsDiffusionOne,Err)
-  !Set the equations matrices sparsity type
-  CALL CMISSEquationsSparsityTypeSet(EquationsDiffusionOne,CMISSEquationsSparseMatrices,Err)
-!   !Set the equations lumping type
-!   CALL CMISSEquationsLumpingTypeSet(EquationsDarcy,CMISSEquationsUnlumpedMatrices,Err)
-  !Set the equations set output
-  CALL CMISSEquationsOutputTypeSet(EquationsDiffusionOne,EQUATIONS_DIFFUSION_ONE_OUTPUT,Err)
-  !Finish the equations set equations
-  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetDiffusionOne,Err)
+  DO icompartment=1,Ncompartments
 
-  !Create the equations set equations
-  CALL CMISSEquationsTypeInitialise(EquationsDiffusionTwo,Err)
-  CALL CMISSEquationsSetEquationsCreateStart(EquationsSetDiffusionTwo,EquationsDiffusionTwo,Err)
-  !Set the equations matrices sparsity type
-  CALL CMISSEquationsSparsityTypeSet(EquationsDiffusionTwo,CMISSEquationsSparseMatrices,Err)
-!   !Set the equations lumping type
-!   CALL CMISSEquationsLumpingTypeSet(EquationsDarcy,CMISSEquationsUnlumpedMatrices,Err)
-  !Set the equations set output
-  CALL CMISSEquationsOutputTypeSet(EquationsDiffusionTwo,EQUATIONS_DIFFUSION_TWO_OUTPUT,Err)
-  !Finish the equations set equations
-  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetDiffusionTwo,Err)
+    CALL CMISSEquationsTypeInitialise(EquationsDiffusion(icompartment),Err)
+    CALL CMISSEquationsSetEquationsCreateStart(EquationsSetDiffusion(icompartment),EquationsDiffusion(icompartment),Err)
+    CALL CMISSEquationsSparsityTypeSet(EquationsDiffusion(icompartment),CMISSEquationsSparseMatrices,Err)
+    CALL CMISSEquationsOutputTypeSet(EquationsDiffusion(icompartment),EQUATIONS_DIFFUSION_OUTPUT,Err)
+    CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetDiffusion(icompartment),Err)
+  ENDDO
 
-  !Create the equations set equations
-  CALL CMISSEquationsTypeInitialise(EquationsDiffusionThree,Err)
-  CALL CMISSEquationsSetEquationsCreateStart(EquationsSetDiffusionThree,EquationsDiffusionThree,Err)
-  !Set the equations matrices sparsity type
-  CALL CMISSEquationsSparsityTypeSet(EquationsDiffusionThree,CMISSEquationsSparseMatrices,Err)
-!   !Set the equations lumping type
-!   CALL CMISSEquationsLumpingTypeSet(EquationsDarcy,CMISSEquationsUnlumpedMatrices,Err)
-  !Set the equations set output
-  CALL CMISSEquationsOutputTypeSet(EquationsDiffusionThree,EQUATIONS_DIFFUSION_THREE_OUTPUT,Err)
-  !Finish the equations set equations
-  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetDiffusionThree,Err)
+! 
+!   !Create the equations set equations
+!   CALL CMISSEquationsTypeInitialise(EquationsDiffusionOne,Err)
+!   CALL CMISSEquationsSetEquationsCreateStart(EquationsSetDiffusionOne,EquationsDiffusionOne,Err)
+!   !Set the equations matrices sparsity type
+!   CALL CMISSEquationsSparsityTypeSet(EquationsDiffusionOne,CMISSEquationsSparseMatrices,Err)
+! !   !Set the equations lumping type
+! !   CALL CMISSEquationsLumpingTypeSet(EquationsDarcy,CMISSEquationsUnlumpedMatrices,Err)
+!   !Set the equations set output
+!   CALL CMISSEquationsOutputTypeSet(EquationsDiffusionOne,EQUATIONS_DIFFUSION_ONE_OUTPUT,Err)
+!   !Finish the equations set equations
+!   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetDiffusionOne,Err)
+!   WRITE(*,'(A)') "diffusion one equation set created."
+! 
+!   !Create the equations set equations
+!   CALL CMISSEquationsTypeInitialise(EquationsDiffusionTwo,Err)
+!   CALL CMISSEquationsSetEquationsCreateStart(EquationsSetDiffusionTwo,EquationsDiffusionTwo,Err)
+!   !Set the equations matrices sparsity type
+!   CALL CMISSEquationsSparsityTypeSet(EquationsDiffusionTwo,CMISSEquationsSparseMatrices,Err)
+! !   !Set the equations lumping type
+! !   CALL CMISSEquationsLumpingTypeSet(EquationsDarcy,CMISSEquationsUnlumpedMatrices,Err)
+!   !Set the equations set output
+!   CALL CMISSEquationsOutputTypeSet(EquationsDiffusionTwo,EQUATIONS_DIFFUSION_TWO_OUTPUT,Err)
+!   !Finish the equations set equations
+!   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetDiffusionTwo,Err)
+!   WRITE(*,'(A)') "diffusion two equation set created."
+! 
+!   !Create the equations set equations
+!   CALL CMISSEquationsTypeInitialise(EquationsDiffusionThree,Err)
+!   CALL CMISSEquationsSetEquationsCreateStart(EquationsSetDiffusionThree,EquationsDiffusionThree,Err)
+!   !Set the equations matrices sparsity type
+!   CALL CMISSEquationsSparsityTypeSet(EquationsDiffusionThree,CMISSEquationsSparseMatrices,Err)
+! !   !Set the equations lumping type
+! !   CALL CMISSEquationsLumpingTypeSet(EquationsDarcy,CMISSEquationsUnlumpedMatrices,Err)
+!   !Set the equations set output
+!   CALL CMISSEquationsOutputTypeSet(EquationsDiffusionThree,EQUATIONS_DIFFUSION_THREE_OUTPUT,Err)
+!   !Finish the equations set equations
+!   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetDiffusionThree,Err)
+! 
+!    WRITE(*,'(A)') "diffusion three equation set created."
 
-  !
   !================================================================================================================================
   !
 
 !--------------------------------------------------------------------------------------------------------------------------------
 
   !BOUNDARY CONDITIONS
-  !Start the creation of the equations set boundary conditions for advection-diffusion
 
-  !Start the creation of the equations set boundary conditions for diffusion
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDiffusionOne,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDiffusionOne,BoundaryConditionsDiffusionOne,Err)
-  IF(INLET_WALL_NODES_DIFFUSION_ONE_FLAG) THEN
-    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE
-      NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_ONE(NODE_COUNTER)
-      CONDITION=CMISSBoundaryConditionFixed
-!       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-        VALUE=0.2_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusionOne,CMISSFieldU1VariableType,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
-!       ENDDO
-    ENDDO
-  ENDIF
-  !Finish the creation of the equations set boundary conditions for diffusion
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDiffusionOne,Err)
 
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDiffusionTwo,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDiffusionTwo,BoundaryConditionsDiffusionTwo,Err)
-  IF(INLET_WALL_NODES_DIFFUSION_TWO_FLAG) THEN
-    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO
-      NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_TWO(NODE_COUNTER)
-      CONDITION=CMISSBoundaryConditionFixed
-!       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-        VALUE=0.2_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusionTwo,CMISSFieldU2VariableType,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_TWO,CONDITION,VALUE,Err)
-!       ENDDO
-    ENDDO
-  ENDIF
-  !Finish the creation of the equations set boundary conditions for diffusion
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDiffusionTwo,Err)
+  DO icompartment=1,Ncompartments
 
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDiffusionThree,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDiffusionThree,BoundaryConditionsDiffusionThree,Err)
-  IF(INLET_WALL_NODES_DIFFUSION_THREE_FLAG) THEN
-    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE
-      NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_THREE(NODE_COUNTER)
-      CONDITION=CMISSBoundaryConditionFixed
-!       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-        VALUE=0.2_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusionThree,CMISSFieldU3VariableType,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_THREE,CONDITION,VALUE,Err)
+    CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDiffusion(icompartment),Err)
+    CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDiffusion(icompartment),&
+         &  BoundaryConditionsDiffusion(icompartment),Err)
+
+!     IF(INLET_WALL_NODES_DIFFUSION_FLAG(icompartment)) THEN
+!       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION(icompartment)
+!         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION(icompartment,NODE_COUNTER)
+!         CONDITION=CMISSBoundaryConditionFixed
+!           VALUE=0.2_CMISSDP
+!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(icompartment),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+!             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
 !       ENDDO
-    ENDDO
-  ENDIF
-  !Finish the creation of the equations set boundary conditions for diffusion
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDiffusionThree,Err)
+!     ENDIF
+   IF(icompartment==1)THEN
+    IF(INLET_WALL_NODES_DIFFUSION_ONE_FLAG) THEN
+      DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE
+        NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_ONE(NODE_COUNTER)
+        CONDITION=CMISSBoundaryConditionFixed
+          VALUE=0.2_CMISSDP
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(1),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+            & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
+      ENDDO
+    ENDIF
+   ENDIF
+
+   IF(icompartment==2)THEN
+    IF(INLET_WALL_NODES_DIFFUSION_TWO_FLAG) THEN
+      DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO
+        NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_TWO(NODE_COUNTER)
+        CONDITION=CMISSBoundaryConditionFixed
+          VALUE=0.4_CMISSDP
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(2),CMISSFieldU2VariableType,CMISSNoGlobalDerivative, & 
+            & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
+      ENDDO
+    ENDIF
+   ENDIF
+
+   IF(icompartment==3)THEN
+    IF(INLET_WALL_NODES_DIFFUSION_THREE_FLAG) THEN
+      DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE
+        NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_THREE(NODE_COUNTER)
+        CONDITION=CMISSBoundaryConditionFixed
+          VALUE=0.6_CMISSDP
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(3),CMISSFieldU3VariableType,CMISSNoGlobalDerivative, & 
+            & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
+      ENDDO
+    ENDIF
+   ENDIF
+
+
+!NEED TO HARDCODE IN THE VARIABLE TYPE TO EQUATION SET NUMBER MAP EXPLICITLY INTO THE EXAMPLE FILE
+
+    CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDiffusion(icompartment),Err)
+
+  ENDDO
+  WRITE(*,'(A)') "Boundary conditions created."
+
 
 
   !
@@ -1077,11 +1135,8 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   !
   !================================================================================================================================
   !
-
-
   WRITE(*,'(A)') "Start creation of the problem solver equations."
   !SOLVER EQUATIONS
-
   !Start the creation of the problem solver equations
   CALL CMISSSolverTypeInitialise(SolverDiffusion,Err)
   CALL CMISSSolverEquationsTypeInitialise(SolverEquationsDiffusion,Err)
@@ -1090,17 +1145,19 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverDiffusionUserNumber,SolverDiffusion,Err)
   CALL CMISSSolverSolverEquationsGet(SolverDiffusion,SolverEquationsDiffusion,Err)
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsDiffusion,CMISSSolverEquationsSparseMatrices,Err)
-  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsDiffusion,EquationsSetDiffusionOne,EquationsSetIndexOne,Err)
-  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsDiffusion,EquationsSetDiffusionTwo,EquationsSetIndexTwo,Err)
-  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsDiffusion,EquationsSetDiffusionThree,EquationsSetIndexThree,Err)
+
+  DO icompartment=1,Ncompartments
+
+    CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsDiffusion,EquationsSetDiffusion(icompartment),&
+         & EquationsSetIndex,Err)
+  
+  ENDDO
+
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
-
-
   !
   !================================================================================================================================
   !
-
   !RUN SOLVERS
 
   !Turn of PETSc error handling
@@ -1110,12 +1167,9 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   WRITE(*,'(A)') "Solving problem..."
   CALL CMISSProblemSolve(Problem,Err)
   WRITE(*,'(A)') "Problem solved!"
-
-
   !
   !================================================================================================================================
   !
-
   !OUTPUT
 
   EXPORT_FIELD_IO=.TRUE.
@@ -1128,7 +1182,6 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
     CALL CMISSFieldsTypeFinalise(Fields,Err)
     WRITE(*,'(A)') "Field exported!"
   ENDIF
-
 
   !Finialise CMISS
 !   CALL CMISSFinalise(Err)

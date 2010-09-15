@@ -72,6 +72,10 @@ PROGRAM ADVECTIONDIFFUSIONIOEXAMPLE
 
   IMPLICIT NONE
 
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
+
   !Test program parameters
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -462,12 +466,11 @@ PROGRAM ADVECTIONDIFFUSIONIOEXAMPLE
  
   !Create the equations_set
   CALL CMISSEquationsSetTypeInitialise(EquationsSetAdvecDiff,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberAdvecDiff,Region,GeometricField,EquationsSetAdvecDiff,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberAdvecDiff,Region,GeometricField,CMISSEquationsSetClassicalFieldClass,&
+    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetNoSourceAdvectionDiffusionSubtype,& 
+    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSetAdvecDiff,Err)
   !Set the equations set to be a standard Laplace problem
-!   CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
-!     & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetNoSourceStaticAdvecDiffSubtype,Err)
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetAdvecDiff,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetNoSourceAdvectionDiffusionSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetAdvecDiff,Err)
 

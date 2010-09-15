@@ -72,6 +72,10 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
 
   IMPLICIT NONE
 
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
+
   !Test program parameters
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -532,10 +536,12 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
 
   !Create the equations set for static Navier-Stokes
   CALL CMISSEquationsSetTypeInitialise(EquationsSetNavierStokes,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField,EquationsSetNavierStokes,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField, &
+    & CMISSEquationsSetFluidMechanicsClass,CMISSEquationsSetNavierStokesEquationType,CMISSEquationsSetStaticNavierStokesSubtype, &
+    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSetNavierStokes,Err)
   !Set the equations set to be a static Navier-Stokes problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetNavierStokes,CMISSEquationsSetFluidMechanicsClass, &
-    & CMISSEquationsSetNavierStokesEquationType,CMISSEquationsSetStaticNavierStokesSubtype,Err)
+  
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetNavierStokes,Err)
 

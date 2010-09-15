@@ -72,6 +72,10 @@ PROGRAM STOKESDYNAMICEXAMPLE
 
   IMPLICIT NONE
 
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
+
   !Test program parameters
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -546,10 +550,12 @@ PROGRAM STOKESDYNAMICEXAMPLE
 
   !Create the equations set for dynamic Stokes
   CALL CMISSEquationsSetTypeInitialise(EquationsSetStokes,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberStokes,Region,GeometricField,EquationsSetStokes,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberStokes,Region,GeometricField,CMISSEquationsSetFluidMechanicsClass, &
+    & CMISSEquationsSetStokesEquationType,CMISSEquationsSetTransientStokesSubtype,EquationsSetFieldUserNumber,EquationsSetField, &
+    & EquationsSetStokes,Err)
   !Set the equations set to be a dynamic Stokes problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetStokes,CMISSEquationsSetFluidMechanicsClass, &
-    & CMISSEquationsSetStokesEquationType,CMISSEquationsSetTransientStokesSubtype,Err)
+  
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetStokes,Err)
 

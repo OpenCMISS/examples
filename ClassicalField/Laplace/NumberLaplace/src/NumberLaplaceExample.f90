@@ -74,6 +74,8 @@ PROGRAM NUMBERLAPLACEEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=8
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=9
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=11
+  
  
   !Program types
   
@@ -200,10 +202,13 @@ PROGRAM NUMBERLAPLACEEXAMPLE
   CALL CMISSGeneratedMeshGeometricParametersCalculate(RegionUserNumber,GeometricFieldUserNumber,GeneratedMeshUserNumber,Err)
   
   !Create the equations_set
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,RegionUserNumber,GeometricFieldUserNumber,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,RegionUserNumber,GeometricFieldUserNumber,&
+     & CMISSEquationsSetClassicalFieldClass, &
+     & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,EquationsSetFieldUserNumber,&
+     & Err)
   !Set the equations set to be a standard Laplace problem
-  CALL CMISSEquationsSetSpecificationSet(RegionUserNumber,EquationsSetUserNumber,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,Err)
+!   CALL CMISSEquationsSetSpecificationSet(RegionUserNumber,EquationsSetUserNumber,CMISSEquationsSetClassicalFieldClass, &
+!     & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(RegionUserNumber,EquationsSetUserNumber,Err)
 

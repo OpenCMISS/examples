@@ -87,6 +87,8 @@ PROGRAM NAVIERSTOKESALEEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumberMovingMesh=11
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberNavierStokes=12
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberMovingMesh=13
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberNavierStokes=22
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberMovingMesh=23
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=14
 
   INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
@@ -216,6 +218,8 @@ PROGRAM NAVIERSTOKESALEEXAMPLE
   TYPE(CMISSFieldType) :: MaterialsFieldMovingMesh
   TYPE(CMISSFieldType) :: IndependentFieldNavierStokes
   TYPE(CMISSFieldType) :: IndependentFieldMovingMesh
+  TYPE(CMISSFieldType) :: EquationsSetFieldNavierStokes
+  TYPE(CMISSFieldType) :: EquationsSetFieldMovingMesh
   !Boundary conditions
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsNavierStokes
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsMovingMesh
@@ -609,20 +613,26 @@ PROGRAM NAVIERSTOKESALEEXAMPLE
   !EQUATIONS SETS
 
   !Create the equations set for ALE Navier-Stokes
+  CALL CMISSFieldTypeInitialise(EquationsSetFieldNavierStokes,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSetNavierStokes,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField,EquationsSetNavierStokes,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField,CMISSEquationsSetFluidMechanicsClass,&
+    & CMISSEquationsSetNavierStokesEquationType,CMISSEquationsSetALENavierStokesSubtype,&
+    & EquationsSetFieldUserNumberNavierStokes,EquationsSetFieldNavierStokes,EquationsSetNavierStokes,Err)
   !Set the equations set to be a ALE Navier-Stokes problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetNavierStokes,CMISSEquationsSetFluidMechanicsClass, &
-    & CMISSEquationsSetNavierStokesEquationType,CMISSEquationsSetALENavierStokesSubtype,Err)
+!   CALL CMISSEquationsSetSpecificationSet(EquationsSetNavierStokes,CMISSEquationsSetFluidMechanicsClass, &
+!     & CMISSEquationsSetNavierStokesEquationType,CMISSEquationsSetALENavierStokesSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetNavierStokes,Err)
 
   !Create the equations set for moving mesh
+  CALL CMISSFieldTypeInitialise(EquationsSetFieldMovingMesh,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSetMovingMesh,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberMovingMesh,Region,GeometricField,EquationsSetMovingMesh,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberMovingMesh,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetMovingMeshLaplaceSubtype,&
+    & EquationsSetFieldUserNumberMovingMesh,EquationsSetFieldMovingMesh,EquationsSetMovingMesh,Err)
   !Set the equations set to be a moving mesh problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetMovingMesh,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetMovingMeshLaplaceSubtype,Err)
+!   CALL CMISSEquationsSetSpecificationSet(EquationsSetMovingMesh,CMISSEquationsSetClassicalFieldClass, &
+!     & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetMovingMeshLaplaceSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetMovingMesh,Err)
 

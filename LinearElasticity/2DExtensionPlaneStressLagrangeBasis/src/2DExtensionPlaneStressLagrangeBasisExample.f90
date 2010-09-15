@@ -56,6 +56,10 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
 
   IMPLICIT NONE
 
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
+
   !Test program parameters
 
   REAL(CMISSDP), PARAMETER :: ORIGIN(3)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)
@@ -294,9 +298,11 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
 
   !Create a Elasticity Class, Linear Elasticity type, no subtype, EquationsSet
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,GeometricField,EquationsSet,Err)
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetElasticityClass,CMISSEquationsSetLinearElasticityType, &
-    & CMISSEquationsSetPlaneStressSubtype,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,GeometricField,CMISSEquationsSetElasticityClass, &
+    & CMISSEquationsSetLinearElasticityType,CMISSEquationsSetPlaneStressSubtype,EquationsSetFieldUserNumber,EquationsSetField, &
+    & EquationsSet,Err)
+  
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
   CALL CMISSEquationsSetDependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err) 
