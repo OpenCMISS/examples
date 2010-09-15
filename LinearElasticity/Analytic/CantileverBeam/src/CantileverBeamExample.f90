@@ -59,6 +59,10 @@ PROGRAM ANALYTIC_LINEAR_ELASTICITYEXAMPLE
 
   IMPLICIT NONE
 
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
+
   !Test program parameters
 
   REAL(CMISSDP), PARAMETER :: ORIGIN(3)=(/0.0_CMISSDP,-1.0_CMISSDP,-1.0_CMISSDP/)
@@ -331,9 +335,10 @@ CONTAINS
 
     !Create a Elasticity Class, Linear Elasticity type, no subtype, EquationsSet
     CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-    CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,GeometricField,EquationsSet,Err)
-    CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetElasticityClass,CMISSEquationsSetLinearElasticityType, &
-      & EquationSetSubtype,Err)
+      CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,GeometricField,CMISSEquationsSetElasticityClass, &
+    & CMISSEquationsSetLinearElasticityType,EquationSetSubtype,EquationsSetFieldUserNumber,EquationsSetField,EquationsSet,Err)
+    
     CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
     CALL CMISSEquationsSetDependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err) 
