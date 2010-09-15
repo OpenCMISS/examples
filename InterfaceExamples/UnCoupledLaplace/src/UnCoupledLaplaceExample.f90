@@ -85,6 +85,8 @@ PROGRAM COUPLEDLAPLACE
   INTEGER(CMISSIntg), PARAMETER :: DependentField2UserNumber=23
   INTEGER(CMISSIntg), PARAMETER :: LagrangeFieldUserNumber=26
   INTEGER(CMISSIntg), PARAMETER :: CoupledProblemUserNumber=27
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetField1UserNumber=40
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetField2UserNumber=41
  
   !Program types
   
@@ -108,7 +110,7 @@ PROGRAM COUPLEDLAPLACE
   TYPE(CMISSDecompositionType) :: Decomposition1,Decomposition2
   TYPE(CMISSEquationsType) :: Equations1,Equations2
   TYPE(CMISSEquationsSetType) :: EquationsSet1,EquationsSet2
-  TYPE(CMISSFieldType) :: GeometricField1,GeometricField2,DependentField1,DependentField2
+  TYPE(CMISSFieldType) :: GeometricField1,GeometricField2,DependentField1,DependentField2,EquationsSetField1,EquationsSetField2
   TYPE(CMISSFieldsType) :: Fields1,Fields2
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh1,GeneratedMesh2
   TYPE(CMISSMeshType) :: Mesh1,Mesh2
@@ -375,21 +377,22 @@ PROGRAM COUPLEDLAPLACE
 
   !Create the equations set for the first region
   PRINT *, ' == >> CREATING EQUATION SET(1) << == '
+  CALL CMISSFieldTypeInitialise(EquationsSetField1,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSet1,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSet1UserNumber,Region1,GeometricField1,EquationsSet1,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSet1UserNumber,Region1,GeometricField1,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,EquationsSetField1UserNumber,&
+    & EquationsSetField1,EquationsSet1,Err)
   !Set the equations set to be a standard Laplace problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet1,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet1,Err)
 
   !Create the equations set for the second region
   PRINT *, ' == >> CREATING EQUATION SET(2) << == '
+  CALL CMISSFieldTypeInitialise(EquationsSetField2,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSet2,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSet2UserNumber,Region2,GeometricField2,EquationsSet2,Err)
-  !Set the equations set to be a standard Laplace problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet2,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSet2UserNumber,Region2,GeometricField2,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,EquationsSetField2UserNumber,&
+    & EquationsSetField2,EquationsSet2,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet2,Err)
 
