@@ -72,6 +72,10 @@ PROGRAM STOKESSTATICEXAMPLE
 
   IMPLICIT NONE
 
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
+
   !Test program parameters
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -525,10 +529,12 @@ PROGRAM STOKESSTATICEXAMPLE
 
   !Create the equations set for static Stokes
   CALL CMISSEquationsSetTypeInitialise(EquationsSetStokes,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberStokes,Region,GeometricField,EquationsSetStokes,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberStokes,Region,GeometricField,CMISSEquationsSetFluidMechanicsClass, &
+    & CMISSEquationsSetStokesEquationType,CMISSEquationsSetStaticStokesSubtype,EquationsSetFieldUserNumber,EquationsSetField, &
+    & EquationsSetStokes,Err)
   !Set the equations set to be a static Stokes problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetStokes,CMISSEquationsSetFluidMechanicsClass, &
-    & CMISSEquationsSetStokesEquationType,CMISSEquationsSetStaticStokesSubtype,Err)
+  
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetStokes,Err)
 
