@@ -98,7 +98,7 @@ PROGRAM TRIQUADRATICCUBEEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponents=4
 
   INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
   !Program types
