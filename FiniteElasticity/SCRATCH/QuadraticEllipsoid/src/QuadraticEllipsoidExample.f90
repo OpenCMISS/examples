@@ -301,9 +301,9 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
   CALL CMISSFieldGeometricFieldSet(FibreField,GeometricField,Err)
   CALL CMISSFieldNumberOfVariablesSet(FibreField,FieldFibreNumberOfVariables,Err)
   CALL CMISSFieldNumberOfComponentsSet(FibreField,CMISSFieldUVariableType,FieldFibreNumberOfComponents,Err)  
-  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,1,LinearMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,2,LinearMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,3,LinearMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,2,QuadraticMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,3,QuadraticMeshComponentNumber,Err)
   CALL CMISSFieldCreateFinish(FibreField,Err)
 
   !Set Fibre directions
