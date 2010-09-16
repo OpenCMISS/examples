@@ -74,6 +74,10 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
 
   IMPLICIT NONE
 
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
+
   !Test program parameters
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -597,10 +601,13 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
 
   !Create the equations set for dynamic Navier-Stokes
   CALL CMISSEquationsSetTypeInitialise(EquationsSetNavierStokes,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField,EquationsSetNavierStokes,Err)
+  CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField, &
+    & CMISSEquationsSetFluidMechanicsClass,CMISSEquationsSetNavierStokesEquationType,&
+    & CMISSEquationsSetTransientNavierStokesSubtype, &
+    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSetNavierStokes,Err)
   !Set the equations set to be a dynamic Navier-Stokes problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetNavierStokes,CMISSEquationsSetFluidMechanicsClass, &
-    & CMISSEquationsSetNavierStokesEquationType,CMISSEquationsSetTransientNavierStokesSubtype,Err)
+  
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetNavierStokes,Err)
 
