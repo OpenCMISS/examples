@@ -992,7 +992,8 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
 
   !Finialise CMISS
 !   CALL CMISSFinalise(Err)
- 
+   WRITE(*,'(A)') "Program successfully completed."
+
   STOP
 
 END PROGRAM MONOLITHICSCHEMETESTEXAMPLE
