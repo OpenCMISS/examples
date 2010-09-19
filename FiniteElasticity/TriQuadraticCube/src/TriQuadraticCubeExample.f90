@@ -128,6 +128,7 @@ PROGRAM TRIQUADRATICCUBEEXAMPLE
   TYPE(CMISSSolverEquationsType) :: SolverEquations
   TYPE(CMISSNodesType) :: Nodes
   TYPE(CMISSMeshElementsType) :: QuadraticElements,LinearElements
+  TYPE(CMISSControlLoopType) :: ControlLoop
 
   !Other variables
   INTEGER(CMISSIntg) :: NN,I,J,K,BC_TYPE
@@ -238,6 +239,7 @@ PROGRAM TRIQUADRATICCUBEEXAMPLE
   CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
   CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
+  CALL CMISSDecompositionCalculateFacesSet(Decomposition,.TRUE.,Err)
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
 
   !Create a field to put the geometry (default is geometry)
@@ -361,7 +363,7 @@ PROGRAM TRIQUADRATICCUBEEXAMPLE
       & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
   ENDDO
 
-  BC_TYPE=1 ! 1=displacement 2=surface pressure 3=force
+  BC_TYPE=2 ! 1=displacement 2=surface pressure 3=force
   SELECT CASE(BC_TYPE)
   CASE(1)
     !1. Move top of the element by a little?
@@ -373,8 +375,10 @@ PROGRAM TRIQUADRATICCUBEEXAMPLE
     !2. Apply pressure at the top face?
     DO NN=19,27
       !NOTE: Surface pressure goes into pressure_values_set_type of the DELUDELN type
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,NN,3, &
+!         & CMISSBoundaryConditionPressure,4.0_CMISSDP,Err)
       CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,NN,3, &
-        & CMISSBoundaryConditionPressure,4.0_CMISSDP,Err)
+        & CMISSBoundaryConditionPressureIncremented,4.0_CMISSDP,Err)
     ENDDO
   CASE(3)
     !3. Apply force at the top nodes?
@@ -402,7 +406,11 @@ PROGRAM TRIQUADRATICCUBEEXAMPLE
 
   !Create the problem control loop
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
+  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
+  CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
+  CALL CMISSControlLoopMaximumIterationsSet(ControlLoop,3,Err)
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
+  
 
   !Create the problem solvers
   CALL CMISSSolverTypeInitialise(Solver,Err)
