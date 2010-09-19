@@ -274,10 +274,9 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
 
   !Create the CellML environment for the source field
   CALL CMISSCellMLTypeInitialise(CellML,Err)
-  CALL CMISSCellMLCreateStart(CellMLUserNumber,SourceField,CellML,Err)
+  CALL CMISSCellMLCreateStart(CellMLUserNumber,CellML,Err)
   !Finish the CellML environment
   CALL CMISSCellMLCreateFinish(CellML,Err)
-
   !Start the creation of CellML models
   CALL CMISSCellMLModelsCreateStart(CellML,Err)
   !Import a Noble 1998 model from a file
@@ -289,7 +288,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
 
   !Start the creation of the CellML models field
   CALL CMISSFieldTypeInitialise(CellMLModelsField,Err)
-  CALL CMISSCellMLModelsFieldCreateStart(CellMLModelsFieldUserNumber,CellML,CellMLModelsField,Err)
+  !CALL CMISSCellMLModelsFieldCreateStart(CellMLModelsFieldUserNumber,CellML,CellMLModelsField,Err)
   ! set up the models field
   DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
     IF(N < 5) THEN
@@ -297,10 +296,10 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
     ELSE
         CELL_TYPE = 2
     ENDIF
-    CALL CMISSFieldParameterSetUpdateNode(CellMLModelsField, CMISSFieldUVariableType, CMISSFieldValuesSetType,1,N,1,CELL_TYPE,Err)
+    !CALL CMISSFieldParameterSetUpdateNode(CellMLModelsField, CMISSFieldUVariableType, CMISSFieldValuesSetType,1,N,1,CELL_TYPE,Err)
   END DO
   !Finish the creation of the CellML models field
-  CALL CMISSCellMLModelsFieldCreateFinish(CellML,Err)
+  !CALL CMISSCellMLModelsFieldCreateFinish(CellML,Err)
 
   !Start the creation of the CellML state field
   CALL CMISSCellMLStateFieldCreateStart(CellMLStateFieldUserNumber,CellML,CellMLStateField,Err)
