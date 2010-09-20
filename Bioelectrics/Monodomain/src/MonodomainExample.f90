@@ -245,8 +245,8 @@ PROGRAM MONODOMAINEXAMPLE
         
   !Create the equations_set
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
-CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetBioelectricsClass, &
+  CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetBioelectricsClass, &
     & CMISSEquationsSetMonodomainEquationType,CMISSEquationsSetNoSubtype,EquationsSetFieldUserNumber,EquationsSetField, &
     & EquationsSet,Err)
   !Set the equations set to be a standard Laplace problem
@@ -274,17 +274,17 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
 
   !Create the CellML environment for the source field
   CALL CMISSCellMLTypeInitialise(CellML,Err)
-  CALL CMISSCellMLCreateStart(CellMLUserNumber,CellML,Err)
-  !Finish the CellML environment
-  CALL CMISSCellMLCreateFinish(CellML,Err)
-  !Start the creation of CellML models
-  CALL CMISSCellMLModelsCreateStart(CellML,Err)
+  CALL CMISSCellMLCreateStart(CellMLUserNumber,Region,CellML,Err)
   !Import a Noble 1998 model from a file
   CALL CMISSCellMLModelImport(1,CellML,"n98.xml",Err)
   ! and import JRW 1998 from a file
   CALL CMISSCellMLModelImport(2,CellML,"jrw-1998.xml",Err)
-  !Finish the creation of CellML models
-  CALL CMISSCellMLModelsCreateFinish(CellML,Err)
+  ! Now we have the models we can set up the field variable component <--> CellML model variable mappings.
+  !CMISSCellMLCreateFieldToCellMLMap(CellML,field,field_variable,component_number,cellml_model_number,VariableID,Err)
+  CALL CMISSCellMLCreateFieldToCellMLMap(CellML,SourceField,CMISSFieldUVariableType,1,1,"Am",Err)
+  CALL CMISSCellMLCreateFieldToCellMLMap(CellML,SourceField,CMISSFieldUVariableType,1,2,"jrw-1998.xml#Vm",Err)
+  !Finish the CellML environment
+  CALL CMISSCellMLCreateFinish(CellML,Err)
 
   !Start the creation of the CellML models field
   CALL CMISSFieldTypeInitialise(CellMLModelsField,Err)
