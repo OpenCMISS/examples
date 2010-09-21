@@ -1,5 +1,5 @@
 !> \file
-!> $Id: TwoElementTriLinearExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id$
 !> \author Kumar Mithraratne
 !> \brief This is an example program to solve a finite elasticity equation using openCMISS calls.
 !>

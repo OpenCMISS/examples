@@ -1,5 +1,5 @@
 !> \file
-!> $Id: MonodomainExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve a Monodomain equation using OpenCMISS calls.
 !>
@@ -376,10 +376,17 @@ PROGRAM MONODOMAINEXAMPLE
   !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
  
-   !Start the creation of the problem solvers
+  !Start the creation of the problem solvers
   CALL CMISSSolverTypeInitialise(Solver,Err)
   CALL CMISSProblemSolversCreateStart(Problem,Err)
+  !Get the first (DAE) solver
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
+  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
+  !Get the second (Parabolic) solver
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,2,Solver,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
@@ -389,11 +396,19 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
 
   !Start the creation of the problem solver equations
-  CALL CMISSSolverTypeInitialise(Solver,Err)
   CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
   CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
-  !Get the solve equations
+  !Get the first solver
+  !Get the solver equations
+  CALL CMISSSolverTypeInitialise(Solver,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
+  CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
+  !Add in the CellML environment
+  CALL CMISSSolverEquationsCellMLAdd(SolverEquations,CellML,Err)
+  !Get the second solver  
+  !Get the solver equations
+  CALL CMISSSolverTypeInitialise(Solver,Err)
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,2,Solver,Err)
   CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
   !Set the solver equations sparsity
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
@@ -408,7 +423,7 @@ PROGRAM MONODOMAINEXAMPLE
 
 #endif /* UP_TO_HERE */
 
-  EXPORT_FIELD=.TRUE.
+  EXPORT_FIELD=.FALSE.
   IF(EXPORT_FIELD) THEN
     CALL CMISSFieldsTypeInitialise(Fields,Err)
     CALL CMISSFieldsTypeCreate(Region,Fields,Err)

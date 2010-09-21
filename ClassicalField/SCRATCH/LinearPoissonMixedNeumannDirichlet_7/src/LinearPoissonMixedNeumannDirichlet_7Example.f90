@@ -1,5 +1,5 @@
 !> \file
-!> $Id: LinearPoissonMixedNeumannDirichlet_3Example.f90 20 2010-05-28 20:22:52Z cpb $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve a nonlinear Poisson equation using openCMISS calls.
 !>

@@ -1,5 +1,5 @@
 !> \file
-!> $Id: MonodomainBuenoOrovioExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id$
 !> \author Ishani Roy & Sander Land
 !> \brief This is an example program to solve a Monodomain equation using OpenCMISS calls.
 !>

@@ -1,5 +1,5 @@
 ! \file
-!> $Id: LinearElasticityExample.f90 20 2009-02-15 13:26:52Z cpb $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve a linear elasticity equation using openCMISS calls.
 !>

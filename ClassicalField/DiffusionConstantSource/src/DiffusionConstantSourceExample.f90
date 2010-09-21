@@ -1,5 +1,5 @@
 !> \file
-!> $Id: DiffusionConstantSourceExample.f90 20 2009-10-09 18:49:52Z anc $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve a diffusion equation using openCMISS calls.
 !>

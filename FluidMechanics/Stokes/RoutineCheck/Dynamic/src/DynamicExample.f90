@@ -1,5 +1,5 @@
 !> \file
-!> $Id: DynamicExample.f90 20 2009-10-28 20:22:52Z sebk $
+!> $Id$
 !> \author Sebastian Krittian
 !> \brief This is an example program to solve a dynamic Stokes equation using OpenCMISS calls.
 !>

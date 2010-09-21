@@ -1,5 +1,5 @@
 !> \file
-!> $Id: 1DRectangularCartesianExample.f90 $
+!> $Id$
 !> \author Tim Wu
 !> \brief This is an example program to solve 3D data points projecting onto 1D cartesian elements using openCMISS calls.
 !>

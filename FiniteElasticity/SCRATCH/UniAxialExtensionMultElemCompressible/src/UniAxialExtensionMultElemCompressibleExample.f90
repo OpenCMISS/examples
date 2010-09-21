@@ -1,5 +1,5 @@
 !> \file
-!> $Id: UniAxialExtensionMultElemCompressible.f90 20 2009-05-28 20:22:52Z chrm76 $
+!> $Id$
 !> \authors Christian Michler
 !> \brief This is an example program to solve a Compressible Finite Elastiticity equation using openCMISS calls and FLUID_MECHANICS_IO_ROUTINES.
 !>

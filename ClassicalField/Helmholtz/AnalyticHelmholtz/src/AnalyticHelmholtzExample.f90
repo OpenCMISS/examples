@@ -1,5 +1,5 @@
 !> \file
-!> $Id: AnalyticHelmholtzExample.f90 20 2010-05-20 15:09:52Z cpb $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve an Analytic Helmholtz equation using OpenCMISS calls.
 !>

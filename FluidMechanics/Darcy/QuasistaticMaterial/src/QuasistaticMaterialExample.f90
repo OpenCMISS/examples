@@ -1,5 +1,5 @@
 !> \file
-!> $Id: DarcyExample.f90 20 2009-05-28 20:22:52Z chrm76 $
+!> $Id$
 !> \author Christian Michler
 !> \brief This is an example program to solve a Darcy equation using openCMISS calls.
 !>
