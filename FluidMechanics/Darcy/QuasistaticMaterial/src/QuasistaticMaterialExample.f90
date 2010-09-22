@@ -42,10 +42,8 @@
 
 !> \example FluidMechanics/Darcy/QuasistaticMaterial/src/QuasistaticMaterialExample.f90
 !! Example program to solve a QuasistaticMaterial ALE Darcy equation using OpenCMISS calls.
-!! \par Latest Builds:
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FluidMechanics/Darcy/QuasistaticMaterial/build-intel'>Linux Intel Build</a>
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FluidMechanics/Darcy/QuasistaticMaterial/build-intel'>Linux GNU Build</a>
 !!
+!! !! \htmlinclude FluidMechanics/Darcy/QuasistaticMaterial/history.html
 !<
 
 ! ! 

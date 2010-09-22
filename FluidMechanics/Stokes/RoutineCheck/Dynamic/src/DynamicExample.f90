@@ -40,9 +40,9 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example FluidMechanics/Stokes/Dynamic/src/DynamicExample.f90
+!> \example FluidMechanics/Stokes/RoutineCheck/Dynamic/src/DynamicExample.f90
 !! Example program to solve a dynamic Stokes equation using OpenCMISS calls.
-!! \htmlinclude FluidMechanics/Stokes/Dynamic/history.html
+!! \htmlinclude FluidMechanics/Stokes/RoutineCheck/Dynamic/history.html
 !!
 !<
 

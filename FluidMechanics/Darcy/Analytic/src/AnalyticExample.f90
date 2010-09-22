@@ -42,10 +42,8 @@
 
 !> \example FluidMechanics/Darcy/Analytic/src/AnalyticExample.f90
 !! Example program to solve an analytic Darcy equation using OpenCMISS calls.
-!! \par Latest Builds:
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FluidMechanics/Darcy/Analytic/build-intel'>Linux Intel Build</a>
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FluidMechanics/Darcy/Analytic/build-intel'>Linux GNU Build</a>
 !!
+!! \htmlinclude FluidMechanics/Darcy/Analytic/history.html
 !<
 
 ! ! 

@@ -40,9 +40,9 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example FluidMechanics/NavierStokes/ALE/src/ALEExample.f90
+!> \example FluidMechanics/NavierStokes/RoutineCheck/ALE/src/ALEExample.f90
 !! Example program to solve a ALE Navier-Stokes equation using OpenCMISS calls.
-!! \htmlinclude FluidMechanics/NavierStokes/ALE/history.html
+!! \htmlinclude FluidMechanics/NavierStokes/RoutineCheck/ALE/history.html
 !!
 !<
 

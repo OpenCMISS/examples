@@ -40,12 +40,10 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example MultiPhysics/Poroelasticity/FiniteElasticityDarcy/Standard/src/StandardExample.f90
+!> \example MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDarcySharedVarsTimeBCs/src/IncompressibleElasticityDarcySharedVarsTimeBCsExample.f90
 !! Example program to solve coupled FiniteElasticityDarcy equations using OpenCMISS calls.
-!! \par Latest Builds:
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/MultiPhysics/Poroelasticity/FiniteElasticityDarcy/Standard/build-intel'>Linux Intel Build</a>
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/MultiPhysics/Poroelasticity/FiniteElasticityDarcy/Standard/build-intel'>Linux GNU Build</a>
 !!
+!! \htmlinclude MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDarcySharedVarsTimeBCs/history.html
 !<
 
 ! ! 

@@ -40,9 +40,9 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example FluidMechanics/NavierStokes/Static/src/StaticExample.f90
+!> \example FluidMechanics/NavierStokes/RoutineCheck/Static/src/StaticExample.f90
 !! Example program to solve a static Navier-Stokes equation using OpenCMISS calls.
-!! \htmlinclude FluidMechanics/NavierStokes/Static/history.html
+!! \htmlinclude FluidMechanics/NavierStokes/RoutineCheck/Static/history.html
 !!
 !<
 

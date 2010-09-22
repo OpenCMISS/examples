@@ -40,7 +40,7 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/Laplace/Laplace/src/NewLaplaceExample.f90
+!> \example ClassicalField/Laplace/Laplace/src/LaplaceExample.f90
 !! Example program to solve a Laplace equation using OpenCMISS calls.
 !! \htmlinclude ClassicalField/Laplace/Laplace/history.html
 !!

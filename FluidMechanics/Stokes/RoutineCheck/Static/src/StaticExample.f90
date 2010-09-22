@@ -40,9 +40,9 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example FluidMechanics/Stokes/Static/src/StaticExample.f90
+!> \example FluidMechanics/Stokes/RoutineCheck/Static/src/StaticExample.f90
 !! Example program to solve a static Stokes equation using OpenCMISS calls.
-!! \htmlinclude FluidMechanics/Stokes/Static/history.html
+!! \htmlinclude FluidMechanics/Stokes/RoutineCheck/Static/history.html
 !!
 !<
 

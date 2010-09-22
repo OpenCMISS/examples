@@ -40,9 +40,9 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example FluidMechanics/NavierStokes/Dynamic/src/DynamicExample.f90
+!> \example FluidMechanics/NavierStokes/RoutineCheck/Dynamic/src/DynamicExample.f90
 !! Example program to solve a dynamic Navier-Stokes equation using OpenCMISS calls.
-!! \htmlinclude FluidMechanics/NavierStokes/Dynamic/history.html
+!! \htmlinclude FluidMechanics/NavierStokes/RoutineCheck/Dynamic/history.html
 !!
 !<
 

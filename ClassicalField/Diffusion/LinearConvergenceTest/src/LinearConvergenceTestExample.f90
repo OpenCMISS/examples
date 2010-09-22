@@ -40,9 +40,9 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/Diffusion/src/DiffusionExample.f90
+!> \example ClassicalField/Diffusion/LinearConvergenceTest/src/LinearConvergenceTestExample.f90
 !! Example program to solve a diffusion equation using openCMISS calls.
-!! \htmlinclude ClassicalField/Diffusion/history.html
+!! \htmlinclude ClassicalField/Diffusion/LinearConvergenceTest/history.html
 !<
 
 !> Main program
