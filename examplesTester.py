@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 import os, sys, subprocess
 from time import strftime
+import socket
 
 cwd = os.getcwd();
 logDir = cwd + "/../../build/logs";
 ndiff = cwd + "/../utils/ndiff"
 rootUrl = "http://autotest.bioeng.auckland.ac.nz/opencmiss-build/"
+hostname = socket.gethostname()
 
 if not os.path.isdir(logDir):
   os.mkdir(cwd + "/../../build")
@@ -20,7 +22,7 @@ f.close()
 f = open(logDir+'/build.log',"a")
 
 def insertTag(tag,outfile) :
-  logFile.write(tag+"\n")
+  outfile.write(tag+"\n")
 
 def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=None) :
    global compiler,logDir,successbuilds,f;
@@ -76,16 +78,23 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
      outputfile = open(newDir + "/test" + id + "-" + compiler, 'r')
      if "ERROR:" in outputfile.read() :
        err=-1
+     if os.path.exists(newDir + "/history-test"+id+"-" + compiler) :
+       history = open(newDir + "/history-test"+id+"-" + compiler,"a")
+     else :
+       history = open(newDir + "/history-test"+id+"-" + compiler,"w")
+       history.write("<pre>Completed Time\t\tStatus\tHostname\n")
      if err==0 :
        f.write(compiler+'_'+path+'_test|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
-       print "<a class='success' href='%slogs_x86_64-linux/%s/test%s-%s'>Pass</a>: testing %s%s<br>" %(rootUrl,path,id,compiler,path,id)
+       print "<a class='success' href='%slogs_x86_64-linux/%s/history-test%s-%s'>Pass</a>: testing <a href='%slogs_x86_64-linux/%s/test%s-%s'>%s%s</a><br>" %(rootUrl,path,id,compiler,rootUrl,path,id,compiler,path,id)
+       history.write(strftime("%Y-%m-%d %H:%M:%S")+'\tsuccess\t'+hostname+'\n')
      else :
        f.write(compiler+'_'+path+'_test|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
-       print "<a class='fail' href='%slogs_x86_64-linux/%s/test%s-%s'>Fail</a>: testing %s%s: <br>" %(rootUrl,path,id,compiler,path,id)
+       print "<a class='fail' href='%slogs_x86_64-linux/%s/history-test%s-%s'>Fail</a>: testing <a href='%slogs_x86_64-linux/%s/test%s-%s'>%s%s</a> <br>" %(rootUrl,path,id,compiler,rootUrl,path,id,compiler,path,id)
+       history.write(strftime("%Y-%m-%d %H:%M:%S")+'\tfailed\t'+hostname+'\n')
      os.chdir(cwd)
    else :
      f.write(compiler+'_'+path+'_test|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
-     print "<a class='fail'>Fail</a>: testing %s%s failed due to build failure<br>" %(path,id)
+     print "<a class='fail' href='%slogs_x86_64-linux/%s/history-test%s-%s'>Fail</a>: testing %s%s failed due to build failure<br>" %(rootUrl,path,id,compiler,path,id)
    return;
 
 def htmlWrapper(infile, outfile) :
