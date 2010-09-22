@@ -12,13 +12,8 @@ if not os.path.isdir(logDir):
 compiler = sys.argv[1];
 f = open(logDir+'/build.log',"a")
 
-def insertTag(tag,filePath,isOpen) :
-  if (isOpen) :
-    logFile = open(filePath,"w")
-  else :
-    logFile = open(filePath,"a")
-  logFile.write(tag+"\n")
-  logFile.close()
+def insertTag(tag,outfile) :
+  outfile.write(tag+"\n")
   
 
 def buildExample(path) :
@@ -30,11 +25,10 @@ def buildExample(path) :
        if not os.path.isdir(newDir):
          os.mkdir(newDir)
      os.chdir(path)
-     if os.path.exists(newDir + "/build-" + compiler) :
-       os.remove(newDir + "/build-" + compiler)
-     insertTag("<pre>",newDir + "/build-" + compiler,True)
-     err=os.system("make COMPILER=" + compiler + " >> " + newDir + "/build-" + compiler +" 2>&1")
-     insertTag("</pre>",newDir + "/build-" + compiler,False)
+     if os.path.exists(newDir + "/temp") :
+       os.remove(newDir + "/temp")
+     err=os.system("make COMPILER=" + compiler + " > " + newDir + "/temp" +" 2>&1")
+     htmlWrapper(newDir + "/temp",newDir + "/build-" + compiler)
      if err==0 :
        f.write(compiler+'_'+path+'_build|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
        print "<a class='success' href='%slogs_x86_64-linux/%s/build-%s'>Pass</a>: building %s<br>" %(rootUrl,path,compiler,path)
@@ -51,11 +45,10 @@ def buildLibrary() :
    global compiler,logDir;
    newDir = logDir
    os.chdir('..')
-   if os.path.exists(newDir + "/build-" + compiler) :
-     os.remove(newDir + "/build-" + compiler)
-   insertTag("<pre>",newDir + "/build-" + compiler,True)
-   err=os.system("make USEFIELDML=true COMPILER=" + compiler + " >> " + newDir + "/build-" + compiler +" 2>&1")
-   insertTag("</pre>",newDir + "/build-" + compiler,False)
+   if os.path.exists(newDir + "/temp") :
+     os.remove(newDir + "/temp")
+   err=os.system("make USEFIELDML=true COMPILER=" + compiler + " > " + newDir + "/temp" +" 2>&1")
+   htmlWrapper(newDir + "/temp",newDir + "/build-" + compiler)
    if err==0 :
      f.write(compiler+'_library_build|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
      print "<a class='success' href='%slogs_x86_64-linux/build-%s'>Pass</a>: building OpenCMISS Library<br>" %(rootUrl,compiler)
@@ -66,6 +59,21 @@ def buildLibrary() :
      print "<a class='fail' href='%slogs_x86_64-linux/build-%s'>Fail</a>: building OpenCMISS Library<br>" %(rootUrl,compiler)
      os.chdir(cwd)
      return -1;
+
+def htmlWrapper(infile, outfile) :
+  stext1 = "<";
+  stext2 = ">";
+  rtext1 = "&lt;";
+  rtext2 = "&gt;";
+  input = sys.stdin
+  output = sys.stdout
+  input = open(infile)
+  output = open(outfile, 'w')
+  insertTag("<pre>",output)
+  for s in input.xreadlines():
+    output.write(s.replace(stext1, rtext1).replace(stext2,rtext2))
+  insertTag("</pre>",output)
+  output.close()
    
    
 libSuccess = buildLibrary()

@@ -19,13 +19,8 @@ successbuilds = f.read()
 f.close()
 f = open(logDir+'/build.log',"a")
 
-def insertTag(tag,filePath,isOpen) :
-  if (isOpen) :
-    logFile = open(filePath,"w")
-  else :
-    logFile = open(filePath,"a")
+def insertTag(tag,outfile) :
   logFile.write(tag+"\n")
-  logFile.close()
 
 def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=None) :
    global compiler,logDir,successbuilds,f;
@@ -38,12 +33,13 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
        if not os.path.isdir(newDir):
          os.mkdir(newDir)
      os.chdir(path)
-     insertTag("<pre>",newDir + "/test" + id + "-" + compiler,True)
+     if os.path.exists(newDir + "/temp") :
+       os.remove(newDir + "/temp")
      execPath='bin/x86_64-linux/mpich2/'+compiler+'/'+path.rpartition('/')[2]+'Example-debug'
      if nodes == '1' :
        if input != None :
          inputPipe = subprocess.Popen(["echo", input], stdout=subprocess.PIPE)
-         f1 = open(newDir + "/test" + id + "-" + compiler,"a")
+         f1 = open(newDir + "/temp","w")
          execArgs = [execPath]
          if args != None :
            execArgs.extend(args.split(' '))
@@ -51,13 +47,13 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
          f1.close()
          err = os.waitpid(execCommand.pid, 0)[1]
        elif args==None :
-         err=os.system(execPath +" >> " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+         err=os.system(execPath +" > " + newDir + "/temp" + " 2>&1")
        else :
-         err=os.system(execPath + ' ' + args +" >> " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+         err=os.system(execPath + ' ' + args +" >> " + newDir + "/temp" + " 2>&1")
      else :
        if input != None :
          inputPipe = subprocess.Popen(["echo", input], stdout=subprocess.PIPE)
-         f1 = open(newDir + "/test" + id + "-" + compiler,"a")
+         f1 = open(newDir + "/temp","w")
          execArgs = ["mpiexec","-n",nodes,execPath]
          if args != None :
            execArgs.extend(args.split(' '))
@@ -65,18 +61,18 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
          f1.close()
          err = os.waitpid(execCommand.pid, 0)[1]
        elif args==None :
-         err=os.system('python ' + mpidir + '/mpiexec.py -n ' + nodes + ' ' + execPath +" >> " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+         err=os.system('python ' + mpidir + '/mpiexec.py -n ' + nodes + ' ' + execPath +" > " + newDir + "/temp" + " 2>&1")
        else :
-         err=os.system('python ' + mpidir + '/mpiexec.py -n ' + nodes + " " + execPath + ' ' + args+" >> " + newDir + "/test" + id + "-" + compiler + " 2>&1")
+         err=os.system('python ' + mpidir + '/mpiexec.py -n ' + nodes + " " + execPath + ' ' + args+" > " + newDir + "/temp" + " 2>&1")
      if err==0 and ndiffDir != None and outputDir != None :
      	for outputFile in os.listdir(ndiffDir) :
 		if outputFile!='.svn' :
-       			error=os.system(ndiff + ' --tolerance=1e-10 ' + ndiffDir +'/'+outputFile + ' ' + outputDir +'/'+outputFile + ' >> '  + newDir + "/test" + id + "-" + compiler + " 2>&1")
+       			error=os.system(ndiff + ' --tolerance=1e-10 ' + ndiffDir +'/'+outputFile + ' ' + outputDir +'/'+outputFile + ' >> '  + newDir + "/temp" + " 2>&1")
 			if err==0 :
 				err=error
      if not os.path.exists(execPath) :
        err=-1
-     insertTag("</pre>",newDir + "/test" + id + "-" + compiler,False)
+     htmlWrapper(newDir + "/temp",newDir + "/test" + id + "-" + compiler)
      outputfile = open(newDir + "/test" + id + "-" + compiler, 'r')
      if "ERROR:" in outputfile.read() :
        err=-1
@@ -91,6 +87,21 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
      f.write(compiler+'_'+path+'_test|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
      print "<a class='fail'>Fail</a>: testing %s%s failed due to build failure<br>" %(path,id)
    return;
+
+def htmlWrapper(infile, outfile) :
+  stext1 = "<";
+  stext2 = ">";
+  rtext1 = "&lt;";
+  rtext2 = "&gt;";
+  input = sys.stdin
+  output = sys.stdout
+  input = open(infile)
+  output = open(outfile, 'w')
+  insertTag("<pre>",output)
+  for s in input.xreadlines():
+    output.write(s.replace(stext1, rtext1).replace(stext2,rtext2))
+  insertTag("</pre>",output)
+  output.close()
 
 #testExample(id='1', path="ClassicalField/AdvectionDiffusion", nodes='1')
 testExample(id='1', path="ClassicalField/AdvectionDiffusion/AdvectionDiffusionIO", nodes='1')
