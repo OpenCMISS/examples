@@ -1,5 +1,5 @@
 !> \file
-!> $Id: StaticExample.f90 1530 2010-09-22 01:26:53Z tingy $
+!> $Id$
 !> \author Sebastian Krittian
 !> \brief This is an example program to solve a static Navier-Stokes equation using OpenCMISS calls.
 !>
