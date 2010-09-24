@@ -545,7 +545,6 @@ PROGRAM DARCYSTATICEXAMPLE
 
   IF(.NOT.ALLOCATED(EquationsSetFieldDarcy)) ALLOCATE(EquationsSetFieldDarcy(Ncompartments))
   IF(.NOT.ALLOCATED(EquationsSetDarcy)) ALLOCATE(EquationsSetDarcy(Ncompartments))
-  !IF(.NOT.ALLOCATED(DependentFieldDarcy)) ALLOCATE(DependentFieldDarcy(Ncompartments))
   IF(.NOT.ALLOCATED(MaterialsFieldDarcy)) ALLOCATE(MaterialsFieldDarcy(Ncompartments))
   IF(.NOT.ALLOCATED(BoundaryConditionsDarcy)) ALLOCATE(BoundaryConditionsDarcy(Ncompartments))
   IF(.NOT.ALLOCATED(EquationsSetIndices)) ALLOCATE(EquationsSetIndices(Ncompartments))
@@ -581,8 +580,7 @@ PROGRAM DARCYSTATICEXAMPLE
 !  for first material field (auto-)create it, subsequently just pass it in as we do for the
 !  shared dependent field between daryc and elaasticy
 
-!     CALL CMISSEquationsSetSpecificationSet(EquationsSetDarcy(icomp),CMISSEquationsSetFluidMechanicsClass, &
-!       & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetMultiCompartmentDarcySubtype,Err)
+
     CALL CMISSEquationsSetCreateFinish(EquationsSetDarcy(icomp),Err)
 
     CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldDarcy(icomp),CMISSFieldUVariableType, &
@@ -913,7 +911,7 @@ PROGRAM DARCYSTATICEXAMPLE
 
   !RUN SOLVERS
 
-  !Turn of PETSc error handling
+  !Turn off PETSc error handling
   !CALL PETSC_ERRORHANDLING_SET_ON(ERR,ERROR,*999)
 
   !Solve the problem
@@ -943,7 +941,6 @@ PROGRAM DARCYSTATICEXAMPLE
 
   IF (ALLOCATED(EquationsSetFieldDarcy)) DEALLOCATE(EquationsSetFieldDarcy)
   IF (ALLOCATED(EquationsSetDarcy)) DEALLOCATE(EquationsSetDarcy)
-!  IF (ALLOCATED(DependentFieldDarcy)) DEALLOCATE(DependentFieldDarcy)
   IF (ALLOCATED(MaterialsFieldDarcy)) DEALLOCATE(MaterialsFieldDarcy)
   IF (ALLOCATED(BoundaryConditionsDarcy)) DEALLOCATE(BoundaryConditionsDarcy)
   IF (ALLOCATED(EquationsSetIndices)) DEALLOCATE(EquationsSetIndices)
