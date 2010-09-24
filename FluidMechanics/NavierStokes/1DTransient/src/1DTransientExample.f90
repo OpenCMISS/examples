@@ -589,7 +589,7 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
       CONDITION=CMISSBoundaryConditionInletWall
       CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
       IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
-        DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS+1
+        DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
           VALUE=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER)
           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
           & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
