@@ -661,6 +661,10 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
             & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
         ENDDO
+        IF(NODE_NUMBER==274.OR.NODE_NUMBER==416.OR.NODE_NUMBER==1004.OR.NODE_NUMBER==1092) THEN
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+            & NODE_NUMBER,4,CONDITION,0.0_CMISSDP,Err)
+        ENDIF
       ENDIF
     ENDDO
   ENDIF
