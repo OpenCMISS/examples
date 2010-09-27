@@ -42,8 +42,8 @@
 
 !> \example FluidMechanics/Darcy/Static/src/StaticExample.f90
 !! Example program to solve a static Darcy equation using OpenCMISS calls.
-!! \par Latest Builds:
 !! \htmlinclude FluidMechanics/Darcy/Static/history.html
+!!
 !<
 
 ! ! 
