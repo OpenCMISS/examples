@@ -92,12 +92,8 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   INTEGER(CMISSIntg) :: SourceFieldUserNumberDiffusion
   INTEGER(CMISSIntg) :: EquationsSetUserNumberDiffusion
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=20
-!!!!!!!!!!!!!!!!!!!EQUATIONS FIELD PARAMETERS
-!   INTEGER(CMISSIntg), PARAMETER :: EquationsFieldDiffusionOne=33
-!   INTEGER(CMISSIntg), PARAMETER :: EquationsFieldDiffusionTwo=34
-!   INTEGER(CMISSIntg), PARAMETER :: EquationsFieldDiffusionThree=35
   INTEGER(CMISSIntg) :: EquationsSetFieldUserNumberDiffusion
-  INTEGER(CMISSIntg) :: icompartment,Ncompartments
+  INTEGER(CMISSIntg) :: icompartment,Ncompartments,num_var
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: NumberOfUserDomains=1
@@ -232,10 +228,6 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   TYPE(CMISSEquationsSetType), ALLOCATABLE, DIMENSION(:) :: EquationsSetDiffusion
   TYPE(CMISSEquationsType), ALLOCATABLE, DIMENSION(:) :: EquationsDiffusion
   TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: EquationsSetFieldDiffusion
-!   !Boundary conditions
-!   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDiffusionOne
-!   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDiffusionTwo
-!   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDiffusionThree
   !Problems
   TYPE(CMISSProblemType) :: Problem
   !Control loops
@@ -261,7 +253,7 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
 
 
   !Array containing the field variable types that will be used (for ease of incorporating inside a loop)
-  INTEGER(CMISSIntg), ALLOCATABLE, DIMENSION(:) :: FieldVariableType
+  INTEGER(CMISSIntg), ALLOCATABLE, DIMENSION(:) :: VariableTypes
 
   INTEGER(CMISSIntg) :: DIAG_LEVEL_LIST(5)
 !   CHARACTER(LEN=255) :: DIAG_ROUTINE_LIST(8) !,TIMING_ROUTINE_LIST(1)
@@ -413,25 +405,10 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   !ALLOCATE THE ARRAYS
   ALLOCATE (EquationsSetDiffusion(Ncompartments))
   ALLOCATE (EquationsSetFieldDiffusion(Ncompartments))
-  ALLOCATE (FieldVariableType(2*Ncompartments))
   ALLOCATE (MaterialsFieldDiffusion(Ncompartments))
   ALLOCATE (SourceFieldDiffusion(Ncompartments))
   ALLOCATE (BoundaryConditionsDiffusion(Ncompartments))
   ALLOCATE (EquationsDiffusion(Ncompartments))
-  FieldVariableType(1)=CMISSFieldUVariableType
-  FieldVariableType(2)=CMISSFieldDelUDelNVariableType
-  FieldVariableType(3)=CMISSFieldVVariableType
-  FieldVariableType(4)=CMISSFieldDelVDelNVariableType
-  FieldVariableType(5)=CMISSFieldU1VariableType
-  FieldVariableType(6)=CMISSFieldDelU1DelNVariableType
-!   FieldVariableType(3)=CMISSFieldU2VariableType
-!   FieldVariableType(4)=CMISSFieldDelU2DelNVariableType
-!   FieldVariableType(5)=CMISSFieldU3VariableType
-!   FieldVariableType(6)=CMISSFieldDelU3DelNVariableType
-!   FieldVariableType(13)=CMISSFieldU4VariableType
-!   FieldVariableType(14)=CMISSFieldDelU4DelNVariableType
-!   FieldVariableType(15)=CMISSFieldU5VariableType
-!   FieldVariableType(16)=CMISSFieldDelU5DelNVariableType  
 
 !
   !================================================================================================================================
@@ -684,58 +661,33 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   END DO 
 
   !-------------------------------------------------------------------------------------
-  ! DEPENDENT FIELD: Shared. We're gonna create the dependent field manually for now
-  ! U & DEL_U_DEL_N: Diffusion-one
-  ! V & DEL_V_DEL_N: Diffusion-two
-  ! U1 & DEL_U1_DEL_N: Diffusion-three
+  ! DEPENDENT FIELD: Shared
   CALL CMISSFieldTypeInitialise(DependentField,Err)
-    ! -- Advection-diffusion
-    CALL CMISSFieldCreateStart(DependentFieldUserNumber,Region,DependentField,Err)
-    CALL CMISSFieldTypeSet(DependentField,CMISSFieldGeneralType,Err)  
-    CALL CMISSFieldMeshDecompositionSet(DependentField,Decomposition,Err)
-    CALL CMISSFieldGeometricFieldSet(DependentField,GeometricField,Err) 
-    CALL CMISSFieldDependentTypeSet(DependentField,CMISSFieldDependentType,Err) 
-     CALL CMISSFieldNumberOfVariablesSet(DependentField,6,Err)
-     CALL CMISSFieldVariableTypesSet(DependentField,&
-      & (/CMISSFieldUVariableType,CMISSFieldDelUDelNVariableType,CMISSFieldVVariableType,&
-      & CMISSFieldDelVDelNVariableType,CMISSFieldU1VariableType,CMISSFieldDelU1DelNVariableType/),Err)
-
-     CALL CMISSFieldDimensionSet(DependentField,CMISSFieldUVariableType, &
-                   & CMISSFieldScalarDimensionType,Err)
-     CALL CMISSFieldDimensionSet(DependentField,CMISSFieldDelUDelNVariableType, &
-                   & CMISSFieldScalarDimensionType,Err)
-     CALL CMISSFieldDimensionSet(DependentField,CMISSFieldVVariableType, &
-                   & CMISSFieldScalarDimensionType,Err)
-     CALL CMISSFieldDimensionSet(DependentField,CMISSFieldDelVDelNVariableType, &
-                   & CMISSFieldScalarDimensionType,Err)
-     CALL CMISSFieldDimensionSet(DependentField,CMISSFieldU1VariableType, &
-                   & CMISSFieldScalarDimensionType,Err)
-     CALL CMISSFieldDimensionSet(DependentField,CMISSFieldDelU1DelNVariableType, &
-                   & CMISSFieldScalarDimensionType,Err)
-
-     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldUVariableType,1,Err)
-     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelUDelNVariableType,1,Err)
-     CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,1, & 
+  CALL CMISSFieldCreateStart(DependentFieldUserNumber,Region,DependentField,Err)
+  CALL CMISSFieldTypeSet(DependentField,CMISSFieldGeneralType,Err)  
+  CALL CMISSFieldMeshDecompositionSet(DependentField,Decomposition,Err)
+  CALL CMISSFieldGeometricFieldSet(DependentField,GeometricField,Err) 
+  CALL CMISSFieldDependentTypeSet(DependentField,CMISSFieldDependentType,Err) 
+  !Create 2N number of variables
+  CALL CMISSFieldNumberOfVariablesSet(DependentField,2*Ncompartments,Err) 
+  !create two variables for each compartment
+  ALLOCATE(VariableTypes(2*Ncompartments))
+  DO num_var=1,Ncompartments
+     VariableTypes(2*num_var-1)=CMISSFieldUVariableType+(CMISSFieldNumberOfVariableSubtypes*(num_var-1))
+     VariableTypes(2*num_var)=CMISSFieldDelUDelNVariableType+(CMISSFieldNumberOfVariableSubtypes*(num_var-1))
+  ENDDO
+  CALL CMISSFieldVariableTypesSet(DependentField,VariableTypes,Err) 
+  !loop over the number of compartments
+  DO icompartment=1,2*Ncompartments
+    !set dimension type
+    CALL CMISSFieldDimensionSet(DependentField,VariableTypes(icompartment), &
+       & CMISSFieldScalarDimensionType,Err)
+    CALL CMISSFieldNumberOfComponentsSet(DependentField,VariableTypes(icompartment),1,Err)
+    CALL CMISSFieldComponentMeshComponentSet(DependentField,VariableTypes(icompartment),1, & 
        & MESH_COMPONENT_NUMBER_CONC_ONE,Err)
-     CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,1, & 
-       & MESH_COMPONENT_NUMBER_CONC_ONE,Err)
-
-     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldVVariableType,1,Err)
-     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelVDelNVariableType,1,Err)
-     CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldVVariableType,1, & 
-       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
-     CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelVDelNVariableType,1, & 
-       & MESH_COMPONENT_NUMBER_CONC_TWO,Err)
-
-     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldU1VariableType,1,Err)
-     CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelU1DelNVariableType,1,Err)
-     CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldU1VariableType,1, & 
-       & MESH_COMPONENT_NUMBER_CONC_THREE,Err)
-     CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelU1DelNVariableType,1, & 
-       & MESH_COMPONENT_NUMBER_CONC_THREE,Err)
+  ENDDO
   CALL CMISSFieldCreateFinish(DependentField,Err)
-  !DEPENDENT FIELDS
-
+  
   DO icompartment = 1,Ncompartments
     CALL CMISSEquationsSetDependentCreateStart(EquationsSetDiffusion(icompartment),DependentFieldUserNumber,&
       & DependentField,Err)
@@ -820,7 +772,6 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
 
   !EQUATIONS
   DO icompartment=1,Ncompartments
-    write (*,*) "I am here!"
     CALL CMISSEquationsTypeInitialise(EquationsDiffusion(icompartment),Err)
     CALL CMISSEquationsSetEquationsCreateStart(EquationsSetDiffusion(icompartment),EquationsDiffusion(icompartment),Err)
     CALL CMISSEquationsSparsityTypeSet(EquationsDiffusion(icompartment),CMISSEquationsSparseMatrices,Err)
