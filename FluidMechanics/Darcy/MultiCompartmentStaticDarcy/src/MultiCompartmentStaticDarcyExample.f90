@@ -633,40 +633,40 @@ PROGRAM DARCYSTATICEXAMPLE
     CALL CMISSFieldDependentTypeSet(DependentFieldDarcy,CMISSFieldDependentType,Err) 
      CALL CMISSFieldNumberOfVariablesSet(DependentFieldDarcy,6,Err)
      CALL CMISSFieldVariableTypesSet(DependentFieldDarcy,&
-      & (/CMISSFieldUVariableType,CMISSFieldDelUDelNVariableType,CMISSFieldU2VariableType,&
-      & CMISSFieldDelU2DelNVariableType,CMISSFieldU3VariableType,CMISSFieldDelU3DelNVariableType/),Err)
+      & (/CMISSFieldUVariableType,CMISSFieldDelUDelNVariableType,CMISSFieldVVariableType,&
+      & CMISSFieldDelVDelNVariableType,CMISSFieldU1VariableType,CMISSFieldDelU1DelNVariableType/),Err)
    WRITE(*,'(A)') "set number of variables"
      CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldUVariableType, &
                    & CMISSFieldVectorDimensionType,Err)
      CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldDelUDelNVariableType, &
                    & CMISSFieldVectorDimensionType,Err)
-     CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldU2VariableType, &
+     CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldVVariableType, &
                    & CMISSFieldVectorDimensionType,Err)
-     CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldDelU2DelNVariableType, &
+     CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldDelVDelNVariableType, &
                    & CMISSFieldVectorDimensionType,Err)
-     CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldU3VariableType, &
+     CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldU1VariableType, &
                    & CMISSFieldVectorDimensionType,Err)
-     CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldDelU3DelNVariableType, &
+     CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldDelU1DelNVariableType, &
                    & CMISSFieldVectorDimensionType,Err)
 
      CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldUVariableType,4,Err)
      CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldDelUDelNVariableType,4,Err)
-     CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldU2VariableType,4,Err)
-     CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldDelU2DelNVariableType,4,Err)
-     CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldU3VariableType,4,Err)
-     CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldDelU3DelNVariableType,4,Err)
+     CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldVVariableType,4,Err)
+     CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldDelVDelNVariableType,4,Err)
+     CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldU1VariableType,4,Err)
+     CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldDelU1DelNVariableType,4,Err)
    DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
       CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
         & MESH_COMPONENT_NUMBER_VELOCITY,Err)
       CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelUDelNVariableType,COMPONENT_NUMBER, & 
         & MESH_COMPONENT_NUMBER_VELOCITY,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldU2VariableType,COMPONENT_NUMBER, & 
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldVVariableType,COMPONENT_NUMBER, & 
         & MESH_COMPONENT_NUMBER_VELOCITY,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelU2DelNVariableType,COMPONENT_NUMBER, & 
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelVDelNVariableType,COMPONENT_NUMBER, & 
         & MESH_COMPONENT_NUMBER_VELOCITY,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldU3VariableType,COMPONENT_NUMBER, & 
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldU1VariableType,COMPONENT_NUMBER, & 
         & MESH_COMPONENT_NUMBER_VELOCITY,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelU3DelNVariableType,COMPONENT_NUMBER, & 
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelU1DelNVariableType,COMPONENT_NUMBER, & 
         & MESH_COMPONENT_NUMBER_VELOCITY,Err)
      ENDDO
      COMPONENT_NUMBER=NUMBER_OF_DIMENSIONS+1
@@ -674,13 +674,13 @@ PROGRAM DARCYSTATICEXAMPLE
         & MESH_COMPONENT_NUMBER_PRESSURE,Err)
       CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelUDelNVariableType,COMPONENT_NUMBER, & 
         & MESH_COMPONENT_NUMBER_PRESSURE,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldU2VariableType,COMPONENT_NUMBER, & 
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldVVariableType,COMPONENT_NUMBER, & 
         & MESH_COMPONENT_NUMBER_PRESSURE,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelU2DelNVariableType,COMPONENT_NUMBER, & 
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelVDelNVariableType,COMPONENT_NUMBER, & 
         & MESH_COMPONENT_NUMBER_PRESSURE,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldU3VariableType,COMPONENT_NUMBER, & 
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldU1VariableType,COMPONENT_NUMBER, & 
         & MESH_COMPONENT_NUMBER_PRESSURE,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelU3DelNVariableType,COMPONENT_NUMBER, & 
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelU1DelNVariableType,COMPONENT_NUMBER, & 
         & MESH_COMPONENT_NUMBER_PRESSURE,Err)
     CALL CMISSFieldCreateFinish(DependentFieldDarcy,Err)
    DO icomp=1,Ncompartments
