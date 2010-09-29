@@ -129,7 +129,7 @@ PROGRAM MONODOMAINEXAMPLE
    !Generic CMISS variables
   
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: EquationsSetIndex,CellMLIndex
   INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
   INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain
   INTEGER(CMISSIntg) :: Err
@@ -324,6 +324,8 @@ PROGRAM MONODOMAINEXAMPLE
   
   !Generate the CellML
   CALL CMISSCellMLGenerate(CellML,Err)
+
+#define UP_TO_HERE
   
 #ifdef UP_TO_HERE
   !Create the equations set equations
@@ -367,7 +369,7 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
   !Set the problem to be a standard Laplace problem
   CALL CMISSProblemSpecificationSet(Problem,CMISSProblemBioelectricsClass,CMISSProblemMonodomainEquationType, &
-    & CMISSProblemNoSubtype,Err)
+    & CMISSProblemMonodomainGudunovSplitSubtype,Err)
   !Finish the creation of a problem.
   CALL CMISSProblemCreateFinish(Problem,Err)
 
@@ -377,15 +379,18 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
  
   !Start the creation of the problem solvers
-  CALL CMISSSolverTypeInitialise(Solver,Err)
   CALL CMISSProblemSolversCreateStart(Problem,Err)
   !Get the first (DAE) solver
+  CALL CMISSSolverTypeInitialise(Solver,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
   CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
+  !Add in the CellML environment
+  CALL CMISSSolverCellMLAdd(Solver,CellML,CellMLIndex,Err)
   !Get the second (Parabolic) solver
+  CALL CMISSSolverTypeInitialise(Solver,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,2,Solver,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
@@ -396,19 +401,12 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
 
   !Start the creation of the problem solver equations
-  CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
   CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
-  !Get the first solver
-  !Get the solver equations
-  CALL CMISSSolverTypeInitialise(Solver,Err)
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
-  CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
-  !Add in the CellML environment
-  CALL CMISSSolverEquationsCellMLAdd(SolverEquations,CellML,Err)
   !Get the second solver  
   !Get the solver equations
   CALL CMISSSolverTypeInitialise(Solver,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,2,Solver,Err)
+  CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
   CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
   !Set the solver equations sparsity
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
