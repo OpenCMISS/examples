@@ -290,7 +290,7 @@ PROGRAM DARCYSTATICEXAMPLE
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
   LINEAR_SOLVER_DARCY_OUTPUT_TYPE=CMISSSolverSolverOutput
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
-  EQUATIONS_DARCY_OUTPUT=CMISSEquationsNoOutput
+  EQUATIONS_DARCY_OUTPUT=CMISSEquationsMatrixOutput
   !Set solver parameters
   LINEAR_SOLVER_DARCY_DIRECT_FLAG=.FALSE.
   RELATIVE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-05_CMISSDP

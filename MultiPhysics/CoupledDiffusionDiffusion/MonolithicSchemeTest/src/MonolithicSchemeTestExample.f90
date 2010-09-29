@@ -378,7 +378,7 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
 
 
   icompartment =1_CMISSIntg
-  Ncompartments=3_CMISSIntg
+  Ncompartments=2_CMISSIntg
   !
   !================================================================================================================================
   !
@@ -803,7 +803,8 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_ONE(NODE_COUNTER)
         CONDITION=CMISSBoundaryConditionFixed
           VALUE=0.2_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(1),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(1),CMISSFieldUVariableType, &
+            & CMISSNoGlobalDerivative, & 
             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
       ENDDO
     ENDIF
@@ -833,8 +834,30 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
     ENDIF
    ENDIF
 
+   IF(icompartment==4)THEN
+    IF(INLET_WALL_NODES_DIFFUSION_THREE_FLAG) THEN
+      DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE
+        NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_THREE(NODE_COUNTER)
+        CONDITION=CMISSBoundaryConditionFixed
+          VALUE=0.8_CMISSDP
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(4),CMISSFieldU2VariableType,CMISSNoGlobalDerivative, & 
+            & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
+      ENDDO
+    ENDIF
+   ENDIF
 
-!NEED TO HARDCODE IN THE VARIABLE TYPE TO EQUATION SET NUMBER MAP EXPLICITLY INTO THE EXAMPLE FILE
+   IF(icompartment==5)THEN
+    IF(INLET_WALL_NODES_DIFFUSION_THREE_FLAG) THEN
+      DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE
+        NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_THREE(NODE_COUNTER)
+        CONDITION=CMISSBoundaryConditionFixed
+          VALUE=1.0_CMISSDP
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(5),CMISSFieldU3VariableType,CMISSNoGlobalDerivative, & 
+            & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
+      ENDDO
+    ENDIF
+   ENDIF
+
 
     CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDiffusion(icompartment),Err)
 
