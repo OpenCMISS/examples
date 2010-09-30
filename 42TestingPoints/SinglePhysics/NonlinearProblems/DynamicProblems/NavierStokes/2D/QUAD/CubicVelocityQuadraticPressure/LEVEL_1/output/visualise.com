@@ -1,5 +1,5 @@
 #Read in the sequence of nodal positions.
-for $i (1..5)
+for $i (1..3)
   {
 	 $filename = sprintf("./output/TIME_STEP_%04d.exnode", $i);
 	 print "Reading $filename time $i\n";

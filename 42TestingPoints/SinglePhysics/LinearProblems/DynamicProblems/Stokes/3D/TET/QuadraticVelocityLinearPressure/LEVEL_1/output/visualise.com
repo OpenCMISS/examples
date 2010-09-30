@@ -19,7 +19,7 @@ gfx def field vector_field coord rectangular_cartesian component general.1 gener
 gfx cre spectrum pressure
 gfx modify spectrum pressure linear reverse range -1 1 extend_above extend_below rainbow colour_range 0 1 component 4;
 
-gfx modify g_element OpenCMISS node_points glyph arrow_solid general size "0.1*0.1*0.1" centre 0,0,0 select_on material default selected_material default_selected data vector_field orientation vector_field scale_factors "0.1*0.1*0.1" spectrum flow
+gfx modify g_element OpenCMISS node_points glyph arrow_solid general size "1.0*1.0*1.0" centre 0,0,0 select_on material default selected_material default_selected data vector_field orientation vector_field scale_factors "1.0*1.0*1.0" spectrum flow
 
 gfx modify window 1 background colour 1 1 1
 
