@@ -209,6 +209,7 @@ PROGRAM DARCYSTATICEXAMPLE
   
   INTEGER(CMISSIntg), ALLOCATABLE :: EquationsSetIndices(:)
   INTEGER(CMISSIntg) :: Err
+  INTEGER(CMISSIntg), ALLOCATABLE, DIMENSION(:) :: VariableTypes
 
 
   INTEGER(CMISSIntg) :: DIAG_LEVEL_LIST(5)
@@ -218,7 +219,7 @@ PROGRAM DARCYSTATICEXAMPLE
   TYPE(CMISSFieldType), ALLOCATABLE :: EquationsSetFieldDarcy(:)
   INTEGER(CMISSIntg) :: EquationsSetFieldDarcyUserNumber
   INTEGER(CMISSIntg) :: EquationsSetUserNumberDarcy
-  INTEGER(CMISSIntg) :: icomp,Ncompartments
+  INTEGER(CMISSIntg) :: icomp,Ncompartments,num_var,icompartment
 
   
 #ifdef WIN32
@@ -299,7 +300,7 @@ PROGRAM DARCYSTATICEXAMPLE
   MAXIMUM_ITERATIONS=10000_CMISSIntg !default: 100000
   RESTART_VALUE=3000_CMISSIntg !default: 30
 
-  Ncompartments = 3_CMISSIntg
+  Ncompartments = 4_CMISSIntg
 
   !
   !================================================================================================================================
@@ -594,26 +595,6 @@ PROGRAM DARCYSTATICEXAMPLE
   !
 
   !DEPENDENT FIELDS
-
-!   DO icomp = 1,Ncompartments
-!     !Create the equations set dependent field variables for Static Darcy
-!     CALL CMISSFieldTypeInitialise(DependentFieldDarcy(icomp),Err)
-!     CALL CMISSEquationsSetDependentCreateStart(EquationsSetDarcy(icomp),DependentFieldUserNumberDarcy, & 
-!       & DependentFieldDarcy(icomp),Err)
-!     !Set the mesh component to be used by the field components.
-!     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-!       CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy(icomp),CMISSFieldUVariableType,COMPONENT_NUMBER, & 
-!         & MESH_COMPONENT_NUMBER_VELOCITY,Err)
-!       CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy(icomp),CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
-!         & MESH_COMPONENT_NUMBER_VELOCITY,Err)
-!     ENDDO
-!     COMPONENT_NUMBER=NUMBER_OF_DIMENSIONS+1
-!       CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy(icomp),CMISSFieldUVariableType,COMPONENT_NUMBER, & 
-!         & MESH_COMPONENT_NUMBER_PRESSURE,Err)
-!       CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy(icomp),CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
-!         & MESH_COMPONENT_NUMBER_PRESSURE,Err)
-!     !Finish the equations set dependent field variables
-!     CALL CMISSEquationsSetDependentCreateFinish(EquationsSetDarcy(icomp),Err)
 ! 
 !     !Initialise dependent field (velocity components)
 !     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
@@ -631,64 +612,40 @@ PROGRAM DARCYSTATICEXAMPLE
     CALL CMISSFieldMeshDecompositionSet(DependentFieldDarcy,Decomposition,Err)
     CALL CMISSFieldGeometricFieldSet(DependentFieldDarcy,GeometricField,Err) 
     CALL CMISSFieldDependentTypeSet(DependentFieldDarcy,CMISSFieldDependentType,Err) 
-     CALL CMISSFieldNumberOfVariablesSet(DependentFieldDarcy,6,Err)
-     CALL CMISSFieldVariableTypesSet(DependentFieldDarcy,&
-      & (/CMISSFieldUVariableType,CMISSFieldDelUDelNVariableType,CMISSFieldVVariableType,&
-      & CMISSFieldDelVDelNVariableType,CMISSFieldU1VariableType,CMISSFieldDelU1DelNVariableType/),Err)
-   WRITE(*,'(A)') "set number of variables"
-     CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldUVariableType, &
-                   & CMISSFieldVectorDimensionType,Err)
-     CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldDelUDelNVariableType, &
-                   & CMISSFieldVectorDimensionType,Err)
-     CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldVVariableType, &
-                   & CMISSFieldVectorDimensionType,Err)
-     CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldDelVDelNVariableType, &
-                   & CMISSFieldVectorDimensionType,Err)
-     CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldU1VariableType, &
-                   & CMISSFieldVectorDimensionType,Err)
-     CALL CMISSFieldDimensionSet(DependentFieldDarcy,CMISSFieldDelU1DelNVariableType, &
-                   & CMISSFieldVectorDimensionType,Err)
 
-     CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldUVariableType,4,Err)
-     CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldDelUDelNVariableType,4,Err)
-     CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldVVariableType,4,Err)
-     CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldDelVDelNVariableType,4,Err)
-     CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldU1VariableType,4,Err)
-     CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,CMISSFieldDelU1DelNVariableType,4,Err)
-   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
-        & MESH_COMPONENT_NUMBER_VELOCITY,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelUDelNVariableType,COMPONENT_NUMBER, & 
-        & MESH_COMPONENT_NUMBER_VELOCITY,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldVVariableType,COMPONENT_NUMBER, & 
-        & MESH_COMPONENT_NUMBER_VELOCITY,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelVDelNVariableType,COMPONENT_NUMBER, & 
-        & MESH_COMPONENT_NUMBER_VELOCITY,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldU1VariableType,COMPONENT_NUMBER, & 
-        & MESH_COMPONENT_NUMBER_VELOCITY,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelU1DelNVariableType,COMPONENT_NUMBER, & 
-        & MESH_COMPONENT_NUMBER_VELOCITY,Err)
+    CALL CMISSFieldNumberOfVariablesSet(DependentFieldDarcy,2*Ncompartments,Err) 
+    !create two variables for each compartment
+    ALLOCATE(VariableTypes(2*Ncompartments))
+    DO num_var=1,Ncompartments
+       VariableTypes(2*num_var-1)=CMISSFieldUVariableType+(CMISSFieldNumberOfVariableSubtypes*(num_var-1))
+       VariableTypes(2*num_var)=CMISSFieldDelUDelNVariableType+(CMISSFieldNumberOfVariableSubtypes*(num_var-1))
+    ENDDO
+    CALL CMISSFieldVariableTypesSet(DependentFieldDarcy,VariableTypes,Err) 
+
+    DO icompartment=1,2*Ncompartments
+      !set dimension type
+      CALL CMISSFieldDimensionSet(DependentFieldDarcy,VariableTypes(icompartment), &
+         & CMISSFieldVectorDimensionType,Err)
+      CALL CMISSFieldNumberOfComponentsSet(DependentFieldDarcy,VariableTypes(icompartment),NUMBER_OF_DIMENSIONS+1,Err)
+    ENDDO
+    DO icompartment=1,2*Ncompartments
+     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,VariableTypes(icompartment),COMPONENT_NUMBER, & 
+         & MESH_COMPONENT_NUMBER_VELOCITY,Err)
      ENDDO
-     COMPONENT_NUMBER=NUMBER_OF_DIMENSIONS+1
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
-        & MESH_COMPONENT_NUMBER_PRESSURE,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelUDelNVariableType,COMPONENT_NUMBER, & 
-        & MESH_COMPONENT_NUMBER_PRESSURE,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldVVariableType,COMPONENT_NUMBER, & 
-        & MESH_COMPONENT_NUMBER_PRESSURE,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelVDelNVariableType,COMPONENT_NUMBER, & 
-        & MESH_COMPONENT_NUMBER_PRESSURE,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldU1VariableType,COMPONENT_NUMBER, & 
-        & MESH_COMPONENT_NUMBER_PRESSURE,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDelU1DelNVariableType,COMPONENT_NUMBER, & 
-        & MESH_COMPONENT_NUMBER_PRESSURE,Err)
+    ENDDO
+    DO icompartment=1,2*Ncompartments
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,VariableTypes(icompartment),NUMBER_OF_DIMENSIONS+1, & 
+         & MESH_COMPONENT_NUMBER_PRESSURE,Err)
+    ENDDO
     CALL CMISSFieldCreateFinish(DependentFieldDarcy,Err)
-   DO icomp=1,Ncompartments
+    
+    DO icomp=1,Ncompartments
      
-     CALL CMISSEquationsSetDependentCreateStart(EquationsSetDarcy(icomp),DependentFieldUserNumberDarcy,DependentFieldDarcy,Err)
-     CALL CMISSEquationsSetDependentCreateFinish(EquationsSetDarcy(icomp),Err)
+      CALL CMISSEquationsSetDependentCreateStart(EquationsSetDarcy(icomp),DependentFieldUserNumberDarcy,DependentFieldDarcy,Err)
+      CALL CMISSEquationsSetDependentCreateFinish(EquationsSetDarcy(icomp),Err)
 
-   ENDDO
+    ENDDO
 
 
 
