@@ -379,9 +379,51 @@ PROGRAM STOKESMASTEREXAMPLE
         !do nothing
       END SELECT
   ENDDO 
+  IF(NUMBER_OF_DIMENSIONS==2) THEN
+    IF(DYNAMIC_SOLVER_STOKES_FLAG) THEN
+      ANALYTIC_TYPE=CMISSEquationsSetStokesTwoDim5
+    ELSE
+      ANALYTIC_TYPE=CMISSEquationsSetStokesTwoDim1
+    ENDIF
+  ELSE
+    IF(DYNAMIC_SOLVER_STOKES_FLAG) THEN
+      ANALYTIC_TYPE=CMISSEquationsSetStokesThreeDim5
+    ELSE
+      ANALYTIC_TYPE=CMISSEquationsSetStokesThreeDim1
+    ENDIF
+  ENDIF
+
+  WRITE(*,*)' '
+  WRITE(*,*)' ************************************* '
+  WRITE(*,*)' '
   WRITE(*,*)'-density........', RHO_PARAM_STOKES
   WRITE(*,*)'-viscosity......', MU_PARAM_STOKES
-  WRITE(*,*)'-velocity.......', BOUNDARY_CONDITIONS_STOKES
+  WRITE(*,*)'-analytic.......  ', ANALYTIC_FLAG
+  IF(.NOT.ANALYTIC_FLAG) THEN
+    WRITE(*,*)'-velocity.......', BOUNDARY_CONDITIONS_STOKES
+  ELSE
+    IF(ANALYTIC_TYPE==CMISSEquationsSetStokesTwoDim1.AND.NUMBER_OF_DIMENSIONS==2) THEN
+      WRITE(*,*)'  -analytictype...', 'CMISSEquationsSetStokesTwoDim1'
+   ELSE IF(ANALYTIC_TYPE==CMISSEquationsSetStokesTwoDim2.AND.NUMBER_OF_DIMENSIONS==2) THEN
+      WRITE(*,*)'  -analytictype...', 'CMISSEquationsSetStokesTwoDim2'
+   ELSE IF(ANALYTIC_TYPE==CMISSEquationsSetStokesTwoDim3.AND.NUMBER_OF_DIMENSIONS==2) THEN
+      WRITE(*,*)'  -analytictype...', 'CMISSEquationsSetStokesTwoDim3'
+   ELSE IF(ANALYTIC_TYPE==CMISSEquationsSetStokesTwoDim4.AND.NUMBER_OF_DIMENSIONS==2) THEN
+      WRITE(*,*)'  -analytictype...', 'CMISSEquationsSetStokesTwoDim4'
+    ELSE IF(ANALYTIC_TYPE==CMISSEquationsSetStokesTwoDim5.AND.NUMBER_OF_DIMENSIONS==2) THEN
+      WRITE(*,*)'  -analytictype...', 'CMISSEquationsSetStokesTwoDim5'
+    ELSE IF(ANALYTIC_TYPE==CMISSEquationsSetStokesThreeDim1.AND.NUMBER_OF_DIMENSIONS==3) THEN
+      WRITE(*,*)'  -analytictype...', 'CMISSEquationsSetStokesThreeDim1'
+    ELSE IF(ANALYTIC_TYPE==CMISSEquationsSetStokesThreeDim2.AND.NUMBER_OF_DIMENSIONS==3) THEN
+      WRITE(*,*)'  -analytictype...', 'CMISSEquationsSetStokesThreeDim2'
+    ELSE IF(ANALYTIC_TYPE==CMISSEquationsSetStokesThreeDim3.AND.NUMBER_OF_DIMENSIONS==3) THEN
+      WRITE(*,*)'  -analytictype...', 'CMISSEquationsSetStokesThreeDim3'
+    ELSE IF(ANALYTIC_TYPE==CMISSEquationsSetStokesThreeDim4.AND.NUMBER_OF_DIMENSIONS==3) THEN
+      WRITE(*,*)'  -analytictype...', 'CMISSEquationsSetStokesThreeDim4'
+    ELSE IF(ANALYTIC_TYPE==CMISSEquationsSetStokesThreeDim5.AND.NUMBER_OF_DIMENSIONS==3) THEN
+      WRITE(*,*)'  -analytictype...', 'CMISSEquationsSetStokesThreeDim5'
+    ENDIF
+   ENDIF 
   WRITE(*,*) ' '
   WRITE(*,*)'-dynamic........  ', DYNAMIC_SOLVER_STOKES_FLAG
   IF(DYNAMIC_SOLVER_STOKES_FLAG) THEN
@@ -391,50 +433,20 @@ PROGRAM STOKESMASTEREXAMPLE
     WRITE(*,*)'  -ALE............  ', ALE_SOLVER_STOKES_FLAG
     WRITE(*,*) ' ' 
   ENDIF
-  WRITE(*,*)'-analytic.......  ', ANALYTIC_FLAG
   WRITE(*,*)'-directsolver...  ', LINEAR_SOLVER_STOKES_DIRECT_FLAG
   WRITE(*,*)' '
-  IF(ANALYTIC_FLAG) THEN 
-    IF(ANALYTIC_TYPE==1.AND.NUMBER_OF_DIMENSIONS==2) THEN
-      ANALYTIC_TYPE=CMISSEquationsSetStokesTwoDim1
-      WRITE(*,*)'-analytictype...', 'CMISSEquationsSetStokesTwoDim1'
-    ELSE IF(ANALYTIC_TYPE==2.AND.NUMBER_OF_DIMENSIONS==2) THEN
-      ANALYTIC_TYPE=CMISSEquationsSetStokesTwoDim2
-      WRITE(*,*)'-analytictype...', 'CMISSEquationsSetStokesTwoDim2'
-    ELSE IF(ANALYTIC_TYPE==3.AND.NUMBER_OF_DIMENSIONS==2) THEN
-      ANALYTIC_TYPE=CMISSEquationsSetStokesTwoDim3
-      WRITE(*,*)'-analytictype...', 'CMISSEquationsSetStokesTwoDim3'
-    ELSE IF(ANALYTIC_TYPE==4.AND.NUMBER_OF_DIMENSIONS==2) THEN
-      ANALYTIC_TYPE=CMISSEquationsSetStokesTwoDim4
-      WRITE(*,*)'-analytictype...', 'CMISSEquationsSetStokesTwoDim4'
-    ELSE IF(ANALYTIC_TYPE==5.AND.NUMBER_OF_DIMENSIONS==2) THEN
-      ANALYTIC_TYPE=CMISSEquationsSetStokesTwoDim5
-      WRITE(*,*)'-analytictype...', 'CMISSEquationsSetStokesTwoDim5'
-    ELSE IF(ANALYTIC_TYPE==1.AND.NUMBER_OF_DIMENSIONS==3) THEN
-      ANALYTIC_TYPE=CMISSEquationsSetStokesTwoDim1
-      WRITE(*,*)'-analytictype...', 'CMISSEquationsSetStokesThreeDim1'
-    ELSE IF(ANALYTIC_TYPE==2.AND.NUMBER_OF_DIMENSIONS==3) THEN
-      ANALYTIC_TYPE=CMISSEquationsSetStokesTwoDim2
-      WRITE(*,*)'-analytictype...', 'CMISSEquationsSetStokesThreeDim2'
-    ELSE IF(ANALYTIC_TYPE==3.AND.NUMBER_OF_DIMENSIONS==3) THEN
-      ANALYTIC_TYPE=CMISSEquationsSetStokesTwoDim3
-      WRITE(*,*)'-analytictype...', 'CMISSEquationsSetStokesThreeDim3'
-    ELSE IF(ANALYTIC_TYPE==4.AND.NUMBER_OF_DIMENSIONS==3) THEN
-      ANALYTIC_TYPE=CMISSEquationsSetStokesTwoDim4
-      WRITE(*,*)'-analytictype...', 'CMISSEquationsSetStokesThreeDim4'
-    ELSE IF(ANALYTIC_TYPE==5.AND.NUMBER_OF_DIMENSIONS==3) THEN
-      ANALYTIC_TYPE=CMISSEquationsSetStokesTwoDim5
-      WRITE(*,*)'-analytictype...', 'CMISSEquationsSetStokesThreeDim5'
-    ENDIF
-    WRITE(*,*)' '
-  ENDIF
-
+  WRITE(*,*)' ************************************* '
+  WRITE(*,*)' '
+  WRITE(*,*) ' ' 
   !Set boundary conditions
   INQUIRE(FILE="./input/bc/FIXED_WALL", EXIST=FIXED_WALL_NODES_STOKES_FLAG)
   INQUIRE(FILE="./input/bc/FREE_INLET", EXIST=INLET_WALL_NODES_STOKES_FLAG)
   INQUIRE(FILE="./input/bc/MOVED_WALL", EXIST=MOVED_WALL_NODES_STOKES_FLAG)
   INQUIRE(FILE="./input/bc/FIXED_MESH", EXIST=FIXED_WALL_NODES_MOVING_MESH_FLAG)
   INQUIRE(FILE="./input/bc/MOVED_MESH", EXIST=MOVED_WALL_NODES_MOVING_MESH_FLAG)
+  INITIAL_FIELD_STOKES(1)=BOUNDARY_CONDITIONS_STOKES(1)
+  INITIAL_FIELD_STOKES(2)=BOUNDARY_CONDITIONS_STOKES(2)
+  INITIAL_FIELD_STOKES(3)=BOUNDARY_CONDITIONS_STOKES(3)
   IF(FIXED_WALL_NODES_STOKES_FLAG) THEN
     OPEN(UNIT=1, FILE="./input/bc/FIXED_WALL",STATUS='unknown')
     READ(1,*) NUMBER_OF_FIXED_WALL_NODES_STOKES

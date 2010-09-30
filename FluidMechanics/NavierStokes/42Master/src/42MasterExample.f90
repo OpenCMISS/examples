@@ -381,9 +381,50 @@ PROGRAM NAVIERSTOKESMASTEREXAMPLE
         !do nothing
       END SELECT
   ENDDO 
+  IF(NUMBER_OF_DIMENSIONS==2) THEN
+    IF(DYNAMIC_SOLVER_NAVIER_STOKES_FLAG) THEN
+      ANALYTIC_TYPE=CMISSEquationsSetNavierStokesTwoDim5
+    ELSE
+      ANALYTIC_TYPE=CMISSEquationsSetNavierStokesTwoDim1
+    ENDIF
+  ELSE
+    IF(DYNAMIC_SOLVER_NAVIER_STOKES_FLAG) THEN
+      ANALYTIC_TYPE=CMISSEquationsSetNavierStokesThreeDim5
+    ELSE
+      ANALYTIC_TYPE=CMISSEquationsSetNavierStokesThreeDim1
+    ENDIF
+  ENDIF
+  WRITE(*,*)' '
+  WRITE(*,*)' ************************************* '
+  WRITE(*,*)' '
   WRITE(*,*)'-density........', RHO_PARAM_NAVIER_STOKES
   WRITE(*,*)'-viscosity......', MU_PARAM_NAVIER_STOKES
-  WRITE(*,*)'-velocity.......', BOUNDARY_CONDITIONS_NAVIER_STOKES
+  WRITE(*,*)'-analytic.......  ', ANALYTIC_FLAG
+  IF(.NOT.ANALYTIC_FLAG) THEN
+    WRITE(*,*)'-velocity.......', BOUNDARY_CONDITIONS_NAVIER_STOKES
+  ELSE
+    IF(ANALYTIC_TYPE==CMISSEquationsSetNavierStokesTwoDim1.AND.NUMBER_OF_DIMENSIONS==2) THEN
+      WRITE(*,*)'  -analytictype...', 'CMISSEquationsSetNavierStokesTwoDim1'
+    ELSE IF(ANALYTIC_TYPE==CMISSEquationsSetNavierStokesTwoDim2.AND.NUMBER_OF_DIMENSIONS==2) THEN
+      WRITE(*,*)'  -analytictype...', 'CMISSEquationsSetNavierStokesTwoDim2'
+    ELSE IF(ANALYTIC_TYPE==CMISSEquationsSetNavierStokesTwoDim3.AND.NUMBER_OF_DIMENSIONS==2) THEN
+      WRITE(*,*)'  -analytictype...', 'CMISSEquationsSetNavierStokesTwoDim3'
+    ELSE IF(ANALYTIC_TYPE==CMISSEquationsSetNavierStokesTwoDim4.AND.NUMBER_OF_DIMENSIONS==2) THEN
+      WRITE(*,*)'  -analytictype...', 'CMISSEquationsSetNavierStokesTwoDim4'
+    ELSE IF(ANALYTIC_TYPE==CMISSEquationsSetNavierStokesTwoDim5.AND.NUMBER_OF_DIMENSIONS==2) THEN
+      WRITE(*,*)'  -analytictype...', 'CMISSEquationsSetNavierStokesTwoDim5'
+    ELSE IF(ANALYTIC_TYPE==CMISSEquationsSetNavierStokesThreeDim1.AND.NUMBER_OF_DIMENSIONS==3) THEN
+      WRITE(*,*)'  -analytictype...', 'CMISSEquationsSetNavierStokesThreeDim1'
+    ELSE IF(ANALYTIC_TYPE==CMISSEquationsSetNavierStokesThreeDim2.AND.NUMBER_OF_DIMENSIONS==3) THEN
+      WRITE(*,*)'  -analytictype...', 'CMISSEquationsSetNavierStokesThreeDim2'
+    ELSE IF(ANALYTIC_TYPE==CMISSEquationsSetNavierStokesThreeDim3.AND.NUMBER_OF_DIMENSIONS==3) THEN
+      WRITE(*,*)'  -analytictype...', 'CMISSEquationsSetNavierStokesThreeDim3'
+    ELSE IF(ANALYTIC_TYPE==CMISSEquationsSetNavierStokesThreeDim4.AND.NUMBER_OF_DIMENSIONS==3) THEN
+      WRITE(*,*)'  -analytictype...', 'CMISSEquationsSetNavierStokesThreeDim4'
+    ELSE IF(ANALYTIC_TYPE==CMISSEquationsSetNavierStokesThreeDim5.AND.NUMBER_OF_DIMENSIONS==3) THEN
+      WRITE(*,*)'  -analytictype...', 'CMISSEquationsSetNavierStokesThreeDim5'
+    ENDIF
+  ENDIF
   WRITE(*,*) ' '
   WRITE(*,*)'-dynamic........  ', DYNAMIC_SOLVER_NAVIER_STOKES_FLAG
   IF(DYNAMIC_SOLVER_NAVIER_STOKES_FLAG) THEN
@@ -393,50 +434,20 @@ PROGRAM NAVIERSTOKESMASTEREXAMPLE
     WRITE(*,*)'  -ALE............  ', ALE_SOLVER_NAVIER_STOKES_FLAG
     WRITE(*,*) ' ' 
   ENDIF
-  WRITE(*,*)'-analytic.......  ', ANALYTIC_FLAG
   WRITE(*,*)'-directsolver...  ', LINEAR_SOLVER_NAVIER_STOKES_DIRECT_FLAG
   WRITE(*,*)' '
-  IF(ANALYTIC_FLAG) THEN 
-    IF(ANALYTIC_TYPE==1.AND.NUMBER_OF_DIMENSIONS==2) THEN
-      ANALYTIC_TYPE=CMISSEquationsSetNavierStokesTwoDim1
-      WRITE(*,*)'-analytictype...', 'CMISSEquationsSetNavierStokesTwoDim1'
-    ELSE IF(ANALYTIC_TYPE==2.AND.NUMBER_OF_DIMENSIONS==2) THEN
-      ANALYTIC_TYPE=CMISSEquationsSetNavierStokesTwoDim2
-      WRITE(*,*)'-analytictype...', 'CMISSEquationsSetNavierStokesTwoDim2'
-    ELSE IF(ANALYTIC_TYPE==3.AND.NUMBER_OF_DIMENSIONS==2) THEN
-      ANALYTIC_TYPE=CMISSEquationsSetNavierStokesTwoDim3
-      WRITE(*,*)'-analytictype...', 'CMISSEquationsSetNavierStokesTwoDim3'
-    ELSE IF(ANALYTIC_TYPE==4.AND.NUMBER_OF_DIMENSIONS==2) THEN
-      ANALYTIC_TYPE=CMISSEquationsSetNavierStokesTwoDim4
-      WRITE(*,*)'-analytictype...', 'CMISSEquationsSetNavierStokesTwoDim4'
-    ELSE IF(ANALYTIC_TYPE==5.AND.NUMBER_OF_DIMENSIONS==2) THEN
-      ANALYTIC_TYPE=CMISSEquationsSetNavierStokesTwoDim5
-      WRITE(*,*)'-analytictype...', 'CMISSEquationsSetNavierStokesTwoDim5'
-    ELSE IF(ANALYTIC_TYPE==1.AND.NUMBER_OF_DIMENSIONS==3) THEN
-      ANALYTIC_TYPE=CMISSEquationsSetNavierStokesTwoDim1
-      WRITE(*,*)'-analytictype...', 'CMISSEquationsSetNavierStokesThreeDim1'
-    ELSE IF(ANALYTIC_TYPE==2.AND.NUMBER_OF_DIMENSIONS==3) THEN
-      ANALYTIC_TYPE=CMISSEquationsSetNavierStokesTwoDim2
-      WRITE(*,*)'-analytictype...', 'CMISSEquationsSetNavierStokesThreeDim2'
-    ELSE IF(ANALYTIC_TYPE==3.AND.NUMBER_OF_DIMENSIONS==3) THEN
-      ANALYTIC_TYPE=CMISSEquationsSetNavierStokesTwoDim3
-      WRITE(*,*)'-analytictype...', 'CMISSEquationsSetNavierStokesThreeDim3'
-    ELSE IF(ANALYTIC_TYPE==4.AND.NUMBER_OF_DIMENSIONS==3) THEN
-      ANALYTIC_TYPE=CMISSEquationsSetNavierStokesTwoDim4
-      WRITE(*,*)'-analytictype...', 'CMISSEquationsSetNavierStokesThreeDim4'
-    ELSE IF(ANALYTIC_TYPE==5.AND.NUMBER_OF_DIMENSIONS==3) THEN
-      ANALYTIC_TYPE=CMISSEquationsSetNavierStokesTwoDim5
-      WRITE(*,*)'-analytictype...', 'CMISSEquationsSetNavierStokesThreeDim5'
-    ENDIF
-    WRITE(*,*)' '
-  ENDIF
-
+  WRITE(*,*)' ************************************* '
+  WRITE(*,*)' '
+  WRITE(*,*) ' ' 
   !Set boundary conditions
   INQUIRE(FILE="./input/bc/FIXED_WALL", EXIST=FIXED_WALL_NODES_NAVIER_STOKES_FLAG)
   INQUIRE(FILE="./input/bc/FREE_INLET", EXIST=INLET_WALL_NODES_NAVIER_STOKES_FLAG)
   INQUIRE(FILE="./input/bc/MOVED_WALL", EXIST=MOVED_WALL_NODES_NAVIER_STOKES_FLAG)
   INQUIRE(FILE="./input/bc/FIXED_MESH", EXIST=FIXED_WALL_NODES_MOVING_MESH_FLAG)
   INQUIRE(FILE="./input/bc/MOVED_MESH", EXIST=MOVED_WALL_NODES_MOVING_MESH_FLAG)
+  INITIAL_FIELD_NAVIER_STOKES(1)=BOUNDARY_CONDITIONS_NAVIER_STOKES(1)
+  INITIAL_FIELD_NAVIER_STOKES(2)=BOUNDARY_CONDITIONS_NAVIER_STOKES(2)
+  INITIAL_FIELD_NAVIER_STOKES(3)=BOUNDARY_CONDITIONS_NAVIER_STOKES(3)
   IF(FIXED_WALL_NODES_NAVIER_STOKES_FLAG) THEN
     OPEN(UNIT=1, FILE="./input/bc/FIXED_WALL",STATUS='unknown')
     READ(1,*) NUMBER_OF_FIXED_WALL_NODES_NAVIER_STOKES
