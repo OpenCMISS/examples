@@ -748,6 +748,7 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
     CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDiffusion(icompartment),Err)
   END DO
   !Initialise the coupling coefficients
+  !Need to devise a neater way of specifying these components - e.g. specify only the upper diagonal components, and then automatically fill out the rest
   ALLOCATE(CouplingCoeffs(Ncompartments,Ncompartments))
   CouplingCoeffs(1,1)=1.0_CMISSDP
   CouplingCoeffs(1,2)=1.0_CMISSDP
