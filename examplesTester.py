@@ -37,9 +37,9 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
      os.chdir(path)
      if os.path.exists(newDir + "/temp") :
        os.remove(newDir + "/temp")
-	 if path.endswith('42Master') :
-	   execPath='./run42-debug.sh'
-	 else :
+     if path.endswith('42Master') :
+       execPath='./run42-debug.sh'
+     else :
        execPath='bin/x86_64-linux/mpich2/'+compiler+'/'+path.rpartition('/')[2]+'Example-debug'
      if nodes == '1' :
        if input != None :
