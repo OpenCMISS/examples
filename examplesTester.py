@@ -37,7 +37,10 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
      os.chdir(path)
      if os.path.exists(newDir + "/temp") :
        os.remove(newDir + "/temp")
-     execPath='bin/x86_64-linux/mpich2/'+compiler+'/'+path.rpartition('/')[2]+'Example-debug'
+	 if path.endswith('42Master') :
+	   execPath='./run42-debug.sh'
+	 else :
+       execPath='bin/x86_64-linux/mpich2/'+compiler+'/'+path.rpartition('/')[2]+'Example-debug'
      if nodes == '1' :
        if input != None :
          inputPipe = subprocess.Popen(["echo", input], stdout=subprocess.PIPE)
@@ -142,7 +145,7 @@ def htmlWrapper(infile, outfile) :
 #testExample(id='1',path="42TestingPoints/SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/3D/TET/CubicVelocityQuadraticPressure/LEVEL_1",nodes='1',input='\n')
 #testExample(id='1',path="42TestingPoints/SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/3D/TET/QuadraticVelocityLinearPressure/LEVEL_1",nodes='1',input='\n')
 
-#testExample(id='1',path="FluidMechanics/Stokes/42Master & FluidMechanics/NavierStokes/42Master",nodes='1',input='4\n4\n0\n1')
+testExample(id='1',path="FluidMechanics/Stokes/42Master",nodes='1')
 #testExample(id='1',path="FluidMechanics/NavierStokes/42Master",nodes='1',input='\n')
 #testExample(id='1',path="FluidMechanics/Stokes/42Master",nodes='1',input='\n')
 
