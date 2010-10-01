@@ -254,6 +254,7 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
 
   !Array containing the field variable types that will be used (for ease of incorporating inside a loop)
   INTEGER(CMISSIntg), ALLOCATABLE, DIMENSION(:) :: VariableTypes
+  REAL(CMISSDP), ALLOCATABLE, DIMENSION(:,:) :: CouplingCoeffs
 
   INTEGER(CMISSIntg) :: DIAG_LEVEL_LIST(5)
 !   CHARACTER(LEN=255) :: DIAG_ROUTINE_LIST(8) !,TIMING_ROUTINE_LIST(1)
@@ -378,7 +379,7 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
 
 
   icompartment =1_CMISSIntg
-  Ncompartments=2_CMISSIntg
+  Ncompartments=3_CMISSIntg
   !
   !================================================================================================================================
   !
@@ -736,15 +737,34 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
   !================================================================================================================================
   !
 
-  !MATERIALS FIELDS
-
+  !MATERIALS FIELDS - create the materials field
+  !Auto-created field contains a U variable type to store the diffusion coefficient(s)
+  !It also contains a V variable type to store the coupling coefficients 
   DO icompartment = 1,Ncompartments
     MaterialsFieldUserNumberDiffusion = 400+icompartment
     CALL CMISSFieldTypeInitialise(MaterialsFieldDiffusion(icompartment),Err)
     CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDiffusion(icompartment),MaterialsFieldUserNumberDiffusion,&
          & MaterialsFieldDiffusion(icompartment),Err)
     CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDiffusion(icompartment),Err)
-  END DO 
+  END DO
+  !Initialise the coupling coefficients
+  ALLOCATE(CouplingCoeffs(Ncompartments,Ncompartments))
+  CouplingCoeffs(1,1)=1.0_CMISSDP
+  CouplingCoeffs(1,2)=1.0_CMISSDP
+  CouplingCoeffs(1,3)=1.0_CMISSDP
+  CouplingCoeffs(2,1)=1.0_CMISSDP
+  CouplingCoeffs(2,2)=1.0_CMISSDP
+  CouplingCoeffs(2,3)=1.0_CMISSDP
+  CouplingCoeffs(3,1)=1.0_CMISSDP
+  CouplingCoeffs(3,2)=1.0_CMISSDP
+  CouplingCoeffs(3,3)=1.0_CMISSDP
+
+  DO icompartment = 1, Ncompartments
+    DO COMPONENT_NUMBER=1, Ncompartments
+      CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDiffusion(icompartment),CMISSFieldVVariableType, &
+         & CMISSFieldValuesSetType,COMPONENT_NUMBER,CouplingCoeffs(icompartment,COMPONENT_NUMBER),Err)
+    END DO
+  END DO
 
 !   CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDiffusionOne,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
 !     & MaterialsFieldUserNumberDiffusionOne,POROSITY_PARAM_MAT_PROPERTIES,Err)
