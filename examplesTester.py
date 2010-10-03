@@ -24,9 +24,13 @@ f = open(logDir+'/build.log',"a")
 def insertTag(tag,outfile) :
   outfile.write(tag+"\n")
 
-def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=None) :
+def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=None,master42=None) :
    global compiler,logDir,successbuilds,f;
-   index = successbuilds.find(compiler+'_'+path)
+   if master42!=None :
+     index = successbuilds.find(compiler+'_'+master42)
+     path='42TestingPoints/'+path
+   else :
+     index = successbuilds.find(compiler+'_'+path)
    index = successbuilds.find('|',index)
    if (successbuilds.startswith('success',index+1)) :
      newDir = logDir
@@ -37,7 +41,7 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
      os.chdir(path)
      if os.path.exists(newDir + "/temp") :
        os.remove(newDir + "/temp")
-     if path.endswith('42Master') :
+     if master42!=None:
        execPath='./run42-debug.sh'
      else :
        execPath='bin/x86_64-linux/mpich2/'+compiler+'/'+path.rpartition('/')[2]+'Example-debug'
@@ -115,37 +119,38 @@ def htmlWrapper(infile, outfile) :
   insertTag("</pre>",output)
   output.close()
   
-##testExample(id='1',path="42TestingPoints/SinglePhysics/LinearProblems/StaticProblems/Stokes",nodes='1',input='4\n4\n0\n1')
-  
-#testExample(id='1',path="42TestingPoints/SinglePhysics/LinearProblems/StaticProblems/Stokes/2D/QUAD/CubicVelocityLinearPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/LinearProblems/StaticProblems/Stokes/2D/QUAD/CubicVelocityQuadraticPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/LinearProblems/StaticProblems/Stokes/2D/QUAD/QuadraticVelocityLinearPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/LinearProblems/StaticProblems/Stokes/2D/TRI/CubicVelocityLinearPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/LinearProblems/StaticProblems/Stokes/2D/TRI/CubicVelocityQuadraticPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/LinearProblems/StaticProblems/Stokes/2D/TRI/QuadraticVelocityLinearPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/LinearProblems/StaticProblems/Stokes/3D/HEX/CubicVelocityLinearPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/LinearProblems/StaticProblems/Stokes/3D/HEX/CubicVelocityQuadraticPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/LinearProblems/StaticProblems/Stokes/3D/HEX/QuadraticVelocityLinearPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/LinearProblems/StaticProblems/Stokes/3D/TET/CubicVelocityLinearPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/LinearProblems/StaticProblems/Stokes/3D/TET/CubicVelocityQuadraticPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/LinearProblems/StaticProblems/Stokes/3D/TET/QuadraticVelocityLinearPressure/LEVEL_1",nodes='1',input='\n')
+#testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Stokes/2D/...",nodes='1',input='\n')
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Stokes/2D/QUAD/CubicVelocityLinearPressure/LEVEL_1",master42="FluidMechanics/Stokes/42Master",nodes='1')     
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Stokes/2D/TRI/CubicVelocityLinearPressure/LEVEL_1",master42="FluidMechanics/Stokes/42Master",nodes='1')
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Stokes/2D/QUAD/CubicVelocityQuadraticPressure/LEVEL_1",master42="FluidMechanics/Stokes/42Master",nodes='1')  
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Stokes/2D/TRI/CubicVelocityQuadraticPressure/LEVEL_1",master42="FluidMechanics/Stokes/42Master",nodes='1')
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Stokes/2D/QUAD/QuadraticVelocityLinearPressure/LEVEL_1",master42="FluidMechanics/Stokes/42Master",nodes='1') 
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Stokes/2D/TRI/QuadraticVelocityLinearPressure/LEVEL_1",master42="FluidMechanics/Stokes/42Master",nodes='1')
 
-##testExample(id='1',path="42TestingPoints/SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes",nodes='1',input='4\n4\n0\n1')
-  
-#testExample(id='1',path="42TestingPoints/SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/2D/QUAD/CubicVelocityLinearPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/2D/QUAD/CubicVelocityQuadraticPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/2D/QUAD/QuadraticVelocityLinearPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/2D/TRI/CubicVelocityLinearPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/2D/TRI/CubicVelocityQuadraticPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/2D/TRI/QuadraticVelocityLinearPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/3D/HEX/CubicVelocityLinearPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/3D/HEX/CubicVelocityQuadraticPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/3D/HEX/QuadraticVelocityLinearPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/3D/TET/CubicVelocityLinearPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/3D/TET/CubicVelocityQuadraticPressure/LEVEL_1",nodes='1',input='\n')
-#testExample(id='1',path="42TestingPoints/SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/3D/TET/QuadraticVelocityLinearPressure/LEVEL_1",nodes='1',input='\n')
+#testExample(id='1',path="LinearProblems/StaticProblems/Stokes/3D/...",nodes='1',input='\n')
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Stokes/3D/HEX/CubicVelocityLinearPressure/LEVEL_1",master42="FluidMechanics/Stokes/42Master",nodes='1')     
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Stokes/3D/TET/CubicVelocityLinearPressure/LEVEL_1",master42="FluidMechanics/Stokes/42Master",nodes='1')
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Stokes/3D/HEX/CubicVelocityQuadraticPressure/LEVEL_1",master42="FluidMechanics/Stokes/42Master",nodes='1')  
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Stokes/3D/TET/CubicVelocityQuadraticPressure/LEVEL_1",master42="FluidMechanics/Stokes/42Master",nodes='1')
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Stokes/3D/HEX/QuadraticVelocityLinearPressure/LEVEL_1",master42="FluidMechanics/Stokes/42Master",nodes='1') 
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Stokes/3D/TET/QuadraticVelocityLinearPressure/LEVEL_1",master42="FluidMechanics/Stokes/42Master",nodes='1')
 
-testExample(id='1',path="FluidMechanics/Stokes/42Master",nodes='1')
+#testExample(id='1',path="NonlinearProblems/StaticProblems/NavierStokes/2D/...",nodes='1',input='\n')
+testExample(id='1',path="SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/2D/QUAD/CubicVelocityLinearPressure/LEVEL_1",master42="FluidMechanics/NavierStokes/42Master",nodes='1')
+testExample(id='1',path="SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/2D/QUAD/CubicVelocityQuadraticPressure/LEVEL_1",master42="FluidMechanics/NavierStokes/42Master",nodes='1')
+testExample(id='1',path="SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/2D/QUAD/QuadraticVelocityLinearPressure/LEVEL_1",master42="FluidMechanics/NavierStokes/42Master",nodes='1')
+testExample(id='1',path="SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/2D/TRI/CubicVelocityLinearPressure/LEVEL_1",master42="FluidMechanics/NavierStokes/42Master",nodes='1')
+testExample(id='1',path="SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/2D/TRI/CubicVelocityQuadraticPressure/LEVEL_1",master42="FluidMechanics/NavierStokes/42Master",nodes='1')
+testExample(id='1',path="SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/2D/TRI/QuadraticVelocityLinearPressure/LEVEL_1",master42="FluidMechanics/NavierStokes/42Master",nodes='1')
+
+#testExample(id='1',path="NonlinearProblems/StaticProblems/NavierStokes/3D/...",nodes='1',input='\n')
+testExample(id='1',path="SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/3D/HEX/CubicVelocityLinearPressure/LEVEL_1",master42="FluidMechanics/NavierStokes/42Master",nodes='1')
+testExample(id='1',path="SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/3D/HEX/CubicVelocityQuadraticPressure/LEVEL_1",master42="FluidMechanics/NavierStokes/42Master",nodes='1')
+testExample(id='1',path="SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/3D/HEX/QuadraticVelocityLinearPressure/LEVEL_1",master42="FluidMechanics/NavierStokes/42Master",nodes='1')
+testExample(id='1',path="SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/3D/TET/CubicVelocityLinearPressure/LEVEL_1",master42="FluidMechanics/NavierStokes/42Master",nodes='1')
+testExample(id='1',path="SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/3D/TET/CubicVelocityQuadraticPressure/LEVEL_1",master42="FluidMechanics/NavierStokes/42Master",nodes='1')
+testExample(id='1',path="SinglePhysics/NonlinearProblems/StaticProblems/NavierStokes/3D/TET/QuadraticVelocityLinearPressure/LEVEL_1",master42="FluidMechanics/NavierStokes/42Master",nodes='1')
+
 #testExample(id='1',path="FluidMechanics/NavierStokes/42Master",nodes='1',input='\n')
 #testExample(id='1',path="FluidMechanics/Stokes/42Master",nodes='1',input='\n')
 
