@@ -1,5 +1,13 @@
-gfx read node Laplace.part0.exnode
-gfx read element Laplace.part0.exelem 
+@exnodes=<./Laplace.part*.exnode>;
+@exelems=<./Laplace.part*.exelem>;
+foreach $filename (@exnodes) {
+    print "Reading $filename\n";
+    gfx read node "$filename";
+}
+foreach $filename (@exelems) {
+    print "Reading $filename\n";
+    gfx read elem "$filename";
+}
 gfx define faces egroup LaplaceRegion
 gfx create window 1
 gfx modify window 1 view interest_point 1.0,0.5,0.0 eye_point 1.0,0.5,5.0 up_vector 0.0,1.0,0.0
