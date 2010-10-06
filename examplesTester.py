@@ -202,7 +202,7 @@ testExample(id='1', path="ClassicalField/Diffusion/CubicConvergenceTest", nodes=
 testExample(id='1', path="ClassicalField/DiffusionConstantSource", nodes='1')
 #testExample(id='1', path="ClassicalField/Helmholtz", nodes='1',input='4\n4\n0\n1')
 testExample(id='1', path="ClassicalField/NonlinearPoisson",nodes='1',input='4\n4\n0\n1')
-testExample(id='1', path="ClassicalField/Laplace/AnalyticLaplace", nodes='1', ndiffDir='expected_files', outputDir='.')
+#testExample(id='1', path="ClassicalField/Laplace/AnalyticLaplace", nodes='1', ndiffDir='expected_files', outputDir='.')
 testExample(id='1', path="ClassicalField/Laplace/Laplace", nodes='1',args='4 4 0 1') 
 testExample(id='2', path="ClassicalField/Laplace/NumberLaplace", nodes='1',args='4 4 0 1')
 
