@@ -64,6 +64,9 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
 
   USE OPENCMISS
   USE FLUID_MECHANICS_IO_ROUTINES
+  USE FIELDML_OUTPUT_ROUTINES
+  USE FIELDML_UTIL_ROUTINES
+  USE FIELDML_API
   USE MPI
 
 #ifdef WIN32
@@ -256,6 +259,14 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
 !   CHARACTER(LEN=255) :: DIAG_ROUTINE_LIST(8) !,TIMING_ROUTINE_LIST(1)
   CHARACTER(LEN=255) :: DIAG_ROUTINE_LIST(1) !,TIMING_ROUTINE_LIST(1)
 
+  !FieldML variables
+  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "advection_diffusion_advection"
+  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputDirectory = ""
+  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputFilename = "AdvectionDiffusionAdvection.xml"
+
+  INTEGER(C_INT) :: equationsSetDomain
+
+  TYPE(FieldmlInfoType) :: fieldmlInfo
   
   !
   !--------------------------------------------------------------------------------------------------------------------------------
@@ -1038,11 +1049,30 @@ WRITE(*,'(A)') "Solver two equations got."
   EXPORT_FIELD_IO=.TRUE.
   IF(EXPORT_FIELD_IO) THEN
     WRITE(*,'(A)') "Exporting fields..."
-    CALL CMISSFieldsTypeInitialise(Fields,Err)
-    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"CoupledSourceDiffusionAdvectionDiffusion","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"CoupledSourceDiffusionAdvectionDiffusion","FORTRAN",Err)
-    CALL CMISSFieldsTypeFinalise(Fields,Err)
+!    CALL CMISSFieldsTypeInitialise(Fields,Err)
+!    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
+!    CALL CMISSFieldIONodesExport(Fields,"CoupledSourceDiffusionAdvectionDiffusion","FORTRAN",Err)
+!    CALL CMISSFieldIOElementsExport(Fields,"CoupledSourceDiffusionAdvectionDiffusion","FORTRAN",Err)
+!    CALL CMISSFieldsTypeFinalise(Fields,Err)
+
+    CALL FieldmlOutput_InitializeInfo( Region, Mesh, NUMBER_OF_DIMENSIONS, outputDirectory, basename, fieldmlInfo, err )
+
+    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".geometric", region, mesh, GeometricField, &
+      & CMISSFieldUVariableType, err )
+
+    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".dependent", region, mesh, DependentField, &
+      & CMISSFieldUVariableType, err )
+
+    CALL FieldmlOutput_CreateEnsembleDomain( fieldmlInfo, baseName//".equation_set", 3, equationsSetDomain, err )
+
+    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".equation_set.advection_diffusion", mesh, &
+      & EquationsSetFieldDiffusion, CMISSFieldUVariableType, equationsSetDomain, err )
+
+    CALL FieldmlOutput_Write( fieldmlInfo, outputFilename, err )
+
+    CALL FieldmlUtil_FinalizeInfo( fieldmlInfo )
+
+
     WRITE(*,'(A)') "Field exported!"
   ENDIF
 

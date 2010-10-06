@@ -284,7 +284,7 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   !
   !================================================================================================================================
   !
-  
+ 
   CALL FieldmlInput_InitializeFromFile( fieldmlInfo, inputFilename, err )
 
   CALL FieldmlInput_SetDofVariables( fieldmlInfo, "test_mesh.nodal_dofs", "test_mesh.element_dofs", &
@@ -595,7 +595,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
 
   !Solve the problem
   WRITE(*,'(A)') "Solving problem..."
-  CALL CMISSProblemSolve(Problem, err )
+!  CALL CMISSProblemSolve(Problem, err )
   WRITE(*,'(A)') "Problem solved!"
 
   !
@@ -603,18 +603,18 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
   !
 
   !OUTPUT
-  
     CALL FieldmlOutput_InitializeInfo( Region, Mesh, xiDimensions, outputDirectory, basename, outputInfo, err )
 
-    CALL FieldmlOutput_AddField( outputInfo, baseName//".geometric", region, mesh, GeometricField, err )
+   CALL FieldmlOutput_AddField( outputInfo, baseName//".geometric", region, mesh, GeometricField, &
+     & CMISSFieldUVariableType, err )
 
-    domainHandle = Fieldml_GetNamedObject( outputInfo%fmlHandle, "library.velocity.rc.3d"//NUL )
-    CALL FieldmlOutput_AddFieldComponents( outputInfo, domainHandle, baseName//".velocity", Mesh, DependentFieldNavierStokes, &
-      & (/1,2,3/), err )
+   domainHandle = Fieldml_GetNamedObject( outputInfo%fmlHandle, "library.velocity.rc.3d"//NUL )
+   CALL FieldmlOutput_AddFieldComponents( outputInfo, domainHandle, baseName//".velocity", Mesh, DependentFieldNavierStokes, &
+     & (/1,2,3/), CMISSFieldUVariableType, err )
     
     domainHandle = Fieldml_GetNamedObject( outputInfo%fmlHandle, "library.pressure"//NUL )
     CALL FieldmlOutput_AddFieldComponents( outputInfo, domainHandle, baseName//".pressure", Mesh, DependentFieldNavierStokes, &
-      & (/4/), err )
+      & (/4/), CMISSFieldUVariableType, err )
     
     CALL FieldmlOutput_Write( outputInfo, outputFilename, err )
     

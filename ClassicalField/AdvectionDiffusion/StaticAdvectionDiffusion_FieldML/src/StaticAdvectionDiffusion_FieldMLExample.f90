@@ -427,17 +427,23 @@ CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
     
     CALL FieldmlOutput_InitializeInfo( Region, Mesh, dimensions, outputDirectory, basename, fieldmlInfo, err )
 
-    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".geometric", region, mesh, GeometricField, err )
+    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".geometric", region, mesh, GeometricField, &
+      & CMISSFieldUVariableType, err )
 
-    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".dependent", region, mesh, DependentField, err )
+    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".dependent", region, mesh, DependentField, &
+      & CMISSFieldUVariableType, err )
 
-    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".independent", region, mesh, IndependentField, err )
+    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".independent", region, mesh, IndependentField, &
+      & CMISSFieldUVariableType, err )
 
-    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".source", region, mesh, SourceField, err )
+    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".source", region, mesh, SourceField, &
+      & CMISSFieldUVariableType, err )
 
-    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".materials", region, mesh, MaterialsField, err )
+    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".materials", region, mesh, MaterialsField, &
+      & CMISSFieldUVariableType, err )
 
-    !CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".analytic", region, mesh, AnalyticField, err )
+    !CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".analytic", region, mesh, AnalyticField, &
+    !  & CMISSFieldUVariableType, err )
     
     CALL FieldmlOutput_Write( fieldmlInfo, outputFilename, err )
     
