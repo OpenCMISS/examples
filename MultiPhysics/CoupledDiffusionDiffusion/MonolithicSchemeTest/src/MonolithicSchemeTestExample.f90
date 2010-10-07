@@ -379,7 +379,7 @@ PROGRAM MONOLITHICSCHEMETESTEXAMPLE
 
 
   icompartment =1_CMISSIntg
-  Ncompartments=3_CMISSIntg
+  Ncompartments=4_CMISSIntg
   !
   !================================================================================================================================
   !
