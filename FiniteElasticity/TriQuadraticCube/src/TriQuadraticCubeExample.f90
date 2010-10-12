@@ -228,7 +228,7 @@ PROGRAM TRIQUADRATICCUBEEXAMPLE
   !linear Lagrange component
   CALL CMISSMeshElementsTypeInitialise(LinearElements,Err)
   CALL CMISSMeshElementsCreateStart(Mesh,LinearMeshComponentNumber,LinearBasis,LinearElements,Err)
-  CALL CMISSMeshElementsNodesSet(LinearElements,1,(/1,2,3,4,5,6,7,8/),Err)
+  CALL CMISSMeshElementsNodesSet(LinearElements,1,(/1,3,7,9,19,21,25,27/),Err) 
   CALL CMISSMeshElementsCreateFinish(LinearElements,Err)
 
   !finish mesh creation
