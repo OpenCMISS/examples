@@ -125,6 +125,7 @@ if (compiler!="intel") :
   
   
   ##buildExample("FluidMechanics/Stokes/42Master & FluidMechanics/NavierStokes/42Master")
+  buildExample("ClassicalField/Laplace/42Master")
   buildExample("FluidMechanics/NavierStokes/42Master")
   buildExample("FluidMechanics/Stokes/42Master")
   
