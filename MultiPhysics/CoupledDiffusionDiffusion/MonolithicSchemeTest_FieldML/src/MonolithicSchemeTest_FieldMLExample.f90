@@ -767,7 +767,16 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   !
   !================================================================================================================================
   !
-
+  ALLOCATE(CouplingCoeffs(Ncompartments,Ncompartments))
+  CouplingCoeffs(1,1)=-2.0_CMISSDP
+  CouplingCoeffs(1,2)=2.0_CMISSDP
+  CouplingCoeffs(1,3)=3.0_CMISSDP
+  CouplingCoeffs(2,1)=4.0_CMISSDP
+  CouplingCoeffs(2,2)=-2.0_CMISSDP
+  CouplingCoeffs(2,3)=5.0_CMISSDP
+  CouplingCoeffs(3,1)=6.0_CMISSDP
+  CouplingCoeffs(3,2)=7.0_CMISSDP
+  CouplingCoeffs(3,3)=-2.0_CMISSDP
   !MATERIALS FIELDS - create the materials field
   !Auto-created field contains a U variable type to store the diffusion coefficient(s)
   !It also contains a V variable type to store the coupling coefficients 
@@ -780,21 +789,14 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   END DO
   !Initialise the coupling coefficients
   !Need to devise a neater way of specifying these components - e.g. specify only the upper diagonal components, and then automatically fill out the rest
-  ALLOCATE(CouplingCoeffs(Ncompartments,Ncompartments))
-  CouplingCoeffs(1,1)=1.0_CMISSDP
-  CouplingCoeffs(1,2)=1.0_CMISSDP
-  CouplingCoeffs(1,3)=1.0_CMISSDP
-  CouplingCoeffs(2,1)=1.0_CMISSDP
-  CouplingCoeffs(2,2)=1.0_CMISSDP
-  CouplingCoeffs(2,3)=1.0_CMISSDP
-  CouplingCoeffs(3,1)=1.0_CMISSDP
-  CouplingCoeffs(3,2)=1.0_CMISSDP
-  CouplingCoeffs(3,3)=1.0_CMISSDP
+
 
   DO icompartment = 1, Ncompartments
     DO COMPONENT_NUMBER=1, Ncompartments
-      CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDiffusion(icompartment),CMISSFieldVVariableType, &
-         & CMISSFieldValuesSetType,COMPONENT_NUMBER,CouplingCoeffs(icompartment,COMPONENT_NUMBER),Err)
+!       CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDiffusion(icompartment),CMISSFieldVVariableType, &
+!          & CMISSFieldValuesSetType,COMPONENT_NUMBER,CouplingCoeffs(icompartment,COMPONENT_NUMBER),Err)
+        CALL CMISSFieldParameterSetUpdateConstant(MaterialsFieldDiffusion(icompartment),CMISSFieldVVariableType, &
+          & CMISSFieldValuesSetType,COMPONENT_NUMBER,CouplingCoeffs(icompartment,COMPONENT_NUMBER),Err)
     END DO
   END DO
 
