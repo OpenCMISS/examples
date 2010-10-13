@@ -275,7 +275,7 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !Set output parameter
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
   DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISSSolverProgressOutput
-  NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISSSolverProgressOutput
+  NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISSSolverSolverMatrixOutput
   LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISSSolverProgressOutput
   !(NoOutput/TimingOutatrixOutput/ElementOutput)
   EQUATIONS_NAVIER_STOKES_OUTPUT=CMISSEquationsNoOutput
