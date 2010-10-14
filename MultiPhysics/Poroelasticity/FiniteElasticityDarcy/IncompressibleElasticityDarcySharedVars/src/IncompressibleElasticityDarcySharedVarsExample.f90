@@ -1215,11 +1215,15 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !Set the times
   CALL CMISSControlLoopTimesSet(ControlLoop,LINEAR_SOLVER_DARCY_START_TIME,LINEAR_SOLVER_DARCY_STOP_TIME, & 
     & LINEAR_SOLVER_DARCY_TIME_INCREMENT,Err)
+  !Set output on for all loops
+  CALL CMISSControlLoopOutputTypeSet(ProblemUserNumber,[CMISSControlLoopNode],CMISSControlLoopProgressOutput,Err)
+  CALL CMISSControlLoopOutputTypeSet(ProblemUserNumber,[1,CMISSControlLoopNode],CMISSControlLoopProgressOutput,Err)
+  CALL CMISSControlLoopOutputTypeSet(ProblemUserNumber,[2,CMISSControlLoopNode],CMISSControlLoopProgressOutput,Err)
   !Set the output timing
   CALL CMISSControlLoopTimeOutputSet(ControlLoop,LINEAR_SOLVER_DARCY_OUTPUT_FREQUENCY,Err)
   !set the number of iterations for the elasticity load increment loop
   CALL CMISSControlLoopTypeInitialise(ControlLoopSolid,Err)
-  CALL CMISSProblemControlLoopGet(Problem,(/1,CMISSControlLoopNode/),ControlLoopSolid,Err)
+  CALL CMISSProblemControlLoopGet(Problem,[1,CMISSControlLoopNode],ControlLoopSolid,Err)
   CALL CMISSControlLoopMaximumIterationsSet(ControlLoopSolid,2,Err)
   !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
