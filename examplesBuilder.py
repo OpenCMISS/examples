@@ -161,7 +161,7 @@ if (compiler!="intel") :
   buildExample("FluidMechanics/Darcy/QuasistaticMaterial")
   #buildExample("FluidMechanics/Darcy/VenousCompartment")
 
-  #buildExample("FiniteElasticity/UniAxialExtension")
+  buildExample("FiniteElasticity/UniAxialExtension")
   #buildExample("FiniteElasticity/TwoElementTriLinear")
   #buildExample("FiniteElasticity/MixedBoundaryConditions")
   #buildExample("FiniteElasticity/TriCubicAxialExtension")
