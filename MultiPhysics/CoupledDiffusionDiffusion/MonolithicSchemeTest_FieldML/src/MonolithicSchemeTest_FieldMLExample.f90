@@ -769,13 +769,13 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   !
   ALLOCATE(CouplingCoeffs(Ncompartments,Ncompartments))
   CouplingCoeffs(1,1)=-2.0_CMISSDP
-  CouplingCoeffs(1,2)=2.0_CMISSDP
-  CouplingCoeffs(1,3)=3.0_CMISSDP
-  CouplingCoeffs(2,1)=4.0_CMISSDP
+  CouplingCoeffs(1,2)=1.0_CMISSDP
+  CouplingCoeffs(1,3)=1.0_CMISSDP
+  CouplingCoeffs(2,1)=1.0_CMISSDP
   CouplingCoeffs(2,2)=-2.0_CMISSDP
-  CouplingCoeffs(2,3)=5.0_CMISSDP
-  CouplingCoeffs(3,1)=6.0_CMISSDP
-  CouplingCoeffs(3,2)=7.0_CMISSDP
+  CouplingCoeffs(2,3)=1.0_CMISSDP
+  CouplingCoeffs(3,1)=1.0_CMISSDP
+  CouplingCoeffs(3,2)=1.0_CMISSDP
   CouplingCoeffs(3,3)=-2.0_CMISSDP
   !MATERIALS FIELDS - create the materials field
   !Auto-created field contains a U variable type to store the diffusion coefficient(s)
