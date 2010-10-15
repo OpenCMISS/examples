@@ -394,8 +394,8 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   EQUATIONS_DIFFUSION_THREE_OUTPUT=CMISSEquationsNoOutput
   !Set time parameter
   LINEAR_SOLVER_DIFFUSION_START_TIME=0.0_CMISSDP
-  LINEAR_SOLVER_DIFFUSION_STOP_TIME=0.25_CMISSDP 
-  LINEAR_SOLVER_DIFFUSION_TIME_INCREMENT=0.125_CMISSDP
+  LINEAR_SOLVER_DIFFUSION_STOP_TIME=1.0_CMISSDP 
+  LINEAR_SOLVER_DIFFUSION_TIME_INCREMENT=0.1_CMISSDP
   !Set result output parameter
   LINEAR_SOLVER_DIFFUSION_OUTPUT_FREQUENCY=1
   !Set solver parameters
@@ -410,7 +410,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 
 
   icompartment =1_CMISSIntg
-  Ncompartments=3_CMISSIntg
+  Ncompartments=4_CMISSIntg
   !
   !================================================================================================================================
   !
@@ -752,8 +752,8 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   !-------------------------------------------------------------------------------------
   ! INITIALISE DEPENDENT FIELDS
 !   !Initialise dependent field (concentration one components)
-!   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldU1VariableType,CMISSFieldValuesSetType, & 
-!     & 1,INITIAL_FIELD_DIFFUSION_ONE,Err)
+  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+    & 1,1.0_CMISSDP,Err)
 
 !   !Initialise dependent field (concentration two components)
 !   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldU2VariableType,CMISSFieldValuesSetType, & 
@@ -768,15 +768,67 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   !================================================================================================================================
   !
   ALLOCATE(CouplingCoeffs(Ncompartments,Ncompartments))
-  CouplingCoeffs(1,1)=-2.0_CMISSDP
-  CouplingCoeffs(1,2)=1.0_CMISSDP
-  CouplingCoeffs(1,3)=1.0_CMISSDP
-  CouplingCoeffs(2,1)=1.0_CMISSDP
-  CouplingCoeffs(2,2)=-2.0_CMISSDP
-  CouplingCoeffs(2,3)=1.0_CMISSDP
-  CouplingCoeffs(3,1)=1.0_CMISSDP
-  CouplingCoeffs(3,2)=1.0_CMISSDP
-  CouplingCoeffs(3,3)=-2.0_CMISSDP
+  IF(Ncompartments==2)THEN
+    CouplingCoeffs(1,1)=1.0E-02_CMISSDP
+    CouplingCoeffs(1,2)=-1.0E-02_CMISSDP
+    CouplingCoeffs(2,1)=-1.0E-02_CMISSDP
+    CouplingCoeffs(2,2)=1.0E-02_CMISSDP
+  ELSE IF(Ncompartments==3)THEN
+    CouplingCoeffs(1,1)=1.0E-02_CMISSDP
+    CouplingCoeffs(1,2)=-1.0E-02_CMISSDP
+    CouplingCoeffs(1,3)=0.0E-02_CMISSDP
+    CouplingCoeffs(2,1)=-1.0E-02_CMISSDP
+    CouplingCoeffs(2,2)=2.0E-02_CMISSDP
+    CouplingCoeffs(2,3)=-1.0E-02_CMISSDP
+    CouplingCoeffs(3,1)=0.0E-02_CMISSDP
+    CouplingCoeffs(3,2)=-1.0E-02_CMISSDP
+    CouplingCoeffs(3,3)=1.0E-02_CMISSDP
+  ELSE IF(Ncompartments==4)THEN
+    CouplingCoeffs(1,1)=0.0E-02_CMISSDP
+    CouplingCoeffs(1,2)=0.0E-02_CMISSDP
+    CouplingCoeffs(1,3)=0.0E-02_CMISSDP
+    CouplingCoeffs(1,4)=0.0E-02_CMISSDP
+    CouplingCoeffs(2,1)=0.0E-02_CMISSDP
+    CouplingCoeffs(2,2)=0.0E-02_CMISSDP
+    CouplingCoeffs(2,3)=0.0E-02_CMISSDP
+    CouplingCoeffs(2,4)=0.0E-02_CMISSDP
+    CouplingCoeffs(3,1)=0.0E-02_CMISSDP
+    CouplingCoeffs(3,2)=0.0E-02_CMISSDP
+    CouplingCoeffs(3,3)=0.0E-02_CMISSDP
+    CouplingCoeffs(3,4)=0.0E-02_CMISSDP
+    CouplingCoeffs(4,1)=0.0E-02_CMISSDP
+    CouplingCoeffs(4,2)=0.0E-02_CMISSDP
+    CouplingCoeffs(4,3)=0.0E-02_CMISSDP
+    CouplingCoeffs(4,4)=0.0E-02_CMISSDP
+  ELSE IF(Ncompartments==5)THEN
+    CouplingCoeffs(1,1)=0.0E-02_CMISSDP
+    CouplingCoeffs(1,2)=0.0E-02_CMISSDP
+    CouplingCoeffs(1,3)=0.0E-02_CMISSDP
+    CouplingCoeffs(1,4)=0.0E-02_CMISSDP
+    CouplingCoeffs(1,5)=0.0E-02_CMISSDP
+    CouplingCoeffs(2,1)=0.0E-02_CMISSDP
+    CouplingCoeffs(2,2)=0.0E-02_CMISSDP
+    CouplingCoeffs(2,3)=0.0E-02_CMISSDP
+    CouplingCoeffs(2,4)=0.0E-02_CMISSDP
+    CouplingCoeffs(2,5)=0.0E-02_CMISSDP
+    CouplingCoeffs(3,1)=0.0E-02_CMISSDP
+    CouplingCoeffs(3,2)=0.0E-02_CMISSDP
+    CouplingCoeffs(3,3)=0.0E-02_CMISSDP
+    CouplingCoeffs(3,4)=0.0E-02_CMISSDP
+    CouplingCoeffs(3,5)=0.0E-02_CMISSDP
+    CouplingCoeffs(4,1)=0.0E-02_CMISSDP
+    CouplingCoeffs(4,2)=0.0E-02_CMISSDP
+    CouplingCoeffs(4,3)=0.0E-02_CMISSDP
+    CouplingCoeffs(4,4)=0.0E-02_CMISSDP
+    CouplingCoeffs(4,5)=0.0E-02_CMISSDP
+    CouplingCoeffs(5,1)=0.0E-02_CMISSDP
+    CouplingCoeffs(5,2)=0.0E-02_CMISSDP
+    CouplingCoeffs(5,3)=0.0E-02_CMISSDP
+    CouplingCoeffs(5,4)=0.0E-02_CMISSDP
+    CouplingCoeffs(5,5)=0.0E-02_CMISSDP
+  ELSE
+    write(*,*) "Can't initialise coupling coefficients array."
+  ENDIF
   !MATERIALS FIELDS - create the materials field
   !Auto-created field contains a U variable type to store the diffusion coefficient(s)
   !It also contains a V variable type to store the coupling coefficients 
@@ -856,7 +908,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE
         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_ONE(NODE_COUNTER)
         CONDITION=CMISSBoundaryConditionFixed
-          VALUE=0.2_CMISSDP
+          VALUE=1.0_CMISSDP
           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(1),CMISSFieldUVariableType, &
             & CMISSNoGlobalDerivative, & 
             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
@@ -864,36 +916,36 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
     ENDIF
    ENDIF
 
-   IF(icompartment==2)THEN
-    IF(INLET_WALL_NODES_DIFFUSION_TWO_FLAG) THEN
-      DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO
-        NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_TWO(NODE_COUNTER)
-        CONDITION=CMISSBoundaryConditionFixed
-          VALUE=0.4_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(2),CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
-            & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
-      ENDDO
-    ENDIF
-   ENDIF
+!    IF(icompartment==2)THEN
+!     IF(INLET_WALL_NODES_DIFFUSION_TWO_FLAG) THEN
+!       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO
+!         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_TWO(NODE_COUNTER)
+!         CONDITION=CMISSBoundaryConditionFixed
+!           VALUE=0.0_CMISSDP
+!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(2),CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
+!             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
+!       ENDDO
+!     ENDIF
+!    ENDIF
 
-   IF(icompartment==3)THEN
-    IF(INLET_WALL_NODES_DIFFUSION_THREE_FLAG) THEN
-      DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE
-        NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_THREE(NODE_COUNTER)
-        CONDITION=CMISSBoundaryConditionFixed
-          VALUE=0.6_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(3),CMISSFieldU1VariableType,CMISSNoGlobalDerivative, & 
-            & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
-      ENDDO
-    ENDIF
-   ENDIF
+!    IF(icompartment==3)THEN
+!     IF(INLET_WALL_NODES_DIFFUSION_THREE_FLAG) THEN
+!       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE
+!         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_THREE(NODE_COUNTER)
+!         CONDITION=CMISSBoundaryConditionFixed
+!           VALUE=0.0_CMISSDP
+!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(3),CMISSFieldU1VariableType,CMISSNoGlobalDerivative, & 
+!             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
+!       ENDDO
+!     ENDIF
+!    ENDIF
 
    IF(icompartment==4)THEN
     IF(INLET_WALL_NODES_DIFFUSION_THREE_FLAG) THEN
       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE
         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_THREE(NODE_COUNTER)
         CONDITION=CMISSBoundaryConditionFixed
-          VALUE=0.8_CMISSDP
+          VALUE=0.0_CMISSDP
           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(4),CMISSFieldU2VariableType,CMISSNoGlobalDerivative, & 
             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
       ENDDO
@@ -1027,6 +1079,9 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 
     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".dependent_V", region, mesh, DependentField, &
       & CMISSFieldVVariableType, err )
+
+!     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".dependent_U1", region, mesh, DependentField, &
+!       & CMISSFieldVVariableType, err )
     
     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".equations_set_field_1", region, mesh, EquationsSetFieldDiffusion(1), &
       & CMISSFieldUVariableType, err )
@@ -1034,8 +1089,8 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".equations_set_field_2", region, mesh, EquationsSetFieldDiffusion(2), &
       & CMISSFieldUVariableType, err )
 
-    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".equations_set_field_3", region, mesh, EquationsSetFieldDiffusion(3), &
-      & CMISSFieldUVariableType, err )
+!     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".equations_set_field_3", region, mesh, EquationsSetFieldDiffusion(3), &
+!       & CMISSFieldUVariableType, err )
 
     !CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".source", region, mesh, SourceField, err )
 
