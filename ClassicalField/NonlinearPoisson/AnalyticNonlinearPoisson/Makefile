@@ -63,9 +63,9 @@ endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_PATH=ClassicalField/
+EXAMPLE_PATH=ClassicalField/NonlinearPoisson/
 
-EXAMPLE_NAME = NonlinearPoisson
+EXAMPLE_NAME = AnalyticNonlinearPoisson
 
 include $(GLOBAL_ROOT)/NewExampleMakefile
 
