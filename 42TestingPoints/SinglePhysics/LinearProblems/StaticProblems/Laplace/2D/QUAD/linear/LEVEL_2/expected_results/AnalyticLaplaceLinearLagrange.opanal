@@ -1,0 +1,61 @@
+Analytic error analysis:
+
+Field 2 : Dependent Field
+
+Variable 1 : Phi
+
+Component 1 : Phi
+
+Nodal errors:
+     Node#  Deriv#     Numerical      Analytic       % error  Absolute err  Relative err
+         1       1   0.13541E-10   0.13541E-10   0.00000E+00   0.00000E+00   0.00000E+00
+         2       1   0.21114E+01   0.21114E+01   0.00000E+00   0.00000E+00   0.00000E+00
+         3       1   0.22816E+01   0.22816E+01   0.00000E+00   0.00000E+00   0.00000E+00
+         4       1   0.62999E-11   0.62999E-11   0.00000E+00   0.00000E+00   0.00000E+00
+         5       1   0.92113E+00   0.98231E+00   0.62289E+01   0.61188E-01   0.30867E-01
+         6       1   0.10615E+01   0.10615E+01   0.00000E+00   0.00000E+00   0.00000E+00
+         7       1   0.59014E-11   0.59014E-11   0.00000E+00   0.00000E+00   0.00000E+00
+         8       1   0.92017E+00   0.92017E+00   0.00000E+00   0.00000E+00   0.00000E+00
+         9       1   0.99434E+00   0.99434E+00   0.00000E+00   0.00000E+00   0.00000E+00
+
+RMS errors:
+            Deriv#                                   % error  Absolute err  Relative err
+                 1                               0.20763E+01   0.20396E-01   0.10289E-01
+
+Integral errors:
+Component#             Numerical      Analytic       % error  Absolute err  Relative err
+         1  Intg     0.37866E+01   0.38478E+01   0.15902E+01   0.61188E-01   0.12622E-01
+            Intg^2   0.47021E+01   0.48207E+01   0.24593E+01   0.11855E+00   0.20368E-01
+Component#             Numerical      Analytic           NID        NID(%)
+         1  Diff     0.61188E-01   0.38478E+01   0.98410E+00   0.98410E+02
+            Diff^2   0.16640E-02   0.48207E+01   0.99965E+00   0.99965E+02
+
+
+Variable 2 : del Phi/del n
+
+Component 1 : del Phi/del n
+
+Nodal errors:
+     Node#  Deriv#     Numerical      Analytic       % error  Absolute err  Relative err
+         1       1  -0.73217E+00   0.00000E+00   0.00000E+00   0.73217E+00   0.73217E+00
+         2       1   0.17741E+01   0.00000E+00   0.00000E+00   0.17741E+01  -0.17741E+01
+         3       1   0.64707E+00   0.00000E+00   0.00000E+00   0.64707E+00  -0.64707E+00
+         4       1   0.18310E+01   0.00000E+00   0.00000E+00   0.18310E+01  -0.18310E+01
+         5       1   0.61062E-15   0.00000E+00   0.00000E+00   0.61062E-15  -0.61062E-15
+         6       1  -0.15964E+01   0.00000E+00   0.00000E+00   0.15964E+01   0.15964E+01
+         7       1   0.81726E+00   0.00000E+00   0.00000E+00   0.81726E+00  -0.81726E+00
+         8       1  -0.41308E+00   0.00000E+00   0.00000E+00   0.41308E+00   0.41308E+00
+         9       1  -0.73217E+00   0.00000E+00   0.00000E+00   0.73217E+00   0.73217E+00
+
+RMS errors:
+            Deriv#                                   % error  Absolute err  Relative err
+                 1                               0.00000E+00   0.11244E+01   0.11244E+01
+
+Integral errors:
+Component#             Numerical      Analytic       % error  Absolute err  Relative err
+         1  Intg     0.79778E+00   0.00000E+00   0.00000E+00   0.79778E+00  -0.79778E+00
+            Intg^2   0.23180E+01   0.00000E+00   0.00000E+00   0.23180E+01  -0.23180E+01
+Component#             Numerical      Analytic           NID        NID(%)
+         1  Diff    -0.79778E+00   0.00000E+00   0.79778E+00   0.79778E+02
+            Diff^2   0.23180E+01   0.00000E+00  -0.23180E+01  -0.23180E+03
+

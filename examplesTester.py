@@ -158,6 +158,14 @@ testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/3D/
 nodes='1',ndiffDir='expected_results',outputDir='output')
 testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/3D/TET/cubic/LEVEL_1",master42="ClassicalField/Laplace/42Master",
 nodes='1',ndiffDir='expected_results',outputDir='output')
+# Analytic Laplace 2D
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/QUAD/linear/LEVEL_2",master42="ClassicalField/Laplace/AnalyticLaplace",
+nodes='1',ndiffDir='expected_results',outputDir='output')
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/TRI/linear/LEVEL_2",master42="ClassicalField/Laplace/AnalyticLaplace",
+nodes='1',ndiffDir='expected_results',outputDir='output')
+#TODO: Hermite is currently not working
+#testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/HERMITE/linear/LEVEL_2",master42="ClassicalField/Laplace/AnalyticLaplace",
+#nodes='1',ndiffDir='expected_results',outputDir='output')
 
 #testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Stokes/2D/...",nodes='1',input='\n')
 testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Stokes/2D/QUAD/CubicVelocityLinearPressure/LEVEL_1",master42="FluidMechanics/Stokes/42Master",nodes='1',ndiffDir='expected_results',outputDir='output')     
@@ -238,8 +246,6 @@ testExample(id='1', path="ClassicalField/Diffusion/CubicConvergenceTest", nodes=
 testExample(id='1', path="ClassicalField/DiffusionConstantSource", nodes='1')
 #testExample(id='1', path="ClassicalField/Helmholtz", nodes='1',input='4\n4\n0\n1')
 testExample(id='1', path="ClassicalField/NonlinearPoisson",nodes='1',input='4\n4\n0\n1')
-#testExample(id='1', path="ClassicalField/Laplace/AnalyticLaplace", nodes='1', ndiffDir='expected_files', outputDir='.')
-testExample(id='1', path="ClassicalField/Laplace/Laplace", nodes='1',args='4 4 0 1') 
 testExample(id='2', path="ClassicalField/Laplace/NumberLaplace", nodes='1',args='4 4 0 1')
 
 #testExample(id='1',path="Bioelectrics/Monodomain",nodes='1',input='4\n4\n0\n1')
