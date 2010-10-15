@@ -123,6 +123,15 @@ def htmlWrapper(infile, outfile) :
 # START: 42 TESTING MATRIX
 # ##################################################################################
 
+# Laplace 1D
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/1D/linear/LEVEL_1",master42="ClassicalField/Laplace/42Master",
+nodes='1',ndiffDir='expected_results',outputDir='output')
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/1D/quadratic/LEVEL_1",master42="ClassicalField/Laplace/42Master",
+nodes='1',ndiffDir='expected_results',outputDir='output')
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/1D/cubic/LEVEL_1",master42="ClassicalField/Laplace/42Master",
+nodes='1',ndiffDir='expected_results',outputDir='output')
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/1D/hermite/LEVEL_1",master42="ClassicalField/Laplace/42Master",
+nodes='1',ndiffDir='expected_results',outputDir='output')
 # Laplace 2D
 testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/QUAD/linear/LEVEL_1",master42="ClassicalField/Laplace/42Master",
 nodes='1',ndiffDir='expected_results',outputDir='output')
@@ -130,13 +139,24 @@ testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/
 nodes='1',ndiffDir='expected_results',outputDir='output')
 testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/QUAD/cubic/LEVEL_1",master42="ClassicalField/Laplace/42Master",
 nodes='1',ndiffDir='expected_results',outputDir='output')
-
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/TRI/linear/LEVEL_1",master42="ClassicalField/Laplace/42Master",
+nodes='1',ndiffDir='expected_results',outputDir='output')
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/TRI/quadratic/LEVEL_1",master42="ClassicalField/Laplace/42Master",
+nodes='1',ndiffDir='expected_results',outputDir='output')
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/TRI/cubic/LEVEL_1",master42="ClassicalField/Laplace/42Master",
+nodes='1',ndiffDir='expected_results',outputDir='output')
 # Laplace 3D
 testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/3D/HEX/linear/LEVEL_1",master42="ClassicalField/Laplace/42Master",
 nodes='1',ndiffDir='expected_results',outputDir='output')
 testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/3D/HEX/quadratic/LEVEL_1",master42="ClassicalField/Laplace/42Master",
 nodes='1',ndiffDir='expected_results',outputDir='output')
 testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/3D/HEX/cubic/LEVEL_1",master42="ClassicalField/Laplace/42Master",
+nodes='1',ndiffDir='expected_results',outputDir='output')
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/3D/TET/linear/LEVEL_1",master42="ClassicalField/Laplace/42Master",
+nodes='1',ndiffDir='expected_results',outputDir='output')
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/3D/TET/quadratic/LEVEL_1",master42="ClassicalField/Laplace/42Master",
+nodes='1',ndiffDir='expected_results',outputDir='output')
+testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/3D/TET/cubic/LEVEL_1",master42="ClassicalField/Laplace/42Master",
 nodes='1',ndiffDir='expected_results',outputDir='output')
 
 #testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Stokes/2D/...",nodes='1',input='\n')
