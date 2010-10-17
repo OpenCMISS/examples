@@ -300,7 +300,7 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   !Set result output parameter
   DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY=1
   !Set solver parameters
-  LINEAR_SOLVER_NAVIER_STOKES_DIRECT_FLAG=.TRUE.
+  LINEAR_SOLVER_NAVIER_STOKES_DIRECT_FLAG=.FALSE.
   RELATIVE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-05_CMISSDP
   ABSOLUTE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-10_CMISSDP
   DIVERGENCE_TOLERANCE=1.0E20 !default: 1.0E5
@@ -550,7 +550,7 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   CALL CMISSFieldComponentValuesInitialise(MaterialsFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
     & MaterialsFieldUserNumberNavierStokesE,E_PARAM_NAVIER_STOKES,Err)
 
-  !================================================================================================================================
+  !================================================================================================================================x
   !
 
   !EQUATIONS
@@ -705,7 +705,8 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverNavierStokesUserNumber,DynamicSolverNavierStokes,Err)
   CALL CMISSSolverSolverEquationsGet(DynamicSolverNavierStokes,SolverEquationsNavierStokes,Err)
   !Set the solver equations sparsity
-  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsNavierStokes,CMISSSolverEquationsSparseMatrices,Err)
+  !CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsNavierStokes,CMISSSolverEquationsSparseMatrices,Err)
+  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsNavierStokes,CMISSSolverEquationsFullMatrices,Err)
   !Add in the equations set
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsNavierStokes,EquationsSetNavierStokes,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations

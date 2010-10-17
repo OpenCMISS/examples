@@ -335,6 +335,9 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
 
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
+
+  CALL CMISSOutputSetOn("Testing",Err)
+  
   !
   !================================================================================================================================
   !

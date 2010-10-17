@@ -1,7 +1,7 @@
 !> \file
 !> $Id$
 !> \author Chris Bradley
-!> \brief This is an example program to solve a Monodomain equation using OpenCMISS calls.
+!> \brief This is an example program to solve a Bidomain equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -40,16 +40,16 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example Bioelectrics/Monodomain/src/MonodomainExample.f90
-!! Example program to solve a Monodomain equation using openCMISS calls.
+!> \example Bioelectrics/Bidomain/src/BidomainExample.f90
+!! Example program to solve a Bidomain equation using openCMISS calls.
 !! \par Latest Builds:
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/Bioelectrics/Monodomain/build-intel'>Linux Intel Build</a>
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/Bioelectrics/Monodomain/build-gnu'>Linux GNU Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/Bioelectrics/Bidomain/build-intel'>Linux Intel Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/Bioelectrics/Bidomain/build-gnu'>Linux GNU Build</a>
 !!
 !<
 
 !> Main program
-PROGRAM MONODOMAINEXAMPLE
+PROGRAM BIDOMAINEXAMPLE
 
   USE OPENCMISS
   USE MPI
@@ -85,8 +85,9 @@ PROGRAM MONODOMAINEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: CellMLStateFieldUserNumber=13
   INTEGER(CMISSIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=14
   INTEGER(CMISSIntg), PARAMETER :: CellMLParametersFieldUserNumber=15
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=16
-  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=17
+  INTEGER(CMISSIntg), PARAMETER :: ParabolicEquationsSetUserNumber=16
+  INTEGER(CMISSIntg), PARAMETER :: EllipticEquationsSetUserNumber=17
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=18
 
   !Program types
   
@@ -111,7 +112,7 @@ PROGRAM MONODOMAINEXAMPLE
   TYPE(CMISSCoordinateSystemType) :: CoordinateSystem,WorldCoordinateSystem
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
-  TYPE(CMISSEquationsSetType) :: EquationsSet
+  TYPE(CMISSEquationsSetType) :: ParabolicEquationsSet,EllipticEquationsSet
   TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField,SourceField
   TYPE(CMISSFieldType) :: CellMLModelsField,CellMLStateField,CellMLIntermediateField,CellMLParametersField
   TYPE(CMISSFieldsType) :: Fields
@@ -131,7 +132,7 @@ PROGRAM MONODOMAINEXAMPLE
    !Generic CMISS variables
   
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMISSIntg) :: EquationsSetIndex,CellMLIndex
+  INTEGER(CMISSIntg) :: ParabolicEquationsSetIndex,EllipticEquationsSetIndex,CellMLIndex
   INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
   INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain
   INTEGER(CMISSIntg) :: Err
@@ -245,35 +246,128 @@ PROGRAM MONODOMAINEXAMPLE
   !Update the geometric field parameters
   CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
         
-  !Create the equations_set
-  CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
+  !Create the first (parabolic) equations set for the bidomain equations
+  CALL CMISSEquationsSetTypeInitialise(ParabolicEquationsSet,Err)
   CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetBioelectricsClass, &
-    & CMISSEquationsSetMonodomainEquationType,CMISSEquationsSetNoSubtype,EquationsSetFieldUserNumber,EquationsSetField, &
-    & EquationsSet,Err)
-  !Set the equations set to be a standard Laplace problem
-  
+  CALL CMISSEquationsSetCreateStart(ParabolicEquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetBioelectricsClass, &
+    & CMISSEquationsSetBidomainEquationType,CMISSEquationsSetFirstBidomainSubtype,EquationsSetFieldUserNumber, &
+    & EquationsSetField,ParabolicEquationsSet,Err)
   !Finish creating the equations set
-  CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
+  CALL CMISSEquationsSetCreateFinish(ParabolicEquationsSet,Err)
 
   !Create the equations set dependent field variables
   CALL CMISSFieldTypeInitialise(DependentField,Err)
-  CALL CMISSEquationsSetDependentCreateStart(EquationsSet,DependentFieldUserNumber,DependentField,Err)
+  CALL CMISSEquationsSetDependentCreateStart(ParabolicEquationsSet,DependentFieldUserNumber,DependentField,Err)
   !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
+  CALL CMISSEquationsSetDependentCreateFinish(ParabolicEquationsSet,Err)
   
   !Create the equations set materials field variables
   CALL CMISSFieldTypeInitialise(MaterialsField,Err)
-  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,MaterialsFieldUserNumber,MaterialsField,Err)
+  CALL CMISSEquationsSetMaterialsCreateStart(ParabolicEquationsSet,MaterialsFieldUserNumber,MaterialsField,Err)
   !Finish the equations set materials field variables
-  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
+  CALL CMISSEquationsSetMaterialsCreateFinish(ParabolicEquationsSet,Err)
   
   !Create the equations set source field variables
   CALL CMISSFieldTypeInitialise(SourceField,Err)
-  CALL CMISSEquationsSetSourceCreateStart(EquationsSet,SourceFieldUserNumber,SourceField,Err)
+  CALL CMISSEquationsSetSourceCreateStart(ParabolicEquationsSet,SourceFieldUserNumber,SourceField,Err)
   !Finish the equations set source field variables
-  CALL CMISSEquationsSetSourceCreateFinish(EquationsSet,Err)
+  CALL CMISSEquationsSetSourceCreateFinish(ParabolicEquationsSet,Err)
 
+  !Create the parabolic equations set equations
+  CALL CMISSEquationsTypeInitialise(Equations,Err)
+  CALL CMISSEquationsSetEquationsCreateStart(ParabolicEquationsSet,Equations,Err)
+  !Set the equations matrices sparsity type
+  CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
+  !Set the equations set output
+  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
+  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsTimingOutput,Err)
+  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsMatrixOutput,Err)
+  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsElementMatrixOutput,Err)
+  !Finish the equations set equations
+  CALL CMISSEquationsSetEquationsCreateFinish(ParabolicEquationsSet,Err)
+
+  !Start the creation of the equations set boundary conditions
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSEquationsSetBoundaryConditionsCreateStart(ParabolicEquationsSet,BoundaryConditions,Err)
+  !Set the first node to 0.0 and the last node to 1.0
+  FirstNodeNumber=1
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)
+  ELSE
+    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
+  ENDIF
+  CALL CMISSDecompositionNodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
+  CALL CMISSDecompositionNodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
+  IF(FirstNodeDomain==ComputationalNodeNumber) THEN
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
+      & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+  ENDIF
+  IF(LastNodeDomain==ComputationalNodeNumber) THEN
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,LastNodeNumber,1, &
+      & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
+  ENDIF
+  !Finish the creation of the equations set boundary conditions
+  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(ParabolicEquationsSet,Err)
+  
+  !Create the second (elliptic) equations set for the bidomain equations
+  CALL CMISSEquationsSetTypeInitialise(EllipticEquationsSet,Err)
+  CALL CMISSEquationsSetCreateStart(EllipticEquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetBioelectricsClass, &
+    & CMISSEquationsSetBidomainEquationType,CMISSEquationsSetSecondBidomainSubtype,EquationsSetFieldUserNumber, &
+    & EquationsSetField,EllipticEquationsSet,Err)
+  !Finish creating the equations set
+  CALL CMISSEquationsSetCreateFinish(EllipticEquationsSet,Err)
+
+  !Create the equations set dependent field variables using the field from the first (parabolic) equations set
+  CALL CMISSEquationsSetDependentCreateStart(EllipticEquationsSet,DependentFieldUserNumber,DependentField,Err)
+  !Finish the equations set dependent field variables
+  CALL CMISSEquationsSetDependentCreateFinish(EllipticEquationsSet,Err)
+  
+  !Create the equations set materials field variables using the field from the first (parabolic) equations set
+  CALL CMISSEquationsSetMaterialsCreateStart(EllipticEquationsSet,MaterialsFieldUserNumber,MaterialsField,Err)
+  !Finish the equations set materials field variables
+  CALL CMISSEquationsSetMaterialsCreateFinish(EllipticEquationsSet,Err)
+  
+  !Create the equations set source field variables using the field from the first (parabolic) equations set
+  CALL CMISSEquationsSetSourceCreateStart(EllipticEquationsSet,SourceFieldUserNumber,SourceField,Err)
+  !Finish the equations set source field variables
+  CALL CMISSEquationsSetSourceCreateFinish(EllipticEquationsSet,Err)
+
+  !Create the elliptic equations set equations
+  CALL CMISSEquationsTypeInitialise(Equations,Err)
+  CALL CMISSEquationsSetEquationsCreateStart(EllipticEquationsSet,Equations,Err)
+  !Set the equations matrices sparsity type
+  CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
+  !Set the equations set output
+  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
+  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsTimingOutput,Err)
+  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsMatrixOutput,Err)
+  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsElementMatrixOutput,Err)
+  !Finish the equations set equations
+  CALL CMISSEquationsSetEquationsCreateFinish(EllipticEquationsSet,Err)
+
+  !Start the creation of the elliptic equations set boundary conditions
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EllipticEquationsSet,BoundaryConditions,Err)
+  !Set the first node to 0.0 and the last node to 1.0
+  FirstNodeNumber=1
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)
+  ELSE
+    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
+  ENDIF
+  CALL CMISSDecompositionNodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
+  CALL CMISSDecompositionNodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
+  IF(FirstNodeDomain==ComputationalNodeNumber) THEN
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldVVariableType,1,FirstNodeNumber,1, &
+      & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+  ENDIF
+  IF(LastNodeDomain==ComputationalNodeNumber) THEN
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldVVariableType,1,LastNodeNumber,1, &
+      & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
+  ENDIF
+  !Finish the creation of the elliptic equations set boundary conditions
+  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EllipticEquationsSet,Err)
+  
   !Create the CellML environment for the source field
   CALL CMISSCellMLTypeInitialise(CellML,Err)
   CALL CMISSCellMLCreateStart(CellMLUserNumber,Region,CellML,Err)
@@ -327,51 +421,12 @@ PROGRAM MONODOMAINEXAMPLE
   !Generate the CellML
   CALL CMISSCellMLGenerate(CellML,Err)
 
-#define UP_TO_HERE
-  
-#ifdef UP_TO_HERE
-  !Create the equations set equations
-  CALL CMISSEquationsTypeInitialise(Equations,Err)
-  CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
-  !Set the equations matrices sparsity type
-  CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
-  !Set the equations set output
-  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
-  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsTimingOutput,Err)
-  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsMatrixOutput,Err)
-  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsElementMatrixOutput,Err)
-  !Finish the equations set equations
-  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
-
-  !Start the creation of the equations set boundary conditions
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-  !Set the first node to 0.0 and the last node to 1.0
-  FirstNodeNumber=1
-  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)
-  ELSE
-    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
-  ENDIF
-  CALL CMISSDecompositionNodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
-  CALL CMISSDecompositionNodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
-  IF(FirstNodeDomain==ComputationalNodeNumber) THEN
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
-      & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-  ENDIF
-  IF(LastNodeDomain==ComputationalNodeNumber) THEN
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,LastNodeNumber,1, &
-      & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
-  ENDIF
-  !Finish the creation of the equations set boundary conditions
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
-  
   !Start the creation of a problem.
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
   !Set the problem to be a standard Laplace problem
-  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemBioelectricsClass,CMISSProblemMonodomainEquationType, &
-    & CMISSProblemMonodomainGudunovSplitSubtype,Err)
+  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemBioelectricsClass,CMISSProblemBidomainEquationType, &
+    & CMISSProblemBidomainGudunovSplitSubtype,Err)
   !Finish the creation of a problem.
   CALL CMISSProblemCreateFinish(Problem,Err)
 
@@ -381,7 +436,11 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
   !Set the times
-  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,1.01_CMISSDP,0.01_CMISSDP,Err)
+  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,1.01_CMISSDP,0.1_CMISSDP,Err)
+  !Set the output type
+  !CALL CMISSControlLoopOutputTypeSet(ControlLoop,CMISSControlLoopNoOutput,Err)
+  CALL CMISSControlLoopOutputTypeSet(ControlLoop,CMISSControlLoopProgressOutput,Err)
+  !CALL CMISSControlLoopOutputTypeSet(ControlLoop,CMISSControlLoopTimingOutput,Err)
   !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
  
@@ -398,10 +457,18 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSSolverTypeInitialise(Solver,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,2,Solver,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
-  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
+  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
-  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
+  !Get the third (Elliptic) solver
+  CALL CMISSSolverTypeInitialise(Solver,Err)
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,3,Solver,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
+  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
   !Finish the creation of the problem solver
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
 
@@ -420,7 +487,7 @@ PROGRAM MONODOMAINEXAMPLE
 
   !Start the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
-  !Get the second solver  
+  !Get the second (parabolic) solver  
   !Get the solver equations
   CALL CMISSSolverTypeInitialise(Solver,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,2,Solver,Err)
@@ -430,21 +497,30 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
   !CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices,Err)  
   !Add in the equations set
-  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
+  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,ParabolicEquationsSet,ParabolicEquationsSetIndex,Err)
+  !Get the third (elliptic) solver  
+  !Get the solver equations
+  CALL CMISSSolverTypeInitialise(Solver,Err)
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,3,Solver,Err)
+  CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
+  CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
+  !Set the solver equations sparsity
+  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
+  !CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices,Err)  
+  !Add in the equations set
+  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EllipticEquationsSet,EllipticEquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
 
   !Solve the problem
   CALL CMISSProblemSolve(Problem,Err)
 
-#endif /* UP_TO_HERE */
-
   EXPORT_FIELD=.FALSE.
   IF(EXPORT_FIELD) THEN
     CALL CMISSFieldsTypeInitialise(Fields,Err)
     CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"MonodomainExample","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"MonodomainExample","FORTRAN",Err)
+    CALL CMISSFieldIONodesExport(Fields,"BidomainExample","FORTRAN",Err)
+    CALL CMISSFieldIOElementsExport(Fields,"BidomainExample","FORTRAN",Err)
     CALL CMISSFieldsTypeFinalise(Fields,Err)
   ENDIF
   
@@ -455,4 +531,4 @@ PROGRAM MONODOMAINEXAMPLE
   
   STOP
   
-END PROGRAM MONODOMAINEXAMPLE
+END PROGRAM BIDOMAINEXAMPLE
