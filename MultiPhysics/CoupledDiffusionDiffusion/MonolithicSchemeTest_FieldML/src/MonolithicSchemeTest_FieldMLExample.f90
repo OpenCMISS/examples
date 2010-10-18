@@ -387,7 +387,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   BASIS_XI_GAUSS_CONC_TWO=3 !4
   !Set output parameter
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
-  LINEAR_SOLVER_DIFFUSION_OUTPUT_TYPE=CMISSSolverSolverOutput
+  LINEAR_SOLVER_DIFFUSION_OUTPUT_TYPE=CMISSSolverSolverMatrixOutput
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
   EQUATIONS_DIFFUSION_OUTPUT=CMISSEquationsMatrixOutput
   EQUATIONS_DIFFUSION_TWO_OUTPUT=CMISSEquationsNoOutput
@@ -410,7 +410,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 
 
   icompartment =1_CMISSIntg
-  Ncompartments=4_CMISSIntg
+  Ncompartments=3_CMISSIntg
   !
   !================================================================================================================================
   !
@@ -769,19 +769,21 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   !
   ALLOCATE(CouplingCoeffs(Ncompartments,Ncompartments))
   IF(Ncompartments==2)THEN
-    CouplingCoeffs(1,1)=1.0E-02_CMISSDP
-    CouplingCoeffs(1,2)=-1.0E-02_CMISSDP
-    CouplingCoeffs(2,1)=-1.0E-02_CMISSDP
-    CouplingCoeffs(2,2)=1.0E-02_CMISSDP
+    CouplingCoeffs(1,1)=1.0E-04_CMISSDP
+!     CouplingCoeffs(1,2)=-1.0E-04_CMISSDP
+!     CouplingCoeffs(2,1)=-1.0E-04_CMISSDP
+    CouplingCoeffs(1,2)=1.0E-04_CMISSDP
+    CouplingCoeffs(2,1)=1.0E-04_CMISSDP
+    CouplingCoeffs(2,2)=1.0E-04_CMISSDP
   ELSE IF(Ncompartments==3)THEN
     CouplingCoeffs(1,1)=1.0E-02_CMISSDP
-    CouplingCoeffs(1,2)=-1.0E-02_CMISSDP
+    CouplingCoeffs(1,2)=1.0E-02_CMISSDP
     CouplingCoeffs(1,3)=0.0E-02_CMISSDP
-    CouplingCoeffs(2,1)=-1.0E-02_CMISSDP
+    CouplingCoeffs(2,1)=1.0E-02_CMISSDP
     CouplingCoeffs(2,2)=2.0E-02_CMISSDP
-    CouplingCoeffs(2,3)=-1.0E-02_CMISSDP
+    CouplingCoeffs(2,3)=1.0E-02_CMISSDP
     CouplingCoeffs(3,1)=0.0E-02_CMISSDP
-    CouplingCoeffs(3,2)=-1.0E-02_CMISSDP
+    CouplingCoeffs(3,2)=1.0E-02_CMISSDP
     CouplingCoeffs(3,3)=1.0E-02_CMISSDP
   ELSE IF(Ncompartments==4)THEN
     CouplingCoeffs(1,1)=0.0E-02_CMISSDP
@@ -916,17 +918,18 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
     ENDIF
    ENDIF
 
-!    IF(icompartment==2)THEN
-!     IF(INLET_WALL_NODES_DIFFUSION_TWO_FLAG) THEN
-!       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO
-!         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_TWO(NODE_COUNTER)
-!         CONDITION=CMISSBoundaryConditionFixed
-!           VALUE=0.0_CMISSDP
-!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(2),CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
-!             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
-!       ENDDO
-!     ENDIF
-!    ENDIF
+   IF(icompartment==2)THEN
+    IF(INLET_WALL_NODES_DIFFUSION_TWO_FLAG) THEN
+      DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO
+        NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_TWO(NODE_COUNTER)
+        CONDITION=CMISSBoundaryConditionFixed
+          VALUE=0.0_CMISSDP
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(2),CMISSFieldDelVDelNVariableType, &
+            & CMISSNoGlobalDerivative, & 
+            & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
+      ENDDO
+    ENDIF
+   ENDIF
 
 !    IF(icompartment==3)THEN
 !     IF(INLET_WALL_NODES_DIFFUSION_THREE_FLAG) THEN
