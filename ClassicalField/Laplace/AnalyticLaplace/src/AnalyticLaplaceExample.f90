@@ -523,6 +523,9 @@ CALL CMISSEquationsSetCreateStart(1,REGION,GEOMETRIC_FIELD,CMISSEquationsSetClas
     CALL CMISSSolverTypeInitialise(Solver,Err)
     CALL CMISSProblemSolversCreateStart(Problem,Err)
     CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
+    !Set solver to direct type
+    CALL CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearDirectSolveType,Err)
+    CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverMUMPSLibrary,Err)
     !Finish the creation of the problem solver
     CALL CMISSProblemSolversCreateFinish(Problem,Err)
 

@@ -300,6 +300,9 @@ PROGRAM LAPLACEEXAMPLE
   !Finish the equations set dependent field variables
   CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
 
+  !Initialise the field with an initial guess
+  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,0.5_CMISSDP,Err)
+
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
   CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
