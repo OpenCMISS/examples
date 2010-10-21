@@ -143,8 +143,8 @@ testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/
 nodes='1',ndiffDir='expected_results',outputDir='output')
 testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/TRI/quadratic/LEVEL_1",master42="ClassicalField/Laplace/42Master",
 nodes='1',ndiffDir='expected_results',outputDir='output')
-testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/TRI/cubic/LEVEL_1",master42="ClassicalField/Laplace/42Master",
-nodes='1',ndiffDir='expected_results',outputDir='output')
+#testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/TRI/cubic/LEVEL_1",master42="ClassicalField/Laplace/42Master",
+#nodes='1',ndiffDir='expected_results',outputDir='output')
 testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/HERMITE/LEVEL_1",master42="ClassicalField/Laplace/42Master",
 nodes='1',ndiffDir='expected_results',outputDir='output')
 # Laplace 3D
@@ -158,8 +158,8 @@ testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/3D/
 nodes='1',ndiffDir='expected_results',outputDir='output')
 testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/3D/TET/quadratic/LEVEL_1",master42="ClassicalField/Laplace/42Master",
 nodes='1',ndiffDir='expected_results',outputDir='output')
-testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/3D/TET/cubic/LEVEL_1",master42="ClassicalField/Laplace/42Master",
-nodes='1',ndiffDir='expected_results',outputDir='output')
+#testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/3D/TET/cubic/LEVEL_1",master42="ClassicalField/Laplace/42Master",
+#nodes='1',ndiffDir='expected_results',outputDir='output')
 testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/3D/HERMITE/LEVEL_1",master42="ClassicalField/Laplace/42Master",
 nodes='1',ndiffDir='expected_results',outputDir='output')
 # Analytic Laplace 2D

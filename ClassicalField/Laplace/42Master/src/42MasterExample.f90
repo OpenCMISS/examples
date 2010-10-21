@@ -65,6 +65,8 @@ PROGRAM LAPLACEEXAMPLE
   REAL(CMISSDP), PARAMETER :: WIDTH=2.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
 
+  LOGICAL, PARAMETER :: SOLVER_DIRECT_TYPE=.TRUE.
+
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
@@ -392,7 +394,9 @@ PROGRAM LAPLACEEXAMPLE
   CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
 
   !Initialise the field with an initial guess
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,0.5_CMISSDP,Err)
+  IF(.NOT. SOLVER_DIRECT_TYPE) THEN
+    CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,0.5_CMISSDP,Err)
+  ENDIF
 
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
@@ -452,10 +456,17 @@ PROGRAM LAPLACEEXAMPLE
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
   CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
-  !CALL CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearDirectSolveType,Err)
-  !CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverMUMPSLibrary,Err)
-  !CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverSuperLULibrary,Err)
-  !CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverPaStiXLibrary,Err)
+  IF(SOLVER_DIRECT_TYPE) THEN
+    CALL CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearDirectSolveType,Err)
+    CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverMUMPSLibrary,Err)
+    !CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverSuperLULibrary,Err)
+    !CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverPaStiXLibrary,Err)
+  ELSE
+    CALL CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearIterativeSolveType,Err)
+    CALL CMISSSolverLinearIterativeAbsoluteToleranceSet(Solver,1.0E-10_CMISSDP,Err)
+    CALL CMISSSolverLinearIterativeRelativeToleranceSet(Solver,1.0E-10_CMISSDP,Err)
+    CALL CMISSSolverLinearIterativeMaximumIterationsSet(Solver,100000,Err)
+  ENDIF
   !Finish the creation of the problem solver
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
 
