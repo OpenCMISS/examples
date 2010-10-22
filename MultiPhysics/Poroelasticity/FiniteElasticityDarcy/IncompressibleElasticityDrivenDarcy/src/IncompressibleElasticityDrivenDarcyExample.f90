@@ -222,6 +222,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   TYPE(CMISSSolverType) :: DynamicSolverDarcy
   TYPE(CMISSSolverType) :: LinearSolverDarcy
   TYPE(CMISSSolverType) :: LinearSolverMatProperties
+  TYPE(CMISSSolverType) :: LinearSolverSolid
   !Solver equations
   TYPE(CMISSSolverEquationsType) :: SolverEquationsDarcy
   TYPE(CMISSSolverEquationsType) :: SolverEquationsMatProperties
@@ -254,6 +255,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 
   INTEGER(CMISSIntg) :: TotalNumberOfSolidNodes
   INTEGER(CMISSIntg) :: SolidMeshComponenetNumber
+  INTEGER(CMISSIntg) :: SolidPressureMeshComponenetNumber
 
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometrySolidUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometrySolidNumberOfVariables=1
@@ -294,6 +296,8 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   TYPE(CMISSMeshElementsType) :: MeshElementsSolid
 
   !End - Program variables and types (finite elasticity part)
+
+  INTEGER(CMISSIntg) :: dummy_counter
 
   !
   !--------------------------------------------------------------------------------------------------------------------------------
@@ -363,19 +367,19 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   INITIAL_FIELD_MAT_PROPERTIES(1)=0.0_CMISSDP
   INITIAL_FIELD_MAT_PROPERTIES(2)=0.0_CMISSDP
   INITIAL_FIELD_MAT_PROPERTIES(3)=0.0_CMISSDP
-  INITIAL_FIELD_SOLID(1)=1.0_CMISSDP
-  INITIAL_FIELD_SOLID(2)=1.0_CMISSDP
-  INITIAL_FIELD_SOLID(3)=1.0_CMISSDP
-  INITIAL_FIELD_SOLID(4)=1.0_CMISSDP
+!   INITIAL_FIELD_SOLID(1)=1.0_CMISSDP
+!   INITIAL_FIELD_SOLID(2)=1.0_CMISSDP
+!   INITIAL_FIELD_SOLID(3)=1.0_CMISSDP
+!   INITIAL_FIELD_SOLID(4)=1.0_CMISSDP
   !Set material parameters
   POROSITY_PARAM_DARCY=0.1_CMISSDP
   PERM_OVER_VIS_PARAM_DARCY=1.0e-1_CMISSDP
   POROSITY_PARAM_MAT_PROPERTIES=POROSITY_PARAM_DARCY
   PERM_OVER_VIS_PARAM_MAT_PROPERTIES=PERM_OVER_VIS_PARAM_DARCY
   !Set number of Gauss points (Mind that also material field may be interpolated)
-  BASIS_XI_GAUSS_GEOMETRY=4 !3
-  BASIS_XI_GAUSS_VELOCITY=4 !3
-  BASIS_XI_GAUSS_PRESSURE=4 !3
+  BASIS_XI_GAUSS_GEOMETRY=3 !4
+  BASIS_XI_GAUSS_VELOCITY=3 !4
+  BASIS_XI_GAUSS_PRESSURE=3 !4
   !Set output parameter
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
   LINEAR_SOLVER_MAT_PROPERTIES_OUTPUT_TYPE=CMISSSolverProgressOutput
@@ -387,14 +391,15 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 
   !Set time parameter
   DYNAMIC_SOLVER_DARCY_START_TIME=0.0_CMISSDP
-  DYNAMIC_SOLVER_DARCY_STOP_TIME=0.03_CMISSDP
+!   DYNAMIC_SOLVER_DARCY_STOP_TIME=0.03_CMISSDP
   DYNAMIC_SOLVER_DARCY_TIME_INCREMENT=1.0e-2_CMISSDP
+  DYNAMIC_SOLVER_DARCY_STOP_TIME=1_CMISSIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
   DYNAMIC_SOLVER_DARCY_THETA=1.0_CMISSDP !2.0_CMISSDP/3.0_CMISSDP
   !Set result output parameter
   DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY=1
   !Set solver parameters
-  LINEAR_SOLVER_MAT_PROPERTIES_DIRECT_FLAG=.FALSE.
-  LINEAR_SOLVER_DARCY_DIRECT_FLAG=.FALSE.
+  LINEAR_SOLVER_MAT_PROPERTIES_DIRECT_FLAG=.TRUE.
+  LINEAR_SOLVER_DARCY_DIRECT_FLAG=.TRUE.
   RELATIVE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-05_CMISSDP
   ABSOLUTE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-10_CMISSDP
   DIVERGENCE_TOLERANCE=1.0E5_CMISSDP !default: 1.0E5
@@ -420,7 +425,10 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 !   DIAG_ROUTINE_LIST(1)="DARCY_EQUATION_PRE_SOLVE_GET_SOLID_DISPLACEMENT"
 !   DIAG_ROUTINE_LIST(2)="DARCY_EQUATION_PRE_SOLVE_ALE_UPDATE_MESH"
 !   DIAG_ROUTINE_LIST(1)="DARCY_EQUATION_PRE_SOLVE_GET_SOLID_DISPLACEMENT"
-  DIAG_ROUTINE_LIST(1)="DARCY_EQUATION_PRE_SOLVE_UPDATE_BOUNDARY_CONDITIONS"
+!   DIAG_ROUTINE_LIST(1)="DARCY_EQUATION_PRE_SOLVE_UPDATE_BOUNDARY_CONDITIONS"
+  DIAG_ROUTINE_LIST(1)="FINITE_ELASTICITY_FINITE_ELEMENT_RESIDUAL_EVALUATE"
+!   DIAG_ROUTINE_LIST(2)="FINITE_ELASTICITY_GAUSS_CAUCHY_TENSOR"
+!   DIAG_ROUTINE_LIST(3)="EVALUATE_CHAPELLE_PIOLA_TENSOR_ADDITION"
 !   DIAG_ROUTINE_LIST(5)="DARCY_EQUATION_PRE_SOLVE_MAT_PROPERTIES"
 !   DIAG_ROUTINE_LIST(6)="GALERKIN_PROJECTION_FINITE_ELEMENT_CALCULATE"
 !   DIAG_ROUTINE_LIST(7)="FINITE_ELASTICITY_FINITE_ELEMENT_JACOBIAN_EVALUATE"
@@ -616,6 +624,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   MESH_COMPONENT_NUMBER_VELOCITY=1
   MESH_COMPONENT_NUMBER_PRESSURE=1
   SolidMeshComponenetNumber = 1
+  SolidPressureMeshComponenetNumber = 1
   !Specify spatial mesh component
   CALL CMISSMeshElementsCreateStart(Mesh,MESH_COMPONENT_NUMBER_GEOMETRY,BasisGeometry,MeshElementsGeometry,Err)
   DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
@@ -657,6 +666,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 !   !Simply inherit ...
   MeshElementsSolid=MeshElementsGeometry
   SolidMeshComponenetNumber=MESH_COMPONENT_NUMBER_GEOMETRY
+  SolidPressureMeshComponenetNumber=MESH_COMPONENT_NUMBER_PRESSURE
 
 
   !... or specify:
@@ -833,7 +843,9 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 
   !Set material parameters
   CALL CMISSFieldComponentValuesInitialise(MaterialFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1.0_CMISSDP,Err)
+!   CALL CMISSFieldComponentValuesInitialise(MaterialFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2.0e3_CMISSDP,Err)
   CALL CMISSFieldComponentValuesInitialise(MaterialFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,1.0_CMISSDP,Err)
+!   CALL CMISSFieldComponentValuesInitialise(MaterialFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,33.0_CMISSDP,Err)
 
   CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetSolid,FieldMaterialSolidUserNumber,MaterialFieldSolid,Err)
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetSolid,Err)
@@ -893,13 +905,20 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,2,SolidMeshComponenetNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,3,SolidMeshComponenetNumber,Err)
   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,4,CMISSFieldNodeBasedInterpolation,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,4,SolidMeshComponenetNumber,Err)
+!   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,4,CMISSFieldElementBasedInterpolation,Err)
+!   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,4,SolidMeshComponenetNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,4,SolidPressureMeshComponenetNumber,Err)
+  !
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,1,SolidMeshComponenetNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,2,SolidMeshComponenetNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,3,SolidMeshComponenetNumber,Err)
   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,4, &
     & CMISSFieldNodeBasedInterpolation,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,4,SolidMeshComponenetNumber,Err)
+!   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,4, &
+!     & CMISSFieldElementBasedInterpolation,Err)
+!   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,4,SolidMeshComponenetNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,4,SolidPressureMeshComponenetNumber, &
+    & Err)
 
   !For this equation type, MESH_COMPONENT_NUMBER_PRESSURE is actually the mass increase component as the pressure is taken from the solid equations
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldVVariableType,1,MESH_COMPONENT_NUMBER_VELOCITY,Err)
@@ -917,11 +936,11 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   CALL CMISSEquationsSetDependentCreateStart(EquationsSetSolid,FieldDependentSolidUserNumber,DependentFieldSolid,Err)
   CALL CMISSEquationsSetDependentCreateFinish(EquationsSetSolid,Err)
 
-  !Initialise dependent field (solid displacement and pressure)
-  DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS !+1
-    CALL CMISSFieldComponentValuesInitialise(DependentFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-      & COMPONENT_NUMBER,INITIAL_FIELD_SOLID(COMPONENT_NUMBER),Err)
-  ENDDO
+!   !Initialise dependent field (solid displacement and pressure)
+!   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS !+1
+!     CALL CMISSFieldComponentValuesInitialise(DependentFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+!       & COMPONENT_NUMBER,INITIAL_FIELD_SOLID(COMPONENT_NUMBER),Err)
+!   ENDDO
 
   ! end Solid
   !--------------------------------------------------------------------------------------------------------------------------------
@@ -1055,7 +1074,8 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
     & 2,DependentFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,Err)
   CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
     & 3,DependentFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,Err)
-  CALL CMISSFieldComponentValuesInitialise(DependentFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,-8.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(DependentFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,0.0_CMISSDP, &
+    & Err)
 
   ! end Solid
   !--------------------------------------------------------------------------------------------------------------------------------
@@ -1073,6 +1093,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !--- BCs on normal velocity only
   CONDITION = CMISSBoundaryConditionMovedWall
 
+  dummy_counter = 0_CMISSIntg
   IF( CM%D==2_CMISSIntg ) THEN !CM%D = number of dimensions, ie 2D
     DO NODE_NUMBER=1_CMISSIntg,NUMBER_OF_NODES_GEOMETRY
       COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
@@ -1113,8 +1134,9 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
       COORD_Z = CM%N(NODE_NUMBER,3_CMISSIntg)
 
       IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
+        dummy_counter = dummy_counter + 1_CMISSIntg
         !x-velocity: F L U I D ( V Variable type )
-        VALUE = 1.0e2_CMISSDP
+        VALUE = 11.0_CMISSDP
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
 !           & NODE_NUMBER,4_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err) !BC on pressure component
 !           & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionMovedWall,VALUE,Err) !inflow
@@ -1129,6 +1151,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
       END IF
       !
       IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
+        dummy_counter = dummy_counter + 1_CMISSIntg
         !x-velocity: F L U I D
         VALUE = 10.0_CMISSDP
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
@@ -1143,6 +1166,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
       END IF
       !
       IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
+        dummy_counter = dummy_counter + 1_CMISSIntg
         !y-velocity: F L U I D
         VALUE = 0.0_CMISSDP
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
@@ -1157,6 +1181,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
       END IF
       !
       IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
+        dummy_counter = dummy_counter + 1_CMISSIntg
         !y-velocity: F L U I D
         VALUE = 0.0_CMISSDP
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
@@ -1169,6 +1194,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
       END IF
       !
       IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) ) THEN
+        dummy_counter = dummy_counter + 1_CMISSIntg
         !z-velocity: F L U I D
         VALUE = 0.0_CMISSDP
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
@@ -1181,6 +1207,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
       END IF
       !
       IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) THEN
+        dummy_counter = dummy_counter + 1_CMISSIntg
         !z-velocity: F L U I D
         VALUE = 0.0_CMISSDP
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
@@ -1257,7 +1284,8 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   CALL CMISSProblemSolverGet(Problem,(/ControlLoopSubiterationNumber,ControlLoopSolidNumber,CMISSControlLoopNode/), &
     & SolverSolidIndex,SolverSolid,Err)
   CALL CMISSSolverOutputTypeSet(SolverSolid,CMISSSolverProgressOutput,Err)
-  CALL CMISSSolverNewtonJacobianCalculationTypeSet(SolverSolid,CMISSSolverNewtonJacobianFDCalculated,Err)
+!   CALL CMISSSolverNewtonJacobianCalculationTypeSet(SolverSolid,CMISSSolverNewtonJacobianFDCalculated,Err)
+  CALL CMISSSolverNewtonJacobianCalculationTypeSet(SolverSolid,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
 
 !   CALL CMISSSolverNonLinearTypeSet(SolverSolid,CMISSSolverNonlinearNewton,Err)
 !   CALL CMISSSolverLibraryTypeSet(SolverSolid,CMISSSolverPETScLibrary,Err)
@@ -1373,6 +1401,8 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !
 
   !OUTPUT
+
+  WRITE(*,*)'dummy_counter = ',dummy_counter
 
   EXPORT_FIELD_IO=.FALSE.
   IF(EXPORT_FIELD_IO) THEN
