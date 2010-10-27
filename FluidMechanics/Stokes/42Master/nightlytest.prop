@@ -1,0 +1,5 @@
+42TestingPointsPATH=SinglePhysics/LinearProblems/StaticProblems/Stokes/
+TestingPoint.0=2D/QUAD/CubicVelocityLinearPressure/LEVEL_1,-density 1.0 -viscosity 1.0 -velocity 1.0 0.0 0.0 -dynamic FALSE -starttime 0.0 -stoptime 0.0 -timeincrement 0.0 -ALE FALSE -analytic FALSE -directsolver TRUE,expected_results,output
+TestingPoint.1=2D/QUAD/CubicVelocityLinearPressure/LEVEL_2,-density 1.0 -viscosity 1.0 -velocity 0.0 1.0 0.0 -dynamic FALSE -starttime 0.0 -stoptime 0.0 -timeincrement 0.0 -ALE FALSE -analytic TRUE -directsolver TRUE,expected_results,output
+TestingPoint.2=2D/QUAD/CubicVelocityQuadraticPressure/LEVEL_1,-density 1.0 -viscosity 1.0 -velocity 1.0 0.0 0.0 -dynamic FALSE -starttime 0.0 -stoptime 0.0 -timeincrement 0.0 -ALE FALSE -analytic FALSE -directsolver TRUE,expected_results,output
+TestingPoint.3=2D/QUAD/CubicVelocityQuadraticPressure/LEVEL_2,-density 1.0 -viscosity 1.0 -velocity 0.0 1.0 0.0 -dynamic FALSE -starttime 0.0 -stoptime 0.0 -timeincrement 0.0 -ALE FALSE -analytic TRUE -directsolver TRUE,expected_results,output

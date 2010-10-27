@@ -1,0 +1,5 @@
+42TestingPointsPATH=SinglePhysics/NonlinearProblems/DynamicProblems/NavierStokes/
+TestingPoint.0=2D/QUAD/CubicVelocityLinearPressure/LEVEL_1,-density 1.0 -viscosity 1.0 -velocity 1.0 0.0 0.0 -dynamic TRUE -starttime 0.0 -stoptime 3.01 -timeincrement 1.0 -ALE FALSE -analytic FALSE -directsolver TRUE,expected_results,output
+TestingPoint.1=2D/QUAD/CubicVelocityLinearPressure/LEVEL_2,-density 1.0 -viscosity 1.0 -velocity 0.0 1.0 0.0 -dynamic FALSE -starttime 0.0 -stoptime 0.0 -timeincrement 0.0 -ALE FALSE -analytic TRUE -directsolver TRUE
+TestingPoint.2=2D/QUAD/CubicVelocityQuadraticPressure/LEVEL_1,-density 1.0 -viscosity 1.0 -velocity 1.0 0.0 0.0 -dynamic TRUE -starttime 0.0 -stoptime 3.01 -timeincrement 1.0 -ALE FALSE -analytic FALSE -directsolver TRUE,expected_results,output
+TestingPoint.3=2D/QUAD/CubicVelocityQuadraticPressure/LEVEL_2,-density 1.0 -viscosity 1.0 -velocity 0.0 1.0 0.0 -dynamic TRUE -starttime 0.0 -stoptime 0.0301 -timeincrement 0.01 -ALE FALSE -analytic TRUE -directsolver TRUE
