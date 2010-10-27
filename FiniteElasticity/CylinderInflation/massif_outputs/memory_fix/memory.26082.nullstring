@@ -1,0 +1,1360 @@
+--------------------------------------------------------------------------------
+Command:            ./bin/x86_64-linux/mpich2/gnu/CylinderInflationExample
+Massif arguments:   (none)
+ms_print arguments: massif.out.26082
+--------------------------------------------------------------------------------
+
+
+    GB
+2.569^                                                                       #
+     |                                                                    @@@#
+     |                                                                  @@@@@#
+     |                                                              :@@@@@@@@#
+     |                                                           @@@:@@@@@@@@#
+     |                                                        @@@@@@:@@@@@@@@#
+     |                                                     @@@@@@@@@:@@@@@@@@#
+     |                                                 @@@@@@@@@@@@@:@@@@@@@@#
+     |                                              @@@@ @ @@@@@@@@@:@@@@@@@@#
+     |                                          @@@@@ @@ @ @@@@@@@@@:@@@@@@@@#
+     |                                       @@@@@@ @ @@ @ @@@@@@@@@:@@@@@@@@#
+     |                                    @@@@ @@@@ @ @@ @ @@@@@@@@@:@@@@@@@@#
+     |                                @@@@@@@@ @@@@ @ @@ @ @@@@@@@@@:@@@@@@@@#
+     |                              @@@@ @@@@@ @@@@ @ @@ @ @@@@@@@@@:@@@@@@@@#
+     |                          @@@@@@@@ @@@@@ @@@@ @ @@ @ @@@@@@@@@:@@@@@@@@#
+     |                       @@@@ @ @@@@ @@@@@ @@@@ @ @@ @ @@@@@@@@@:@@@@@@@@#
+     |                    @@@@ @@ @ @@@@ @@@@@ @@@@ @ @@ @ @@@@@@@@@:@@@@@@@@#
+     |                 @@@@@@@ @@ @ @@@@ @@@@@ @@@@ @ @@ @ @@@@@@@@@:@@@@@@@@#
+     |             @@@@@@ @@@@ @@ @ @@@@ @@@@@ @@@@ @ @@ @ @@@@@@@@@:@@@@@@@@#
+     |          @@@@@ @@@ @@@@ @@ @ @@@@ @@@@@ @@@@ @ @@ @ @@@@@@@@@:@@@@@@@@#
+   0 +----------------------------------------------------------------------->Gi
+     0                                                                   113.5
+
+Number of snapshots: 64
+ Detailed snapshots: [2, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63 (peak)]
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+  0              0                0                0             0            0
+  1  1,618,403,472       26,105,608       11,644,433    14,461,175            0
+  2  3,682,521,338       34,739,344       12,010,767    22,728,577            0
+34.57% (12,010,767B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->24.15% (8,391,248B) 0x14DE100: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| ->24.15% (8,391,248B) 0x14CD2F5: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|   ->24.15% (8,391,248B) 0x14D46DF: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|     ->24.15% (8,391,248B) 0x14A883F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|       ->24.15% (8,391,248B) 0x14767D2: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|         ->24.15% (8,391,248B) 0x1476335: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|           ->24.15% (8,391,248B) 0x148FFCA: mpi_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|             ->24.15% (8,391,248B) 0x604BE2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+|               ->24.15% (8,391,248B) 0x5F6948: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+|                 ->24.15% (8,391,248B) 0x4DDAC1: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+|                   ->24.15% (8,391,248B) 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                     ->24.15% (8,391,248B) 0x14DE6E8: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                       
+->05.06% (1,759,060B) in 558 places, all below massif's threshold (01.00%)
+| 
+->02.81% (975,506B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->02.81% (975,323B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->02.81% (975,323B) in 660 places, all below massif's threshold (01.00%)
+| |   
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->01.34% (466,393B) 0xC6D088: PetscMallocAlign(unsigned long, int, char const*, char const*, char const*, void**) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| ->01.13% (393,498B) 0xD134A7: MatSeqAIJSetPreallocation_SeqAIJ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| | ->01.13% (393,498B) 0xD14CCA: MatSeqAIJSetPreallocation(_p_Mat*, int, int const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| |   ->01.13% (393,498B) 0xD5DCBC: MatCreateMPIAIJ(int, int, int, int, int, int, int const*, int, int const*, _p_Mat**) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| |     ->01.13% (393,498B) 0xC1122E: matcreatempiaij_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| |       ->01.13% (393,498B) 0x5FB7F1: __cmiss_petsc_MOD_petsc_matcreatempiaij (cmiss_petsc.f90:2267)
+| |         ->01.13% (393,498B) 0x6820D7: __distributed_matrix_vector_MOD_distributed_matrix_petsc_create_finish (distributed_matrix_vector.f90:1947)
+| |           ->01.13% (393,498B) 0x683727: __distributed_matrix_vector_MOD_distributed_matrix_create_finish (distributed_matrix_vector.f90:621)
+| |             ->01.13% (393,498B) 0x575145: __solver_matrices_routines_MOD_solver_matrices_create_finish (solver_matrices_routines.f90:154)
+| |               ->01.13% (393,498B) 0x51A243: __solver_routines_MOD_solver_newton_linesearch_create_finish (solver_routines.f90:10947)
+| |                 ->01.13% (393,498B) 0x52290A: __solver_routines_MOD_solver_newton_create_finish (solver_routines.f90:10369)
+| |                   ->01.13% (393,498B) 0x522C8A: __solver_routines_MOD_solver_nonlinear_create_finish (solver_routines.f90:12522)
+| |                     ->01.13% (393,498B) 0x5254F3: __solver_routines_MOD_solver_equations_create_finish (solver_routines.f90:4648)
+| |                       ->01.13% (393,498B) 0x93379B: __finite_elasticity_routines_MOD_finite_elasticity_problem_setup (finite_elasticity_routines.f90:3065)
+| |                         ->01.13% (393,498B) 0x6B689E: __elasticity_routines_MOD_elasticity_problem_setup (elasticity_routines.f90:374)
+| |                           ->01.13% (393,498B) 0x4DF9EA: __problem_routines_MOD_problem_setup (problem_routines.f90:895)
+| |                             ->01.13% (393,498B) 0x4E92E2: __problem_routines_MOD_problem_solver_equations_create_finish (problem_routines.f90:2149)
+| |                               ->01.13% (393,498B) 0x4BF5FB: __opencmiss_MOD_cmissproblemsolverequationscreatefinishobj (opencmiss.f90:35383)
+| |                                 ->01.13% (393,498B) 0x40903D: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| |                                   ->01.13% (393,498B) 0x14DE6E8: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| |                                     
+| ->00.21% (72,895B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->01.20% (418,560B) 0xAA8641: __matrix_vector_MOD_matrix_create_finish (matrix_vector.f90:557)
+  ->01.20% (418,560B) 0x668B7C: __distributed_matrix_vector_MOD_distributed_matrix_cmiss_create_finish (distributed_matrix_vector.f90:489)
+    ->01.20% (418,560B) 0x68365F: __distributed_matrix_vector_MOD_distributed_matrix_create_finish (distributed_matrix_vector.f90:619)
+      ->01.20% (418,560B) 0x6F08FF: __equations_matrices_routines_MOD_equations_matrices_create_finish (equations_matrices_routines.f90:393)
+        ->01.20% (418,560B) 0x92EA70: __finite_elasticity_routines_MOD_finite_elasticity_equations_set_setup (finite_elasticity_routines.f90:2776)
+          ->01.20% (418,560B) 0x6B5E16: __elasticity_routines_MOD_elasticity_equations_set_setup (elasticity_routines.f90:256)
+            ->01.20% (418,560B) 0x7000FC: __equations_set_routines_MOD_equations_set_setup (equations_set_routines.f90:3548)
+              ->01.20% (418,560B) 0x705255: __equations_set_routines_MOD_equations_set_equations_create_finish (equations_set_routines.f90:3603)
+                ->01.20% (418,560B) 0x44930E: __opencmiss_MOD_cmissequationssetequationscreatefinishobj (opencmiss.f90:18714)
+                  ->01.20% (418,560B) 0x408DDA: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                    ->01.20% (418,560B) 0x14DE6E8: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                      
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+  3  5,797,052,182       43,554,080       12,370,206    31,183,874            0
+  4  8,650,841,287       57,991,664       12,973,012    45,018,652            0
+  5 11,268,159,363       72,525,912       13,578,603    58,947,309            0
+  6 12,694,354,342       77,132,160       13,777,125    63,355,035            0
+17.86% (13,777,125B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->10.88% (8,391,248B) 0x14DE100: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| ->10.88% (8,391,248B) 0x14CD2F5: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|   ->10.88% (8,391,248B) 0x14D46DF: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|     ->10.88% (8,391,248B) 0x14A883F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|       ->10.88% (8,391,248B) 0x14767D2: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|         ->10.88% (8,391,248B) 0x1476335: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|           ->10.88% (8,391,248B) 0x148FFCA: mpi_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|             ->10.88% (8,391,248B) 0x604BE2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+|               ->10.88% (8,391,248B) 0x5F6948: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+|                 ->10.88% (8,391,248B) 0x4DDAC1: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+|                   ->10.88% (8,391,248B) 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                     ->10.88% (8,391,248B) 0x14DE6E8: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                       
+->03.55% (2,741,864B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->03.55% (2,741,681B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->02.46% (1,898,135B) in 659 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.09% (843,546B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| |   ->01.09% (843,546B) in 7 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->03.43% (2,644,013B) in 560 places, all below massif's threshold (01.00%)
+  
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+  7 14,650,671,747       99,237,160       15,559,203    83,677,957            0
+15.68% (15,559,203B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->08.46% (8,391,248B) 0x14DE100: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| ->08.46% (8,391,248B) 0x14CD2F5: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|   ->08.46% (8,391,248B) 0x14D46DF: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|     ->08.46% (8,391,248B) 0x14A883F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|       ->08.46% (8,391,248B) 0x14767D2: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|         ->08.46% (8,391,248B) 0x1476335: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|           ->08.46% (8,391,248B) 0x148FFCA: mpi_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|             ->08.46% (8,391,248B) 0x604BE2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+|               ->08.46% (8,391,248B) 0x5F6948: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+|                 ->08.46% (8,391,248B) 0x4DDAC1: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+|                   ->08.46% (8,391,248B) 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                     ->08.46% (8,391,248B) 0x14DE6E8: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                       
+->03.65% (3,625,324B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->03.65% (3,625,141B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->02.54% (2,516,581B) in 670 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.12% (1,108,560B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| |   ->01.12% (1,108,560B) in 7 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->03.57% (3,542,631B) in 667 places, all below massif's threshold (01.00%)
+  
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+  8 17,804,185,782      176,810,280       18,791,391   158,018,889            0
+10.63% (18,791,391B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.75% (8,391,248B) 0x14DE100: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| ->04.75% (8,391,248B) 0x14CD2F5: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|   ->04.75% (8,391,248B) 0x14D46DF: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|     ->04.75% (8,391,248B) 0x14A883F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|       ->04.75% (8,391,248B) 0x14767D2: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|         ->04.75% (8,391,248B) 0x1476335: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|           ->04.75% (8,391,248B) 0x148FFCA: mpi_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|             ->04.75% (8,391,248B) 0x604BE2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+|               ->04.75% (8,391,248B) 0x5F6948: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+|                 ->04.75% (8,391,248B) 0x4DDAC1: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+|                   ->04.75% (8,391,248B) 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                     ->04.75% (8,391,248B) 0x14DE6E8: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                       
+->03.88% (6,857,512B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->03.88% (6,857,329B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.53% (2,700,603B) in 669 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.24% (2,193,534B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.24% (2,193,534B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.11% (1,963,192B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.11% (1,963,192B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->02.00% (3,542,631B) in 667 places, all below massif's threshold (01.00%)
+  
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+  9 20,020,428,504      231,463,288       21,068,577   210,394,711            0
+09.10% (21,068,577B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->03.95% (9,134,698B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->03.95% (9,134,515B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (3,595,365B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.26% (2,921,166B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.26% (2,921,166B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.13% (2,617,984B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.13% (2,617,984B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->03.63% (8,391,248B) 0x14DE100: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| ->03.63% (8,391,248B) 0x14CD2F5: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|   ->03.63% (8,391,248B) 0x14D46DF: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|     ->03.63% (8,391,248B) 0x14A883F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|       ->03.63% (8,391,248B) 0x14767D2: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|         ->03.63% (8,391,248B) 0x1476335: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|           ->03.63% (8,391,248B) 0x148FFCA: mpi_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|             ->03.63% (8,391,248B) 0x604BE2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+|               ->03.63% (8,391,248B) 0x5F6948: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+|                 ->03.63% (8,391,248B) 0x4DDAC1: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+|                   ->03.63% (8,391,248B) 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                     ->03.63% (8,391,248B) 0x14DE6E8: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                       
+->01.53% (3,542,631B) in 667 places, all below massif's threshold (01.00%)
+  
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 10 22,923,488,905      302,833,512       24,042,315   278,791,197            0
+07.94% (24,042,315B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.00% (12,108,436B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.00% (12,108,253B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (4,683,467B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.29% (3,917,778B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.29% (3,917,778B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.16% (3,507,008B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.16% (3,507,008B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->02.77% (8,391,248B) 0x14DE100: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| ->02.77% (8,391,248B) 0x14CD2F5: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|   ->02.77% (8,391,248B) 0x14D46DF: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|     ->02.77% (8,391,248B) 0x14A883F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|       ->02.77% (8,391,248B) 0x14767D2: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|         ->02.77% (8,391,248B) 0x1476335: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|           ->02.77% (8,391,248B) 0x148FFCA: mpi_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|             ->02.77% (8,391,248B) 0x604BE2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+|               ->02.77% (8,391,248B) 0x5F6948: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+|                 ->02.77% (8,391,248B) 0x4DDAC1: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+|                   ->02.77% (8,391,248B) 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                     ->02.77% (8,391,248B) 0x14DE6E8: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                       
+->01.17% (3,542,631B) in 667 places, all below massif's threshold (01.00%)
+  
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 11 24,630,767,406      344,670,800       25,781,402   318,889,398            0
+07.48% (25,781,402B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.02% (13,851,771B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.02% (13,851,588B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (5,352,488B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.30% (4,481,424B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.30% (4,481,424B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.17% (4,017,676B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.17% (4,017,676B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->02.43% (8,391,248B) 0x14DE100: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| ->02.43% (8,391,248B) 0x14CD2F5: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|   ->02.43% (8,391,248B) 0x14D46DF: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|     ->02.43% (8,391,248B) 0x14A883F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|       ->02.43% (8,391,248B) 0x14767D2: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|         ->02.43% (8,391,248B) 0x1476335: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|           ->02.43% (8,391,248B) 0x148FFCA: mpi_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|             ->02.43% (8,391,248B) 0x604BE2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+|               ->02.43% (8,391,248B) 0x5F6948: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+|                 ->02.43% (8,391,248B) 0x4DDAC1: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+|                   ->02.43% (8,391,248B) 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                     ->02.43% (8,391,248B) 0x14DE6E8: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                       
+->01.03% (3,538,383B) in 667 places, all below massif's threshold (01.00%)
+  
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 12 27,218,640,582      408,217,336       28,427,670   379,789,666            0
+06.96% (28,427,670B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.04% (16,499,571B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.04% (16,499,388B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (6,319,458B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.31% (5,367,378B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.31% (5,367,378B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.18% (4,812,552B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.18% (4,812,552B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->02.06% (8,391,248B) 0x14DE100: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| ->02.06% (8,391,248B) 0x14CD2F5: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|   ->02.06% (8,391,248B) 0x14D46DF: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|     ->02.06% (8,391,248B) 0x14A883F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|       ->02.06% (8,391,248B) 0x14767D2: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|         ->02.06% (8,391,248B) 0x1476335: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|           ->02.06% (8,391,248B) 0x148FFCA: mpi_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|             ->02.06% (8,391,248B) 0x604BE2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+|               ->02.06% (8,391,248B) 0x5F6948: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+|                 ->02.06% (8,391,248B) 0x4DDAC1: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+|                   ->02.06% (8,391,248B) 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                     ->02.06% (8,391,248B) 0x14DE6E8: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                       
+->00.87% (3,536,851B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 13 29,886,491,357      473,947,696       31,170,623   442,777,073            0
+06.58% (31,170,623B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.06% (19,238,128B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.06% (19,237,945B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (7,355,441B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.32% (6,264,816B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.32% (6,264,816B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.19% (5,617,688B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.19% (5,617,688B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->01.77% (8,391,248B) 0x14DE100: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| ->01.77% (8,391,248B) 0x14CD2F5: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|   ->01.77% (8,391,248B) 0x14D46DF: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|     ->01.77% (8,391,248B) 0x14A883F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|       ->01.77% (8,391,248B) 0x14767D2: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|         ->01.77% (8,391,248B) 0x1476335: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|           ->01.77% (8,391,248B) 0x148FFCA: mpi_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|             ->01.77% (8,391,248B) 0x604BE2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+|               ->01.77% (8,391,248B) 0x5F6948: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+|                 ->01.77% (8,391,248B) 0x4DDAC1: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+|                   ->01.77% (8,391,248B) 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                     ->01.77% (8,391,248B) 0x14DE6E8: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                       
+->00.75% (3,541,247B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 14 31,471,583,537      513,226,000       32,808,534   480,417,466            0
+06.39% (32,808,534B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.07% (20,874,655B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.07% (20,874,472B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (7,930,572B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.33% (6,827,256B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.33% (6,827,256B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.19% (6,116,644B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.19% (6,116,644B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->01.64% (8,391,248B) 0x14DE100: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| ->01.64% (8,391,248B) 0x14CD2F5: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|   ->01.64% (8,391,248B) 0x14D46DF: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|     ->01.64% (8,391,248B) 0x14A883F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|       ->01.64% (8,391,248B) 0x14767D2: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|         ->01.64% (8,391,248B) 0x1476335: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|           ->01.64% (8,391,248B) 0x148FFCA: mpi_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|             ->01.64% (8,391,248B) 0x604BE2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+|               ->01.64% (8,391,248B) 0x5F6948: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+|                 ->01.64% (8,391,248B) 0x4DDAC1: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+|                   ->01.64% (8,391,248B) 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                     ->01.64% (8,391,248B) 0x14DE6E8: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                       
+->00.69% (3,542,631B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 15 34,119,969,803      578,328,856       35,521,105   542,807,751            0
+06.14% (35,521,105B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.08% (23,587,226B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.08% (23,587,043B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.54% (8,931,929B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.34% (7,729,050B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.34% (7,729,050B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.20% (6,926,064B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.20% (6,926,064B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->01.45% (8,391,248B) 0x14DE100: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| ->01.45% (8,391,248B) 0x14CD2F5: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|   ->01.45% (8,391,248B) 0x14D46DF: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|     ->01.45% (8,391,248B) 0x14A883F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|       ->01.45% (8,391,248B) 0x14767D2: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|         ->01.45% (8,391,248B) 0x1476335: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|           ->01.45% (8,391,248B) 0x148FFCA: mpi_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|             ->01.45% (8,391,248B) 0x604BE2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+|               ->01.45% (8,391,248B) 0x5F6948: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+|                 ->01.45% (8,391,248B) 0x4DDAC1: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+|                   ->01.45% (8,391,248B) 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                     ->01.45% (8,391,248B) 0x14DE6E8: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                       
+->00.61% (3,542,631B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 16 36,075,117,048      626,253,528       37,513,459   588,740,069            0
+05.99% (37,513,459B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.09% (25,584,244B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.09% (25,584,061B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (9,685,116B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.34% (8,384,862B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.34% (8,384,862B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.20% (7,514,083B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.20% (7,514,083B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->01.34% (8,391,248B) 0x14DE100: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| ->01.34% (8,391,248B) 0x14CD2F5: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|   ->01.34% (8,391,248B) 0x14D46DF: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|     ->01.34% (8,391,248B) 0x14A883F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|       ->01.34% (8,391,248B) 0x14767D2: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|         ->01.34% (8,391,248B) 0x1476335: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|           ->01.34% (8,391,248B) 0x148FFCA: mpi_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|             ->01.34% (8,391,248B) 0x604BE2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+|               ->01.34% (8,391,248B) 0x5F6948: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+|                 ->01.34% (8,391,248B) 0x4DDAC1: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+|                   ->01.34% (8,391,248B) 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                     ->01.34% (8,391,248B) 0x14DE6E8: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                       
+->00.56% (3,537,967B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 17 37,917,633,038      671,430,496       39,395,899   632,034,597            0
+05.87% (39,395,899B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.09% (27,466,596B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.09% (27,466,413B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (10,402,047B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.34% (8,997,714B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.34% (8,997,714B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.20% (8,066,652B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.20% (8,066,652B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->01.25% (8,391,248B) 0x14DE100: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| ->01.25% (8,391,248B) 0x14CD2F5: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|   ->01.25% (8,391,248B) 0x14D46DF: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|     ->01.25% (8,391,248B) 0x14A883F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|       ->01.25% (8,391,248B) 0x14767D2: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|         ->01.25% (8,391,248B) 0x1476335: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|           ->01.25% (8,391,248B) 0x148FFCA: mpi_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|             ->01.25% (8,391,248B) 0x604BE2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+|               ->01.25% (8,391,248B) 0x5F6948: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+|                 ->01.25% (8,391,248B) 0x4DDAC1: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+|                   ->01.25% (8,391,248B) 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                     ->01.25% (8,391,248B) 0x14DE6E8: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                       
+->00.53% (3,538,055B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 18 40,169,909,016      727,070,600       41,718,607   685,351,993            0
+05.74% (41,718,607B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.10% (29,784,728B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.10% (29,784,545B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.54% (11,174,757B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.35% (9,811,356B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.35% (9,811,356B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.21% (8,798,432B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.21% (8,798,432B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->01.15% (8,391,248B) 0x14DE100: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| ->01.15% (8,391,248B) 0x14CD2F5: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|   ->01.15% (8,391,248B) 0x14D46DF: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|     ->01.15% (8,391,248B) 0x14A883F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|       ->01.15% (8,391,248B) 0x14767D2: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|         ->01.15% (8,391,248B) 0x1476335: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|           ->01.15% (8,391,248B) 0x148FFCA: mpi_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|             ->01.15% (8,391,248B) 0x604BE2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+|               ->01.15% (8,391,248B) 0x5F6948: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+|                 ->01.15% (8,391,248B) 0x4DDAC1: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+|                   ->01.15% (8,391,248B) 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                     ->01.15% (8,391,248B) 0x14DE6E8: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                       
+->00.49% (3,542,631B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 19 42,612,983,521      787,319,096       44,228,941   743,090,155            0
+05.62% (44,228,941B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.10% (32,295,062B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.10% (32,294,879B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.54% (12,155,127B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.35% (10,620,384B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.35% (10,620,384B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.21% (9,519,368B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.21% (9,519,368B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->01.07% (8,391,248B) 0x14DE100: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+| ->01.07% (8,391,248B) 0x14CD2F5: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|   ->01.07% (8,391,248B) 0x14D46DF: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|     ->01.07% (8,391,248B) 0x14A883F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|       ->01.07% (8,391,248B) 0x14767D2: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|         ->01.07% (8,391,248B) 0x1476335: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|           ->01.07% (8,391,248B) 0x148FFCA: mpi_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|             ->01.07% (8,391,248B) 0x604BE2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+|               ->01.07% (8,391,248B) 0x5F6948: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+|                 ->01.07% (8,391,248B) 0x4DDAC1: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+|                   ->01.07% (8,391,248B) 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                     ->01.07% (8,391,248B) 0x14DE6E8: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+|                       
+->00.45% (3,542,631B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 20 45,633,387,007      861,086,216       47,296,988   813,789,228            0
+05.49% (47,296,988B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.11% (35,368,889B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.11% (35,368,706B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (13,328,000B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.35% (11,619,570B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.35% (11,619,570B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.21% (10,421,136B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.21% (10,421,136B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->01.39% (11,928,099B) in 668 places, all below massif's threshold (01.00%)
+  
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 21 48,529,269,557      932,434,880       50,275,360   882,159,520            0
+05.39% (50,275,360B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.11% (38,341,481B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.11% (38,341,298B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (14,444,436B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.35% (12,600,042B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.35% (12,600,042B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.21% (11,296,820B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.21% (11,296,820B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->01.28% (11,933,879B) in 668 places, all below massif's threshold (01.00%)
+  
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 22 51,661,359,122    1,009,703,216       53,494,846   956,208,370            0
+05.30% (53,494,846B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.12% (41,560,967B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.12% (41,560,784B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (15,653,856B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.35% (13,658,028B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.35% (13,658,028B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.21% (12,248,900B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.21% (12,248,900B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->01.18% (11,933,879B) in 668 places, all below massif's threshold (01.00%)
+  
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 23 53,760,915,363    1,061,213,624       55,641,093 1,005,572,531            0
+05.24% (55,641,093B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.12% (43,707,214B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.12% (43,707,031B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (16,462,283B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.35% (14,364,132B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.35% (14,364,132B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.21% (12,880,616B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.21% (12,880,616B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->01.12% (11,933,879B) in 668 places, all below massif's threshold (01.00%)
+  
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 24 55,505,198,302    1,104,309,168       57,436,726 1,046,872,442            0
+05.20% (57,436,726B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.12% (45,502,847B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.12% (45,502,664B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (17,063,720B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (14,992,788B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (14,992,788B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (13,446,156B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (13,446,156B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->01.08% (11,933,879B) in 668 places, all below massif's threshold (01.00%)
+  
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 25 57,334,953,732    1,149,153,496       59,305,221 1,089,848,275            0
+05.16% (59,305,221B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.12% (47,371,342B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.12% (47,371,159B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (17,777,329B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (15,602,142B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (15,602,142B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (13,991,688B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (13,991,688B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->01.04% (11,933,879B) in 668 places, all below massif's threshold (01.00%)
+  
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 26 59,240,457,982    1,195,893,464       61,252,709 1,134,640,755            0
+05.12% (61,252,709B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.12% (49,318,830B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.12% (49,318,647B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (18,522,963B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (16,236,732B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (16,236,732B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (14,558,952B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (14,558,952B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->01.00% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 27 61,206,778,629    1,244,456,248       63,276,147 1,181,180,101            0
+05.08% (63,276,147B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.13% (51,342,268B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.13% (51,342,085B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.54% (19,195,023B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (16,947,630B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (16,947,630B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (15,199,432B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (15,199,432B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.96% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 28 63,256,920,667    1,294,989,976       65,381,701 1,229,608,275            0
+05.05% (65,381,701B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.13% (53,447,822B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.13% (53,447,639B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (20,034,309B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (17,615,490B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (17,615,490B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (15,797,840B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (15,797,840B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.92% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 29 65,390,689,119    1,347,578,520       67,572,873 1,280,005,647            0
+05.01% (67,572,873B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.13% (55,638,994B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.13% (55,638,811B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (20,897,385B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (18,315,018B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (18,315,018B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (16,426,408B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (16,426,408B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.89% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 30 67,609,549,257    1,402,302,648       69,853,007 1,332,449,641            0
+04.98% (69,853,007B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.13% (57,919,128B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.13% (57,918,945B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (21,796,455B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (19,043,202B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (19,043,202B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (17,079,288B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (17,079,288B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.85% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 31 69,919,293,651    1,459,245,568       72,225,606 1,387,019,962            0
+04.95% (72,225,606B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.13% (60,291,727B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.13% (60,291,544B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.56% (22,725,588B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (19,806,192B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (19,806,192B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (17,759,764B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (17,759,764B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.82% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 32 72,331,344,297    1,518,502,304       74,694,616 1,443,807,688            0
+04.92% (74,694,616B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.13% (62,760,737B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.13% (62,760,554B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.56% (23,638,868B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (20,624,394B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (20,624,394B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (18,497,292B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (18,497,292B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.79% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 33 74,193,830,823    1,564,516,312       76,607,472 1,487,908,840            0
+04.90% (76,607,472B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.13% (64,678,169B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.13% (64,677,986B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (24,282,651B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (21,296,059B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (21,296,059B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (19,099,276B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (19,099,276B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.76% (11,929,303B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 34 76,126,730,983    1,611,926,920       78,587,279 1,533,339,641            0
+04.88% (78,587,279B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.14% (66,653,400B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.14% (66,653,217B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (25,031,761B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (21,941,736B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (21,941,736B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (19,679,720B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (19,679,720B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.74% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 35 78,790,400,733    1,677,382,616       81,314,575 1,596,068,041            0
+04.85% (81,314,575B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.14% (69,380,696B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.14% (69,380,513B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (26,034,621B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (22,851,204B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (22,851,204B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (20,494,688B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (20,494,688B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.71% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 36 81,552,472,969    1,745,498,704       84,152,722 1,661,345,982            0
+04.82% (84,152,722B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.14% (72,218,843B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.14% (72,218,660B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.55% (27,118,836B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (23,776,404B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (23,776,404B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (21,323,420B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (21,323,420B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.68% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 37 84,425,486,329    1,816,379,320       87,106,055 1,729,273,265            0
+04.80% (87,106,055B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.14% (75,172,176B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.14% (75,171,993B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.56% (28,245,447B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (24,740,274B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (24,740,274B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (22,186,272B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (22,186,272B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.66% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 38 87,416,430,746    1,890,134,072       90,174,766 1,799,959,306            0
+04.77% (90,174,766B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.14% (78,245,463B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.14% (78,245,280B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.56% (29,400,435B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (25,749,277B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (25,749,277B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (23,095,568B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (23,095,568B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.63% (11,929,303B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 39 90,527,599,853    1,966,884,696       93,377,069 1,873,507,627            0
+04.75% (93,377,069B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.14% (81,443,190B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.14% (81,443,007B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.56% (30,605,241B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (26,800,878B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (26,800,878B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (24,036,888B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (24,036,888B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.61% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 40 92,133,488,453    2,006,421,864       95,024,439 1,911,397,425            0
+04.74% (95,024,439B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.14% (83,090,560B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.14% (83,090,377B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.56% (31,281,549B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (27,311,292B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (27,311,292B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (24,497,536B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (24,497,536B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.59% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 41 93,769,970,998    2,046,751,704       96,700,448 1,950,051,256            0
+04.72% (96,700,448B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.14% (84,771,145B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.14% (84,770,962B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.56% (31,982,576B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (27,828,994B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (27,828,994B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (24,959,392B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (24,959,392B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.58% (11,929,303B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 42 95,435,575,326    2,087,893,768       98,419,071 1,989,474,697            0
+04.71% (98,419,071B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.14% (86,485,192B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.14% (86,485,009B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.56% (32,551,197B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (28,431,468B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (28,431,468B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (25,502,344B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (25,502,344B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.57% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 43 97,138,237,214    2,129,862,088      100,167,737 2,029,694,351            0
+04.70% (100,167,737B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.14% (88,233,858B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.14% (88,233,675B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.56% (33,275,661B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (28,973,262B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (28,973,262B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (25,984,752B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (25,984,752B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.56% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 44 98,888,938,129    2,172,672,936      101,945,966 2,070,726,970            0
+04.69% (101,945,966B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.14% (90,017,867B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.14% (90,017,684B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.56% (33,941,102B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (29,560,962B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (29,560,962B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (26,515,620B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (26,515,620B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.55% (11,928,099B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 45 100,642,641,314    2,216,344,664      103,771,147 2,112,573,517            0
+04.68% (103,771,147B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.14% (91,837,268B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.14% (91,837,085B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.56% (34,617,309B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (30,165,576B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (30,165,576B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (27,054,200B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (27,054,200B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.54% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 46 102,450,817,485    2,260,895,152      105,627,404 2,155,267,748            0
+04.67% (105,627,404B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.14% (93,693,525B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.14% (93,693,342B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.56% (35,367,636B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (30,747,774B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (30,747,774B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (27,577,932B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (27,577,932B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.53% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 47 104,305,025,668    2,306,339,584      107,515,373 2,198,824,211            0
+04.66% (107,515,373B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.14% (95,587,274B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.14% (95,587,091B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.56% (36,085,667B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (31,366,272B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (31,366,272B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (28,135,152B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (28,135,152B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.52% (11,928,099B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 48 106,136,358,535    2,351,826,344      109,409,663 2,242,416,681            0
+ 49 108,089,354,869    2,399,989,992      111,422,979 2,288,567,013            0
+04.64% (111,422,979B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.15% (99,489,100B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.15% (99,488,917B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.57% (37,577,427B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (32,638,986B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (32,638,986B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (29,272,504B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (29,272,504B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.50% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 50 109,061,257,589    2,423,989,896      112,418,586 2,311,571,310            0
+04.64% (112,418,586B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.15% (100,489,283B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.15% (100,489,100B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.56% (37,909,028B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (32,990,448B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (32,990,448B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (29,589,624B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (29,589,624B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.49% (11,929,303B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 51 110,020,394,106    2,448,267,440      113,422,795 2,334,844,645            0
+04.63% (113,422,795B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.15% (101,501,165B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.15% (101,500,982B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.57% (38,507,270B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.36% (33,207,168B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.36% (33,207,168B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.22% (29,786,544B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.22% (29,786,544B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.49% (11,921,630B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 52 110,907,985,719    2,472,750,120      114,449,098 2,358,301,022            0
+04.63% (114,449,098B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.15% (102,520,999B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.15% (102,520,816B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.59% (39,322,768B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.35% (33,314,880B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.35% (33,314,880B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.21% (29,883,168B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.21% (29,883,168B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.48% (11,928,099B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 53 111,804,157,849    2,497,479,584      115,483,701 2,381,995,883            0
+04.62% (115,483,701B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.15% (103,551,206B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.15% (103,551,023B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.61% (40,147,327B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.34% (33,423,264B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.34% (33,423,264B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.20% (29,980,432B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.20% (29,980,432B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.48% (11,932,495B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 54 112,796,475,959    2,522,456,144      116,525,712 2,405,930,432            0
+04.62% (116,525,712B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.15% (104,591,833B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.15% (104,591,650B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.61% (40,585,596B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.34% (33,742,818B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.34% (33,742,818B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.20% (30,263,236B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.20% (30,263,236B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.47% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 55 113,816,983,832    2,547,681,152      117,576,748 2,430,104,404            0
+04.62% (117,576,748B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.15% (105,642,869B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.15% (105,642,686B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.61% (40,935,972B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.34% (34,110,294B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.34% (34,110,294B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.20% (30,596,420B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.20% (30,596,420B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.47% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 56 114,833,002,351    2,573,159,728      118,637,001 2,454,522,727            0
+04.61% (118,637,001B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.15% (106,704,506B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.15% (106,704,323B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.61% (41,514,245B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.34% (34,364,946B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.34% (34,364,946B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.20% (30,825,132B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.20% (30,825,132B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.46% (11,932,495B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 57 115,766,006,119    2,598,891,344      119,704,939 2,479,186,405            0
+04.61% (119,704,939B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.15% (107,776,840B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.15% (107,776,657B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.63% (42,372,709B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.33% (34,477,680B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.33% (34,477,680B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.19% (30,926,268B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.19% (30,926,268B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.46% (11,928,099B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 58 116,708,066,614    2,624,880,280      120,787,810 2,504,092,470            0
+04.60% (120,787,810B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.15% (108,859,711B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.15% (108,859,528B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.65% (43,239,526B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.32% (34,591,602B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.32% (34,591,602B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.18% (31,028,400B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.18% (31,028,400B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.45% (11,928,099B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 59 117,763,096,210    2,651,131,304      121,887,131 2,529,244,173            0
+04.60% (121,887,131B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.15% (109,953,252B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.15% (109,953,069B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.65% (43,643,987B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.32% (34,957,170B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.32% (34,957,170B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.18% (31,351,912B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.18% (31,351,912B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.45% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 60 118,836,640,581    2,677,642,840      122,991,771 2,554,651,069            0
+04.59% (122,991,771B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.15% (111,057,892B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.15% (111,057,709B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.64% (44,011,289B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.32% (35,345,652B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.32% (35,345,652B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.18% (31,700,768B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.18% (31,700,768B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.45% (11,933,879B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 61 119,876,657,362    2,704,419,280      124,101,907 2,580,317,373            0
+04.59% (124,101,907B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.15% (112,173,808B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.15% (112,173,625B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.65% (44,735,605B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.31% (35,549,904B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.31% (35,549,904B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.18% (31,888,116B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.18% (31,888,116B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.44% (11,928,099B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 62 120,857,077,188    2,731,465,384      125,233,036 2,606,232,348            0
+04.58% (125,233,036B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.15% (113,300,541B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.15% (113,300,358B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.67% (45,637,786B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.31% (35,668,248B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.31% (35,668,248B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.17% (31,994,324B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.17% (31,994,324B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.44% (11,932,495B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 63 121,847,196,981    2,758,782,000      126,371,227 2,632,410,773            0
+04.58% (126,371,227B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->04.15% (114,438,732B) 0xA31895: __iso_varying_string_MOD_op_assign_vs_ch (iso_varying_string.f90:1441)
+| ->04.15% (114,438,549B) 0x5951CA: __base_routines_MOD_enters (base_routines.f90:276)
+| | ->01.69% (46,549,651B) in 674 places, all below massif's threshold (01.00%)
+| | | 
+| | ->01.30% (35,787,570B) 0x6257F6: __coordinate_routines_MOD_coordinate_interpolation_adjust (coordinate_routines.f90:3558)
+| | | ->01.30% (35,787,570B) in 7 places, all below massif's threshold (01.00%)
+| | |   
+| | ->01.16% (32,101,328B) 0x59FD65: __basis_routines_MOD_basis_interpolate_gauss_dp (basis_routines.f90:1000)
+| |   ->01.16% (32,101,328B) in 3 places, all below massif's threshold (01.00%)
+| |     
+| ->00.00% (183B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->00.43% (11,932,495B) in 1+ places, all below ms_print's threshold (01.00%)
+

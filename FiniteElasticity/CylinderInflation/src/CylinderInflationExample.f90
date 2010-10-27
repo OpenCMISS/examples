@@ -60,12 +60,36 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   IMPLICIT NONE
 
   !Test program parameters
-  
-  REAL(CMISSDP), PARAMETER :: INNER_RAD=1.0_CMISSDP !\todo: don't hard code, read in + default
+
+  !\todo: don't hard code, read in + default
+  REAL(CMISSDP), PARAMETER :: INNER_PRESSURE=0.5_CMISSDP !Positive is compressive
+  REAL(CMISSDP), PARAMETER :: OUTER_PRESSURE=0.0_CMISSDP !Positive is compressive
+  REAL(CMISSDP), PARAMETER :: LAMBDA=1.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: TSI=0.0_CMISSDP    !Not yet working. Leave at 0
+  REAL(CMISSDP), PARAMETER :: INNER_RAD=1.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: OUTER_RAD=1.2_CMISSDP
   REAL(CMISSDP), PARAMETER :: HEIGHT=2.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: INNER_PRESSURE=-20000.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: OUTER_PRESSURE=0.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: C1=2.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: C2=6.0_CMISSDP
+
+  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalXElements=2 !\todo: don't hardcode
+  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalYElements=4
+  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalZElements=1
+
+!   !Standard test parameters (don't remove or change)
+!   REAL(CMISSDP), PARAMETER :: INNER_PRESSURE=1.0_CMISSDP !Positive is compressive
+!   REAL(CMISSDP), PARAMETER :: OUTER_PRESSURE=0.0_CMISSDP !Positive is compressive
+!   REAL(CMISSDP), PARAMETER :: LAMBDA=1.0_CMISSDP
+!   REAL(CMISSDP), PARAMETER :: TSI=0.0_CMISSDP    !Not yet used
+!   REAL(CMISSDP), PARAMETER :: INNER_RAD=1.0_CMISSDP
+!   REAL(CMISSDP), PARAMETER :: OUTER_RAD=1.2_CMISSDP
+!   REAL(CMISSDP), PARAMETER :: HEIGHT=2.0_CMISSDP
+!   REAL(CMISSDP), PARAMETER :: C1=2.0_CMISSDP
+!   REAL(CMISSDP), PARAMETER :: C2=6.0_CMISSDP
+!   INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalXElements=2 !\todo: don't hardcode
+!   INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalYElements=4
+!   INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalZElements=1
+!  Increment loop of 2
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: NumberOfSpatialCoordinates=3
@@ -100,6 +124,8 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfVariables=2
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponents=4
 
+  INTEGER(CMISSIntg), PARAMETER :: FieldAnalyticUserNumber=1337
+
   INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
@@ -108,7 +134,6 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
 
 
   !Program variables
-  INTEGER(CMISSIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements ! \todo: r, theta, z
   INTEGER(CMISSIntg) :: MPI_IERROR
   INTEGER(CMISSIntg) :: EquationsSetIndex  
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
@@ -123,7 +148,8 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,FibreField,MaterialField,DependentField,EquationsSetField
+  TYPE(CMISSFieldType) :: GeometricField,FibreField,MaterialField
+  TYPE(CMISSFieldType) :: DependentField,EquationsSetField,AnalyticField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSProblemType) :: Problem
   TYPE(CMISSRegionType) :: Region,WorldRegion
@@ -134,7 +160,7 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   TYPE(CMISSControlLoopType) :: ControlLoop
 
   !Other variables
-  INTEGER(CMISSIntg) :: NN !,I,J,K,BC_TYPE
+  INTEGER(CMISSIntg) :: NN,NE !,I,J,K,BC_TYPE
 !   REAL(CMISSDP) :: X,Y,Z
 
   INTEGER(CMISSIntg),ALLOCATABLE :: BottomSurfaceNodes(:)
@@ -179,17 +205,15 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
-  NumberGlobalXElements=1 !\todo: don't hardcode
-  NumberGlobalYElements=4
-  NumberGlobalZElements=1
-  NumberOfDomains=1
+write(*,*) "NumberOfDomains=",NumberOfComputationalNodes
+  NumberOfDomains=NumberOfComputationalNodes !1
 
   !Broadcast the number of elements in the X,Y and Z directions and the number of partitions to the other computational nodes
-  CALL MPI_BCAST(NumberGlobalXElements,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NumberGlobalYElements,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NumberGlobalZElements,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
+!   CALL MPI_BCAST(NumberGlobalXElements,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR) ! NOW A PARAMETER
+!   CALL MPI_BCAST(NumberGlobalYElements,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR) ! NOW A PARAMETER
+!   CALL MPI_BCAST(NumberGlobalZElements,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR) ! NOW A PARAMETER 
   CALL MPI_BCAST(NumberOfDomains,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-
+  
   !Create a CS - default is 3D rectangular cartesian CS with 0,0,0 as origin
   CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
   CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
@@ -209,6 +233,7 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   CALL CMISSBasisCreateStart(LinearBasisUserNumber,LinearBasis,Err)
   CALL CMISSBasisQuadratureNumberOfGaussXiSet(LinearBasis, &
     & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)
+  CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(LinearBasis,.true.,Err) !Have to do this (unused) due to field_interp setup
   CALL CMISSBasisCreateFinish(LinearBasis,Err)
 
   CALL CMISSBasisTypeInitialise(QuadraticBasis,Err)
@@ -217,6 +242,7 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
     & CMISSBasisQuadraticLagrangeInterpolation,CMISSBasisQuadraticLagrangeInterpolation/),Err)
   CALL CMISSBasisQuadratureNumberOfGaussXiSet(QuadraticBasis, &
     & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)
+  CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(QuadraticBasis,.true.,Err) !Enable 3D interpolation on faces
   CALL CMISSBasisCreateFinish(QuadraticBasis,Err)
 
   !Start the creation of a generated cylinder mesh
@@ -242,8 +268,20 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   !Create a decomposition
   CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
   CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
-  CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
+  !Automatic decomposition
+  !CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
+  !CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
+  !Manual decomposition
+  IF(NumberOfDomains>1) THEN
+    CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionUserDefinedType,Err)
+    !Set all elements but last one to first domain
+    CALL CMISSMeshNumberOfElementsGet(Mesh,NE,Err)
+    do NN=1,NE-1
+      CALL CMISSDecompositionElementDomainSet(Decomposition,NN,0,Err)
+    enddo
+    CALL CMISSDecompositionElementDomainSet(Decomposition,NE,1,Err)
+    CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
+  ENDIF
   CALL CMISSDecompositionCalculateFacesSet(Decomposition,.TRUE.,Err)
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
 
@@ -288,14 +326,14 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   CALL CMISSFieldCreateFinish(MaterialField,Err)
 
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively.
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,6.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,C1,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,C2,Err)
 
   !Create the equations_set
   CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
   CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSEquationsSetElasticityClass, &
-    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetNoSubtype,EquationsSetFieldUserNumber,EquationsSetField,&
+    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetMooneyRivlinSubtype,EquationsSetFieldUserNumber,EquationsSetField,&
     & EquationsSet,Err)
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
@@ -326,6 +364,23 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,FieldMaterialUserNumber,MaterialField,Err)  
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
 
+  !Set up analytic field
+  CALL CMISSFieldTypeInitialise(AnalyticField,Err)
+  CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSEquationsSetFiniteElasticityCylinder, &
+    & FieldAnalyticUserNumber,AnalyticField,Err)
+  !Finish the equations set analytic field variables
+  CALL CMISSEquationsSetAnalyticCreateFinish(EquationsSet,Err)
+
+  !Set the analytic parameters
+  CALL CMISSEquationsSetAnalyticUserParamSet(EquationsSet,CMISSFiniteElasticityAnalyticCylinderParamPinIdx,INNER_PRESSURE,Err)
+  CALL CMISSEquationsSetAnalyticUserParamSet(EquationsSet,CMISSFiniteElasticityAnalyticCylinderParamPoutIdx,OUTER_PRESSURE,Err)
+  CALL CMISSEquationsSetAnalyticUserParamSet(EquationsSet,CMISSFiniteElasticityAnalyticCylinderParamLambdaIdx,LAMBDA,Err)
+  CALL CMISSEquationsSetAnalyticUserParamSet(EquationsSet,CMISSFiniteElasticityAnalyticCylinderParamTsiIdx,TSI,Err)
+  CALL CMISSEquationsSetAnalyticUserParamSet(EquationsSet,CMISSFiniteElasticityAnalyticCylinderParamRinIdx,INNER_RAD,Err)
+  CALL CMISSEquationsSetAnalyticUserParamSet(EquationsSet,CMISSFiniteElasticityAnalyticCylinderParamRoutIdx,OUTER_RAD,Err)
+  CALL CMISSEquationsSetAnalyticUserParamSet(EquationsSet,CMISSFiniteElasticityAnalyticCylinderParamC1Idx,C1,Err)
+  CALL CMISSEquationsSetAnalyticUserParamSet(EquationsSet,CMISSFiniteElasticityAnalyticCylinderParamC2Idx,C2,Err)
+
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
   CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
@@ -340,75 +395,87 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
     & 2,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,Err)
   CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
     & 3,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,Err)
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,-8.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,-14.0_CMISSDP,Err)
 
-  !Prescribe boundary conditions (absolute nodal parameters)
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
+!! MANUAL BC ASSIGNMENT - REPLACED BY THE ANALYTIC BC ROUTINE BELOW
+!   !Prescribe boundary conditions (absolute nodal parameters)
+!   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+!   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
+! 
+!   !Get surfaces - will fix two nodes on bottom face, pressure conditions inside
+!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshCylinderBottomSurfaceType,BottomSurfaceNodes,BottomNormalXi,Err)
+!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshCylinderInnerSurfaceType,InnerSurfaceNodes,InnerNormalXi,Err)
+!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshCylinderOuterSurfaceType,OuterSurfaceNodes,OuterNormalXi,Err)
+! 
+!   !Set all inner surface nodes to inner pressure
+!   DO NN=1,SIZE(InnerSurfaceNodes,1)
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,InnerSurfaceNodes(NN), &
+!       & abs(InnerNormalXi),CMISSBoundaryConditionPressureIncremented,INNER_PRESSURE,Err)   ! INNER_PRESSURE
+!     IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING INNER PRESSURE TO NODE", InnerSurfaceNodes(NN)
+!   ENDDO
+! 
+!   !Set all outer surface nodes to outer pressure
+!   DO NN=1,SIZE(OuterSurfaceNodes,1)
+!     CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,OuterSurfaceNodes(NN), &
+!       & abs(OuterNormalXi),CMISSBoundaryConditionPressureIncremented,OUTER_PRESSURE,Err)
+!     IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING OUTER PRESSURE TO NODE", OuterSurfaceNodes(NN)
+!   ENDDO
+! 
+!   !Set all top nodes fixed in z plane at the set height
+!   DO NN=1,SIZE(TopSurfaceNodes,1)
+!     CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,TopSurfaceNodes(NN), &
+!       & 3,CMISSBoundaryConditionFixed,deformedHeight,Err)
+!     IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING FIXED CONDITION TO NODE", TopSurfaceNodes(NN)
+!   ENDDO
+! 
+!   !Set all bottom nodes fixed in z plane
+!   DO NN=1,SIZE(BottomSurfaceNodes,1)
+!     CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,BottomSurfaceNodes(NN), &
+!       & 3,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+!     IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING FIXED CONDITION TO NODE", BottomSurfaceNodes(NN)
+!   ENDDO
+! 
+!   !Set two nodes on the bottom surface to axial displacement only
+!   X_FIXED=.FALSE.
+!   Y_FIXED=.FALSE.
+!   DO NN=1,SIZE(BottomSurfaceNodes,1)
+!     IF (.NOT.X_FIXED) THEN
+!       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+!         & 1,BottomSurfaceNodes(NN),1,xValue,Err)
+!       IF(abs(xValue)<1e-5_CMISSDP) THEN
+!         !Constrain it in x direction
+!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,BottomSurfaceNodes(NN),1, &
+!           & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+!         X_FIXED=.TRUE.
+!         WRITE(*,*) "CyliderInflationExample: SUCCESSFULLY CONSTRAINED IN X DIRECTION NODE",BottomSurfaceNodes(NN)
+!       ENDIF
+!     ENDIF
+!     IF(.NOT.Y_FIXED) THEN
+!       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+!         & 1,BottomSurfaceNodes(NN),2,yValue,Err)
+!       IF(abs(yValue)<1e-5_CMISSDP) THEN
+!         !Constrain it in y direction
+!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,BottomSurfaceNodes(NN),2, &
+!           & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+!         Y_FIXED=.TRUE.
+!         WRITE(*,*) "CyliderInflationExample: SUCCESSFULLY CONSTRAINED IN Y DIRECTION NODE",BottomSurfaceNodes(NN)
+!       ENDIF
+!     ENDIF
+!     IF (X_FIXED.AND.Y_FIXED) EXIT
+!   ENDDO
+!   !Check
+!   IF(.NOT.X_FIXED .OR. .NOT.Y_FIXED) THEN
+!     Write(*,*) "Couldn't fix bottom surface. No node lies on x or y axis, try changing number of elements"// &
+!       & " in theta coordinate"
+!     STOP
+!   ENDIF
+! 
+!   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
+!! END OF MANUAL BC ASSIGNMENT
 
-  !Get surfaces - will fix two nodes on bottom face, pressure conditions inside
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshCylinderBottomSurfaceType,BottomSurfaceNodes,BottomNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshCylinderInnerSurfaceType,InnerSurfaceNodes,InnerNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshCylinderOuterSurfaceType,OuterSurfaceNodes,OuterNormalXi,Err)
 
-  !Set all inner surface nodes to inner pressure
-  DO NN=1,SIZE(InnerSurfaceNodes,1)
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,InnerSurfaceNodes(NN), &
-      & abs(InnerNormalXi),CMISSBoundaryConditionPressureIncremented,INNER_PRESSURE-2*NN,Err)   ! INNER_PRESSURE-2*NN HACK
-    IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING INNER PRESSURE TO NODE", InnerSurfaceNodes(NN)
-  ENDDO
-
-  !Set all outer surface nodes to outer pressure
-  DO NN=1,SIZE(OuterSurfaceNodes,1)
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,OuterSurfaceNodes(NN), &
-      & abs(OuterNormalXi),CMISSBoundaryConditionPressureIncremented,OUTER_PRESSURE,Err)
-    IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING OUTER PRESSURE TO NODE", OuterSurfaceNodes(NN)
-  ENDDO
-
-  !Set all bottom nodes fixed in z plane
-  DO NN=1,SIZE(BottomSurfaceNodes,1)
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,BottomSurfaceNodes(NN), &
-      & 3,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-    IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING FIXED CONDITION TO NODE", BottomSurfaceNodes(NN)
-  ENDDO
-
-  !Set two nodes on the bottom surface to axial displacement only
-  X_FIXED=.FALSE.
-  Y_FIXED=.FALSE.
-  DO NN=1,SIZE(BottomSurfaceNodes,1)
-    IF (.NOT.X_FIXED) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-        & 1,BottomSurfaceNodes(NN),1,xValue,Err)
-      IF(abs(xValue)<1e-5_CMISSDP) THEN
-        !Constrain it in x direction
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,BottomSurfaceNodes(NN),1, &
-          & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-        X_FIXED=.TRUE.
-        WRITE(*,*) "CONSTRAINED IN X DIRECTION NODE",BottomSurfaceNodes(NN)
-      ENDIF
-    ENDIF
-    IF(.NOT.Y_FIXED) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-        & 1,BottomSurfaceNodes(NN),2,yValue,Err)
-      IF(abs(yValue)<1e-5_CMISSDP) THEN
-        !Constrain it in y direction
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,BottomSurfaceNodes(NN),2, &
-          & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-        Y_FIXED=.TRUE.
-        WRITE(*,*) "CONSTRAINED IN Y DIRECTION NODE",BottomSurfaceNodes(NN)
-      ENDIF
-    ENDIF
-    IF (X_FIXED.AND.Y_FIXED) EXIT
-  ENDDO
-  !Check
-  IF(.NOT.X_FIXED .OR. .NOT.Y_FIXED) THEN
-    Write(*,*) "Couldn't fix bottom surface. No node lies on x or y axis, try changing number of elements"// &
-      & " in theta coordinate"
-    STOP
-  ENDIF
-
-
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
+  !Set the bc using the analytic solution routine
+  CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
 
   !Define the problem
   CALL CMISSProblemTypeInitialise(Problem,Err)
@@ -421,17 +488,17 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
   CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
-  CALL CMISSControlLoopMaximumIterationsSet(ControlLoop,2,Err)  ! this one sets the increment loop counter
+  CALL CMISSControlLoopMaximumIterationsSet(ControlLoop,1,Err)  ! this one sets the increment loop counter
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
   
-
   !Create the problem solvers
   CALL CMISSSolverTypeInitialise(Solver,Err)
   CALL CMISSSolverTypeInitialise(LinearSolver,Err)
   CALL CMISSProblemSolversCreateStart(Problem,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
   CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
-  CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianFDCalculated,Err)
+  !CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianFDCalculated,Err)  !Slower
+  CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
   CALL CMISSSolverNewtonLinearSolverGet(Solver,LinearSolver,Err)
   CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearDirectSolveType,Err)
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
@@ -449,11 +516,14 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   !Solve problem
   CALL CMISSProblemSolve(Problem,Err)
 
+  !Output Analytic analysis
+  Call CMISSAnalyticAnalysisOutput(DependentField,"outputs/CylinderInflation",Err)
+
   !Output solution  
   CALL CMISSFieldsTypeInitialise(Fields,Err)
   CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-  CALL CMISSFieldIONodesExport(Fields,"CylinderInflation","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields,"CylinderInflation","FORTRAN",Err)
+  CALL CMISSFieldIONodesExport(Fields,"outputs/CylinderInflation","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields,"outputs/CylinderInflation","FORTRAN",Err)
   CALL CMISSFieldsTypeFinalise(Fields,Err)
 
   CALL CMISSFinalise(Err)
