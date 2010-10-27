@@ -140,6 +140,7 @@ if (compiler!="intel") :
   buildExample("ClassicalField/DiffusionConstantSource")
   #buildExample("ClassicalField/Helmholtz")
   buildExample("ClassicalField/NonlinearPoisson/AnalyticNonlinearPoisson")
+  buildExample("ClassicalField/Poisson/42Master")
   buildExample("ClassicalField/Laplace/AnalyticLaplace")
   buildExample("ClassicalField/Laplace/Laplace")
   buildExample("ClassicalField/Laplace/NumberLaplace")

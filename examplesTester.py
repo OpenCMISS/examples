@@ -171,6 +171,39 @@ nodes='1',ndiffDir='expected_results',outputDir='output')
 #testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/HERMITE/linear/LEVEL_2",master42="ClassicalField/Laplace/AnalyticLaplace",
 #nodes='1',ndiffDir='expected_results',outputDir='output')
 
+#Linear Poisson problem, constant source
+#1D
+for interp in ['linear','quadratic','cubic','hermite']:
+    testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Poisson/1D/"+interp+"/LEVEL_1",master42="ClassicalField/Poisson/42Master",
+    nodes='1',ndiffDir='expected_results',outputDir='output')
+#2D,3D
+for dims in ['2D','3D']:
+    if dims == '2D': elements = ['QUAD','TRI']
+    elif dims == '3D': elements = ['HEX','TET']
+    for els in elements:
+        for interp in ['linear','quadratic']:
+            testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Poisson/"+dims+"/"+els+"/"+interp+"/LEVEL_1",master42="ClassicalField/Poisson/42Master",
+            nodes='1',ndiffDir='expected_results',outputDir='output')
+        if els in ['QUAD','HEX']: #cubic broken for tet/tri
+            interp = 'cubic'
+            testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Poisson/"+dims+"/"+els+"/"+interp+"/LEVEL_1",master42="ClassicalField/Poisson/42Master",
+            nodes='1',ndiffDir='expected_results',outputDir='output')
+    els = 'HERMITE'
+    testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Poisson/"+dims+"/"+els+"/LEVEL_1",master42="ClassicalField/Poisson/42Master",
+    nodes='1',ndiffDir='expected_results',outputDir='output')
+
+#Nonlinear Poisson problem, exponential source
+#2D only and no Hermite for analytic solution
+dims = '2D'
+for els in ['QUAD','TRI']:
+    for interp in ['linear','quadratic']:
+        testExample(id='1',path="SinglePhysics/NonlinearProblems/StaticProblems/NonlinearPoisson/"+dims+"/"+els+"/"+interp+"/LEVEL_1",master42="ClassicalField/NonlinearPoisson/AnalyticNonlinearPoisson",
+        nodes='1',ndiffDir='expected_results',outputDir='output')
+    if els == 'QUAD': #cubic broken for tet
+        interp = 'cubic'
+        testExample(id='1',path="SinglePhysics/NonlinearProblems/StaticProblems/NonlinearPoisson/"+dims+"/"+els+"/"+interp+"/LEVEL_1",master42="ClassicalField/NonlinearPoisson/AnalyticNonlinearPoisson",
+        nodes='1',ndiffDir='expected_results',outputDir='output')
+
 #testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Stokes/2D/...",nodes='1',input='\n')
 testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Stokes/2D/QUAD/CubicVelocityLinearPressure/LEVEL_1",master42="FluidMechanics/Stokes/42Master",nodes='1',ndiffDir='expected_results',outputDir='output')     
 testExample(id='1',path="SinglePhysics/LinearProblems/StaticProblems/Stokes/2D/QUAD/CubicVelocityQuadraticPressure/LEVEL_1",master42="FluidMechanics/Stokes/42Master",nodes='1',ndiffDir='expected_results',outputDir='output')  

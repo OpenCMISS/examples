@@ -1,7 +1,7 @@
 !> \file
 !> $Id$
 !> \author Chris Bradley
-!> \brief This is an example program to solve a nonlinear Poisson equation using OpenCMISS calls.
+!> \brief This is an example program to solve a constant source Poisson equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -40,13 +40,13 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/NonlinearPoisson/src/NonlinearPoissonExample.f90
-!! Example program to solve a nonlinear Poisson equation using openCMISS calls.
-!! \htmlinclude ClassicalField/NonlinearPoisson/history.html
+!> \example ClassicalField/Poisson/42Master/src/42MasterExample.f90
+!! Example program to solve a constant source Poisson equation using openCMISS calls.
+!! \htmlinclude ClassicalField/Poisson/42Master/history.html
 !<
 
 !> Main program
-PROGRAM NONLINEARPOISSONEXAMPLE
+PROGRAM LINEARPOISSONEXAMPLE
 
   USE OPENCMISS
   USE MPI
@@ -72,7 +72,7 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
   INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=8
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=9
-  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumber=10
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=11
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=12
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=13
@@ -85,22 +85,26 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT
 
+  INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber,FirstNodeDomain,LastNodeDomain
+
   LOGICAL :: EXPORT_FIELD
 
   !CMISS variables
 
   TYPE(CMISSBasisType) :: Basis
+  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
   TYPE(CMISSCoordinateSystemType) :: CoordinateSystem,WorldCoordinateSystem
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField,AnalyticField
+  TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField,SourceField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh
   TYPE(CMISSMeshType) :: Mesh
+  TYPE(CMISSNodesType) :: Nodes
   TYPE(CMISSProblemType) :: Problem
   TYPE(CMISSRegionType) :: Region,WorldRegion
-  TYPE(CMISSSolverType) :: Solver,LinearSolver
+  TYPE(CMISSSolverType) :: Solver
   TYPE(CMISSSolverEquationsType) :: SolverEquations
   TYPE(CMISSFieldType) :: EquationsSetField
 
@@ -169,7 +173,7 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
 
   !Output to a file
-  CALL CMISSOutputSetOn("NonlinearPoisson",Err)
+  CALL CMISSOutputSetOn("Poisson",Err)
 
   !Get the computational nodes information
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -178,9 +182,7 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   !Start the creation of a new RC coordinate system
   CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
   CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
-  !Set the coordinate system number of dimensions
   CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,NUMBER_DIMENSIONS,Err)
-  !Finish the creation of the coordinate system
   CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
 
   !Start the creation of the region
@@ -188,7 +190,6 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegion,Region,Err)
   !Set the regions coordinate system to the 2D RC coordinate system that we have created
   CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
-  !Finish the creation of the region
   CALL CMISSRegionCreateFinish(Region,Err)
 
   !Start the creation of a basis (default is trilinear lagrange)
@@ -229,7 +230,6 @@ PROGRAM NONLINEARPOISSONEXAMPLE
       CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,[NUMBER_OF_GAUSS_XI,NUMBER_OF_GAUSS_XI,NUMBER_OF_GAUSS_XI],Err)
     ENDIF
   ENDIF
-  !Finish the creation of the basis
   CALL CMISSBasisCreateFinish(Basis,Err)
 
   !Start the creation of a generated mesh in the region
@@ -237,7 +237,6 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
   !Set up a regular x*y*z mesh
   CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
-  !Set the default basis
   CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,Basis,Err)
   !Define the mesh on the region
   IF(NUMBER_DIMENSIONS==1) THEN
@@ -251,7 +250,6 @@ PROGRAM NONLINEARPOISSONEXAMPLE
     CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
       & NUMBER_GLOBAL_Z_ELEMENTS],Err)
   ENDIF
-  !Finish the creation of a generated mesh in the region
   CALL CMISSMeshTypeInitialise(Mesh,Err)
   CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
 
@@ -261,19 +259,15 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
   CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
-  !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
 
   !Start to create a default (geometric) field on the region
   CALL CMISSFieldTypeInitialise(GeometricField,Err)
   CALL CMISSFieldCreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
-  !Set the decomposition to use
   CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
-  !Set the domain to be used by the field components.
   DO component_idx=1,NUMBER_DIMENSIONS
     CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,component_idx,1,Err)
   ENDDO
-  !Finish creating the field
   CALL CMISSFieldCreateFinish(GeometricField,Err)
 
   !Update the geometric field parameters
@@ -283,113 +277,105 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
   CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
   CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetPoissonEquationType,CMISSEquationsSetExponentialSourcePoissonSubtype,EquationsSetFieldUserNumber, &
+    & CMISSEquationsSetPoissonEquationType,CMISSEquationsSetConstantSourcePoissonSubtype,EquationsSetFieldUserNumber, &
     & EquationsSetField,EquationsSet,Err)
 
-  !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
   !Create the equations set dependent field variables
   CALL CMISSFieldTypeInitialise(DependentField,Err)
   CALL CMISSEquationsSetDependentCreateStart(EquationsSet,DependentFieldUserNumber,DependentField,Err)
-  !Finish the equations set dependent field variables
   CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
 
-  !Initialise the field to zero
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,0.0_CMISSDP,Err)
+  !Initialise the field values
+  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1.0_CMISSDP,Err)
 
   !Create the equations set material field variables
   CALL CMISSFieldTypeInitialise(MaterialsField,Err)
   CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,MaterialsFieldUserNumber,MaterialsField,Err)
-  !Finish the equations set dependent field variables
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1.0_CMISSDP,Err)
 
-  !Create the equations set analytic field variables
-  CALL CMISSFieldTypeInitialise(AnalyticField,Err)
-  IF(NUMBER_DIMENSIONS==2) THEN
-    CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSEquationsSetPoissonTwoDim1,AnalyticFieldUserNumber,AnalyticField, &
-      & Err)
-  ELSE
-    WRITE(*,'(A)') "One and three dimensions are not implemented."
-    STOP
-  ENDIF
-  !Finish the equations set analytic field variables
-  CALL CMISSEquationsSetAnalyticCreateFinish(EquationsSet,Err)
+  !Create the source field
+  CALL CMISSFieldTypeInitialise(SourceField,Err)
+  CALL CMISSEquationsSetSourceCreateStart(EquationsSet,SourceFieldUserNumber,SourceField,Err)
+  CALL CMISSEquationsSetSourceCreateFinish(EquationsSet,Err)
 
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
   CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
-  !Set the equations matrices sparsity type
   CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
-  !Set the equations set output
   CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
-  !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
 
-  !Set up the boundary conditions as per the analytic solution
-  CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
+  !Set up the boundary conditions
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
+  !Set the fixed boundary conditions at the first node and last nodes
+  FirstNodeNumber=1
+  CALL CMISSNodesTypeInitialise(Nodes,Err)
+  CALL CMISSRegionNodesGet(Region,Nodes,Err)
+  CALL CMISSNodesNumberOfNodesGet(Nodes,LastNodeNumber,Err)
+  CALL CMISSDecompositionNodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
+  CALL CMISSDecompositionNodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
+  IF(FirstNodeDomain==ComputationalNodeNumber) THEN
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
+      & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
+  ENDIF
+  IF(LastNodeDomain==ComputationalNodeNumber) THEN
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,LastNodeNumber,1, &
+      & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+  ENDIF
+  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
 
   !Start the creation of a problem.
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
-  !Set the problem to be a standard Poisson problem
   CALL CMISSProblemSpecificationSet(Problem,CMISSProblemClassicalFieldClass,CMISSProblemPoissonEquationType, &
-    & CMISSProblemNonlinearSourcePoissonSubtype,Err)
-  !Finish the creation of a problem.
+    & CMISSProblemLinearSourcePoissonSubtype,Err)
   CALL CMISSProblemCreateFinish(Problem,Err)
 
   !Start the creation of the problem control loop
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
-  !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
 
   !Start the creation of the problem solvers
   CALL CMISSSolverTypeInitialise(Solver,Err)
-  CALL CMISSSolverTypeInitialise(LinearSolver,Err)
   CALL CMISSProblemSolversCreateStart(Problem,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
-  !Set the solver output
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
-  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
+  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
-  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
-  !Set the Jacobian type
-  CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
-  !CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianFDCalculated,Err)
-  !Get the associated linear solver
-  CALL CMISSSolverNewtonLinearSolverGet(Solver,LinearSolver,Err)
-  CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolver,500,Err)
-  !Finish the creation of the problem solver
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
+  !Set solver parameters
+  !CALL CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearIterativeSolveType,Err)
+  CALL CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearDirectSolveType,Err)
+  !CALL CMISSSolverLinearIterativeRelativeToleranceSet(Solver,1.0E-8_CMISSDP,Err)
+  !CALL CMISSSolverLinearIterativeAbsoluteToleranceSet(Solver,1.0E-8_CMISSDP,Err)
+  !CALL CMISSSolverLinearIterativeMaximumIterationsSet(Solver,10000,Err)
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
 
   !Start the creation of the problem solver equations
   CALL CMISSSolverTypeInitialise(Solver,Err)
   CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
   CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
-  !Get the solve equations
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
   CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
-  !Set the solver equations sparsity
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
   !CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices,Err)
-  !Add in the equations set
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
-  !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
 
   !Solve the problem
   CALL CMISSProblemSolve(Problem,Err)
 
-  !Output Analytic analysis
-  Call CMISSAnalyticAnalysisOutput(DependentField,"",Err)
-
   EXPORT_FIELD=.TRUE.
   IF(EXPORT_FIELD) THEN
     CALL CMISSFieldsTypeInitialise(Fields,Err)
     CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"NonlinearPoisson","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"NonlinearPoisson","FORTRAN",Err)
+    CALL CMISSFieldIONodesExport(Fields,"Poisson","FORTRAN",Err)
+    CALL CMISSFieldIOElementsExport(Fields,"Poisson","FORTRAN",Err)
     CALL CMISSFieldsTypeFinalise(Fields,Err)
   ENDIF
 
@@ -411,4 +397,4 @@ CONTAINS
 
   END SUBROUTINE HANDLE_ERROR
 
-END PROGRAM NONLINEARPOISSONEXAMPLE
+END PROGRAM LINEARPOISSONEXAMPLE

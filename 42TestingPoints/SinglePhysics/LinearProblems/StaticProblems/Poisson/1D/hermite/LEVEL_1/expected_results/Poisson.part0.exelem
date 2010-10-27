@@ -1,0 +1,127 @@
+ Region: /Region 2           
+ Shape.  Dimension=1
+ #Scale factor sets= 1
+ c.Hermite, #Scale factors=4
+ #Nodes=           2
+ #Fields=5
+ 1) coordinates,  coordinate, rectangular cartesian, #Components=1
+   x.   c.Hermite, no modify, standard node based.
+     #Nodes= 2
+     1.  #Values=2
+      Value indices:     1   2
+      Scale factor indices:    1   2
+     2.  #Values=2
+      Value indices:     1   2
+      Scale factor indices:    3   4
+ 2) general,  field,  rectangular cartesian, #Components=1
+   1.   c.Hermite, no modify, standard node based.
+     #Nodes= 2
+     1.  #Values=2
+      Value indices:     1   2
+      Scale factor indices:    1   2
+     2.  #Values=2
+      Value indices:     1   2
+      Scale factor indices:    3   4
+ 3) norm_dev_variable,  field,  rectangular cartesian, #Components=1
+   1.   c.Hermite, no modify, standard node based.
+     #Nodes= 2
+     1.  #Values=2
+      Value indices:     1   2
+      Scale factor indices:    1   2
+     2.  #Values=2
+      Value indices:     1   2
+      Scale factor indices:    3   4
+ 4) material,  field,  rectangular cartesian, #Components=2
+   1.   l.Lagrange, no modify, grid based.
+     #xi1=1
+   2.   l.Lagrange, no modify, grid based.
+     #xi1=1
+ 5) general,  field,  rectangular cartesian, #Components=1
+   1.   c.Hermite, no modify, standard node based.
+     #Nodes= 2
+     1.  #Values=2
+      Value indices:     1   2
+      Scale factor indices:    1   2
+     2.  #Values=2
+      Value indices:     1   2
+      Scale factor indices:    3   4
+ Element:            1 0 0
+   Values:
+     1.0000000000000000E+00   1.0000000000000000E+00
+     1.0000000000000000E+00   1.0000000000000000E+00
+   Nodes:
+           1           2
+   Scale factors:
+     1.0000000000000000E+00   5.0000000000000003E-02   1.0000000000000000E+00   5.0000000000000003E-02
+ Element:            2 0 0
+   Values:
+     1.0000000000000000E+00   1.0000000000000000E+00
+     1.0000000000000000E+00   1.0000000000000000E+00
+   Nodes:
+           2           3
+   Scale factors:
+     1.0000000000000000E+00   5.0000000000000003E-02   1.0000000000000000E+00   5.0000000000000017E-02
+ Element:            3 0 0
+   Values:
+     1.0000000000000000E+00   1.0000000000000000E+00
+     1.0000000000000000E+00   1.0000000000000000E+00
+   Nodes:
+           3           4
+   Scale factors:
+     1.0000000000000000E+00   5.0000000000000017E-02   1.0000000000000000E+00   5.0000000000000003E-02
+ Element:            4 0 0
+   Values:
+     1.0000000000000000E+00   1.0000000000000000E+00
+     1.0000000000000000E+00   1.0000000000000000E+00
+   Nodes:
+           4           5
+   Scale factors:
+     1.0000000000000000E+00   5.0000000000000003E-02   1.0000000000000000E+00   4.9999999999999989E-02
+ Element:            5 0 0
+   Values:
+     1.0000000000000000E+00   1.0000000000000000E+00
+     1.0000000000000000E+00   1.0000000000000000E+00
+   Nodes:
+           5           6
+   Scale factors:
+     1.0000000000000000E+00   4.9999999999999989E-02   1.0000000000000000E+00   5.0000000000000017E-02
+ Element:            6 0 0
+   Values:
+     1.0000000000000000E+00   1.0000000000000000E+00
+     1.0000000000000000E+00   1.0000000000000000E+00
+   Nodes:
+           6           7
+   Scale factors:
+     1.0000000000000000E+00   5.0000000000000017E-02   1.0000000000000000E+00   5.0000000000000017E-02
+ Element:            7 0 0
+   Values:
+     1.0000000000000000E+00   1.0000000000000000E+00
+     1.0000000000000000E+00   1.0000000000000000E+00
+   Nodes:
+           7           8
+   Scale factors:
+     1.0000000000000000E+00   5.0000000000000017E-02   1.0000000000000000E+00   4.9999999999999989E-02
+ Element:            8 0 0
+   Values:
+     1.0000000000000000E+00   1.0000000000000000E+00
+     1.0000000000000000E+00   1.0000000000000000E+00
+   Nodes:
+           8           9
+   Scale factors:
+     1.0000000000000000E+00   4.9999999999999989E-02   1.0000000000000000E+00   4.9999999999999975E-02
+ Element:            9 0 0
+   Values:
+     1.0000000000000000E+00   1.0000000000000000E+00
+     1.0000000000000000E+00   1.0000000000000000E+00
+   Nodes:
+           9          10
+   Scale factors:
+     1.0000000000000000E+00   4.9999999999999975E-02   1.0000000000000000E+00   4.9999999999999961E-02
+ Element:            10 0 0
+   Values:
+     1.0000000000000000E+00   1.0000000000000000E+00
+     1.0000000000000000E+00   1.0000000000000000E+00
+   Nodes:
+          10          11
+   Scale factors:
+     1.0000000000000000E+00   4.9999999999999961E-02   1.0000000000000000E+00   4.9999999999999975E-02
