@@ -212,7 +212,7 @@ for times in ['StaticProblems','DynamicProblems']:
     for els in elements:
         for interp in ['QuadraticVelocityLinearPressure','CubicVelocityLinearPressure','CubicVelocityQuadraticPressure']:
           for level in ['LEVEL_1','LEVEL_2']:
-            testExample(id='1',path="SinglePhysics/LinearProblems/"+times+"/Stokes/"+dims+"/"+els+"/"+interp+"/"+level+"",master42=,master42="FluidMechanics/Stokes/42Master",nodes='1',ndiffDir='expected_results',outputDir='output')     
+            testExample(id='1',path="SinglePhysics/LinearProblems/"+times+"/Stokes/"+dims+"/"+els+"/"+interp+"/"+level+"",master42="FluidMechanics/Stokes/42Master",nodes='1',ndiffDir='expected_results',outputDir='output')     
 
 #Nonlinear Navier-Stokes problem, static/dynamic, 2D/3D, HEX/TET, 221/331/332
 for times in ['StaticProblems','DynamicProblems']:
@@ -222,8 +222,10 @@ for times in ['StaticProblems','DynamicProblems']:
     for els in elements:
         for interp in ['QuadraticVelocityLinearPressure','CubicVelocityLinearPressure','CubicVelocityQuadraticPressure']:
           for level in ['LEVEL_1','LEVEL_2']:
-            testExample(id='1',path="SinglePhysics/NonlinearProblems/"+times+"/NavierStokes/"+dims+"/"+els+"/"+interp+"/"+level+"",master42=,master42="FluidMechanics/NavierStokes/42Master",nodes='1',ndiffDir='expected_results',outputDir='output')     
+            testExample(id='1',path="SinglePhysics/NonlinearProblems/"+times+"/NavierStokes/"+dims+"/"+els+"/"+interp+"/"+level+"",master42="FluidMechanics/NavierStokes/42Master",nodes='1',ndiffDir='expected_results',outputDir='output')     
             
+
+
 
 # ##################################################################################
 # END: 42 TESTING MATRIX
