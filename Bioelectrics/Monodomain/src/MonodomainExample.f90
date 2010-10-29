@@ -101,6 +101,8 @@ PROGRAM MONODOMAINEXAMPLE
 
   INTEGER(CMISSIntg) :: N,CELL_TYPE
 
+  INTEGER(CMISSIntg) :: n98ModelIndex,JRWModelIndex
+
   !CMISS variables
 
   TYPE(CMISSBasisType) :: Basis
@@ -278,38 +280,47 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSCellMLTypeInitialise(CellML,Err)
   CALL CMISSCellMLCreateStart(CellMLUserNumber,Region,CellML,Err)
   !Import a Noble 1998 model from a file
-  CALL CMISSCellMLModelImport(1,CellML,"n98.xml",Err)
+  CALL CMISSCellMLModelImport(CellML,"n98.xml",n98ModelIndex,Err)
   ! and import JRW 1998 from a file
-  CALL CMISSCellMLModelImport(2,CellML,"jrw-1998.xml",Err)
-  ! Now we have the models we can set up the field variable component <--> CellML model variable mappings.
-  !CMISSCellMLCreateFieldToCellMLMap(CellML,field,field_variable,component_number,cellml_model_number,VariableID,Err)
-  CALL CMISSCellMLCreateFieldToCellMLMap(CellML,SourceField,CMISSFieldUVariableType,1,1,"Am",Err)
-  CALL CMISSCellMLCreateFieldToCellMLMap(CellML,SourceField,CMISSFieldUVariableType,1,2,"jrw-1998.xml#Vm",Err)
+  CALL CMISSCellMLModelImport(CellML,"jrw-1998.xml",JRWModelIndex,Err)
+  !Now we have the models we can set up the field variable component <--> CellML model variable mappings.
+  !Map Vm
+  CALL CMISSCellMLCreateFieldToCellMLMap(CellML,DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType, &
+    & n98ModelIndex,"Vm",CMISSFieldValuesSetType,Err)
+  CALL CMISSCellMLCreateFieldToCellMLMap(CellML,DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType, &
+    & JRWModelIndex,"Vm",CMISSFieldValuesSetType,Err)
+  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,n98ModelIndex,"Vm",CMISSFieldValuesSetType, &
+    & DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType,Err)
+  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,JRWModelIndex,"Vm",CMISSFieldValuesSetType, &
+    & DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType,Err)
   !Finish the CellML environment
   CALL CMISSCellMLCreateFinish(CellML,Err)
 
   !Start the creation of the CellML models field
   CALL CMISSFieldTypeInitialise(CellMLModelsField,Err)
-  !CALL CMISSCellMLModelsFieldCreateStart(CellMLModelsFieldUserNumber,CellML,CellMLModelsField,Err)
-  ! set up the models field
+  CALL CMISSCellMLModelsFieldCreateStart(CellMLModelsFieldUserNumber,CellML,CellMLModelsField,Err)
+  !Finish the creation of the CellML models field
+  CALL CMISSCellMLModelsFieldCreateFinish(CellML,Err)
+  !Set up the models field
   DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
     IF(N < 5) THEN
-        CELL_TYPE = 1
+      CELL_TYPE = 1
     ELSE
-        CELL_TYPE = 2
+      CELL_TYPE = 2
     ENDIF
-    !CALL CMISSFieldParameterSetUpdateNode(CellMLModelsField, CMISSFieldUVariableType, CMISSFieldValuesSetType,1,N,1,CELL_TYPE,Err)
+    CALL CMISSFieldParameterSetUpdateNode(CellMLModelsField, CMISSFieldUVariableType, CMISSFieldValuesSetType,1,N,1,CELL_TYPE,Err)
   END DO
-  !Finish the creation of the CellML models field
-  !CALL CMISSCellMLModelsFieldCreateFinish(CellML,Err)
 
   !Start the creation of the CellML state field
+  CALL CMISSFieldTypeInitialise(CellMLStateField,Err)
   CALL CMISSCellMLStateFieldCreateStart(CellMLStateFieldUserNumber,CellML,CellMLStateField,Err)
   !Finish the creation of the CellML state field
   CALL CMISSCellMLStateFieldCreateFinish(CellML,Err)
 
 !!TODO: There should be intermediate and intermediate field
+  
   !Start the creation of the CellML intermediate field
+  CALL CMISSFieldTypeInitialise(CellMLIntermediateField,Err)
   CALL CMISSCellMLIntermediateFieldCreateStart(CellMLIntermediateFieldUserNumber,CellML,CellMLIntermediateField,Err)
   !Finish the creation of the CellML intermediate field
   CALL CMISSCellMLIntermediateFieldCreateFinish(CellML,Err)
@@ -320,6 +331,7 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSCellMLParametersCreateFinish(CellML,Err)
   
   !Start the creation of CellML parameters field
+  CALL CMISSFieldTypeInitialise(CellMLParametersField,Err)
   CALL CMISSCellMLParametersFieldCreateStart(CellMLParametersFieldUserNumber,CellML,CellMLParametersField,Err)
   !Finish the creation of CellML parameters
   CALL CMISSCellMLParametersFieldCreateFinish(CellML,Err)
@@ -327,9 +339,6 @@ PROGRAM MONODOMAINEXAMPLE
   !Generate the CellML
   CALL CMISSCellMLGenerate(CellML,Err)
 
-#define UP_TO_HERE
-  
-#ifdef UP_TO_HERE
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
   CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
@@ -436,8 +445,6 @@ PROGRAM MONODOMAINEXAMPLE
 
   !Solve the problem
   CALL CMISSProblemSolve(Problem,Err)
-
-#endif /* UP_TO_HERE */
 
   EXPORT_FIELD=.FALSE.
   IF(EXPORT_FIELD) THEN
