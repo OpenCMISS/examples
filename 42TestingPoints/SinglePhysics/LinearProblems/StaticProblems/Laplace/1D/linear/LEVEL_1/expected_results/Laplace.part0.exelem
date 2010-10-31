@@ -1,4 +1,4 @@
- Region: /LaplaceRegion
+ Group name: LaplaceRegion
  Shape.  Dimension=1
  #Scale factor sets= 1
  l.Lagrange, #Scale factors=2

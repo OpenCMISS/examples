@@ -1,4 +1,4 @@
- Region: /LaplaceRegion
+ Group name: LaplaceRegion
  Shape.  Dimension=2, simplex(2)*simplex
  #Scale factor sets= 1
  l.simplex(2)*l.simplex, #Scale factors=3

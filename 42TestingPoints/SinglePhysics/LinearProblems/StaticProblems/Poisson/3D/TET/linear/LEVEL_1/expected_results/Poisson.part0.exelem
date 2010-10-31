@@ -1,4 +1,4 @@
- Region: /Region 2           
+ Group name: Region 2           
  Shape.  Dimension=3, simplex(2;3)*simplex*simplex
  #Scale factor sets= 1
  l.simplex(2;3)*l.simplex*l.simplex, #Scale factors=4

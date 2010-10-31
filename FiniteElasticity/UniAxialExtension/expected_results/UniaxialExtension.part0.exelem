@@ -1,4 +1,4 @@
- Region: /Region 1           
+ Group name: Region 1           
  Shape.  Dimension=3
  #Scale factor sets= 1
  l.Lagrange*l.Lagrange*l.Lagrange, #Scale factors=8
