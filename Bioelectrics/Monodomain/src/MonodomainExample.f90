@@ -137,7 +137,7 @@ PROGRAM MONODOMAINEXAMPLE
   INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
   INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain
   INTEGER(CMISSIntg) :: Err
-    
+
 #ifdef WIN32
   !Initialise QuickWin
   QUICKWIN_WINDOW_CONFIG%TITLE="General Output" !Window title
@@ -283,6 +283,8 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSCellMLModelImport(CellML,"n98.xml",n98ModelIndex,Err)
   ! and import JRW 1998 from a file
   CALL CMISSCellMLModelImport(CellML,"jrw-1998.xml",JRWModelIndex,Err)
+  CALL CMISSDiagnosticsSetOn(CMISSInDiagType,(/1,2,3,4,5/),"",(/"CELLML_CREATE_FIELD_TO_CELLML_MAP_C", &
+    & "CELLML_CREATE_CELLML_TO_FIELD_MAP_C"/),Err)
   !Now we have the models we can set up the field variable component <--> CellML model variable mappings.
   !Map Vm
   CALL CMISSCellMLCreateFieldToCellMLMap(CellML,DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType, &
@@ -293,6 +295,7 @@ PROGRAM MONODOMAINEXAMPLE
     & DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType,Err)
   CALL CMISSCellMLCreateCellMLToFieldMap(CellML,JRWModelIndex,"Vm",CMISSFieldValuesSetType, &
     & DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType,Err)
+  CALL CMISSDiagnosticsSetOff(Err)
   !Finish the CellML environment
   CALL CMISSCellMLCreateFinish(CellML,Err)
 
