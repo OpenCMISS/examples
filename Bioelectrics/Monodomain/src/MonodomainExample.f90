@@ -283,21 +283,36 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSCellMLModelImport(CellML,"n98.xml",n98ModelIndex,Err)
   ! and import JRW 1998 from a file
   CALL CMISSCellMLModelImport(CellML,"jrw-1998.xml",JRWModelIndex,Err)
-  CALL CMISSDiagnosticsSetOn(CMISSInDiagType,(/1,2,3,4,5/),"",(/"CELLML_CREATE_FIELD_TO_CELLML_MAP_C", &
-    & "CELLML_CREATE_CELLML_TO_FIELD_MAP_C"/),Err)
-  !Now we have the models we can set up the field variable component <--> CellML model variable mappings.
-  !Map Vm
-  CALL CMISSCellMLCreateFieldToCellMLMap(CellML,DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType, &
-    & n98ModelIndex,"Vm",CMISSFieldValuesSetType,Err)
-  CALL CMISSCellMLCreateFieldToCellMLMap(CellML,DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType, &
-    & JRWModelIndex,"Vm",CMISSFieldValuesSetType,Err)
-  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,n98ModelIndex,"Vm",CMISSFieldValuesSetType, &
-    & DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType,Err)
-  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,JRWModelIndex,"Vm",CMISSFieldValuesSetType, &
-    & DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType,Err)
-  CALL CMISSDiagnosticsSetOff(Err)
+!  CALL CMISSDiagnosticsSetOn(CMISSInDiagType,(/1,2,3,4,5/),"",(/"CELLML_CREATE_FIELD_TO_CELLML_MAP_C", &
+!    & "CELLML_CREATE_CELLML_TO_FIELD_MAP_C"/),Err)
+  ! Now we have imported all the models we are able to specify which variables from the model we want:
+  !   - to set from this side
+  CALL CMISSCellMLVariableSetAsKnown(CellML,n98ModelIndex,"ionic_concentrations/K_o",Err)
+  CALL CMISSCellMLVariableSetAsKnown(CellML,n98ModelIndex,"environment/IStim",Err)
+  CALL CMISSCellMLVariableSetAsKnown(CellML,JRWModelIndex,"L_type_Ca_channel/Ko",Err)
+  CALL CMISSCellMLVariableSetAsKnown(CellML,JRWModelIndex,"environment/I_stim",Err)
+  !   - to get from the CellML side
+  CALL CMISSCellMLVariableSetAsWanted(CellML,n98ModelIndex,"environment/i_K1",Err)
+  CALL CMISSCellMLVariableSetAsWanted(CellML,n98ModelIndex,"environment/IStimC",Err)
+  CALL CMISSCellMLVariableSetAsWanted(CellML,JRWModelIndex,"environment/i_K1",Err)
+  CALL CMISSCellMLVariableSetAsWanted(CellML,JRWModelIndex,"environment/IStimC",Err)
+  !   - and override constant parameters without needing to set up fields
+  !> \todo Need to allow parameter values to be overridden for the case when user has non-spatially varying parameter value.
+!  CALL CMISSDiagnosticsSetOff(Err)
   !Finish the CellML environment
   CALL CMISSCellMLCreateFinish(CellML,Err)
+
+  ! We have set up CellML models, so now to map to external (non-CellML) fields
+  !Now we have the models we can set up the field variable component <--> CellML model variable mappings.
+  !Map Vm
+!  CALL CMISSCellMLCreateFieldToCellMLMap(CellML,DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType, &
+!    & n98ModelIndex,"Vm",CMISSFieldValuesSetType,Err)
+!  CALL CMISSCellMLCreateFieldToCellMLMap(CellML,DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType, &
+!    & JRWModelIndex,"Vm",CMISSFieldValuesSetType,Err)
+!  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,n98ModelIndex,"Vm",CMISSFieldValuesSetType, &
+!    & DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType,Err)
+!  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,JRWModelIndex,"Vm",CMISSFieldValuesSetType, &
+!    & DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType,Err)
 
   !Start the creation of the CellML models field
   CALL CMISSFieldTypeInitialise(CellMLModelsField,Err)
