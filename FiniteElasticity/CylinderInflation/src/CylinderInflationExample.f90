@@ -77,7 +77,7 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalZElements=1
 
 !   !Standard test parameters (don't remove or change)
-!   REAL(CMISSDP), PARAMETER :: INNER_PRESSURE=1.0_CMISSDP !Positive is compressive
+!   REAL(CMISSDP), PARAMETER :: INNER_PRESSURE=0.5_CMISSDP !Positive is compressive
 !   REAL(CMISSDP), PARAMETER :: OUTER_PRESSURE=0.0_CMISSDP !Positive is compressive
 !   REAL(CMISSDP), PARAMETER :: LAMBDA=1.0_CMISSDP
 !   REAL(CMISSDP), PARAMETER :: TSI=0.0_CMISSDP    !Not yet used
@@ -160,7 +160,7 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   TYPE(CMISSControlLoopType) :: ControlLoop
 
   !Other variables
-  INTEGER(CMISSIntg) :: NN,NE !,I,J,K,BC_TYPE
+  INTEGER(CMISSIntg) :: NN,NE,E !,I,J,K,BC_TYPE
 !   REAL(CMISSDP) :: X,Y,Z
 
   INTEGER(CMISSIntg),ALLOCATABLE :: BottomSurfaceNodes(:)
@@ -205,7 +205,7 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
-write(*,*) "NumberOfDomains=",NumberOfComputationalNodes
+  write(*,*) "NumberOfDomains=",NumberOfComputationalNodes
   NumberOfDomains=NumberOfComputationalNodes !1
 
   !Broadcast the number of elements in the X,Y and Z directions and the number of partitions to the other computational nodes
@@ -266,20 +266,23 @@ write(*,*) "NumberOfDomains=",NumberOfComputationalNodes
   CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
 
   !Create a decomposition
+  CALL CMISSRandomSeedsSet(0_CMISSIntg,Err) !To keep the decomposition same each time
   CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
   CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Automatic decomposition
-  !CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
-  !CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
+!   CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
+!   CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
   !Manual decomposition
   IF(NumberOfDomains>1) THEN
     CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionUserDefinedType,Err)
     !Set all elements but last one to first domain
     CALL CMISSMeshNumberOfElementsGet(Mesh,NE,Err)
-    do NN=1,NE-1
-      CALL CMISSDecompositionElementDomainSet(Decomposition,NN,0,Err)
+    do E=1,NE/2
+      CALL CMISSDecompositionElementDomainSet(Decomposition,E,0,Err)
     enddo
-    CALL CMISSDecompositionElementDomainSet(Decomposition,NE,1,Err)
+    do E=NE/2+1,NE
+      CALL CMISSDecompositionElementDomainSet(Decomposition,E,1,Err)
+    enddo
     CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
   ENDIF
   CALL CMISSDecompositionCalculateFacesSet(Decomposition,.TRUE.,Err)
