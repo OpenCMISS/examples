@@ -136,7 +136,9 @@ if (compiler!="intel") :
   buildExample("FiniteElasticity/UniAxialExtension")
   #buildExample("FiniteElasticity/TwoElementTriLinear")
   #buildExample("FiniteElasticity/MixedBoundaryConditions")
-  #buildExample("FiniteElasticity/TriCubicAxialExtension")
+  buildExample("FiniteElasticity/TriCubicAxialExtension")
+  buildExample("FiniteElasticity/CylinderInflation")
+  buildExample("FiniteElasticity/LargeUniAxialExtension")
   buildExample("FiniteElasticity/SimplexElements/LargeQuadraticTet")
 
   buildExample("LinearElasticity/2DExtensionPlaneStressLagrangeBasis")
