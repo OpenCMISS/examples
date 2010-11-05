@@ -62,7 +62,7 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   !Test program parameters
 
   !\todo: don't hard code, read in + default
-  REAL(CMISSDP), PARAMETER :: INNER_PRESSURE=0.5_CMISSDP !Positive is compressive
+  REAL(CMISSDP), PARAMETER :: INNER_PRESSURE=1.0_CMISSDP !Positive is compressive
   REAL(CMISSDP), PARAMETER :: OUTER_PRESSURE=0.0_CMISSDP !Positive is compressive
   REAL(CMISSDP), PARAMETER :: LAMBDA=1.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: TSI=0.0_CMISSDP    !Not yet working. Leave at 0
@@ -72,9 +72,9 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   REAL(CMISSDP), PARAMETER :: C1=2.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: C2=6.0_CMISSDP
 
-  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalXElements=2 !\todo: don't hardcode
-  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalYElements=4
-  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalZElements=1
+  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalXElements=4 !\todo: don't hardcode
+  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalYElements=16
+  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalZElements=4
 
 !   !Standard test parameters (don't remove or change)
 !   REAL(CMISSDP), PARAMETER :: INNER_PRESSURE=0.5_CMISSDP !Positive is compressive
