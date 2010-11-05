@@ -377,7 +377,23 @@ PROGRAM BIDOMAINEXAMPLE
   CALL CMISSCellMLModelImport(CellML,"n98.xml",n98ModelIndex,Err)
   ! and import JRW 1998 from a file
   CALL CMISSCellMLModelImport(CellML,"jrw-1998.xml",JRWModelIndex,Err)
-  !Now we have the models we can set up the field variable component <--> CellML model variable mappings.
+  ! Now we have imported all the models we are able to specify which variables from the model we want:
+  !   - to set from this side
+  CALL CMISSCellMLVariableSetAsKnown(CellML,n98ModelIndex,"ionic_concentrations/K_o",Err)
+  CALL CMISSCellMLVariableSetAsKnown(CellML,n98ModelIndex,"environment/IStim",Err)
+  CALL CMISSCellMLVariableSetAsKnown(CellML,JRWModelIndex,"L_type_Ca_channel/Ko",Err)
+  CALL CMISSCellMLVariableSetAsKnown(CellML,JRWModelIndex,"environment/I_stim",Err)
+  !   - to get from the CellML side
+  CALL CMISSCellMLVariableSetAsWanted(CellML,n98ModelIndex,"environment/i_K1",Err)
+  CALL CMISSCellMLVariableSetAsWanted(CellML,n98ModelIndex,"environment/IStimC",Err)
+  CALL CMISSCellMLVariableSetAsWanted(CellML,JRWModelIndex,"environment/i_K1",Err)
+  CALL CMISSCellMLVariableSetAsWanted(CellML,JRWModelIndex,"environment/IStimC",Err)
+  !Finish the CellML environment
+  CALL CMISSCellMLCreateFinish(CellML,Err)
+
+  !Start the creation of CellML <--> OpenCMISS field maps
+  CALL CMISSCellMLFieldMapsCreateStart(CellML,Err)
+  !Now  set up the field variable component <--> CellML model variable mappings.
   !Map Vm
   CALL CMISSCellMLCreateFieldToCellMLMap(CellML,DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType, &
     & n98ModelIndex,"Vm",CMISSFieldValuesSetType,Err)
@@ -387,8 +403,8 @@ PROGRAM BIDOMAINEXAMPLE
     & DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType,Err)
   CALL CMISSCellMLCreateCellMLToFieldMap(CellML,JRWModelIndex,"Vm",CMISSFieldValuesSetType, &
     & DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType,Err)
-  !Finish the CellML environment
-  CALL CMISSCellMLCreateFinish(CellML,Err)
+  !Finish the creation of CellML <--> OpenCMISS field maps
+  CALL CMISSCellMLFieldMapsCreateFinish(CellML,Err)
 
   !Start the creation of the CellML models field
   CALL CMISSFieldTypeInitialise(CellMLModelsField,Err)
@@ -411,18 +427,11 @@ PROGRAM BIDOMAINEXAMPLE
   !Finish the creation of the CellML state field
   CALL CMISSCellMLStateFieldCreateFinish(CellML,Err)
 
-!!TODO: There should be intermediate and intermediate field
-  
   !Start the creation of the CellML intermediate field
   CALL CMISSFieldTypeInitialise(CellMLIntermediateField,Err)
   CALL CMISSCellMLIntermediateFieldCreateStart(CellMLIntermediateFieldUserNumber,CellML,CellMLIntermediateField,Err)
   !Finish the creation of the CellML intermediate field
   CALL CMISSCellMLIntermediateFieldCreateFinish(CellML,Err)
-  
-  !Start the creation of CellML parameters
-  CALL CMISSCellMLParametersCreateStart(CellML,Err)
-  !Finish the creation of CellML parameters
-  CALL CMISSCellMLParametersCreateFinish(CellML,Err)
   
   !Start the creation of CellML parameters field
   CALL CMISSFieldTypeInitialise(CellMLParametersField,Err)
