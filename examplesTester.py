@@ -270,7 +270,7 @@ testExample(id='1',path="FiniteElasticity/UniAxialExtension",nodes='1',input='\n
 testExample(id='1',path="FiniteElasticity/TriCubicAxialExtension",nodes='1',input='\n',ndiffDir="expected_results",outputDir=".")
 testExample(id='1',path="FiniteElasticity/LargeUniAxialExtension",nodes='1',input='\n',ndiffDir="expected_results",outputDir=".")
 testExample(id='1',path="FiniteElasticity/CylinderInflation",nodes='1',input='\n',ndiffDir="expected_results/1proc",outputDir="./outputs")
-testExample(id='1',path="FiniteElasticity/CylinderInflation",nodes='2',input='\n',ndiffDir="expected_results/2proc",outputDir="./outputs")
+testExample(id='2',path="FiniteElasticity/CylinderInflation",nodes='2',ndiffDir="expected_results/2proc",outputDir="./outputs")
 testExample(id='1',path="FiniteElasticity/SimplexElements/LargeQuadraticTet",nodes='1',input='\n')
 
 #testExample(id='1',path="LinearElasticity/2DAnalytic1",nodes='1',input='4\n4\n0\n1')
