@@ -69,10 +69,14 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
   REAL(CMISSDP), PARAMETER :: FIBRE_SLOPE_INTERSECTION=1.73205_CMISSDP !Slope of fibres in base endocardium = 60 degrees
   REAL(CMISSDP), PARAMETER :: FIBRE_SLOPE_CHANGE=-3.4641_CMISSDP !Slope change of fibres from 60 to -60 degrees in transmural direction 
   REAL(CMISSDP), PARAMETER :: SHEET_SLOPE_BASE_ENDO=1.0_CMISSDP !Slope of sheet at base endocardium 
+
+  REAL(CMISSDP), PARAMETER :: INNER_PRESSURE=2.0_CMISSDP  !Positive is compressive
+  REAL(CMISSDP), PARAMETER :: OUTER_PRESSURE=0.0_CMISSDP  !Positive is compressive
+
   INTEGER(CMISSIntg), PARAMETER :: NumberGlobalXElements=4  ! X ==NUMBER_GLOBAL_CIRCUMFERENTIAL_ELEMENTS
   INTEGER(CMISSIntg), PARAMETER :: NumberGlobalYElements=4  ! Y ==NUMBER_GLOBAL_LONGITUDINAL_ELEMENTS
-  INTEGER(CMISSIntg), PARAMETER :: NumberGlobalZElements=4  ! Z ==NUMBER_GLOBAL_TRANSMURAL_ELEMENTS
-  INTEGER(CMISSIntg), PARAMETER :: NumberOfDomains=1
+  INTEGER(CMISSIntg), PARAMETER :: NumberGlobalZElements=1  ! Z ==NUMBER_GLOBAL_TRANSMURAL_ELEMENTS
+  INTEGER(CMISSIntg) :: NumberOfDomains
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: NumberOfSpatialCoordinates=3
@@ -129,6 +133,9 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
   INTEGER(CMISSIntg), ALLOCATABLE :: InnerSurfaceNodes(:)
   INTEGER(CMISSIntg), ALLOCATABLE :: OuterSurfaceNodes(:)
   INTEGER(CMISSIntg), ALLOCATABLE :: TopSurfaceNodes(:)
+  INTEGER(CMISSIntg) :: NN,NODE,NodeDomain
+  REAL(CMISSDP) :: XCoord,YCoord,ZCoord
+  LOGICAL :: X_FIXED,Y_FIXED
 
   !CMISS variables
 
@@ -146,12 +153,6 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
   TYPE(CMISSRegionType) :: Region,WorldRegion
   TYPE(CMISSSolverType) :: Solver,LinearSolver
   TYPE(CMISSSolverEquationsType) :: SolverEquations
-  !TYPE(CMISSNodesType) :: Nodes
-  !TYPE(CMISSMeshElementsType) :: QuadraticElements,LinearElements
-
-  !Other variables
-!   INTEGER(CMISSIntg) :: NN,I,J,K,BC_TYPE
-!   REAL(CMISSDP) :: X,Y,Z
 
 #ifdef WIN32
   !Quickwin type
@@ -188,10 +189,11 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
   !Broadcast the number of elements in the X,Y and Z directions and the number of partitions to the other computational nodes
-  CALL MPI_BCAST(NumberGlobalXElements,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NumberGlobalYElements,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NumberGlobalZElements,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NumberOfDomains,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
+!   CALL MPI_BCAST(NumberGlobalXElements,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
+!   CALL MPI_BCAST(NumberGlobalYElements,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
+!   CALL MPI_BCAST(NumberGlobalZElements,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
+!   CALL MPI_BCAST(NumberOfDomains,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
+  NumberOfDomains=NumberOfComputationalNodes
 
   !Create a CS - default is 3D rectangular cartesian CS with 0,0,0 as origin
   CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
@@ -215,6 +217,7 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
     & CMISSBasisQuadraticLagrangeInterpolation,CMISSBasisQuadraticLagrangeInterpolation/),Err)
   CALL CMISSBasisQuadratureNumberOfGaussXiSet(QuadraticBasis, &
     & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)
+  CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(QuadraticBasis,.true.,Err) !Have to do this
   CALL CMISSBasisCreateFinish(QuadraticBasis,Err)
 
     !Collapsed Quadratic Basis
@@ -228,6 +231,7 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
        & CMISSBasisCollapsedAtXi0,CMISSBasisNotCollapsed/),Err)
   CALL CMISSBasisQuadratureNumberOfGaussXiSet(QuadraticCollapsedBasis, &
        & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)  
+  CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(QuadraticCollapsedBasis,.true.,Err) !Have to do this
   CALL CMISSBasisCreateFinish(QuadraticCollapsedBasis,Err)
 
     !Linear Basis
@@ -235,6 +239,7 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
   CALL CMISSBasisCreateStart(LinearBasisUserNumber,LinearBasis,Err)
   CALL CMISSBasisQuadratureNumberOfGaussXiSet(LinearBasis, &
     & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)
+  CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(LinearBasis,.true.,Err) !Have to do this (unused) due to field_interp setup
   CALL CMISSBasisCreateFinish(LinearBasis,Err)
 
     !Collapsed Linear Basis
@@ -247,6 +252,7 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
   CALL CMISSBasisCollapsedXiSet(LinearCollapsedBasis,(/CMISSBasisXiCollapsed,CMISSBasisCollapsedAtXi0,CMISSBasisNotCollapsed/),Err)
   CALL CMISSBasisQuadratureNumberOfGaussXiSet(LinearCollapsedBasis, &
        & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)
+  CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(LinearCollapsedBasis,.true.,Err) !Have to do this (unused) due to field_interp setup
   CALL CMISSBasisCreateFinish(LinearCollapsedBasis,Err)
 
   !Start the creation of a generated ellipsoid mesh
@@ -276,6 +282,7 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
   CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
   CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
+  CALL CMISSDecompositionCalculateFacesSet(Decomposition,.TRUE.,Err)
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
 
   !Create a field to put the geometry (default is geometry)
@@ -306,8 +313,7 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,3,QuadraticMeshComponentNumber,Err)
   CALL CMISSFieldCreateFinish(FibreField,Err)
 
-  !Set Fibre directions
-
+  !Set Fibre directions (this block is parallel-untested)
   node_idx=0  
   !This is valid only for quadratic basis functions
   TOTAL_NUMBER_NODES_XI(1)=NumberGlobalXElements*2
@@ -319,29 +325,35 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
   XI3delta=(1.0)/(TOTAL_NUMBER_NODES_XI(3)-1)
   zero=0
   DO k=1, TOTAL_NUMBER_NODES_XI(3)
-     !Apex nodes
-     j=1
-     i=1
-     node_idx=node_idx+1
-     FibreFieldAngle=(/zero,zero,zero/) 
-     DO component_idx=1,FieldFibreNumberOfComponents
+    !Apex nodes
+    j=1
+    i=1
+    node_idx=node_idx+1
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      FibreFieldAngle=(/zero,zero,zero/) 
+      DO component_idx=1,FieldFibreNumberOfComponents
         CALL CMISSFieldParameterSetUpdateNode(FibreField,CMISSFieldUVariableType,CMISSFieldValuesSetType,DerivativeUserNumber, &
-             & node_idx,component_idx,FibreFieldAngle(component_idx),Err)
-     ENDDO
-     theta=atan(FIBRE_SLOPE_CHANGE*XI3+FIBRE_SLOPE_INTERSECTION)
-     DO j=2, TOTAL_NUMBER_NODES_XI(2) 
-        nu=PI-XI2delta*(j-1)
-        omega=PI/2+cos(2*nu)*atan(SHEET_SLOPE_BASE_ENDO)*(-2*XI3+1)
-        DO i=1, TOTAL_NUMBER_NODES_XI(1)
-           node_idx=node_idx+1
-           FibreFieldAngle=(/theta,zero,omega/)
-           DO component_idx=1,FieldFibreNumberOfComponents
-              CALL CMISSFieldParameterSetUpdateNode(FibreField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-                   & DerivativeUserNumber, node_idx,component_idx,FibreFieldAngle(component_idx),Err)
-           ENDDO
-        ENDDO
-     ENDDO
-     XI3=XI3+XI3delta
+          & node_idx,component_idx,FibreFieldAngle(component_idx),Err)
+      ENDDO
+    ENDIF
+    theta=atan(FIBRE_SLOPE_CHANGE*XI3+FIBRE_SLOPE_INTERSECTION)
+    DO j=2, TOTAL_NUMBER_NODES_XI(2) 
+      nu=PI-XI2delta*(j-1)
+      omega=PI/2+cos(2*nu)*atan(SHEET_SLOPE_BASE_ENDO)*(-2*XI3+1)
+      DO i=1, TOTAL_NUMBER_NODES_XI(1)
+        node_idx=node_idx+1
+        CALL CMISSDecompositionNodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
+        IF(NodeDomain==ComputationalNodeNumber) THEN
+          FibreFieldAngle=(/theta,zero,omega/)
+          DO component_idx=1,FieldFibreNumberOfComponents
+            CALL CMISSFieldParameterSetUpdateNode(FibreField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+              & DerivativeUserNumber, node_idx,component_idx,FibreFieldAngle(component_idx),Err)
+          ENDDO
+        ENDIF
+      ENDDO
+    ENDDO
+    XI3=XI3+XI3delta
   ENDDO
 
   !Create a material field and attach it to the geometric field  
@@ -390,9 +402,6 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
   CALL CMISSFieldScalingTypeSet(DependentField,CMISSFieldUnitScaling,Err)
   CALL CMISSFieldCreateFinish(DependentField,Err)
 
-!Actually, don't need to create this at all - they're automatically created
-! CALL CMISSFieldParameterSetCreate(DependentField,CMISSFieldDelUDelNVariableType,CMISSFieldPressureValuesSetType,Err)
-
   CALL CMISSEquationsSetDependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)
   CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
 
@@ -413,7 +422,7 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
     & 2,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,Err)
   CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
     & 3,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,Err)
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,-8.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,-14.0_CMISSDP,Err)
 
   !Prescribe boundary conditions (absolute nodal parameters)
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
@@ -424,27 +433,64 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshEllipsoidInnerSurfaceType,InnerSurfaceNodes,InnerNormalXi,Err)
   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshEllipsoidOuterSurfaceType,OuterSurfaceNodes,OuterNormalXi,Err)
 
-  ! LEAVE THESE FOR NOW - will fix later
+  ! ASSIGN BOUNDARY CONDITIONS
+  !Fix base of the ellipsoid in z direction
+  DO NN=1,SIZE(TopSurfaceNodes,1)
+    NODE=TopSurfaceNodes(NN)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,3,ZCoord,Err)
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,NODE,3, &
+        & CMISSBoundaryConditionFixed,ZCoord,Err)
+    ENDIF
+  ENDDO
 
-!   !Fix base of the element in z direction
-!   DO NN=1,9
-!     CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,NN,3, &
-!       & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-!   ENDDO
+  !Apply inner surface pressure
+  !NOTE: Surface pressure goes into pressure_values_set_type of the DELUDELN type
+  DO NN=1,SIZE(InnerSurfaceNodes,1)
+    NODE=InnerSurfaceNodes(NN)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,NODE,ABS(InnerNormalXi), &
+        & CMISSBoundaryConditionPressure,INNER_PRESSURE,Err)
+    ENDIF
+  ENDDO
 
-!   CALL CMISSDecompositionNodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
-!   CALL CMISSDecompositionNodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
-!   IF(FirstNodeDomain==ComputationalNodeNumber) THEN
+  !Apply outer surface pressure
+  DO NN=1,SIZE(OuterSurfaceNodes,1)
+    NODE=OuterSurfaceNodes(NN)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,NODE,ABS(OuterNormalXi), &
+        & CMISSBoundaryConditionPressure,OUTER_PRESSURE,Err)
+    ENDIF
+  ENDDO
 
-!   !NOTE: Surface pressure goes into pressure_values_set_type of the DELUDELN type
-!   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,NN,3, &
-!     & CMISSBoundaryConditionPressure,4.0_CMISSDP,Err)
-
-!   !Fix two more nodes at the bottom
-!   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,1,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-!   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,2,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-!   !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,3,1,CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
-!   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,3,2,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+  !Fix more nodes at the base to stop free body motion
+  X_FIXED=.FALSE.
+  Y_FIXED=.FALSE.
+  DO NN=1,SIZE(TopSurfaceNodes,1)
+    NODE=TopSurfaceNodes(NN)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
+      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,2,YCoord,Err)
+      IF(ABS(XCoord)<1.0E-6_CMISSDP) THEN
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,NODE,1, &
+          & CMISSBoundaryConditionFixed,XCoord,Err)
+        X_FIXED=.TRUE.
+      ENDIF
+      IF(ABS(YCoord)<1.0E-6_CMISSDP) THEN
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,NODE,2, &
+          & CMISSBoundaryConditionFixed,YCoord,Err)
+        Y_FIXED=.TRUE.
+      ENDIF
+    ENDIF
+  ENDDO
+  IF(.NOT.(X_FIXED.AND.Y_FIXED)) THEN
+    WRITE(*,*) "Free body motion could not be prevented!"
+    STOP
+  ENDIF
 
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
 
@@ -465,7 +511,8 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
   CALL CMISSProblemSolversCreateStart(Problem,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
   CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
-  CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianFDCalculated,Err)
+  !CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianFDCalculated,Err)
+  CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
   CALL CMISSSolverNewtonLinearSolverGet(Solver,LinearSolver,Err)
   CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearDirectSolveType,Err)
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
