@@ -463,7 +463,7 @@ CHANGES:
     
     <!-- These variables is defined here and only used internally. -->
     <variable name="Cm" initial_value="0.01" units="uF_per_mm2" />
-    <variable name="I_stim" units="uA_per_mm2" />
+    <variable name="I_stim" initial_value="0.0" units="uA_per_mm2" />
     
     <rdf:RDF
       xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -3552,7 +3552,6 @@ CHANGES:
     <variable name="i_ns_K" public_interface="out" units="uA_per_mm2" />
     
     <!-- These variables are defined here and only used internally. -->
-    <variable name="I_ns_Ca" units="uA_per_mm2" />
     <variable name="I_ns_Na" units="uA_per_mm2" />
     <variable name="I_ns_K" units="uA_per_mm2" />
     <variable name="K_m_ns_Ca" initial_value="1.2e-3" units="mM" />
