@@ -135,7 +135,7 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
   INTEGER(CMISSIntg), ALLOCATABLE :: TopSurfaceNodes(:)
   INTEGER(CMISSIntg) :: NN,NODE,NodeDomain
   REAL(CMISSDP) :: XCoord,YCoord,ZCoord
-  LOGICAL :: X_FIXED,Y_FIXED
+  LOGICAL :: X_FIXED,Y_FIXED,X_OKAY,Y_OKAY
 
   !CMISS variables
 
@@ -478,18 +478,25 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
       IF(ABS(XCoord)<1.0E-6_CMISSDP) THEN
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,NODE,1, &
           & CMISSBoundaryConditionFixed,XCoord,Err)
+        WRITE(*,*) "FIXING NODE",NODE,"IN X DIRECTION"
         X_FIXED=.TRUE.
       ENDIF
       IF(ABS(YCoord)<1.0E-6_CMISSDP) THEN
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,NODE,2, &
           & CMISSBoundaryConditionFixed,YCoord,Err)
+        WRITE(*,*) "FIXING NODE",NODE,"IN Y DIRECTION"
         Y_FIXED=.TRUE.
       ENDIF
     ENDIF
   ENDDO
-  IF(.NOT.(X_FIXED.AND.Y_FIXED)) THEN
-    WRITE(*,*) "Free body motion could not be prevented!"
-    STOP
+  CALL MPI_REDUCE(X_FIXED,X_OKAY,1,MPI_LOGICAL,MPI_LOR,0,MPI_COMM_WORLD,MPI_IERROR)
+  CALL MPI_REDUCE(Y_FIXED,Y_OKAY,1,MPI_LOGICAL,MPI_LOR,0,MPI_COMM_WORLD,MPI_IERROR)
+  IF(ComputationalNodeNumber==0) THEN
+    IF(.NOT.(X_OKAY.AND.Y_OKAY)) THEN
+      WRITE(*,*) "Free body motion could not be prevented!"
+      CALL CMISSFinalise(Err)
+      STOP
+    ENDIF
   ENDIF
 
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
