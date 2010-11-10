@@ -101,7 +101,7 @@ PROGRAM MONODOMAINEXAMPLE
 
   INTEGER(CMISSIntg) :: N,CELL_TYPE
 
-  INTEGER(CMISSIntg) :: n98ModelIndex,JRWModelIndex
+  INTEGER(CMISSIntg) :: n98ModelIndex,JRWModelIndex,LRdModelIndex
 
   !CMISS variables
 
@@ -283,6 +283,8 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSCellMLModelImport(CellML,"n98.xml",n98ModelIndex,Err)
   ! and import JRW 1998 from a file
   CALL CMISSCellMLModelImport(CellML,"jrw-1998.xml",JRWModelIndex,Err)
+  ! and import LRd from a file
+  CALL CMISSCellMLModelImport(CellML,"LRd.xml",LRdModelIndex,Err)
 !  CALL CMISSDiagnosticsSetOn(CMISSInDiagType,(/1,2,3,4,5/),"",(/"CELLML_CREATE_FIELD_TO_CELLML_MAP_C", &
 !    & "CELLML_CREATE_CELLML_TO_FIELD_MAP_C"/),Err)
   ! Now we have imported all the models we are able to specify which variables from the model we want:
