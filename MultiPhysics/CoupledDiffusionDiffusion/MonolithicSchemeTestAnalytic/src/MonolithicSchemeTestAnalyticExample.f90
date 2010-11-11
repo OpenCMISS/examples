@@ -85,12 +85,17 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 
   !Test program parameters
 
+  REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: WIDTH=1.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
+
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=3
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=4
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=9
   INTEGER(CMISSIntg) :: MaterialsFieldUserNumberDiffusion
 !   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDiffusionTwo=10
 !   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDiffusionThree=11
@@ -98,6 +103,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 !   INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumberDiffusionTwo=16
 !   INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumberDiffusionThree=17
   INTEGER(CMISSIntg) :: EquationsSetUserNumberDiffusion
+  INTEGER(CMISSIntg) :: AnalyticFieldUserNumberDiffusion
 !   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDiffusionTwo=13
 !   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDiffusionThree=14
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=20
@@ -121,6 +127,10 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   TYPE(EXPORT_CONTAINER):: CM
 
   !Program variables
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
+  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
+
+  INTEGER(CMISSIntg) :: MPI_IERROR
 
   INTEGER(CMISSIntg) :: NUMBER_OF_DIMENSIONS
 
@@ -237,11 +247,13 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   TYPE(CMISSDecompositionType) :: Decomposition
   !Fields
   TYPE(CMISSFieldsType) :: Fields
+  TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
   !Field types
   TYPE(CMISSFieldType) :: GeometricField
   TYPE(CMISSFieldType) :: DependentField
   TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: MaterialsFieldDiffusion
   TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: SourceFieldDiffusion
+  TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: AnalyticFieldDiffusion
   TYPE(CMISSBoundaryConditionsType), ALLOCATABLE, DIMENSION(:) :: BoundaryConditionsDiffusion
   TYPE(CMISSEquationsSetType), ALLOCATABLE, DIMENSION(:) :: EquationsSetDiffusion
   TYPE(CMISSEquationsType), ALLOCATABLE, DIMENSION(:) :: EquationsDiffusion
@@ -263,7 +275,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 #endif
   
   !Generic CMISS variables
-  
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
   INTEGER(CMISSIntg) :: EquationsSetIndex
   INTEGER(CMISSIntg) :: EquationsSetIndexTwo
   INTEGER(CMISSIntg) :: EquationsSetIndexThree
@@ -323,7 +335,8 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   BASIS_NUMBER_CONC_TWO=CM%ID_P !USE THE p COMPONENT OF CMHEART INPUT FOR CONCENTRATION TWO
   NUMBER_OF_DIMENSIONS=CM%D
   BASIS_TYPE=CM%IT_T
-  BASIS_XI_INTERPOLATION_GEOMETRY=CM%IT_M
+!  BASIS_XI_INTERPOLATION_GEOMETRY=CM%IT_M
+   BASIS_XI_INTERPOLATION_GEOMETRY=2
   BASIS_XI_INTERPOLATION_CONC_ONE=CM%IT_V
   BASIS_XI_INTERPOLATION_CONC_TWO=CM%IT_P
   NUMBER_OF_NODES_GEOMETRY=CM%N_M
@@ -334,49 +347,72 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   NUMBER_OF_ELEMENT_NODES_GEOMETRY=CM%EN_M
   NUMBER_OF_ELEMENT_NODES_CONC_ONE=CM%EN_V
   NUMBER_OF_ELEMENT_NODES_CONC_TWO=CM%EN_P
-  !Set domain dimensions
-  DOMAIN_X1 =  0.0_CMISSDP
-  DOMAIN_X2 =  1.0_CMISSDP
-  DOMAIN_Y1 =  0.0_CMISSDP
-  DOMAIN_Y2 =  1.0_CMISSDP
-  DOMAIN_Z1 =  0.0_CMISSDP
-  DOMAIN_Z2 =  1.0_CMISSDP
-  !Set geometric tolerance
-  GEOMETRY_TOLERANCE = 1.0E-12_CMISSDP
-  !Set initial values
-  INITIAL_FIELD_DIFFUSION_ONE=1.0_CMISSDP
-  INITIAL_FIELD_DIFFUSION_TWO=1.0_CMISSDP
-  INITIAL_FIELD_DIFFUSION_THREE=1.0_CMISSDP
-  !Set initial boundary conditions
-  INLET_WALL_NODES_DIFFUSION_ONE_FLAG=.TRUE.
-  IF(INLET_WALL_NODES_DIFFUSION_ONE_FLAG) THEN
-    NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE=36
-    ALLOCATE(INLET_WALL_NODES_DIFFUSION_ONE(NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE))
-    INLET_WALL_NODES_DIFFUSION_ONE=(/191,155,119,83,23,21,192,156,120,84,24,22,&
-     & 198,162,126,90,36,35,204,168,132,96,48,47,210,174,138,102,60,59,216,180,144,108,72,71/)
-    !Set initial boundary conditions
-    BOUNDARY_CONDITIONS_DIFFUSION_ONE=1.0_CMISSDP
-  ENDIF  !Set material parameters
+!   !Set domain dimensions
+!   DOMAIN_X1 =  0.0_CMISSDP
+!   DOMAIN_X2 =  1.0_CMISSDP
+!   DOMAIN_Y1 =  0.0_CMISSDP
+!   DOMAIN_Y2 =  1.0_CMISSDP
+!   DOMAIN_Z1 =  0.0_CMISSDP
+!   DOMAIN_Z2 =  1.0_CMISSDP
+!   !Set geometric tolerance
+!   GEOMETRY_TOLERANCE = 1.0E-12_CMISSDP
+!   !Set initial values
+!   INITIAL_FIELD_DIFFUSION_ONE=1.0_CMISSDP
+!   INITIAL_FIELD_DIFFUSION_TWO=1.0_CMISSDP
+!   INITIAL_FIELD_DIFFUSION_THREE=1.0_CMISSDP
+!   !Set initial boundary conditions
+!   INLET_WALL_NODES_DIFFUSION_ONE_FLAG=.TRUE.
+!   IF(INLET_WALL_NODES_DIFFUSION_ONE_FLAG) THEN
+!     NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE=36
+!     ALLOCATE(INLET_WALL_NODES_DIFFUSION_ONE(NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE))
+!     INLET_WALL_NODES_DIFFUSION_ONE=(/191,155,119,83,23,21,192,156,120,84,24,22,&
+!      & 198,162,126,90,36,35,204,168,132,96,48,47,210,174,138,102,60,59,216,180,144,108,72,71/)
+!     !Set initial boundary conditions
+!     BOUNDARY_CONDITIONS_DIFFUSION_ONE=1.0_CMISSDP
+!   ENDIF  !Set material parameters
+! 
+!   INLET_WALL_NODES_DIFFUSION_TWO_FLAG=.TRUE.
+!   IF(INLET_WALL_NODES_DIFFUSION_TWO_FLAG) THEN
+!     NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO=36
+!     ALLOCATE(INLET_WALL_NODES_DIFFUSION_TWO(NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO))
+!     INLET_WALL_NODES_DIFFUSION_TWO=(/191,155,119,83,23,21,192,156,120,84,24,22,&
+!      & 198,162,126,90,36,35,204,168,132,96,48,47,210,174,138,102,60,59,216,180,144,108,72,71/)
+!     !Set initial boundary conditions
+!     BOUNDARY_CONDITIONS_DIFFUSION_TWO=1.0_CMISSDP
+!   ENDIF  !Set material parameters
+! 
+!   INLET_WALL_NODES_DIFFUSION_THREE_FLAG=.TRUE.
+!   IF(INLET_WALL_NODES_DIFFUSION_THREE_FLAG) THEN
+!     NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE=36
+!     ALLOCATE(INLET_WALL_NODES_DIFFUSION_THREE(NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE))
+!     INLET_WALL_NODES_DIFFUSION_THREE=(/191,155,119,83,23,21,192,156,120,84,24,22,&
+!      & 198,162,126,90,36,35,204,168,132,96,48,47,210,174,138,102,60,59,216,180,144,108,72,71/)
+!     !Set initial boundary conditions
+!     BOUNDARY_CONDITIONS_DIFFUSION_THREE=1.0_CMISSDP
+!   ENDIF  !Set material parameters
 
-  INLET_WALL_NODES_DIFFUSION_TWO_FLAG=.TRUE.
-  IF(INLET_WALL_NODES_DIFFUSION_TWO_FLAG) THEN
-    NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO=36
-    ALLOCATE(INLET_WALL_NODES_DIFFUSION_TWO(NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO))
-    INLET_WALL_NODES_DIFFUSION_TWO=(/191,155,119,83,23,21,192,156,120,84,24,22,&
-     & 198,162,126,90,36,35,204,168,132,96,48,47,210,174,138,102,60,59,216,180,144,108,72,71/)
-    !Set initial boundary conditions
-    BOUNDARY_CONDITIONS_DIFFUSION_TWO=1.0_CMISSDP
-  ENDIF  !Set material parameters
+  !Get the computational nodes information
+  CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
+  CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
-  INLET_WALL_NODES_DIFFUSION_THREE_FLAG=.TRUE.
-  IF(INLET_WALL_NODES_DIFFUSION_THREE_FLAG) THEN
-    NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE=36
-    ALLOCATE(INLET_WALL_NODES_DIFFUSION_THREE(NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE))
-    INLET_WALL_NODES_DIFFUSION_THREE=(/191,155,119,83,23,21,192,156,120,84,24,22,&
-     & 198,162,126,90,36,35,204,168,132,96,48,47,210,174,138,102,60,59,216,180,144,108,72,71/)
-    !Set initial boundary conditions
-    BOUNDARY_CONDITIONS_DIFFUSION_THREE=1.0_CMISSDP
-  ENDIF  !Set material parameters
+  NUMBER_GLOBAL_X_ELEMENTS=1
+  NUMBER_GLOBAL_Y_ELEMENTS=1
+  NUMBER_GLOBAL_Z_ELEMENTS=0
+
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0)THEN
+    NUMBER_OF_DIMENSIONS=2
+  ELSE
+    NUMBER_OF_DIMENSIONS=3
+  ENDIF
+  NUMBER_OF_DOMAINS=NumberOfComputationalNodes
+
+  !Set all diganostic levels on for testing
+
+  CALL MPI_BCAST(NUMBER_GLOBAL_X_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
+  CALL MPI_BCAST(NUMBER_GLOBAL_Y_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
+  CALL MPI_BCAST(NUMBER_GLOBAL_Z_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
+  CALL MPI_BCAST(NUMBER_OF_DOMAINS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
+
 
 
 
@@ -388,14 +424,16 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   !Set output parameter
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
   LINEAR_SOLVER_DIFFUSION_OUTPUT_TYPE=CMISSSolverSolverMatrixOutput
+  !LINEAR_SOLVER_DIFFUSION_OUTPUT_TYPE=CMISSSolverNoOutput
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
   EQUATIONS_DIFFUSION_OUTPUT=CMISSEquationsMatrixOutput
+  !EQUATIONS_DIFFUSION_OUTPUT=CMISSEquationsNoOutput
   EQUATIONS_DIFFUSION_TWO_OUTPUT=CMISSEquationsNoOutput
   EQUATIONS_DIFFUSION_THREE_OUTPUT=CMISSEquationsNoOutput
   !Set time parameter
   LINEAR_SOLVER_DIFFUSION_START_TIME=0.0_CMISSDP
-  LINEAR_SOLVER_DIFFUSION_STOP_TIME=2.1_CMISSDP 
-  LINEAR_SOLVER_DIFFUSION_TIME_INCREMENT=0.1_CMISSDP
+  LINEAR_SOLVER_DIFFUSION_STOP_TIME=0.3000001_CMISSDP 
+  LINEAR_SOLVER_DIFFUSION_TIME_INCREMENT=0.01_CMISSDP
   !Set result output parameter
   LINEAR_SOLVER_DIFFUSION_OUTPUT_FREQUENCY=1
   !Set solver parameters
@@ -417,18 +455,18 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 
   !Set diagnostics
 
-  DIAG_LEVEL_LIST(1)=1
-  DIAG_LEVEL_LIST(2)=2
-  DIAG_LEVEL_LIST(3)=3
-  DIAG_LEVEL_LIST(4)=4
-  DIAG_LEVEL_LIST(5)=5
+   !DIAG_LEVEL_LIST(1)=1
+!   DIAG_LEVEL_LIST(2)=2
+!   DIAG_LEVEL_LIST(3)=3
+!   DIAG_LEVEL_LIST(4)=4
+!   DIAG_LEVEL_LIST(5)=5
 
 !   DIAG_ROUTINE_LIST(1)="DIFFUSION_EQUATION_FINITE_ELEMENT_CALCULATE"
 !   DIAG_ROUTINE_LIST(2)="PROBLEM_SOLVER_EQUATIONS_SOLVE"
-!   DIAG_ROUTINE_LIST(3)="SOLVER_SOLUTION_UPDATE"
+   !DIAG_ROUTINE_LIST(1)="SOLVER_DYNAMIC_CREATE_FINISH"
 
   !CMISSAllDiagType/CMISSInDiagType/CMISSFromDiagType
-!   CALL CMISSDiagnosticsSetOn(CMISSInDiagType,DIAG_LEVEL_LIST,"Diagnostics",DIAG_ROUTINE_LIST,Err)
+   !CALL CMISSDiagnosticsSetOn(CMISSInDiagType,DIAG_LEVEL_LIST,"Diagnostics",DIAG_ROUTINE_LIST,Err)
 
   !CMISSAllTimingType/CMISSInTimingType/CMISSFromTimingType
   !TIMING_ROUTINE_LIST(1)="PROBLEM_FINITE_ELEMENT_CALCULATE"
@@ -441,6 +479,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   ALLOCATE (SourceFieldDiffusion(Ncompartments))
   ALLOCATE (BoundaryConditionsDiffusion(Ncompartments))
   ALLOCATE (EquationsDiffusion(Ncompartments))
+  ALLOCATE (AnalyticFieldDiffusion(Ncompartments))
 
 !
   !================================================================================================================================
@@ -550,85 +589,106 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   !
   !================================================================================================================================
   !
-  !MESH
-  !All types of physics utilize the same "mesh", but may be represented on individual mesh components.
-  TotalNumberOfSolidNodes = NUMBER_OF_NODES_GEOMETRY
-  TOTAL_NUMBER_OF_ALL_NODES = TOTAL_NUMBER_OF_NODES + TotalNumberOfSolidNodes
-  MESH_NUMBER_OF_ALL_COMPONENTS = MESH_NUMBER_OF_COMPONENTS
-
-  !Start the creation of mesh nodes
-  CALL CMISSNodesTypeInitialise(Nodes,Err)
-  CALL CMISSNodesCreateStart(Region,TOTAL_NUMBER_OF_ALL_NODES,Nodes,Err)
-  CALL CMISSNodesCreateFinish(Nodes,Err)
-  !Start the creation of the mesh
-  CALL CMISSMeshTypeInitialise(Mesh,Err)
-  CALL CMISSMeshCreateStart(MeshUserNumber,Region,NUMBER_OF_DIMENSIONS,Mesh,Err)
-  !Set number of mesh elements
-  CALL CMISSMeshNumberOfElementsSet(Mesh,TOTAL_NUMBER_OF_ELEMENTS,Err)
-  !Set number of mesh components
-  CALL CMISSMeshNumberOfComponentsSet(Mesh,MESH_NUMBER_OF_ALL_COMPONENTS,Err)
-  !
-  CALL CMISSMeshElementsTypeInitialise(MeshElementsGeometry,Err)
-  CALL CMISSMeshElementsTypeInitialise(MeshElementsConcOne,Err)
-  CALL CMISSMeshElementsTypeInitialise(MeshElementsConcTwo,Err)
-  CALL CMISSMeshElementsTypeInitialise(MeshElementsConcThree,Err)
+!   !MESH
+!   !All types of physics utilize the same "mesh", but may be represented on individual mesh components.
+!   TotalNumberOfSolidNodes = NUMBER_OF_NODES_GEOMETRY
+!   TOTAL_NUMBER_OF_ALL_NODES = TOTAL_NUMBER_OF_NODES + TotalNumberOfSolidNodes
+!   MESH_NUMBER_OF_ALL_COMPONENTS = MESH_NUMBER_OF_COMPONENTS
+! 
+!   !Start the creation of mesh nodes
+!   CALL CMISSNodesTypeInitialise(Nodes,Err)
+!   CALL CMISSNodesCreateStart(Region,TOTAL_NUMBER_OF_ALL_NODES,Nodes,Err)
+!   CALL CMISSNodesCreateFinish(Nodes,Err)
+!   !Start the creation of the mesh
+!   CALL CMISSMeshTypeInitialise(Mesh,Err)
+!   CALL CMISSMeshCreateStart(MeshUserNumber,Region,NUMBER_OF_DIMENSIONS,Mesh,Err)
+!   !Set number of mesh elements
+!   CALL CMISSMeshNumberOfElementsSet(Mesh,TOTAL_NUMBER_OF_ELEMENTS,Err)
+!   !Set number of mesh components
+!   CALL CMISSMeshNumberOfComponentsSet(Mesh,MESH_NUMBER_OF_ALL_COMPONENTS,Err)
+!   !
+!   CALL CMISSMeshElementsTypeInitialise(MeshElementsGeometry,Err)
+!   CALL CMISSMeshElementsTypeInitialise(MeshElementsConcOne,Err)
+!   CALL CMISSMeshElementsTypeInitialise(MeshElementsConcTwo,Err)
+!   CALL CMISSMeshElementsTypeInitialise(MeshElementsConcThree,Err)
   MESH_COMPONENT_NUMBER_GEOMETRY=1
   MESH_COMPONENT_NUMBER_CONC_ONE=1
   MESH_COMPONENT_NUMBER_CONC_TWO=1
   MESH_COMPONENT_NUMBER_CONC_THREE=1
-  !Specify spatial mesh component
-  CALL CMISSMeshElementsCreateStart(Mesh,MESH_COMPONENT_NUMBER_GEOMETRY,BasisGeometry,MeshElementsGeometry,Err)
-  DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
-    CALL CMISSMeshElementsNodesSet(MeshElementsGeometry,ELEMENT_NUMBER,CM%M(ELEMENT_NUMBER,1:NUMBER_OF_ELEMENT_NODES_GEOMETRY),Err)
-  ENDDO
-  CALL CMISSMeshElementsCreateFinish(MeshElementsGeometry,Err)
-  !Specify concentration one mesh component
-! !  IF(BASIS_XI_INTERPOLATION_CONC_ONE==BASIS_XI_INTERPOLATION_GEOMETRY) THEN
-     MeshElementsConcOne=MeshElementsGeometry
-! !   ELSE
-! !     MESH_COMPONENT_NUMBER_CONC_ONE=MESH_COMPONENT_NUMBER_GEOMETRY+1
-!      CALL CMISSMeshElementsCreateStart(Mesh,MESH_COMPONENT_NUMBER_CONC_ONE,BasisConcOne,MeshElementsConcOne,Err)
-! !     DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
-! !       CALL CMISSMeshElementsNodesSet(MeshElementsConcOne,ELEMENT_NUMBER,CM%V(ELEMENT_NUMBER, & 
-! !         & 1:NUMBER_OF_ELEMENT_NODES_CONC_ONE),Err)
-! !     ENDDO
- !    CALL CMISSMeshElementsCreateFinish(MeshElementsConcOne,Err)
-! !  ENDIF
-!   !Specify concentration two mesh component
-! !  IF(BASIS_XI_INTERPOLATION_CONC_TWO==BASIS_XI_INTERPOLATION_GEOMETRY) THEN
-     MeshElementsConcTwo=MeshElementsGeometry
-! !    MESH_COMPONENT_NUMBER_CONC_TWO=MESH_COMPONENT_NUMBER_GEOMETRY
-! !  ELSE IF(BASIS_XI_INTERPOLATION_CONC_TWO==BASIS_XI_INTERPOLATION_CONC_ONE) THEN
-! !    MeshElementsConcTwo=MeshElementsConcOne
-! !    MESH_COMPONENT_NUMBER_CONC_TWO=MESH_COMPONENT_NUMBER_CONC_ONE
-! !  ELSE
-! !    MESH_COMPONENT_NUMBER_CONC_TWO=MESH_COMPONENT_NUMBER_CONC_ONE+1
-!     CALL CMISSMeshElementsCreateStart(Mesh,MESH_COMPONENT_NUMBER_CONC_TWO,BasisConcTwo,MeshElementsConcTwo,Err)
-! !    DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
-! !      CALL CMISSMeshElementsNodesSet(MeshElementsConcTwo,ELEMENT_NUMBER,CM%P(ELEMENT_NUMBER, & 
-! !        & 1:NUMBER_OF_ELEMENT_NODES_CONC_TWO),Err)
-! !    ENDDO
-!     CALL CMISSMeshElementsCreateFinish(MeshElementsConcTwo,Err)
-!  ! ENDIF
-!   !Specify concentration three mesh component
-! !  IF(BASIS_XI_INTERPOLATION_CONC_THREE==BASIS_XI_INTERPOLATION_GEOMETRY) THEN
-     MeshElementsConcThree=MeshElementsGeometry
-! !    MESH_COMPONENT_NUMBER_CONC_THREE=MESH_COMPONENT_NUMBER_GEOMETRY
-! !   ELSE IF(BASIS_XI_INTERPOLATION_CONC_THREE==BASIS_XI_INTERPOLATION_CONC_ONE) THEN
-! !     MeshElementsConcThree=MeshElementsConcOne
-! !    MESH_COMPONENT_NUMBER_CONC_THREE=MESH_COMPONENT_NUMBER_CONC_ONE
-! !  ELSE
-! !    MESH_COMPONENT_NUMBER_CONC_TWO=MESH_COMPONENT_NUMBER_CONC_ONE+1
-!     CALL CMISSMeshElementsCreateStart(Mesh,MESH_COMPONENT_NUMBER_CONC_THREE,BasisConcThree,MeshElementsConcThree,Err)
-! !    DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
-! !      CALL CMISSMeshElementsNodesSet(MeshElementsConcTwo,ELEMENT_NUMBER,CM%P(ELEMENT_NUMBER, & 
-! !        & 1:NUMBER_OF_ELEMENT_NODES_CONC_TWO),Err)
-! !    ENDDO
-!     CALL CMISSMeshElementsCreateFinish(MeshElementsConcThree,Err)
-! !  ENDIF
+!   !Specify spatial mesh component
+!   CALL CMISSMeshElementsCreateStart(Mesh,MESH_COMPONENT_NUMBER_GEOMETRY,BasisGeometry,MeshElementsGeometry,Err)
+!   DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
+!     CALL CMISSMeshElementsNodesSet(MeshElementsGeometry,ELEMENT_NUMBER,CM%M(ELEMENT_NUMBER,1:NUMBER_OF_ELEMENT_NODES_GEOMETRY),Err)
+!   ENDDO
+!   CALL CMISSMeshElementsCreateFinish(MeshElementsGeometry,Err)
+!   !Specify concentration one mesh component
+! ! !  IF(BASIS_XI_INTERPOLATION_CONC_ONE==BASIS_XI_INTERPOLATION_GEOMETRY) THEN
+!      MeshElementsConcOne=MeshElementsGeometry
+! ! !   ELSE
+! ! !     MESH_COMPONENT_NUMBER_CONC_ONE=MESH_COMPONENT_NUMBER_GEOMETRY+1
+! !      CALL CMISSMeshElementsCreateStart(Mesh,MESH_COMPONENT_NUMBER_CONC_ONE,BasisConcOne,MeshElementsConcOne,Err)
+! ! !     DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
+! ! !       CALL CMISSMeshElementsNodesSet(MeshElementsConcOne,ELEMENT_NUMBER,CM%V(ELEMENT_NUMBER, & 
+! ! !         & 1:NUMBER_OF_ELEMENT_NODES_CONC_ONE),Err)
+! ! !     ENDDO
+!  !    CALL CMISSMeshElementsCreateFinish(MeshElementsConcOne,Err)
+! ! !  ENDIF
+! !   !Specify concentration two mesh component
+! ! !  IF(BASIS_XI_INTERPOLATION_CONC_TWO==BASIS_XI_INTERPOLATION_GEOMETRY) THEN
+!      MeshElementsConcTwo=MeshElementsGeometry
+! ! !    MESH_COMPONENT_NUMBER_CONC_TWO=MESH_COMPONENT_NUMBER_GEOMETRY
+! ! !  ELSE IF(BASIS_XI_INTERPOLATION_CONC_TWO==BASIS_XI_INTERPOLATION_CONC_ONE) THEN
+! ! !    MeshElementsConcTwo=MeshElementsConcOne
+! ! !    MESH_COMPONENT_NUMBER_CONC_TWO=MESH_COMPONENT_NUMBER_CONC_ONE
+! ! !  ELSE
+! ! !    MESH_COMPONENT_NUMBER_CONC_TWO=MESH_COMPONENT_NUMBER_CONC_ONE+1
+! !     CALL CMISSMeshElementsCreateStart(Mesh,MESH_COMPONENT_NUMBER_CONC_TWO,BasisConcTwo,MeshElementsConcTwo,Err)
+! ! !    DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
+! ! !      CALL CMISSMeshElementsNodesSet(MeshElementsConcTwo,ELEMENT_NUMBER,CM%P(ELEMENT_NUMBER, & 
+! ! !        & 1:NUMBER_OF_ELEMENT_NODES_CONC_TWO),Err)
+! ! !    ENDDO
+! !     CALL CMISSMeshElementsCreateFinish(MeshElementsConcTwo,Err)
+! !  ! ENDIF
+! !   !Specify concentration three mesh component
+! ! !  IF(BASIS_XI_INTERPOLATION_CONC_THREE==BASIS_XI_INTERPOLATION_GEOMETRY) THEN
+!      MeshElementsConcThree=MeshElementsGeometry
+! ! !    MESH_COMPONENT_NUMBER_CONC_THREE=MESH_COMPONENT_NUMBER_GEOMETRY
+! ! !   ELSE IF(BASIS_XI_INTERPOLATION_CONC_THREE==BASIS_XI_INTERPOLATION_CONC_ONE) THEN
+! ! !     MeshElementsConcThree=MeshElementsConcOne
+! ! !    MESH_COMPONENT_NUMBER_CONC_THREE=MESH_COMPONENT_NUMBER_CONC_ONE
+! ! !  ELSE
+! ! !    MESH_COMPONENT_NUMBER_CONC_TWO=MESH_COMPONENT_NUMBER_CONC_ONE+1
+! !     CALL CMISSMeshElementsCreateStart(Mesh,MESH_COMPONENT_NUMBER_CONC_THREE,BasisConcThree,MeshElementsConcThree,Err)
+! ! !    DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
+! ! !      CALL CMISSMeshElementsNodesSet(MeshElementsConcTwo,ELEMENT_NUMBER,CM%P(ELEMENT_NUMBER, & 
+! ! !        & 1:NUMBER_OF_ELEMENT_NODES_CONC_TWO),Err)
+! ! !    ENDDO
+! !     CALL CMISSMeshElementsCreateFinish(MeshElementsConcThree,Err)
+! ! !  ENDIF
+! 
+!   !Finish the creation of the mesh
+!   CALL CMISSMeshCreateFinish(Mesh,Err)
 
-  !Finish the creation of the mesh
-  CALL CMISSMeshCreateFinish(Mesh,Err)
+  !Start the creation of a generated mesh in the region
+  CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
+  CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
+  !Set up a regular x*y*z mesh
+  CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
+  !Set the default basis
+  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,BasisGeometry,Err)   
+  !Define the mesh on the region
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/WIDTH,HEIGHT/),Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS/),Err)
+  ELSE
+    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/WIDTH,HEIGHT,LENGTH/),Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
+      & NUMBER_GLOBAL_Z_ELEMENTS/),Err)
+  ENDIF
+  !Finish the creation of a generated mesh in the region
+  CALL CMISSMeshTypeInitialise(Mesh,Err)
+  CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
+
   !
   !================================================================================================================================
   !
@@ -659,16 +719,19 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   ENDDO
   !Finish creating the field
   CALL CMISSFieldCreateFinish(GeometricField,Err)
+
   !Update the geometric field parameters
-  DO NODE_NUMBER=1,NUMBER_OF_NODES_GEOMETRY
-    DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-      VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)
-      CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-        & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
-    ENDDO
-  ENDDO
-  CALL CMISSFieldParameterSetUpdateStart(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
-  CALL CMISSFieldParameterSetUpdateFinish(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
+  CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
+  !Update the geometric field parameters
+!   DO NODE_NUMBER=1,NUMBER_OF_NODES_GEOMETRY
+!     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+!       VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)
+!       CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!         & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+!     ENDDO
+!   ENDDO
+!   CALL CMISSFieldParameterSetUpdateStart(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
+!   CALL CMISSFieldParameterSetUpdateFinish(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
   !
   !================================================================================================================================
   !
@@ -752,8 +815,8 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   !-------------------------------------------------------------------------------------
   ! INITIALISE DEPENDENT FIELDS
 !   !Initialise dependent field (concentration one components)
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,1.0_CMISSDP,Err)
+!   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!     & 1,1.0_CMISSDP,Err)
 
 !   !Initialise dependent field (concentration two components)
 !   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldU2VariableType,CMISSFieldValuesSetType, & 
@@ -769,12 +832,16 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   !
   ALLOCATE(CouplingCoeffs(Ncompartments,Ncompartments))
   IF(Ncompartments==2)THEN
-    CouplingCoeffs(1,1)=10.0E-01_CMISSDP
-!     CouplingCoeffs(1,2)=-1.0E-04_CMISSDP
-!     CouplingCoeffs(2,1)=-1.0E-04_CMISSDP
-    CouplingCoeffs(1,2)=10.0E-01_CMISSDP
-    CouplingCoeffs(2,1)=10.0E-01_CMISSDP
-    CouplingCoeffs(2,2)=10.0E-01_CMISSDP
+!     CouplingCoeffs(1,1)=1.0E-01_CMISSDP
+! !     CouplingCoeffs(1,2)=-1.0E-04_CMISSDP
+! !     CouplingCoeffs(2,1)=-1.0E-04_CMISSDP
+!     CouplingCoeffs(1,2)=1.0E-01_CMISSDP
+!     CouplingCoeffs(2,1)=1.0E-01_CMISSDP
+!     CouplingCoeffs(2,2)=1.0E-01_CMISSDP
+    CouplingCoeffs(1,1)=0.0E-01_CMISSDP
+    CouplingCoeffs(1,2)=0.0E-01_CMISSDP
+    CouplingCoeffs(2,1)=0.0E-01_CMISSDP
+    CouplingCoeffs(2,2)=0.0E-01_CMISSDP
   ELSE IF(Ncompartments==3)THEN
     CouplingCoeffs(1,1)=1.0E-02_CMISSDP
     CouplingCoeffs(1,2)=1.0E-02_CMISSDP
@@ -874,6 +941,18 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
     CALL CMISSEquationsSetSourceCreateFinish(EquationsSetDiffusion(icompartment),Err)
   END DO 
 
+  !Create the equations set analytic field variables
+  DO icompartment = 1,Ncompartments
+    AnalyticFieldUserNumberDiffusion=900_CMISSIntg+icompartment
+    CALL CMISSFieldTypeInitialise(AnalyticFieldDiffusion(icompartment),Err)
+
+    CALL CMISSEquationsSetAnalyticCreateStart(EquationsSetDiffusion(icompartment),CMISSEquationsSetMultiCompDiffusionTwoCompTwoDim,&
+      & AnalyticFieldUserNumberDiffusion,AnalyticFieldDiffusion(icompartment),Err)
+  
+    !Finish the equations set analytic field variables
+    CALL CMISSEquationsSetAnalyticCreateFinish(EquationsSetDiffusion(icompartment),Err)
+  END DO 
+
   !
   !================================================================================================================================
   !
@@ -893,82 +972,84 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 
 
   DO icompartment=1,Ncompartments
-    CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDiffusion(icompartment),Err)
-    CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDiffusion(icompartment),&
-         &  BoundaryConditionsDiffusion(icompartment),Err)
-!     IF(INLET_WALL_NODES_DIFFUSION_FLAG(icompartment)) THEN
-!       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION(icompartment)
-!         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION(icompartment,NODE_COUNTER)
+!     CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDiffusion(icompartment),Err)
+!     CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDiffusion(icompartment),&
+!          &  BoundaryConditionsDiffusion(icompartment),Err)
+! !     IF(INLET_WALL_NODES_DIFFUSION_FLAG(icompartment)) THEN
+! !       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION(icompartment)
+! !         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION(icompartment,NODE_COUNTER)
+! !         CONDITION=CMISSBoundaryConditionFixed
+! !           VALUE=0.2_CMISSDP
+! !           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(icompartment),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+! !             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
+! !       ENDDO
+! !     ENDIF
+!    IF(icompartment==1)THEN
+!     IF(INLET_WALL_NODES_DIFFUSION_ONE_FLAG) THEN
+!       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE
+!         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_ONE(NODE_COUNTER)
 !         CONDITION=CMISSBoundaryConditionFixed
-!           VALUE=0.2_CMISSDP
-!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(icompartment),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+!           VALUE=1.0_CMISSDP
+!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(1),CMISSFieldUVariableType, &
+!             & CMISSNoGlobalDerivative, & 
 !             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
 !       ENDDO
 !     ENDIF
-   IF(icompartment==1)THEN
-    IF(INLET_WALL_NODES_DIFFUSION_ONE_FLAG) THEN
-      DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE
-        NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_ONE(NODE_COUNTER)
-        CONDITION=CMISSBoundaryConditionFixed
-          VALUE=1.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(1),CMISSFieldUVariableType, &
-            & CMISSNoGlobalDerivative, & 
-            & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
-      ENDDO
-    ENDIF
-   ENDIF
-
-   IF(icompartment==2)THEN
-    IF(INLET_WALL_NODES_DIFFUSION_TWO_FLAG) THEN
-      DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO
-        NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_TWO(NODE_COUNTER)
-        CONDITION=CMISSBoundaryConditionFixed
-          VALUE=0.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(2),CMISSFieldDelVDelNVariableType, &
-            & CMISSNoGlobalDerivative, & 
-            & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
-      ENDDO
-    ENDIF
-   ENDIF
-
-!    IF(icompartment==3)THEN
+!    ENDIF
+! 
+!    IF(icompartment==2)THEN
+!     IF(INLET_WALL_NODES_DIFFUSION_TWO_FLAG) THEN
+!       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO
+!         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_TWO(NODE_COUNTER)
+!         CONDITION=CMISSBoundaryConditionFixed
+!           VALUE=0.0_CMISSDP
+!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(2),CMISSFieldDelVDelNVariableType, &
+!             & CMISSNoGlobalDerivative, & 
+!             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
+!       ENDDO
+!     ENDIF
+!    ENDIF
+! 
+! !    IF(icompartment==3)THEN
+! !     IF(INLET_WALL_NODES_DIFFUSION_THREE_FLAG) THEN
+! !       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE
+! !         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_THREE(NODE_COUNTER)
+! !         CONDITION=CMISSBoundaryConditionFixed
+! !           VALUE=0.0_CMISSDP
+! !           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(3),CMISSFieldU1VariableType,CMISSNoGlobalDerivative, & 
+! !             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
+! !       ENDDO
+! !     ENDIF
+! !    ENDIF
+! 
+!    IF(icompartment==4)THEN
 !     IF(INLET_WALL_NODES_DIFFUSION_THREE_FLAG) THEN
 !       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE
 !         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_THREE(NODE_COUNTER)
 !         CONDITION=CMISSBoundaryConditionFixed
 !           VALUE=0.0_CMISSDP
-!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(3),CMISSFieldU1VariableType,CMISSNoGlobalDerivative, & 
+!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(4),CMISSFieldU2VariableType,CMISSNoGlobalDerivative, & 
 !             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
 !       ENDDO
 !     ENDIF
 !    ENDIF
+! 
+!    IF(icompartment==5)THEN
+!     IF(INLET_WALL_NODES_DIFFUSION_THREE_FLAG) THEN
+!       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE
+!         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_THREE(NODE_COUNTER)
+!         CONDITION=CMISSBoundaryConditionFixed
+!           VALUE=1.0_CMISSDP
+!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(5),CMISSFieldU3VariableType,CMISSNoGlobalDerivative, & 
+!             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
+!       ENDDO
+!     ENDIF
+!    ENDIF
+! 
+! 
+!     CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDiffusion(icompartment),Err)
 
-   IF(icompartment==4)THEN
-    IF(INLET_WALL_NODES_DIFFUSION_THREE_FLAG) THEN
-      DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE
-        NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_THREE(NODE_COUNTER)
-        CONDITION=CMISSBoundaryConditionFixed
-          VALUE=0.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(4),CMISSFieldU2VariableType,CMISSNoGlobalDerivative, & 
-            & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
-      ENDDO
-    ENDIF
-   ENDIF
-
-   IF(icompartment==5)THEN
-    IF(INLET_WALL_NODES_DIFFUSION_THREE_FLAG) THEN
-      DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE
-        NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_THREE(NODE_COUNTER)
-        CONDITION=CMISSBoundaryConditionFixed
-          VALUE=1.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(5),CMISSFieldU3VariableType,CMISSNoGlobalDerivative, & 
-            & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
-      ENDDO
-    ENDIF
-   ENDIF
-
-
-    CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDiffusion(icompartment),Err)
+    CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSetDiffusion(icompartment),Err)
 
   ENDDO
   !
@@ -1061,6 +1142,9 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   !
   !OUTPUT
 
+  Call CMISSAnalyticAnalysisOutput(DependentField,"MultiCompDiffusionAnalytics_2Comp_2D_x1_y1_Q_T1",Err)
+
+
   EXPORT_FIELD_IO=.TRUE.
   IF(EXPORT_FIELD_IO) THEN
     WRITE(*,'(A)') "Exporting fields..."
@@ -1082,9 +1166,6 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 
     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".dependent_V", region, mesh, DependentField, &
       & CMISSFieldVVariableType, err )
-
-!     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".dependent_U1", region, mesh, DependentField, &
-!       & CMISSFieldVVariableType, err )
     
     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".equations_set_field_1", region, mesh, EquationsSetFieldDiffusion(1), &
       & CMISSFieldUVariableType, err )
@@ -1095,9 +1176,17 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 !     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".equations_set_field_3", region, mesh, EquationsSetFieldDiffusion(3), &
 !       & CMISSFieldUVariableType, err )
 
-    !CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".source", region, mesh, SourceField, err )
+    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".source_1", region,mesh,SourceFieldDiffusion(1),CMISSFieldUVariableType,&
+      & err )
 
-    !CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".materials", region, mesh, MaterialsField, err )
+    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".source_2", region,mesh,SourceFieldDiffusion(2),CMISSFieldUVariableType,&
+      & err )
+
+    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".materials_1", region, mesh, MaterialsFieldDiffusion(1), &
+      & CMISSFieldUVariableType,err )
+
+    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".materials_2", region, mesh, MaterialsFieldDiffusion(2), &
+      & CMISSFieldUVariableType,err )
 
     !CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".analytic", region, mesh, AnalyticField, err )
     

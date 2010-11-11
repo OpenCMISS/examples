@@ -67,8 +67,8 @@ PROGRAM DIFFUSIONCONSTANTSOURCEEXAMPLE
   !Test program parameters
 
   REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: WIDTH=2.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: WIDTH=1.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: LENGTH=1.0_CMISSDP
   
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
@@ -139,9 +139,9 @@ PROGRAM DIFFUSIONCONSTANTSOURCEEXAMPLE
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  NUMBER_GLOBAL_X_ELEMENTS=10
-  NUMBER_GLOBAL_Y_ELEMENTS=20
-  NUMBER_GLOBAL_Z_ELEMENTS=0
+  NUMBER_GLOBAL_X_ELEMENTS=5
+  NUMBER_GLOBAL_Y_ELEMENTS=5
+  NUMBER_GLOBAL_Z_ELEMENTS=5
   NUMBER_OF_DOMAINS=1
 
 
@@ -272,7 +272,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   !Set the equations set output
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsTimingOutput,Err)
-  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsMatrixOutput,Err)
+  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsMatrixOutput,Err)
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsElementMatrixOutput,Err)
   !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
@@ -281,16 +281,16 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
   !Set the first node to 0.0 and the last node to 1.0
-  FirstNodeNumber=1
-  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)
-  ELSE
-    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
-  ENDIF
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
-    & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDeludelnVariableType,1,LastNodeNumber,1, &
-    & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
+!   FirstNodeNumber=1
+!   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+!     LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)
+!   ELSE
+!     LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
+!   ENDIF
+!   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
+!     & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+!   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDeludelnVariableType,1,LastNodeNumber,1, &
+!     & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
   !Finish the creation of the equations set boundary conditions
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
 
@@ -298,7 +298,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   !Create the problem
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
-  !Set the problem to be a No Source Diffusion problem
+  !Set the problem to be a linear source Diffusion problem
   CALL CMISSProblemSpecificationSet(Problem,CMISSProblemClassicalFieldClass,CMISSProblemDiffusionEquationType, &
     & CMISSProblemLinearSourceDiffusionSubtype,Err)
   !Finish the creation of a problem.
@@ -309,9 +309,9 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
   !CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   !Get the control loop
-  !CALL CMISSProblemControlLoopGet(Problem,ControlLoopNode,ControlLoop,Err)
+  CALL CMISSProblemControlLoopGet(Problem,ControlLoopNode,ControlLoop,Err)
   !Set the times
-  !CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,1.0_CMISSDP,0.1_CMISSDP,Err)
+  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,0.1_CMISSDP,0.1_CMISSDP,Err)
   !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
 
@@ -330,10 +330,10 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
-  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
-  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
+  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   CALL CMISSSolverDynamicLinearSolverGet(Solver,LinearSolver,Err)
-  CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolver,300,Err)
+  CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolver,10000,Err)
   !Finish the creation of the problem solver
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
 
@@ -346,7 +346,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
   CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
   !Set the solver equations sparsity
-  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
+  !CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
   !CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices,Err)  
   !Add in the equations set
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
