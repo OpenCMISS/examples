@@ -260,14 +260,8 @@ PROGRAM QUADRATICELLIPSOIDEEXAMPLE
   CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
   !Set up an ellipsoid mesh
   CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshEllipsoidMeshType,Err)
-  !Enable creation of second mesh component
-  CALL CMISSGeneratedMeshLogicalSet(GeneratedMesh,.TRUE.,Err)
-  !Set the quadratic bases
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,QuadraticBasis,Err)
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,QuadraticCollapsedBasis,Err)
-  !Set the linear bases
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,LinearBasis,Err)
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,LinearCollapsedBasis,Err)
+  !Set the quadratic and linear bases
+  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,[QuadraticBasis,QuadraticCollapsedBasis,LinearBasis,LinearCollapsedBasis],Err)
   !Define the mesh on the region
   CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/LONG_AXIS,SHORT_AXIS,WALL_THICKNESS,CUTOFF_ANGLE/),Err)
   CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NumberGlobalXElements,NumberGlobalYElements, &

@@ -250,12 +250,8 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
   !Set up an cylinder mesh
   CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshCylinderMeshType,Err)
-  !Enable creation of the second mesh component
-  CALL CMISSGeneratedMeshLogicalSet(GeneratedMesh,.TRUE.,Err) !\todo: logical? say something else
   !Set the quadratic basis
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,QuadraticBasis,Err)
-  !Set the linear basis
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,LinearBasis,Err)
+  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,[QuadraticBasis,LinearBasis],Err)
   !Define the mesh on the region
   CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/INNER_RAD, OUTER_RAD, HEIGHT/),Err)
   CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NumberGlobalXElements,NumberGlobalYElements, &
