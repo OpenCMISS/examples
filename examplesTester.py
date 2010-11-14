@@ -253,6 +253,7 @@ testExample(id='1',path="FluidMechanics/NavierStokes/RoutineCheck/ALE",nodes='1'
 testExample(id='1',path="FluidMechanics/NavierStokes/RoutineCheck/Static",nodes='1',input='\n')
 testExample(id='1',path="FluidMechanics/NavierStokes/Static_FieldML",nodes='1',input='\n')
 testExample(id='1',path="FluidMechanics/NavierStokes/RoutineCheck/Dynamic",nodes='1',input='\n')
+testExample(id='1',path="FluidMechanics/NavierStokes/1DTransient",nodes='1',input='\n')
 
 
 testExample(id='1',path="FluidMechanics/Darcy/Analytic",nodes='1',input='\n',args='1 test1')

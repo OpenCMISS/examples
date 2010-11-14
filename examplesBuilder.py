@@ -126,7 +126,7 @@ if (compiler!="intel") :
   buildExample("FluidMechanics/NavierStokes/RoutineCheck/Static")
   buildExample("FluidMechanics/NavierStokes/RoutineCheck/Dynamic")
   buildExample("FluidMechanics/NavierStokes/Static_FieldML")
-
+  buildExample("FluidMechanics/NavierStokes/1DTransient")
 
   buildExample("FluidMechanics/Darcy/Analytic")
   buildExample("FluidMechanics/Darcy/Static")
