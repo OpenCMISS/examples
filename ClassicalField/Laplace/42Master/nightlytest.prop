@@ -1,5 +1,5 @@
 42TestingPointsPATH=SinglePhysics/LinearProblems/StaticProblems/Laplace/
-TestingPoint.0=1D/linear/LEVEL_1,-1D -linearbasi -nx 10,expected_results,.
+TestingPoint.0=1D/linear/LEVEL_1,-1D -linearbasis -nx 10,expected_results,.
 TestingPoint.1=1D/quadratic/LEVEL_1,-1D -quadraticbasis -nx 10,expected_results,.
 TestingPoint.2=1D/cubic/LEVEL_1,-1D -cubicbasis -nx 10,expected_results,.
 TestingPoint.3=1D/hermite/LEVEL_1,-1D -1D -hermite -nx 10,expected_results,.

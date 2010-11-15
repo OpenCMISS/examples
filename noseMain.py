@@ -22,6 +22,18 @@ def load_prop(propFile, properties) :
         properties[name]=value.split(',')
   propFile.close()
 
+def test_build_library():
+  rootDir=os.environ['OPENCMISS_ROOT']+"/cm"
+  os.chdir(rootDir)
+  f1 = open("temp0","w")
+  command = "make COMPILER=gnu"
+  execCommand = subprocess.Popen(args=command.split(), stdout=f1,stderr=f1)
+  f1.close()
+  err = os.waitpid(execCommand.pid, 0)[1]
+  assert err==0
+  
+  
+
 def test_example():
   rootdir = os.getcwd()
   for root, subFolders, files in os.walk(rootdir) :
@@ -35,7 +47,10 @@ def test_example():
           propFile= file(f, "r")
           properties = dict()
           load_prop(propFile,properties)
-          testingPointsPath = os.environ['OPENCMISS_ROOT']+"/cm/examples/42TestingPoints/"+properties['42TestingPointsPATH']
+          if '42TestingPointsPATH' in properties :
+            testingPointsPath = os.environ['OPENCMISS_ROOT']+"/cm/examples/42TestingPoints/"+properties['42TestingPointsPATH']
+          else:
+            testingPointsPath = ""
           testpoints = properties['TestingPoint']
           for testpoint in testpoints :
             os.chdir(testingPointsPath + testpoint[0])
