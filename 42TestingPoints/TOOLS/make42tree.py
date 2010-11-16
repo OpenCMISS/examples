@@ -191,7 +191,7 @@ class firstTimeRunFuncs(object):
     def leafFunc(self, sofar):
         print('Running %s' % '/'.join(sofar) + '/run42.sh')
         try:
-            ret = subprocess.call('/bin/bash run42.sh')
+            ret = subprocess.call('/bin/bash run42.sh', shell=True)
         except Exception:
             print('Could not run subprocess')
         else:
