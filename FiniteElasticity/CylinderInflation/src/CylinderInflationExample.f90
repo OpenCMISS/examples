@@ -64,31 +64,30 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   !\todo: don't hard code, read in + default
   REAL(CMISSDP), PARAMETER :: INNER_PRESSURE=1.0_CMISSDP !Positive is compressive
   REAL(CMISSDP), PARAMETER :: OUTER_PRESSURE=0.0_CMISSDP !Positive is compressive
-  REAL(CMISSDP), PARAMETER :: LAMBDA=1.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: LAMBDA=1.1_CMISSDP
   REAL(CMISSDP), PARAMETER :: TSI=0.0_CMISSDP    !Not yet working. Leave at 0
   REAL(CMISSDP), PARAMETER :: INNER_RAD=1.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: OUTER_RAD=1.2_CMISSDP
   REAL(CMISSDP), PARAMETER :: HEIGHT=2.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: C1=2.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: C2=6.0_CMISSDP
-
-  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalXElements=4 !\todo: don't hardcode
-  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalYElements=16
-  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalZElements=4
+  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalXElements=2
+  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalYElements=8
+  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalZElements=2
 
 !   !Standard test parameters (don't remove or change)
-!   REAL(CMISSDP), PARAMETER :: INNER_PRESSURE=0.5_CMISSDP !Positive is compressive
+!   REAL(CMISSDP), PARAMETER :: INNER_PRESSURE=1.0_CMISSDP !Positive is compressive
 !   REAL(CMISSDP), PARAMETER :: OUTER_PRESSURE=0.0_CMISSDP !Positive is compressive
-!   REAL(CMISSDP), PARAMETER :: LAMBDA=1.0_CMISSDP
+!   REAL(CMISSDP), PARAMETER :: LAMBDA=1.1_CMISSDP
 !   REAL(CMISSDP), PARAMETER :: TSI=0.0_CMISSDP    !Not yet used
 !   REAL(CMISSDP), PARAMETER :: INNER_RAD=1.0_CMISSDP
 !   REAL(CMISSDP), PARAMETER :: OUTER_RAD=1.2_CMISSDP
 !   REAL(CMISSDP), PARAMETER :: HEIGHT=2.0_CMISSDP
 !   REAL(CMISSDP), PARAMETER :: C1=2.0_CMISSDP
 !   REAL(CMISSDP), PARAMETER :: C2=6.0_CMISSDP
-!   INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalXElements=2 !\todo: don't hardcode
-!   INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalYElements=4
-!   INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalZElements=1
+!   INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalXElements=2 !\todo: don't hardcode?
+!   INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalYElements=8
+!   INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalZElements=2
 !  Increment loop of 2
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -100,13 +99,11 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
 
-  INTEGER(CMISSIntg), PARAMETER :: TotalNumberOfNodes=27
   INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshDimensions=3
   INTEGER(CMISSIntg), PARAMETER :: NumberOfXiCoordinates=3
   INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshComponents=2
   INTEGER(CMISSIntg), PARAMETER :: QuadraticMeshComponentNumber=1
   INTEGER(CMISSIntg), PARAMETER :: LinearMeshComponentNumber=2
-  INTEGER(CMISSIntg), PARAMETER :: TotalNumberOfElements=1
 
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
@@ -160,15 +157,14 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   TYPE(CMISSControlLoopType) :: ControlLoop
 
   !Other variables
-  INTEGER(CMISSIntg) :: NN,NE,E !,I,J,K,BC_TYPE
-!   REAL(CMISSDP) :: X,Y,Z
+  INTEGER(CMISSIntg) :: NN,NE,E
 
   INTEGER(CMISSIntg),ALLOCATABLE :: BottomSurfaceNodes(:)
   INTEGER(CMISSIntg),ALLOCATABLE :: InnerSurfaceNodes(:)
   INTEGER(CMISSIntg),ALLOCATABLE :: OuterSurfaceNodes(:)
   INTEGER(CMISSIntg) :: BottomNormalXi,InnerNormalXi,OuterNormalXi
-  REAL(CMISSDP) :: xValue,yValue
-  LOGICAL :: X_FIXED,Y_FIXED
+  REAL(CMISSDP) :: xValue,yValue, InitialPressure
+  !LOGICAL :: X_FIXED,Y_FIXED
   
 
 #ifdef WIN32
@@ -262,7 +258,7 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
 
   !Create a decomposition
-  CALL CMISSRandomSeedsSet(0_CMISSIntg,Err) !To keep the decomposition same each time
+  CALL CMISSRandomSeedsSet(0_CMISSIntg,Err) !To keep the automatic decomposition same each time
   CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
   CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Automatic decomposition
