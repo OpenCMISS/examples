@@ -63,7 +63,7 @@ endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_PATH = FiniteElasticity/SCRATCH/
+EXAMPLE_PATH = FiniteElasticity/
 
 
 EXAMPLE_NAME = testingPoints
