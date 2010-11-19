@@ -224,6 +224,17 @@ for times in ['StaticProblems','DynamicProblems']:
           for level in ['LEVEL_1','LEVEL_2']:
             testExample(id='1',path="SinglePhysics/NonlinearProblems/"+times+"/NavierStokes/"+dims+"/"+els+"/"+interp+"/"+level+"",master42="FluidMechanics/NavierStokes/42Master",nodes='1',ndiffDir='expected_results',outputDir='output')     
             
+#Nonlinear FiniteElasticity, Quasistatic, 3D, HEX, 21/31,32
+bases=['cubic','quadratic','linear']
+for els in ['HEX']:
+  for interp1 in range(2):
+    for interp2 in range(interp1+1,3):
+      for level in ['LEVEL_1','LEVEL_2','LEVEL_3']:
+        path_prefix="SinglePhysics/NonlinearProblems/QuasistaticProblems/FiniteElasticity/3D/"
+        if level=='LEVEL_3':
+          testExample(id='1',path=path_prefix+els+"/"+bases[interp1]+"_"+bases[interp2]+"/"+level+"",master42="FiniteElasticity/testingPoints",nodes='2',ndiffDir='expected_results',outputDir='output')
+        else:
+          testExample(id='1',path=path_prefix+els+"/"+bases[interp1]+"_"+bases[interp2]+"/"+level+"",master42="FiniteElasticity/testingPoints",nodes='1',ndiffDir='expected_results',outputDir='output')
 
 
 
