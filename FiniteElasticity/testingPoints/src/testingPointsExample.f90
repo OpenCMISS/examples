@@ -65,7 +65,7 @@ PROGRAM TESTINGPOINTSEXAMPLE
   CHARACTER(LEN=256) :: ARG_DIM, ARG_ELEM, ARG_BASIS_1,ARG_BASIS_2, ARG_LEVEL, ARG
 
   !\todo: don't hard code, read in + default
-  REAL(CMISSDP), PARAMETER :: INNER_PRESSURE=1.0_CMISSDP !Positive is compressive
+  REAL(CMISSDP), PARAMETER :: INNER_PRESSURE=0.1_CMISSDP !Positive is compressive
   REAL(CMISSDP), PARAMETER :: OUTER_PRESSURE=0.0_CMISSDP !Positive is compressive
   REAL(CMISSDP), PARAMETER :: LAMBDA=1.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: TSI=0.0_CMISSDP    !Not yet working. Leave at 0
@@ -74,9 +74,9 @@ PROGRAM TESTINGPOINTSEXAMPLE
   REAL(CMISSDP), PARAMETER :: HEIGHT=2.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: C1=2.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: C2=6.0_CMISSDP
-  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalXElements=2 !\todo: don't hardcode
-  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalYElements=8
-  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalZElements=2
+  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalXElements=1 !\todo: don't hardcode
+  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalYElements=4
+  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalZElements=1
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: NumberOfSpatialCoordinates=3
@@ -507,7 +507,6 @@ PROGRAM TESTINGPOINTSEXAMPLE
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,BottomSurfaceNodes(NN),1, &
           & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
         X_FIXED=.TRUE.
-!         WRITE(*,*) "CyliderInflationExample: SUCCESSFULLY CONSTRAINED IN X DIRECTION NODE",BottomSurfaceNodes(NN)
       ENDIF
       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
         & 1,BottomSurfaceNodes(NN),2,yValue,Err)
@@ -516,7 +515,6 @@ PROGRAM TESTINGPOINTSEXAMPLE
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,BottomSurfaceNodes(NN),2, &
           & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
         Y_FIXED=.TRUE.
-!         WRITE(*,*) "CyliderInflationExample: SUCCESSFULLY CONSTRAINED IN Y DIRECTION NODE",BottomSurfaceNodes(NN)
       ENDIF
     ENDDO
     !Check
@@ -542,7 +540,7 @@ PROGRAM TESTINGPOINTSEXAMPLE
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
   CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
-  CALL CMISSControlLoopMaximumIterationsSet(ControlLoop,1,Err)  ! this one sets the increment loop counter
+  CALL CMISSControlLoopMaximumIterationsSet(ControlLoop,3,Err)  ! this one sets the increment loop counter
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
   
   !Create the problem solvers
@@ -554,6 +552,7 @@ PROGRAM TESTINGPOINTSEXAMPLE
   !CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianFDCalculated,Err)  !Slower
   CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
   CALL CMISSSolverNewtonLinearSolverGet(Solver,LinearSolver,Err)
+  CALL CMISSSolverNewtonLineSearchTypeSet(Solver,CMISSSolverNewtonLinesearchQuadratic,Err) !Helps convergence with cubics...
   CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearDirectSolveType,Err)
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
 
@@ -572,14 +571,14 @@ PROGRAM TESTINGPOINTSEXAMPLE
 
   !Output Analytic analysis
   IF(TRIM(ARG_LEVEL)=="2".OR.TRIM(ARG_LEVEL)=="3") THEN
-    Call CMISSAnalyticAnalysisOutput(DependentField,"outputs/CylinderInflation",Err)
+    Call CMISSAnalyticAnalysisOutput(DependentField,"output/testingPoints",Err)
   ENDIF
 
   !Output solution  
   CALL CMISSFieldsTypeInitialise(Fields,Err)
   CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-  CALL CMISSFieldIONodesExport(Fields,"outputs/CylinderInflation","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields,"outputs/CylinderInflation","FORTRAN",Err)
+  CALL CMISSFieldIONodesExport(Fields,"output/testingPoints","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields,"output/testingPoints","FORTRAN",Err)
   CALL CMISSFieldsTypeFinalise(Fields,Err)
 
   CALL CMISSFinalise(Err)
