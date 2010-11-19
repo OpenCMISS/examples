@@ -173,7 +173,10 @@ class makeScriptFuncs(object):
         else:
             run42.write('#!/bin/bash\n')
             # Should look at making following line more robust, people will most likely make mistakes
-            run42.write('$OPENCMISS_ROOT/' + self.execdir + ' ' + self.defaultargs + ' ' + options + '\n')
+            if sofar[-1] == 'LEVEL_3':
+                run42.write('mpiexec -n 2 $OPENCMISS_ROOT/' + self.execdir + ' ' + self.defaultargs + ' ' + options + '\n')
+            else:
+                run42.write('$OPENCMISS_ROOT/' + self.execdir + ' ' + self.defaultargs + ' ' + options + '\n')
             run42.write('mv *.exnode *.exelem output/\n')
             run42.close()
             
