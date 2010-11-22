@@ -1,7 +1,10 @@
 import os, subprocess,sys
+from time import strftime
+import socket
 sys.path.append(os.environ['OPENCMISS_ROOT']+"/cm/examples")
 examplesDir = os.environ['OPENCMISS_ROOT']+"/cm/examples"
 logsDir = os.environ['OPENCMISS_ROOT']+"/build/logs"
+hostname = socket.gethostname()
 
 def load_prop(propFile, properties) :
   properties['TestingPoint']=[]
@@ -33,6 +36,19 @@ def close_log(logPath) :
   f1 = open(logPath,"a")
   f1.write("</pre>")
   f1.close()
+
+def add_history(historyPath,err) :
+  global hostname
+  if os.path.exists(historyPath) :
+    history = open(historyPath,"a")
+  else :
+    history = open(historyPath,"w")
+    history.write("<pre>Completed Time\t\tStatus\tHostname\n")
+  if err==0 :
+    history.write(strftime("%Y-%m-%d %H:%M:%S")+'\tsuccess\t'+hostname+'\n')
+  elif err==0 :
+    history.write(strftime("%Y-%m-%d %H:%M:%S")+'\tfail\t'+hostname+'\n')
+  history.close()
   
 
 def test_build_library():
@@ -50,6 +66,7 @@ def test_build_library():
   command = "make COMPILER=gnu" + " >> "  + logPath + " 2>&1"
   err = os.system(command)
   close_log(logPath)
+  add_history(logDir+"/nose_library_build_history",err)
   assert err==0
   
   
@@ -93,6 +110,7 @@ def check_build(status,root,compiler):
   command = "make COMPILER=" + compiler + " >> "  + logPath + " 2>&1"
   err = os.system(command)
   close_log(logPath)
+  add_history(logDir+"/nose_build_history",err)
   assert err==0
 
 def check_run(status,cwd, system,arch,compiler,masterPath,testArgs,testPath,noCheck=None):
@@ -109,6 +127,7 @@ def check_run(status,cwd, system,arch,compiler,masterPath,testArgs,testPath,noCh
   command = masterPath+"/bin/"+arch+"-"+system+"/mpich2/"+compiler+"/"+exampleName+"Example-debug "+testArgs + " >> "  + logPath + " 2>&1"
   err = os.system(command)
   close_log(logPath)
+  add_history(logDir+"/nose_run_history",err)
   assert err==0
 
 def check_output(status, cwd, ndiffDir, outputDir):
@@ -129,7 +148,12 @@ def check_output(status, cwd, ndiffDir, outputDir):
       err = os.system(command)
       if err!=0 :
         errall = -1
+  if errall==0 :
+    f1 = open(logPath,"a")
+    f1.write("The output values are identical with the expected ones. However, the outputs may be generated from previous build. You need also check if the latest test run passes.")
+    f1.close()
   close_log(logPath)
+  add_history(logDir+"/nose_check_history",errall)
   assert errall==0 
  
 if __name__ == '__main__':
