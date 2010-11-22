@@ -46,7 +46,7 @@ def add_history(historyPath,err) :
     history.write("<pre>Completed Time\t\tStatus\tHostname\n")
   if err==0 :
     history.write(strftime("%Y-%m-%d %H:%M:%S")+'\tsuccess\t'+hostname+'\n')
-  elif err==0 :
+  else :
     history.write(strftime("%Y-%m-%d %H:%M:%S")+'\tfail\t'+hostname+'\n')
   history.close()
   
