@@ -1,5 +1,7 @@
 import os, subprocess,sys
 sys.path.append(os.environ['OPENCMISS_ROOT']+"/cm/examples")
+examplesDir = os.environ['OPENCMISS_ROOT']+"/cm/examples"
+logsDir = os.environ['OPENCMISS_ROOT']+"/build/logs"
 
 def load_prop(propFile, properties) :
   properties['TestingPoint']=[]
@@ -22,14 +24,32 @@ def load_prop(propFile, properties) :
         properties[name]=value.split(',')
   propFile.close()
 
+def open_log(logPath) :
+  f1 = open(logPath,"w")
+  f1.write("<pre>")
+  f1.close()
+
+def close_log(logPath) :
+  f1 = open(logPath,"a")
+  f1.write("</pre>")
+  f1.close()
+  
+
 def test_build_library():
+  global logsDir
   rootDir=os.environ['OPENCMISS_ROOT']+"/cm"
   os.chdir(rootDir)
-  f1 = open("temp0","w")
-  command = "make COMPILER=gnu"
-  execCommand = subprocess.Popen(args=command.split(), stdout=f1,stderr=f1)
-  f1.close()
-  err = os.waitpid(execCommand.pid, 0)[1]
+  logDir = os.getcwd().replace(rootDir,logsDir)
+  newDir = ''
+  for folder in logDir.split('/') :
+    newDir = newDir + '/' + folder
+    if not os.path.isdir(newDir):
+      os.mkdir(newDir)
+  logPath = logDir+"/nose_library_build"
+  open_log(logPath)
+  command = "make COMPILER=gnu" + " >> "  + logPath + " 2>&1"
+  err = os.system(command)
+  close_log(logPath)
   assert err==0
   
   
@@ -55,35 +75,62 @@ def test_example():
           for testpoint in testpoints :
             os.chdir(testingPointsPath + testpoint[0])
             if len(testpoint)<=2 :            
-              yield check_run, 'run', system, arch, "gnu", root, testpoint[1], testpoint[0], False
+              yield check_run, 'run', os.getcwd(), system, arch, "gnu", root, testpoint[1], testpoint[0], False
             else :
-              yield check_run, 'run', system, arch, "gnu", root, testpoint[1], testpoint[0]
-              yield check_output,'check',testpoint[2], testpoint[3]
+              yield check_run, 'run', os.getcwd(), system, arch, "gnu", root, testpoint[1], testpoint[0]
+              yield check_output,'check',os.getcwd(), testpoint[2], testpoint[3]
   
 def check_build(status,root,compiler):
-  f1 = open("temp0","w")
-  command = "make COMPILER=" + compiler
-  execCommand = subprocess.Popen(args=command.split(), stdout=f1,stderr=f1)
-  f1.close()
-  err = os.waitpid(execCommand.pid, 0)[1]
+  global examplesDir, logsDir
+  logDir = os.getcwd().replace(examplesDir,logsDir)
+  newDir = ''
+  for folder in logDir.split('/') :
+    newDir = newDir + '/' + folder
+    if not os.path.isdir(newDir):
+      os.mkdir(newDir)
+  logPath = logDir+"/nose_build"
+  open_log(logPath)
+  command = "make COMPILER=" + compiler + " >> "  + logPath + " 2>&1"
+  err = os.system(command)
+  close_log(logPath)
   assert err==0
 
-def check_run(status,system,arch,compiler,masterPath,testArgs,testPath,noCheck=None):
-  f1 = open("temp1","w")
+def check_run(status,cwd, system,arch,compiler,masterPath,testArgs,testPath,noCheck=None):
+  global examplesDir, logsDir
+  logDir = os.getcwd().replace(examplesDir,logsDir)
+  newDir = ''
+  for folder in logDir.split('/') :
+    newDir = newDir + '/' + folder
+    if not os.path.isdir(newDir):
+      os.mkdir(newDir)
+  logPath = logDir+"/nose_run"
+  open_log(logPath)
   exampleName = masterPath.rpartition("/")[2]
-  command = masterPath+"/bin/"+arch+"-"+system+"/mpich2/"+compiler+"/"+exampleName+"Example-debug "+testArgs
-  execCommand = subprocess.Popen(args=command.split(), stdout=f1,stderr=f1)
-  f1.close()
-  err = os.waitpid(execCommand.pid, 0)[1]
+  command = masterPath+"/bin/"+arch+"-"+system+"/mpich2/"+compiler+"/"+exampleName+"Example-debug "+testArgs + " >> "  + logPath + " 2>&1"
+  err = os.system(command)
+  close_log(logPath)
   assert err==0
 
-def check_output(status,ndiffDir, outputDir):
+def check_output(status, cwd, ndiffDir, outputDir):
+  global examplesDir, logsDir
+  logDir = os.getcwd().replace(examplesDir,logsDir)
+  newDir = ''
+  for folder in logDir.split('/') :
+    newDir = newDir + '/' + folder
+    if not os.path.isdir(newDir):
+      os.mkdir(newDir)
+  logPath = logDir+"/nose_check"
+  open_log(logPath)
   ndiff = os.environ['OPENCMISS_ROOT']+"/cm/utils/ndiff"
+  errall =0
   for outputFile in os.listdir(ndiffDir) :
     if outputFile!='.svn' :
-      command = ndiff+" --tolerance=1e-10 "+ndiffDir+"/"+outputFile+" "+outputDir+"/"+outputFile
+      command = ndiff+" --tolerance=1e-10 "+ndiffDir+"/"+outputFile+" "+outputDir+"/"+outputFile + ' >> '  + logPath + " 2>&1"
       err = os.system(command)
-      assert err==0 
+      if err!=0 :
+        errall = -1
+  close_log(logPath)
+  assert errall==0 
  
 if __name__ == '__main__':
   test_example()   
