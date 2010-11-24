@@ -141,9 +141,9 @@ PROGRAM DIFFUSIONCONSTANTSOURCEEXAMPLE
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  NUMBER_GLOBAL_X_ELEMENTS=20
-  NUMBER_GLOBAL_Y_ELEMENTS=20
-  NUMBER_GLOBAL_Z_ELEMENTS=20
+  NUMBER_GLOBAL_X_ELEMENTS=10
+  NUMBER_GLOBAL_Y_ELEMENTS=10
+  NUMBER_GLOBAL_Z_ELEMENTS=10
   NUMBER_OF_DOMAINS=1
 
 
@@ -324,7 +324,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   !Get the control loop
   CALL CMISSProblemControlLoopGet(Problem,ControlLoopNode,ControlLoop,Err)
   !Set the times
-  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,1.0001_CMISSDP,0.005_CMISSDP,Err)
+  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,1.0001_CMISSDP,0.01_CMISSDP,Err)
   !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
 
@@ -370,15 +370,15 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   CALL CMISSProblemSolve(Problem,Err)
 
   !Output Analytic analysis
-  CALL CMISSAnalyticAnalysisOutput(DependentField,"DiffusionAnalytics_x20_y20_z20_L_T1_dt0.005",Err)
+  CALL CMISSAnalyticAnalysisOutput(DependentField,"DiffusionAnalytics_x10_y10_z10_L_T1",Err)
 
 
   EXPORT_FIELD=.TRUE.
   IF(EXPORT_FIELD) THEN
     CALL CMISSFieldsTypeInitialise(Fields,Err)
     CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"DiffusionConstantSourceAnalytic_x20_y20_z20_L_T1_dt0.005","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"DiffusionConstantSourceAnalytic_x20_y20_z20_L_T1_dt0.005","FORTRAN",Err)
+    CALL CMISSFieldIONodesExport(Fields,"DiffusionConstantSourceAnalytic_x10_y10_z10_L_T1","FORTRAN",Err)
+    CALL CMISSFieldIOElementsExport(Fields,"DiffusionConstantSourceAnalytic_x10_y10_z10_L_T1","FORTRAN",Err)
     CALL CMISSFieldsTypeFinalise(Fields,Err)
 
   ENDIF
