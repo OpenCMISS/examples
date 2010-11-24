@@ -83,6 +83,8 @@ PROGRAM DIFFUSIONCONSTANTSOURCEEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=11
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopNode=0
   INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=13
+
   !Program types
   
   !Program variables
@@ -100,7 +102,7 @@ PROGRAM DIFFUSIONCONSTANTSOURCEEXAMPLE
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField,SourceField
+  TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField,SourceField,AnalyticField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
   TYPE(CMISSMeshType) :: Mesh
@@ -139,9 +141,9 @@ PROGRAM DIFFUSIONCONSTANTSOURCEEXAMPLE
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  NUMBER_GLOBAL_X_ELEMENTS=5
-  NUMBER_GLOBAL_Y_ELEMENTS=5
-  NUMBER_GLOBAL_Z_ELEMENTS=5
+  NUMBER_GLOBAL_X_ELEMENTS=20
+  NUMBER_GLOBAL_Y_ELEMENTS=20
+  NUMBER_GLOBAL_Z_ELEMENTS=20
   NUMBER_OF_DOMAINS=1
 
 
@@ -264,6 +266,13 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   !Finish the equations set dependent field variables
   CALL CMISSEquationsSetSourceCreateFinish(EquationsSet,Err)
 
+  !Create the equations set analytic field variables
+  CALL CMISSFieldTypeInitialise(AnalyticField,Err)
+  CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSEquationsSetDiffusionThreeDim1,AnalyticFieldUserNumber, & 
+    & AnalyticField,Err)
+  !Finish the equations set analytic field variables
+  CALL CMISSEquationsSetAnalyticCreateFinish(EquationsSet,Err)
+
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
   CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
@@ -278,21 +287,25 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
   
   !Create the equations set boundary conditions
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-  !Set the first node to 0.0 and the last node to 1.0
-!   FirstNodeNumber=1
-!   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-!     LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)
-!   ELSE
-!     LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
-!   ENDIF
-!   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
-!     & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-!   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDeludelnVariableType,1,LastNodeNumber,1, &
-!     & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
-  !Finish the creation of the equations set boundary conditions
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
+!   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+!   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
+!   !Set the first node to 0.0 and the last node to 1.0
+! !   FirstNodeNumber=1
+! !   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+! !     LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)
+! !   ELSE
+! !     LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
+! !   ENDIF
+! !   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
+! !     & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+! !   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDeludelnVariableType,1,LastNodeNumber,1, &
+! !     & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
+!   !Finish the creation of the equations set boundary conditions
+!   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
+
+  CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
+
+
 
 
   !Create the problem
@@ -311,7 +324,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   !Get the control loop
   CALL CMISSProblemControlLoopGet(Problem,ControlLoopNode,ControlLoop,Err)
   !Set the times
-  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,0.1_CMISSDP,0.1_CMISSDP,Err)
+  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,1.0001_CMISSDP,0.005_CMISSDP,Err)
   !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
 
@@ -356,12 +369,16 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   !Solve the problem
   CALL CMISSProblemSolve(Problem,Err)
 
+  !Output Analytic analysis
+  CALL CMISSAnalyticAnalysisOutput(DependentField,"DiffusionAnalytics_x20_y20_z20_L_T1_dt0.005",Err)
+
+
   EXPORT_FIELD=.TRUE.
   IF(EXPORT_FIELD) THEN
     CALL CMISSFieldsTypeInitialise(Fields,Err)
     CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"DiffusionConstantSource","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"DiffusionConstantSource","FORTRAN",Err)
+    CALL CMISSFieldIONodesExport(Fields,"DiffusionConstantSourceAnalytic_x20_y20_z20_L_T1_dt0.005","FORTRAN",Err)
+    CALL CMISSFieldIOElementsExport(Fields,"DiffusionConstantSourceAnalytic_x20_y20_z20_L_T1_dt0.005","FORTRAN",Err)
     CALL CMISSFieldsTypeFinalise(Fields,Err)
 
   ENDIF

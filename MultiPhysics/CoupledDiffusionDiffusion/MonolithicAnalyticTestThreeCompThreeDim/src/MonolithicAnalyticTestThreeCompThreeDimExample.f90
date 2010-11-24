@@ -335,8 +335,8 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   BASIS_NUMBER_CONC_TWO=CM%ID_P !USE THE p COMPONENT OF CMHEART INPUT FOR CONCENTRATION TWO
   NUMBER_OF_DIMENSIONS=CM%D
   BASIS_TYPE=CM%IT_T
-!  BASIS_XI_INTERPOLATION_GEOMETRY=CM%IT_M
-   BASIS_XI_INTERPOLATION_GEOMETRY=2
+  BASIS_XI_INTERPOLATION_GEOMETRY=CM%IT_M
+!   BASIS_XI_INTERPOLATION_GEOMETRY=2
   BASIS_XI_INTERPOLATION_CONC_ONE=CM%IT_V
   BASIS_XI_INTERPOLATION_CONC_TWO=CM%IT_P
   NUMBER_OF_NODES_GEOMETRY=CM%N_M
@@ -433,7 +433,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   !Set time parameter
   LINEAR_SOLVER_DIFFUSION_START_TIME=0.0_CMISSDP
   LINEAR_SOLVER_DIFFUSION_STOP_TIME=0.3000001_CMISSDP 
-  LINEAR_SOLVER_DIFFUSION_TIME_INCREMENT=0.01_CMISSDP
+  LINEAR_SOLVER_DIFFUSION_TIME_INCREMENT=0.001_CMISSDP
   !Set result output parameter
   LINEAR_SOLVER_DIFFUSION_OUTPUT_FREQUENCY=1
   !Set solver parameters
@@ -843,15 +843,15 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
     CouplingCoeffs(2,1)=0.0E-01_CMISSDP
     CouplingCoeffs(2,2)=0.0E-01_CMISSDP
   ELSE IF(Ncompartments==3)THEN
-    CouplingCoeffs(1,1)=1.0E-02_CMISSDP
+    CouplingCoeffs(1,1)=2.0E-02_CMISSDP
     CouplingCoeffs(1,2)=1.0E-02_CMISSDP
-    CouplingCoeffs(1,3)=0.0E-02_CMISSDP
+    CouplingCoeffs(1,3)=1.0E-02_CMISSDP
     CouplingCoeffs(2,1)=1.0E-02_CMISSDP
     CouplingCoeffs(2,2)=2.0E-02_CMISSDP
     CouplingCoeffs(2,3)=1.0E-02_CMISSDP
-    CouplingCoeffs(3,1)=0.0E-02_CMISSDP
+    CouplingCoeffs(3,1)=1.0E-02_CMISSDP
     CouplingCoeffs(3,2)=1.0E-02_CMISSDP
-    CouplingCoeffs(3,3)=1.0E-02_CMISSDP
+    CouplingCoeffs(3,3)=2.0E-02_CMISSDP
   ELSE IF(Ncompartments==4)THEN
     CouplingCoeffs(1,1)=0.0E-02_CMISSDP
     CouplingCoeffs(1,2)=0.0E-02_CMISSDP
@@ -946,7 +946,8 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
     AnalyticFieldUserNumberDiffusion=900_CMISSIntg+icompartment
     CALL CMISSFieldTypeInitialise(AnalyticFieldDiffusion(icompartment),Err)
 
-    CALL CMISSEquationsSetAnalyticCreateStart(EquationsSetDiffusion(icompartment),CMISSEquationsSetMultiCompDiffusionTwoCompTwoDim,&
+    CALL CMISSEquationsSetAnalyticCreateStart(EquationsSetDiffusion(icompartment),&
+      & CMISSEquationsSetMultiCompDiffusionThreeCompThreeDim,&
       & AnalyticFieldUserNumberDiffusion,AnalyticFieldDiffusion(icompartment),Err)
   
     !Finish the equations set analytic field variables
@@ -1142,7 +1143,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   !
   !OUTPUT
 
-  Call CMISSAnalyticAnalysisOutput(DependentField,"MultiCompDiffusionAnalytics_2Comp_2D_x1_y1_Q_T1",Err)
+  Call CMISSAnalyticAnalysisOutput(DependentField,"MultiCompDiffusionAnalytics_3Comp_3D_x5_y5_z5_L_T0.3_dt0.001",Err)
 
 
   EXPORT_FIELD_IO=.TRUE.
@@ -1166,6 +1167,9 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 
     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".dependent_V", region, mesh, DependentField, &
       & CMISSFieldVVariableType, err )
+
+    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".dependent_U1", region, mesh, DependentField, &
+      & CMISSFieldU1VariableType, err )
     
     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".equations_set_field_1", region, mesh, EquationsSetFieldDiffusion(1), &
       & CMISSFieldUVariableType, err )
@@ -1173,8 +1177,8 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".equations_set_field_2", region, mesh, EquationsSetFieldDiffusion(2), &
       & CMISSFieldUVariableType, err )
 
-!     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".equations_set_field_3", region, mesh, EquationsSetFieldDiffusion(3), &
-!       & CMISSFieldUVariableType, err )
+    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".equations_set_field_3", region, mesh, EquationsSetFieldDiffusion(3), &
+      & CMISSFieldUVariableType, err )
 
     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".source_1", region,mesh,SourceFieldDiffusion(1),CMISSFieldUVariableType,&
       & err )
@@ -1182,10 +1186,16 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".source_2", region,mesh,SourceFieldDiffusion(2),CMISSFieldUVariableType,&
       & err )
 
+    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".source_3", region,mesh,SourceFieldDiffusion(3),CMISSFieldUVariableType,&
+      & err )
+
     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".materials_1", region, mesh, MaterialsFieldDiffusion(1), &
       & CMISSFieldUVariableType,err )
 
     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".materials_2", region, mesh, MaterialsFieldDiffusion(2), &
+      & CMISSFieldUVariableType,err )
+
+    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".materials_3", region, mesh, MaterialsFieldDiffusion(3), &
       & CMISSFieldUVariableType,err )
 
     !CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".analytic", region, mesh, AnalyticField, err )
