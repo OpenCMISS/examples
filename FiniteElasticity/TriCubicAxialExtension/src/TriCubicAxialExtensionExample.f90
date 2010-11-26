@@ -130,7 +130,7 @@ PROGRAM TRICUBICAXIALEXTENSIONEXAMPLE
   CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
 
   !Set all diganostic levels on for testing
-  !CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,(/1,2,3,4,5/),"Diagnostics",(/"PROBLEM_RESIDUAL_EVALUATE"/),Err)
+  !CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,[1,2,3,4,5],"Diagnostics",["PROBLEM_RESIDUAL_EVALUATE"],Err)
 
   !Get the number of computational nodes and this computational node number
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -162,15 +162,16 @@ PROGRAM TRICUBICAXIALEXTENSIONEXAMPLE
   CALL CMISSBasisTypeInitialise(LinearBasis,Err)
   CALL CMISSBasisCreateStart(LinearBasisUserNumber,LinearBasis,Err)
   CALL CMISSBasisQuadratureNumberOfGaussXiSet(LinearBasis, &
-    & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)
+    & [CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme],Err)
   CALL CMISSBasisCreateFinish(LinearBasis,Err)
 
   CALL CMISSBasisTypeInitialise(CubicBasis,Err)
   CALL CMISSBasisCreateStart(CubicBasisUserNumber,CubicBasis,Err)
-  CALL CMISSBasisInterpolationXiSet(CubicBasis,(/CMISSBasisCubicHermiteInterpolation, &
-    & CMISSBasisCubicHermiteInterpolation,CMISSBasisCubicHermiteInterpolation/),Err)
+  CALL CMISSBasisInterpolationXiSet(CubicBasis,[CMISSBasisCubicHermiteInterpolation, &
+    & CMISSBasisCubicHermiteInterpolation,CMISSBasisCubicHermiteInterpolation],Err)
   CALL CMISSBasisQuadratureNumberOfGaussXiSet(CubicBasis, &
-    & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)
+    & [CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme],Err)
+  CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(CubicBasis,.TRUE.,Err)
   CALL CMISSBasisCreateFinish(CubicBasis,Err)
 
   !Create a mesh with two components, cubic hermite for geometry and linear lagrange
@@ -189,12 +190,12 @@ PROGRAM TRICUBICAXIALEXTENSIONEXAMPLE
   !cubic Hermite component
   CALL CMISSMeshElementsTypeInitialise(CubicElements,Err)
   CALL CMISSMeshElementsCreateStart(Mesh,CubicMeshComponentNumber,CubicBasis,CubicElements,Err)
-  CALL CMISSMeshElementsNodesSet(CubicElements,1,(/1,2,3,4,5,6,7,8/),Err)
+  CALL CMISSMeshElementsNodesSet(CubicElements,1,[1,2,3,4,5,6,7,8],Err)
   CALL CMISSMeshElementsCreateFinish(CubicElements,Err)
   !linear Lagrange component
   CALL CMISSMeshElementsTypeInitialise(LinearElements,Err)
   CALL CMISSMeshElementsCreateStart(Mesh,LinearMeshComponentNumber,LinearBasis,LinearElements,Err)
-  CALL CMISSMeshElementsNodesSet(LinearElements,1,(/1,2,3,4,5,6,7,8/),Err)
+  CALL CMISSMeshElementsNodesSet(LinearElements,1,[1,2,3,4,5,6,7,8],Err)
   CALL CMISSMeshElementsCreateFinish(LinearElements,Err)
   !finish mesh creation
   CALL CMISSMeshCreateFinish(Mesh,Err)
