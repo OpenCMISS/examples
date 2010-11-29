@@ -6,7 +6,7 @@
 # contains three parameter set with four parameter
 
 # Job parameters
-export parfile="Parameters.par"    # File with parameter sets
+export parfile="Parameters.csv"    # File with parameter sets
 
 
 # Extract number of parameter sets
@@ -17,5 +17,5 @@ for TASK_ID in $(seq 1 $Npars);
 do  
     echo -ne "* Submitting job "$TASK_ID" ... "
     # TODO: submit job to queue system
-    ./bin/x86_64-linux/mpich2/gnu/QuadraticEllipsoidExample-debug $(cat $parfile | sed $TASK_ID'q;d') > dummy.$TASK_ID.log
+    ./bin/x86_64-linux/mpich2/gnu/QuadraticEllipsoidCostaReadInExample-debug $(cat $parfile | sed $TASK_ID'q;d') > dummy.$TASK_ID.log
 done

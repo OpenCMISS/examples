@@ -66,8 +66,8 @@ PROGRAM QUADRATICELLIPSOIDCOSTAREADINEXAMPLE
   REAL(CMISSDP) :: SHORT_AXIS=1.0_CMISSDP
   REAL(CMISSDP) :: WALL_THICKNESS=0.5_CMISSDP
   REAL(CMISSDP) :: CUTOFF_ANGLE=1.5708_CMISSDP
-  REAL(CMISSDP) :: FIBRE_SLOPE_INTERSECTION=1.73205_CMISSDP !Slope of fibres in base endocardium = 60 degrees
-  REAL(CMISSDP) :: FIBRE_SLOPE_CHANGE=-3.4641_CMISSDP !Slope change of fibres from 60 to -60 degrees in transmural direction 
+  REAL(CMISSDP) :: FIBRE_SLOPE_ENDO=1.73205_CMISSDP !Slope of fibres in endocardium = 60 degrees
+  REAL(CMISSDP) :: FIBRE_SLOPE_EPI=-3.4641_CMISSDP !Slope of fibres in endocardium = -60 degrees 
   REAL(CMISSDP) :: SHEET_SLOPE_BASE_ENDO=1.0_CMISSDP !Slope of sheet at base endocardium 
   !REAL(CMISSDP), PARAMETER :: COSTA_PARAMS (1:7) =  (/ 0.2, 30.0, 12.0, 14.0, 14.0, 10.0, 18.0 /)
   !REAL(CMISSDP), DIMENSION(:),ALLOCATABLE :: COSTA_PARAMS ! =  (/ 0.2, 30.0, 12.0, 14.0, 14.0, 10.0, 18.0 /) ! a bff bfs bfn bss bsn bnn
@@ -135,6 +135,8 @@ PROGRAM QUADRATICELLIPSOIDCOSTAREADINEXAMPLE
   INTEGER(CMISSIntg), ALLOCATABLE :: InnerSurfaceNodes(:)
   INTEGER(CMISSIntg), ALLOCATABLE :: OuterSurfaceNodes(:)
   INTEGER(CMISSIntg), ALLOCATABLE :: TopSurfaceNodes(:)
+  INTEGER(CMISSIntg), ALLOCATABLE :: G(:)
+  INTEGER(CMISSIntg) :: NotCornerNode, CornerNode, NumberOfCornerNodes, gn, CorrectNodeNumber,TotalNumberOfNodes
   INTEGER(CMISSIntg) :: NN,NODE,NodeDomain
   REAL(CMISSDP) :: XCoord,YCoord,ZCoord
   LOGICAL :: X_FIXED,Y_FIXED,X_OKAY,Y_OKAY
@@ -165,7 +167,7 @@ PROGRAM QUADRATICELLIPSOIDCOSTAREADINEXAMPLE
   !Generic CMISS variables
   INTEGER(CMISSIntg) :: Err
   CHARACTER(len=20) :: HEIGHT, WIDTH, WALL, CUTOFF,X_ELEM,Y_ELEM,Z_ELEM
-  CHARACTER(len=20) :: FIBRE_INTERSECTION, FIBRE_SLOPE, SHEET_ENDO_SLOPE
+  CHARACTER(len=20) :: FIBRE_ENDO, FIBRE_EPI, SHEET_ENDO_SLOPE
   CHARACTER(len=20) :: COSTA_1, COSTA_2, COSTA_3, COSTA_4, COSTA_5, COSTA_6, COSTA_7
   CHARACTER(len=4) :: PARAMETERSET
 #ifdef WIN32
@@ -186,8 +188,8 @@ PROGRAM QUADRATICELLIPSOIDCOSTAREADINEXAMPLE
   CALL GETARG(6,WIDTH)
   CALL GETARG(7,WALL)
   !CALL GETARG(8,CUTOFF)
-  CALL GETARG(8,FIBRE_INTERSECTION)
-  CALL GETARG(9,FIBRE_SLOPE)
+  CALL GETARG(8,FIBRE_ENDO)
+  CALL GETARG(9,FIBRE_EPI)
   CALL GETARG(10,SHEET_ENDO_SLOPE)
   CALL GETARG(11,COSTA_1)
   CALL GETARG(12,COSTA_2)
@@ -200,8 +202,8 @@ PROGRAM QUADRATICELLIPSOIDCOSTAREADINEXAMPLE
   READ(WIDTH,*)SHORT_AXIS
   READ(WALL,*)WALL_THICKNESS
   !READ(CUTOFF,*)CUTOFF_ANGLE
-  READ(FIBRE_INTERSECTION,*)FIBRE_SLOPE_INTERSECTION
-  READ(FIBRE_SLOPE,*)FIBRE_SLOPE_CHANGE
+  READ(FIBRE_ENDO,*)FIBRE_SLOPE_ENDO
+  READ(FIBRE_EPI,*)FIBRE_SLOPE_EPI
   READ(SHEET_ENDO_SLOPE,*)SHEET_SLOPE_BASE_ENDO
   READ(COSTA_1,*)COSTA_PARAMS(1)
   READ(COSTA_2,*)COSTA_PARAMS(2)
@@ -300,14 +302,8 @@ PROGRAM QUADRATICELLIPSOIDCOSTAREADINEXAMPLE
   CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
   !Set up an ellipsoid mesh
   CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshEllipsoidMeshType,Err)
-  !Enable creation of second mesh component
-  CALL CMISSGeneratedMeshLogicalSet(GeneratedMesh,.TRUE.,Err)
-  !Set the quadratic bases
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,QuadraticBasis,Err)
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,QuadraticCollapsedBasis,Err)
-  !Set the linear bases
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,LinearBasis,Err)
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,LinearCollapsedBasis,Err)
+  !Set the quadratic and linear bases
+  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,[QuadraticBasis,QuadraticCollapsedBasis,LinearBasis,LinearCollapsedBasis],Err)
   !Define the mesh on the region
   CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/LONG_AXIS,SHORT_AXIS,WALL_THICKNESS,CUTOFF_ANGLE/),Err)
   CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
@@ -360,6 +356,45 @@ PROGRAM QUADRATICELLIPSOIDCOSTAREADINEXAMPLE
   TOTAL_NUMBER_NODES_XI(2)=NUMBER_GLOBAL_Y_ELEMENTS*2+1
   TOTAL_NUMBER_NODES_XI(3)=NUMBER_GLOBAL_Z_ELEMENTS*2+1
    
+  !Map the correct node number (cn) to geometric node number (gn) G(gn)=cn
+  NumberOfCornerNodes=(NUMBER_GLOBAL_Z_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS*NUMBER_GLOBAL_X_ELEMENTS+1)
+  TotalNumberOfNodes=(TOTAL_NUMBER_NODES_XI(3))*((TOTAL_NUMBER_NODES_XI(2)-1)*TOTAL_NUMBER_NODES_XI(1)+1)
+  
+  ALLOCATE(G(TotalNumberOfNodes),STAT=Err)
+    
+  CornerNode=0
+  !Numbering of not corner nodes starts where Corner nodes end
+  NotCornerNode=NumberOfCornerNodes
+  gn=0
+
+  DO k=1,TOTAL_NUMBER_NODES_XI(3)
+     gn=gn+1
+     IF (mod(k,2)==0) THEN
+        !Not corner node
+        NotCornerNode=NotCornerNode+1
+        G(gn)=NotCornerNode
+     ELSE
+        !Corner node
+        CornerNode=CornerNode+1
+        G(gn)=CornerNode
+     ENDIF
+     DO j=2,TOTAL_NUMBER_NODES_XI(2)  
+        DO i=1,TOTAL_NUMBER_NODES_XI(1)
+           gn=gn+1
+           IF ((mod(i,2)==0).OR.(mod(j,2)==0).OR.(mod(k,2)==0)) THEN
+              !Not corner node
+              NotCornerNode=NotCornerNode+1
+              G(gn)=NotCornerNode
+           ELSE
+              !Corner node
+              CornerNode=CornerNode+1
+              G(gn)=CornerNode
+           ENDIF
+        ENDDO
+     ENDDO
+  ENDDO
+
+
   XI2delta=(PI-CUTOFF_ANGLE)/(TOTAL_NUMBER_NODES_XI(2)-1)
   XI3=0
   XI3delta=(1.0)/(TOTAL_NUMBER_NODES_XI(3)-1)
@@ -369,12 +404,13 @@ PROGRAM QUADRATICELLIPSOIDCOSTAREADINEXAMPLE
      j=1
      i=1
      node_idx=node_idx+1
+     CorrectNodeNumber=G(node_idx)
      FibreFieldAngle=(/zero,zero,zero/) 
      DO component_idx=1,FieldFibreNumberOfComponents
         CALL CMISSFieldParameterSetUpdateNode(FibreField,CMISSFieldUVariableType,CMISSFieldValuesSetType,DerivativeUserNumber, &
-             & node_idx,component_idx,FibreFieldAngle(component_idx),Err)
+             & CorrectNodeNumber,component_idx,FibreFieldAngle(component_idx),Err)
      ENDDO
-     theta=atan(FIBRE_SLOPE_CHANGE*XI3+FIBRE_SLOPE_INTERSECTION)
+     theta=atan((FIBRE_SLOPE_EPI-FIBRE_SLOPE_ENDO)*XI3+FIBRE_SLOPE_ENDO)
      DO j=2, TOTAL_NUMBER_NODES_XI(2) 
         nu=XI2delta*(j-1)
         omega=PI/2+(-2*nu/(PI-CUTOFF_ANGLE)+1)*atan(SHEET_SLOPE_BASE_ENDO)*(-2*XI3+1)
@@ -382,10 +418,11 @@ PROGRAM QUADRATICELLIPSOIDCOSTAREADINEXAMPLE
         !omega=PI/2+cos(2*nu)*atan(SHEET_SLOPE_BASE_ENDO)*(-2*XI3+1)
         DO i=1, TOTAL_NUMBER_NODES_XI(1)
            node_idx=node_idx+1
+           CorrectNodeNumber=G(node_idx)
            FibreFieldAngle=(/theta,zero,omega/)
            DO component_idx=1,FieldFibreNumberOfComponents
               CALL CMISSFieldParameterSetUpdateNode(FibreField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-                   & DerivativeUserNumber, node_idx,component_idx,FibreFieldAngle(component_idx),Err)
+                   & DerivativeUserNumber, CorrectNodeNumber,component_idx,FibreFieldAngle(component_idx),Err)
            ENDDO
         ENDDO
      ENDDO
