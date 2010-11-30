@@ -78,8 +78,8 @@ PROGRAM TwoElmnTet
   INTEGER(CMISSIntg) :: NUMBER_OF_SNAPSHOTS
   REAL(CMISSDP) :: MIN_VALUE,MAX_VALUE,TIME_STEP
   REAL(CMISSDP) :: SPEED_FUNCTION_ALONG_EIGEN_VECTOR(3)
-  CHARACTER (LEN=100) :: INPUT_FILE_NAME
-  CHARACTER (LEN=100) :: OUTPUT_FILE_NAME
+  CHARACTER (LEN=300) :: INPUT_FILE_NAME
+  CHARACTER (LEN=300) :: OUTPUT_FILE_NAME
   CHARACTER (LEN=300) :: OUTPUT_FILE_FIELD_TITLE
   CHARACTER (LEN=10)  :: INPUT_FILE_FORMAT
   CHARACTER (LEN=10)  :: OUTPUT_FILE_FORMAT
@@ -88,6 +88,18 @@ PROGRAM TwoElmnTet
   CHARACTER (LEN=10)  :: INPUT_TYPE_FOR_SEED_VALUE
   CHARACTER (LEN=10)  :: INPUT_TYPE_FOR_CONDUCTIVITY
   CHARACTER (LEN=100) :: STRING
+  
+  TYPE(CMISSMeshType) :: Mesh
+  TYPE(CMISSFieldType) :: GeometricField, DependentField
+  TYPE(CMISSProblemType) :: Problem
+  TYPE(CMISSSolverType) :: Solver
+  TYPE(CMISSEquationsSetType) :: EquationsSet
+  TYPE(CMISSSolverEquationsType) :: SolverEquations
+  TYPE(CMISSEquationsType) :: Equations
+  TYPE(CMISSRegionType) :: Region
+  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
+  
+  INTEGER(CMISSIntg) :: EquationsSetIndex
 
   INTEGER(CMISSIntg) :: Err
 
@@ -138,6 +150,12 @@ PROGRAM TwoElmnTet
 
 ! INPUT_FILE_NAME :   in order to calculate TOTAL_NUMBER_OF_NODES
   INPUT_FILE_NAME = "src/TwoElmnTet"
+  
+! OUTPUT_FILE_FORMAT :  "TABC" -> tabc format
+!			"VTKTET"  -> VTK tetrahedral format
+  OUTPUT_FILE_FORMAT = "VTKTET"
+  OUTPUT_FILE_NAME = "src/Output"
+  OUTPUT_FILE_FIELD_TITLE = "depolarizatin_time_comp"
 
 ! TOTAL_NUMBER_OF_NODES : to set input parameters
   CALL CMISS_NUMBER_OF_INPUT_NODES(INPUT_FILE_NAME,INPUT_FILE_FORMAT,TOTAL_NUMBER_OF_NODES,TOTAL_NUMBER_OF_ELEMENTS,&
@@ -195,25 +213,95 @@ PROGRAM TwoElmnTet
     ! EIGEN-VECTOR 3
     SPEED_FUNCTION_ALONG_EIGEN_VECTOR(3) = 1.0_CMISSDP
 
-  CALL CMISS_PRE_PROCESS_INFORMATION(MATERIAL_BEHAVIOUR,INPUT_FILE_NAME,INPUT_FILE_FORMAT,TOTAL_NUMBER_OF_NODES,&
-&INPUT_TYPE_FOR_SEED_VALUE,INPUT_TYPE_FOR_SPEED_FUNCTION,SPEED_FUNCTION_ALONG_EIGEN_VECTOR,INPUT_TYPE_FOR_CONDUCTIVITY,&
-&STATUS_MASK,NODE_LIST,CONDUCTIVITY_TENSOR,SPEED_FUNCTION_TABLE,SEED_VALUE,CONNECTIVITY_NUMBER,&
-&SPEED_FUNCTION_TABLE_ON_CONNECTIVITY,CONDUCTIVITY_TENSOR_ON_CONNECTIVITY,RAW_INDEX,COLUMN_INDEX,TOTAL_NUMBER_OF_CONNECTIVITY,&
-&CONNECTIVITY_LIST,ELEMENT_LIST,TOTAL_NUMBER_OF_ELEMENTS,NUMBER_OF_NODES_PER_ELEMENT,Err)
+  CALL CMISSReadTetgenMesh(INPUT_FILE_NAME,WorldRegion,Mesh,Region,GeometricField,Err)
+  
+  CALL CMISSWriteVTKMesh(OUTPUT_FILE_NAME,Mesh,GeometricField,Err)
+  
+  !Create the equations_set
+  CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
+  CALL CMISSEquationsSetCreateStart(77001,Region,GeometricField,EquationsSet,Err)
+  !Set the equations set to be a standard hj problem
+  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetFMMClass, &
+    & CMISSEquationsSetHJEquationType,CMISSEquationsSetStandardHJSubtype,Err)
+  !Finish creating the equations set
+  CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
-  CALL CMISS_SOLVE_PROBLEM_FMM_CONNECTIVITY(TOTAL_NUMBER_OF_NODES,NODE_LIST,CONDUCTIVITY_TENSOR_ON_CONNECTIVITY,&
-                       &SPEED_FUNCTION_TABLE_ON_CONNECTIVITY,RAW_INDEX,COLUMN_INDEX,TOTAL_NUMBER_OF_CONNECTIVITY,&
-                       &SEED_VALUE,STATUS_MASK)
+  !Create the equations set dependent field variables
+  CALL CMISSFieldTypeInitialise(DependentField,Err)
+  CALL CMISSEquationsSetDependentCreateStart(EquationsSet,77001,DependentField,Err)
+  !Finish the equations set dependent field variables
+  CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
 
-! OUTPUT_FILE_FORMAT :  "TABC" -> tabc format
-!			"VTKTET"  -> VTK tetrahedral format
-  OUTPUT_FILE_FORMAT = "VTKTET"
-  OUTPUT_FILE_NAME = "src/Output"
-  OUTPUT_FILE_FIELD_TITLE = "depolarizatin_time_comp"
+  !Create the equations set equations
+  CALL CMISSEquationsTypeInitialise(Equations,Err)
+  CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
+  !Set the equations matrices sparsity type
+  !CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
+  !Set the equations set output
+  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
+  !Finish the equations set equations
+  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
+  
+  !Start the creation of the equations set boundary conditions
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
+  !Finish the creation of the equations set boundary conditions
+  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
 
-  CALL CMISS_POST_PROCESS_DATA(MATERIAL_BEHAVIOUR,OUTPUT_FILE_NAME,OUTPUT_FILE_FORMAT,TOTAL_NUMBER_OF_NODES,NODE_LIST,&
-&CONDUCTIVITY_TENSOR,SPEED_FUNCTION_TABLE,SEED_VALUE,CONNECTIVITY_NUMBER,OUTPUT_FILE_FIELD_TITLE,&
-&CONNECTIVITY_LIST,ELEMENT_LIST,TOTAL_NUMBER_OF_ELEMENTS,NUMBER_OF_NODES_PER_ELEMENT,Err)
+  
+  !Start the creation of a problem.
+  CALL CMISSProblemTypeInitialise(Problem,Err)
+  CALL CMISSProblemCreateStart(77000,Problem,Err)
+  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemFMMClass,CMISSProblemHJEquationType, &
+    & CMISSProblemStandardHJSubtype,Err)
+  CALL CMISSProblemCreateFinish(Problem,Err)
+  
+  !Start the creation of the problem control loop
+  CALL CMISSProblemControlLoopCreateStart(Problem,Err)
+  !Finish creating the problem control loop
+  CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
+  
+  !Start the creation of the problem solvers
+  CALL CMISSSolverTypeInitialise(Solver,Err)
+  CALL CMISSProblemSolversCreateStart(Problem,Err)
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
+  !CALL CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearDirectSolveType,Err)
+  !CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverMUMPSLibrary,Err)
+  !Finish the creation of the problem solver
+  CALL CMISSProblemSolversCreateFinish(Problem,Err)
+  
+  !Start the creation of the problem solver equations
+ ! CALL CMISSSolverTypeInitialise(Solver,Err)
+ ! CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
+ ! CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
+  !Get the solve equations
+ ! CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
+ ! CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
+  !Set the solver equations sparsity
+ ! CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
+  !CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices,Err)  
+  !Add in the equations set
+  !CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
+  !Finish the creation of the problem solver equations
+ !CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+  
+  !Solve
+  CALL CMISSProblemSolve(Problem,Err)
+
+  !CALL CMISS_PRE_PROCESS_INFORMATION(MATERIAL_BEHAVIOUR,INPUT_FILE_NAME,INPUT_FILE_FORMAT,TOTAL_NUMBER_OF_NODES,&
+  !     &INPUT_TYPE_FOR_SEED_VALUE,INPUT_TYPE_FOR_SPEED_FUNCTION,SPEED_FUNCTION_ALONG_EIGEN_VECTOR,INPUT_TYPE_FOR_CONDUCTIVITY,&
+  !     &STATUS_MASK,NODE_LIST,CONDUCTIVITY_TENSOR,SPEED_FUNCTION_TABLE,SEED_VALUE,CONNECTIVITY_NUMBER,&
+  !     &SPEED_FUNCTION_TABLE_ON_CONNECTIVITY,CONDUCTIVITY_TENSOR_ON_CONNECTIVITY,RAW_INDEX,COLUMN_INDEX,TOTAL_NUMBER_OF_CONNECTIVITY,&
+  !     &CONNECTIVITY_LIST,ELEMENT_LIST,TOTAL_NUMBER_OF_ELEMENTS,NUMBER_OF_NODES_PER_ELEMENT,Err)
+
+  !CALL CMISS_SOLVE_PROBLEM_FMM_CONNECTIVITY(TOTAL_NUMBER_OF_NODES,NODE_LIST,CONDUCTIVITY_TENSOR_ON_CONNECTIVITY,&
+  !                     &SPEED_FUNCTION_TABLE_ON_CONNECTIVITY,RAW_INDEX,COLUMN_INDEX,TOTAL_NUMBER_OF_CONNECTIVITY,&
+  !                     &SEED_VALUE,STATUS_MASK)
+
+
+  !CALL CMISS_POST_PROCESS_DATA(MATERIAL_BEHAVIOUR,OUTPUT_FILE_NAME,OUTPUT_FILE_FORMAT,TOTAL_NUMBER_OF_NODES,NODE_LIST,&
+  !&CONDUCTIVITY_TENSOR,SPEED_FUNCTION_TABLE,SEED_VALUE,CONNECTIVITY_NUMBER,OUTPUT_FILE_FIELD_TITLE,&
+  !&CONNECTIVITY_LIST,ELEMENT_LIST,TOTAL_NUMBER_OF_ELEMENTS,NUMBER_OF_NODES_PER_ELEMENT,Err)
   
   STOP
 
