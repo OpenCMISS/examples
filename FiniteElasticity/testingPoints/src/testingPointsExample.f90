@@ -261,7 +261,7 @@ PROGRAM TESTINGPOINTSEXAMPLE
   CALL CMISSBasisTypeInitialise(LinearBasis,Err)
   CALL CMISSBasisCreateStart(LinearBasisUserNumber,LinearBasis,Err)
   CALL CMISSBasisQuadratureNumberOfGaussXiSet(LinearBasis, &
-    & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)
+    & (/CMISSBasisHighQuadratureScheme,CMISSBasisHighQuadratureScheme,CMISSBasisHighQuadratureScheme/),Err)
   CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(LinearBasis,.true.,Err) !Have to do this (unused) due to field_interp setup
   CALL CMISSBasisCreateFinish(LinearBasis,Err)
 
@@ -270,7 +270,7 @@ PROGRAM TESTINGPOINTSEXAMPLE
   CALL CMISSBasisInterpolationXiSet(QuadraticBasis,(/CMISSBasisQuadraticLagrangeInterpolation, &
     & CMISSBasisQuadraticLagrangeInterpolation,CMISSBasisQuadraticLagrangeInterpolation/),Err)
   CALL CMISSBasisQuadratureNumberOfGaussXiSet(QuadraticBasis, &
-    & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)
+    & (/CMISSBasisHighQuadratureScheme,CMISSBasisHighQuadratureScheme,CMISSBasisHighQuadratureScheme/),Err)
   CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(QuadraticBasis,.true.,Err) !Enable 3D interpolation on faces
   CALL CMISSBasisCreateFinish(QuadraticBasis,Err)
 
@@ -279,7 +279,7 @@ PROGRAM TESTINGPOINTSEXAMPLE
   CALL CMISSBasisInterpolationXiSet(CubicBasis,(/CMISSBasisCubicLagrangeInterpolation, &
     & CMISSBasisCubicLagrangeInterpolation,CMISSBasisCubicLagrangeInterpolation/),Err)
   CALL CMISSBasisQuadratureNumberOfGaussXiSet(CubicBasis, &
-    & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)
+    & (/CMISSBasisHighQuadratureScheme,CMISSBasisHighQuadratureScheme,CMISSBasisHighQuadratureScheme/),Err)
   CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(CubicBasis,.true.,Err) !Enable 3D interpolation on faces
   CALL CMISSBasisCreateFinish(CubicBasis,Err)
 
