@@ -219,7 +219,7 @@ PROGRAM CUBOIDGENERICEXAMPLE
   CALL CMISSBasisTypeInitialise(LinearBasis,Err)
   CALL CMISSBasisCreateStart(LinearBasisUserNumber,LinearBasis,Err)
   CALL CMISSBasisQuadratureNumberOfGaussXiSet(LinearBasis, &
-    & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)
+    & (/CMISSBasisHighQuadratureScheme,CMISSBasisHighQuadratureScheme,CMISSBasisHighQuadratureScheme/),Err)
   CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(LinearBasis,.true.,Err)
   CALL CMISSBasisCreateFinish(LinearBasis,Err)
 
@@ -228,7 +228,7 @@ PROGRAM CUBOIDGENERICEXAMPLE
   CALL CMISSBasisInterpolationXiSet(QuadraticBasis,(/CMISSBasisQuadraticLagrangeInterpolation, &
     & CMISSBasisQuadraticLagrangeInterpolation,CMISSBasisQuadraticLagrangeInterpolation/),Err)
   CALL CMISSBasisQuadratureNumberOfGaussXiSet(QuadraticBasis, &
-    & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)
+    & (/CMISSBasisHighQuadratureScheme,CMISSBasisHighQuadratureScheme,CMISSBasisHighQuadratureScheme/),Err)
   CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(QuadraticBasis,.true.,Err)
   CALL CMISSBasisCreateFinish(QuadraticBasis,Err)
 
@@ -237,7 +237,7 @@ PROGRAM CUBOIDGENERICEXAMPLE
   CALL CMISSBasisInterpolationXiSet(CubicBasis,(/CMISSBasisCubicLagrangeInterpolation, &
     & CMISSBasisCubicLagrangeInterpolation,CMISSBasisCubicLagrangeInterpolation/),Err)
   CALL CMISSBasisQuadratureNumberOfGaussXiSet(CubicBasis, &
-    & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)
+    & (/CMISSBasisHighQuadratureScheme,CMISSBasisHighQuadratureScheme,CMISSBasisHighQuadratureScheme/),Err)
   CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(CubicBasis,.true.,Err) !Enable 3D interpolation on faces
   CALL CMISSBasisCreateFinish(CubicBasis,Err)
 
@@ -428,7 +428,7 @@ PROGRAM CUBOIDGENERICEXAMPLE
       Nodes=>Face6Nodes    
     END SELECT    
     CALL SET_BC(Decomposition,GeometricField,BoundaryConditions,VariableType,INT(BC(I,3)),Nodes,INT(BC(I,2)),BC(I,4), &
-      & ComputationalNodeNumber)  
+      & ComputationalNodeNumber)
   ENDDO
 
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
