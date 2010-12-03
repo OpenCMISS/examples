@@ -412,14 +412,14 @@ PROGRAM BIDOMAINEXAMPLE
   !Finish the creation of the CellML models field
   CALL CMISSCellMLModelsFieldCreateFinish(CellML,Err)
   !Set up the models field
-  DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
-    IF(N < 5) THEN
-      CELL_TYPE = 1
-    ELSE
-      CELL_TYPE = 2
-    ENDIF
-    CALL CMISSFieldParameterSetUpdateNode(CellMLModelsField, CMISSFieldUVariableType, CMISSFieldValuesSetType,1,N,1,CELL_TYPE,Err)
-  END DO
+  !DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
+  !  IF(N < 5) THEN
+  !    CELL_TYPE = 1
+  !  ELSE
+  !    CELL_TYPE = 2
+  !  ENDIF
+  !  CALL CMISSFieldParameterSetUpdateNode(CellMLModelsField, CMISSFieldUVariableType, CMISSFieldValuesSetType,1,N,1,CELL_TYPE,Err)
+  !END DO
 
   !Start the creation of the CellML state field
   CALL CMISSFieldTypeInitialise(CellMLStateField,Err)

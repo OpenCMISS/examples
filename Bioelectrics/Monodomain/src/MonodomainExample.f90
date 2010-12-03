@@ -284,14 +284,14 @@ PROGRAM MONODOMAINEXAMPLE
   ! and import JRW 1998 from a file
   CALL CMISSCellMLModelImport(CellML,"jrw-1998.xml",JRWModelIndex,Err)
   ! and import LRd from a file
-  CALL CMISSCellMLModelImport(CellML,"LRd.xml",LRdModelIndex,Err)
+  !CALL CMISSCellMLModelImport(CellML,"LRd.xml",LRdModelIndex,Err)
 !  CALL CMISSDiagnosticsSetOn(CMISSInDiagType,(/1,2,3,4,5/),"",(/"CELLML_CREATE_FIELD_TO_CELLML_MAP_C", &
 !    & "CELLML_CREATE_CELLML_TO_FIELD_MAP_C"/),Err)
   ! Now we have imported all the models we are able to specify which variables from the model we want:
   !   - to set from this side
   CALL CMISSCellMLVariableSetAsKnown(CellML,n98ModelIndex,"ionic_concentrations/K_o",Err)
   CALL CMISSCellMLVariableSetAsKnown(CellML,n98ModelIndex,"membrane/IStim",Err)
-  CALL CMISSCellMLVariableSetAsKnown(CellML,JRWModelIndex,"L_type_Ca_channel/Ko",Err) ! this one should fail
+  !CALL CMISSCellMLVariableSetAsKnown(CellML,JRWModelIndex,"L_type_Ca_channel/Ko",Err) ! this one should fail
   CALL CMISSCellMLVariableSetAsKnown(CellML,JRWModelIndex,"membrane/I_stim",Err)
   !   - to get from the CellML side
   CALL CMISSCellMLVariableSetAsWanted(CellML,n98ModelIndex,"membrane/i_K1",Err)
@@ -305,7 +305,7 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSCellMLVariableSetAsWanted(CellML,n98ModelIndex,"membrane/i_b_Na",Err)
   CALL CMISSCellMLVariableSetAsWanted(CellML,n98ModelIndex,"membrane/i_Ca_L_Na",Err)
   CALL CMISSCellMLVariableSetAsWanted(CellML,n98ModelIndex,"membrane/i_NaCa",Err)
-  CALL CMISSCellMLVariableSetAsWanted(CellML,n98ModelIndex,"membrane/IStimC",Err)
+  !CALL CMISSCellMLVariableSetAsWanted(CellML,n98ModelIndex,"membrane/IStimC",Err)
   CALL CMISSCellMLVariableSetAsWanted(CellML,JRWModelIndex,"membrane/i_K1",Err)
   CALL CMISSCellMLVariableSetAsWanted(CellML,JRWModelIndex,"membrane/i_Na",Err)
   CALL CMISSCellMLVariableSetAsWanted(CellML,JRWModelIndex,"membrane/i_Ca_L_Ca",Err)
@@ -316,7 +316,7 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSCellMLVariableSetAsWanted(CellML,JRWModelIndex,"membrane/i_p_Ca",Err)
   CALL CMISSCellMLVariableSetAsWanted(CellML,JRWModelIndex,"membrane/i_Na_b",Err)
   CALL CMISSCellMLVariableSetAsWanted(CellML,JRWModelIndex,"membrane/i_Ca_b",Err)
-  CALL CMISSCellMLVariableSetAsWanted(CellML,JRWModelIndex,"membrane/IStimC",Err)
+  !CALL CMISSCellMLVariableSetAsWanted(CellML,JRWModelIndex,"membrane/IStimC",Err)
   !   - and override constant parameters without needing to set up fields
   !> \todo Need to allow parameter values to be overridden for the case when user has non-spatially varying parameter value.
 !  CALL CMISSDiagnosticsSetOff(Err)
@@ -344,14 +344,16 @@ PROGRAM MONODOMAINEXAMPLE
   !Finish the creation of the CellML models field
   CALL CMISSCellMLModelsFieldCreateFinish(CellML,Err)
   !Set up the models field
-  DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
-    IF(N < 5) THEN
-      CELL_TYPE = 1
-    ELSE
-      CELL_TYPE = 2
-    ENDIF
-    CALL CMISSFieldParameterSetUpdateNode(CellMLModelsField, CMISSFieldUVariableType, CMISSFieldValuesSetType,1,N,1,CELL_TYPE,Err)
-  END DO
+  !DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
+  !  IF(N < 5) THEN
+  !    CELL_TYPE = 1
+  !  ELSE
+  !    CELL_TYPE = 2
+  !  ENDIF
+  !  CALL CMISSFieldParameterSetUpdateNode(CellMLModelsField, CMISSFieldUVariableType, CMISSFieldValuesSetType,1,N,1,CELL_TYPE,Err)
+  !END DO
+  !CALL CMISSFieldParameterSetUpdateStart(CellMLModelsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
+  !CALL CMISSFieldParameterSetUpdateFinish(CellMLModelsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
 
   !Start the creation of the CellML state field
   CALL CMISSFieldTypeInitialise(CellMLStateField,Err)
