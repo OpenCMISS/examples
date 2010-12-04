@@ -436,6 +436,7 @@ PROGRAM MONODOMAINEXAMPLE
   !Get the first (DAE) solver
   CALL CMISSSolverTypeInitialise(Solver,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
+  CALL CMISSSolverDAESolverTypeSet(Solver,CMISSSolverDAEExternal,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
   CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
