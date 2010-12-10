@@ -604,11 +604,11 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   !Create the equations set for deformation-dependent material properties
   CALL CMISSFieldTypeInitialise(EquationsSetFieldMatProperties,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSetMatProperties,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberMatProperties,Region,GeometricField,CMISSEquationsSetFittingFieldClass,&
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberMatProperties,Region,GeometricField,CMISSEquationsSetFittingClass,&
     & CMISSEquationsSetDataFittingEquationType,CMISSEquationsSetMatPropertiesDataFittingSubtype,&
     & EquationsSetFieldUserNumberMatProperties,EquationsSetFieldMatProperties,EquationsSetMatProperties,Err)
   !Set the equations set to be a deformation-dependent material properties problem
-!   CALL CMISSEquationsSetSpecificationSet(EquationsSetMatProperties,CMISSEquationsSetFittingFieldClass, &
+!   CALL CMISSEquationsSetSpecificationSet(EquationsSetMatProperties,CMISSEquationsSetFittingClass, &
 !     & CMISSEquationsSetDataFittingEquationType,CMISSEquationsSetMatPropertiesDataFittingSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetMatProperties,Err)
