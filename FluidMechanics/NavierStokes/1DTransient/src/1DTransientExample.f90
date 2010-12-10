@@ -252,7 +252,7 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   !Set initial values
   INITIAL_FIELD_NAVIER_STOKES(1)=1000.0_CMISSDP
   INITIAL_FIELD_NAVIER_STOKES(2)=18.1_CMISSDP
-  INITIAL_FIELD_NAVIER_STOKES(3)=10.0_CMISSDP
+  INITIAL_FIELD_NAVIER_STOKES(3)=1000.0_CMISSDP
   !Set boundary conditions
   OUTLET_WALL_NODES_NAVIER_STOKES_FLAG=.TRUE.
   INLET_WALL_NODES_NAVIER_STOKES_FLAG=.TRUE.
@@ -263,7 +263,7 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
     INLET_WALL_NODES_NAVIER_STOKES=[1]
     !Set initial boundary conditions
     BOUNDARY_CONDITIONS_NAVIER_STOKES(1)=1000.0_CMISSDP
-    BOUNDARY_CONDITIONS_NAVIER_STOKES(3)=10.0_CMISSDP
+    BOUNDARY_CONDITIONS_NAVIER_STOKES(3)=1000.0_CMISSDP
   ENDIF
 
   IF(OUTLET_WALL_NODES_NAVIER_STOKES_FLAG) THEN
@@ -276,11 +276,11 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
 
   !Set material parameters
   MU_PARAM_NAVIER_STOKES=0.0035_CMISSDP
-  RHO_PARAM_NAVIER_STOKES=1050E-6_CMISSDP
-  E_PARAM_NAVIER_STOKES=0.8E-6_CMISSDP
+  RHO_PARAM_NAVIER_STOKES=1050E-6_CMISSDP !g/cm3
+  E_PARAM_NAVIER_STOKES=800_CMISSDP !KPa
+  H0_PARAM_NAVIER_STOKES=0.5_CMISSDP !mm
+  A0_PARAM_NAVIER_STOKES=18.1_CMISSDP !mm2
   SIGMA_PARAM_NAVIER_STOKES=0.5_CMISSDP
-  H0_PARAM_NAVIER_STOKES=0.5_CMISSDP
-  A0_PARAM_NAVIER_STOKES=18.1_CMISSDP
   !Set interpolation parameters
   BASIS_XI_GAUSS_SPACE=3
   BASIS_XI_GAUSS_VELOCITY=3
@@ -542,14 +542,14 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
     & MaterialsFieldUserNumberNavierStokesMu,MU_PARAM_NAVIER_STOKES,Err)
   CALL CMISSFieldComponentValuesInitialise(MaterialsFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
     & MaterialsFieldUserNumberNavierStokesRho,RHO_PARAM_NAVIER_STOKES,Err)
-!  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-!    & MaterialsFieldUserNumberNavierStokesSigma,SIGMA_PARAM_NAVIER_STOKES,Err)
-!  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-!    & MaterialsFieldUserNumberNavierStokesH0,H0_PARAM_NAVIER_STOKES,Err)
-!  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-!    & MaterialsFieldUserNumberNavierStokesA0,A0_PARAM_NAVIER_STOKES,Err)
-!  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-!    & MaterialsFieldUserNumberNavierStokesE,E_PARAM_NAVIER_STOKES,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+    & MaterialsFieldUserNumberNavierStokesE,E_PARAM_NAVIER_STOKES,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+    & MaterialsFieldUserNumberNavierStokesH0,H0_PARAM_NAVIER_STOKES,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+    & MaterialsFieldUserNumberNavierStokesA0,A0_PARAM_NAVIER_STOKES,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+    & MaterialsFieldUserNumberNavierStokesSigma,SIGMA_PARAM_NAVIER_STOKES,Err)
 
   !================================================================================================================================x
   !
