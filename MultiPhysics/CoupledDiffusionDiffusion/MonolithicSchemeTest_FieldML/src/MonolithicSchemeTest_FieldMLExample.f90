@@ -92,24 +92,9 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=6
   INTEGER(CMISSIntg) :: MaterialsFieldUserNumberDiffusion
-!   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDiffusionTwo=10
-!   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDiffusionThree=11
   INTEGER(CMISSIntg) :: SourceFieldUserNumberDiffusion
-!   INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumberDiffusionTwo=16
-!   INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumberDiffusionThree=17
   INTEGER(CMISSIntg) :: EquationsSetUserNumberDiffusion
-!   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDiffusionTwo=13
-!   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDiffusionThree=14
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=20
-!!!!!!!!!!!!!!!!!!!EQUATIONS FIELD PARAMETERS
-  INTEGER(CMISSIntg), PARAMETER :: EquationsFieldDiffusionOne=33
-  INTEGER(CMISSIntg), PARAMETER :: EquationsFieldDiffusionTwo=34
-  INTEGER(CMISSIntg), PARAMETER :: EquationsFieldDiffusionThree=35
-
-
-
-
-
   INTEGER(CMISSIntg) :: EquationsSetFieldUserNumberDiffusion
   INTEGER(CMISSIntg) :: icompartment,Ncompartments,num_var
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

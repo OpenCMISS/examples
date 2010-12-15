@@ -259,24 +259,24 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   INTEGER(CMISSIntg) :: SolidMeshComponenetNumber
   INTEGER(CMISSIntg) :: SolidPressureMeshComponenetNumber
 
-  INTEGER(CMISSIntg), PARAMETER :: FieldGeometrySolidUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometrySolidUserNumber=51
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometrySolidNumberOfVariables=1
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometrySolidNumberOfComponents=3
 
-  INTEGER(CMISSIntg), PARAMETER :: FieldFibreSolidUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreSolidUserNumber=52
   INTEGER(CMISSIntg), PARAMETER :: FieldFibreSolidNumberOfVariables=1
   INTEGER(CMISSIntg), PARAMETER :: FieldFibreSolidNumberOfComponents=3
 
-  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialSolidUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialSolidUserNumber=53
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialSolidNumberOfVariables=1
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialSolidNumberOfComponents=2
 
-  INTEGER(CMISSIntg), PARAMETER :: FieldDependentSolidUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentSolidUserNumber=54
   INTEGER(CMISSIntg) :: FieldDependentSolidNumberOfVariables
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentSolidNumberOfComponents=4
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentFluidNumberOfComponents=4  !(u,v,w,m)
 
-  INTEGER(CMISSIntg), PARAMETER :: EquationSetSolidUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationSetSolidUserNumber=55
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldSolidUserNumber=25
   !Program types
   !Program variables
@@ -453,7 +453,11 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   ALLOCATE (MaterialsFieldDarcy(Ncompartments))
   ALLOCATE (MaterialsFieldMatProperties(Ncompartments))
   ALLOCATE (BoundaryConditionsDarcy(Ncompartments))
+  ALLOCATE (BoundaryConditionsMatProperties(Ncompartments))
   ALLOCATE (EquationsDarcy(Ncompartments))
+  ALLOCATE (EquationsSetFieldMatProperties(Ncompartments))
+  ALLOCATE (EquationsSetMatProperties(Ncompartments))
+  ALLOCATE (EquationsMatProperties(Ncompartments))
  !
   !================================================================================================================================
   !
@@ -715,9 +719,10 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   CALL CMISSFieldTypeInitialise(GeometricField,Err)
   CALL CMISSFieldCreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
   !Set the field type
+  CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
   CALL CMISSFieldTypeSet(GeometricField,CMISSFieldGeometricType,Err)
   !Set the decomposition to use
-  CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
+
   !Set the scaling to use
   CALL CMISSFieldScalingTypeSet(GeometricField,CMISSFieldNoScaling,Err)
   !Set the mesh component to be used by the field components.
@@ -798,10 +803,14 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
     CALL CMISSFieldTypeInitialise(EquationsSetFieldDarcy(icompartment),Err)
     CALL CMISSEquationsSetTypeInitialise(EquationsSetDarcy(icompartment),Err)
     CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDarcy,Region,GeometricField,CMISSEquationsSetFluidMechanicsClass, & 
-      & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetIncompressibleElasticityDrivenDarcySubtype,&
+      & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetIncompressibleElastMultiCompDarcySubtype,&
       & EquationsSetFieldUserNumberDarcy,EquationsSetFieldDarcy(icompartment),EquationsSetDarcy(icompartment),Err)
     !Finish creating the equations set
     CALL CMISSEquationsSetCreateFinish(EquationsSetDarcy(icompartment),Err)
+    CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldDarcy(icompartment),CMISSFieldUVariableType, &
+      & CMISSFieldValuesSetType,1,icompartment,Err)
+    CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldDarcy(icompartment),CMISSFieldUVariableType, &
+      & CMISSFieldValuesSetType,2,Ncompartments,Err)
   ENDDO
   DO icompartment = 1,Ncompartments
     EquationsSetFieldUserNumberMatProperties = 150_CMISSIntg+icompartment
@@ -810,12 +819,16 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
     CALL CMISSFieldTypeInitialise(EquationsSetFieldMatProperties(icompartment),Err)
     CALL CMISSEquationsSetTypeInitialise(EquationsSetMatProperties(icompartment),Err)
     CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberMatProperties,Region,GeometricField, & 
-      & CMISSEquationsSetClassicalFieldClass,&
+      & CMISSEquationsSetFittingClass,&
       & CMISSEquationsSetDataFittingEquationType,CMISSEquationsSetMatPropertiesInriaModelDataFittingSubtype,&
       & EquationsSetFieldUserNumberMatProperties,EquationsSetFieldMatProperties(icompartment), &
       & EquationsSetMatProperties(icompartment),Err)
     !Finish creating the equations set
     CALL CMISSEquationsSetCreateFinish(EquationsSetMatProperties(icompartment),Err)
+!     CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldMatProperties(icompartment),CMISSFieldUVariableType, &
+!       & CMISSFieldValuesSetType,1,icompartment,Err)
+!     CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldMatProperties(icompartment),CMISSFieldUVariableType, &
+!       & CMISSFieldValuesSetType,2,Ncompartments,Err)
   ENDDO
 
   !--------------------------------------------------------------------------------------------------------------------------------
@@ -823,10 +836,15 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
 
   !Create the equations_set
   CALL CMISSFieldTypeInitialise(EquationsSetFieldSolid,Err)
+  CALL CMISSEquationsSetTypeInitialise(EquationsSetSolid,Err)
   CALL CMISSEquationsSetCreateStart(EquationSetSolidUserNumber,Region,FibreFieldSolid,CMISSEquationsSetElasticityClass, &
-    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetIncompressibleElasticityDrivenDarcySubtype,&
+    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetIncompressibleElastMultiCompDarcySubtype,&
     & EquationsSetFieldSolidUserNumber,EquationsSetFieldSolid,EquationsSetSolid,Err)
   CALL CMISSEquationsSetCreateFinish(EquationsSetSolid,Err)
+    CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldSolid,CMISSFieldUVariableType, &
+      & CMISSFieldValuesSetType,1,1,Err)
+    CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldSolid,CMISSFieldUVariableType, &
+      & CMISSFieldValuesSetType,2,Ncompartments,Err)
 
 
   ! end Solid
@@ -875,16 +893,19 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
     CALL CMISSEquationsSetDependentCreateStart(EquationsSetMatProperties(icompartment),DependentFieldUserNumberMatProperties, &
       & DependentFieldMatProperties,Err)
     !Set the mesh component to be used by the field components.
-    NUMBER_OF_COMPONENTS_DEPENDENT_FIELD_MAT_PROPERTIES = 2
-    DO COMPONENT_NUMBER=1,NUMBER_OF_COMPONENTS_DEPENDENT_FIELD_MAT_PROPERTIES
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldMatProperties,CMISSFieldUVariableType,COMPONENT_NUMBER, &
-        & MESH_COMPONENT_NUMBER_GEOMETRY,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldMatProperties,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, &
-        & MESH_COMPONENT_NUMBER_GEOMETRY,Err)
-    ENDDO
+!NEED TO GENERALISE THE FOLLOWING COMMENTED OUT LINES OF CODE TO WORK FOR ARBITRARY VARIABLE TYPES
+!     NUMBER_OF_COMPONENTS_DEPENDENT_FIELD_MAT_PROPERTIES = 2
+!     DO COMPONENT_NUMBER=1,NUMBER_OF_COMPONENTS_DEPENDENT_FIELD_MAT_PROPERTIES
+!       CALL CMISSFieldComponentMeshComponentSet(DependentFieldMatProperties,CMISSFieldUVariableType,COMPONENT_NUMBER, &
+!         & MESH_COMPONENT_NUMBER_GEOMETRY,Err)
+!       CALL CMISSFieldComponentMeshComponentSet(DependentFieldMatProperties,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, &
+!         & MESH_COMPONENT_NUMBER_GEOMETRY,Err)
+!     ENDDO
     !Finish the equations set dependent field variables
     CALL CMISSEquationsSetDependentCreateFinish(EquationsSetMatProperties(icompartment),Err)
   ENDDO
+
+
   !Initialise dependent field
   DO COMPONENT_NUMBER=1,NUMBER_OF_COMPONENTS_DEPENDENT_FIELD_MAT_PROPERTIES
     CALL CMISSFieldComponentValuesInitialise(DependentFieldMatProperties,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
@@ -907,6 +928,7 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   FieldDependentSolidNumberOfVariables=2*Ncompartments+2
   CALL CMISSFieldNumberOfVariablesSet(DependentFieldSolid,FieldDependentSolidNumberOfVariables,Err)
   !create two variables for each compartment
+  ALLOCATE(VariableTypes(2*Ncompartments+2))
   DO num_var=1,Ncompartments+1
      VariableTypes(2*num_var-1)=CMISSFieldUVariableType+(CMISSFieldNumberOfVariableSubtypes*(num_var-1))
      VariableTypes(2*num_var)=CMISSFieldDelUDelNVariableType+(CMISSFieldNumberOfVariableSubtypes*(num_var-1))
@@ -914,9 +936,16 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   CALL CMISSFieldVariableTypesSet(DependentFieldSolid,VariableTypes,Err) 
 !   CALL CMISSFieldVariableTypesSet(DependentFieldSolid,(/CMISSFieldUVariableType, &
 !     & CMISSFieldDelUDelNVariableType,CMISSFieldVVariableType,CMISSFieldDelVDelNVariableType/),Err)
-
+    CALL CMISSFieldDimensionSet(DependentFieldSolid,CMISSFieldUVariableType, &
+       & CMISSFieldVectorDimensionType,Err)
+    CALL CMISSFieldDimensionSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType, &
+       & CMISSFieldVectorDimensionType,Err)
   CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,CMISSFieldUVariableType,FieldDependentSolidNumberOfComponents,Err)
   CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,FieldDependentSolidNumberOfComponents,Err)
+  CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,1,CMISSFieldNodeBasedInterpolation,Err)
+  CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,2,CMISSFieldNodeBasedInterpolation,Err)
+  CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,3,CMISSFieldNodeBasedInterpolation,Err)
+
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,1,SolidMeshComponenetNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,2,SolidMeshComponenetNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,3,SolidMeshComponenetNumber,Err)
@@ -924,6 +953,12 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
 !   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,4,CMISSFieldElementBasedInterpolation,Err)
 !   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,4,SolidMeshComponenetNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,4,SolidPressureMeshComponenetNumber,Err)
+  CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,1, &
+    & CMISSFieldNodeBasedInterpolation,Err)
+  CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,2, &
+    & CMISSFieldNodeBasedInterpolation,Err)
+  CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,3, &
+    & CMISSFieldNodeBasedInterpolation,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,1,SolidMeshComponenetNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,2,SolidMeshComponenetNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,3,SolidMeshComponenetNumber,Err)
@@ -936,16 +971,26 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
     & Err)
   !loop over the number of compartments
   DO icompartment=3,2*Ncompartments+2
+    CALL CMISSFieldDimensionSet(DependentFieldSolid,VariableTypes(icompartment), &
+       & CMISSFieldVectorDimensionType,Err)
     CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,VariableTypes(icompartment),FieldDependentFluidNumberOfComponents,Err)
-   DO componentnum=1,FieldDependentFluidNumberOfComponents-1
+    DO componentnum=1,FieldDependentFluidNumberOfComponents-1
     !set dimension type
 !     CALL CMISSFieldDimensionSet(DependentField,VariableTypes(icompartment), &
 !        & CMISSFieldScalarDimensionType,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,VariableTypes(icompartment),componentnum, & 
-       & MESH_COMPONENT_NUMBER_VELOCITY,Err)
-   ENDDO
-       CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,VariableTypes(icompartment),componentnum+1, & 
-       & MESH_COMPONENT_NUMBER_PRESSURE,Err)
+      CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,VariableTypes(icompartment),componentnum, &
+       & CMISSFieldNodeBasedInterpolation,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,VariableTypes(icompartment),componentnum, & 
+         & MESH_COMPONENT_NUMBER_VELOCITY,Err)
+    ENDDO
+      CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,VariableTypes(icompartment), &
+       & FieldDependentFluidNumberOfComponents, &
+       & CMISSFieldNodeBasedInterpolation,Err)
+!     CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,VariableTypes(icompartment), &
+!       & FieldDependentFluidNumberOfComponents,MESH_COMPONENT_NUMBER_PRESSURE,Err)
+    CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,VariableTypes(icompartment), &
+      & FieldDependentFluidNumberOfComponents,MESH_COMPONENT_NUMBER_VELOCITY,Err)
+    
   ENDDO
 
 !   CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,CMISSFieldVVariableType,FieldDependentFluidNumberOfComponents,Err)
@@ -1162,6 +1207,7 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
     CALL CMISSEquationsOutputTypeSet(EquationsDarcy(icompartment),EQUATIONS_DARCY_OUTPUT,Err)
   !Finish the equations set equations
     CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetDarcy(icompartment),Err)
+  write(*,*) "round and round we go!"
   ENDDO
   DO icompartment=1,Ncompartments
     !Create the equations set equations
@@ -1456,7 +1502,7 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   CALL CMISSSolverOutputTypeSet(DynamicSolverDarcy,DYNAMIC_SOLVER_DARCY_OUTPUT_TYPE,Err)
   !Set theta
   CALL CMISSSolverDynamicThetaSet(DynamicSolverDarcy,DYNAMIC_SOLVER_DARCY_THETA,Err)
-!   CALL CMISSSolverDynamicDynamicSet(DynamicSolverDarcy,.TRUE.,Err)
+  !CALL CMISSSolverDynamicDynamicSet(DynamicSolverDarcy,.TRUE.,Err)
   !Get the dynamic linear solver
   CALL CMISSSolverDynamicLinearSolverGet(DynamicSolverDarcy,LinearSolverDarcy,Err)
   !Set the solver settings
@@ -1558,6 +1604,17 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
 
   !Finialise CMISS
 !   CALL CMISSFinalise(Err)
+
+  IF (ALLOCATED(EquationsSetFieldDarcy)) DEALLOCATE(EquationsSetFieldDarcy)
+  IF (ALLOCATED(EquationsSetDarcy)) DEALLOCATE(EquationsSetDarcy)
+  IF (ALLOCATED(MaterialsFieldDarcy)) DEALLOCATE(MaterialsFieldDarcy)
+  IF (ALLOCATED(MaterialsFieldMatProperties)) DEALLOCATE(MaterialsFieldMatProperties)
+  IF (ALLOCATED(BoundaryConditionsDarcy)) DEALLOCATE(BoundaryConditionsDarcy)
+  IF (ALLOCATED(BoundaryConditionsMatProperties)) DEALLOCATE(BoundaryConditionsMatProperties)
+  IF (ALLOCATED(EquationsDarcy)) DEALLOCATE(EquationsDarcy)
+  IF (ALLOCATED(EquationsSetFieldMatProperties)) DEALLOCATE(EquationsSetFieldMatProperties)
+  IF (ALLOCATED(EquationsSetMatProperties)) DEALLOCATE(EquationsSetMatProperties)
+  IF (ALLOCATED(EquationsMatProperties)) DEALLOCATE(EquationsMatProperties)
 
   WRITE(*,'(A)') "Program successfully completed."
 
