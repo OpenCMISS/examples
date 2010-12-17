@@ -268,7 +268,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialSolidUserNumber=3
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialSolidNumberOfVariables=1
-  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialSolidNumberOfComponents=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialSolidNumberOfComponents=3
 
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentSolidUserNumber=4
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentSolidNumberOfVariables=4
@@ -843,6 +843,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   CALL CMISSFieldNumberOfComponentsSet(MaterialFieldSolid,CMISSFieldUVariableType,FieldMaterialSolidNumberOfComponents,Err)
   CALL CMISSFieldComponentMeshComponentSet(MaterialFieldSolid,CMISSFieldUVariableType,1,SolidMeshComponenetNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(MaterialFieldSolid,CMISSFieldUVariableType,2,SolidMeshComponenetNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(MaterialFieldSolid,CMISSFieldUVariableType,3,SolidMeshComponenetNumber,Err)
   !
   CALL CMISSFieldCreateFinish(MaterialFieldSolid,Err)
 
@@ -851,6 +852,8 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 !   CALL CMISSFieldComponentValuesInitialise(MaterialFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2.0e3_CMISSDP,Err)
   CALL CMISSFieldComponentValuesInitialise(MaterialFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,1.0_CMISSDP,Err)
 !   CALL CMISSFieldComponentValuesInitialise(MaterialFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,33.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,10.0_CMISSDP,Err)
+
 
   CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetSolid,FieldMaterialSolidUserNumber,MaterialFieldSolid,Err)
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetSolid,Err)
