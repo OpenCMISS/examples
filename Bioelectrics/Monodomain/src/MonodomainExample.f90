@@ -41,7 +41,7 @@
 !>
 
 !> \example Bioelectrics/Monodomain/src/MonodomainExample.f90
-!! Example program to solve a Monodomain equation using openCMISS calls.
+!! Example program to solve a Monodomain equation using OpenCMISS calls.
 !! \par Latest Builds:
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/Bioelectrics/Monodomain/build-intel'>Linux Intel Build</a>
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/Bioelectrics/Monodomain/build-gnu'>Linux GNU Build</a>
@@ -155,6 +155,8 @@ PROGRAM MONODOMAINEXAMPLE
   !Get the computational nodes information
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
+
+  CALL CMISSOutputSetOn("Monodomain",Err)
     
   NUMBER_GLOBAL_X_ELEMENTS=2
   NUMBER_GLOBAL_Y_ELEMENTS=2
@@ -276,7 +278,7 @@ PROGRAM MONODOMAINEXAMPLE
   !Finish the equations set source field variables
   CALL CMISSEquationsSetSourceCreateFinish(EquationsSet,Err)
 
-  !Create the CellML environment for the source field
+  !Create the CellML environment
   CALL CMISSCellMLTypeInitialise(CellML,Err)
   CALL CMISSCellMLCreateStart(CellMLUserNumber,Region,CellML,Err)
   !Import a Noble 1998 model from a file
@@ -361,6 +363,9 @@ PROGRAM MONODOMAINEXAMPLE
   !Finish the creation of the CellML state field
   CALL CMISSCellMLStateFieldCreateFinish(CellML,Err)
 
+  !Initialise Vm
+  CALL CMISSFieldComponentValuesInitialise(CellMLStateField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,-80.0_CMISSDP,Err)
+
   !Start the creation of the CellML intermediate field
   CALL CMISSFieldTypeInitialise(CellMLIntermediateField,Err)
   CALL CMISSCellMLIntermediateFieldCreateStart(CellMLIntermediateFieldUserNumber,CellML,CellMLIntermediateField,Err)
@@ -436,7 +441,7 @@ PROGRAM MONODOMAINEXAMPLE
   !Get the first (DAE) solver
   CALL CMISSSolverTypeInitialise(Solver,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
-  CALL CMISSSolverDAESolverTypeSet(Solver,CMISSSolverDAEExternal,Err)
+  !CALL CMISSSolverDAESolverTypeSet(Solver,CMISSSolverDAEExternal,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
   CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)

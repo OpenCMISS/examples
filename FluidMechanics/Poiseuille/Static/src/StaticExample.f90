@@ -83,6 +83,7 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
   INTEGER(CMISSIntg) :: component_idx
   INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
+  REAL(CMISSDP) :: POSITION(3),PIPE_LENGTH
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT
 
   INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber,FirstNodeDomain,LastNodeDomain
@@ -136,7 +137,7 @@ PROGRAM STATICPOISEUILLEEXAMPLE
 
   !Get input arguments
   NUMBER_OF_ARGUMENTS = COMMAND_ARGUMENT_COUNT()
-  IF(NUMBER_OF_ARGUMENTS >= 4) THEN
+  IF(NUMBER_OF_ARGUMENTS >= 2) THEN
     !If we have enough arguments then use the first four for setting up the problem. The subsequent arguments may be used to
     !pass flags to, say, PETSc.
     CALL GET_COMMAND_ARGUMENT(1,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
@@ -145,32 +146,12 @@ PROGRAM STATICPOISEUILLEEXAMPLE
     IF(NUMBER_GLOBAL_X_ELEMENTS<=0) CALL HANDLE_ERROR("Invalid number of X elements.")
     CALL GET_COMMAND_ARGUMENT(2,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
     IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 2.")
-    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*) NUMBER_GLOBAL_Y_ELEMENTS
-    IF(NUMBER_GLOBAL_Y_ELEMENTS<0) CALL HANDLE_ERROR("Invalid number of Y elements.")
-    CALL GET_COMMAND_ARGUMENT(3,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
-    IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 3.")
-    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*) NUMBER_GLOBAL_Z_ELEMENTS
-    IF(NUMBER_GLOBAL_Z_ELEMENTS<0) CALL HANDLE_ERROR("Invalid number of Z elements.")
-    CALL GET_COMMAND_ARGUMENT(4,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
-    IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 4.")
     READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*) INTERPOLATION_TYPE
     IF(INTERPOLATION_TYPE<=0) CALL HANDLE_ERROR("Invalid Interpolation specification.")
-    IF(NUMBER_GLOBAL_Z_ELEMENTS>0) THEN
-      NUMBER_DIMENSIONS=3
-    ELSEIF(NUMBER_GLOBAL_Y_ELEMENTS>0) THEN
-      NUMBER_DIMENSIONS=2
-    ELSE
-      NUMBER_DIMENSIONS=1
-    ENDIF
   ELSE
     !If there are not enough arguments default the problem specification
-    NUMBER_DIMENSIONS=3
     NUMBER_GLOBAL_X_ELEMENTS=2
-    NUMBER_GLOBAL_Y_ELEMENTS=0
-    NUMBER_GLOBAL_Z_ELEMENTS=0
     INTERPOLATION_TYPE=1
-    WRITE(*,*),NUMBER_DIMENSIONS,NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
-      & NUMBER_GLOBAL_Z_ELEMENTS,NUMBER_OF_ARGUMENTS
   ENDIF
 
   !Intialise OpenCMISS
@@ -189,7 +170,7 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   !Start the creation of a new RC coordinate system
   CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
   CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,NUMBER_DIMENSIONS,Err)
+  CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,3,Err)
   CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
 
   !Start the creation of the region
@@ -202,15 +183,8 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   !Start the creation of a basis (default is trilinear lagrange)
   CALL CMISSBasisTypeInitialise(Basis,Err)
   CALL CMISSBasisCreateStart(BasisUserNumber,Basis,Err)
-  CALL CMISSBasisNumberOfXiSet(Basis,NUMBER_DIMENSIONS,Err)
-  SELECT CASE(INTERPOLATION_TYPE)
-  CASE(1,2,3,4)
-    CALL CMISSBasisTypeSet(Basis,CMISSBasisLagrangeHermiteTPType,Err)
-  CASE(7,8,9)
-    CALL CMISSBasisTypeSet(Basis,CMISSBasisSimplexType,Err)
-  CASE DEFAULT
-    CALL HANDLE_ERROR("Invalid interpolation type.")
-  END SELECT
+  CALL CMISSBasisNumberOfXiSet(Basis,1,Err)
+  CALL CMISSBasisTypeSet(Basis,CMISSBasisLagrangeHermiteTPType,Err)
   SELECT CASE(INTERPOLATION_TYPE)
   CASE(1)
     NUMBER_OF_GAUSS_XI=2
@@ -219,24 +193,10 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   CASE(3,4)
     NUMBER_OF_GAUSS_XI=4
   CASE DEFAULT
-    NUMBER_OF_GAUSS_XI=0
+    CALL HANDLE_ERROR("Invalid interpolation type.")
   END SELECT
-  IF(NUMBER_DIMENSIONS==1) THEN
-    CALL CMISSBasisInterpolationXiSet(Basis,[INTERPOLATION_TYPE],Err)
-    IF(NUMBER_OF_GAUSS_XI>0) THEN
-      CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,[NUMBER_OF_GAUSS_XI],Err)
-    ENDIF
-  ELSEIF(NUMBER_DIMENSIONS==2) THEN
-    CALL CMISSBasisInterpolationXiSet(Basis,[INTERPOLATION_TYPE,INTERPOLATION_TYPE],Err)
-    IF(NUMBER_OF_GAUSS_XI>0) THEN
-      CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,[NUMBER_OF_GAUSS_XI,NUMBER_OF_GAUSS_XI],Err)
-    ENDIF
-  ELSE
-    CALL CMISSBasisInterpolationXiSet(Basis,[INTERPOLATION_TYPE,INTERPOLATION_TYPE,INTERPOLATION_TYPE],Err)
-    IF(NUMBER_OF_GAUSS_XI>0) THEN
-      CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,[NUMBER_OF_GAUSS_XI,NUMBER_OF_GAUSS_XI,NUMBER_OF_GAUSS_XI],Err)
-    ENDIF
-  ENDIF
+  CALL CMISSBasisInterpolationXiSet(Basis,[INTERPOLATION_TYPE],Err)
+  CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,[NUMBER_OF_GAUSS_XI],Err)
   CALL CMISSBasisCreateFinish(Basis,Err)
 
   !Start the creation of a generated mesh in the region
@@ -246,17 +206,9 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
   CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,Basis,Err)
   !Define the mesh on the region
-  IF(NUMBER_DIMENSIONS==1) THEN
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,[WIDTH],Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS],Err)
-  ELSEIF(NUMBER_DIMENSIONS==2) THEN
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,[WIDTH,HEIGHT],Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS],Err)
-  ELSE
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,[WIDTH,HEIGHT,LENGTH],Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
-      & NUMBER_GLOBAL_Z_ELEMENTS],Err)
-  ENDIF
+  POSITION=[WIDTH,HEIGHT,LENGTH]
+  CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,POSITION,Err)
+  CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS],Err)
   CALL CMISSMeshTypeInitialise(Mesh,Err)
   CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
 
@@ -272,9 +224,9 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   CALL CMISSFieldTypeInitialise(GeometricField,Err)
   CALL CMISSFieldCreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
   CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
-  DO component_idx=1,NUMBER_DIMENSIONS
-    CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,component_idx,1,Err)
-  ENDDO
+  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,1,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,1,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,1,Err)
   CALL CMISSFieldCreateFinish(GeometricField,Err)
 
   !Update the geometric field parameters
@@ -286,7 +238,6 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetFluidmechanicsClass, &
     & CMISSEquationsSetPoiseuilleEquationType,CMISSEquationsSetStaticPoiseuilleSubtype,EquationsSetFieldUserNumber, &
     & EquationsSetField,EquationsSet,Err)
-
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
   !Create the equations set dependent field variables
@@ -294,19 +245,12 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   CALL CMISSEquationsSetDependentCreateStart(EquationsSet,DependentFieldUserNumber,DependentField,Err)
   CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
 
-  !Initialise the field values
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1.0_CMISSDP,Err)
-
   !Create the equations set material field variables
   CALL CMISSFieldTypeInitialise(MaterialsField,Err)
   CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,MaterialsFieldUserNumber,MaterialsField,Err)
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1.0_CMISSDP,Err)
-
-  !Create the source field
-  CALL CMISSFieldTypeInitialise(SourceField,Err)
-  CALL CMISSEquationsSetSourceCreateStart(EquationsSet,SourceFieldUserNumber,SourceField,Err)
-  CALL CMISSEquationsSetSourceCreateFinish(EquationsSet,Err)
+  PIPE_LENGTH=SQRT(DOT_PRODUCT(POSITION,POSITION))
+  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,PIPE_LENGTH,Err)
 
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
@@ -327,7 +271,7 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   CALL CMISSDecompositionNodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
   IF(FirstNodeDomain==ComputationalNodeNumber) THEN
     CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
-      & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
+      & CMISSBoundaryConditionFixed,100.0_CMISSDP,Err)
   ENDIF
   IF(LastNodeDomain==ComputationalNodeNumber) THEN
     CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,LastNodeNumber,1, &
@@ -377,14 +321,11 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   !Solve the problem
   CALL CMISSProblemSolve(Problem,Err)
 
-  EXPORT_FIELD=.TRUE.
-  IF(EXPORT_FIELD) THEN
-    CALL CMISSFieldsTypeInitialise(Fields,Err)
-    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"Poiseuille","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"Poiseuille","FORTRAN",Err)
-    CALL CMISSFieldsTypeFinalise(Fields,Err)
-  ENDIF
+  CALL CMISSFieldsTypeInitialise(Fields,Err)
+  CALL CMISSFieldsTypeCreate(Region,Fields,Err)
+  CALL CMISSFieldIONodesExport(Fields,"Poiseuille","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields,"Poiseuille","FORTRAN",Err)
+  CALL CMISSFieldsTypeFinalise(Fields,Err)
 
   !Finialise CMISS
   CALL CMISSFinalise(Err)
