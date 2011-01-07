@@ -40,11 +40,11 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDrivenDarcy/src/IncompressibleElasticityDrivenDarcyExample.f90
+!> \example MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDrivenDarcyMatSolve/src/IncompressibleElasticityDrivenDarcyMatSolveExample.f90
 !! Example program to solve coupled FiniteElasticityDarcy equations using OpenCMISS calls.
 !! \par Latest Builds:
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDrivenDarcy/build-intel'>Linux Intel Build</a>
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDrivenDarcy/build-intel'>Linux GNU Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDrivenDarcyMatSolve/build-intel'>Linux Intel Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/MultiPhysics/Poroelasticity/FiniteElasticityDarcy/IncompressibleElasticityDrivenDarcyMatSolve/build-intel'>Linux GNU Build</a>
 !!
 !<
 
@@ -107,9 +107,8 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopFluidNumber=2
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopSubiterationNumber=1
   INTEGER(CMISSIntg), PARAMETER :: SolverSolidIndex=1
-!   INTEGER(CMISSIntg), PARAMETER :: SolverMatPropertiesIndex=1
-!   INTEGER(CMISSIntg), PARAMETER :: SolverDarcyIndex=2
-  INTEGER(CMISSIntg), PARAMETER :: SolverDarcyIndex=1
+  INTEGER(CMISSIntg), PARAMETER :: SolverMatPropertiesIndex=1
+  INTEGER(CMISSIntg), PARAMETER :: SolverDarcyIndex=2
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPorosity=1
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPermOverVis=2
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberMatPropertiesPorosity=1
@@ -355,9 +354,9 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   INITIAL_FIELD_DARCY(2)=0.0_CMISSDP
   INITIAL_FIELD_DARCY(3)=0.0_CMISSDP
   INITIAL_FIELD_DARCY(4)=0.0_CMISSDP
-!   INITIAL_FIELD_MAT_PROPERTIES(1)=0.0_CMISSDP
-!   INITIAL_FIELD_MAT_PROPERTIES(2)=0.0_CMISSDP
-!   INITIAL_FIELD_MAT_PROPERTIES(3)=0.0_CMISSDP
+  INITIAL_FIELD_MAT_PROPERTIES(1)=0.0_CMISSDP
+  INITIAL_FIELD_MAT_PROPERTIES(2)=0.0_CMISSDP
+  INITIAL_FIELD_MAT_PROPERTIES(3)=0.0_CMISSDP
 !   INITIAL_FIELD_SOLID(1)=1.0_CMISSDP
 !   INITIAL_FIELD_SOLID(2)=1.0_CMISSDP
 !   INITIAL_FIELD_SOLID(3)=1.0_CMISSDP
@@ -367,16 +366,16 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 !   PERM_OVER_VIS_PARAM_DARCY=1.0e-1_CMISSDP
   PERM_OVER_VIS_PARAM_DARCY=1.0_CMISSDP
 !   PERM_OVER_VIS_PARAM_DARCY=0.1_CMISSDP
-!   POROSITY_PARAM_MAT_PROPERTIES=POROSITY_PARAM_DARCY
-!   PERM_OVER_VIS_PARAM_MAT_PROPERTIES=PERM_OVER_VIS_PARAM_DARCY
+  POROSITY_PARAM_MAT_PROPERTIES=POROSITY_PARAM_DARCY
+  PERM_OVER_VIS_PARAM_MAT_PROPERTIES=PERM_OVER_VIS_PARAM_DARCY
   !Set output parameter
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
-!   LINEAR_SOLVER_MAT_PROPERTIES_OUTPUT_TYPE=CMISSSolverProgressOutput
+  LINEAR_SOLVER_MAT_PROPERTIES_OUTPUT_TYPE=CMISSSolverProgressOutput
   DYNAMIC_SOLVER_DARCY_OUTPUT_TYPE=CMISSSolverProgressOutput
   LINEAR_SOLVER_DARCY_OUTPUT_TYPE=CMISSSolverSolverOutput
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
   EQUATIONS_DARCY_OUTPUT=CMISSEquationsNoOutput
-!   EQUATIONS_MAT_PROPERTIES_OUTPUT=CMISSEquationsNoOutput
+  EQUATIONS_MAT_PROPERTIES_OUTPUT=CMISSEquationsNoOutput
 
   !Set time parameter
   DYNAMIC_SOLVER_DARCY_START_TIME=0.0_CMISSDP
@@ -387,7 +386,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !Set result output parameter
   DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY=1
   !Set solver parameters
-!   LINEAR_SOLVER_MAT_PROPERTIES_DIRECT_FLAG=.TRUE.
+  LINEAR_SOLVER_MAT_PROPERTIES_DIRECT_FLAG=.TRUE.
   LINEAR_SOLVER_DARCY_DIRECT_FLAG=.TRUE.
   RELATIVE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-05_CMISSDP
   ABSOLUTE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-10_CMISSDP
@@ -649,13 +648,13 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
     & EquationsSetFieldUserNumberDarcy,EquationsSetFieldDarcy,EquationsSetDarcy,Err)
   CALL CMISSEquationsSetCreateFinish(EquationsSetDarcy,Err)
 
-!   !Create the equations set for deformation-dependent material properties
-!   CALL CMISSFieldTypeInitialise(EquationsSetFieldMatProperties,Err)
-!   CALL CMISSEquationsSetTypeInitialise(EquationsSetMatProperties,Err)
-!   CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberMatProperties,Region,GeometricField,CMISSEquationsSetFittingClass,&
-!     & CMISSEquationsSetDataFittingEquationType,CMISSEquationsSetMatPropertiesInriaModelDataFittingSubtype,&
-!     & EquationsSetFieldUserNumberMatProperties,EquationsSetFieldMatProperties,EquationsSetMatProperties,Err)
-!   CALL CMISSEquationsSetCreateFinish(EquationsSetMatProperties,Err)
+  !Create the equations set for deformation-dependent material properties
+  CALL CMISSFieldTypeInitialise(EquationsSetFieldMatProperties,Err)
+  CALL CMISSEquationsSetTypeInitialise(EquationsSetMatProperties,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberMatProperties,Region,GeometricField,CMISSEquationsSetFittingClass,&
+    & CMISSEquationsSetDataFittingEquationType,CMISSEquationsSetMatPropertiesInriaModelDataFittingSubtype,&
+    & EquationsSetFieldUserNumberMatProperties,EquationsSetFieldMatProperties,EquationsSetMatProperties,Err)
+  CALL CMISSEquationsSetCreateFinish(EquationsSetMatProperties,Err)
 
   !Create the equations set for the solid
   CALL CMISSFieldTypeInitialise(EquationsSetFieldSolid,Err)
@@ -705,26 +704,26 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 
   !DEPENDENT FIELDS
 
-!   !Create the equations set dependent field variables for deformation-dependent material properties
-!   CALL CMISSFieldTypeInitialise(DependentFieldMatProperties,Err)
-!   CALL CMISSEquationsSetDependentCreateStart(EquationsSetMatProperties,DependentFieldUserNumberMatProperties, &
-!     & DependentFieldMatProperties,Err)
-!   NUMBER_OF_COMPONENTS_DEPENDENT_FIELD_MAT_PROPERTIES = 2
-!   DO COMPONENT_NUMBER=1,NUMBER_OF_COMPONENTS_DEPENDENT_FIELD_MAT_PROPERTIES
-!     ! In 'FITTING_EQUATIONS_SET_MAT_PROPERTIES_SETUP' the MESH_COMPONENT for the DEPENDENT_FIELD 
-!     ! of EQUATIONS_SET_MAT_PROPERTIES is currently being defaulted to GEOMETRIC_MESH_COMPONENT. Therfore:
-!     CALL CMISSFieldComponentMeshComponentSet(DependentFieldMatProperties,CMISSFieldUVariableType,COMPONENT_NUMBER, &
-!       & SolidGeometryMeshComponentNumber,Err)
-!     CALL CMISSFieldComponentMeshComponentSet(DependentFieldMatProperties,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, &
-!       & SolidGeometryMeshComponentNumber,Err)
-!   ENDDO
-!   CALL CMISSEquationsSetDependentCreateFinish(EquationsSetMatProperties,Err)
-! 
-!   !Initialise dependent field
-!   DO COMPONENT_NUMBER=1,NUMBER_OF_COMPONENTS_DEPENDENT_FIELD_MAT_PROPERTIES
-!     CALL CMISSFieldComponentValuesInitialise(DependentFieldMatProperties,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-!       & COMPONENT_NUMBER,INITIAL_FIELD_MAT_PROPERTIES(COMPONENT_NUMBER),Err)
-!   ENDDO
+  !Create the equations set dependent field variables for deformation-dependent material properties
+  CALL CMISSFieldTypeInitialise(DependentFieldMatProperties,Err)
+  CALL CMISSEquationsSetDependentCreateStart(EquationsSetMatProperties,DependentFieldUserNumberMatProperties, &
+    & DependentFieldMatProperties,Err)
+  NUMBER_OF_COMPONENTS_DEPENDENT_FIELD_MAT_PROPERTIES = 2
+  DO COMPONENT_NUMBER=1,NUMBER_OF_COMPONENTS_DEPENDENT_FIELD_MAT_PROPERTIES
+    ! In 'FITTING_EQUATIONS_SET_MAT_PROPERTIES_SETUP' the MESH_COMPONENT for the DEPENDENT_FIELD 
+    ! of EQUATIONS_SET_MAT_PROPERTIES is currently being defaulted to GEOMETRIC_MESH_COMPONENT. Therfore:
+    CALL CMISSFieldComponentMeshComponentSet(DependentFieldMatProperties,CMISSFieldUVariableType,COMPONENT_NUMBER, &
+      & SolidGeometryMeshComponentNumber,Err)
+    CALL CMISSFieldComponentMeshComponentSet(DependentFieldMatProperties,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, &
+      & SolidGeometryMeshComponentNumber,Err)
+  ENDDO
+  CALL CMISSEquationsSetDependentCreateFinish(EquationsSetMatProperties,Err)
+
+  !Initialise dependent field
+  DO COMPONENT_NUMBER=1,NUMBER_OF_COMPONENTS_DEPENDENT_FIELD_MAT_PROPERTIES
+    CALL CMISSFieldComponentValuesInitialise(DependentFieldMatProperties,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+      & COMPONENT_NUMBER,INITIAL_FIELD_MAT_PROPERTIES(COMPONENT_NUMBER),Err)
+  ENDDO
 
   !--------------------------------------------------------------------------------------------------------------------------------
   ! Solid
@@ -822,16 +821,16 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
     & MaterialsFieldUserNumberDarcyPorosity,POROSITY_PARAM_DARCY,Err)
   CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
     & MaterialsFieldUserNumberDarcyPermOverVis,PERM_OVER_VIS_PARAM_DARCY,Err)
-!   !Create the equations set materials field variables for deformation-dependent material properties
-!   CALL CMISSFieldTypeInitialise(MaterialsFieldMatProperties,Err)
-!   CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetMatProperties,MaterialsFieldUserNumberMatProperties, &
-!     & MaterialsFieldMatProperties,Err)
-!   !Finish the equations set materials field variables
-!   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetMatProperties,Err)
-!   CALL CMISSFieldComponentValuesInitialise(MaterialsFieldMatProperties,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-!     & MaterialsFieldUserNumberMatPropertiesPorosity,POROSITY_PARAM_MAT_PROPERTIES,Err)
-!   CALL CMISSFieldComponentValuesInitialise(MaterialsFieldMatProperties,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-!     & MaterialsFieldUserNumberMatPropertiesPermOverVis,PERM_OVER_VIS_PARAM_MAT_PROPERTIES,Err)
+  !Create the equations set materials field variables for deformation-dependent material properties
+  CALL CMISSFieldTypeInitialise(MaterialsFieldMatProperties,Err)
+  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetMatProperties,MaterialsFieldUserNumberMatProperties, &
+    & MaterialsFieldMatProperties,Err)
+  !Finish the equations set materials field variables
+  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetMatProperties,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldMatProperties,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+    & MaterialsFieldUserNumberMatPropertiesPorosity,POROSITY_PARAM_MAT_PROPERTIES,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldMatProperties,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+    & MaterialsFieldUserNumberMatPropertiesPermOverVis,PERM_OVER_VIS_PARAM_MAT_PROPERTIES,Err)
 
 
   !
@@ -865,12 +864,12 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   CALL CMISSEquationsOutputTypeSet(EquationsDarcy,EQUATIONS_DARCY_OUTPUT,Err)
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetDarcy,Err)
 
-!   !MatProperties
-!   CALL CMISSEquationsTypeInitialise(EquationsMatProperties,Err)
-!   CALL CMISSEquationsSetEquationsCreateStart(EquationsSetMatProperties,EquationsMatProperties,Err)
-!   CALL CMISSEquationsSparsityTypeSet(EquationsMatProperties,CMISSEquationsSparseMatrices,Err)
-!   CALL CMISSEquationsOutputTypeSet(EquationsMatProperties,EQUATIONS_MAT_PROPERTIES_OUTPUT,Err)
-!   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetMatProperties,Err)
+  !MatProperties
+  CALL CMISSEquationsTypeInitialise(EquationsMatProperties,Err)
+  CALL CMISSEquationsSetEquationsCreateStart(EquationsSetMatProperties,EquationsMatProperties,Err)
+  CALL CMISSEquationsSparsityTypeSet(EquationsMatProperties,CMISSEquationsSparseMatrices,Err)
+  CALL CMISSEquationsOutputTypeSet(EquationsMatProperties,EQUATIONS_MAT_PROPERTIES_OUTPUT,Err)
+  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetMatProperties,Err)
 
   !Solid
   CALL CMISSEquationsTypeInitialise(EquationsSolid,Err)
@@ -1130,10 +1129,10 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 !   !Finish the creation of the equations set boundary conditions for the solid
 !   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetSolid,Err)
 
-!   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsMatProperties,Err)
-!   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetMatProperties,BoundaryConditionsMatProperties,Err)
-!   !(No boundary conditions requrired for deformation-dependent material properties)
-!   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetMatProperties,Err)
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsMatProperties,Err)
+  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetMatProperties,BoundaryConditionsMatProperties,Err)
+  !(No boundary conditions requrired for deformation-dependent material properties)
+  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetMatProperties,Err)
 
 
 
@@ -1388,7 +1387,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
   CALL CMISSProblemSpecificationSet(Problem,CMISSProblemMultiPhysicsClass,CMISSProblemFiniteElasticityDarcyType, &
-    & CMISSProblemQuasistaticElasticityTransientDarcySubtype,Err)
+    & CMISSProblemQuasistaticElastTransDarcyMatSolveSubtype,Err)
   CALL CMISSProblemCreateFinish(Problem,Err)
 
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
@@ -1407,7 +1406,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !SOLVERS
 
   CALL CMISSSolverTypeInitialise(SolverSolid,Err)
-!   CALL CMISSSolverTypeInitialise(LinearSolverMatProperties,Err)
+  CALL CMISSSolverTypeInitialise(LinearSolverMatProperties,Err)
   CALL CMISSSolverTypeInitialise(DynamicSolverDarcy,Err)
   CALL CMISSSolverTypeInitialise(LinearSolverDarcy,Err)
 
@@ -1431,21 +1430,21 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 !   CALL CMISSSolverLinearTypeSet(LinearSolverSolid,CMISSSolverLinearDirectSolveType,Err)
 
 
-!   !MatProperties
-!   CALL CMISSProblemSolverGet(Problem,(/ControlLoopSubiterationNumber,ControlLoopFluidNumber,CMISSControlLoopNode/), &
-!     & SolverMatPropertiesIndex,LinearSolverMatProperties,Err)
-!   CALL CMISSSolverOutputTypeSet(LinearSolverMatProperties,LINEAR_SOLVER_MAT_PROPERTIES_OUTPUT_TYPE,Err)
-!   IF(LINEAR_SOLVER_MAT_PROPERTIES_DIRECT_FLAG) THEN
-!     CALL CMISSSolverLinearTypeSet(LinearSolverMatProperties,CMISSSolverLinearDirectSolveType,Err)
-!     CALL CMISSSolverLibraryTypeSet(LinearSolverMatProperties,CMISSSolverMUMPSLibrary,Err)
-!   ELSE
-!     CALL CMISSSolverLinearTypeSet(LinearSolverMatProperties,CMISSSolverLinearIterativeSolveType,Err)
-!     CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolverMatProperties,MAXIMUM_ITERATIONS,Err)
-!     CALL CMISSSolverLinearIterativeDivergenceToleranceSet(LinearSolverMatProperties,DIVERGENCE_TOLERANCE,Err)
-!     CALL CMISSSolverLinearIterativeRelativeToleranceSet(LinearSolverMatProperties,RELATIVE_TOLERANCE,Err)
-!     CALL CMISSSolverLinearIterativeAbsoluteToleranceSet(LinearSolverMatProperties,ABSOLUTE_TOLERANCE,Err)
-!     CALL CMISSSolverLinearIterativeGMRESRestartSet(LinearSolverMatProperties,RESTART_VALUE,Err)
-!   ENDIF
+  !MatProperties
+  CALL CMISSProblemSolverGet(Problem,(/ControlLoopSubiterationNumber,ControlLoopFluidNumber,CMISSControlLoopNode/), &
+    & SolverMatPropertiesIndex,LinearSolverMatProperties,Err)
+  CALL CMISSSolverOutputTypeSet(LinearSolverMatProperties,LINEAR_SOLVER_MAT_PROPERTIES_OUTPUT_TYPE,Err)
+  IF(LINEAR_SOLVER_MAT_PROPERTIES_DIRECT_FLAG) THEN
+    CALL CMISSSolverLinearTypeSet(LinearSolverMatProperties,CMISSSolverLinearDirectSolveType,Err)
+    CALL CMISSSolverLibraryTypeSet(LinearSolverMatProperties,CMISSSolverMUMPSLibrary,Err)
+  ELSE
+    CALL CMISSSolverLinearTypeSet(LinearSolverMatProperties,CMISSSolverLinearIterativeSolveType,Err)
+    CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolverMatProperties,MAXIMUM_ITERATIONS,Err)
+    CALL CMISSSolverLinearIterativeDivergenceToleranceSet(LinearSolverMatProperties,DIVERGENCE_TOLERANCE,Err)
+    CALL CMISSSolverLinearIterativeRelativeToleranceSet(LinearSolverMatProperties,RELATIVE_TOLERANCE,Err)
+    CALL CMISSSolverLinearIterativeAbsoluteToleranceSet(LinearSolverMatProperties,ABSOLUTE_TOLERANCE,Err)
+    CALL CMISSSolverLinearIterativeGMRESRestartSet(LinearSolverMatProperties,RESTART_VALUE,Err)
+  ENDIF
 
   !Darcy
   CALL CMISSProblemSolverGet(Problem,(/ControlLoopSubiterationNumber,ControlLoopFluidNumber,CMISSControlLoopNode/), &
@@ -1476,11 +1475,11 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 
   !Start the creation of the problem solver equations
   CALL CMISSSolverTypeInitialise(SolverSolid,Err)
-!   CALL CMISSSolverTypeInitialise(LinearSolverMatProperties,Err)
+  CALL CMISSSolverTypeInitialise(LinearSolverMatProperties,Err)
   CALL CMISSSolverTypeInitialise(LinearSolverDarcy,Err)
 
   CALL CMISSSolverEquationsTypeInitialise(SolverEquationsSolid,Err)
-!   CALL CMISSSolverEquationsTypeInitialise(SolverEquationsMatProperties,Err)
+  CALL CMISSSolverEquationsTypeInitialise(SolverEquationsMatProperties,Err)
   CALL CMISSSolverEquationsTypeInitialise(SolverEquationsDarcy,Err)
 
   CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
@@ -1492,12 +1491,12 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsSolid,CMISSSolverEquationsSparseMatrices,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsSolid,EquationsSetSolid,EquationsSetIndex,Err)
   !
-!   !Get the deformation-dependent material properties solver equations
-!   CALL CMISSProblemSolverGet(Problem,(/ControlLoopSubiterationNumber,ControlLoopFluidNumber,CMISSControlLoopNode/), &
-!     & SolverMatPropertiesIndex,LinearSolverMatProperties,Err)
-!   CALL CMISSSolverSolverEquationsGet(LinearSolverMatProperties,SolverEquationsMatProperties,Err)
-!   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsMatProperties,CMISSSolverEquationsSparseMatrices,Err)
-!   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsMatProperties,EquationsSetMatProperties,EquationsSetIndex,Err)
+  !Get the deformation-dependent material properties solver equations
+  CALL CMISSProblemSolverGet(Problem,(/ControlLoopSubiterationNumber,ControlLoopFluidNumber,CMISSControlLoopNode/), &
+    & SolverMatPropertiesIndex,LinearSolverMatProperties,Err)
+  CALL CMISSSolverSolverEquationsGet(LinearSolverMatProperties,SolverEquationsMatProperties,Err)
+  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsMatProperties,CMISSSolverEquationsSparseMatrices,Err)
+  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsMatProperties,EquationsSetMatProperties,EquationsSetIndex,Err)
   !
   !Get the Darcy solver equations
   CALL CMISSProblemSolverGet(Problem,(/ControlLoopSubiterationNumber,ControlLoopFluidNumber,CMISSControlLoopNode/), &
