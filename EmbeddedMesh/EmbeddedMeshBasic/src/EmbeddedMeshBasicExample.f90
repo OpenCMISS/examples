@@ -1,8 +1,11 @@
 !> \file
-!> $Id: EmbeddedMeshBasicExample.f90 1528 2010-12-07 01:32:29Z chrispbradley $
+!> $Id: EmbeddedMeshBasicExample.f90 1528 2010-12-07 01:32:29Z  $
 !> \author Ishani Roy
-!> \brief This is an example program to solve active contraction based finite elasticity equation using openCMISS calls.
-!>
+!> \brief This is an example program to solve an embedded meshing problem on a simple cube
+!>        Currently some of the pre processing information is assumed, which will be automated
+!>        in future. This example is only to check whether data is being transfered correctly 
+!>        between meshes. Currently it is a constant field value being transfered. 
+!> 
 !> \section LICENSE
 !>
 !> Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -89,10 +92,13 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   INTEGER(CMISSIntg) :: Err
 
    !Other variables
-  INTEGER(CMISSIntg) :: NumberofNodes1,NumberofNodes2,NumberOfElements,dim_idx,node_idx,NumberOfComponents,elem_idx
-  REAL(CMISSDP) :: value, Coords1(3,8),Coords2(3,12),ChildXiCoords(3,12)
-  INTEGER(CMISSIntg) :: NodeNumbers(12),node_idx2
-  !INTEGER(CMISSIntg), ALLOCATABLE  :: NodeNumbers(:)
+  INTEGER(CMISSIntg) :: NumberofNodes1,NumberofNodes2,NumberOfElements,dim_idx,node_idx, &
+    & NumberOfComponents,elem_idx,elem_idx2,NodeCount,gauss_idx,NodeNumbers(8),NodeNumbers1(8)
+  INTEGER(CMISSIntg) :: NodeElem(2,8)
+  REAL(CMISSDP) :: value,Coords1(3,12),Coords2(3,12),ChildXiCoords(3,12),ParentXiCoords(3,8)
+  REAL(CMISSDP) :: C1(8),C2(4)
+  INTEGER(CMISSIntg) :: node_idx2,NumberOfElements2,GaussPointNumber,ElemArray(2),NGP
+  !INTEGER(CMISSIntg), DIMENSION(:), ALLOCATABLE :: NodeNumbers, NodeNumbers1
   REAL(CMISSDP), POINTER :: GEOMETRIC_PARAMETERS(:)
   !CMISS variables
 
@@ -112,15 +118,16 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   TYPE(CMISSSolverType) :: Solver
   TYPE(CMISSSolverEquationsType) :: SolverEquations
   TYPE(CMISSMeshEmbeddingType) :: MeshEmbedding
+  !TYPE(CMISSEmbeddingXiType) :: EmbeddingXi
 
   NUMBER_GLOBAL_X_ELEMENTS=1
   NUMBER_GLOBAL_Y_ELEMENTS=1
   NUMBER_GLOBAL_Z_ELEMENTS=1
   INTERPOLATION_TYPE=1
   
-  NUMBER_GLOBAL_X_ELEMENTS_2=2
+  NUMBER_GLOBAL_X_ELEMENTS_2=1
   NUMBER_GLOBAL_Y_ELEMENTS_2=1
-  NUMBER_GLOBAL_Z_ELEMENTS_2=1
+  NUMBER_GLOBAL_Z_ELEMENTS_2=2
   INTERPOLATION_TYPE_2=1
 
  
@@ -237,8 +244,10 @@ PROGRAM EMBEDDEDMESHEXAMPLE
 
   !Initialise the field with an initial guess
   CALL CMISSFieldComponentValuesInitialise(DependentField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,0.5_CMISSDP,Err)
-
-
+  CALL CMISSFieldComponentValuesInitialise(DependentField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,0.5_CMISSDP,Err)
+  IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
+   CALL CMISSFieldComponentValuesInitialise(DependentField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,0.5_CMISSDP,Err)
+  ENDIF
 !!!!!!!!!!!!!!!!!!
 ! The second mesh
 !!!!!!!!!!!!!!!!!!
@@ -328,10 +337,12 @@ PROGRAM EMBEDDEDMESHEXAMPLE
    !CALL CMISSFieldScalingTypeSet(DependentField2,CMISSFieldUnitScaling,Err)
   CALL CMISSFieldCreateFinish(DependentField2,Err)
 
- 
-
   !Initialise the field with an initial guess
-  CALL CMISSFieldComponentValuesInitialise(DependentField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,0.5_CMISSDP,Err)
+  !CALL CMISSFieldComponentValuesInitialise(DependentField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,0.1_CMISSDP,Err)
+  !CALL CMISSFieldComponentValuesInitialise(DependentField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,0.1_CMISSDP,Err)
+  !IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
+   !CALL CMISSFieldComponentValuesInitialise(DependentField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,0.1_CMISSDP,Err)
+  !ENDIF
   
   !Start creating an embedded mesh
   CALL CMISSEmbeddedMeshTypeInitialise(MeshEmbedding,Err)
@@ -346,67 +357,99 @@ PROGRAM EMBEDDEDMESHEXAMPLE
    DO dim_idx = 1,3
    CALL CMISSFieldParameterSetGetNode(GeometricField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
      & node_idx,dim_idx,value,Err)
-   Coords1(dim_idx,node_idx) = value
-   !WRITE(*,*) 'Node',node_idx,'comp',dim_idx,'Value', value
+   ParentXiCoords(dim_idx,node_idx) = value
    ENDDO
    ENDDO
 
   ! Get the positions of the child nodes
   CALL CMISSNodesNumberOfNodesGet(RegionTwoUserNumber,NumberOfNodes2,Err)
-  CALL CMISSMeshNumberOfComponentsGet(RegionTwoUserNumber,MeshOneUserNumber,NumberOfComponents,Err)
+  !CALL CMISSMeshNumberOfComponentsGet(RegionTwoUserNumber,MeshOneUserNumber,NumberOfComponents,Err)
 
-   DO node_idx = 1,NumberofNodes2
-   DO dim_idx = 1,3
-   CALL CMISSFieldParameterSetGetNode(GeometricField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
-     & node_idx,dim_idx,value,Err)
-   Coords2(dim_idx,node_idx) = value
-   !WRITE(*,*) 'Node',node_idx,'comp',dim_idx,'Value', value
-   ENDDO
-   ENDDO
+    DO node_idx = 1,NumberofNodes2
+    DO dim_idx = 1,3
+    CALL CMISSFieldParameterSetGetNode(GeometricField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
+      & node_idx,dim_idx,value,Err)
+     ChildXiCoords(dim_idx,node_idx) = value
+    ENDDO
+    ENDDO
 
    ! Calculate the nodes in the child mesh belonging in an element of the parent mesh - Need to clean up
-   CALL CMISSMeshNumberOfElementsGet(RegionOneUserNumber,MeshOneUserNumber,NumberOfElements,Err)
-   DO elem_idx = 1,NumberOfElements
-    DO dim_idx = 1,3
-     DO node_idx = 1,NumberofNodes1
-      DO node_idx2 = 1,NumberOfNodes2
-      IF(Coords2(dim_idx,node_idx2).lt.coords1(dim_idx,node_idx))THEN
-      !WRITE(*,*) 'Inside'
-      !ChildXicoords(elem_idx,node_idx)=coords2(node_idx)
-      NodeNumbers(node_idx) = node_idx !Figure out the index of the NodeNumbers
+   !CALL CMISSMeshNumberOfElementsGet(RegionOneUserNumber,MeshOneUserNumber,NumberOfElements,Err)
+   !CALL CMISSMeshNumberOfElementsGet(RegionOneUserNumber,MeshTwoUserNumber,NumberOfElements2,Err)
+   !Preprocessing step:calculating which element of child mesh is in 
+   ! which particular element of the parent mesh and the corresponding node numbers and xi-coordinates
+  
+
+!   By each element 
+
+    DO elem_idx = 1,1
+     CALL CMISSMeshElementsNodesGet(RegionOneUserNumber,MeshOneUserNumber,1,elem_idx, &
+      & NodeNumbers1,Err)
+      DO elem_idx2 =1,2
+      CALL CMISSMeshElementsNodesGet(RegionTwoUserNumber,MeshTwoUserNumber,1,elem_idx2, &
+       & NodeNumbers,Err)      
+      DO node_idx=1,8
+      DO dim_idx = 1,3    
+      IF(ChildXiCoords(dim_idx,NodeNumbers(node_idx)).le.ParentXiCoords(dim_idx,NodeNumbers1(node_idx)))THEN
+!     Get the element number for the parent elem_idx and child elem_idx2
+      NodeElem(elem_idx2,node_idx)=NodeNumbers(node_idx)
+      ElemArray(elem_idx2)=elem_idx    
       ENDIF
       ENDDO
-     ENDDO 
+      ENDDO
     ENDDO
-   ENDDO
+  ENDDO
 
-  !Figure out the nodes in the child mesh belonging in a particular element of the parent mesh - in field_routines?
+  !Future: preprocessing to figure out the nodes in the child mesh belonging in a particular 
+  !element of the parent mesh - in field_routines?
   !CALL CMISSMeshEmbeddingChildNodeInElementGet(MeshEmbedding,GeometricField1,GeometricField2,NodeNumbers, &
    ! & XiCoords, Err) 
 
-   ! Setting Xi locations of each child node
-   DO elem_idx = 1,NumberOfElements
-   CALL CMISSMeshEmbeddingSetChildNodePosition(MeshEmbedding,elem_idx, NodeNumbers, ChildXiCoords, Err)
+   !Future: setting Xi locations of each child node by passing the Embedding Xi type
+   !CALL CMISSMeshEmbeddingXiSet(EmbeddingXi,elem_idx,NodeCount,Err)
+   DO elem_idx = 1,2
+    ! CALL CMISSMeshEmbeddingXiGet(EmbeddingXi,NodeNumbers,ChildXiCoords,Err)
+    DO node_idx = 1,8
+    NodeNumbers(node_idx) = NodeElem(elem_idx,node_idx)
+    ENDDO
+    CALL CMISSMeshEmbeddingSetChildNodePosition(MeshEmbedding,elem_idx, NodeNumbers, ChildXiCoords, Err)
    ENDDO
 
 
    !Data field from one mesh to the other
-   !CALL CMISSMeshEmbeddingPushData(MeshEmbedding, DependentField1, 1,DependentField2, 1, Err)
-   !CALL CMISSMeshEmbeddingPushData(MeshEmbedding, DependentField1, 2,DependentField2, 2, Err)
-   !IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
-   !CALL CMISSMeshEmbeddingPushData(MeshEmbedding, DependentField1, 3,DependentField2, 3, Err)
-   !ENDIF
-  
-   !Setting position of Gauss point of parent mesh wrt child coordinates
-   !CALL CMISSMeshEmbeddingSetGaussPointData(MeshEmbedding, ParentElementNumber,ParentXiCoords, &
-   !   & GaussPointNumber, ChildElementNumber,ChildXiCoords, Err) 
+    CALL CMISSMeshEmbeddingPushData(MeshEmbedding, DependentField1,1,DependentField2, 1, Err)
+    CALL CMISSMeshEmbeddingPushData(MeshEmbedding, DependentField1,2,DependentField2, 2, Err)
+    IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
+    CALL CMISSMeshEmbeddingPushData(MeshEmbedding, DependentField1,3,DependentField2, 3, Err)
+    ENDIF
+   
+      
+   !Setting position of Gauss point of parent element wrt child coordinates, figure out the gauss point number in the parent element 
+
+     DO elem_idx2 = 1,2
+     elem_idx = ElemArray(elem_idx2)
+     !Find the Gauss point given the parent element number corresponding to the child elem       
+        DO dim_idx = 1,1
+        CALL CMISSFieldParameterSetGetGaussPointCoord(MeshEmbedding,dim_idx,NGP,C1,Err)                
+        !Step to work out which Gauss points are in which element
+        !For now using our knowledge of the positions of the Gauss points
+        !GPs 1:4 are in child element 1 
+        C2=C1((elem_idx2-1)*4+1:(elem_idx2)*4)
+        DO gauss_idx = (elem_idx2-1)*4+1,(elem_idx2)*4
+        !DO gauss_idx =1,NGP
+        CALL CMISSMeshEmbeddingSetGaussPointData(MeshEmbedding,elem_idx,gauss_idx, &
+         & C1,elem_idx2,C2, Err)
+        ENDDO
+       ENDDO
+     ENDDO
+   
 
    !Move field data
-   !CALL CMISSMeshEmbeddingPullGaussPointData(MeshEmbedding, DependentField2, 1,DependentField1, 1, Err)
-   !CALL CMISSMeshEmbeddingPullGaussPointData(MeshEmbedding, DependentField2, 2,DependentField1, 2, Err)
-   !IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
-   !CALL CMISSMeshEmbeddingPullGaussPointData(MeshEmbedding, DependentField2, 3,DependentField1, 3, Err)
-   !ENDIF
+    CALL CMISSMeshEmbeddingPullGaussPointData(MeshEmbedding, DependentField1, 1,DependentField2, 1, Err)
+    CALL CMISSMeshEmbeddingPullGaussPointData(MeshEmbedding, DependentField1, 2,DependentField2, 2, Err)
+    IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
+    CALL CMISSMeshEmbeddingPullGaussPointData(MeshEmbedding, DependentField1, 3,DependentField2, 3, Err)
+    ENDIF
   
   CALL CMISSFinalise(Err)
 
