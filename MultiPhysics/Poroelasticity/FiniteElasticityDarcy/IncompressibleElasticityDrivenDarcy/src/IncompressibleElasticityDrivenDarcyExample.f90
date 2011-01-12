@@ -434,8 +434,8 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   CALL CMISSBasisCreateFinish(CubicBasis,Err)
 
   !LinearBasis/QuadraticBasis/CubicBasis
-  Bases(1)=CubicBasis
-  Bases(2)=QuadraticBasis
+  Bases(1)=QuadraticBasis
+  Bases(2)=LinearBasis
 
   !Start the creation of a generated mesh in the region
   CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
