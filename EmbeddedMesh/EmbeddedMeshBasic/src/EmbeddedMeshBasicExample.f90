@@ -93,17 +93,17 @@ PROGRAM EMBEDDEDMESHEXAMPLE
 
    !Other variables
   INTEGER(CMISSIntg) :: NumberofNodes1,NumberofNodes2,NumberOfElements,dim_idx,node_idx, &
-    & NumberOfComponents,elem_idx,elem_idx2,NodeCount,gauss_idx,ineach!,NodeNumbers(8),NodeNumbers1(8)
+    & NumberOfComponents,elem_idx,elem_idx2,NodeCount,gauss_idx,ineach,counts!,NodeNumbers(8),NodeNumbers1(8)
 !  INTEGER(CMISSIntg) :: NodeElem(2,8)!,ElemArray(2)
 !  REAL(CMISSDP) :: ChildXiCoords(3,12),ParentXiCoords(3,8)
 !  REAL(CMISSDP) :: C1(8),C2(4)
   INTEGER(CMISSIntg) :: node_idx2,NumberOfElements2,GaussPointNumber,NGP
 
   !Allocatable
-   INTEGER(CMISSIntg), DIMENSION(:), ALLOCATABLE :: NodeNumbers, NodeNumbers1,ElemArray
+   INTEGER(CMISSIntg), DIMENSION(:), ALLOCATABLE :: NodeNumbers, NodeNumbers1,NodeNumbers2,ElemArray
    INTEGER(CMISSIntg), DIMENSION(:,:), ALLOCATABLE :: NodeElem
    REAL(CMISSDP), DIMENSION(:), ALLOCATABLE :: C1,C2
-   REAL(CMISSDP), ALLOCATABLE :: ChildXiCoords(:,:),ParentXiCoords(:,:)
+   REAL(CMISSDP), ALLOCATABLE :: ChildXiCoords(:,:),ParentXiCoords(:,:), Coords(:,:)
 !   REAL(CMISSDP), POINTER :: GEOMETRIC_PARAMETERS(:)
    REAL(CMISSDP) :: X, Y, Z, FieldValue,value
   !CMISS variables
@@ -132,7 +132,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   INTERPOLATION_TYPE=1
   
   NUMBER_GLOBAL_X_ELEMENTS_2=1
-  NUMBER_GLOBAL_Y_ELEMENTS_2=1
+  NUMBER_GLOBAL_Y_ELEMENTS_2=2
   NUMBER_GLOBAL_Z_ELEMENTS_2=0
   INTERPOLATION_TYPE_2=1
 
@@ -365,22 +365,21 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   CALL CMISSFieldCreateFinish(DependentField2,Err)
 
   !Initialise the field with an initial guess
-  !CALL CMISSFieldComponentValuesInitialise(DependentField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,0.1_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(DependentField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,0.1_CMISSDP,Err)
     ! Get the coordinates of the parent nodes
  
-  DO node_idx=1,(NUMBER_GLOBAL_X_ELEMENTS_2+1)*(NUMBER_GLOBAL_Y_ELEMENTS_2+1)*(NUMBER_GLOBAL_Z_ELEMENTS_2+1)
-  CALL CMISSFieldParameterSetGetNode(GeometricField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,1,x,Err)
-  CALL CMISSFieldParameterSetGetNode(GeometricField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,2,y,Err)
-  IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
-  CALL CMISSFieldParameterSetGetNode(GeometricField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,3,z,Err)
-  ELSE
-  Z = 0
-  ENDIF
-  FieldValue = x**2+y**2+z**2
-  CALL CMISSFieldParameterSetUpdateNode(DependentField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,1,fieldvalue,Err)
-
-  WRITE(*,*) 'The values at the nodes for field 2',fieldvalue
-  ENDDO
+  !DO node_idx=1,(NUMBER_GLOBAL_X_ELEMENTS_2+1)*(NUMBER_GLOBAL_Y_ELEMENTS_2+1)*(NUMBER_GLOBAL_Z_ELEMENTS_2+1)
+  !CALL CMISSFieldParameterSetGetNode(GeometricField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,1,x,Err)
+  !CALL CMISSFieldParameterSetGetNode(GeometricField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,2,y,Err)
+  !IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
+  !CALL CMISSFieldParameterSetGetNode(GeometricField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,3,z,Err)
+  !ELSE
+  !Z = 0
+  !ENDIF
+  !FieldValue = x**2+y**2+z**2
+  !CALL CMISSFieldParameterSetUpdateNode(DependentField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,1,fieldvalue,Err)
+  !WRITE(*,*) 'The values at the nodes for field 2',fieldvalue
+  !ENDDO
 
   
    CALL CMISSNodesNumberOfNodesGet(RegionTwoUserNumber,NumberOfNodes2,Err)
@@ -419,6 +418,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
     
     Allocate(NodeNumbers(NumberofNodes1))
     Allocate(NodeNumbers1(NumberofNodes1))
+    Allocate(NodeNumbers2(NumberofNodes2))
    ! Calculate the nodes in the child mesh belonging in an element of the parent mesh - Need to clean up
    CALL CMISSMeshNumberOfElementsGet(RegionOneUserNumber,MeshOneUserNumber,NumberOfElements,Err)
    CALL CMISSMeshNumberOfElementsGet(RegionTwoUserNumber,MeshTwoUserNumber,NumberOfElements2,Err)
@@ -427,24 +427,27 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   
 
 !   By each element 
-
+    counts = 1
     Allocate(ElemArray(NumberOfElements2))
-    Allocate(NodeElem(NumberOfElements2,NumberofNodes1))
+    Allocate(NodeElem(NumberOfElements,NumberofNodes2))
     DO elem_idx = 1,NumberOfElements
      CALL CMISSMeshElementsNodesGet(RegionOneUserNumber,MeshOneUserNumber,1,elem_idx, &
       & NodeNumbers1,Err)
       DO elem_idx2 =1,NumberOfElements2
       CALL CMISSMeshElementsNodesGet(RegionTwoUserNumber,MeshTwoUserNumber,1,elem_idx2, &
        & NodeNumbers,Err)      
-      DO node_idx=1,NumberofNodes1
+      DO node_idx=1,size(NodeNumbers)
       DO dim_idx = 1,NumberOfComponents   
       IF(ChildXiCoords(dim_idx,NodeNumbers(node_idx)).le.ParentXiCoords(dim_idx,NodeNumbers1(node_idx)))THEN
-!     Get the element number for the parent elem_idx and child elem_idx2
-      NodeElem(elem_idx2,node_idx)=NodeNumbers(node_idx)
-      ElemArray(elem_idx2)=elem_idx    
+!     Get the element number for the parent elem_idx and child elem_idx2       
+      NodeElem(elem_idx,NodeNumbers(node_idx))=NodeNumbers(node_idx)
+      
+      ElemArray(elem_idx2)=elem_idx 
+      !WRITE(*,*) 'how many',node_idx,NodeNumbers(node_idx)
       ENDIF
       ENDDO
-      ENDDO
+      
+      ENDDO     
     ENDDO
   ENDDO
 
@@ -453,14 +456,17 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   !CALL CMISSMeshEmbeddingChildNodeInElementGet(MeshEmbedding,GeometricField1,GeometricField2,NodeNumbers, &
    ! & XiCoords, Err) 
 
+   !Allocate(Coords(NumberOfComponents,NumberofNodes1))
    !Future: setting Xi locations of each child node by passing the Embedding Xi type
    !CALL CMISSMeshEmbeddingXiSet(EmbeddingXi,elem_idx,NodeCount,Err)
-   DO elem_idx = 1,NumberOfElements2
+   DO elem_idx = 1,NumberOfElements
     ! CALL CMISSMeshEmbeddingXiGet(EmbeddingXi,NodeNumbers,ChildXiCoords,Err)
-    DO node_idx = 1,NumberofNodes1
-    NodeNumbers(node_idx) = NodeElem(elem_idx,node_idx)
+    !Allocate(Coords(NumberOfComponents,NumberofNodes1))
+    DO node_idx = 1,NumberofNodes2 !Will be either 4 or 8
+    NodeNumbers2(node_idx) = NodeElem(elem_idx,node_idx)
+    !Coords(:,node_idx)=ChildXiCoords(:,NodeNumbers(node_idx))
     ENDDO
-    CALL CMISSMeshEmbeddingSetChildNodePosition(MeshEmbedding,elem_idx, NodeNumbers, ChildXiCoords, Err)
+    CALL CMISSMeshEmbeddingSetChildNodePosition(MeshEmbedding,elem_idx, NodeNumbers2,ChildXiCoords, Err)
    ENDDO
 
 
@@ -486,7 +492,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
       CALL CMISSFieldParameterSetGetGaussPointCoord(MeshEmbedding,dim_idx,NGP,C1,Err)                
       !Step to work out which Gauss points are in which element
       !For now using our knowledge of the positions of the Gauss points
-      !GPs 1:4 are in child element 1 
+      !GPs 1:4 are in child element 1, We have to change the next step for this to work on an arbitrary mesh
       C2=C1((elem_idx2-1)*ineach+1:(elem_idx2)*ineach)
       DO gauss_idx = (elem_idx2-1)*ineach+1,(elem_idx2)*ineach
       !DO gauss_idx =1,NGP
@@ -498,6 +504,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
    
 
    !Move field data
+
     CALL CMISSMeshEmbeddingPullGaussPointData(MeshEmbedding, DependentField1, 1,DependentField2, 1, Err)
 
    !After
