@@ -649,6 +649,7 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
       & EquationsSetFieldUserNumberDarcy,EquationsSetFieldDarcy(icompartment),EquationsSetDarcy(icompartment),Err)
     !Finish creating the equations set
     CALL CMISSEquationsSetCreateFinish(EquationsSetDarcy(icompartment),Err)
+    !Set the values for the equations set field to be the current compartment number (1 - N), and the total number of compartments (N)
     CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldDarcy(icompartment),CMISSFieldUVariableType, &
       & CMISSFieldValuesSetType,1,icompartment,Err)
     CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldDarcy(icompartment),CMISSFieldUVariableType, &
@@ -665,10 +666,12 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
     & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetIncompressibleElastMultiCompDarcySubtype,&
     & EquationsSetFieldSolidUserNumber,EquationsSetFieldSolid,EquationsSetSolid,Err)
   CALL CMISSEquationsSetCreateFinish(EquationsSetSolid,Err)
-    CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldSolid,CMISSFieldUVariableType, &
-      & CMISSFieldValuesSetType,1,1,Err)
-    CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldSolid,CMISSFieldUVariableType, &
-      & CMISSFieldValuesSetType,2,Ncompartments,Err)
+  !Set the values for the equations set field to be the current compartment number (O for the finite elasticity equations_set), and the total number of compartments (N)
+  !Need to store number of compartments, as finite elasticity uses this to calculate the total mass increase for the constiutive law
+  CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldSolid,CMISSFieldUVariableType, &
+     & CMISSFieldValuesSetType,1,0_CMISSIntg,Err)
+  CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldSolid,CMISSFieldUVariableType, &
+     & CMISSFieldValuesSetType,2,Ncompartments,Err)
 
 
   ! end Solid
@@ -1034,7 +1037,6 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
     CALL CMISSEquationsOutputTypeSet(EquationsDarcy(icompartment),EQUATIONS_DARCY_OUTPUT,Err)
   !Finish the equations set equations
     CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetDarcy(icompartment),Err)
-  write(*,*) "round and round we go!"
   ENDDO
   !--------------------------------------------------------------------------------------------------------------------------------
   ! Solid
@@ -1291,12 +1293,12 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
       NODE=Face11Nodes(NN)
 ! !     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
 ! !     IF(NodeDomain==ComputationalNodeNumber) THEN
-        VALUE = 0.0_CMISSDP
+        VALUE = -2.0_CMISSDP
         COMPONENT_NUMBER = 3
         write(*,*)'Marker 0'
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,NODE,COMPONENT_NUMBER,&
           & CMISSBoundaryConditionFixed,VALUE,Err)
-        WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Z DIRECTION"
+        WRITE(*,*) "SPECIFIED INFLOW AT NODE",NODE,"IN Z DIRECTION"
 
 ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
 ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,2,YCoord,Err)
@@ -1304,6 +1306,23 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
 ! !       WRITE(*,*) "XCoord, YCoord, ZCoord = ",XCoord, YCoord, ZCoord
 ! !     ENDIF
     ENDDO
+!     DO NN=1,SIZE(Face11Nodes,1)
+!       NODE=Face11Nodes(NN)
+! ! !     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+! ! !     IF(NodeDomain==ComputationalNodeNumber) THEN
+!         VALUE = 0.0_CMISSDP
+!         COMPONENT_NUMBER = 3
+!         write(*,*)'Marker 0'
+!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,NODE,COMPONENT_NUMBER,&
+!           & CMISSBoundaryConditionFixed,VALUE,Err)
+!         WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Z DIRECTION"
+! 
+! ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
+! ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,2,YCoord,Err)
+! ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,3,ZCoord,Err)
+! ! !       WRITE(*,*) "XCoord, YCoord, ZCoord = ",XCoord, YCoord, ZCoord
+! ! !     ENDIF
+!     ENDDO
 
     !All other faces are impermeable
     DO NN=1,SIZE(Face7Nodes,1)
