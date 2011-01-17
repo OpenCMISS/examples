@@ -63,7 +63,7 @@ def test_build_library():
       os.mkdir(newDir)
   logPath = logDir+"/nose_library_build"
   open_log(logPath)
-  command = "make COMPILER=gnu" + " >> "  + logPath + " 2>&1"
+  command = "make USEFIELDML=true COMPILER=gnu" + " >> "  + logPath + " 2>&1"
   err = os.system(command)
   close_log(logPath)
   add_history(logDir+"/nose_library_build_history",err)
