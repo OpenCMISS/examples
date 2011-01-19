@@ -197,11 +197,11 @@ for dims in ['2D','3D']:
 dims = '2D'
 for els in ['QUAD','TRI']:
     for interp in ['linear','quadratic']:
-        testExample(id='1',path="SinglePhysics/NonlinearProblems/StaticProblems/NonlinearPoisson/"+dims+"/"+els+"/"+interp+"/LEVEL_1",master42="ClassicalField/NonlinearPoisson/AnalyticNonlinearPoisson",
+        testExample(id='1',path="SinglePhysics/NonlinearProblems/StaticProblems/NonlinearPoisson/"+dims+"/"+els+"/"+interp+"/LEVEL_1",master42="ClassicalField/Poisson/AnalyticNonlinearPoisson",
         nodes='1',ndiffDir='expected_results',outputDir='output')
     if els == 'QUAD': #cubic broken for tet
         interp = 'cubic'
-        testExample(id='1',path="SinglePhysics/NonlinearProblems/StaticProblems/NonlinearPoisson/"+dims+"/"+els+"/"+interp+"/LEVEL_1",master42="ClassicalField/NonlinearPoisson/AnalyticNonlinearPoisson",
+        testExample(id='1',path="SinglePhysics/NonlinearProblems/StaticProblems/NonlinearPoisson/"+dims+"/"+els+"/"+interp+"/LEVEL_1",master42="ClassicalField/Poisson/AnalyticNonlinearPoisson",
         nodes='1',ndiffDir='expected_results',outputDir='output')
 
 #Linear Stokes problem, static/dynamic, 2D/3D, HEX/TET, 221/331/332

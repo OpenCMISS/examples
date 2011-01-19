@@ -40,9 +40,9 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/NonlinearPoisson/NonlinearPoisson/src/NonlinearPoissonExample.f90
+!> \example ClassicalField/Poisson/NonlinearPoisson/src/NonlinearPoissonExample.f90
 !! Example program to solve a nonlinear Poisson equation using openCMISS calls.
-!! \htmlinclude ClassicalField/NonlinearPoisson/NonlinearPoisson/history.html
+!! \htmlinclude ClassicalField/Poisson/NonlinearPoisson/history.html
 !<
 
 !> Main program
