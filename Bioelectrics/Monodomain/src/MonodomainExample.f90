@@ -325,20 +325,25 @@ PROGRAM MONODOMAINEXAMPLE
   !Finish the CellML environment
   CALL CMISSCellMLCreateFinish(CellML,Err)
 
+!  CALL CMISSDiagnosticsSetOn(CMISSInDiagType,(/1,2,3,4,5/),"",(/"CELLML_CREATE_FIELD_TO_CELLML_MAP_C", &
+!    & "CELLML_CREATE_CELLML_TO_FIELD_MAP_C"/),Err)
+
   !Start the creation of CellML <--> OpenCMISS field maps
   CALL CMISSCellMLFieldMapsCreateStart(CellML,Err)
   !Now we can set up the field variable component <--> CellML model variable mappings.
   !Map Vm
   CALL CMISSCellMLCreateFieldToCellMLMap(CellML,DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType, &
-    & n98ModelIndex,"Vm",CMISSFieldValuesSetType,Err)
+    & n98ModelIndex,"membrane/V",CMISSFieldValuesSetType,Err)
   CALL CMISSCellMLCreateFieldToCellMLMap(CellML,DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType, &
-    & JRWModelIndex,"Vm",CMISSFieldValuesSetType,Err)
-  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,n98ModelIndex,"Vm",CMISSFieldValuesSetType, &
+    & JRWModelIndex,"membrane/V",CMISSFieldValuesSetType,Err)
+  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,n98ModelIndex,"membrane/V",CMISSFieldValuesSetType, &
     & DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType,Err)
-  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,JRWModelIndex,"Vm",CMISSFieldValuesSetType, &
+  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,JRWModelIndex,"membrane/V",CMISSFieldValuesSetType, &
     & DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType,Err)
   !Finish the creation of CellML <--> OpenCMISS field maps
   CALL CMISSCellMLFieldMapsCreateFinish(CellML,Err)
+
+!  CALL CMISSDiagnosticsSetOff(Err)
 
   !Start the creation of the CellML models field
   CALL CMISSFieldTypeInitialise(CellMLModelsField,Err)
