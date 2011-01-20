@@ -151,8 +151,8 @@ PROGRAM LAPLACEEXAMPLE
     IF(INTERPOLATION_TYPE<=0) CALL HANDLE_ERROR("Invalid Interpolation specification.")
   ELSE
     !If there are not enough arguments default the problem specification 
-    NUMBER_GLOBAL_X_ELEMENTS=5
-    NUMBER_GLOBAL_Y_ELEMENTS=5
+    NUMBER_GLOBAL_X_ELEMENTS=2
+    NUMBER_GLOBAL_Y_ELEMENTS=2
     NUMBER_GLOBAL_Z_ELEMENTS=0
     INTERPOLATION_TYPE=1
   ENDIF
@@ -264,7 +264,10 @@ PROGRAM LAPLACEEXAMPLE
   CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
-  
+ 
+  !Destory the mesh now that we have decomposed it
+  !CALL CMISSMeshDestroy(Mesh,Err)
+ 
   !Start to create a default (geometric) field on the region
   CALL CMISSFieldTypeInitialise(GeometricField,Err)
   CALL CMISSFieldCreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
