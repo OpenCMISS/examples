@@ -1,0 +1,30 @@
+#number_of_mesh_dimensions
+3
+#number_of_mesh_components
+2
+#number_of_nodes
+63
+#number_of_elements
+3
+#number_of_bases
+2
+
+! start definition of elements - you know this could be in a separate 
+! file just joined by a + at execution time
+#mesh_component
+1
+#basis_order
+2
+#elements
+1 17 2 18 19 20 3 21 4 22 23 24 25 26 27 28 29 30 5 31 6 32 33 34 7 35 8
+5 31 6 32 33 34 7 35 8 36 37 38 39 40 41 42 43 44 9 45 10 46 47 48 11 49 12
+9 45 10 46 47 48 11 49 12 50 51 52 53 54 55 56 57 58 13 59 14 60 61 62 15 63 16
+
+#mesh_component
+2
+#basis_order
+1
+#elements
+1 2 3 4 5 6 7 8
+5 6 7 8 9 10 11 12
+9 10 11 12 13 14 15 16
