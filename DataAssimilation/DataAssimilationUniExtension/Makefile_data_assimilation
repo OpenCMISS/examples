@@ -1,0 +1,35 @@
+EXAMPLE_NAME=data_assimilation_uniextension
+
+################################################
+MPICC_DIR=${PETSC_DIR}/linux-gnu-c-debug/bin
+PETSC_DIR=/home/scratch/installation/petsc-3.1-p5
+SLEPC_DIR=/home/scratch/installation/slepc-3.1-p4
+#OPENCMISS_INCLUDE_DIR=/home/scratch/opencmiss/cm/include/x86_64-linux/mpich2/gnu_4.4
+OPENCMISS_LIB_DIR=/home/scratch/opencmiss/cm/lib/x86_64-linux/mpich2/gnu_4.4
+#OPENCMISSEXTRAS_INCLUDE_DIR=/home/scratch/opencmissextras/cm/external/x86_64-linux-debug/mpich2/gnu_4.4/include
+OPENCMISSEXTRAS_LIB_DIR=/home/scratch/opencmissextras/cm/external/x86_64-linux-debug/mpich2/gnu_4.4/lib
+
+EXAMPLE_SRC_DIR=./src
+DATA_ASSIMILATION_SRC_DIR=../common
+BIN_OUTPUT_DIR=./bin
+OTHER_OBJ="${BIN_OUTPUT_DIR}/UniAxialExtensionExample.o ${OPENCMISS_LIB_DIR}/libOpenCMISS-debug.a"
+
+COMPILER_FLAG="-c -Wall -Wwrite-strings -Wno-strict-aliasing -g3 -I${PETSC_DIR}/linux-gnu-c-debug/include -I${PETSC_DIR}/include -I${PETSC_DIR}/linux-gnu-c-debug/include -I${PETSC_DIR}/linux-gnu-c-debug/lib -D__INSDIR__=src/mat/examples/tutorials/ -I${SLEPC_DIR} -I${SLEPC_DIR}/linux-gnu-c-debug/include -I${SLEPC_DIR}/include -I${DATA_ASSIMILATION_SRC_DIR}"
+
+LINKDER_FLAG="-Wall -Wwrite-strings -Wno-strict-aliasing -g3  -Wl,-rpath,${SLEPC_DIR}/linux-gnu-c-debug/lib -L${SLEPC_DIR}/linux-gnu-c-debug/lib -lslepc      -Wl,-rpath,${PETSC_DIR}/linux-gnu-c-debug/lib -L${PETSC_DIR}/linux-gnu-c-debug/lib -lpetsc   -lX11 -Wl,-rpath,${PETSC_DIR}/linux-gnu-c-debug/lib -L${PETSC_DIR}/linux-gnu-c-debug/lib -lHYPRE -lmpi_cxx -lstdc++ -lPLAPACK -lpastix -lscotch -lscotcherr -lscalapack -lblacs -lumfpack -lamd -lflapack -lfblas -lnsl -laio -lrt -L${PETSC_DIR}/linux-gnu-c-debug/lib -L/usr/lib/gcc/x86_64-redhat-linux/4.4.1 -ldl -lmpi -lopen-rte -lopen-pal -lnsl -lutil -lgcc_s -lpthread -lmpi_f90 -lmpi_f77 -lgfortran -lm -lm -lm -lm -lmpi_cxx -lstdc++ -lrt -lm -lrt -lm -lz -lz -lmpi_cxx -lstdc++ -ldl -lmpi -lopen-rte -lopen-pal -lnsl -lutil -lgcc_s -lpthread -ldl  -L/usr/lib64/ -lgsl -lgslcblas"
+
+LINKDER_FLAG_OTHER_OBJ="-m64 -L${OPENCMISSEXTRAS_LIB_DIR}/  -L/usr/X11R6/lib64/ -L/usr/lib64/ -L/usr/lib64/openmotif/ -ltaofortran -ltaopetsc -ltao -lpetsc -lMrm -lXmu -lXm -lXt -lX11 -lstdc++ -ldl -lsundials_cvode -lsundials_nvecparallel -lsundials_nvecserial -lHYPRE -lsuperlu_dist -lpastix -lptscotch -lptscotcherr -lptscotcherrexit -lscotch -lscotcherr -lscotcherrexit -ldmumps -lmumps_common -lpord -lscalapack -lblacs -lblacsC -lblacsF77 -lblacs -lblacsC -lblacsF77 -lparmetis -lmetis -lmpichf90 -lmpich -lmpl -lpthread -lrt -llapack -lblas"
+
+
+################################################
+echo "  Compling ..."
+gcc ${EXAMPLE_SRC_DIR}/${EXAMPLE_NAME}.cpp -o ${BIN_OUTPUT_DIR}/${EXAMPLE_NAME}.o   ${COMPILER_FLAG}
+
+echo "  Linking ..." #${MPICC_DIR}/mpicc
+gcc ${BIN_OUTPUT_DIR}/${EXAMPLE_NAME}.o ${OTHER_OBJ} -o ${BIN_OUTPUT_DIR}/${EXAMPLE_NAME}    ${LINKDER_FLAG} ${LINKDER_FLAG_OTHER_OBJ}
+
+echo " Cleaning up ..."
+rm -f ${BIN_OUTPUT_DIR}/${EXAMPLE_NAME}.o
+rm -f *~
+
+echo "  Done!  ${BIN_OUTPUT_DIR}/${EXAMPLE_NAME}"

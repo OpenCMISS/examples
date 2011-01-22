@@ -1,0 +1,27 @@
+EXAMPLE_NAME=data_assimilation_test01
+
+################################################
+MPICC_DIR=${PETSC_DIR}/linux-gnu-c-debug/bin
+PETSC_DIR=/home/scratch/installation/petsc-3.1-p5
+SLEPC_DIR=/home/scratch/installation/slepc-3.1-p4
+EXAMPLE_SRC_DIR=./src
+DATA_ASSIMILATION_SRC_DIR=../common
+BIN_OUTPUT_DIR=./bin
+
+COMPILER_FLAG="-c -Wall -Wwrite-strings -Wno-strict-aliasing -g3 -I${PETSC_DIR}/linux-gnu-c-debug/include -I${PETSC_DIR}/include -I${PETSC_DIR}/linux-gnu-c-debug/include -I${PETSC_DIR}/linux-gnu-c-debug/lib -D__INSDIR__=src/mat/examples/tutorials/ -I${SLEPC_DIR} -I${SLEPC_DIR}/linux-gnu-c-debug/include -I${SLEPC_DIR}/include -I${DATA_ASSIMILATION_SRC_DIR}"
+
+LINKDER_FLAG="-Wall -Wwrite-strings -Wno-strict-aliasing -g3  -Wl,-rpath,${SLEPC_DIR}/linux-gnu-c-debug/lib -L${SLEPC_DIR}/linux-gnu-c-debug/lib -lslepc      -Wl,-rpath,${PETSC_DIR}/linux-gnu-c-debug/lib -L${PETSC_DIR}/linux-gnu-c-debug/lib -lpetsc   -lX11 -Wl,-rpath,${PETSC_DIR}/linux-gnu-c-debug/lib -L${PETSC_DIR}/linux-gnu-c-debug/lib -lHYPRE -lmpi_cxx -lstdc++ -lPLAPACK -lpastix -lscotch -lscotcherr -lscalapack -lblacs -lumfpack -lamd -lflapack -lfblas -lnsl -laio -lrt -L${PETSC_DIR}/linux-gnu-c-debug/lib -L/usr/lib/gcc/x86_64-redhat-linux/4.4.1 -ldl -lmpi -lopen-rte -lopen-pal -lnsl -lutil -lgcc_s -lpthread -lmpi_f90 -lmpi_f77 -lgfortran -lm -lm -lm -lm -lmpi_cxx -lstdc++ -lrt -lm -lrt -lm -lz -lz -lmpi_cxx -lstdc++ -ldl -lmpi -lopen-rte -lopen-pal -lnsl -lutil -lgcc_s -lpthread -ldl  -L/usr/lib64/ -lgsl -lgslcblas"
+
+
+################################################
+echo "  Compling ..."
+${MPICC_DIR}/mpicc ${EXAMPLE_SRC_DIR}/${EXAMPLE_NAME}.cpp -o ${BIN_OUTPUT_DIR}/${EXAMPLE_NAME}.o   ${COMPILER_FLAG}
+
+echo "  Linking ..."
+${MPICC_DIR}/mpicc ${BIN_OUTPUT_DIR}/${EXAMPLE_NAME}.o    -o ${BIN_OUTPUT_DIR}/${EXAMPLE_NAME}    ${LINKDER_FLAG}
+
+echo " Cleaning up ..."
+rm -f ${BIN_OUTPUT_DIR}/${EXAMPLE_NAME}.o
+rm -f *~
+
+echo "  Done!  ${BIN_OUTPUT_DIR}/${EXAMPLE_NAME}"
