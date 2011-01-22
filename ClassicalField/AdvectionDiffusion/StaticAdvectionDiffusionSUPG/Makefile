@@ -67,5 +67,5 @@ EXAMPLE_PATH=ClassicalField/AdvectionDiffusion/
 
 EXAMPLE_NAME = StaticAdvectionDiffusionSUPG
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 
