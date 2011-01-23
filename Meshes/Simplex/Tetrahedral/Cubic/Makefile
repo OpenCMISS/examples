@@ -67,5 +67,5 @@ EXAMPLE_PATH = Meshes/Simplex/Tetrahedral/
 
 EXAMPLE_NAME = Cubic
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

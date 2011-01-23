@@ -67,5 +67,5 @@ EXAMPLE_PATH=ClassicalField/Laplace/
 
 EXAMPLE_NAME = NumberLaplace
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

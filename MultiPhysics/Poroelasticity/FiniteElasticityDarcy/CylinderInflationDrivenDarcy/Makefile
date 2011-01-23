@@ -67,5 +67,5 @@ EXAMPLE_PATH = MultiPhysics/Poroelasticity/FiniteElasticityDarcy/
 
 EXAMPLE_NAME = CylinderInflationDrivenDarcy
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

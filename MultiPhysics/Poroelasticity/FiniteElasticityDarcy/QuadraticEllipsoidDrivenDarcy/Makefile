@@ -67,5 +67,5 @@ EXAMPLE_PATH = MultiPhysics/Poroelasticity/FiniteElasticityDarcy/
 
 EXAMPLE_NAME = QuadraticEllipsoidDrivenDarcy
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

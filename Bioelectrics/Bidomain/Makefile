@@ -68,5 +68,5 @@ EXAMPLE_PATH = Bioelectrics/
 
 EXAMPLE_NAME = Bidomain
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

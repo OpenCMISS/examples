@@ -65,5 +65,5 @@ endif
 
 EXAMPLE_NAME = SimplexMesh
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

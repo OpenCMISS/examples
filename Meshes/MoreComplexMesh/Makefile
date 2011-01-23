@@ -65,5 +65,5 @@ endif
 
 EXAMPLE_NAME = MoreComplexMesh
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

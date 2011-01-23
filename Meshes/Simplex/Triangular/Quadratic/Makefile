@@ -67,5 +67,5 @@ EXAMPLE_PATH = Meshes/Simplex/Triangular/
 
 EXAMPLE_NAME = Quadratic
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

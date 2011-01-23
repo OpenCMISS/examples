@@ -67,5 +67,5 @@ EXAMPLE_PATH=ClassicalField/Hamilton_Jacobi/
 
 EXAMPLE_NAME = GeodesicEx1
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

@@ -67,11 +67,7 @@ EXAMPLE_PATH=MultiPhysics/Poroelasticity/FiniteElasticityDarcy/
 
 EXAMPLE_NAME = IncompressibleElasticityDrivenDarcy
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
-
-# customisation begins here ---
-MAIN_OBJECT_DIR = $(GLOBAL_ROOT)/object/$(LIB_ARCH_DIR)$(MT_SUFFIX)$(DEBUG_SUFFIX)$(PROF_SUFFIX)/$(MPI)/$(COMPILER)_$(COMPILER_VERSION)
-MAIN_SOURCE_DIR = $(GLOBAL_ROOT)/src
+include $(GLOBAL_ROOT)/ExampleMakefile
 
 # let's assume fluid_mechanics_IO_routines has been built in main_object, copy them over
 # redefine preliminaries

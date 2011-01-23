@@ -40,9 +40,9 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/DiffusionConstantSource/src/DiffusionConstantSourceExample.f90
+!> \example ClassicalField/Diffusion/DiffusionConstantSource/src/DiffusionConstantSourceExample.f90
 !! Example program to solve a diffusion equation using openCMISS calls.
-!! \htmlinclude ClassicalField/DiffusionConstantSource/history.html
+!! \htmlinclude ClassicalField/Diffusion/DiffusionConstantSource/history.html
 !<
 
 !> Main program

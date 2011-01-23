@@ -104,11 +104,11 @@ if (compiler!="intel") :
   buildExample("ClassicalField/AdvectionDiffusion/AdvectionDiffusionIO")
   buildExample("ClassicalField/AdvectionDiffusion/StaticAdvectionDiffusion")
   buildExample("ClassicalField/AdvectionDiffusion/StaticAdvectionDiffusion_FieldML")
-  buildExample("ClassicalField/Diffusion")
+  buildExample("ClassicalField/Diffusion/Diffusion")
   buildExample("ClassicalField/Diffusion/LinearConvergenceTest")
   buildExample("ClassicalField/Diffusion/QuadraticConvergenceTest")
   buildExample("ClassicalField/Diffusion/CubicConvergenceTest") 
-  buildExample("ClassicalField/DiffusionConstantSource")
+  buildExample("ClassicalField/Diffusion/DiffusionConstantSource")
   #buildExample("ClassicalField/Helmholtz")
   buildExample("ClassicalField/Poisson/AnalyticNonlinearPoisson")
   buildExample("ClassicalField/Poisson/42Master")
@@ -161,3 +161,4 @@ if (compiler!="intel") :
   #buildExample("TwoRegions")
 
 f.close()
+

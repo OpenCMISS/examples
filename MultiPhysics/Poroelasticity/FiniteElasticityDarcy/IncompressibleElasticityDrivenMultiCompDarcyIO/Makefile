@@ -67,12 +67,7 @@ EXAMPLE_PATH=MultiPhysics/Poroelasticity/FiniteElasticityDarcy/
 
 EXAMPLE_NAME = IncompressibleElasticityDrivenMultiCompDarcyIO
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
-
-# customisation begins here ---
-MAIN_OBJECT_DIR = $(GLOBAL_ROOT)/object/$(LIB_ARCH_DIR)$(MT_SUFFIX)$(DEBUG_SUFFIX)$(PROF_SUFFIX)/$(MPI)/$(COMPILER)_$(COMPILER_VERSION)
-MAIN_SOURCE_DIR = $(GLOBAL_ROOT)/src
-
+include $(GLOBAL_ROOT)/ExampleMakefile
 
 #need to build the user routine before the whole thing is built...
 USER_ROUTINE_NAME = iostuff

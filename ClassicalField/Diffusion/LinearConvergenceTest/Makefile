@@ -67,5 +67,5 @@ EXAMPLE_PATH=ClassicalField/Diffusion/
 
 EXAMPLE_NAME = LinearConvergenceTest
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

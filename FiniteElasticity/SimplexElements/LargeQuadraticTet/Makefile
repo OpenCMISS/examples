@@ -67,5 +67,5 @@ EXAMPLE_PATH = FiniteElasticity/SimplexElements/
 
 EXAMPLE_NAME = LargeQuadraticTet
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

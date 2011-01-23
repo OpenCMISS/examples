@@ -67,5 +67,5 @@ EXAMPLE_PATH=ClassicalField/Poisson/
 
 EXAMPLE_NAME = NonlinearPoisson
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 
