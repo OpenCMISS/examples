@@ -296,7 +296,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENMULTICOMPDARCYEXAMPLE
   !Set time parameter
   DYNAMIC_SOLVER_DARCY_START_TIME=0.0_CMISSDP
   DYNAMIC_SOLVER_DARCY_TIME_INCREMENT=1.0e-3_CMISSDP
-  DYNAMIC_SOLVER_DARCY_STOP_TIME=2_CMISSIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
+  DYNAMIC_SOLVER_DARCY_STOP_TIME=1_CMISSIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
   DYNAMIC_SOLVER_DARCY_THETA=1.0_CMISSDP !2.0_CMISSDP/3.0_CMISSDP
   !Set result output parameter
   DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY=1
@@ -1103,7 +1103,19 @@ PROGRAM QUADRATICELLIPSOIDDRIVENMULTICOMPDARCYEXAMPLE
           & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
         IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING TOP DARCY BC TO NODE", TopSurfaceNodesDarcyVel(NN)
       ENDDO
+    ELSEIF(icompartment==2)THEN
+
+    !Set all top surface nodes to Darcy inflow BC
+      DO NN=1,SIZE(TopSurfaceNodesDarcyVel,1)
+        VALUE = -1.0_CMISSDP
+        COMPONENT_NUMBER = 3
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1, &
+          & TopSurfaceNodesDarcyVel(NN), &
+          & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
+        IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING TOP DARCY BC TO NODE", TopSurfaceNodesDarcyVel(NN)
+      ENDDO
     ENDIF
+
 
     CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDarcy(icompartment),Err)
   ENDDO
