@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os, sys, subprocess
 from time import strftime
-import socket
+import socket,commands
 
 cwd = os.getcwd();
 logDir = cwd + "/../../build/logs";

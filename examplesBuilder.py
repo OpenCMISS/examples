@@ -50,7 +50,7 @@ def buildExample(path) :
        history = open(newDir + "/history-build-" + compiler + compiler_version,"w")
        history.write("<pre>Completed Time\t\tStatus\tHostname\n")
      if err==0 :
-       f.write(compiler+'_'+path+'_build|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
+       f.write(compiler+compiler_version+'_'+path+'_build|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
        print "<a class='success' href='%slogs_x86_64-linux/%s/history-build-%s'>Pass</a>: building <a href='%slogs_x86_64-linux/%s/build-%s'>%s</a><br>" %(rootUrl,path,compiler+compiler_version,rootUrl,path,compiler+compiler_version,path)
        history.write(strftime("%Y-%m-%d %H:%M:%S")+'\tsuccess\t'+hostname+'\n')
      else :
