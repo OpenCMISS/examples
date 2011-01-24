@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os, sys
+import os, sys, commands
 from time import strftime
 import socket
 
@@ -8,10 +8,23 @@ logDir = cwd + "/../../build/logs";
 rootUrl = "http://autotest.bioeng.auckland.ac.nz/opencmiss-build/"
 hostname = socket.gethostname()
 
+def getVersion() :
+  global compiler;
+  operating_system = commands.getoutput('uname') 
+  if operating_system == 'Linux':
+    if compiler == 'gnu':
+      version_info = commands.getoutput('gfortran -v')
+      if version_info.find('gcc version 4.5') :
+        return '_4.5'
+      elif version_info.find('gcc version 4.4') :
+        return '_4.4'
+  return ''
+
 if not os.path.isdir(logDir):
   os.mkdir(cwd + "/../../build")
   os.mkdir(logDir);
 compiler = sys.argv[1];
+compiler_version = getVersion()
 f = open(logDir+'/build.log',"a")
 
 def insertTag(tag,outfile) :
@@ -19,7 +32,7 @@ def insertTag(tag,outfile) :
   
 
 def buildExample(path) :
-   global compiler,logDir,libSuccess;
+   global compiler,compiler_version,logDir,libSuccess;
    if (libSuccess!=-1) :
      newDir = logDir
      for folder in path.split('/') :
@@ -30,48 +43,48 @@ def buildExample(path) :
      if os.path.exists(newDir + "/temp") :
        os.remove(newDir + "/temp")
      err=os.system("make COMPILER=" + compiler + " > " + newDir + "/temp" +" 2>&1")
-     htmlWrapper(newDir + "/temp",newDir + "/build-" + compiler)
-     if os.path.exists(newDir + "/history-build-" + compiler) :
-       history = open(newDir + "/history-build-" + compiler,"a")
+     htmlWrapper(newDir + "/temp",newDir + "/build-" + compiler + compiler_version)
+     if os.path.exists(newDir + "/history-build-" + compiler + compiler_version) :
+       history = open(newDir + "/history-build-" + compiler + compiler_version,"a")
      else :
-       history = open(newDir + "/history-build-" + compiler,"w")
+       history = open(newDir + "/history-build-" + compiler + compiler_version,"w")
        history.write("<pre>Completed Time\t\tStatus\tHostname\n")
      if err==0 :
        f.write(compiler+'_'+path+'_build|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
-       print "<a class='success' href='%slogs_x86_64-linux/%s/history-build-%s'>Pass</a>: building <a href='%slogs_x86_64-linux/%s/build-%s'>%s</a><br>" %(rootUrl,path,compiler,rootUrl,path,compiler,path)
+       print "<a class='success' href='%slogs_x86_64-linux/%s/history-build-%s'>Pass</a>: building <a href='%slogs_x86_64-linux/%s/build-%s'>%s</a><br>" %(rootUrl,path,compiler+compiler_version,rootUrl,path,compiler+compiler_version,path)
        history.write(strftime("%Y-%m-%d %H:%M:%S")+'\tsuccess\t'+hostname+'\n')
      else :
-       f.write(compiler+'_'+path+'_build|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
-       print "<a class='fail' href='%slogs_x86_64-linux/%s/history-build-%s'>Fail</a>: building <a href='%slogs_x86_64-linux/%s/build-%s'>%s</a><br>" %(rootUrl,path,compiler,rootUrl,path,compiler,path)
+       f.write(compiler+compiler_version+'_'+path+'_build|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
+       print "<a class='fail' href='%slogs_x86_64-linux/%s/history-build-%s'>Fail</a>: building <a href='%slogs_x86_64-linux/%s/build-%s'>%s</a><br>" %(rootUrl,path,compiler+compiler_version,rootUrl,path,compiler+compiler_version,path)
        history.write(strftime("%Y-%m-%d %H:%M:%S")+'\tfailed\t'+hostname+'\n')
      os.chdir(cwd)
    else :
-     f.write(compiler+'_'+path+'_build|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
-     print "<a class='fail' href='%slogs_x86_64-linux/%s/history-build-%s'>Fail</a>: building %s failed due to library build failure<br>" %(rootUrl,path,compiler,path)
+     f.write(compiler+compiler_version+'_'+path+'_build|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
+     print "<a class='fail' href='%slogs_x86_64-linux/%s/history-build-%s'>Fail</a>: building %s failed due to library build failure<br>" %(rootUrl,path,compiler+compiler_version,path)
    return;
 
 def buildLibrary() :
-   global compiler,logDir,hostname;
+   global compiler,compiler_version,logDir,hostname;
    newDir = logDir
    os.chdir('..')
    if os.path.exists(newDir + "/temp") :
      os.remove(newDir + "/temp")
    err=os.system("make USEFIELDML=true COMPILER=" + compiler + " > " + newDir + "/temp" +" 2>&1")
-   htmlWrapper(newDir + "/temp",newDir + "/build-" + compiler)
-   if os.path.exists(newDir + "/history-" + compiler) :
-     history = open(newDir + "/history-" + compiler,"a")
+   htmlWrapper(newDir + "/temp",newDir + "/build-" + compiler+compiler_version)
+   if os.path.exists(newDir + "/history-" + compiler+compiler_version) :
+     history = open(newDir + "/history-" + compiler+compiler_version,"a")
    else :
-     history = open(newDir + "/history-" + compiler,"w")
+     history = open(newDir + "/history-" + compiler+compiler_version,"w")
      history.write("<pre>Completed Time\t\tStatus\tHostname\n")
    if err==0 :
-     f.write(compiler+'_library_build|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
-     print "<a class='success' href='%slogs_x86_64-linux/history-%s'>Pass</a>: building <a href='%slogs_x86_64-linux/build-%s'>OpenCMISS Library</a><br>" %(rootUrl,compiler,rootUrl,compiler)
+     f.write(compiler+compiler_version+'_library_build|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
+     print "<a class='success' href='%slogs_x86_64-linux/history-%s'>Pass</a>: building <a href='%slogs_x86_64-linux/build-%s'>OpenCMISS Library</a><br>" %(rootUrl,compiler+compiler_version,rootUrl,compiler+compiler_version)
      history.write(strftime("%Y-%m-%d %H:%M:%S")+'\tsuccess\t'+hostname+'\n')
      os.chdir(cwd)
      return 0;
    else :
-     f.write(compiler+'_library_build|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
-     print "<a class='fail' href='%slogs_x86_64-linux/history-%s'>Fail</a>: building <a href='%slogs_x86_64-linux/build-%s'>OpenCMISS Library</a><br>" %(rootUrl,compiler,rootUrl,compiler)
+     f.write(compiler+compiler_version+'_library_build|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
+     print "<a class='fail' href='%slogs_x86_64-linux/history-%s'>Fail</a>: building <a href='%slogs_x86_64-linux/build-%s'>OpenCMISS Library</a><br>" %(rootUrl,compiler+compiler_version,rootUrl,compiler+compiler_version)
      history.write(strftime("%Y-%m-%d %H:%M:%S")+'\tfailed\t'+hostname+'\n')
      os.chdir(cwd)
      return -1;

@@ -9,12 +9,25 @@ ndiff = cwd + "/../utils/ndiff"
 rootUrl = "http://autotest.bioeng.auckland.ac.nz/opencmiss-build/"
 hostname = socket.gethostname()
 
+def getVersion() :
+  global compiler;
+  operating_system = commands.getoutput('uname') 
+  if operating_system == 'Linux':
+    if compiler == 'gnu':
+      version_info = commands.getoutput('gfortran -v')
+      if version_info.find('gcc version 4.5') :
+        return '_4.5'
+      elif version_info.find('gcc version 4.4') :
+        return '_4.4'
+  return ''
+
 if not os.path.isdir(logDir):
   os.mkdir(cwd + "/../../build")
   os.mkdir(logDir);
 compiler = sys.argv[1];
+compiler_version = getVersion()
 os.putenv('HOME', '/home/autotest')
-mpidir = cwd+'/../../../opencmissextras/cm/external/x86_64-linux-debug/mpich2/'+compiler+'/bin'
+mpidir = cwd+'/../../../opencmissextras/cm/external/x86_64-linux-debug/mpich2/'+compiler+compiler_version+'/bin'
 os.system('python ' + mpidir + '/mpd.py &')
 f = open(logDir+'/build.log',"r")
 successbuilds = f.read()
@@ -25,12 +38,12 @@ def insertTag(tag,outfile) :
   outfile.write(tag+"\n")
 
 def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=None,master42=None) :
-   global compiler,logDir,successbuilds,f;
+   global compiler,compiler_version,logDir,successbuilds,f;
    if master42!=None :
-     index = successbuilds.find(compiler+'_'+master42)
+     index = successbuilds.find(compiler+compiler_version+'_'+master42)
      path='42TestingPoints/'+path
    else :
-     index = successbuilds.find(compiler+'_'+path)
+     index = successbuilds.find(compiler+compiler_version+'_'+path)
    index = successbuilds.find('|',index)
    if (successbuilds.startswith('success',index+1)) :
      newDir = logDir
@@ -44,7 +57,7 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
      if master42!=None:
        execPath='./run42-debug.sh'
      else :
-       execPath='bin/x86_64-linux/mpich2/'+compiler+'/'+path.rpartition('/')[2]+'Example-debug'
+       execPath='bin/x86_64-linux/mpich2/'+compiler+compiler_version+'/'+path.rpartition('/')[2]+'Example-debug'
      if nodes == '1' :
        if input != None :
          inputPipe = subprocess.Popen(["echo", input], stdout=subprocess.PIPE)
@@ -81,27 +94,27 @@ def testExample(id, path, nodes, input=None, args=None, ndiffDir=None,outputDir=
 				err=error
      if not os.path.exists(execPath) :
        err=-1
-     htmlWrapper(newDir + "/temp",newDir + "/test" + id + "-" + compiler)
-     outputfile = open(newDir + "/test" + id + "-" + compiler, 'r')
+     htmlWrapper(newDir + "/temp",newDir + "/test" + id + "-" + compiler+compiler_version)
+     outputfile = open(newDir + "/test" + id + "-" + compiler+compiler_version, 'r')
      if "ERROR:" in outputfile.read() :
        err=-1
-     if os.path.exists(newDir + "/history-test"+id+"-" + compiler) :
-       history = open(newDir + "/history-test"+id+"-" + compiler,"a")
+     if os.path.exists(newDir + "/history-test"+id+"-" + compiler+compiler_version) :
+       history = open(newDir + "/history-test"+id+"-" + compiler+compiler_version,"a")
      else :
-       history = open(newDir + "/history-test"+id+"-" + compiler,"w")
+       history = open(newDir + "/history-test"+id+"-" + compiler+compiler_version,"w")
        history.write("<pre>Completed Time\t\tStatus\tHostname\n")
      if err==0 :
-       f.write(compiler+'_'+path+'_test|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
-       print "<a class='success' href='%slogs_x86_64-linux/%s/history-test%s-%s'>Pass</a>: testing <a href='%slogs_x86_64-linux/%s/test%s-%s'>%s%s</a><br>" %(rootUrl,path,id,compiler,rootUrl,path,id,compiler,path,id)
+       f.write(compiler+compiler_version+'_'+path+'_test|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
+       print "<a class='success' href='%slogs_x86_64-linux/%s/history-test%s-%s'>Pass</a>: testing <a href='%slogs_x86_64-linux/%s/test%s-%s'>%s%s</a><br>" %(rootUrl,path,id,compiler+compiler_version,rootUrl,path,id,compiler+compiler_version,path,id)
        history.write(strftime("%Y-%m-%d %H:%M:%S")+'\tsuccess\t'+hostname+'\n')
      else :
-       f.write(compiler+'_'+path+'_test|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
-       print "<a class='fail' href='%slogs_x86_64-linux/%s/history-test%s-%s'>Fail</a>: testing <a href='%slogs_x86_64-linux/%s/test%s-%s'>%s%s</a> <br>" %(rootUrl,path,id,compiler,rootUrl,path,id,compiler,path,id)
+       f.write(compiler+compiler_version+'_'+path+'_test|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
+       print "<a class='fail' href='%slogs_x86_64-linux/%s/history-test%s-%s'>Fail</a>: testing <a href='%slogs_x86_64-linux/%s/test%s-%s'>%s%s</a> <br>" %(rootUrl,path,id,compiler+compiler_version,rootUrl,path,id,compiler+compiler_version,path,id)
        history.write(strftime("%Y-%m-%d %H:%M:%S")+'\tfailed\t'+hostname+'\n')
      os.chdir(cwd)
    else :
-     f.write(compiler+'_'+path+'_test|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
-     print "<a class='fail' href='%slogs_x86_64-linux/%s/history-test%s-%s'>Fail</a>: testing %s%s failed due to build failure<br>" %(rootUrl,path,id,compiler,path,id)
+     f.write(compiler+compiler_version+'_'+path+'_test|fail|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
+     print "<a class='fail' href='%slogs_x86_64-linux/%s/history-test%s-%s'>Fail</a>: testing %s%s failed due to build failure<br>" %(rootUrl,path,id,compiler+compiler_version,path,id)
    return;
 
 def htmlWrapper(infile, outfile) :
