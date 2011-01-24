@@ -1,4 +1,4 @@
-import os, subprocess,sys
+import os, subprocess,sys,commands
 from time import strftime
 import socket
 sys.path.append(os.environ['OPENCMISS_ROOT']+"/cm/examples")
@@ -49,6 +49,17 @@ def add_history(historyPath,err) :
   else :
     history.write(strftime("%Y-%m-%d %H:%M:%S")+'\tfail\t'+hostname+'\n')
   history.close()
+
+def getVersion(compiler) :
+  operating_system = commands.getoutput('uname') 
+  if operating_system == 'Linux':
+    if compiler == 'gnu':
+      version_info = commands.getoutput('gfortran -v')
+      if version_info.find('gcc version 4.5') != -1:
+        return '_4.5'
+      elif version_info.find('gcc version 4.4') != -1 :
+        return '_4.4'
+  return ''
   
 
 def test_build_library():
@@ -124,7 +135,8 @@ def check_run(status,cwd, system,arch,compiler,masterPath,testArgs,testPath,noCh
   logPath = logDir+"/nose_run"
   open_log(logPath)
   exampleName = masterPath.rpartition("/")[2]
-  command = masterPath+"/bin/"+arch+"-"+system+"/mpich2/"+compiler+"/"+exampleName+"Example-debug "+testArgs + " >> "  + logPath + " 2>&1"
+  compiler_version = getVersion(compiler)
+  command = masterPath+"/bin/"+arch+"-"+system+"/mpich2/"+compiler+compiler_version+"/"+exampleName+"Example-debug "+testArgs + " >> "  + logPath + " 2>&1"
   err = os.system(command)
   close_log(logPath)
   add_history(logDir+"/nose_run_history",err)
