@@ -311,11 +311,11 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   !Now we can set up the field variable component <--> CellML model variable mappings.
   !Map Vm
   CALL CMISSCellMLCreateFieldToCellMLMap(CellML,DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType, &
-    & LRdModelIndex,"Vm",CMISSFieldValuesSetType,Err)
-  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,LRdModelIndex,"Vm",CMISSFieldValuesSetType, &
+    & LRdModelIndex,"membrane/V",CMISSFieldValuesSetType,Err)
+  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,LRdModelIndex,"membrane/V",CMISSFieldValuesSetType, &
     & DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType,Err)
   !Finish the creation of CellML <--> OpenCMISS field maps
-  CALL CMISSCellMLFieldMapsCreateFinish(CellML,Err)
+  CALL CMISSCellMLFieldMapsCreateFinish(CellML,Err) 
 
   !Start the creation of the CellML models field
   CALL CMISSFieldTypeInitialise(CellMLModelsField,Err)
