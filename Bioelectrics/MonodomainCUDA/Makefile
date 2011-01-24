@@ -1,11 +1,12 @@
-# -*- makefile -*-
+#
+#-*- makefile -*-
 #
 # For use with GNU make.
 #
-#
+# $Id: Makefile 1528 2010-09-21 01:32:29Z chrispbradley $
 #
 #----------------------------------------------------------------------------------------------------------------------------------
-# Makefile for compiling openCMISS examples
+# Makefile for compiling OpenCMISS examples
 #
 # Original by Chris Bradley adapted from the CMISS Makefile by Karl Tomlinson 
 # Changes:
@@ -55,15 +56,17 @@ MAKEFLAGS = --no-builtin-rules --warn-undefined-variables
 #----------------------------------------------------------------------------------------------------------------------------------
 
 ifndef OPENCMISS_ROOT
-  OPENCMISS_ROOT := ../..
-  GLOBAL_ROOT := $(CURDIR)/../..
+  OPENCMISS_ROOT := ../../..
+  GLOBAL_ROOT := $(CURDIR)/../../..
 else
   GLOBAL_ROOT := ${OPENCMISS_ROOT}/cm
 endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_NAME = define-geometry-and-export
+EXAMPLE_PATH = Bioelectrics/
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+EXAMPLE_NAME = MonodomainCUDA
+
+include $(GLOBAL_ROOT)/ExampleMakefile
 
