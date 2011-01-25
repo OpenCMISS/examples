@@ -279,6 +279,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENMULTICOMPDARCYEXAMPLE
 #endif
 
   !Set initial values
+  NUMBER_OF_DIMENSIONS=3_CMISSIntg
   INITIAL_FIELD_DARCY(1)=0.0_CMISSDP
   INITIAL_FIELD_DARCY(2)=0.0_CMISSDP
   INITIAL_FIELD_DARCY(3)=0.0_CMISSDP
@@ -309,7 +310,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENMULTICOMPDARCYEXAMPLE
   RESTART_VALUE=30_CMISSIntg !default: 30
   LINESEARCH_ALPHA=1.0_CMISSDP
   icompartment =1_CMISSIntg
-  Ncompartments=2_CMISSIntg
+  Ncompartments=4_CMISSIntg
 
   !LinearMeshComponentNumber/QuadraticMeshComponentNumber
   DarcyVelMeshComponentNumber = LinearMeshComponentNumber
@@ -736,6 +737,10 @@ PROGRAM QUADRATICELLIPSOIDDRIVENMULTICOMPDARCYEXAMPLE
       & COMPONENT_NUMBER,INITIAL_FIELD_DARCY(COMPONENT_NUMBER),Err)
     CALL CMISSFieldComponentValuesInitialise(DependentFieldSolid,CMISSFieldU1VariableType,CMISSFieldValuesSetType, &
       & COMPONENT_NUMBER,INITIAL_FIELD_DARCY(COMPONENT_NUMBER),Err)
+    CALL CMISSFieldComponentValuesInitialise(DependentFieldSolid,CMISSFieldU2VariableType,CMISSFieldValuesSetType, &
+      & COMPONENT_NUMBER,INITIAL_FIELD_DARCY(COMPONENT_NUMBER),Err)
+    CALL CMISSFieldComponentValuesInitialise(DependentFieldSolid,CMISSFieldU3VariableType,CMISSFieldValuesSetType, &
+      & COMPONENT_NUMBER,INITIAL_FIELD_DARCY(COMPONENT_NUMBER),Err)
   ENDDO
   !
   !================================================================================================================================
@@ -1096,7 +1101,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENMULTICOMPDARCYEXAMPLE
 
     !Set all top surface nodes to Darcy inflow BC
       DO NN=1,SIZE(TopSurfaceNodesDarcyVel,1)
-        VALUE = -1.0_CMISSDP
+        VALUE = -0.25_CMISSDP
         COMPONENT_NUMBER = 3
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldVVariableType,1, &
           & TopSurfaceNodesDarcyVel(NN), &
@@ -1107,9 +1112,29 @@ PROGRAM QUADRATICELLIPSOIDDRIVENMULTICOMPDARCYEXAMPLE
 
     !Set all top surface nodes to Darcy inflow BC
       DO NN=1,SIZE(TopSurfaceNodesDarcyVel,1)
-        VALUE = -1.0_CMISSDP
+        VALUE = -0.25_CMISSDP
         COMPONENT_NUMBER = 3
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1, &
+          & TopSurfaceNodesDarcyVel(NN), &
+          & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
+        IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING TOP DARCY BC TO NODE", TopSurfaceNodesDarcyVel(NN)
+      ENDDO
+    ELSEIF(icompartment==3)THEN
+    !Set all top surface nodes to Darcy inflow BC
+      DO NN=1,SIZE(TopSurfaceNodesDarcyVel,1)
+        VALUE = -0.25_CMISSDP
+        COMPONENT_NUMBER = 3
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU2VariableType,1, &
+          & TopSurfaceNodesDarcyVel(NN), &
+          & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
+        IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING TOP DARCY BC TO NODE", TopSurfaceNodesDarcyVel(NN)
+      ENDDO
+    ELSEIF(icompartment==4)THEN
+    !Set all top surface nodes to Darcy inflow BC
+      DO NN=1,SIZE(TopSurfaceNodesDarcyVel,1)
+        VALUE = -0.25_CMISSDP
+        COMPONENT_NUMBER = 3
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU3VariableType,1, &
           & TopSurfaceNodesDarcyVel(NN), &
           & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
         IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING TOP DARCY BC TO NODE", TopSurfaceNodesDarcyVel(NN)
