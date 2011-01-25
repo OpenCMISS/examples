@@ -310,6 +310,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
     CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,6,0.0_CMISSDP,Err)
   END IF
+  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,7,0.0_CMISSDP,Err)
 
   ! create/init independent field
   CALL CMISSFieldTypeInitialise(IndependentField,Err)
@@ -404,6 +405,16 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
     CALL CMISSFieldsTypeFinalise(Fields,Err)
   ENDIF
   
+  !Read activation times
+  DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
+   CALL CMISSDecompositionNodeDomainGet(Decomposition,N,1,D,Err)
+   IF(D==ComputationalNodeNumber) THEN
+    CALL CMISSFieldParameterSetGetNode(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,7,activ,Err)
+    WRITE(*,*) 'Node ',N,' activation ',activ
+   ENDIF
+  ENDDO
+
+
   !Finialise CMISS
   CALL CMISSFinalise(Err)
 
