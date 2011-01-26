@@ -55,8 +55,8 @@ MAKEFLAGS = --no-builtin-rules --warn-undefined-variables
 #----------------------------------------------------------------------------------------------------------------------------------
 
 ifndef OPENCMISS_ROOT
-  OPENCMISS_ROOT := ../../..
-  GLOBAL_ROOT := $(CURDIR)/../../..
+  OPENCMISS_ROOT := ../../../..
+  GLOBAL_ROOT := $(CURDIR)/../../../..
 else
   GLOBAL_ROOT := ${OPENCMISS_ROOT}/cm
 endif
@@ -65,13 +65,9 @@ endif
 
 EXAMPLE_PATH= InterfaceExamples/
 
-EXAMPLE_NAME = 3DCoupledLaplace-HEXHEX
+EXAMPLE_NAME = 3DCoupledLaplace
 
 include $(GLOBAL_ROOT)/ExampleMakefile
-
-# customisation begins here ---
-MAIN_OBJECT_DIR = $(GLOBAL_ROOT)/object/$(LIB_ARCH_DIR)$(MT_SUFFIX)$(DEBUG_SUFFIX)$(PROF_SUFFIX)/$(MPI)/$(COMPILER)
-MAIN_SOURCE_DIR = $(GLOBAL_ROOT)/src
 
 # let's assume fluid_mechanics_IO_routines has been built in main_object, copy them over
 # redefine preliminaries

@@ -94,7 +94,7 @@ PROGRAM COUPLEDLAPLACE
  
   !Program types
 
-  TYPE(EXPORT_CONTAINER):: CM1,CM2
+  TYPE(EXPORT_CONTAINER):: CM1,CM2,CM3
   
   !Program variables
   INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, &
@@ -108,30 +108,30 @@ PROGRAM COUPLEDLAPLACE
   INTEGER(CMISSIntg) :: y_element_idx,z_element_idx,mesh_local_y_node,mesh_local_z_node
   REAL(CMISSDP) :: XI2(2),XI3(3),VALUE
 
-  INTEGER(CMISSIntg) :: NUMBER_OF_DIMENSIONS1,NUMBER_OF_DIMENSIONS2
+  INTEGER(CMISSIntg) :: NUMBER_OF_DIMENSIONS1,NUMBER_OF_DIMENSIONS2,NUMBER_OF_DIMENSIONS_INTERFACE
   
-  INTEGER(CMISSIntg) :: BASIS_TYPE1,BASIS_TYPE2
-  INTEGER(CMISSIntg) :: BASIS_NUMBER_SPACE1,BASIS_NUMBER_SPACE2
+  INTEGER(CMISSIntg) :: BASIS_TYPE1,BASIS_TYPE2,BASIS_TYPE_INTERFACE
+  INTEGER(CMISSIntg) :: BASIS_NUMBER_SPACE1,BASIS_NUMBER_SPACE2,BASIS_NUMBER_SPACE_INTERFACE
 !   INTEGER(CMISSIntg) :: BASIS_NUMBER_VELOCITY1,BASIS_NUMBER_VELOCITY2
 !   INTEGER(CMISSIntg) :: BASIS_NUMBER_PRESSURE1,BASIS_NUMBER_PRESSURE2
-  INTEGER(CMISSIntg) :: BASIS_XI_GAUSS_SPACE1,BASIS_XI_GAUSS_SPACE2
+  INTEGER(CMISSIntg) :: BASIS_XI_GAUSS_SPACE1,BASIS_XI_GAUSS_SPACE2,BASIS_XI_GAUSS_INTERFACE
 !   INTEGER(CMISSIntg) :: BASIS_XI_GAUSS_VELOCITY1,BASIS_XI_GAUSS_VELOCITY2
 !   INTEGER(CMISSIntg) :: BASIS_XI_GAUSS_PRESSURE1,BASIS_XI_GAUSS_PRESSURE2
-  INTEGER(CMISSIntg) :: BASIS_XI_INTERPOLATION_SPACE1,BASIS_XI_INTERPOLATION_SPACE2
+  INTEGER(CMISSIntg) :: BASIS_XI_INTERPOLATION_SPACE1,BASIS_XI_INTERPOLATION_SPACE2,BASIS_XI_INTERPOLATION_INTERFACE
 !   INTEGER(CMISSIntg) :: BASIS_XI_INTERPOLATION_VELOCITY1,BASIS_XI_INTERPOLATION_VELOCITY2
 !   INTEGER(CMISSIntg) :: BASIS_XI_INTERPOLATION_PRESSURE1,BASIS_XI_INTERPOLATION_PRESSURE2
-  INTEGER(CMISSIntg) :: MESH_NUMBER_OF_COMPONENTS1,MESH_NUMBER_OF_COMPONENTS2
-  INTEGER(CMISSIntg) :: MESH_COMPONENT_NUMBER_SPACE1,MESH_COMPONENT_NUMBER_SPACE2
+  INTEGER(CMISSIntg) :: MESH_NUMBER_OF_COMPONENTS1,MESH_NUMBER_OF_COMPONENTS2,MESH_NUMBER_OF_COMPONENTS_INTERFACE
+  INTEGER(CMISSIntg) :: MESH_COMPONENT_NUMBER_SPACE1,MESH_COMPONENT_NUMBER_SPACE2,MESH_COMPONENT_NUMBER_INTERFACE
 !   INTEGER(CMISSIntg) :: MESH_COMPONENT_NUMBER_VELOCITY1,MESH_COMPONENT_NUMBER_VELOCITY2
 !   INTEGER(CMISSIntg) :: MESH_COMPONENT_NUMBER_PRESSURE1,MESH_COMPONENT_NUMBER_PRESSURE2
-  INTEGER(CMISSIntg) :: NUMBER_OF_NODES_SPACE1,NUMBER_OF_NODES_SPACE2
+  INTEGER(CMISSIntg) :: NUMBER_OF_NODES_SPACE1,NUMBER_OF_NODES_SPACE2,NUMBER_OF_NODES_INTERFACE
 !   INTEGER(CMISSIntg) :: NUMBER_OF_NODES_VELOCITY1,NUMBER_OF_NODES_VELOCITY2
 !   INTEGER(CMISSIntg) :: NUMBER_OF_NODES_PRESSURE1,NUMBER_OF_NODES_PRESSURE2
-  INTEGER(CMISSIntg) :: NUMBER_OF_ELEMENT_NODES_SPACE1,NUMBER_OF_ELEMENT_NODES_SPACE2
+  INTEGER(CMISSIntg) :: NUMBER_OF_ELEMENT_NODES_SPACE1,NUMBER_OF_ELEMENT_NODES_SPACE2,NUMBER_OF_ELEMENT_NODES_INTERFACE
 !   INTEGER(CMISSIntg) :: NUMBER_OF_ELEMENT_NODES_VELOCITY1,NUMBER_OF_ELEMENT_NODES_VELOCITY2
 !   INTEGER(CMISSIntg) :: NUMBER_OF_ELEMENT_NODES_PRESSURE1,NUMBER_OF_ELEMENT_NODES_PRESSURE2
-  INTEGER(CMISSIntg) :: TOTAL_NUMBER_OF_NODES1,TOTAL_NUMBER_OF_NODES2
-  INTEGER(CMISSIntg) :: TOTAL_NUMBER_OF_ELEMENTS1,TOTAL_NUMBER_OF_ELEMENTS2
+  INTEGER(CMISSIntg) :: TOTAL_NUMBER_OF_NODES1,TOTAL_NUMBER_OF_NODES2,TOTAL_NUMBER_OF_NODES_INTERFACE
+  INTEGER(CMISSIntg) :: TOTAL_NUMBER_OF_ELEMENTS1,TOTAL_NUMBER_OF_ELEMENTS2,TOTAL_NUMBER_OF_ELEMENTS_INTERFACE
   INTEGER(CMISSIntg) :: ELEMENT_NUMBER,COMPONENT_NUMBER,NODE_NUMBER
 
   !CMISS variables
@@ -153,6 +153,7 @@ PROGRAM COUPLEDLAPLACE
   !Nodes
   TYPE(CMISSNodesType) :: Nodes1
   TYPE(CMISSNodesType) :: Nodes2
+  TYPE(CMISSNodesType) :: InterfaceNodes
   !Elements
   TYPE(CMISSMeshElementsType) :: MeshElements1
   TYPE(CMISSMeshElementsType) :: MeshElements2
@@ -219,7 +220,7 @@ PROGRAM COUPLEDLAPLACE
   !PROBLEM CONTROL PANEL
 
   !Import cmHeart mesh information
-  CALL FLUID_MECHANICS_IO_READ_CMHEART(CM1,CM2,Err)
+  CALL FLUID_MECHANICS_IO_READ_CMHEART(CM1,CM2,CM3,Err)
 
   !Information for mesh 1
   BASIS_NUMBER_SPACE1=CM1%ID_M
@@ -262,6 +263,30 @@ PROGRAM COUPLEDLAPLACE
   BASIS_XI_GAUSS_SPACE2=3
 !   BASIS_XI_GAUSS_VELOCITY2=3
 !   BASIS_XI_GAUSS_PRESSURE2=3
+  BASIS_NUMBER_SPACE_INTERFACE=CM3%ID_M
+!   BASIS_NUMBER_VELOCITY2=CM2%ID_V
+!   BASIS_NUMBER_PRESSURE2=CM2%ID_P
+  NUMBER_OF_DIMENSIONS_INTERFACE=CM3%D
+  BASIS_TYPE_INTERFACE=CM3%IT_T
+  BASIS_XI_INTERPOLATION_INTERFACE=CM3%IT_M
+!   BASIS_XI_INTERPOLATION_VELOCITY2=CM2%IT_V
+!   BASIS_XI_INTERPOLATION_PRESSURE2=CM2%IT_P
+  NUMBER_OF_NODES_INTERFACE=CM3%N_M
+!   NUMBER_OF_NODES_VELOCITY2=CM2%N_V
+!   NUMBER_OF_NODES_PRESSURE2=CM2%N_P
+  TOTAL_NUMBER_OF_NODES_INTERFACE=CM3%N_T
+  TOTAL_NUMBER_OF_ELEMENTS_INTERFACE=CM3%E_T
+  NUMBER_OF_ELEMENT_NODES_INTERFACE=CM3%EN_M
+!   NUMBER_OF_ELEMENT_NODES_VELOCITY2=CM2%EN_V
+!   NUMBER_OF_ELEMENT_NODES_PRESSURE2=CM2%EN_P
+  !Set interpolation parameters
+  BASIS_XI_GAUSS_INTERFACE=3
+!   BASIS_XI_GAUSS_VELOCITY1=3
+!   BASIS_XI_GAUSS_PRESSURE1=3
+  BASIS_XI_GAUSS_INTERFACE=3
+!   BASIS_XI_GAUSS_VELOCITY2=3
+!   BASIS_XI_GAUSS_PRESSURE2=3
+
 
   !
   !================================================================================================================================
@@ -332,11 +357,20 @@ PROGRAM COUPLEDLAPLACE
   !Set the basis xi interpolation and number of Gauss points
   IF(NUMBER_OF_DIMENSIONS1==2.AND.NUMBER_OF_DIMENSIONS2==2) THEN
     CALL CMISSBasisInterpolationXiSet(Basis1,(/BASIS_XI_INTERPOLATION_SPACE1,BASIS_XI_INTERPOLATION_SPACE1/),Err)
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis1,(/BASIS_XI_GAUSS_SPACE1,BASIS_XI_GAUSS_SPACE1/),Err)
+    IF(BASIS_TYPE1/=CMISSBasisSimplexType) THEN
+      CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis1,(/BASIS_XI_GAUSS_SPACE1,BASIS_XI_GAUSS_SPACE1/),Err)
+    ELSE
+      CALL CMISSBasisQuadratureOrderSet(Basis1,BASIS_XI_GAUSS_SPACE1+1,Err)
+    ENDIF
   ELSE IF(NUMBER_OF_DIMENSIONS1==3.AND.NUMBER_OF_DIMENSIONS2==3) THEN
     CALL CMISSBasisInterpolationXiSet(Basis1,(/BASIS_XI_INTERPOLATION_SPACE1,BASIS_XI_INTERPOLATION_SPACE1, & 
       & BASIS_XI_INTERPOLATION_SPACE1/),Err)                         
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis1,(/BASIS_XI_GAUSS_SPACE1,BASIS_XI_GAUSS_SPACE1,BASIS_XI_GAUSS_SPACE1/),Err)
+    IF(BASIS_TYPE1/=CMISSBasisSimplexType) THEN
+      CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis1,(/BASIS_XI_GAUSS_SPACE1,BASIS_XI_GAUSS_SPACE1,BASIS_XI_GAUSS_SPACE1/), & 
+        & Err)
+    ELSE
+      CALL CMISSBasisQuadratureOrderSet(Basis1,BASIS_XI_GAUSS_SPACE1+1,Err)
+    ENDIF
   ELSE
     CALL HANDLE_ERROR("Dimension coupling error.")
   ENDIF
@@ -354,16 +388,26 @@ PROGRAM COUPLEDLAPLACE
   !Set the basis xi interpolation and number of Gauss points
   IF(NUMBER_OF_DIMENSIONS1==2.AND.NUMBER_OF_DIMENSIONS2==2) THEN
     CALL CMISSBasisInterpolationXiSet(Basis2,(/BASIS_XI_INTERPOLATION_SPACE2,BASIS_XI_INTERPOLATION_SPACE2/),Err)
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis2,(/BASIS_XI_GAUSS_SPACE2,BASIS_XI_GAUSS_SPACE2/),Err)
+    IF(BASIS_TYPE2/=CMISSBasisSimplexType) THEN
+      CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis2,(/BASIS_XI_GAUSS_SPACE2,BASIS_XI_GAUSS_SPACE2/),Err)
+    ELSE
+      CALL CMISSBasisQuadratureOrderSet(Basis2,BASIS_XI_GAUSS_SPACE2+1,Err)
+    ENDIF
   ELSE IF(NUMBER_OF_DIMENSIONS1==3.AND.NUMBER_OF_DIMENSIONS2==3) THEN
     CALL CMISSBasisInterpolationXiSet(Basis2,(/BASIS_XI_INTERPOLATION_SPACE2,BASIS_XI_INTERPOLATION_SPACE2, & 
       & BASIS_XI_INTERPOLATION_SPACE2/),Err)                         
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis2,(/BASIS_XI_GAUSS_SPACE2,BASIS_XI_GAUSS_SPACE2,BASIS_XI_GAUSS_SPACE2/),Err)
+    IF(BASIS_TYPE2/=CMISSBasisSimplexType) THEN
+      CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis2,(/BASIS_XI_GAUSS_SPACE2,BASIS_XI_GAUSS_SPACE2,BASIS_XI_GAUSS_SPACE2/), & 
+        & Err)
+    ELSE
+      CALL CMISSBasisQuadratureOrderSet(Basis2,BASIS_XI_GAUSS_SPACE2+1,Err)
+    ENDIF
   ELSE
     CALL HANDLE_ERROR("Dimension coupling error.")
   ENDIF
   !Finish the creation of the basis
-  CALL CMISSBasisCreateFinish(Basis1,Err)
+  CALL CMISSBasisCreateFinish(Basis2,Err)
+
 
   !
   !================================================================================================================================
@@ -384,6 +428,7 @@ PROGRAM COUPLEDLAPLACE
   !Set number of mesh elements
   CALL CMISSMeshNumberOfElementsSet(Mesh1,TOTAL_NUMBER_OF_ELEMENTS1,Err)
   !Set number of mesh components
+  MESH_NUMBER_OF_COMPONENTS1=1
   CALL CMISSMeshNumberOfComponentsSet(Mesh1,MESH_NUMBER_OF_COMPONENTS1,Err)
   !Specify spatial mesh component
   CALL CMISSMeshElementsTypeInitialise(MeshElements1,Err)
@@ -409,6 +454,7 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSMeshCreateStart(Mesh2UserNumber,Region2,NUMBER_OF_DIMENSIONS2,Mesh2,Err)
   !Set number of mesh elements
   CALL CMISSMeshNumberOfElementsSet(Mesh2,TOTAL_NUMBER_OF_ELEMENTS2,Err)
+  MESH_NUMBER_OF_COMPONENTS2=1
   !Set number of mesh components
   CALL CMISSMeshNumberOfComponentsSet(Mesh2,MESH_NUMBER_OF_COMPONENTS2,Err)
   !Specify spatial mesh component
@@ -443,18 +489,19 @@ PROGRAM COUPLEDLAPLACE
   PRINT *, ' == >> CREATING INTERFACE BASIS << == '
   CALL CMISSBasisTypeInitialise(InterfaceBasis,Err)
   CALL CMISSBasisCreateStart(InterfaceBasisUserNumber,InterfaceBasis,Err)
-  IF(NUMBER_OF_DIMENSIONS1==2.AND.NUMBER_OF_DIMENSIONS2==2) THEN
-    !Set the basis to be a linear Lagrange basis
-    CALL CMISSBasisNumberOfXiSet(InterfaceBasis,1,Err)
-    CALL CMISSBasisInterpolationXiSet(InterfaceBasis,[CMISSBasisLinearLagrangeInterpolation],Err)
-  ELSE
-    !Set the basis to be a bilinear Lagrange basis
-    CALL CMISSBasisNumberOfXiSet(InterfaceBasis,2,Err)
-    CALL CMISSBasisInterpolationXiSet(InterfaceBasis,[CMISSBasisLinearLagrangeInterpolation, &
-      & CMISSBasisLinearLagrangeInterpolation],Err)
+  CALL CMISSBasisTypeSet(InterfaceBasis,BASIS_TYPE_INTERFACE,Err)
+  CALL CMISSBasisNumberOfXiSet(InterfaceBasis,NUMBER_OF_DIMENSIONS_INTERFACE,Err)
+  IF(NUMBER_OF_DIMENSIONS1==3.AND.NUMBER_OF_DIMENSIONS2==3.AND.NUMBER_OF_DIMENSIONS_INTERFACE==2) THEN
+    CALL CMISSBasisInterpolationXiSet(InterfaceBasis,(/BASIS_XI_INTERPOLATION_INTERFACE,BASIS_XI_INTERPOLATION_INTERFACE/),Err)
+    IF(BASIS_TYPE_INTERFACE/=CMISSBasisSimplexType) THEN
+      CALL CMISSBasisQuadratureNumberOfGaussXiSet(InterfaceBasis,(/BASIS_XI_GAUSS_INTERFACE,BASIS_XI_GAUSS_INTERFACE/),Err)
+    ELSE
+      CALL CMISSBasisQuadratureOrderSet(InterfaceBasis,BASIS_XI_GAUSS_INTERFACE+1,Err)
+    ENDIF
   ENDIF
   !Finish the creation of the basis
   CALL CMISSBasisCreateFinish(InterfaceBasis,Err)
+
 
   !
   !================================================================================================================================
@@ -483,56 +530,34 @@ PROGRAM COUPLEDLAPLACE
   !================================================================================================================================
   !
 
-             !!!!
-             !!!!
-             !!!!
-             !!!!
-             !!!!
-       !!!!!!!!!!!!!!!!!
-        !!!!!!!!!!!!!!!
-         !!!!!!!!!!!!!
-          !!!!!!!!!!!
-           !!!!!!!!!
-            !!!!!!!
-             !!!!!
-              !!!
-               !
-  !*** HERE *** HERE *** HERE ***
-  ! THIS MUST BE CHANGED
+  !INTERFACE MESH
+  
+  !Start the creation of a generated mesh for the interface
+  PRINT *, ' == >> CREATING INTERFACE MESH FROM INPUT DATA << == '
+  !Start the creation of mesh nodes
+  CALL CMISSNodesTypeInitialise(InterfaceNodes,Err)
+  CALL CMISSMeshTypeInitialise(InterfaceMesh,Err)
+  CALL CMISSNodesCreateStart(Interface,TOTAL_NUMBER_OF_NODES_INTERFACE,InterfaceNodes,Err)
+  CALL CMISSNodesCreateFinish(InterfaceNodes,Err)
+  !Start the creation of the mesh
+  CALL CMISSMeshCreateStart(InterfaceMeshUserNumber,Interface,NUMBER_OF_DIMENSIONS_INTERFACE,InterfaceMesh,Err)
+  !Set number of mesh elements
+  CALL CMISSMeshNumberOfElementsSet(InterfaceMesh,TOTAL_NUMBER_OF_ELEMENTS_INTERFACE,Err)
+  MESH_NUMBER_OF_COMPONENTS_INTERFACE=1
+  !Set number of mesh components
+  CALL CMISSMeshNumberOfComponentsSet(InterfaceMesh,MESH_NUMBER_OF_COMPONENTS_INTERFACE,Err)
+  !Specify spatial mesh component
+  CALL CMISSMeshElementsTypeInitialise(InterfaceMeshElements,Err)
+  MESH_COMPONENT_NUMBER_INTERFACE=1
+  CALL CMISSMeshElementsCreateStart(InterfaceMesh,MESH_COMPONENT_NUMBER_INTERFACE,InterfaceBasis,InterfaceMeshElements,Err)
+  DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS_INTERFACE
+    CALL CMISSMeshElementsNodesSet(InterfaceMeshElements,ELEMENT_NUMBER,CM3%M(ELEMENT_NUMBER, &
+      & 1:NUMBER_OF_ELEMENT_NODES_INTERFACE),Err)
+  ENDDO
+  CALL CMISSMeshElementsCreateFinish(InterfaceMeshElements,Err)
+  !Finish the creation of the mesh
+  CALL CMISSMeshCreateFinish(InterfaceMesh,Err)
 
-
-! 
-!   !INTERFACE MESH
-!   
-!   !Start the creation of a generated mesh for the interface
-!   PRINT *, ' == >> CREATING INTERFACE GENERATED MESH << == '
-! 
-!   !!! CHANGE FOR MORE GENERALITY
-!   !!! HERE LIES A BUG FOR 3D IN GENERATED MESH ROUTINES ANYWAY!!!
-! 
-!   !Start the creation of a generated mesh in the second region
-!   PRINT *, ' == >> CREATING INTERFACE MESH FROM INPUT DATA << == '
-!   !Start the creation of mesh nodes
-!   CALL CMISSMeshTypeInitialise(InterfaceMesh,Err)
-!   !Start the creation of the mesh
-! 
-! ! AND THIS ONE DOES NOT EXIST!!!
-! 
-!   CALL CMISSMeshCreateStart(InterfaceMeshUserNumber,Interface,NUMBER_OF_DIMENSIONS2-1,InterfaceMesh,Err)
-!   !Set number of mesh elements
-!   CALL CMISSMeshNumberOfElementsSet(InterfaceMesh,4,Err)
-!   !Set number of mesh components
-!   CALL CMISSMeshNumberOfComponentsSet(InterfaceMesh,1,Err)
-!   !Specify spatial mesh component
-!   CALL CMISSMeshElementsTypeInitialise(InterfaceMeshElements,Err)
-!   CALL CMISSMeshElementsCreateStart(InterfaceMesh,1,InterfaceBasis,InterfaceMeshElements,Err)
-!   DO ELEMENT_NUMBER=1,4
-!     CALL CMISSMeshElementsNodesSet(InterfaceMeshElements,ELEMENT_NUMBER,CM2%M(ELEMENT_NUMBER,1:4),Err)
-!   ENDDO
-!   CALL CMISSMeshElementsCreateFinish(InterfaceMeshElements,Err)
-!   !Finish the creation of the mesh
-!   CALL CMISSMeshCreateFinish(InterfaceMesh,Err)
-! 
 
   !
   !================================================================================================================================
