@@ -749,8 +749,8 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSEquationsSparsityTypeSet(Equations1,CMISSEquationsSparseMatrices,Err)
   !Set the equations set output
   !CALL CMISSEquationsOutputTypeSet(Equations1,CMISSEquationsNoOutput,Err)
-  CALL CMISSEquationsOutputTypeSet(Equations1,CMISSEquationsTimingOutput,Err)
-  !CALL CMISSEquationsOutputTypeSet(Equations1,CMISSEquationsMatrixOutput,Err)
+  !CALL CMISSEquationsOutputTypeSet(Equations1,CMISSEquationsTimingOutput,Err)
+  CALL CMISSEquationsOutputTypeSet(Equations1,CMISSEquationsMatrixOutput,Err)
   !CALL CMISSEquationsOutputTypeSet(Equations1,CMISSEquationsElementMatrixOutput,Err)
   !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet1,Err)
@@ -831,7 +831,7 @@ PROGRAM COUPLEDLAPLACE
 
  !Update the geometric field parameters for the interface field
   DO NODE_NUMBER=1,NUMBER_OF_NODES_INTERFACE
-    DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS_INTERFACE
+    DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS_INTERFACE+1
       VALUE=CM3%N(NODE_NUMBER,COMPONENT_NUMBER)
       CALL CMISSFieldParameterSetUpdateNode(InterfaceGeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
         & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
