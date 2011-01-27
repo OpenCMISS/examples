@@ -141,6 +141,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   REAL(CMISSDP) :: LINESEARCH_ALPHA
   REAL(CMISSDP) :: VALUE
   REAL(CMISSDP) :: POROSITY_PARAM_DARCY, PERM_OVER_VIS_PARAM_DARCY
+  REAL(CMISSDP) :: INNER_PRESSURE,OUTER_PRESSURE
 
   LOGICAL :: EXPORT_FIELD_IO
   LOGICAL :: LINEAR_SOLVER_DARCY_DIRECT_FLAG
@@ -333,7 +334,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   !Set time parameter
   DYNAMIC_SOLVER_DARCY_START_TIME=0.0_CMISSDP
   DYNAMIC_SOLVER_DARCY_TIME_INCREMENT=1.0e-3_CMISSDP
-  DYNAMIC_SOLVER_DARCY_STOP_TIME=2_CMISSIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
+  DYNAMIC_SOLVER_DARCY_STOP_TIME=100_CMISSIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
   DYNAMIC_SOLVER_DARCY_THETA=1.0_CMISSDP !2.0_CMISSDP/3.0_CMISSDP
   !Set result output parameter
   DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY=1
@@ -768,6 +769,9 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
 
   write(*,*)'surface_quad_base = ',surface_quad_base
 
+  INNER_PRESSURE = 0.5_CMISSDP
+  OUTER_PRESSURE = 0.0_CMISSDP
+
   ! ASSIGN BOUNDARY CONDITIONS
   !Fix base of the ellipsoid in z direction
   DO NN=1,SIZE(surface_quad_base,1)
@@ -780,26 +784,28 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
     ENDIF
   ENDDO
 
-!   !Apply inner surface pressure
-!   !NOTE: Surface pressure goes into pressure_values_set_type of the DELUDELN type
-!   DO NN=1,SIZE(surface_quad_inner,1)
-!     NODE=surface_quad_inner(NN)
-!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-!     IF(NodeDomain==ComputationalNodeNumber) THEN
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldDelUDelNVariableType,1,NODE,ABS(InnerNormalXi), &
-!         & CMISSBoundaryConditionPressure,INNER_PRESSURE,Err)
-!     ENDIF
-!   ENDDO
-! 
-!   !Apply outer surface pressure
-!   DO NN=1,SIZE(surface_quad_outer,1)
-!     NODE=surface_quad_outer(NN)
-!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-!     IF(NodeDomain==ComputationalNodeNumber) THEN
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldDelUDelNVariableType,1,NODE,ABS(OuterNormalXi), &
-!         & CMISSBoundaryConditionPressure,OUTER_PRESSURE,Err)
-!     ENDIF
-!   ENDDO
+  !Apply inner surface pressure
+  !NOTE: Surface pressure goes into pressure_values_set_type of the DELUDELN type
+  DO NN=1,SIZE(surface_quad_inner,1)
+    NODE=surface_quad_inner(NN)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      COMPONENT_NUMBER = 3  ! Does it matter which number ??? It used to be linked to the normal ... Check this !!!
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldDelUDelNVariableType,1,NODE,COMPONENT_NUMBER, &
+        & CMISSBoundaryConditionPressure,INNER_PRESSURE,Err)
+    ENDIF
+  ENDDO
+
+  !Apply outer surface pressure
+  DO NN=1,SIZE(surface_quad_outer,1)
+    NODE=surface_quad_outer(NN)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      COMPONENT_NUMBER = 3  ! Does it matter which number ??? It used to be linked to the normal ... Check this !!!
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldDelUDelNVariableType,1,NODE,COMPONENT_NUMBER, &
+        & CMISSBoundaryConditionPressure,OUTER_PRESSURE,Err)
+    ENDIF
+  ENDDO
 
   !Fix more nodes at the base to stop free body motion: 600 in x, 584 in y
   X_FIXED=.FALSE.
@@ -938,7 +944,7 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
 
     !Set all top surface nodes to Darcy inflow BC
     DO NN=1,SIZE(surface_lin_base,1)
-      VALUE = +1.0_CMISSDP
+      VALUE = +1.0_CMISSDP  ! Mind the sign !
       COMPONENT_NUMBER = 3
       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,surface_lin_base(NN), &
         & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
