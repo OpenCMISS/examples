@@ -96,7 +96,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
 
   INTEGER(CMISSIntg), PARAMETER :: NumberGlobalXElements=4  ! X ==NUMBER_GLOBAL_CIRCUMFERENTIAL_ELEMENTS
   INTEGER(CMISSIntg), PARAMETER :: NumberGlobalYElements=4  ! Y ==NUMBER_GLOBAL_LONGITUDINAL_ELEMENTS
-  INTEGER(CMISSIntg), PARAMETER :: NumberGlobalZElements=1  ! Z ==NUMBER_GLOBAL_TRANSMURAL_ELEMENTS
+  INTEGER(CMISSIntg), PARAMETER :: NumberGlobalZElements=2  ! Z ==NUMBER_GLOBAL_TRANSMURAL_ELEMENTS
   INTEGER(CMISSIntg) :: NumberOfDomains
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -135,6 +135,8 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfVariables=4 !2
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentSolidNumberOfComponents=4
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentFluidNumberOfComponents=4
+
+  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldDarcyUserNumber=15
 
   INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumberSolid=1
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberSolid=13
@@ -187,7 +189,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
   INTEGER(CMISSIntg) :: RESTART_VALUE
 
   INTEGER(CMISSIntg) :: EQUATIONS_DARCY_OUTPUT
-  INTEGER(CMISSIntg) :: COMPONENT_NUMBER
+  INTEGER(CMISSIntg) :: COMPONENT_NUMBER, NODE_NUMBER
   INTEGER(CMISSIntg) :: CONDITION
 
   INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY
@@ -222,6 +224,8 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
   TYPE(CMISSEquationsSetType) :: EquationsSetSolid
   TYPE(CMISSFieldType) :: GeometricFieldSolid,FibreFieldSolid,MaterialFieldSolid
   TYPE(CMISSFieldType) :: DependentField,EquationsSetFieldSolid
+
+  TYPE(CMISSFieldType) :: IndependentFieldDarcy
 
   TYPE(CMISSFieldType) :: GeometricFieldDarcy
 
@@ -291,7 +295,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
   !Set time parameter
   DYNAMIC_SOLVER_DARCY_START_TIME=0.0_CMISSDP
   DYNAMIC_SOLVER_DARCY_TIME_INCREMENT=1.0e-3_CMISSDP
-  DYNAMIC_SOLVER_DARCY_STOP_TIME=2_CMISSIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
+  DYNAMIC_SOLVER_DARCY_STOP_TIME=20_CMISSIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
   DYNAMIC_SOLVER_DARCY_THETA=1.0_CMISSDP !2.0_CMISSDP/3.0_CMISSDP
   !Set result output parameter
   DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY=1
@@ -649,6 +653,31 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
       & COMPONENT_NUMBER,INITIAL_FIELD_DARCY(COMPONENT_NUMBER),Err)
   ENDDO
 
+  !
+  !================================================================================================================================
+  !
+
+  !INDEPENDENT FIELD Darcy for storing BC flags
+
+  CALL CMISSFieldTypeInitialise(IndependentFieldDarcy,Err)
+  CALL CMISSEquationsSetIndependentCreateStart(EquationsSetDarcy,IndependentFieldDarcyUserNumber, &
+    & IndependentFieldDarcy,Err)
+
+  CALL CMISSFieldComponentMeshComponentSet(IndependentFieldDarcy,CMISSFieldUVariableType,1,DarcyVelMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(IndependentFieldDarcy,CMISSFieldUVariableType,2,DarcyVelMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(IndependentFieldDarcy,CMISSFieldUVariableType,3,DarcyVelMeshComponentNumber,Err)
+!   CALL CMISSFieldComponentMeshComponentSet(IndependentFieldDarcy,CMISSFieldUVariableType,4,DarcyMassIncreaseMeshComponentNumber,Err)
+
+  CALL CMISSEquationsSetIndependentCreateFinish(EquationsSetDarcy,Err)
+
+  CALL CMISSFieldComponentValuesInitialise(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,0.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,0.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,0.0_CMISSDP,Err)
+
+  !
+  !================================================================================================================================
+  !
+
   !Create the equations set materials field variables for ALE Darcy
   CALL CMISSFieldTypeInitialise(MaterialsFieldDarcy,Err)
   CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDarcy,MaterialsFieldUserNumberDarcy, &
@@ -789,69 +818,96 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
     !MeshComponentNumber_dummy = DarcyVelMeshComponentNumber
     MeshComponentNumber_dummy = 3 
 
-!     !inner surface
-!     CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,MeshComponentNumber_dummy,CMISSGeneratedMeshEllipsoidInnerSurfaceType, &
-!       & InnerSurfaceNodesDarcyVel,InnerNormalXi,Err)
-! 
-!     write(*,*)'InnerSurfaceNodesDarcyVel = ',InnerSurfaceNodesDarcyVel
-! 
-!     !Set all inner surface nodes impermeable
-!     DO NN=1,SIZE(InnerSurfaceNodesDarcyVel,1)
-! !       VALUE = 0.0_CMISSDP
-! !       COMPONENT_NUMBER = 1
-! !       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,InnerSurfaceNodesDarcyVel(NN), &
-! !         & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
-! !       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING INNER DARCY BC TO NODE", InnerSurfaceNodesDarcyVel(NN)
-! ! 
-! !       VALUE = 0.0_CMISSDP
-! !       COMPONENT_NUMBER = 2
-! !       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,InnerSurfaceNodesDarcyVel(NN), &
-! !         & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
-! !       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING INNER DARCY BC TO NODE", InnerSurfaceNodesDarcyVel(NN)
-! ! 
-!       VALUE = 0.0_CMISSDP
-!       COMPONENT_NUMBER = 3
-! !       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,InnerSurfaceNodesDarcyVel(NN), &
-! !         & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,InnerSurfaceNodesDarcyVel(NN), &
-!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
-!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING INNER DARCY BC TO NODE", InnerSurfaceNodesDarcyVel(NN)
-!     ENDDO
+    !  I N N E R   S U R F A C E
+    CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,MeshComponentNumber_dummy,CMISSGeneratedMeshEllipsoidInnerSurfaceType, &
+      & InnerSurfaceNodesDarcyVel,InnerNormalXi,Err)
 
+    write(*,*)'InnerSurfaceNodesDarcyVel = ',InnerSurfaceNodesDarcyVel
+    write(*,*)'InnerNormalXi = ',InnerNormalXi
 
-!     !outer surface
-!     CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,MeshComponentNumber_dummy,CMISSGeneratedMeshEllipsoidOuterSurfaceType, &
-!       & OuterSurfaceNodesDarcyVel,OuterNormalXi,Err)
-! 
-!     write(*,*)'OuterSurfaceNodesDarcyVel = ',OuterSurfaceNodesDarcyVel
-! 
-!     !Set all outer surface nodes impermeable
-!     DO NN=1,SIZE(OuterSurfaceNodesDarcyVel,1)
+    !Set all inner surface nodes impermeable
+    !MIND: CMISSFieldDelVDelNVariableType -> RHS invoked in DARCY_EQUATION_FINITE_ELEMENT_CALCULATE
+    !      CMISSBoundaryConditionImpermeableWall
+    DO NN=1,SIZE(InnerSurfaceNodesDarcyVel,1)
 !       VALUE = 0.0_CMISSDP
 !       COMPONENT_NUMBER = 1
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,OuterSurfaceNodesDarcyVel(NN), &
-!         & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,InnerSurfaceNodesDarcyVel(NN), &
+!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
+!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING INNER DARCY BC TO NODE", InnerSurfaceNodesDarcyVel(NN)
+! 
+!       VALUE = 0.0_CMISSDP
+!       COMPONENT_NUMBER = 2
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,InnerSurfaceNodesDarcyVel(NN), &
+!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
+!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING INNER DARCY BC TO NODE", InnerSurfaceNodesDarcyVel(NN)
+! 
+!       VALUE = 0.0_CMISSDP
+!       COMPONENT_NUMBER = 3
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,InnerSurfaceNodesDarcyVel(NN), &
+!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
+!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING INNER DARCY BC TO NODE", InnerSurfaceNodesDarcyVel(NN)
+
+!       VALUE = 1.0_CMISSDP
+!       COMPONENT_NUMBER = ABS(InnerNormalXi)
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,InnerSurfaceNodesDarcyVel(NN), &
+!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
+!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING INNER DARCY BC TO NODE", InnerSurfaceNodesDarcyVel(NN)
+
+      NODE_NUMBER = InnerSurfaceNodesDarcyVel(NN)
+      COMPONENT_NUMBER = ABS(InnerNormalXi)
+      VALUE = 1.0_CMISSDP
+      CALL CMISSFieldParameterSetUpdateNode(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+        & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+    ENDDO
+
+
+    !  O U T E R   S U R F A C E
+    CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,MeshComponentNumber_dummy,CMISSGeneratedMeshEllipsoidOuterSurfaceType, &
+      & OuterSurfaceNodesDarcyVel,OuterNormalXi,Err)
+
+    write(*,*)'OuterSurfaceNodesDarcyVel = ',OuterSurfaceNodesDarcyVel
+    write(*,*)'OuterNormalXi = ',OuterNormalXi
+
+    !Set all outer surface nodes impermeable
+    DO NN=1,SIZE(OuterSurfaceNodesDarcyVel,1)
+!       VALUE = 0.0_CMISSDP
+!       COMPONENT_NUMBER = 1
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,OuterSurfaceNodesDarcyVel(NN), &
+!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
 !       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING OUTER DARCY BC TO NODE", OuterSurfaceNodesDarcyVel(NN)
 ! 
 !       VALUE = 0.0_CMISSDP
 !       COMPONENT_NUMBER = 2
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,OuterSurfaceNodesDarcyVel(NN), &
-!         & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,OuterSurfaceNodesDarcyVel(NN), &
+!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
 !       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING OUTER DARCY BC TO NODE", OuterSurfaceNodesDarcyVel(NN)
 ! 
 !       VALUE = 0.0_CMISSDP
 !       COMPONENT_NUMBER = 3
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,OuterSurfaceNodesDarcyVel(NN), &
-!         & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,OuterSurfaceNodesDarcyVel(NN), &
+!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
 !       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING OUTER DARCY BC TO NODE", OuterSurfaceNodesDarcyVel(NN)
-!     ENDDO
+
+!       VALUE = 1.0_CMISSDP
+!       COMPONENT_NUMBER = ABS(OuterNormalXi)
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,OuterSurfaceNodesDarcyVel(NN), &
+!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
+!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING OUTER DARCY BC TO NODE", OuterSurfaceNodesDarcyVel(NN)
+
+      NODE_NUMBER = OuterSurfaceNodesDarcyVel(NN)
+      COMPONENT_NUMBER = ABS(OuterNormalXi)
+      VALUE = 1.0_CMISSDP
+      CALL CMISSFieldParameterSetUpdateNode(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+        & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+    ENDDO
 
 
-    !top surface
+    !  T O P   S U R F A C E
     CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,MeshComponentNumber_dummy,CMISSGeneratedMeshEllipsoidTopSurfaceType, &
       & TopSurfaceNodesDarcyVel,TopNormalXi,Err)
 
     write(*,*)'TopSurfaceNodesDarcyVel = ',TopSurfaceNodesDarcyVel
+    write(*,*)'TopNormalXi = ',TopNormalXi
 
     !Set all top surface nodes to Darcy inflow BC
     DO NN=1,SIZE(TopSurfaceNodesDarcyVel,1)
