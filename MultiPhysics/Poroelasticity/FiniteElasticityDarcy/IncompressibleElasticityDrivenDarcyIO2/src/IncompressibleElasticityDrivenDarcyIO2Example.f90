@@ -273,7 +273,8 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   TYPE(CMISSSolverType) :: SolverSolid
   TYPE(CMISSSolverEquationsType) :: SolverEquationsSolid
 
-  INTEGER(CMISSIntg),allocatable :: surface_inner(:),surface_outer(:),surface_base(:)
+  INTEGER(CMISSIntg),allocatable :: surface_lin_inner(:),surface_lin_outer(:),surface_lin_base(:)
+  INTEGER(CMISSIntg),allocatable :: surface_quad_inner(:),surface_quad_outer(:),surface_quad_base(:)
 
   !End - Program variables and types (finite elasticity part)
 
@@ -726,9 +727,12 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsSolid,Err)
   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetSolid,BoundaryConditionsSolid,Err)
 
-CALL READ_SURFACE('input/surface-inner',surface_inner)
-CALL READ_SURFACE('input/surface-outer',surface_outer)
-CALL READ_SURFACE('input/surface-base',surface_base)
+CALL READ_SURFACE('input/surface-lin-inner',surface_lin_inner)
+CALL READ_SURFACE('input/surface-lin-outer',surface_lin_outer)
+CALL READ_SURFACE('input/surface-lin-base',surface_lin_base)
+CALL READ_SURFACE('input/surface-quad-inner',surface_quad_inner)
+CALL READ_SURFACE('input/surface-quad-outer',surface_quad_outer)
+CALL READ_SURFACE('input/surface-quad-base',surface_quad_base)
 !   !Get surfaces 
 !   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,SolidDisplMeshComponentNumber,CMISSGeneratedMeshRegularFrontSurface, &
 !     & Face1Nodes,FaceXi(1),Err)
