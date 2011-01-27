@@ -938,7 +938,7 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
 
     !Set all top surface nodes to Darcy inflow BC
     DO NN=1,SIZE(surface_lin_base,1)
-      VALUE = -1.0_CMISSDP
+      VALUE = +1.0_CMISSDP
       COMPONENT_NUMBER = 3
       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,surface_lin_base(NN), &
         & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
