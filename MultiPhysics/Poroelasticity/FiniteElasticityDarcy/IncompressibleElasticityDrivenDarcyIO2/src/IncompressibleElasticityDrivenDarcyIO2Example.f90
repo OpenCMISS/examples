@@ -333,7 +333,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   !Set time parameter
   DYNAMIC_SOLVER_DARCY_START_TIME=0.0_CMISSDP
-  DYNAMIC_SOLVER_DARCY_TIME_INCREMENT=1.0e-3_CMISSDP
+  DYNAMIC_SOLVER_DARCY_TIME_INCREMENT=1.0e-4_CMISSDP
   DYNAMIC_SOLVER_DARCY_STOP_TIME=100_CMISSIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
   DYNAMIC_SOLVER_DARCY_THETA=1.0_CMISSDP !2.0_CMISSDP/3.0_CMISSDP
   !Set result output parameter
@@ -769,7 +769,7 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
 
   write(*,*)'surface_quad_base = ',surface_quad_base
 
-  INNER_PRESSURE = 0.5_CMISSDP
+  INNER_PRESSURE = 0.01_CMISSDP
   OUTER_PRESSURE = 0.0_CMISSDP
 
   ! ASSIGN BOUNDARY CONDITIONS
@@ -944,7 +944,7 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
 
     !Set all top surface nodes to Darcy inflow BC
     DO NN=1,SIZE(surface_lin_base,1)
-      VALUE = +1.0_CMISSDP  ! Mind the sign !
+      VALUE = +5.0_CMISSDP  ! Mind the sign !
       COMPONENT_NUMBER = 3
       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,surface_lin_base(NN), &
         & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
