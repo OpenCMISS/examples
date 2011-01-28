@@ -14,9 +14,9 @@ def getVersion() :
   if operating_system == 'Linux':
     if compiler == 'gnu':
       version_info = commands.getoutput('gfortran -v')
-      if version_info.find('gcc version 4.5') :
+      if version_info.find('gcc version 4.5') != -1 :
         return '_4.5'
-      elif version_info.find('gcc version 4.4') :
+      elif version_info.find('gcc version 4.4') != -1 :
         return '_4.4'
   return ''
 
@@ -50,7 +50,7 @@ def buildExample(path) :
        history = open(newDir + "/history-build-" + compiler + compiler_version,"w")
        history.write("<pre>Completed Time\t\tStatus\tHostname\n")
      if err==0 :
-       f.write(compiler+'_'+path+'_build|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
+       f.write(compiler+compiler_version+'_'+path+'_build|success|'+ strftime("%Y-%m-%d %H:%M:%S")+'\n')
        print "<a class='success' href='%slogs_x86_64-linux/%s/history-build-%s'>Pass</a>: building <a href='%slogs_x86_64-linux/%s/build-%s'>%s</a><br>" %(rootUrl,path,compiler+compiler_version,rootUrl,path,compiler+compiler_version,path)
        history.write(strftime("%Y-%m-%d %H:%M:%S")+'\tsuccess\t'+hostname+'\n')
      else :

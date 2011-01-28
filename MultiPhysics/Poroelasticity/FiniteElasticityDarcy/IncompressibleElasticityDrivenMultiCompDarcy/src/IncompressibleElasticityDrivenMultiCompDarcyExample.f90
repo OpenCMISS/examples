@@ -344,7 +344,7 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   !Set time parameter
   DYNAMIC_SOLVER_DARCY_START_TIME=0.0_CMISSDP
   DYNAMIC_SOLVER_DARCY_TIME_INCREMENT=1.0e-3_CMISSDP
-  DYNAMIC_SOLVER_DARCY_STOP_TIME=1_CMISSIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
+  DYNAMIC_SOLVER_DARCY_STOP_TIME=2_CMISSIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
   DYNAMIC_SOLVER_DARCY_THETA=1.0_CMISSDP !2.0_CMISSDP/3.0_CMISSDP
   !Set result output parameter
   DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY=1
@@ -1231,7 +1231,7 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
       NODE=Face11Nodes(NN)
 ! !     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
 ! !     IF(NodeDomain==ComputationalNodeNumber) THEN
-        VALUE = -2.0_CMISSDP
+        VALUE = -1.0_CMISSDP
         COMPONENT_NUMBER = 3
         write(*,*)'Marker 0'
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldVVariableType,1,NODE,COMPONENT_NUMBER,&
@@ -1314,33 +1314,16 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
     !Compartment TWO boundary conditions!
     ! At the top impose Darcy velocity in z direction
     IF(icompartment==2) THEN
-!     DO NN=1,SIZE(Face11Nodes,1)
-!       NODE=Face11Nodes(NN)
-! ! !     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-! ! !     IF(NodeDomain==ComputationalNodeNumber) THEN
-!         VALUE = -2.0_CMISSDP
-!         COMPONENT_NUMBER = 3
-!         write(*,*)'Marker 0'
-!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,NODE,COMPONENT_NUMBER,&
-!           & CMISSBoundaryConditionFixed,VALUE,Err)
-!         WRITE(*,*) "SPECIFIED INFLOW AT NODE",NODE,"IN Z DIRECTION"
-! 
-! ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
-! ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,2,YCoord,Err)
-! ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,3,ZCoord,Err)
-! ! !       WRITE(*,*) "XCoord, YCoord, ZCoord = ",XCoord, YCoord, ZCoord
-! ! !     ENDIF
-!     ENDDO
     DO NN=1,SIZE(Face11Nodes,1)
       NODE=Face11Nodes(NN)
 ! !     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
 ! !     IF(NodeDomain==ComputationalNodeNumber) THEN
-        VALUE = 0.0_CMISSDP
+        VALUE = -1.0_CMISSDP
         COMPONENT_NUMBER = 3
         write(*,*)'Marker 0'
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,NODE,COMPONENT_NUMBER,&
           & CMISSBoundaryConditionFixed,VALUE,Err)
-        WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Z DIRECTION"
+        WRITE(*,*) "SPECIFIED INFLOW AT NODE",NODE,"IN Z DIRECTION"
 
 ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
 ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,2,YCoord,Err)
@@ -1348,6 +1331,23 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
 ! !       WRITE(*,*) "XCoord, YCoord, ZCoord = ",XCoord, YCoord, ZCoord
 ! !     ENDIF
     ENDDO
+!     DO NN=1,SIZE(Face11Nodes,1)
+!       NODE=Face11Nodes(NN)
+! ! !     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+! ! !     IF(NodeDomain==ComputationalNodeNumber) THEN
+!         VALUE = 0.0_CMISSDP
+!         COMPONENT_NUMBER = 3
+!         write(*,*)'Marker 0'
+!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,NODE,COMPONENT_NUMBER,&
+!           & CMISSBoundaryConditionFixed,VALUE,Err)
+!         WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Z DIRECTION"
+! 
+! ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
+! ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,2,YCoord,Err)
+! ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,3,ZCoord,Err)
+! ! !       WRITE(*,*) "XCoord, YCoord, ZCoord = ",XCoord, YCoord, ZCoord
+! ! !     ENDIF
+!     ENDDO
 
     !All other faces are impermeable
     DO NN=1,SIZE(Face7Nodes,1)

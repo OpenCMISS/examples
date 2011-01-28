@@ -93,7 +93,7 @@ def logExample(path) :
    return;
 
 for log in logs :
-  if log.startswith('gnu_') :
+  if log.startswith('gnu_4.4_') :
     paths=log.split('|');
     if(paths[0].endswith('_build') and (not log.startswith('gnu_4.4_library_build')))  :
       logExample(path=paths[0].replace('gnu_4.4_','').replace('_build',''));

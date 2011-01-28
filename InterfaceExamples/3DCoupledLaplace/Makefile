@@ -55,8 +55,8 @@ MAKEFLAGS = --no-builtin-rules --warn-undefined-variables
 #----------------------------------------------------------------------------------------------------------------------------------
 
 ifndef OPENCMISS_ROOT
-  OPENCMISS_ROOT := ../../..
-  GLOBAL_ROOT := $(CURDIR)/../../..
+  OPENCMISS_ROOT := ../../../..
+  GLOBAL_ROOT := $(CURDIR)/../../../..
 else
   GLOBAL_ROOT := ${OPENCMISS_ROOT}/cm
 endif
@@ -65,7 +65,24 @@ endif
 
 EXAMPLE_PATH= InterfaceExamples/
 
-EXAMPLE_NAME = CoupledLaplace
+EXAMPLE_NAME = 3DCoupledLaplace
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 
+# let's assume fluid_mechanics_IO_routines has been built in main_object, copy them over
+# redefine preliminaries
+preliminaries: $(OBJECT_DIR) $(EXE_DIR)
+	cp $(MAIN_OBJECT_DIR)/fluid_mechanics_IO_routines.o $(OBJECT_DIR)
+	cp $(MAIN_OBJECT_DIR)/fluid_mechanics_io_routines.mod $(OBJECT_DIR)
+
+info:
+	@echo "OBJECTS:"
+	@echo $(OBJECTS)
+	@echo "OBJECT_DIR:"
+	@echo $(OBJECT_DIR)
+	@echo "MAIN_OBJECT_DIR:"
+	@echo $(MAIN_OBJECT_DIR)
+	@echo "EXAMPLE_SOURCE_DIR:"
+	@echo $(EXAMPLE_SOURCE_DIR)
+	@echo "MAIN_SOURCE_DIR:"
+	@echo $(MAIN_SOURCE_DIR)
