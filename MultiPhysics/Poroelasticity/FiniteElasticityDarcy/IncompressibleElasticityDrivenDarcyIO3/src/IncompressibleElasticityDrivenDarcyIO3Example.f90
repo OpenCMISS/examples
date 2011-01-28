@@ -98,6 +98,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDarcy=12
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=14
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberDarcy=22
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumber=42
 
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopSolidNumber=1
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopFluidNumber=2
@@ -125,7 +126,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   INTEGER(CMISSIntg) :: RESTART_VALUE
 
   INTEGER(CMISSIntg) :: EQUATIONS_DARCY_OUTPUT
-  INTEGER(CMISSIntg) :: COMPONENT_NUMBER, NODE_NUMBER
+  INTEGER(CMISSIntg) :: COMPONENT_NUMBER, NODE_NUMBER, ELEMENT_NUMBER
 
   INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY
   INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_DARCY_OUTPUT_TYPE
@@ -169,6 +170,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   TYPE(CMISSFieldType) :: GeometricField
   TYPE(CMISSFieldType) :: MaterialsFieldDarcy
   TYPE(CMISSFieldType) :: EquationsSetFieldDarcy
+  TYPE(CMISSFieldType) :: SourceField
   !Boundary conditions
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDarcy
   !Equations sets
@@ -418,7 +420,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   !================================================================================================================================
   !
 
-call READ_MESH('input/pigheart-mesh',MeshUserNumber,Region, Mesh,Bases,Nodes,Elements)
+call READ_MESH('input/LV242-mesh',MeshUserNumber,Region, Mesh,Bases,Nodes,Elements)
 !   !BASES
 !   !Define basis functions
 !   CALL CMISSBasisTypeInitialise(LinearBasis,Err)
@@ -489,7 +491,7 @@ call READ_MESH('input/pigheart-mesh',MeshUserNumber,Region, Mesh,Bases,Nodes,Ele
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,SolidGeometryMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,SolidGeometryMeshComponentNumber,Err)
   CALL CMISSFieldCreateFinish(GeometricField,Err)
-CALL READ_NODES('input/pigheart-nodes',GeometricField)
+CALL READ_NODES('input/LV242-nodes',GeometricField)
 !   CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
 
   !--------------------------------------------------------------------------------------------------------------------------------
@@ -512,7 +514,7 @@ CALL READ_NODES('input/pigheart-nodes',GeometricField)
   CALL CMISSFieldComponentMeshComponentSet(GeometricFieldSolid,CMISSFieldUVariableType,3,SolidMeshComponenetNumber,Err)
   CALL CMISSFieldCreateFinish(GeometricFieldSolid,Err)
   !Set the mesh component to be used by the field components.
-CALL READ_NODES('input/pigheart-nodes',GeometricFieldSolid)
+CALL READ_NODES('input/LV242-nodes',GeometricFieldSolid)
 !  CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricFieldSolid,GeneratedMesh,Err)
 
   !Create a fibre field and attach it to the geometric field
@@ -694,9 +696,10 @@ CALL READ_NODES('input/pigheart-nodes',GeometricFieldSolid)
   !================================================================================================================================
   !
 
-call READ_FIELD('input/pigheart-material',MaterialsFieldUserNumberDarcy,Region,GeometricField,MaterialsFieldDarcy)
-CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDarcy,MaterialsFieldUserNumberDarcy,MaterialsFieldDarcy,Err)
-CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
+! call READ_FIELD('input/LV242-material',MaterialsFieldUserNumberDarcy,Region,GeometricField,MaterialsFieldDarcy)
+  CALL CMISSFieldTypeInitialise(MaterialsFieldDarcy,Err)
+  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDarcy,MaterialsFieldUserNumberDarcy,MaterialsFieldDarcy,Err)
+  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
 !   !MATERIALS FIELDS
 ! 
 !   !Create the equations set materials field variables for ALE Darcy
@@ -709,6 +712,21 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
 !     & MaterialsFieldUserNumberDarcyPorosity,POROSITY_PARAM_DARCY,Err)
 !   CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
 !     & MaterialsFieldUserNumberDarcyPermOverVis,PERM_OVER_VIS_PARAM_DARCY,Err)
+
+  !
+  !================================================================================================================================
+  !
+
+  !Source field
+  CALL CMISSFieldTypeInitialise(SourceField,Err)
+  CALL CMISSEquationsSetSourceCreateStart(EquationsSetDarcy,SourceFieldUserNumber,SourceField,Err)
+  CALL CMISSEquationsSetSourceCreateFinish(EquationsSetDarcy,Err)
+
+  ELEMENT_NUMBER = 3
+  COMPONENT_NUMBER = 4
+  VALUE = 1.0_CMISSDP
+  CALL CMISSFieldParameterSetUpdateElement(RegionUserNumber,SourceFieldUserNumber,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+    & ELEMENT_NUMBER,COMPONENT_NUMBER,VALUE,Err)
 
   !
   !================================================================================================================================
@@ -753,12 +771,12 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
   !------------------------------------
   ! Grab surfaces to assign boundary conditions
 
-  CALL READ_SURFACE('input/surface-lin-inner',surface_lin_inner)
-  CALL READ_SURFACE('input/surface-lin-outer',surface_lin_outer)
-  CALL READ_SURFACE('input/surface-lin-base',surface_lin_base)
-  CALL READ_SURFACE('input/surface-quad-inner',surface_quad_inner)
-  CALL READ_SURFACE('input/surface-quad-outer',surface_quad_outer)
-  CALL READ_SURFACE('input/surface-quad-base',surface_quad_base)
+  CALL READ_SURFACE('input/LV242-surface-lin-inner',surface_lin_inner)
+  CALL READ_SURFACE('input/LV242-surface-lin-outer',surface_lin_outer)
+  CALL READ_SURFACE('input/LV242-surface-lin-base',surface_lin_base)
+  CALL READ_SURFACE('input/LV242-surface-quad-inner',surface_quad_inner)
+  CALL READ_SURFACE('input/LV242-surface-quad-outer',surface_quad_outer)
+  CALL READ_SURFACE('input/LV242-surface-quad-base',surface_quad_base)
 
 
   !------------------------------------
@@ -816,15 +834,15 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
       CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,2,YCoord,Err)
-!       IF(ABS(XCoord)<1.0E-6_CMISSDP) THEN
-      IF(NODE==600) THEN
+      IF(ABS(XCoord)<1.0E-6_CMISSDP) THEN
+!       IF(NODE==600) THEN
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,NODE,1, &
           & CMISSBoundaryConditionFixed,XCoord,Err)
         WRITE(*,*) "FIXING NODE",NODE,"IN X DIRECTION"
         X_FIXED=.TRUE.
       ENDIF
-!       IF(ABS(YCoord)<1.0E-6_CMISSDP) THEN
-      IF(NODE==584) THEN
+      IF(ABS(YCoord)<1.0E-6_CMISSDP) THEN
+!       IF(NODE==584) THEN
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,NODE,2, &
           & CMISSBoundaryConditionFixed,YCoord,Err)
         WRITE(*,*) "FIXING NODE",NODE,"IN Y DIRECTION"
