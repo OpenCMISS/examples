@@ -93,12 +93,12 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=3
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=4
-  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldDarcyUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcy=8
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDarcy=12
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=14
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberDarcy=22
-  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumber=42
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldDarcyUserNumber=42
 
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopSolidNumber=1
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopFluidNumber=2
@@ -160,17 +160,16 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   TYPE(CMISSBasisType),allocatable :: Bases(:)
   !Meshes
   TYPE(CMISSMeshType) :: Mesh
-  TYPE(CMISSGeneratedMeshType) :: GeneratedMesh
 
   !Decompositions
   TYPE(CMISSDecompositionType) :: Decomposition
   !Fields
   TYPE(CMISSFieldsType) :: Fields
   !Field types
-  TYPE(CMISSFieldType) :: GeometricField
+  TYPE(CMISSFieldType) :: GeometricFieldDarcy
   TYPE(CMISSFieldType) :: MaterialsFieldDarcy
   TYPE(CMISSFieldType) :: EquationsSetFieldDarcy
-  TYPE(CMISSFieldType) :: SourceField
+  TYPE(CMISSFieldType) :: SourceFieldDarcy
   !Boundary conditions
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDarcy
   !Equations sets
@@ -227,8 +226,6 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   !Test program parameters
 
-  INTEGER(CMISSIntg) :: SolidMeshComponenetNumber
-
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometrySolidUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometrySolidNumberOfVariables=1
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometrySolidNumberOfComponents=3
@@ -257,9 +254,10 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   INTEGER(CMISSIntg), PARAMETER :: DarcyVelMeshComponentNumber=SolidLagrMultMeshComponentNumber
   INTEGER(CMISSIntg), PARAMETER :: DarcyMassIncreaseMeshComponentNumber=SolidLagrMultMeshComponentNumber
-!   INTEGER(CMISSIntg), PARAMETER :: DarcyGeometryMeshComponentNumber=SolidDisplMeshComponentNumber
+  INTEGER(CMISSIntg), PARAMETER :: DarcyGeometryMeshComponentNumber=SolidDisplMeshComponentNumber
+                                   !is set to 'SolidDisplMeshComponentNumber' since this is how the Darcy geometry
+                                   !  gets updated
 
-  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=32
   !Program types
   !Program variables
 
@@ -281,6 +279,9 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   INTEGER(CMISSIntg),allocatable :: surface_lin_inner(:),surface_lin_outer(:),surface_lin_base(:)
   INTEGER(CMISSIntg),allocatable :: surface_quad_inner(:),surface_quad_outer(:),surface_quad_base(:)
+
+  INTEGER(CMISSIntg),allocatable :: ElementUserNodes(:)
+  INTEGER(CMISSIntg) :: NUMBER_USER_ELEMENT_NODES
 
   !End - Program variables and types (finite elasticity part)
 
@@ -435,17 +436,17 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   CALL CMISSDecompositionCalculateFacesSet(Decomposition,.true.,Err)
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
 
-  CALL CMISSFieldTypeInitialise(GeometricField,Err)
-  CALL CMISSFieldCreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
-  CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
-  CALL CMISSFieldTypeSet(GeometricField,CMISSFieldGeometricType,Err)
-  CALL CMISSFieldNumberOfVariablesSet(GeometricField,FieldGeometryNumberOfVariables,Err)
-  CALL CMISSFieldNumberOfComponentsSet(GeometricField,CMISSFieldUVariableType,3,Err)  
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,SolidGeometryMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,SolidGeometryMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,SolidGeometryMeshComponentNumber,Err)
-  CALL CMISSFieldCreateFinish(GeometricField,Err)
-  CALL READ_NODES('input/LV242-nodes',GeometricField)
+  CALL CMISSFieldTypeInitialise(GeometricFieldDarcy,Err)
+  CALL CMISSFieldCreateStart(GeometricFieldDarcyUserNumber,Region,GeometricFieldDarcy,Err)
+  CALL CMISSFieldMeshDecompositionSet(GeometricFieldDarcy,Decomposition,Err)
+  CALL CMISSFieldTypeSet(GeometricFieldDarcy,CMISSFieldGeometricType,Err)
+  CALL CMISSFieldNumberOfVariablesSet(GeometricFieldDarcy,FieldGeometryNumberOfVariables,Err)
+  CALL CMISSFieldNumberOfComponentsSet(GeometricFieldDarcy,CMISSFieldUVariableType,3,Err)  
+  CALL CMISSFieldComponentMeshComponentSet(GeometricFieldDarcy,CMISSFieldUVariableType,1,DarcyGeometryMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricFieldDarcy,CMISSFieldUVariableType,2,DarcyGeometryMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricFieldDarcy,CMISSFieldUVariableType,3,DarcyGeometryMeshComponentNumber,Err)
+  CALL CMISSFieldCreateFinish(GeometricFieldDarcy,Err)
+  CALL READ_NODES('input/LV242-nodes',GeometricFieldDarcy)
 
   !--------------------------------------------------------------------------------------------------------------------------------
   ! Solid
@@ -454,17 +455,15 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   !Create a field to put the geometry (defualt is geometry)
 
-  SolidMeshComponenetNumber = SolidGeometryMeshComponentNumber
-
   CALL CMISSFieldTypeInitialise(GeometricFieldSolid,Err)
   CALL CMISSFieldCreateStart(FieldGeometrySolidUserNumber,Region,GeometricFieldSolid,Err)
   CALL CMISSFieldMeshDecompositionSet(GeometricFieldSolid,Decomposition,Err)
   CALL CMISSFieldTypeSet(GeometricFieldSolid,CMISSFieldGeometricType,Err)
   CALL CMISSFieldNumberOfVariablesSet(GeometricFieldSolid,FieldGeometrySolidNumberOfVariables,Err)
   CALL CMISSFieldNumberOfComponentsSet(GeometricFieldSolid,CMISSFieldUVariableType,FieldGeometrySolidNumberOfComponents,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricFieldSolid,CMISSFieldUVariableType,1,SolidMeshComponenetNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricFieldSolid,CMISSFieldUVariableType,2,SolidMeshComponenetNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricFieldSolid,CMISSFieldUVariableType,3,SolidMeshComponenetNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricFieldSolid,CMISSFieldUVariableType,1,SolidGeometryMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricFieldSolid,CMISSFieldUVariableType,2,SolidGeometryMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricFieldSolid,CMISSFieldUVariableType,3,SolidGeometryMeshComponentNumber,Err)
   CALL CMISSFieldCreateFinish(GeometricFieldSolid,Err)
   !Set the mesh component to be used by the field components.
   CALL READ_NODES('input/LV242-nodes',GeometricFieldSolid)
@@ -494,7 +493,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   !Create the equations set for ALE Darcy
   CALL CMISSFieldTypeInitialise(EquationsSetFieldDarcy,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSetDarcy,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDarcy,Region,GeometricField,CMISSEquationsSetFluidMechanicsClass, &
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDarcy,Region,GeometricFieldDarcy,CMISSEquationsSetFluidMechanicsClass, &
     & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetIncompressibleElasticityDrivenDarcySubtype,&
     & EquationsSetFieldUserNumberDarcy,EquationsSetFieldDarcy,EquationsSetDarcy,Err)
   CALL CMISSEquationsSetCreateFinish(EquationsSetDarcy,Err)
@@ -572,7 +571,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,3,SolidDisplMeshComponentNumber,Err)
   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,4,CMISSFieldNodeBasedInterpolation,Err)
 !   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,4,CMISSFieldElementBasedInterpolation,Err)
-!   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,4,SolidMeshComponenetNumber,Err)
+!   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,4,SolidGeometryMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,4,SolidLagrMultMeshComponentNumber,Err)
   !
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,1,SolidDisplMeshComponentNumber,Err)
@@ -582,7 +581,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
     & CMISSFieldNodeBasedInterpolation,Err)
 !   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,4, &
 !     & CMISSFieldElementBasedInterpolation,Err)
-!   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,4,SolidMeshComponenetNumber,Err)
+!   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,4,SolidGeometryMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,4,SolidLagrMultMeshComponentNumber, &
     & Err)
 
@@ -648,7 +647,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   !================================================================================================================================
   !
 
-! call READ_FIELD('input/LV242-material',MaterialsFieldUserNumberDarcy,Region,GeometricField,MaterialsFieldDarcy)
+! call READ_FIELD('input/LV242-material',MaterialsFieldUserNumberDarcy,Region,GeometricFieldDarcy,MaterialsFieldDarcy)
   CALL CMISSFieldTypeInitialise(MaterialsFieldDarcy,Err)
   CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDarcy,MaterialsFieldUserNumberDarcy,MaterialsFieldDarcy,Err)
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
@@ -658,15 +657,32 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   !
 
   !Source field
-  CALL CMISSFieldTypeInitialise(SourceField,Err)
-  CALL CMISSEquationsSetSourceCreateStart(EquationsSetDarcy,SourceFieldUserNumber,SourceField,Err)
+  CALL CMISSFieldTypeInitialise(SourceFieldDarcy,Err)
+  CALL CMISSEquationsSetSourceCreateStart(EquationsSetDarcy,SourceFieldDarcyUserNumber,SourceFieldDarcy,Err)
   CALL CMISSEquationsSetSourceCreateFinish(EquationsSetDarcy,Err)
 
   ELEMENT_NUMBER = 3
   COMPONENT_NUMBER = 4
   VALUE = 1.0_CMISSDP
-  CALL CMISSFieldParameterSetUpdateElement(RegionUserNumber,SourceFieldUserNumber,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-    & ELEMENT_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+!   CALL CMISSFieldParameterSetUpdateElement(RegionUserNumber,SourceFieldDarcyUserNumber,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+!     & ELEMENT_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+
+  NUMBER_USER_ELEMENT_NODES = 27  !hardcoding is bad - but how to access the number of element nodes ?
+                                  !- there is no CMISS library call available for this
+                                  !- traversing the structure of 'CMISSMeshElementsType' does not work either,
+                                  !  since certain members are private
+
+  allocate( ElementUserNodes(NUMBER_USER_ELEMENT_NODES) )
+
+  CALL CMISSMeshElementsNodesGet(RegionUserNumber,MeshUserNumber,DarcyGeometryMeshComponentNumber,ELEMENT_NUMBER, &
+    & ElementUserNodes,Err)
+
+  DO NN=1,NUMBER_USER_ELEMENT_NODES
+    NODE_NUMBER = ElementUserNodes(NN)
+    CALL CMISSFieldParameterSetUpdateNode(SourceFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+      & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+  ENDDO
+
 
   !
   !================================================================================================================================

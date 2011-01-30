@@ -182,7 +182,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   !Solvers
   TYPE(CMISSSolverType) :: DynamicSolverDarcy
   TYPE(CMISSSolverType) :: LinearSolverDarcy
-!   TYPE(CMISSSolverType) :: LinearSolverSolid
+  TYPE(CMISSSolverType) :: LinearSolverSolid
   !Solver equations
   TYPE(CMISSSolverEquationsType) :: SolverEquationsDarcy
   ! nodes and elements
@@ -784,28 +784,28 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
     ENDIF
   ENDDO
 
-  !Apply inner surface pressure
-  !NOTE: Surface pressure goes into pressure_values_set_type of the DELUDELN type
-  DO NN=1,SIZE(surface_quad_inner,1)
-    NODE=surface_quad_inner(NN)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      COMPONENT_NUMBER = 3  ! Does it matter which number ??? It used to be linked to the normal ... Check this !!!
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldDelUDelNVariableType,1,NODE,COMPONENT_NUMBER, &
-        & CMISSBoundaryConditionPressure,INNER_PRESSURE,Err)
-    ENDIF
-  ENDDO
-
-  !Apply outer surface pressure
-  DO NN=1,SIZE(surface_quad_outer,1)
-    NODE=surface_quad_outer(NN)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      COMPONENT_NUMBER = 3  ! Does it matter which number ??? It used to be linked to the normal ... Check this !!!
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldDelUDelNVariableType,1,NODE,COMPONENT_NUMBER, &
-        & CMISSBoundaryConditionPressure,OUTER_PRESSURE,Err)
-    ENDIF
-  ENDDO
+!   !Apply inner surface pressure
+!   !NOTE: Surface pressure goes into pressure_values_set_type of the DELUDELN type
+!   DO NN=1,SIZE(surface_quad_inner,1)
+!     NODE=surface_quad_inner(NN)
+!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+!     IF(NodeDomain==ComputationalNodeNumber) THEN
+!       COMPONENT_NUMBER = 3  ! Does it matter which number ??? It used to be linked to the normal ... Check this !!!
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldDelUDelNVariableType,1,NODE,COMPONENT_NUMBER, &
+!         & CMISSBoundaryConditionPressure,INNER_PRESSURE,Err)
+!     ENDIF
+!   ENDDO
+! 
+!   !Apply outer surface pressure
+!   DO NN=1,SIZE(surface_quad_outer,1)
+!     NODE=surface_quad_outer(NN)
+!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+!     IF(NodeDomain==ComputationalNodeNumber) THEN
+!       COMPONENT_NUMBER = 3  ! Does it matter which number ??? It used to be linked to the normal ... Check this !!!
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldDelUDelNVariableType,1,NODE,COMPONENT_NUMBER, &
+!         & CMISSBoundaryConditionPressure,OUTER_PRESSURE,Err)
+!     ENDIF
+!   ENDDO
 
   !Fix more nodes at the base to stop free body motion: 600 in x, 584 in y
   X_FIXED=.FALSE.
@@ -944,7 +944,8 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
 
     !Set all top surface nodes to Darcy inflow BC
     DO NN=1,SIZE(surface_lin_base,1)
-      VALUE = +5.0_CMISSDP  ! Mind the sign !
+!       VALUE = +1.0_CMISSDP  ! Mind the sign !
+      VALUE = 0.0_CMISSDP  ! Mind the sign !
       COMPONENT_NUMBER = 3
       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,surface_lin_base(NN), &
         & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
@@ -1007,8 +1008,8 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
 !   CALL CMISSSolverNonLinearTypeSet(SolverSolid,CMISSSolverNonlinearNewton,Err)
 !   CALL CMISSSolverLibraryTypeSet(SolverSolid,CMISSSolverPETScLibrary,Err)
 
-!   CALL CMISSSolverNewtonLinearSolverGet(SolverSolid,LinearSolverSolid,Err)
-!   CALL CMISSSolverLinearTypeSet(LinearSolverSolid,CMISSSolverLinearDirectSolveType,Err)
+  CALL CMISSSolverNewtonLinearSolverGet(SolverSolid,LinearSolverSolid,Err)
+  CALL CMISSSolverLinearTypeSet(LinearSolverSolid,CMISSSolverLinearDirectSolveType,Err)
 
 
   !Darcy
