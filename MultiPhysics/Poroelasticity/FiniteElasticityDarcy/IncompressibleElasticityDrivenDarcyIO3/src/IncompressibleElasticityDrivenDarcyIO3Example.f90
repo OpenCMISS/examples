@@ -336,8 +336,8 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   !Set time parameter
   DYNAMIC_SOLVER_DARCY_START_TIME=0.0_CMISSDP
-  DYNAMIC_SOLVER_DARCY_TIME_INCREMENT=1.0e-4_CMISSDP
-  DYNAMIC_SOLVER_DARCY_STOP_TIME=100_CMISSIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
+  DYNAMIC_SOLVER_DARCY_TIME_INCREMENT=1.0e-3_CMISSDP
+  DYNAMIC_SOLVER_DARCY_STOP_TIME=10_CMISSIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
   DYNAMIC_SOLVER_DARCY_THETA=1.0_CMISSDP !2.0_CMISSDP/3.0_CMISSDP
   !Set result output parameter
   DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY=1
@@ -647,8 +647,8 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   !================================================================================================================================
   !
 
-! call READ_FIELD('input/LV242-material',MaterialsFieldUserNumberDarcy,Region,GeometricFieldDarcy,MaterialsFieldDarcy)
-  CALL CMISSFieldTypeInitialise(MaterialsFieldDarcy,Err)
+  call READ_FIELD('input/LV242-material',MaterialsFieldUserNumberDarcy,Region,GeometricFieldDarcy,MaterialsFieldDarcy)
+  !CALL CMISSFieldTypeInitialise(MaterialsFieldDarcy,Err)
   CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDarcy,MaterialsFieldUserNumberDarcy,MaterialsFieldDarcy,Err)
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
 
@@ -663,7 +663,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   ELEMENT_NUMBER = 3
   COMPONENT_NUMBER = 4
-  VALUE = 1.0_CMISSDP
+  VALUE = 0.0_CMISSDP
 !   CALL CMISSFieldParameterSetUpdateElement(RegionUserNumber,SourceFieldDarcyUserNumber,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
 !     & ELEMENT_NUMBER,COMPONENT_NUMBER,VALUE,Err)
 
@@ -742,7 +742,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   !write(*,*)'surface_quad_base = ',surface_quad_base
 
-  INNER_PRESSURE = 0.01_CMISSDP
+  INNER_PRESSURE = 0.1_CMISSDP
   OUTER_PRESSURE = 0.0_CMISSDP
 
   ! ASSIGN BOUNDARY CONDITIONS
