@@ -375,8 +375,8 @@ subroutine uniaxialextensionexample_finalize() BIND (C, NAME = &
   !Output solution  
   CALL CMISSFieldsTypeInitialise(Fields,Err)
   CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-  CALL CMISSFieldIONodesExport(Fields,"UniaxialExtension","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields,"UniaxialExtension","FORTRAN",Err)
+  !CALL CMISSFieldIONodesExport(Fields,"UniaxialExtension","FORTRAN",Err)
+  !CALL CMISSFieldIOElementsExport(Fields,"UniaxialExtension","FORTRAN",Err)
   CALL CMISSFieldsTypeFinalise(Fields,Err)
 
   CALL CMISSFinalise(Err)
@@ -385,19 +385,19 @@ subroutine uniaxialextensionexample_finalize() BIND (C, NAME = &
   RETURN
 end subroutine
 
-subroutine uniaxialextensionexample_solve(theta) BIND (C, NAME = &
+subroutine uniaxialextensionexample_solve() BIND (C, NAME = &
   & "uniaxialextensionexample_solveC")
 
   !arguments
   !integer(intg), intent(in) :: n
-  REAL(CMISSDP), INTENT(IN) :: theta(2)
+  !REAL(CMISSDP), INTENT(IN) :: theta(2)
   !real(dp), intent(out) :: f_vec(2)
 
-  print *, theta
+  !print *, theta
 
   !Set Mooney-Rivlin constants 
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,theta(1),Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,theta(1),Err)
+!  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1.0,Err)
+!  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,1.0,Err)
 
   !Solve problem
   CALL CMISSProblemSolve(Problem,Err)

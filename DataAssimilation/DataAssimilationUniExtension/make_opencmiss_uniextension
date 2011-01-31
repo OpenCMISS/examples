@@ -9,9 +9,9 @@ OPENCMISS_LIB_DIR=/home/scratch/opencmiss/cm/lib/x86_64-linux/mpich2/gnu_4.4
 OPENCMISSEXTRAS_INCLUDE_DIR=/home/scratch/opencmissextras/cm/external/x86_64-linux-debug/mpich2/gnu_4.4/include
 OPENCMISSEXTRAS_LIB_DIR=/home/scratch/opencmissextras/cm/external/x86_64-linux-debug/mpich2/gnu_4.4/lib
 
-COMPILER_FLAG="-pipe -m64 -fno-second-underscore -Wall -x f95-cpp-input -ffree-line-length-132 -fmax-identifier-length=63 -march=nocona -g -fPIC -O0 -fbounds-check -I${BIN_OUTPUT_DIR} -I${OPENCMISS_INCLUDE_DIR} -I${OPENCMISSEXTRAS_INCLUDE_DIR}/"
+COMPILER_FLAG="-g3 -pipe -m64 -fno-second-underscore -Wall -x f95-cpp-input -ffree-line-length-132 -fmax-identifier-length=63 -march=nocona -g -fPIC -O0 -fbounds-check -I${BIN_OUTPUT_DIR} -I${OPENCMISS_INCLUDE_DIR} -I${OPENCMISSEXTRAS_INCLUDE_DIR}/"
 
-LINKDER_FLAG="-m64 -L${OPENCMISSEXTRAS_LIB_DIR}/  -L/usr/X11R6/lib64/ -L/usr/lib64/ -L/usr/lib64/openmotif/ -ltaofortran -ltaopetsc -ltao -lpetsc -lMrm -lXmu -lXm -lXt -lX11 -lstdc++ -ldl -lsundials_cvode -lsundials_nvecparallel -lsundials_nvecserial -lHYPRE -lsuperlu_dist -lpastix -lptscotch -lptscotcherr -lptscotcherrexit -lscotch -lscotcherr -lscotcherrexit -ldmumps -lmumps_common -lpord -lscalapack -lblacs -lblacsC -lblacsF77 -lblacs -lblacsC -lblacsF77 -lparmetis -lmetis -lmpichf90 -lmpich -lmpl -lpthread -lrt -llapack -lblas"
+LINKDER_FLAG="-g3 -m64 -L${OPENCMISSEXTRAS_LIB_DIR}/  -L/usr/X11R6/lib64/ -L/usr/lib64/ -L/usr/lib64/openmotif/ -ltaofortran -ltaopetsc -ltao -lpetsc -lMrm -lXmu -lXm -lXt -lX11 -lstdc++ -ldl -lsundials_cvode -lsundials_nvecparallel -lsundials_nvecserial -lHYPRE -lsuperlu_dist -lpastix -lptscotch -lptscotcherr -lptscotcherrexit -lscotch -lscotcherr -lscotcherrexit -ldmumps -lmumps_common -lpord -lscalapack -lblacs -lblacsC -lblacsF77 -lblacs -lblacsC -lblacsF77 -lparmetis -lmetis -lmpichf90 -lmpich -lmpl -lpthread -lrt -llapack -lblas"
 
 
 ################################################
