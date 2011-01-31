@@ -1,3 +1,3 @@
 #! /bin/bash
-$OPENCMISS_ROOT/cm/examples/ClassicalField/Laplace/AnalyticLaplace/bin/x86_64-linux/mpich2/gnu/AnalyticLaplaceExample 4
+$OPENCMISS_ROOT/cm/examples/ClassicalField/Laplace/AnalyticLaplace/bin/x86_64-linux/mpich2/gnu_4.4/AnalyticLaplaceExample 4
 mv AnalyticLaplace* output/
