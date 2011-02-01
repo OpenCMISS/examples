@@ -707,6 +707,7 @@ MEAUSREMENT_TYPE*
 measurement_create_and_initialize(APP_CONTEXT_TYPE* app_context)
 {
   MEAUSREMENT_TYPE* measurement = new MEAUSREMENT_TYPE;
+  memset(measurement, 0, sizeof(MEAUSREMENT_TYPE));
   if(0){
     measurement->n_y = 2;
     measurement->n_z = 4;

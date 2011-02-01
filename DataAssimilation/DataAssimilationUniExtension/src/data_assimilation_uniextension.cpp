@@ -6,7 +6,7 @@
 extern "C" {
   void uniaxialextensionexample_initializeC();
   void uniaxialextensionexample_finalizeC();
-  void uniaxialextensionexample_solveC(double* theta);
+  void uniaxialextensionexample_solveC();
 }
 
 
@@ -22,7 +22,7 @@ model_opeartor_01(MODEL_TYPE* model, APP_CONTEXT_TYPE* app_context)
   for(i=0; i<model->n_ensem; i++){
     double theta[2]={1.0, 1.0};
     PrintLine("uniaxialextensionexample_solveC ... ");
-    uniaxialextensionexample_solveC(theta);
+    uniaxialextensionexample_solveC();
     
     //1. update the system state vector
     VecCopy(model->x_k[i],model->x_k_minus_1[i]);
@@ -64,6 +64,13 @@ int
 test01(int argc, char **args)
 {
   uniaxialextensionexample_initializeC();
+  if(1){
+    double theta[2]={1.0, 5.0};
+    PrintLine("uniaxialextensionexample_solveC ... ");
+    uniaxialextensionexample_solveC();
+    uniaxialextensionexample_solveC();  
+    //return 0;
+  } 
 
   APP_CONTEXT_TYPE* app_context = app_context_create_and_initialize(argc, args);
   MEAUSREMENT_TYPE* measurement = measurement_create_and_initialize(app_context);
@@ -71,18 +78,18 @@ test01(int argc, char **args)
   FILTER_TYPE*      filter      = filter_create_and_initialize     (app_context, model);
   
   app_context_create_and_initialize_dependently(app_context, filter, model, measurement);
-  filter_set_intial_condition(filter, model, app_context);
-  
+  filter_set_intial_condition(filter, model, app_context); 
+
+  //CHKMEMQ(); //check the memory
+
   for(int k=0; k<3; k++){
     filter_time_update       (filter, model,              app_context);
     filter_measurement_update(filter, model, measurement, app_context);
   }
-  
+    
   app_context_destroy_and_finalize(app_context);
   
   uniaxialextensionexample_finalizeC();
-
-  
 
   return 0;
 }

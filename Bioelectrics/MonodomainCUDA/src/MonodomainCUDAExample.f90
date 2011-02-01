@@ -92,7 +92,6 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   
   !Program variables
 
-  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
   INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
   
   INTEGER(CMISSIntg) :: MPI_IERROR
@@ -134,8 +133,8 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
   INTEGER(CMISSIntg) :: EquationsSetIndex,CellMLIndex
-  INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
-  INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain
+  INTEGER(CMISSIntg) :: FirstNodeNumber
+  INTEGER(CMISSIntg) :: FirstNodeDomain
   INTEGER(CMISSIntg) :: Err
 
 #ifdef WIN32
@@ -157,29 +156,16 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
   CALL CMISSOutputSetOn("MonodomainCUDA",Err)
-    
-  NUMBER_GLOBAL_X_ELEMENTS=2000
-  NUMBER_GLOBAL_Y_ELEMENTS=3
-  NUMBER_GLOBAL_Z_ELEMENTS=0
+
   NUMBER_OF_DOMAINS=NumberOfComputationalNodes
-  
-  !Broadcast the number of elements in the X & Y directions and the number of partitions to the other computational nodes
-  CALL MPI_BCAST(NUMBER_GLOBAL_X_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_GLOBAL_Y_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_GLOBAL_Z_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
+
   CALL MPI_BCAST(NUMBER_OF_DOMAINS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  !Read in the number of elements in the X & Y directions, and the number of partitions on the master node (number 0)
 
   !Start the creation of a new RC coordinate system
   CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
   CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
-  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    !Set the coordinate system to be 2D
-    CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,2,Err)
-  ELSE
-    !Set the coordinate system to be 3D
-    CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,3,Err)
-  ENDIF
+  !Set the coordinate system to be 3D
+  CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,3,Err)
   !Finish the creation of the coordinate system
   CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
 
@@ -191,29 +177,16 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   !Finish the creation of the region
   CALL CMISSRegionCreateFinish(Region,Err)
 
-  PRINT *,"BEFORE IMPORT"
-
-  CALL CMISSFieldsTypeInitialise(Fields,Err)
-  CALL CMISSFieldsTypeCreate(Region,Fields,Err)
+  CALL CMISSMeshTypeInitialise(Mesh,Err)
   CALL CMISSFieldIOFieldsImport("MonodomainCUDAExampleIn","FORTRAN", Region, Mesh, MeshUserNumber, Decomposition, &
     & DecompositionUserNumber, CMISSDecompositionAllType, CMISSFieldValuesSetType, CMISSFieldNoScaling, Err)
-  CALL CMISSFieldsTypeFinalise(Fields,Err)
 
-  
-  PRINT *,"AFTER IMPORT"
-
-!  !Start the creation of a basis (default is trilinear lagrange)
-!  CALL CMISSBasisTypeInitialise(Basis,Err)
-!  CALL CMISSBasisCreateStart(BasisUserNumber,Basis,Err)
-!  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-!    !Set the basis to be a bilinear Lagrange basis
-!    CALL CMISSBasisNumberOfXiSet(Basis,2,Err)
-!  ELSE
-!    !Set the basis to be a trilinear Lagrange basis
-!    CALL CMISSBasisNumberOfXiSet(Basis,3,Err)
-!  ENDIF
-!  !Finish the creation of the basis
-!  CALL CMISSBasisCreateFinish(Basis,Err)
+  !Start the creation of a basis (default is trilinear lagrange)
+  CALL CMISSBasisTypeInitialise(Basis,Err)
+  CALL CMISSBasisCreateStart(BasisUserNumber,Basis,Err)
+  CALL CMISSBasisNumberOfXiSet(Basis,3,Err)
+  !Finish the creation of the basis
+  CALL CMISSBasisCreateFinish(Basis,Err)
 
 !  !Start the creation of a generated mesh in the region
 !  CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
@@ -260,231 +233,221 @@ PROGRAM MONODOMAINCUDAEXAMPLE
 !  !Update the geometric field parameters
 !  !CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
 !
-!  !Create the equations_set
-!  CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-!  CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
-!  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetBioelectricsClass, &
-!    & CMISSEquationsSetMonodomainEquationType,CMISSEquationsSetNoSubtype,EquationsSetFieldUserNumber,EquationsSetField, &
-!    & EquationsSet,Err)
-!  !Set the equations set to be a standard Laplace problem
+  !Create the equations_set
+  CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
+  CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetBioelectricsClass, &
+    & CMISSEquationsSetMonodomainEquationType,CMISSEquationsSetNoSubtype,EquationsSetFieldUserNumber,EquationsSetField, &
+    & EquationsSet,Err)
+  !Set the equations set to be a standard Laplace problem
+
+  !Finish creating the equations set
+  CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
+
+  !Create the equations set dependent field variables
+  CALL CMISSFieldTypeInitialise(DependentField,Err)
+  CALL CMISSEquationsSetDependentCreateStart(EquationsSet,DependentFieldUserNumber,DependentField,Err)
+  !Finish the equations set dependent field variables
+  CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
+
+  !Create the equations set materials field variables
+  CALL CMISSFieldTypeInitialise(MaterialsField,Err)
+  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,MaterialsFieldUserNumber,MaterialsField,Err)
+  !Finish the equations set materials field variables
+  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
+
+  !Create the equations set source field variables
+  CALL CMISSFieldTypeInitialise(SourceField,Err)
+  CALL CMISSEquationsSetSourceCreateStart(EquationsSet,SourceFieldUserNumber,SourceField,Err)
+  !Finish the equations set source field variables
+  CALL CMISSEquationsSetSourceCreateFinish(EquationsSet,Err)
+
+  !Create the CellML environment
+  CALL CMISSCellMLTypeInitialise(CellML,Err)
+  CALL CMISSCellMLCreateStart(CellMLUserNumber,Region,CellML,Err)
+  ! and import LRd from a file
+  CALL CMISSCellMLModelImport(CellML,"LRd.xml",LRdModelIndex,Err)
+ !CALL CMISSDiagnosticsSetOn(CMISSInDiagType,(/1,2,3,4,5/),"",(/"CELLML_CREATE_FIELD_TO_CELLML_MAP_C", &
+   !& "CELLML_CREATE_CELLML_TO_FIELD_MAP_C"/),Err)
+  ! Now we have imported all the models we are able to specify which variables from the model we want:
+  !   - to set from this side
+  !CALL CMISSCellMLVariableSetAsKnown(CellML,LRdModelIndex,"membrane/V",Err)
+  !   - to get from the CellML side
+  CALL CMISSCellMLVariableSetAsWanted(CellML,LRdModelIndex,"membrane/i_Na",Err)
+  CALL CMISSCellMLVariableSetAsWanted(CellML,LRdModelIndex,"membrane/i_K1",Err)
+  CALL CMISSCellMLVariableSetAsWanted(CellML,LRdModelIndex,"membrane/i_K",Err)
+  CALL CMISSCellMLVariableSetAsWanted(CellML,LRdModelIndex,"membrane/i_Kp",Err)
+  CALL CMISSCellMLVariableSetAsWanted(CellML,LRdModelIndex,"membrane/i_b",Err)
+  CALL CMISSCellMLVariableSetAsWanted(CellML,LRdModelIndex,"membrane/i_si",Err)
+
+  !CALL CMISSCellMLVariableSetAsWanted(CellML,n98ModelIndex,"membrane/IStimC",Err)
+  !CALL CMISSCellMLVariableSetAsWanted(CellML,JRWModelIndex,"membrane/IStimC",Err)
+  !   - and override constant parameters without needing to set up fields
+  !> \todo Need to allow parameter values to be overridden for the case when user has non-spatially varying parameter value.
+ !CALL CMISSDiagnosticsSetOff(Err)
+  !Finish the CellML environment
+  CALL CMISSCellMLCreateFinish(CellML,Err)
+
+  !Start the creation of CellML <--> OpenCMISS field maps
+  CALL CMISSCellMLFieldMapsCreateStart(CellML,Err)
+  !Now we can set up the field variable component <--> CellML model variable mappings.
+  !Map Vm
+  CALL CMISSCellMLCreateFieldToCellMLMap(CellML,DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType, &
+    & LRdModelIndex,"membrane/V",CMISSFieldValuesSetType,Err)
+  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,LRdModelIndex,"membrane/V",CMISSFieldValuesSetType, &
+    & DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType,Err)
+  !Finish the creation of CellML <--> OpenCMISS field maps
+  CALL CMISSCellMLFieldMapsCreateFinish(CellML,Err)
+
+  !Start the creation of the CellML models field
+  CALL CMISSFieldTypeInitialise(CellMLModelsField,Err)
+  CALL CMISSCellMLModelsFieldCreateStart(CellMLModelsFieldUserNumber,CellML,CellMLModelsField,Err)
+  !Finish the creation of the CellML models field
+  CALL CMISSCellMLModelsFieldCreateFinish(CellML,Err)
+  !Set up the models field
+  !DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
+  !  IF(N < 5) THEN
+  !    CELL_TYPE = 1
+  !  ELSE
+  !    CELL_TYPE = 2
+  !  ENDIF
+  !  CALL CMISSFieldParameterSetUpdateNode(CellMLModelsField, CMISSFieldUVariableType, CMISSFieldValuesSetType,1,N,1,CELL_TYPE,Err)
+  !END DO
+  !CALL CMISSFieldParameterSetUpdateStart(CellMLModelsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
+  !CALL CMISSFieldParameterSetUpdateFinish(CellMLModelsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
+
+  !Start the creation of the CellML state field
+  CALL CMISSFieldTypeInitialise(CellMLStateField,Err)
+  CALL CMISSCellMLStateFieldCreateStart(CellMLStateFieldUserNumber,CellML,CellMLStateField,Err)
+  !Finish the creation of the CellML state field
+  CALL CMISSCellMLStateFieldCreateFinish(CellML,Err)
+
+  !Initialise Vm
+  CALL CMISSFieldComponentValuesInitialise(CellMLStateField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,-80.0_CMISSDP,Err)
+
+  !Start the creation of the CellML intermediate field
+  CALL CMISSFieldTypeInitialise(CellMLIntermediateField,Err)
+  CALL CMISSCellMLIntermediateFieldCreateStart(CellMLIntermediateFieldUserNumber,CellML,CellMLIntermediateField,Err)
+  !Finish the creation of the CellML intermediate field
+  CALL CMISSCellMLIntermediateFieldCreateFinish(CellML,Err)
+
+  !Start the creation of CellML parameters field
+  CALL CMISSFieldTypeInitialise(CellMLParametersField,Err)
+  CALL CMISSCellMLParametersFieldCreateStart(CellMLParametersFieldUserNumber,CellML,CellMLParametersField,Err)
+  !Finish the creation of CellML parameters
+  CALL CMISSCellMLParametersFieldCreateFinish(CellML,Err)
+
+  !Generate the CellML
+  CALL CMISSCellMLGenerate(CellML,Err)
+
+  !Create the equations set equations
+  CALL CMISSEquationsTypeInitialise(Equations,Err)
+  CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
+  !Set the equations matrices sparsity type
+  CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
+  !Set the equations set output
+  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
+  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsTimingOutput,Err)
+  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsMatrixOutput,Err)
+  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsElementMatrixOutput,Err)
+  !Finish the equations set equations
+  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
+
+  !Start the creation of the equations set boundary conditions
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
+  !Set the first node to 0.0 and the last node to 1.0
+  FirstNodeNumber=1
+  CALL CMISSDecompositionNodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
+  IF(FirstNodeDomain==ComputationalNodeNumber) THEN
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
+      & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+  ENDIF
+  !Finish the creation of the equations set boundary conditions
+  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
+
+  !Start the creation of a problem.
+  CALL CMISSProblemTypeInitialise(Problem,Err)
+  CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
+  !Set the problem to be a standard Laplace problem
+  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemBioelectricsClass,CMISSProblemMonodomainEquationType, &
+    & CMISSProblemMonodomainGudunovSplitSubtype,Err)
+  !Finish the creation of a problem.
+  CALL CMISSProblemCreateFinish(Problem,Err)
+
+  !Start the creation of the problem control loop
+  CALL CMISSProblemControlLoopCreateStart(Problem,Err)
+  !Get the control loop
+  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
+  CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
+  !Set the times
+  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,1.01_CMISSDP,0.01_CMISSDP,Err)
+  !Finish creating the problem control loop
+  CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
+
+  !Start the creation of the problem solvers
+  CALL CMISSProblemSolversCreateStart(Problem,Err)
+  !Get the first (DAE) solver
+  CALL CMISSSolverTypeInitialise(Solver,Err)
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
+  CALL CMISSSolverDAESolverTypeSet(Solver,CMISSSolverDAEExternal,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
+  !Get the second (Parabolic) solver
+  CALL CMISSSolverTypeInitialise(Solver,Err)
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,2,Solver,Err)
+  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
+  !Finish the creation of the problem solver
+  CALL CMISSProblemSolversCreateFinish(Problem,Err)
+
+  !Start the creation of the problem solver CellML equations
+  CALL CMISSProblemCellMLEquationsCreateStart(Problem,Err)
+  !Get the first solver
+  !Get the CellML equations
+  CALL CMISSSolverTypeInitialise(Solver,Err)
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
+  CALL CMISSCellMLEquationsTypeInitialise(CellMLEquations,Err)
+  CALL CMISSSolverCellMLEquationsGet(Solver,CellMLEquations,Err)
+  !Add in the CellML environement
+  CALL CMISSCellMLEquationsCellMLAdd(CellMLEquations,CellML,CellMLIndex,Err)
+  !Finish the creation of the problem solver CellML equations
+  CALL CMISSProblemCellMLEquationsCreateFinish(Problem,Err)
+
+  !Start the creation of the problem solver equations
+  CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
+  !Get the second solver
+  !Get the solver equations
+  CALL CMISSSolverTypeInitialise(Solver,Err)
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,2,Solver,Err)
+  CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
+  CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
+  !Set the solver equations sparsity
+  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
+  !CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices,Err)
+  !Add in the equations set
+  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
+  !Finish the creation of the problem solver equations
+  CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !Solve the problem
+  CALL CMISSProblemSolve(Problem,Err)
+
+  EXPORT_FIELD=.TRUE.
+  IF(EXPORT_FIELD) THEN
+    CALL CMISSFieldsTypeInitialise(Fields,Err)
+    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
+    CALL CMISSFieldIONodesExport(Fields,"MonodomainCUDAExample","FORTRAN",Err)
+    CALL CMISSFieldIOElementsExport(Fields,"MonodomainCUDAExample","FORTRAN",Err)
+    CALL CMISSFieldsTypeFinalise(Fields,Err)
+  ENDIF
 !
-!  !Finish creating the equations set
-!  CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
-!
-!  !Create the equations set dependent field variables
-!  CALL CMISSFieldTypeInitialise(DependentField,Err)
-!  CALL CMISSEquationsSetDependentCreateStart(EquationsSet,DependentFieldUserNumber,DependentField,Err)
-!  !Finish the equations set dependent field variables
-!  CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
-!
-!  !Create the equations set materials field variables
-!  CALL CMISSFieldTypeInitialise(MaterialsField,Err)
-!  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,MaterialsFieldUserNumber,MaterialsField,Err)
-!  !Finish the equations set materials field variables
-!  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
-!
-!  !Create the equations set source field variables
-!  CALL CMISSFieldTypeInitialise(SourceField,Err)
-!  CALL CMISSEquationsSetSourceCreateStart(EquationsSet,SourceFieldUserNumber,SourceField,Err)
-!  !Finish the equations set source field variables
-!  CALL CMISSEquationsSetSourceCreateFinish(EquationsSet,Err)
-!
-!  !Create the CellML environment
-!  CALL CMISSCellMLTypeInitialise(CellML,Err)
-!  CALL CMISSCellMLCreateStart(CellMLUserNumber,Region,CellML,Err)
-!  ! and import LRd from a file
-!  CALL CMISSCellMLModelImport(CellML,"LRd.xml",LRdModelIndex,Err)
-! !CALL CMISSDiagnosticsSetOn(CMISSInDiagType,(/1,2,3,4,5/),"",(/"CELLML_CREATE_FIELD_TO_CELLML_MAP_C", &
-!   !& "CELLML_CREATE_CELLML_TO_FIELD_MAP_C"/),Err)
-!  ! Now we have imported all the models we are able to specify which variables from the model we want:
-!  !   - to set from this side
-!  !CALL CMISSCellMLVariableSetAsKnown(CellML,LRdModelIndex,"membrane/V",Err)
-!  !   - to get from the CellML side
-!  CALL CMISSCellMLVariableSetAsWanted(CellML,LRdModelIndex,"membrane/i_Na",Err)
-!  CALL CMISSCellMLVariableSetAsWanted(CellML,LRdModelIndex,"membrane/i_K1",Err)
-!  CALL CMISSCellMLVariableSetAsWanted(CellML,LRdModelIndex,"membrane/i_K",Err)
-!  CALL CMISSCellMLVariableSetAsWanted(CellML,LRdModelIndex,"membrane/i_Kp",Err)
-!  CALL CMISSCellMLVariableSetAsWanted(CellML,LRdModelIndex,"membrane/i_b",Err)
-!  CALL CMISSCellMLVariableSetAsWanted(CellML,LRdModelIndex,"membrane/i_si",Err)
-!
-!  !CALL CMISSCellMLVariableSetAsWanted(CellML,n98ModelIndex,"membrane/IStimC",Err)
-!  !CALL CMISSCellMLVariableSetAsWanted(CellML,JRWModelIndex,"membrane/IStimC",Err)
-!  !   - and override constant parameters without needing to set up fields
-!  !> \todo Need to allow parameter values to be overridden for the case when user has non-spatially varying parameter value.
-! !CALL CMISSDiagnosticsSetOff(Err)
-!  !Finish the CellML environment
-!  CALL CMISSCellMLCreateFinish(CellML,Err)
-!
-!  !Start the creation of CellML <--> OpenCMISS field maps
-!  CALL CMISSCellMLFieldMapsCreateStart(CellML,Err)
-!  !Now we can set up the field variable component <--> CellML model variable mappings.
-!  !Map Vm
-!  CALL CMISSCellMLCreateFieldToCellMLMap(CellML,DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType, &
-!    & LRdModelIndex,"membrane/V",CMISSFieldValuesSetType,Err)
-!  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,LRdModelIndex,"membrane/V",CMISSFieldValuesSetType, &
-!    & DependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType,Err)
-!  !Finish the creation of CellML <--> OpenCMISS field maps
-!  CALL CMISSCellMLFieldMapsCreateFinish(CellML,Err)
-!
-!  !Start the creation of the CellML models field
-!  CALL CMISSFieldTypeInitialise(CellMLModelsField,Err)
-!  CALL CMISSCellMLModelsFieldCreateStart(CellMLModelsFieldUserNumber,CellML,CellMLModelsField,Err)
-!  !Finish the creation of the CellML models field
-!  CALL CMISSCellMLModelsFieldCreateFinish(CellML,Err)
-!  !Set up the models field
-!  !DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
-!  !  IF(N < 5) THEN
-!  !    CELL_TYPE = 1
-!  !  ELSE
-!  !    CELL_TYPE = 2
-!  !  ENDIF
-!  !  CALL CMISSFieldParameterSetUpdateNode(CellMLModelsField, CMISSFieldUVariableType, CMISSFieldValuesSetType,1,N,1,CELL_TYPE,Err)
-!  !END DO
-!  !CALL CMISSFieldParameterSetUpdateStart(CellMLModelsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
-!  !CALL CMISSFieldParameterSetUpdateFinish(CellMLModelsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
-!
-!  !Start the creation of the CellML state field
-!  CALL CMISSFieldTypeInitialise(CellMLStateField,Err)
-!  CALL CMISSCellMLStateFieldCreateStart(CellMLStateFieldUserNumber,CellML,CellMLStateField,Err)
-!  !Finish the creation of the CellML state field
-!  CALL CMISSCellMLStateFieldCreateFinish(CellML,Err)
-!
-!  !Initialise Vm
-!  CALL CMISSFieldComponentValuesInitialise(CellMLStateField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,-80.0_CMISSDP,Err)
-!
-!  !Start the creation of the CellML intermediate field
-!  CALL CMISSFieldTypeInitialise(CellMLIntermediateField,Err)
-!  CALL CMISSCellMLIntermediateFieldCreateStart(CellMLIntermediateFieldUserNumber,CellML,CellMLIntermediateField,Err)
-!  !Finish the creation of the CellML intermediate field
-!  CALL CMISSCellMLIntermediateFieldCreateFinish(CellML,Err)
-!
-!  !Start the creation of CellML parameters field
-!  CALL CMISSFieldTypeInitialise(CellMLParametersField,Err)
-!  CALL CMISSCellMLParametersFieldCreateStart(CellMLParametersFieldUserNumber,CellML,CellMLParametersField,Err)
-!  !Finish the creation of CellML parameters
-!  CALL CMISSCellMLParametersFieldCreateFinish(CellML,Err)
-!
-!  !Generate the CellML
-!  CALL CMISSCellMLGenerate(CellML,Err)
-!
-!  !Create the equations set equations
-!  CALL CMISSEquationsTypeInitialise(Equations,Err)
-!  CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
-!  !Set the equations matrices sparsity type
-!  CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
-!  !Set the equations set output
-!  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
-!  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsTimingOutput,Err)
-!  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsMatrixOutput,Err)
-!  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsElementMatrixOutput,Err)
-!  !Finish the equations set equations
-!  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
-!
-!  !Start the creation of the equations set boundary conditions
-!  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-!  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-!  !Set the first node to 0.0 and the last node to 1.0
-!  FirstNodeNumber=1
-!  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-!    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)
-!  ELSE
-!    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
-!  ENDIF
-!  CALL CMISSDecompositionNodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
-!  CALL CMISSDecompositionNodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
-!  IF(FirstNodeDomain==ComputationalNodeNumber) THEN
-!    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
-!      & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-!  ENDIF
-!  IF(LastNodeDomain==ComputationalNodeNumber) THEN
-!    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,LastNodeNumber,1, &
-!      & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
-!  ENDIF
-!  !Finish the creation of the equations set boundary conditions
-!  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
-!
-!  !Start the creation of a problem.
-!  CALL CMISSProblemTypeInitialise(Problem,Err)
-!  CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
-!  !Set the problem to be a standard Laplace problem
-!  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemBioelectricsClass,CMISSProblemMonodomainEquationType, &
-!    & CMISSProblemMonodomainGudunovSplitSubtype,Err)
-!  !Finish the creation of a problem.
-!  CALL CMISSProblemCreateFinish(Problem,Err)
-!
-!  !Start the creation of the problem control loop
-!  CALL CMISSProblemControlLoopCreateStart(Problem,Err)
-!  !Get the control loop
-!  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
-!  CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
-!  !Set the times
-!  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,1.01_CMISSDP,0.01_CMISSDP,Err)
-!  !Finish creating the problem control loop
-!  CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
-!
-!  !Start the creation of the problem solvers
-!  CALL CMISSProblemSolversCreateStart(Problem,Err)
-!  !Get the first (DAE) solver
-!  CALL CMISSSolverTypeInitialise(Solver,Err)
-!  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
-!  CALL CMISSSolverDAESolverTypeSet(Solver,CMISSSolverDAEExternal,Err)
-!  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
-!  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
-!  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
-!  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
-!  !Get the second (Parabolic) solver
-!  CALL CMISSSolverTypeInitialise(Solver,Err)
-!  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,2,Solver,Err)
-!  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
-!  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
-!  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
-!  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
-!  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
-!  !Finish the creation of the problem solver
-!  CALL CMISSProblemSolversCreateFinish(Problem,Err)
-!
-!  !Start the creation of the problem solver CellML equations
-!  CALL CMISSProblemCellMLEquationsCreateStart(Problem,Err)
-!  !Get the first solver
-!  !Get the CellML equations
-!  CALL CMISSSolverTypeInitialise(Solver,Err)
-!  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
-!  CALL CMISSCellMLEquationsTypeInitialise(CellMLEquations,Err)
-!  CALL CMISSSolverCellMLEquationsGet(Solver,CellMLEquations,Err)
-!  !Add in the CellML environement
-!  CALL CMISSCellMLEquationsCellMLAdd(CellMLEquations,CellML,CellMLIndex,Err)
-!  !Finish the creation of the problem solver CellML equations
-!  CALL CMISSProblemCellMLEquationsCreateFinish(Problem,Err)
-!
-!  !Start the creation of the problem solver equations
-!  CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
-!  !Get the second solver
-!  !Get the solver equations
-!  CALL CMISSSolverTypeInitialise(Solver,Err)
-!  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,2,Solver,Err)
-!  CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
-!  CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
-!  !Set the solver equations sparsity
-!  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
-!  !CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices,Err)
-!  !Add in the equations set
-!  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
-!  !Finish the creation of the problem solver equations
-!  CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
-!
-!  !Solve the problem
-!  CALL CMISSProblemSolve(Problem,Err)
-!
-!  EXPORT_FIELD=.TRUE.
-!  IF(EXPORT_FIELD) THEN
-!    CALL CMISSFieldsTypeInitialise(Fields,Err)
-!    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-!    CALL CMISSFieldIONodesExport(Fields,"MonodomainCUDAExample","FORTRAN",Err)
-!    CALL CMISSFieldIOElementsExport(Fields,"MonodomainCUDAExample","FORTRAN",Err)
-!    CALL CMISSFieldsTypeFinalise(Fields,Err)
-!  ENDIF
-  
-  !Finialise CMISS
+!  !Finialise CMISS
   CALL CMISSFinalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."

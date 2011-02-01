@@ -93,11 +93,12 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=3
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=4
-  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldDarcyUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcy=8
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDarcy=12
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=14
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberDarcy=22
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldDarcyUserNumber=42
 
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopSolidNumber=1
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopFluidNumber=2
@@ -125,7 +126,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   INTEGER(CMISSIntg) :: RESTART_VALUE
 
   INTEGER(CMISSIntg) :: EQUATIONS_DARCY_OUTPUT
-  INTEGER(CMISSIntg) :: COMPONENT_NUMBER, NODE_NUMBER
+  INTEGER(CMISSIntg) :: COMPONENT_NUMBER, NODE_NUMBER, ELEMENT_NUMBER
 
   INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY
   INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_DARCY_OUTPUT_TYPE
@@ -159,16 +160,16 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   TYPE(CMISSBasisType),allocatable :: Bases(:)
   !Meshes
   TYPE(CMISSMeshType) :: Mesh
-  TYPE(CMISSGeneratedMeshType) :: GeneratedMesh
 
   !Decompositions
   TYPE(CMISSDecompositionType) :: Decomposition
   !Fields
   TYPE(CMISSFieldsType) :: Fields
   !Field types
-  TYPE(CMISSFieldType) :: GeometricField
+  TYPE(CMISSFieldType) :: GeometricFieldDarcy
   TYPE(CMISSFieldType) :: MaterialsFieldDarcy
   TYPE(CMISSFieldType) :: EquationsSetFieldDarcy
+  TYPE(CMISSFieldType) :: SourceFieldDarcy
   !Boundary conditions
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDarcy
   !Equations sets
@@ -182,7 +183,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   !Solvers
   TYPE(CMISSSolverType) :: DynamicSolverDarcy
   TYPE(CMISSSolverType) :: LinearSolverDarcy
-  TYPE(CMISSSolverType) :: LinearSolverSolid
+!   TYPE(CMISSSolverType) :: LinearSolverSolid
   !Solver equations
   TYPE(CMISSSolverEquationsType) :: SolverEquationsDarcy
   ! nodes and elements
@@ -225,8 +226,6 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   !Test program parameters
 
-  INTEGER(CMISSIntg) :: SolidMeshComponenetNumber
-
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometrySolidUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometrySolidNumberOfVariables=1
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometrySolidNumberOfComponents=3
@@ -255,9 +254,10 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   INTEGER(CMISSIntg), PARAMETER :: DarcyVelMeshComponentNumber=SolidLagrMultMeshComponentNumber
   INTEGER(CMISSIntg), PARAMETER :: DarcyMassIncreaseMeshComponentNumber=SolidLagrMultMeshComponentNumber
-!   INTEGER(CMISSIntg), PARAMETER :: DarcyGeometryMeshComponentNumber=SolidDisplMeshComponentNumber
+  INTEGER(CMISSIntg), PARAMETER :: DarcyGeometryMeshComponentNumber=SolidDisplMeshComponentNumber
+                                   !is set to 'SolidDisplMeshComponentNumber' since this is how the Darcy geometry
+                                   !  gets updated
 
-  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=32
   !Program types
   !Program variables
 
@@ -279,6 +279,9 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   INTEGER(CMISSIntg),allocatable :: surface_lin_inner(:),surface_lin_outer(:),surface_lin_base(:)
   INTEGER(CMISSIntg),allocatable :: surface_quad_inner(:),surface_quad_outer(:),surface_quad_base(:)
+
+  INTEGER(CMISSIntg),allocatable :: ElementUserNodes(:)
+  INTEGER(CMISSIntg) :: NUMBER_USER_ELEMENT_NODES
 
   !End - Program variables and types (finite elasticity part)
 
@@ -333,8 +336,8 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   !Set time parameter
   DYNAMIC_SOLVER_DARCY_START_TIME=0.0_CMISSDP
-  DYNAMIC_SOLVER_DARCY_TIME_INCREMENT=1.0e-4_CMISSDP
-  DYNAMIC_SOLVER_DARCY_STOP_TIME=100_CMISSIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
+  DYNAMIC_SOLVER_DARCY_TIME_INCREMENT=1.0e-3_CMISSDP
+  DYNAMIC_SOLVER_DARCY_STOP_TIME=10_CMISSIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
   DYNAMIC_SOLVER_DARCY_THETA=1.0_CMISSDP !2.0_CMISSDP/3.0_CMISSDP
   !Set result output parameter
   DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY=1
@@ -418,54 +421,8 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   !================================================================================================================================
   !
 
-call READ_MESH('input/pigheart-mesh',MeshUserNumber,Region, Mesh,Bases,Nodes,Elements)
-!   !BASES
-!   !Define basis functions
-!   CALL CMISSBasisTypeInitialise(LinearBasis,Err)
-!   CALL CMISSBasisCreateStart(LinearBasisUserNumber,LinearBasis,Err)
-!   CALL CMISSBasisQuadratureNumberOfGaussXiSet(LinearBasis, &
-!     & (/CMISSBasisHighQuadratureScheme,CMISSBasisHighQuadratureScheme,CMISSBasisHighQuadratureScheme/),Err)
-!   !CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(LinearBasis,.true.,Err)
-!   CALL CMISSBasisCreateFinish(LinearBasis,Err)
-! 
-!   CALL CMISSBasisTypeInitialise(QuadraticBasis,Err)
-!   CALL CMISSBasisCreateStart(QuadraticBasisUserNumber,QuadraticBasis,Err)
-!   CALL CMISSBasisInterpolationXiSet(QuadraticBasis,(/CMISSBasisQuadraticLagrangeInterpolation, &
-!     & CMISSBasisQuadraticLagrangeInterpolation,CMISSBasisQuadraticLagrangeInterpolation/),Err)
-!   CALL CMISSBasisQuadratureNumberOfGaussXiSet(QuadraticBasis, &
-!     & (/CMISSBasisHighQuadratureScheme,CMISSBasisHighQuadratureScheme,CMISSBasisHighQuadratureScheme/),Err)
-!   !CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(QuadraticBasis,.true.,Err)
-!   CALL CMISSBasisCreateFinish(QuadraticBasis,Err)
-! 
-!   CALL CMISSBasisTypeInitialise(CubicBasis,Err)
-!   CALL CMISSBasisCreateStart(CubicBasisUserNumber,CubicBasis,Err)
-!   CALL CMISSBasisInterpolationXiSet(CubicBasis,(/CMISSBasisCubicLagrangeInterpolation, &
-!     & CMISSBasisCubicLagrangeInterpolation,CMISSBasisCubicLagrangeInterpolation/),Err)
-!   CALL CMISSBasisQuadratureNumberOfGaussXiSet(CubicBasis, &
-!     & (/CMISSBasisHighQuadratureScheme,CMISSBasisHighQuadratureScheme,CMISSBasisHighQuadratureScheme/),Err)
-!   !CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(CubicBasis,.true.,Err) !Enable 3D interpolation on faces
-!   CALL CMISSBasisCreateFinish(CubicBasis,Err)
-! 
-!   !LinearBasis/QuadraticBasis/CubicBasis
-!   Bases(1)=QuadraticBasis
-!   Bases(2)=LinearBasis
-! 
-!   !Start the creation of a generated mesh in the region
-!   CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
-!   CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
-!   CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
-!   CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,Bases,Err)
-!   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-!     CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/X_DIM,Y_DIM/),Err)
-!     CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS/),Err)
-!   ELSE
-!     CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/X_DIM,Y_DIM,Z_DIM/),Err)
-!     CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
-!       & NUMBER_GLOBAL_Z_ELEMENTS/),Err)
-!   ENDIF
-!   CALL CMISSMeshTypeInitialise(Mesh,Err)
-!   CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
-! -------------------------------------------------------------------------------
+  call READ_MESH('input/LV242-mesh',MeshUserNumber,Region, Mesh,Bases,Nodes,Elements)
+  ! -------------------------------------------------------------------------------
   
 
   !GEOMETRIC FIELD
@@ -479,18 +436,17 @@ call READ_MESH('input/pigheart-mesh',MeshUserNumber,Region, Mesh,Bases,Nodes,Ele
   CALL CMISSDecompositionCalculateFacesSet(Decomposition,.true.,Err)
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
 
-  CALL CMISSFieldTypeInitialise(GeometricField,Err)
-  CALL CMISSFieldCreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
-  CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
-  CALL CMISSFieldTypeSet(GeometricField,CMISSFieldGeometricType,Err)
-  CALL CMISSFieldNumberOfVariablesSet(GeometricField,FieldGeometryNumberOfVariables,Err)
-  CALL CMISSFieldNumberOfComponentsSet(GeometricField,CMISSFieldUVariableType,3,Err)  
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,SolidGeometryMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,SolidGeometryMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,SolidGeometryMeshComponentNumber,Err)
-  CALL CMISSFieldCreateFinish(GeometricField,Err)
-CALL READ_NODES('input/pigheart-nodes',GeometricField)
-!   CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
+  CALL CMISSFieldTypeInitialise(GeometricFieldDarcy,Err)
+  CALL CMISSFieldCreateStart(GeometricFieldDarcyUserNumber,Region,GeometricFieldDarcy,Err)
+  CALL CMISSFieldMeshDecompositionSet(GeometricFieldDarcy,Decomposition,Err)
+  CALL CMISSFieldTypeSet(GeometricFieldDarcy,CMISSFieldGeometricType,Err)
+  CALL CMISSFieldNumberOfVariablesSet(GeometricFieldDarcy,FieldGeometryNumberOfVariables,Err)
+  CALL CMISSFieldNumberOfComponentsSet(GeometricFieldDarcy,CMISSFieldUVariableType,3,Err)  
+  CALL CMISSFieldComponentMeshComponentSet(GeometricFieldDarcy,CMISSFieldUVariableType,1,DarcyGeometryMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricFieldDarcy,CMISSFieldUVariableType,2,DarcyGeometryMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricFieldDarcy,CMISSFieldUVariableType,3,DarcyGeometryMeshComponentNumber,Err)
+  CALL CMISSFieldCreateFinish(GeometricFieldDarcy,Err)
+  CALL READ_NODES('input/LV242-nodes',GeometricFieldDarcy)
 
   !--------------------------------------------------------------------------------------------------------------------------------
   ! Solid
@@ -499,21 +455,18 @@ CALL READ_NODES('input/pigheart-nodes',GeometricField)
 
   !Create a field to put the geometry (defualt is geometry)
 
-  SolidMeshComponenetNumber = SolidGeometryMeshComponentNumber
-
   CALL CMISSFieldTypeInitialise(GeometricFieldSolid,Err)
   CALL CMISSFieldCreateStart(FieldGeometrySolidUserNumber,Region,GeometricFieldSolid,Err)
   CALL CMISSFieldMeshDecompositionSet(GeometricFieldSolid,Decomposition,Err)
   CALL CMISSFieldTypeSet(GeometricFieldSolid,CMISSFieldGeometricType,Err)
   CALL CMISSFieldNumberOfVariablesSet(GeometricFieldSolid,FieldGeometrySolidNumberOfVariables,Err)
   CALL CMISSFieldNumberOfComponentsSet(GeometricFieldSolid,CMISSFieldUVariableType,FieldGeometrySolidNumberOfComponents,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricFieldSolid,CMISSFieldUVariableType,1,SolidMeshComponenetNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricFieldSolid,CMISSFieldUVariableType,2,SolidMeshComponenetNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricFieldSolid,CMISSFieldUVariableType,3,SolidMeshComponenetNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricFieldSolid,CMISSFieldUVariableType,1,SolidGeometryMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricFieldSolid,CMISSFieldUVariableType,2,SolidGeometryMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricFieldSolid,CMISSFieldUVariableType,3,SolidGeometryMeshComponentNumber,Err)
   CALL CMISSFieldCreateFinish(GeometricFieldSolid,Err)
   !Set the mesh component to be used by the field components.
-CALL READ_NODES('input/pigheart-nodes',GeometricFieldSolid)
-!  CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricFieldSolid,GeneratedMesh,Err)
+  CALL READ_NODES('input/LV242-nodes',GeometricFieldSolid)
 
   !Create a fibre field and attach it to the geometric field
   CALL CMISSFieldTypeInitialise(FibreFieldSolid,Err)
@@ -540,7 +493,7 @@ CALL READ_NODES('input/pigheart-nodes',GeometricFieldSolid)
   !Create the equations set for ALE Darcy
   CALL CMISSFieldTypeInitialise(EquationsSetFieldDarcy,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSetDarcy,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDarcy,Region,GeometricField,CMISSEquationsSetFluidMechanicsClass, &
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDarcy,Region,GeometricFieldDarcy,CMISSEquationsSetFluidMechanicsClass, &
     & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetIncompressibleElasticityDrivenDarcySubtype,&
     & EquationsSetFieldUserNumberDarcy,EquationsSetFieldDarcy,EquationsSetDarcy,Err)
   CALL CMISSEquationsSetCreateFinish(EquationsSetDarcy,Err)
@@ -618,7 +571,7 @@ CALL READ_NODES('input/pigheart-nodes',GeometricFieldSolid)
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,3,SolidDisplMeshComponentNumber,Err)
   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,4,CMISSFieldNodeBasedInterpolation,Err)
 !   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,4,CMISSFieldElementBasedInterpolation,Err)
-!   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,4,SolidMeshComponenetNumber,Err)
+!   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,4,SolidGeometryMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,4,SolidLagrMultMeshComponentNumber,Err)
   !
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,1,SolidDisplMeshComponentNumber,Err)
@@ -628,7 +581,7 @@ CALL READ_NODES('input/pigheart-nodes',GeometricFieldSolid)
     & CMISSFieldNodeBasedInterpolation,Err)
 !   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,4, &
 !     & CMISSFieldElementBasedInterpolation,Err)
-!   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,4,SolidMeshComponenetNumber,Err)
+!   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,4,SolidGeometryMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,4,SolidLagrMultMeshComponentNumber, &
     & Err)
 
@@ -694,21 +647,42 @@ CALL READ_NODES('input/pigheart-nodes',GeometricFieldSolid)
   !================================================================================================================================
   !
 
-call READ_FIELD('input/pigheart-material',MaterialsFieldUserNumberDarcy,Region,GeometricField,MaterialsFieldDarcy)
-CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDarcy,MaterialsFieldUserNumberDarcy,MaterialsFieldDarcy,Err)
-CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
-!   !MATERIALS FIELDS
-! 
-!   !Create the equations set materials field variables for ALE Darcy
-!   CALL CMISSFieldTypeInitialise(MaterialsFieldDarcy,Err)
-!   CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDarcy,MaterialsFieldUserNumberDarcy, &
-!     & MaterialsFieldDarcy,Err)
-!   !Finish the equations set materials field variables
-!   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
-!   CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-!     & MaterialsFieldUserNumberDarcyPorosity,POROSITY_PARAM_DARCY,Err)
-!   CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-!     & MaterialsFieldUserNumberDarcyPermOverVis,PERM_OVER_VIS_PARAM_DARCY,Err)
+  call READ_FIELD('input/LV242-material',MaterialsFieldUserNumberDarcy,Region,GeometricFieldDarcy,MaterialsFieldDarcy)
+  !CALL CMISSFieldTypeInitialise(MaterialsFieldDarcy,Err)
+  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDarcy,MaterialsFieldUserNumberDarcy,MaterialsFieldDarcy,Err)
+  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
+
+  !
+  !================================================================================================================================
+  !
+
+  !Source field
+  CALL CMISSFieldTypeInitialise(SourceFieldDarcy,Err)
+  CALL CMISSEquationsSetSourceCreateStart(EquationsSetDarcy,SourceFieldDarcyUserNumber,SourceFieldDarcy,Err)
+  CALL CMISSEquationsSetSourceCreateFinish(EquationsSetDarcy,Err)
+
+  ELEMENT_NUMBER = 3
+  COMPONENT_NUMBER = 4
+  VALUE = 0.0_CMISSDP
+!   CALL CMISSFieldParameterSetUpdateElement(RegionUserNumber,SourceFieldDarcyUserNumber,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+!     & ELEMENT_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+
+  NUMBER_USER_ELEMENT_NODES = 27  !hardcoding is bad - but how to access the number of element nodes ?
+                                  !- there is no CMISS library call available for this
+                                  !- traversing the structure of 'CMISSMeshElementsType' does not work either,
+                                  !  since certain members are private
+
+  allocate( ElementUserNodes(NUMBER_USER_ELEMENT_NODES) )
+
+  CALL CMISSMeshElementsNodesGet(RegionUserNumber,MeshUserNumber,DarcyGeometryMeshComponentNumber,ELEMENT_NUMBER, &
+    & ElementUserNodes,Err)
+
+  DO NN=1,NUMBER_USER_ELEMENT_NODES
+    NODE_NUMBER = ElementUserNodes(NN)
+    CALL CMISSFieldParameterSetUpdateNode(SourceFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+      & 1,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+  ENDDO
+
 
   !
   !================================================================================================================================
@@ -753,13 +727,12 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
   !------------------------------------
   ! Grab surfaces to assign boundary conditions
 
-  CALL READ_SURFACE('input/surface-lin-inner',surface_lin_inner)
-  CALL READ_SURFACE('input/surface-lin-outer',surface_lin_outer)
-  CALL READ_SURFACE('input/surface-lin-base',surface_lin_base)
-  CALL READ_SURFACE('input/surface-quad-inner',surface_quad_inner)
-  CALL READ_SURFACE('input/surface-quad-outer',surface_quad_outer)
-  CALL READ_SURFACE('input/surface-quad-base',surface_quad_base)
-
+  CALL READ_SURFACE('input/LV242-surface-lin-inner',surface_lin_inner)
+  CALL READ_SURFACE('input/LV242-surface-lin-outer',surface_lin_outer)
+  CALL READ_SURFACE('input/LV242-surface-lin-base',surface_lin_base)
+  CALL READ_SURFACE('input/LV242-surface-quad-inner',surface_quad_inner)
+  CALL READ_SURFACE('input/LV242-surface-quad-outer',surface_quad_outer)
+  CALL READ_SURFACE('input/LV242-surface-quad-base',surface_quad_base)
 
   !------------------------------------
   ! ASSIGN BOUNDARY CONDITIONS - SOLID (absolute nodal parameters)
@@ -767,9 +740,9 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsSolid,Err)
   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetSolid,BoundaryConditionsSolid,Err)
 
-  write(*,*)'surface_quad_base = ',surface_quad_base
+  !write(*,*)'surface_quad_base = ',surface_quad_base
 
-  INNER_PRESSURE = 0.01_CMISSDP
+  INNER_PRESSURE = 0.5_CMISSDP
   OUTER_PRESSURE = 0.0_CMISSDP
 
   ! ASSIGN BOUNDARY CONDITIONS
@@ -784,28 +757,28 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
     ENDIF
   ENDDO
 
-!   !Apply inner surface pressure
-!   !NOTE: Surface pressure goes into pressure_values_set_type of the DELUDELN type
-!   DO NN=1,SIZE(surface_quad_inner,1)
-!     NODE=surface_quad_inner(NN)
-!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-!     IF(NodeDomain==ComputationalNodeNumber) THEN
-!       COMPONENT_NUMBER = 3  ! Does it matter which number ??? It used to be linked to the normal ... Check this !!!
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldDelUDelNVariableType,1,NODE,COMPONENT_NUMBER, &
-!         & CMISSBoundaryConditionPressure,INNER_PRESSURE,Err)
-!     ENDIF
-!   ENDDO
-! 
-!   !Apply outer surface pressure
-!   DO NN=1,SIZE(surface_quad_outer,1)
-!     NODE=surface_quad_outer(NN)
-!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-!     IF(NodeDomain==ComputationalNodeNumber) THEN
-!       COMPONENT_NUMBER = 3  ! Does it matter which number ??? It used to be linked to the normal ... Check this !!!
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldDelUDelNVariableType,1,NODE,COMPONENT_NUMBER, &
-!         & CMISSBoundaryConditionPressure,OUTER_PRESSURE,Err)
-!     ENDIF
-!   ENDDO
+  !Apply inner surface pressure
+  !NOTE: Surface pressure goes into pressure_values_set_type of the DELUDELN type
+  DO NN=1,SIZE(surface_quad_inner,1)
+    NODE=surface_quad_inner(NN)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      COMPONENT_NUMBER = 3  ! Does it matter which number ??? It used to be linked to the normal ... Check this !!!
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldDelUDelNVariableType,1,NODE,COMPONENT_NUMBER, &
+        & CMISSBoundaryConditionPressure,INNER_PRESSURE,Err)
+    ENDIF
+  ENDDO
+
+  !Apply outer surface pressure
+  DO NN=1,SIZE(surface_quad_outer,1)
+    NODE=surface_quad_outer(NN)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      COMPONENT_NUMBER = 3  ! Does it matter which number ??? It used to be linked to the normal ... Check this !!!
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldDelUDelNVariableType,1,NODE,COMPONENT_NUMBER, &
+        & CMISSBoundaryConditionPressure,OUTER_PRESSURE,Err)
+    ENDIF
+  ENDDO
 
   !Fix more nodes at the base to stop free body motion: 600 in x, 584 in y
   X_FIXED=.FALSE.
@@ -816,15 +789,15 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
       CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,2,YCoord,Err)
-!       IF(ABS(XCoord)<1.0E-6_CMISSDP) THEN
-      IF(NODE==600) THEN
+      IF(ABS(XCoord)<1.0E-6_CMISSDP) THEN
+!       IF(NODE==600) THEN
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,NODE,1, &
           & CMISSBoundaryConditionFixed,XCoord,Err)
         WRITE(*,*) "FIXING NODE",NODE,"IN X DIRECTION"
         X_FIXED=.TRUE.
       ENDIF
-!       IF(ABS(YCoord)<1.0E-6_CMISSDP) THEN
-      IF(NODE==584) THEN
+      IF(ABS(YCoord)<1.0E-6_CMISSDP) THEN
+!       IF(NODE==584) THEN
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,NODE,2, &
           & CMISSBoundaryConditionFixed,YCoord,Err)
         WRITE(*,*) "FIXING NODE",NODE,"IN Y DIRECTION"
@@ -853,45 +826,15 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDarcy,Err)
   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDarcy,BoundaryConditionsDarcy,Err)
 
-    !In 'generated_mesh_routines.f90/GENERATED_MESH_ELLIPSOID_SURFACE_GET' there is a bug:
-    !  BASIS=>ELLIPSOID_MESH%BASES(MESH_COMPONENT)%PTR does not account for the fact that:
-    !  in 'generated_mesh_routines.f90/GENERATED_MESH_ELLIPSOID_CREATE_FINISH' the following is done:
-    !  CALL MESH_NUMBER_OF_COMPONENTS_SET(GENERATED_MESH%MESH,SIZE(ELLIPSOID_MESH%BASES)/2,ERR,ERROR,*999)
-    !Temporary work around, until bug fix:
-
 
     !  I N N E R   S U R F A C E
 
-    write(*,*)'surface_lin_inner = ',surface_lin_inner
+    !write(*,*)'surface_lin_inner = ',surface_lin_inner
 
     !Set all inner surface nodes impermeable
     !MIND: CMISSFieldDelVDelNVariableType -> RHS invoked in DARCY_EQUATION_FINITE_ELEMENT_CALCULATE
     !      CMISSBoundaryConditionImpermeableWall
     DO NN=1,SIZE(surface_lin_inner,1)
-!       VALUE = 0.0_CMISSDP
-!       COMPONENT_NUMBER = 1
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,surface_lin_inner(NN), &
-!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
-!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING INNER DARCY BC TO NODE", surface_lin_inner(NN)
-! 
-!       VALUE = 0.0_CMISSDP
-!       COMPONENT_NUMBER = 2
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,surface_lin_inner(NN), &
-!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
-!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING INNER DARCY BC TO NODE", surface_lin_inner(NN)
-! 
-!       VALUE = 0.0_CMISSDP
-!       COMPONENT_NUMBER = 3
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,surface_lin_inner(NN), &
-!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
-!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING INNER DARCY BC TO NODE", surface_lin_inner(NN)
-
-!       VALUE = 1.0_CMISSDP
-!       COMPONENT_NUMBER = ABS(InnerNormalXi)
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,surface_lin_inner(NN), &
-!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
-!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING INNER DARCY BC TO NODE", surface_lin_inner(NN)
-
       NODE_NUMBER = surface_lin_inner(NN)
       COMPONENT_NUMBER = 1
       VALUE = 1.0_CMISSDP
@@ -902,34 +845,10 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
 
     !  O U T E R   S U R F A C E
 
-    write(*,*)'surface_lin_outer = ',surface_lin_outer
+    !write(*,*)'surface_lin_outer = ',surface_lin_outer
 
     !Set all outer surface nodes impermeable
     DO NN=1,SIZE(surface_lin_outer,1)
-!       VALUE = 0.0_CMISSDP
-!       COMPONENT_NUMBER = 1
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,surface_lin_outer(NN), &
-!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
-!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING OUTER DARCY BC TO NODE", surface_lin_outer(NN)
-! 
-!       VALUE = 0.0_CMISSDP
-!       COMPONENT_NUMBER = 2
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,surface_lin_outer(NN), &
-!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
-!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING OUTER DARCY BC TO NODE", surface_lin_outer(NN)
-! 
-!       VALUE = 0.0_CMISSDP
-!       COMPONENT_NUMBER = 3
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,surface_lin_outer(NN), &
-!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
-!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING OUTER DARCY BC TO NODE", surface_lin_outer(NN)
-
-!       VALUE = 1.0_CMISSDP
-!       COMPONENT_NUMBER = ABS(OuterNormalXi)
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,surface_lin_outer(NN), &
-!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
-!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING OUTER DARCY BC TO NODE", surface_lin_outer(NN)
-
       NODE_NUMBER = surface_lin_outer(NN)
       COMPONENT_NUMBER = 1
       VALUE = 1.0_CMISSDP
@@ -944,14 +863,12 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
 
     !Set all top surface nodes to Darcy inflow BC
     DO NN=1,SIZE(surface_lin_base,1)
-!       VALUE = +1.0_CMISSDP  ! Mind the sign !
-      VALUE = 0.0_CMISSDP  ! Mind the sign !
+      VALUE = +0.0_CMISSDP  ! Mind the sign !
       COMPONENT_NUMBER = 3
       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,surface_lin_base(NN), &
         & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING TOP DARCY BC TO NODE", surface_lin_base(NN)
     ENDDO
-
 
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDarcy,Err)
 
@@ -975,6 +892,7 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
 
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
   CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
+  CALL CMISSControlLoopLabelSet(ControlLoop,'TIME_LOOP',Err)
 !   CALL CMISSControlLoopMaximumIterationsSet(ControlLoop,2,Err)
   CALL CMISSControlLoopTimesSet(ControlLoop,DYNAMIC_SOLVER_DARCY_START_TIME,DYNAMIC_SOLVER_DARCY_STOP_TIME, &
     & DYNAMIC_SOLVER_DARCY_TIME_INCREMENT,Err)
@@ -1008,8 +926,8 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
 !   CALL CMISSSolverNonLinearTypeSet(SolverSolid,CMISSSolverNonlinearNewton,Err)
 !   CALL CMISSSolverLibraryTypeSet(SolverSolid,CMISSSolverPETScLibrary,Err)
 
-  CALL CMISSSolverNewtonLinearSolverGet(SolverSolid,LinearSolverSolid,Err)
-  CALL CMISSSolverLinearTypeSet(LinearSolverSolid,CMISSSolverLinearDirectSolveType,Err)
+!   CALL CMISSSolverNewtonLinearSolverGet(SolverSolid,LinearSolverSolid,Err)
+!   CALL CMISSSolverLinearTypeSet(LinearSolverSolid,CMISSSolverLinearDirectSolveType,Err)
 
 
   !Darcy
@@ -1097,7 +1015,7 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
 
 
   !Finialise CMISS
-!   CALL CMISSFinalise(Err)
+  CALL CMISSFinalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
 
