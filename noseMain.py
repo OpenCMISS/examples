@@ -96,16 +96,20 @@ def test_example():
           properties = dict()
           load_prop(propFile,properties)
           if '42TestingPointsPATH' in properties :
-            testingPointsPath = os.environ['OPENCMISS_ROOT']+"/cm/examples/42TestingPoints/"+properties['42TestingPointsPATH']
+            testingPointsPath = os.environ['OPENCMISS_ROOT']+"/cm/examples/"+properties['42TestingPointsPATH']
           else:
             testingPointsPath = ""
           testpoints = properties['TestingPoint']
           for testpoint in testpoints :
-            os.chdir(testingPointsPath + testpoint[0])
+            if (testpoint[0].find("${")!=-1) :
+              testingPointPath = properties[testpoint[0][2:testpoint[0].find("}")]]+testpoint[0][testpoint[0].find("}")+1:]
+            else:
+              testingPointPath = testpoint[0]
+            os.chdir(testingPointsPath + testingPointPath)
             if len(testpoint)<=2 :            
-              yield check_run, 'run', os.getcwd(), system, arch, "gnu", root, testpoint[1], testpoint[0], False
+              yield check_run, 'run', os.getcwd(), system, arch, "gnu", root, testpoint[1], testingPointPath, False
             else :
-              yield check_run, 'run', os.getcwd(), system, arch, "gnu", root, testpoint[1], testpoint[0]
+              yield check_run, 'run', os.getcwd(), system, arch, "gnu", root, testpoint[1], testingPointPath
               yield check_output,'check',os.getcwd(), testpoint[2], testpoint[3]
   
 def check_build(status,root,compiler):
@@ -118,7 +122,7 @@ def check_build(status,root,compiler):
       os.mkdir(newDir)
   logPath = logDir+"/nose_build"
   open_log(logPath)
-  command = "make COMPILER=" + compiler + " >> "  + logPath + " 2>&1"
+  command = "make USEFIELDML=true COMPILER=" + compiler + " >> "  + logPath + " 2>&1"
   err = os.system(command)
   close_log(logPath)
   add_history(logDir+"/nose_build_history",err)
