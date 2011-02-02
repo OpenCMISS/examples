@@ -65,7 +65,7 @@ endif
 
 EXAMPLE_PATH= InterfaceExamples/
 
-EXAMPLE_NAME = InputCoupledLaplace
+EXAMPLE_NAME = InputCoupledStokes
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 
