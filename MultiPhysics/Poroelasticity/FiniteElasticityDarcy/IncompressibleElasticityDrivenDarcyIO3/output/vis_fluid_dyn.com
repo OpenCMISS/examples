@@ -1,5 +1,5 @@
 #Read in the sequence of nodal positions.
-for $i (1..3)
+for $i (1..1)
   {
 	 $filename = sprintf("./output/TIME_STEP_%04d.exnode", $i);
 #	 $filename = sprintf("./output/T_001_SUB_%04d.exnode", $i);
@@ -24,6 +24,9 @@ gfx modify spectrum mass_increase linear reverse range -0.0002 0.0002 extend_abo
 
 #gfx cre spectrum material_spec
 #gfx modify spectrum material_spec linear reverse range 0.25 0.35 extend_above extend_below rainbow colour_range 0 1 component material 1;
+
+gfx cre spectrum source_spectrum
+gfx modify spectrum source_spectrum linear reverse range 4.199 4.201 extend_above extend_below rainbow colour_range 0 1 component source 4;
 
 gfx modify g_element OpenCMISS node_points glyph arrow_solid general size "1.5*1.5*1.5" centre 0,0,0 select_on material default selected_material default_selected data vec_mag orientation vector_field scale_factors "1.0*1.0*1.0" spectrum flow
 

@@ -177,16 +177,59 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   !Finish the creation of the region
   CALL CMISSRegionCreateFinish(Region,Err)
 
-  CALL CMISSMeshTypeInitialise(Mesh,Err)
-  CALL CMISSFieldIOFieldsImport("MonodomainCUDAExampleIn","FORTRAN", Region, Mesh, MeshUserNumber, Decomposition, &
-    & DecompositionUserNumber, CMISSDecompositionAllType, CMISSFieldValuesSetType, CMISSFieldNoScaling, Err)
-
   !Start the creation of a basis (default is trilinear lagrange)
   CALL CMISSBasisTypeInitialise(Basis,Err)
   CALL CMISSBasisCreateStart(BasisUserNumber,Basis,Err)
   CALL CMISSBasisNumberOfXiSet(Basis,3,Err)
   !Finish the creation of the basis
   CALL CMISSBasisCreateFinish(Basis,Err)
+
+  CALL CMISSReadVTK(FILE_NAME, NODES, NUMBER_OF_NODES, ELEMENTS, NUMBER_OF_ELEMENTS)
+
+  !Create a mesh
+  CALL CMISSMeshTypeInitialise(Mesh,Err)
+  CALL CMISSMeshCreateStart(MeshUserNumber,Region,NumberOfMeshDimensions,Mesh,Err)
+  CALL CMISSMeshNumberOfComponentsSet(Mesh,NumberOfMeshComponents,Err)
+  CALL CMISSMeshNumberOfElementsSet(Mesh,TotalNumberOfElements,Err)
+
+  !Define nodes for the mesh
+  CALL CMISSNodesTypeInitialise(Nodes,Err)
+  CALL CMISSNodesCreateStart(Region,TotalNumberOfNodes,Nodes,Err)
+  CALL CMISSNodesCreateFinish(Nodes,Err)
+
+  CALL CMISSMeshElementsTypeInitialise(Elements,Err)
+  CALL CMISSMeshElementsCreateStart(Mesh,MeshComponentNumber,Basis,Elements,Err)
+  DO N=1,NUMBER_OF_ELEMENTS+1
+    CALL CMISSMeshElementsNodesSet(Elements,N,ELEMENTS(NODES_PER_ELEMENT*N:NODES_PER_ELEMENT*(N+1)),Err)
+  ENDDO
+  CALL CMISSMeshElementsCreateFinish(Elements,Err)
+
+  CALL CMISSMeshCreateFinish(Mesh,Err)
+
+!Create a decomposition
+  CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
+  CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
+  CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
+  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
+  CALL CMISSDecompositionCreateFinish(Decomposition,Err)
+
+  !Create a field to put the geometry (defualt is geometry)
+  CALL CMISSFieldTypeInitialise(GeometricField,Err)
+  CALL CMISSFieldCreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
+  CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
+  CALL CMISSFieldTypeSet(GeometricField,CMISSFieldGeometricType,Err)
+  CALL CMISSFieldNumberOfVariablesSet(GeometricField,FieldGeometryNumberOfVariables,Err)
+  CALL CMISSFieldNumberOfComponentsSet(GeometricField,CMISSFieldUVariableType,FieldGeometryNumberOfComponents,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,MeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,MeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,MeshComponentNumber,Err)
+  CALL CMISSFieldCreateFinish(GeometricField,Err)
+
+  DO N=1,NUMBER_OF_NODES+1
+    DO M=1, NODES_PER_ELEMENT
+      CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,M,NODES(N+M),Err)
+    ENDDO
+  ENDDO
 
 !  !Start the creation of a generated mesh in the region
 !  CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)

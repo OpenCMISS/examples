@@ -265,7 +265,7 @@ testExample(id='1', path="ClassicalField/Diffusion/QuadraticConvergenceTest", no
 testExample(id='1', path="ClassicalField/Diffusion/CubicConvergenceTest", nodes='1', ndiffDir='expected_files', outputDir='.')
 testExample(id='1', path="ClassicalField/Diffusion/DiffusionConstantSource", nodes='1')
 #testExample(id='1', path="ClassicalField/Helmholtz", nodes='1',input='4\n4\n0\n1')
-testExample(id='1', path="ClassicalField/NonlinearPoisson/AnalyticNonlinearPoisson",nodes='1',args='4 4 0 1')
+testExample(id='1', path="ClassicalField/Poisson/AnalyticNonlinearPoisson",nodes='1',args='4 4 0 1')
 testExample(id='2', path="ClassicalField/Laplace/NumberLaplace", nodes='1',args='4 4 0 1')
 
 #testExample(id='1',path="Bioelectrics/Monodomain",nodes='1',input='4\n4\n0\n1')
