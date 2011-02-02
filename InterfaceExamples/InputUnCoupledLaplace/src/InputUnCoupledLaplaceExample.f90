@@ -498,8 +498,8 @@ PROGRAM THREEDCOUPLEDLAPLACE
 
 ! ! ! TEST TEST TEST
 
-    CALL CMISSBasisInterpolationXiSet(InterfaceBasis,[CMISSBasisLinearLagrangeInterpolation, &
-      & CMISSBasisLinearLagrangeInterpolation],Err)
+! ! !     CALL CMISSBasisInterpolationXiSet(InterfaceBasis,[CMISSBasisLinearLagrangeInterpolation, &
+! ! !       & CMISSBasisLinearLagrangeInterpolation],Err)
 
 
     IF(BASIS_TYPE_INTERFACE/=CMISSBasisSimplexType) THEN
@@ -533,8 +533,8 @@ PROGRAM THREEDCOUPLEDLAPLACE
 
 ! ! ! TEST TEST TEST
 
-    CALL CMISSBasisInterpolationXiSet(InterfaceMappingBasis,[CMISSBasisLinearLagrangeInterpolation, &
-      & CMISSBasisLinearLagrangeInterpolation],Err)
+! ! !     CALL CMISSBasisInterpolationXiSet(InterfaceMappingBasis,[CMISSBasisLinearLagrangeInterpolation, &
+! ! !       & CMISSBasisLinearLagrangeInterpolation],Err)
 
 
     IF(BASIS_TYPE_INTERFACE/=CMISSBasisSimplexType) THEN
@@ -798,7 +798,7 @@ PROGRAM THREEDCOUPLEDLAPLACE
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions1,Err)
   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet1,BoundaryConditions1,Err)
   !Set the first node to 0.0
-  FirstNodeNumber=1
+  FirstNodeNumber=110
   CALL CMISSDecompositionNodeDomainGet(Decomposition1,FirstNodeNumber,1,FirstNodeDomain,Err)
   IF(FirstNodeDomain==ComputationalNodeNumber) THEN
     CALL CMISSBoundaryConditionsSetNode(BoundaryConditions1,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
@@ -814,7 +814,7 @@ PROGRAM THREEDCOUPLEDLAPLACE
   !Set the last node 125 to 1.0
   CALL CMISSNodesTypeInitialise(Nodes,Err)
   CALL CMISSRegionNodesGet(Region2,Nodes,Err)
-  LastNodeNumber=110
+  LastNodeNumber=1
   CALL CMISSDecompositionNodeDomainGet(Decomposition2,LastNodeNumber,1,LastNodeDomain,Err)
   IF(LastNodeDomain==ComputationalNodeNumber) THEN
     CALL CMISSBoundaryConditionsSetNode(BoundaryConditions2,CMISSFieldUVariableType,1,LastNodeNumber,1, &
@@ -958,7 +958,7 @@ PROGRAM THREEDCOUPLEDLAPLACE
   !Add in the second equations set
   CALL CMISSSolverEquationsEquationsSetAdd(CoupledSolverEquations,EquationsSet2,EquationsSet2Index,Err)
   !Add in the interface condition
-  CALL CMISSSolverEquationsInterfaceConditionAdd(CoupledSolverEquations,InterfaceCondition,InterfaceConditionIndex,Err)
+! ! !   CALL CMISSSolverEquationsInterfaceConditionAdd(CoupledSolverEquations,InterfaceCondition,InterfaceConditionIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(CoupledProblem,Err)
 
