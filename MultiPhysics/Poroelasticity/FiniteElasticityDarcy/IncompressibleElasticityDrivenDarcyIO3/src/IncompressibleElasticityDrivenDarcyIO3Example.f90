@@ -659,8 +659,8 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   CALL CMISSFieldTypeInitialise(SourceFieldDarcy,Err)
   CALL CMISSEquationsSetSourceCreateStart(EquationsSetDarcy,SourceFieldDarcyUserNumber,SourceFieldDarcy,Err)
   CALL CMISSEquationsSetSourceCreateFinish(EquationsSetDarcy,Err)
-
-  ELEMENT_NUMBER = 3
+  NODE_NUMBER = 1
+  ELEMENT_NUMBER = 15
   COMPONENT_NUMBER = 4
   VALUE = 4.2_CMISSDP
 !   CALL CMISSFieldParameterSetUpdateElement(RegionUserNumber,SourceFieldDarcyUserNumber,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
@@ -681,7 +681,6 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
     CALL CMISSFieldParameterSetUpdateNode(SourceFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
       & 1,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
   ENDDO
-
 
   !
   !================================================================================================================================

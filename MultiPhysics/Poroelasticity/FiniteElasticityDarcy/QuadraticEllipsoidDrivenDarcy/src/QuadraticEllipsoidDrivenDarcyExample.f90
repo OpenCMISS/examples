@@ -745,26 +745,26 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
     ENDIF
   ENDDO
 
-!   !Apply inner surface pressure
-!   !NOTE: Surface pressure goes into pressure_values_set_type of the DELUDELN type
-!   DO NN=1,SIZE(InnerSurfaceNodes,1)
-!     NODE=InnerSurfaceNodes(NN)
-!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-!     IF(NodeDomain==ComputationalNodeNumber) THEN
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,NODE,ABS(InnerNormalXi), &
-!         & CMISSBoundaryConditionPressure,INNER_PRESSURE,Err)
-!     ENDIF
-!   ENDDO
-! 
-!   !Apply outer surface pressure
-!   DO NN=1,SIZE(OuterSurfaceNodes,1)
-!     NODE=OuterSurfaceNodes(NN)
-!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-!     IF(NodeDomain==ComputationalNodeNumber) THEN
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,NODE,ABS(OuterNormalXi), &
-!         & CMISSBoundaryConditionPressure,OUTER_PRESSURE,Err)
-!     ENDIF
-!   ENDDO
+  !Apply inner surface pressure
+  !NOTE: Surface pressure goes into pressure_values_set_type of the DELUDELN type
+  DO NN=1,SIZE(InnerSurfaceNodes,1)
+    NODE=InnerSurfaceNodes(NN)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,NODE,ABS(InnerNormalXi), &
+        & CMISSBoundaryConditionPressure,INNER_PRESSURE,Err)
+    ENDIF
+  ENDDO
+
+  !Apply outer surface pressure
+  DO NN=1,SIZE(OuterSurfaceNodes,1)
+    NODE=OuterSurfaceNodes(NN)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,NODE,ABS(OuterNormalXi), &
+        & CMISSBoundaryConditionPressure,OUTER_PRESSURE,Err)
+    ENDIF
+  ENDDO
 
   !Fix more nodes at the base to stop free body motion
   X_FIXED=.FALSE.

@@ -952,6 +952,73 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING TOP DARCY BC TO NODE", surface_lin_base(NN)
     ENDDO
 
+    DO NN=1,SIZE(surface_lin_inner,1)
+!       VALUE = 0.0_CMISSDP
+!       COMPONENT_NUMBER = 1
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,InnerSurfaceNodesDarcyVel(NN), &
+!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
+!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING INNER DARCY BC TO NODE", InnerSurfaceNodesDarcyVel(NN)
+! 
+!       VALUE = 0.0_CMISSDP
+!       COMPONENT_NUMBER = 2
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,InnerSurfaceNodesDarcyVel(NN), &
+!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
+!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING INNER DARCY BC TO NODE", InnerSurfaceNodesDarcyVel(NN)
+! 
+!       VALUE = 0.0_CMISSDP
+!       COMPONENT_NUMBER = 3
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,InnerSurfaceNodesDarcyVel(NN), &
+!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
+!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING INNER DARCY BC TO NODE", InnerSurfaceNodesDarcyVel(NN)
+
+!       VALUE = 1.0_CMISSDP
+!       COMPONENT_NUMBER = ABS(InnerNormalXi)
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,InnerSurfaceNodesDarcyVel(NN), &
+!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
+!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING INNER DARCY BC TO NODE", InnerSurfaceNodesDarcyVel(NN)
+
+      NODE_NUMBER = surface_lin_inner(NN)
+      !COMPONENT_NUMBER = ABS(InnerNormalXi)
+      COMPONENT_NUMBER=1_CMISSIntg
+      VALUE = 1.0_CMISSDP
+      CALL CMISSFieldParameterSetUpdateNode(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+        & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+
+    ENDDO
+    DO NN=1,SIZE(surface_lin_outer,1)
+!       VALUE = 0.0_CMISSDP
+!       COMPONENT_NUMBER = 1
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,OuterSurfaceNodesDarcyVel(NN), &
+!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
+!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING OUTER DARCY BC TO NODE", OuterSurfaceNodesDarcyVel(NN)
+! 
+!       VALUE = 0.0_CMISSDP
+!       COMPONENT_NUMBER = 2
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,OuterSurfaceNodesDarcyVel(NN), &
+!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
+!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING OUTER DARCY BC TO NODE", OuterSurfaceNodesDarcyVel(NN)
+! 
+!       VALUE = 0.0_CMISSDP
+!       COMPONENT_NUMBER = 3
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,OuterSurfaceNodesDarcyVel(NN), &
+!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
+!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING OUTER DARCY BC TO NODE", OuterSurfaceNodesDarcyVel(NN)
+
+!       VALUE = 1.0_CMISSDP
+!       COMPONENT_NUMBER = ABS(OuterNormalXi)
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldDelVDelNVariableType,1,OuterSurfaceNodesDarcyVel(NN), &
+!         & COMPONENT_NUMBER,CMISSBoundaryConditionImpermeableWall,VALUE,Err)
+!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING OUTER DARCY BC TO NODE", OuterSurfaceNodesDarcyVel(NN)
+
+      NODE_NUMBER = surface_lin_outer(NN)
+      !COMPONENT_NUMBER = ABS(OuterNormalXi)
+      COMPONENT_NUMBER=1_CMISSIntg
+      VALUE = 1.0_CMISSDP
+      CALL CMISSFieldParameterSetUpdateNode(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+        & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+    ENDDO
+
+
 
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDarcy,Err)
 
