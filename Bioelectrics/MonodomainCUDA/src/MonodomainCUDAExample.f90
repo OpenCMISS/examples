@@ -98,7 +98,8 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
   ! 4 nodes per tetrahedral element
   INTEGER(CMISSIntg), PARAMETER :: NODES_PER_ELEMENT=4
-  
+  INTEGER(CMISSIntg) :: NODE_SET(NODES_PER_ELEMENT)
+
   ! C Pointer
   TYPE(C_PTR) :: NODE_COORDINATES_C
   TYPE(C_PTR) :: NODE_SETS_C
@@ -208,10 +209,6 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   CALL CMISSReadVTK("Atlas_Mesh.vtk", NODE_COORDINATES_C, NUMBER_OF_NODES, NODE_SETS_C, NUMBER_OF_ELEMENTS,Err)
   CALL C_F_POINTER(NODE_COORDINATES_C, NODE_COORDINATES_F90,[NUMBER_OF_NODES*NumberOfMeshDimensions])
   CALL C_F_POINTER(NODE_SETS_C, NODE_SETS_F90,[NUMBER_OF_ELEMENTS*NODES_PER_ELEMENT])
-  PRINT *,NUMBER_OF_NODES
-  PRINT *,NUMBER_OF_ELEMENTS
-  PRINT *,NODE_COORDINATES_F90(1)
-  PRINT *,NODE_SETS_F90(1)
 
   !Create a mesh
   CALL CMISSMeshTypeInitialise(Mesh,Err)
@@ -226,10 +223,14 @@ PROGRAM MONODOMAINCUDAEXAMPLE
 
   CALL CMISSMeshElementsTypeInitialise(Elements,Err)
   CALL CMISSMeshElementsCreateStart(Mesh,MeshComponentNumber,Basis,Elements,Err)
-  DO N=0,NUMBER_OF_ELEMENTS
+  DO N=0,NUMBER_OF_ELEMENTS-1
       INDEX=(NODES_PER_ELEMENT*N)+1
-      CALL CMISSMeshElementsNodesSet(Elements,N+1,NODE_SETS_F90(INDEX:INDEX+NODES_PER_ELEMENT-1),Err)
+      DO M=1, NODES_PER_ELEMENT
+        NODE_SET(M)=NODE_SETS_F90(INDEX+M-1)+1
+      ENDDO
+      CALL CMISSMeshElementsNodesSet(Elements,N+1,NODE_SET,Err)
   ENDDO
+
   CALL CMISSMeshElementsCreateFinish(Elements,Err)
 
   CALL CMISSMeshCreateFinish(Mesh,Err)
@@ -253,10 +254,10 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,MeshComponentNumber,Err)
   CALL CMISSFieldCreateFinish(GeometricField,Err)
 
-  DO N=1,NUMBER_OF_NODES+1
-    DO M=0, NumberOfMeshDimensions
-      CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N &
-      & ,M+1,NODE_COORDINATES_F90(N+M),Err)
+  DO N=0,NUMBER_OF_NODES-1
+    DO M=0, NumberOfMeshDimensions-1
+      CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N+1 &
+      & ,M+1,NODE_COORDINATES_F90(N*NumberOfMeshDimensions+M+1),Err)
     ENDDO
   ENDDO
 
