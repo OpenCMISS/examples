@@ -158,8 +158,8 @@ PROGRAM MONODOMAINEXAMPLE
 
   CALL CMISSOutputSetOn("Monodomain",Err)
     
-  NUMBER_GLOBAL_X_ELEMENTS=2
-  NUMBER_GLOBAL_Y_ELEMENTS=2
+  NUMBER_GLOBAL_X_ELEMENTS=10
+  NUMBER_GLOBAL_Y_ELEMENTS=10
   NUMBER_GLOBAL_Z_ELEMENTS=0
   NUMBER_OF_DOMAINS=NumberOfComputationalNodes
   
@@ -272,6 +272,13 @@ PROGRAM MONODOMAINEXAMPLE
   !Finish the equations set materials field variables
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
   
+  !Set conductivity
+  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,10.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,10.0_CMISSDP,Err)
+  IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
+    CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,10.0_CMISSDP,Err)
+  ENDIF
+
   !Create the equations set source field variables
   CALL CMISSFieldTypeInitialise(SourceField,Err)
   CALL CMISSEquationsSetSourceCreateStart(EquationsSet,SourceFieldUserNumber,SourceField,Err)
@@ -364,7 +371,7 @@ PROGRAM MONODOMAINEXAMPLE
   !END DO
   !CALL CMISSFieldParameterSetUpdateStart(CellMLModelsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
   !CALL CMISSFieldParameterSetUpdateFinish(CellMLModelsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
-  CALL CMISSFieldComponentValuesInitialise(CellMLModelsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2_CMISSIntg,Err)
+  !CALL CMISSFieldComponentValuesInitialise(CellMLModelsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2_CMISSIntg,Err)
 
   !Start the creation of the CellML state field
   CALL CMISSFieldTypeInitialise(CellMLStateField,Err)
@@ -384,9 +391,6 @@ PROGRAM MONODOMAINEXAMPLE
   !Finish the creation of CellML parameters
   CALL CMISSCellMLParametersFieldCreateFinish(CellML,Err)
   
-  !Generate the CellML
-  CALL CMISSCellMLGenerate(CellML,Err)
-
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
   CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
@@ -423,6 +427,12 @@ PROGRAM MONODOMAINEXAMPLE
   !Finish the creation of the equations set boundary conditions
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
   
+  !Set the Stimulus at node 1
+  IF(FirstNodeDomain==ComputationalNodeNumber) THEN
+    CALL CMISSFieldParameterSetUpdateNode(CellMLParametersField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,2, &
+      & -10.0_CMISSDP,Err)
+  ENDIF
+  
   !Start the creation of a problem.
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
@@ -433,12 +443,13 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSProblemCreateFinish(Problem,Err)
 
   !Start the creation of the problem control loop
+  !Loop in time for 100 ms with the Stimulus applied.
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
   !Get the control loop
   CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
   !Set the times
-  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,1.01_CMISSDP,0.01_CMISSDP,Err)
+  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,0.10_CMISSDP,0.01_CMISSDP,Err)
   !Set the output
   CALL CMISSControlLoopOutputTypeSet(ControlLoop,CMISSControlLoopTimingOutput,Err)
   !Finish creating the problem control loop
@@ -449,6 +460,8 @@ PROGRAM MONODOMAINEXAMPLE
   !Get the first (DAE) solver
   CALL CMISSSolverTypeInitialise(Solver,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
+  !Set the DAE time step to by 10 us
+  CALL CMISSSolverDAETimeStepSet(Solver,0.00001_CMISSDP,Err)
   !CALL CMISSSolverDAESolverTypeSet(Solver,CMISSSolverDAEExternal,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
@@ -495,9 +508,22 @@ PROGRAM MONODOMAINEXAMPLE
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
 
-  !Solve the problem
+  !Solve the problem for the first 100 ms
   CALL CMISSProblemSolve(Problem,Err)
 
+  !Now turn the stimulus off
+  !Set the Stimulus at node 1
+  IF(FirstNodeDomain==ComputationalNodeNumber) THEN
+    CALL CMISSFieldParameterSetUpdateNode(CellMLParametersField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,2, &
+      & 0.0_CMISSDP,Err)
+  ENDIF
+
+  !Set the time loop for another 900 ms
+  CALL CMISSControlLoopTimesSet(ControlLoop,0.1_CMISSDP,1.00_CMISSDP,0.01_CMISSDP,Err)
+  
+  !Solve the problem for the next 900 ms
+  CALL CMISSProblemSolve(Problem,Err)
+  
   EXPORT_FIELD=.FALSE.
   IF(EXPORT_FIELD) THEN
     CALL CMISSFieldsTypeInitialise(Fields,Err)
