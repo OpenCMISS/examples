@@ -65,7 +65,7 @@ endif
 
 EXAMPLE_PATH=EmbeddedMesh/
 
-EXAMPLE_NAME = EmbeddedMeshBasic
+EXAMPLE_NAME = EmbeddedMeshBasicWithMap
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 
