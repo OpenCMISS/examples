@@ -355,7 +355,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
 
  !Create the dependent field with 1 variables and 1 component
   CALL CMISSFieldTypeInitialise(DependentField2,Err)
-  CALL CMISSFieldCreateStart(DependentFieldOneUserNumber,Region2,DependentField2,Err)
+  CALL CMISSFieldCreateStart(DependentFieldTwoUserNumber,Region2,DependentField2,Err)
   CALL CMISSFieldTypeSet(DependentField2,CMISSFieldGeneralType,Err)
   CALL CMISSFieldMeshDecompositionSet(DependentField2,Decomposition2,Err)
   CALL CMISSFieldGeometricFieldSet(DependentField2,GeometricField2,Err)
@@ -372,8 +372,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
 
   !Initialise the field with an initial guess
   CALL CMISSFieldComponentValuesInitialise(DependentField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,0.1_CMISSDP,Err)
-
-  
+ 
    CALL CMISSNodesNumberOfNodesGet(RegionTwoUserNumber,NumberOfNodes2,Err)
    !Before
    DO node_idx=1,NumberOfNodes2
