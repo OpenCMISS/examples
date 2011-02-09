@@ -358,8 +358,9 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   DIAG_LEVEL_LIST(4)=4
   DIAG_LEVEL_LIST(5)=5
 
-  DIAG_ROUTINE_LIST(1)="WRITE_IP_INFO"
+  !DIAG_ROUTINE_LIST(1)="WRITE_IP_INFO"
 !   DIAG_ROUTINE_LIST(2)="FINITE_ELASTICITY_GAUSS_CAUCHY_TENSOR"
+  DIAG_ROUTINE_LIST(1)="FINITE_ELASTICITY_FINITE_ELEMENT_RESIDUAL_EVALUATE"
 
   !CMISSAllDiagType/CMISSInDiagType/CMISSFromDiagType
   CALL CMISSDiagnosticsSetOn(CMISSInDiagType,DIAG_LEVEL_LIST,"Diagnostics",DIAG_ROUTINE_LIST,Err)
@@ -434,8 +435,8 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   CALL CMISSBasisCreateFinish(CubicBasis,Err)
 
   !LinearBasis/QuadraticBasis/CubicBasis
-  Bases(1)=CubicBasis
-  Bases(2)=QuadraticBasis
+  Bases(1)=QuadraticBasis
+  Bases(2)=LinearBasis
 
   !Start the creation of a generated mesh in the region
   CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)

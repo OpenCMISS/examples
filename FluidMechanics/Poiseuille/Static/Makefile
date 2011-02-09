@@ -67,5 +67,5 @@ EXAMPLE_PATH=FluidMechanics/Poiseuille/
 
 EXAMPLE_NAME = Static
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

@@ -69,5 +69,5 @@ EXAMPLE_NAME = LaplaceEllipsoid_FieldML
 
 USEFIELDML = true
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

@@ -5,7 +5,7 @@
 # $Id: Makefile 1544 2010-09-23 09:38:31Z krittian $
 #
 #----------------------------------------------------------------------------------------------------------------------------------
-# Makefile for compiling openCMISS examples
+# Makefile for compiling OpenCMISS examples
 #
 # Original by Chris Bradley adapted from the CMISS Makefile by Karl Tomlinson 
 # Changes:
@@ -67,11 +67,7 @@ EXAMPLE_PATH=42TestingPoints/SinglePhysics/NonlinearProblems/StaticProblems/Navi
 
 EXAMPLE_NAME = 1k
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
-
-# customisation begins here ---
-MAIN_OBJECT_DIR = $(GLOBAL_ROOT)/object/$(LIB_ARCH_DIR)$(MT_SUFFIX)$(DEBUG_SUFFIX)$(PROF_SUFFIX)/$(MPI)/$(COMPILER)
-MAIN_SOURCE_DIR = $(GLOBAL_ROOT)/src
+include $(GLOBAL_ROOT)/ExampleMakefile
 
 # let's assume fluid_mechanics_IO_routines has been built in main_object, copy them over
 # redefine preliminaries

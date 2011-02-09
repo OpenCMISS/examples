@@ -67,5 +67,5 @@ EXAMPLE_PATH = FiniteElasticity/Membrane/
 
 EXAMPLE_NAME = MembraneExtension3DSpace
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

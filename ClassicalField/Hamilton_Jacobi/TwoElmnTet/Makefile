@@ -67,5 +67,5 @@ EXAMPLE_PATH=ClassicalField/Hamilton_Jacobi/
 
 EXAMPLE_NAME = TwoElmnTet
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

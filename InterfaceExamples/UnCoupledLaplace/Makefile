@@ -67,5 +67,5 @@ EXAMPLE_PATH= InterfaceExamples/
 
 EXAMPLE_NAME = UnCoupledLaplace
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

@@ -85,8 +85,10 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
   !Program types
   
   !Program variables
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
+  CHARACTER(LEN=255) :: COMMAND_ARGUMENT
 
-  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, N
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, N, D, NA
   INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
   
   INTEGER(CMISSIntg) :: MPI_IERROR
@@ -94,10 +96,10 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
   LOGICAL :: EXPORT_FIELD
 
 
-  REAL(CMISSDP), PARAMETER :: START_TIME = 0.0, END_TIME = 100.0, DT = 0.1, DX=0.2, ACTIV_R = 1.5+1e-6   ! ms ms ms mm mm
-  REAL(CMISSDP), PARAMETER  :: FiberD = 0.095298372513562, TransverseD = 0.0125758411473;
+  REAL(CMISSDP) :: START_TIME = 0.0, END_TIME = 100.0, DT = 0.1, DX=0.2, ACTIV_R = 1.5+1e-6   ! ms ms ms mm mm
+  REAL(CMISSDP), PARAMETER  :: FiberD = 0.095298372513562, TransverseD = 0.0125758411473; ! TODO CORRECT
 
-  REAL(CMISSDP) :: x,y,z,activ
+  REAL(CMISSDP) :: x,y,z,activ, activmax
 
   !CMISS variables
 
@@ -140,6 +142,21 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
   IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
 #endif
 
+  NUMBER_OF_ARGUMENTS = COMMAND_ARGUMENT_COUNT()
+  IF(NUMBER_OF_ARGUMENTS >= 1) THEN
+    CALL GET_COMMAND_ARGUMENT(1,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
+    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*), DX
+  END IF
+  IF(NUMBER_OF_ARGUMENTS >= 2) THEN
+    CALL GET_COMMAND_ARGUMENT(2,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
+    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*), DT
+  END IF
+  IF(NUMBER_OF_ARGUMENTS >= 3) THEN
+    CALL GET_COMMAND_ARGUMENT(3,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
+    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*), END_TIME
+  END IF
+ 
+
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
@@ -154,11 +171,12 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
   NUMBER_GLOBAL_X_ELEMENTS= ROUND(WIDTH / DX)
   NUMBER_GLOBAL_Y_ELEMENTS= ROUND(HEIGHT / DX)
 
-!  NUMBER_GLOBAL_Z_ELEMENTS= ROUND(LENGTH / DX)
-  NUMBER_GLOBAL_Z_ELEMENTS= 0
+  NUMBER_GLOBAL_Z_ELEMENTS= ROUND(LENGTH / DX)
 
 
-  WRITE(*,*) 'Solving on ', NUMBER_GLOBAL_X_ELEMENTS*NUMBER_GLOBAL_Y_ELEMENTS*MAX(NUMBER_GLOBAL_Z_ELEMENTS,1),' ELEMENTS'
+  WRITE(*,*) '[',ComputationalNodeNumber,'] Solving ', NUMBER_GLOBAL_X_ELEMENTS*NUMBER_GLOBAL_Y_ELEMENTS*&
+             & MAX(NUMBER_GLOBAL_Z_ELEMENTS,1),' elements on ', NumberOfComputationalNodes,' processors with DT=',DT,&
+             & 'for T from 0 to ',END_TIME
   NUMBER_OF_DOMAINS=NumberOfComputationalNodes
     
   !Broadcast the number of elements in the X & Y directions and the number of partitions to the other computational nodes
@@ -307,7 +325,7 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
   CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
   !Set the equations set output
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
-  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsTimingOutput,Err)
+  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsTimingOutput,Err)
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsMatrixOutput,Err)
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsElementMatrixOutput,Err)
   !Finish the equations set equations
@@ -374,7 +392,7 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
   !Solve the problem
   CALL CMISSProblemSolve(Problem,Err)
 
-  EXPORT_FIELD=.TRUE.
+  EXPORT_FIELD=.FALSE.
   IF(EXPORT_FIELD) THEN
     CALL CMISSFieldsTypeInitialise(Fields,Err)
     CALL CMISSFieldsTypeCreate(Region,Fields,Err)
@@ -383,8 +401,26 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
     CALL CMISSFieldsTypeFinalise(Fields,Err)
   ENDIF
   
+  !Read activation times
+  activmax = 0.0
+  NA = 0
+  DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
+   CALL CMISSDecompositionNodeDomainGet(Decomposition,N,1,D,Err)
+   IF(D==ComputationalNodeNumber) THEN
+    CALL CMISSFieldParameterSetGetNode(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,7,activ,Err)
+!    WRITE(*,*) 'Node ',N,' activation ',activ
+    IF(activ > 0.0) THEN
+      NA = NA+1
+    ENDIF
+    activmax = max(activ,activmax)
+   ENDIF
+  ENDDO
+
+  WRITE(*,*) 100.0*NA/((NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)),&
+             & '% complete, last activation=',activmax
+
   !Finialise CMISS
-  !CALL CMISSFinalise(Err)
+  CALL CMISSFinalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
   

@@ -1,0 +1,35 @@
+EXAMPLE_NAME=data_assimilation_uniextension
+#_OpenCMISS_test
+
+################################################
+MPICC_DIR=${PETSC_DIR}/linux-gnu-c-debug/bin
+#PETSC_DIR=/home/scratch/opencmissextras/cm/external/packages/PETSc/petsc-3.1-p7
+OPENCMISS_INCLUDE_DIR=/home/scratch/opencmissextras/cm/external/x86_64-linux/mpich2/gnu_4.4/include
+OPENCMISS_LIB_DIR=/home/scratch/opencmiss/cm/lib/x86_64-linux/mpich2/gnu_4.4
+OPENCMISSEXTRAS_LIB_DIR=/home/scratch/opencmissextras/cm/external/x86_64-linux-debug/mpich2/gnu_4.4/lib
+SLEPC_DIR=/home/scratch/opencmissextras/cm/external/packages/slepc/slepc-3.1-p4
+EXAMPLE_SRC_DIR=./src
+DATA_ASSIMILATION_SRC_DIR=../common
+BIN_OUTPUT_DIR=./bin
+OTHER_OBJ="${BIN_OUTPUT_DIR}/UniAxialExtensionExample.o ${OPENCMISS_LIB_DIR}/libOpenCMISS-debug.a"
+
+COMPILER_FLAG="-c -Wall -Wwrite-strings -Wno-strict-aliasing -g3 -I${OPENCMISS_INCLUDE_DIR} -D__INSDIR__=src/mat/examples/tutorials/ -I${SLEPC_DIR}/linux-gnu-cxx-debug/include -I${DATA_ASSIMILATION_SRC_DIR}"
+
+LINKDER_FLAG="-Wall -Wwrite-strings -Wno-strict-aliasing -g3  -Wl,-rpath, -L${SLEPC_DIR}/linux-gnu-cxx-debug/lib   -Wl-rpath  -lslepc  -lpetsc  -lX11 -Wl,-rpath, -lHYPRE -lstdc++  -lpastix -lscotch -lscotcherr -lscalapack -lblacs   -lnsl -laio -lrt -L/usr/lib/gcc/x86_64-redhat-linux/4.4.1 -ldl   -lnsl -lutil -lgcc_s -lpthread  -lgfortran -lm -lm -lm -lm  -lstdc++ -lrt -lm -lrt -lm -lz -lz -lstdc++ -ldl  -lnsl -lutil -lgcc_s -lpthread -ldl  -L/usr/lib64/ -lgsl -lgslcblas"
+
+#-lPLAPACK  -lumfpack -lamd -lflapack  -lfblas  -lopen-rte -lopen-pal
+
+LINKDER_FLAG_OTHER_OBJ="-g3 -m64 -L${OPENCMISSEXTRAS_LIB_DIR}/  -L/usr/X11R6/lib64/ -L/usr/lib64/ -L/usr/lib64/openmotif/ -ltaofortran -ltaopetsc -ltao -lpetsc -lMrm -lXmu -lXm -lXt -lX11 -lstdc++ -ldl -lsundials_cvode -lsundials_nvecparallel -lsundials_nvecserial -lHYPRE -lsuperlu_dist -lpastix -lptscotch -lptscotcherr -lptscotcherrexit -lscotch -lscotcherr -lscotcherrexit -ldmumps -lmumps_common -lpord -lscalapack -lblacs -lblacsC -lblacsF77 -lblacs -lblacsC -lblacsF77 -lparmetis -lmetis  -lpthread -lrt -llapack -lblas -lfmpich -lmpe_f2cmpi -lmpe_nompi -lmpe_nompi_null -lmpich -lmpichcxx -lmpichf90 -lmpl "
+
+################################################
+echo "  Compling ..."
+gcc ${EXAMPLE_SRC_DIR}/${EXAMPLE_NAME}.cpp -o ${BIN_OUTPUT_DIR}/${EXAMPLE_NAME}.o   ${COMPILER_FLAG}
+
+echo "  Linking ..." #${MPICC_DIR}/mpicc
+gcc ${BIN_OUTPUT_DIR}/${EXAMPLE_NAME}.o ${OTHER_OBJ} -o ${BIN_OUTPUT_DIR}/${EXAMPLE_NAME}   ${LINKDER_FLAG_OTHER_OBJ} ${LINKDER_FLAG}
+
+echo " Cleaning up ..."
+rm -f ${BIN_OUTPUT_DIR}/${EXAMPLE_NAME}.o
+rm -f *~
+
+echo "  Done!  ${BIN_OUTPUT_DIR}/${EXAMPLE_NAME}"

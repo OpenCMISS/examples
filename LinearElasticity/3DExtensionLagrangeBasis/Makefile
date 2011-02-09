@@ -67,5 +67,5 @@ EXAMPLE_PATH = LinearElasticity/
 
 EXAMPLE_NAME = 3DExtensionLagrangeBasis
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

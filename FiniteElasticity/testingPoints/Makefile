@@ -68,4 +68,4 @@ EXAMPLE_PATH = FiniteElasticity/
 
 EXAMPLE_NAME = testingPoints
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile

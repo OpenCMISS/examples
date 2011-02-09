@@ -67,5 +67,5 @@ EXAMPLE_PATH = FiniteElasticity/
 
 EXAMPLE_NAME = UniAxialExtension
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

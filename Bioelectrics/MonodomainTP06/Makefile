@@ -67,5 +67,5 @@ EXAMPLE_PATH=Bioelectrics/
 
 EXAMPLE_NAME = MonodomainTP06
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

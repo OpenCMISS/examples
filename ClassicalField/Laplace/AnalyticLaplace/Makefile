@@ -67,11 +67,7 @@ EXAMPLE_PATH=ClassicalField/Laplace/
 
 EXAMPLE_NAME = AnalyticLaplace
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
-
-# customisation begins here ---
-MAIN_OBJECT_DIR = $(GLOBAL_ROOT)/object/$(LIB_ARCH_DIR)$(MT_SUFFIX)$(DEBUG_SUFFIX)$(PROF_SUFFIX)/$(MPI)/$(COMPILER)
-MAIN_SOURCE_DIR = $(GLOBAL_ROOT)/src
+include $(GLOBAL_ROOT)/ExampleMakefile
 
 # let's assume test_framework_routine.o has been built in main_object, copy them over
 # redefine preliminaries

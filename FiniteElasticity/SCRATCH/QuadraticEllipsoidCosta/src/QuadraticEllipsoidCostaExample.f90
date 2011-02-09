@@ -598,8 +598,8 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
       CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
       IF(NodeDomain==ComputationalNodeNumber) THEN
         !Set the field directly
-        CALL CMISSFieldParameterSetUpdateNode(DependentField,CMISSFieldDelUDelNVariableType,CMISSFieldPressureValuesSetType,1,NN, &
-          & ABS(InnerNormalXi),INNER_PRESSURE*REAL(time_step+1,CMISSDP),Err)
+        CALL CMISSFieldParameterSetUpdateNode(DependentField,CMISSFieldDelUDelNVariableType,CMISSFieldPressureValuesSetType,1,&
+          & NODE, ABS(InnerNormalXi),INNER_PRESSURE*REAL(time_step+1,CMISSDP),Err)
       ENDIF
     ENDDO
   ENDDO

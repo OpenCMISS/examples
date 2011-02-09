@@ -336,8 +336,8 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   PERM_OVER_VIS_PARAM_DARCY=1.0_CMISSDP
   !Set output parameter
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
-  DYNAMIC_SOLVER_DARCY_OUTPUT_TYPE=CMISSSolverProgressOutput
-  LINEAR_SOLVER_DARCY_OUTPUT_TYPE=CMISSSolverSolverOutput
+  DYNAMIC_SOLVER_DARCY_OUTPUT_TYPE=CMISSSolverSolverMatrixOutput
+  LINEAR_SOLVER_DARCY_OUTPUT_TYPE=CMISSSolverNoOutput
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
   EQUATIONS_DARCY_OUTPUT=CMISSEquationsNoOutput
 
@@ -439,7 +439,35 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   !================================================================================================================================
   !
 
-  !Set diagnostics
+! !   !Set diagnostics
+! ! 
+! !   DIAG_LEVEL_LIST(1)=1
+! !   DIAG_LEVEL_LIST(2)=2
+! !   DIAG_LEVEL_LIST(3)=3
+! !   DIAG_LEVEL_LIST(4)=4
+! !   DIAG_LEVEL_LIST(5)=5
+! ! 
+! ! !   DIAG_ROUTINE_LIST(1)="DARCY_EQUATION_FINITE_ELEMENT_CALCULATE"
+! ! !   DIAG_ROUTINE_LIST(2)="DARCY_EQUATION_PRE_SOLVE_STORE_REFERENCE_DATA"
+! ! !   DIAG_ROUTINE_LIST(1)="DARCY_EQUATION_PRE_SOLVE_GET_SOLID_DISPLACEMENT"
+! ! !   DIAG_ROUTINE_LIST(2)="DARCY_EQUATION_PRE_SOLVE_ALE_UPDATE_MESH"
+! ! !   DIAG_ROUTINE_LIST(1)="DARCY_EQUATION_PRE_SOLVE_GET_SOLID_DISPLACEMENT"
+! ! !   DIAG_ROUTINE_LIST(1)="DARCY_EQUATION_PRE_SOLVE_UPDATE_BOUNDARY_CONDITIONS"
+! !   DIAG_ROUTINE_LIST(1)="FINITE_ELASTICITY_FINITE_ELEMENT_RESIDUAL_EVALUATE"
+! ! !   DIAG_ROUTINE_LIST(2)="FINITE_ELASTICITY_GAUSS_CAUCHY_TENSOR"
+! ! !   DIAG_ROUTINE_LIST(3)="EVALUATE_CHAPELLE_PIOLA_TENSOR_ADDITION"
+! ! !   DIAG_ROUTINE_LIST(5)="DARCY_EQUATION_PRE_SOLVE_MAT_PROPERTIES"
+! ! !   DIAG_ROUTINE_LIST(6)="DATA_FITTING_FINITE_ELEMENT_CALCULATE"
+! ! !   DIAG_ROUTINE_LIST(7)="FINITE_ELASTICITY_FINITE_ELEMENT_JACOBIAN_EVALUATE"
+! ! !   DIAG_ROUTINE_LIST(8)="FINITE_ELASTICITY_FINITE_ELEMENT_RESIDUAL_EVALUATE"
+! ! !   DIAG_ROUTINE_LIST(1)="PROBLEM_SOLVER_EQUATIONS_SOLVE"
+! ! !   DIAG_ROUTINE_LIST(1)="SOLVER_NEWTON_SOLVE"
+! ! !   DIAG_ROUTINE_LIST(2)="SOLVER_NEWTON_LINESEARCH_SOLVE"
+! ! !   DIAG_ROUTINE_LIST(1)="SOLVER_SOLUTION_UPDATE"
+! ! !   DIAG_ROUTINE_LIST(1)="FINITE_ELASTICITY_FINITE_ELEMENT_RESIDUAL_EVALUATE"
+
+
+!Set diagnostics
 
   DIAG_LEVEL_LIST(1)=1
   DIAG_LEVEL_LIST(2)=2
@@ -447,27 +475,19 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   DIAG_LEVEL_LIST(4)=4
   DIAG_LEVEL_LIST(5)=5
 
-!   DIAG_ROUTINE_LIST(1)="DARCY_EQUATION_FINITE_ELEMENT_CALCULATE"
-!   DIAG_ROUTINE_LIST(2)="DARCY_EQUATION_PRE_SOLVE_STORE_REFERENCE_DATA"
-!   DIAG_ROUTINE_LIST(1)="DARCY_EQUATION_PRE_SOLVE_GET_SOLID_DISPLACEMENT"
-!   DIAG_ROUTINE_LIST(2)="DARCY_EQUATION_PRE_SOLVE_ALE_UPDATE_MESH"
-!   DIAG_ROUTINE_LIST(1)="DARCY_EQUATION_PRE_SOLVE_GET_SOLID_DISPLACEMENT"
-!   DIAG_ROUTINE_LIST(1)="DARCY_EQUATION_PRE_SOLVE_UPDATE_BOUNDARY_CONDITIONS"
-  DIAG_ROUTINE_LIST(1)="FINITE_ELASTICITY_FINITE_ELEMENT_RESIDUAL_EVALUATE"
+  !DIAG_ROUTINE_LIST(1)="WRITE_IP_INFO"
 !   DIAG_ROUTINE_LIST(2)="FINITE_ELASTICITY_GAUSS_CAUCHY_TENSOR"
-!   DIAG_ROUTINE_LIST(3)="EVALUATE_CHAPELLE_PIOLA_TENSOR_ADDITION"
-!   DIAG_ROUTINE_LIST(5)="DARCY_EQUATION_PRE_SOLVE_MAT_PROPERTIES"
-!   DIAG_ROUTINE_LIST(6)="DATA_FITTING_FINITE_ELEMENT_CALCULATE"
-!   DIAG_ROUTINE_LIST(7)="FINITE_ELASTICITY_FINITE_ELEMENT_JACOBIAN_EVALUATE"
-!   DIAG_ROUTINE_LIST(8)="FINITE_ELASTICITY_FINITE_ELEMENT_RESIDUAL_EVALUATE"
-!   DIAG_ROUTINE_LIST(1)="PROBLEM_SOLVER_EQUATIONS_SOLVE"
-!   DIAG_ROUTINE_LIST(1)="SOLVER_NEWTON_SOLVE"
-!   DIAG_ROUTINE_LIST(2)="SOLVER_NEWTON_LINESEARCH_SOLVE"
-!   DIAG_ROUTINE_LIST(1)="SOLVER_SOLUTION_UPDATE"
-!   DIAG_ROUTINE_LIST(1)="FINITE_ELASTICITY_FINITE_ELEMENT_RESIDUAL_EVALUATE"
+  DIAG_ROUTINE_LIST(1)="FINITE_ELASTICITY_FINITE_ELEMENT_RESIDUAL_EVALUATE"
 
   !CMISSAllDiagType/CMISSInDiagType/CMISSFromDiagType
-!   CALL CMISSDiagnosticsSetOn(CMISSInDiagType,DIAG_LEVEL_LIST,"Diagnostics",DIAG_ROUTINE_LIST,Err)
+  CALL CMISSDiagnosticsSetOn(CMISSInDiagType,DIAG_LEVEL_LIST,"Diagnostics",DIAG_ROUTINE_LIST,Err)
+
+  !CMISSAllTimingType/CMISSInTimingType/CMISSFromTimingType
+  !TIMING_ROUTINE_LIST(1)="PROBLEM_FINITE_ELEMENT_CALCULATE"
+  !CALL TIMING_SET_ON(IN_TIMING_TYPE,.TRUE.,"",TIMING_ROUTINE_LIST,ERR,ERROR,*999)
+
+!   !CMISSAllDiagType/CMISSInDiagType/CMISSFromDiagType
+!    CALL CMISSDiagnosticsSetOn(CMISSInDiagType,DIAG_LEVEL_LIST,"Diagnostics",DIAG_ROUTINE_LIST,Err)
 
   !CMISSAllTimingType/CMISSInTimingType/CMISSFromTimingType
   !TIMING_ROUTINE_LIST(1)="PROBLEM_FINITE_ELEMENT_CALCULATE"
@@ -649,6 +669,7 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
       & EquationsSetFieldUserNumberDarcy,EquationsSetFieldDarcy(icompartment),EquationsSetDarcy(icompartment),Err)
     !Finish creating the equations set
     CALL CMISSEquationsSetCreateFinish(EquationsSetDarcy(icompartment),Err)
+    !Set the values for the equations set field to be the current compartment number (1 - N), and the total number of compartments (N)
     CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldDarcy(icompartment),CMISSFieldUVariableType, &
       & CMISSFieldValuesSetType,1,icompartment,Err)
     CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldDarcy(icompartment),CMISSFieldUVariableType, &
@@ -665,10 +686,12 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
     & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetIncompressibleElastMultiCompDarcySubtype,&
     & EquationsSetFieldSolidUserNumber,EquationsSetFieldSolid,EquationsSetSolid,Err)
   CALL CMISSEquationsSetCreateFinish(EquationsSetSolid,Err)
-    CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldSolid,CMISSFieldUVariableType, &
-      & CMISSFieldValuesSetType,1,1,Err)
-    CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldSolid,CMISSFieldUVariableType, &
-      & CMISSFieldValuesSetType,2,Ncompartments,Err)
+  !Set the values for the equations set field to be the current compartment number (O for the finite elasticity equations_set), and the total number of compartments (N)
+  !Need to store number of compartments, as finite elasticity uses this to calculate the total mass increase for the constiutive law
+  CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldSolid,CMISSFieldUVariableType, &
+     & CMISSFieldValuesSetType,1,0_CMISSIntg,Err)
+  CALL CMISSFieldParameterSetUpdateConstant(EquationsSetFieldSolid,CMISSFieldUVariableType, &
+     & CMISSFieldValuesSetType,2,Ncompartments,Err)
 
 
   ! end Solid
@@ -686,16 +709,16 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   CALL CMISSFieldGeometricFieldSet(MaterialFieldSolid,GeometricFieldSolid,Err)
   CALL CMISSFieldNumberOfVariablesSet(MaterialFieldSolid,FieldMaterialSolidNumberOfVariables,Err)
   CALL CMISSFieldNumberOfComponentsSet(MaterialFieldSolid,CMISSFieldUVariableType,FieldMaterialSolidNumberOfComponents,Err)
-  CALL CMISSFieldComponentMeshComponentSet(MaterialFieldSolid,CMISSFieldUVariableType,1,SolidMeshComponenetNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(MaterialFieldSolid,CMISSFieldUVariableType,2,SolidMeshComponenetNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(MaterialFieldSolid,CMISSFieldUVariableType,3,SolidMeshComponenetNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(MaterialFieldSolid,CMISSFieldUVariableType,1,SolidGeometryMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(MaterialFieldSolid,CMISSFieldUVariableType,2,SolidGeometryMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(MaterialFieldSolid,CMISSFieldUVariableType,3,SolidGeometryMeshComponentNumber,Err)
   !
   CALL CMISSFieldCreateFinish(MaterialFieldSolid,Err)
 
   !Set material parameters
-  CALL CMISSFieldComponentValuesInitialise(MaterialFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2.0_CMISSDP,Err)
 !   CALL CMISSFieldComponentValuesInitialise(MaterialFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2.0e3_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,1.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,6.0_CMISSDP,Err)
 !   CALL CMISSFieldComponentValuesInitialise(MaterialFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,33.0_CMISSDP,Err)
   CALL CMISSFieldComponentValuesInitialise(MaterialFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,10.0_CMISSDP,Err)
 
@@ -736,9 +759,12 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
        & CMISSFieldVectorDimensionType,Err)
   CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,CMISSFieldUVariableType,FieldDependentSolidNumberOfComponents,Err)
   CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,FieldDependentSolidNumberOfComponents,Err)
-  CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,1,CMISSFieldNodeBasedInterpolation,Err)
-  CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,2,CMISSFieldNodeBasedInterpolation,Err)
-  CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,3,CMISSFieldNodeBasedInterpolation,Err)
+  DO icompartment=3,2*Ncompartments+2
+    CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,VariableTypes(icompartment),FieldDependentFluidNumberOfComponents,Err)
+  ENDDO
+!   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,1,CMISSFieldNodeBasedInterpolation,Err)
+!   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,2,CMISSFieldNodeBasedInterpolation,Err)
+!   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,3,CMISSFieldNodeBasedInterpolation,Err)
 
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,1,SolidDisplMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,2,SolidDisplMeshComponentNumber,Err)
@@ -747,12 +773,12 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
 !   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,4,CMISSFieldElementBasedInterpolation,Err)
 !   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,4,SolidMeshComponenetNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldUVariableType,4,SolidLagrMultMeshComponentNumber,Err)
-  CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,1, &
-    & CMISSFieldNodeBasedInterpolation,Err)
-  CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,2, &
-    & CMISSFieldNodeBasedInterpolation,Err)
-  CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,3, &
-    & CMISSFieldNodeBasedInterpolation,Err)
+!   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,1, &
+!     & CMISSFieldNodeBasedInterpolation,Err)
+!   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,2, &
+!     & CMISSFieldNodeBasedInterpolation,Err)
+!   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,3, &
+!     & CMISSFieldNodeBasedInterpolation,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,1,SolidDisplMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,2,SolidDisplMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,3,SolidDisplMeshComponentNumber,Err)
@@ -765,9 +791,9 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
     & Err)
   !loop over the number of compartments
   DO icompartment=3,2*Ncompartments+2
-    CALL CMISSFieldDimensionSet(DependentFieldSolid,VariableTypes(icompartment), &
-       & CMISSFieldVectorDimensionType,Err)
-    CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,VariableTypes(icompartment),FieldDependentFluidNumberOfComponents,Err)
+!     CALL CMISSFieldDimensionSet(DependentFieldSolid,VariableTypes(icompartment), &
+!        & CMISSFieldVectorDimensionType,Err)
+    !CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,VariableTypes(icompartment),FieldDependentFluidNumberOfComponents,Err)
     DO componentnum=1,FieldDependentFluidNumberOfComponents-1
     !set dimension type
 !     CALL CMISSFieldDimensionSet(DependentField,VariableTypes(icompartment), &
@@ -845,18 +871,20 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS+1
     CALL CMISSFieldComponentValuesInitialise(DependentFieldSolid,CMISSFieldVVariableType,CMISSFieldValuesSetType, &
       & COMPONENT_NUMBER,INITIAL_FIELD_DARCY(COMPONENT_NUMBER),Err)
+    CALL CMISSFieldComponentValuesInitialise(DependentFieldSolid,CMISSFieldU1VariableType,CMISSFieldValuesSetType, &
+      & COMPONENT_NUMBER,INITIAL_FIELD_DARCY(COMPONENT_NUMBER),Err)
   ENDDO
   !
   !================================================================================================================================
   !
   ALLOCATE(CouplingCoeffs(Ncompartments,Ncompartments))
   IF(Ncompartments==2)THEN
-    CouplingCoeffs(1,1)=10.0E-01_CMISSDP
+    CouplingCoeffs(1,1)=0.0E-01_CMISSDP
 !     CouplingCoeffs(1,2)=-1.0E-04_CMISSDP
 !     CouplingCoeffs(2,1)=-1.0E-04_CMISSDP
-    CouplingCoeffs(1,2)=10.0E-01_CMISSDP
-    CouplingCoeffs(2,1)=10.0E-01_CMISSDP
-    CouplingCoeffs(2,2)=10.0E-01_CMISSDP
+    CouplingCoeffs(1,2)=0.0E-01_CMISSDP
+    CouplingCoeffs(2,1)=0.0E-01_CMISSDP
+    CouplingCoeffs(2,2)=0.0E-01_CMISSDP
   ELSE IF(Ncompartments==3)THEN
     CouplingCoeffs(1,1)=1.0E-02_CMISSDP
     CouplingCoeffs(1,2)=1.0E-02_CMISSDP
@@ -1034,7 +1062,6 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
     CALL CMISSEquationsOutputTypeSet(EquationsDarcy(icompartment),EQUATIONS_DARCY_OUTPUT,Err)
   !Finish the equations set equations
     CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetDarcy(icompartment),Err)
-  write(*,*) "round and round we go!"
   ENDDO
   !--------------------------------------------------------------------------------------------------------------------------------
   ! Solid
@@ -1180,10 +1207,6 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   !
   !------------------------------------
   ! ASSIGN BOUNDARY CONDITIONS - FLUID
-  DO icompartment=1,Ncompartments  
-    CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDarcy(icompartment),Err)
-    CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDarcy(icompartment),BoundaryConditionsDarcy(icompartment),Err)
-
     !Get surfaces 
     CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,DarcyVelMeshComponentNumber,CMISSGeneratedMeshRegularFrontSurface, &
       & Face7Nodes,FaceXi(1),Err)
@@ -1198,13 +1221,17 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
     CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,DarcyVelMeshComponentNumber,CMISSGeneratedMeshRegularBottomSurface, &
       & Face12Nodes,FaceXi(6),Err)
 
+  DO icompartment=1,Ncompartments  
+    CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDarcy(icompartment),Err)
+    CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDarcy(icompartment),BoundaryConditionsDarcy(icompartment),Err)
+
     IF(icompartment==1) THEN
     ! At the top impose Darcy velocity in z direction
     DO NN=1,SIZE(Face11Nodes,1)
       NODE=Face11Nodes(NN)
 ! !     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
 ! !     IF(NodeDomain==ComputationalNodeNumber) THEN
-        VALUE = -2.0_CMISSDP
+        VALUE = -1.0_CMISSDP
         COMPONENT_NUMBER = 3
         write(*,*)'Marker 0'
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldVVariableType,1,NODE,COMPONENT_NUMBER,&
@@ -1291,12 +1318,12 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
       NODE=Face11Nodes(NN)
 ! !     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
 ! !     IF(NodeDomain==ComputationalNodeNumber) THEN
-        VALUE = 0.0_CMISSDP
+        VALUE = -1.0_CMISSDP
         COMPONENT_NUMBER = 3
         write(*,*)'Marker 0'
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,NODE,COMPONENT_NUMBER,&
           & CMISSBoundaryConditionFixed,VALUE,Err)
-        WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Z DIRECTION"
+        WRITE(*,*) "SPECIFIED INFLOW AT NODE",NODE,"IN Z DIRECTION"
 
 ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
 ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,2,YCoord,Err)
@@ -1304,6 +1331,23 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
 ! !       WRITE(*,*) "XCoord, YCoord, ZCoord = ",XCoord, YCoord, ZCoord
 ! !     ENDIF
     ENDDO
+!     DO NN=1,SIZE(Face11Nodes,1)
+!       NODE=Face11Nodes(NN)
+! ! !     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+! ! !     IF(NodeDomain==ComputationalNodeNumber) THEN
+!         VALUE = 0.0_CMISSDP
+!         COMPONENT_NUMBER = 3
+!         write(*,*)'Marker 0'
+!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,NODE,COMPONENT_NUMBER,&
+!           & CMISSBoundaryConditionFixed,VALUE,Err)
+!         WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Z DIRECTION"
+! 
+! ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
+! ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,2,YCoord,Err)
+! ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,3,ZCoord,Err)
+! ! !       WRITE(*,*) "XCoord, YCoord, ZCoord = ",XCoord, YCoord, ZCoord
+! ! !     ENDIF
+!     ENDDO
 
     !All other faces are impermeable
     DO NN=1,SIZE(Face7Nodes,1)

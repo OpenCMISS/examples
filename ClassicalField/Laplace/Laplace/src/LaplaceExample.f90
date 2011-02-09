@@ -151,8 +151,8 @@ PROGRAM LAPLACEEXAMPLE
     IF(INTERPOLATION_TYPE<=0) CALL HANDLE_ERROR("Invalid Interpolation specification.")
   ELSE
     !If there are not enough arguments default the problem specification 
-    NUMBER_GLOBAL_X_ELEMENTS=5
-    NUMBER_GLOBAL_Y_ELEMENTS=5
+    NUMBER_GLOBAL_X_ELEMENTS=2
+    NUMBER_GLOBAL_Y_ELEMENTS=2
     NUMBER_GLOBAL_Z_ELEMENTS=0
     INTERPOLATION_TYPE=1
   ENDIF
@@ -264,7 +264,10 @@ PROGRAM LAPLACEEXAMPLE
   CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
-  
+ 
+  !Destory the mesh now that we have decomposed it
+  !CALL CMISSMeshDestroy(Mesh,Err)
+ 
   !Start to create a default (geometric) field on the region
   CALL CMISSFieldTypeInitialise(GeometricField,Err)
   CALL CMISSFieldCreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
@@ -295,8 +298,8 @@ PROGRAM LAPLACEEXAMPLE
   CALL CMISSFieldTypeInitialise(DependentField,Err)
   CALL CMISSEquationsSetDependentCreateStart(EquationsSet,DependentFieldUserNumber,DependentField,Err)
   !Set the DOFs to be contiguous across components
-  CALL CMISSFieldDOFOrderTypeSet(DependentField,CMISSFieldUVariableType,CMISSFieldContiguousComponentDOFOrder,Err)
-  CALL CMISSFieldDOFOrderTypeSet(DependentField,CMISSFieldDelUDelNVariableType,CMISSFieldContiguousComponentDOFOrder,Err)
+  CALL CMISSFieldDOFOrderTypeSet(DependentField,CMISSFieldUVariableType,CMISSFieldSeparatedComponentDOFOrder,Err)
+  CALL CMISSFieldDOFOrderTypeSet(DependentField,CMISSFieldDelUDelNVariableType,CMISSFieldSeparatedComponentDOFOrder,Err)
   !Finish the equations set dependent field variables
   CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
 
@@ -328,11 +331,11 @@ PROGRAM LAPLACEEXAMPLE
   CALL CMISSDecompositionNodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
   CALL CMISSDecompositionNodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
   IF(FirstNodeDomain==ComputationalNodeNumber) THEN
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,FirstNodeNumber,1, &
       & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
   ENDIF
   IF(LastNodeDomain==ComputationalNodeNumber) THEN
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,LastNodeNumber,1, &
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,LastNodeNumber,1, &
       & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
   ENDIF
   !Finish the creation of the equations set boundary conditions

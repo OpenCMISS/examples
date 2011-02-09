@@ -67,5 +67,5 @@ EXAMPLE_PATH=EmbeddedMesh/
 
 EXAMPLE_NAME = EmbeddedMeshBasic
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

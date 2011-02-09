@@ -67,5 +67,5 @@ EXAMPLE_PATH = DataProjection/
 
 EXAMPLE_NAME = 1DRectangularCartesian
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 
