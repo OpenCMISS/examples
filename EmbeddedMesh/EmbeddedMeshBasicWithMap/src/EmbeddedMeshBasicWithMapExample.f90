@@ -79,7 +79,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   !INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=10
   !INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=11
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfVariables=1
-  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponents=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponents=3
   !Program variables
 
   INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
@@ -120,7 +120,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   INTEGER(CMISSIntg) :: ProjectionTypeGet
   REAL(CMISSDP), ALLOCATABLE :: StartingXiGet(:)
 
-  REAL(CMISSDP), DIMENSION(8,3) :: DataPointValues!(number_of_data_points,dimension)
+  REAL(CMISSDP), DIMENSION(2,3) :: DataPointValues!(number_of_data_points,dimension)
   REAL(CMISSDP), DIMENSION(8) :: ElementNumbers!(number_of_data_points,dimension)
   INTEGER(CMISSIntg) :: np
 
@@ -158,14 +158,16 @@ PROGRAM EMBEDDEDMESHEXAMPLE
  !======================================
   !Intialise data points
 
-  DataPointValues(1,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)
-  DataPointValues(2,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)  
-  DataPointValues(1,:)=(/1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP/)
-  DataPointValues(2,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)  
-  DataPointValues(1,:)=(/1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP/)
-  DataPointValues(2,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)  
-  DataPointValues(1,:)=(/1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP/)
-  DataPointValues(2,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)  
+!   DataPointValues(1,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)
+!   DataPointValues(2,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)  
+!   DataPointValues(3,:)=(/1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP/)
+!   DataPointValues(4,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)  
+!   DataPointValues(5,:)=(/1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP/)
+!   DataPointValues(6,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)  
+!   DataPointValues(7,:)=(/0.5_CMISSDP,0.5_CMISSDP,0.5_CMISSDP/)
+!   DataPointValues(8,:)=(/0.5_CMISSDP,0.5_CMISSDP,0.0_CMISSDP/)  
+ DataPointValues(1,:)= (/0.5_CMISSDP,0.5_CMISSDP,0.5_CMISSDP/)
+ DataPointValues(2,:)= (/0.8_CMISSDP,0.6_CMISSDP,0.7_CMISSDP/)
 !================================================================================  
   
 
@@ -502,7 +504,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
    
    !Move field data
 
-    CALL CMISSMeshEmbeddingPullGaussPointData(MeshEmbedding, DependentField1, 1,DependentField2, 1, Err)
+    !CALL CMISSMeshEmbeddingPullGaussPointData(MeshEmbedding, DependentField1, 1,DependentField2, 1, Err)
 
 
    !After
@@ -523,50 +525,94 @@ PROGRAM EMBEDDEDMESHEXAMPLE
 !    
   !SUBROUTINE gauss_point_mapping(datapointvalues,elementnumbers)
    
+!   !=========================================================================================================================
+!   !Create Data Points and set the values
+!   CALL CMISSDataPointsCreateStart(RegionTwoUserNumber,SIZE(DataPointValues,1),Err)
+!   DO np=1,SIZE(DataPointValues,1)
+!     CALL CMISSDataPointsValuesSet(RegionTwoUserNumber,np,DataPointValues(np,:),Err)     
+!   ENDDO
+!   CALL CMISSDataPointsCreateFinish(RegionTwoUserNumber,Err)  
+!   !=========================================================================================================================
+!   !=========================================================================================================================
+!   !Create a data projection
+!   CALL CMISSDataProjectionCreateStart(RegionTwoUserNumber,DependentFieldTwoUserNumber,RegionTwoUserNumber,Err)
+!   !=========================================================================================================================
+!   !Test parameter set functions
+!   CALL CMISSDataProjectionAbsoluteToleranceSet(RegionTwoUserNumber,AbsoluteToleranceSet,Err) !test
+!   CALL CMISSDataProjectionMaximumIterationUpdateSet(RegionTwoUserNumber,MaximumIterationUpdateSet,Err) !test
+!   CALL CMISSDataProjectionMaximumNumberOfIterationsSet(RegionTwoUserNumber,MaximumNumberOfIterationsSet,Err) !test
+!   CALL CMISSDataProjectionNumberOfClosestElementsSet(RegionTwoUserNumber,NumberOfClosestElementsSet,Err) !test
+!   CALL CMISSDataProjectionProjectionTypeSet(RegionTwoUserNumber,ProjectionTypeSet,Err)
+!   CALL CMISSDataProjectionRelativeToleranceSet(RegionTwoUserNumber,RelativeToleranceSet,Err) !test
+!   CALL CMISSDataProjectionStartingXiSet(RegionTwoUserNumber,StartingXiSet,Err) !test
+!   !=========================================================================================================================
+!   !Finish data projection  
+!   CALL CMISSDataProjectionCreateFinish(RegionTwoUserNumber,Err)
+!   !=========================================================================================================================
+!   !Test parameter get functions
+!   CALL CMISSDataProjectionAbsoluteToleranceGet(RegionTwoUserNumber,AbsoluteToleranceGet,Err) !test
+!   CALL CMISSDataProjectionMaximumIterationUpdateGet(RegionTwoUserNumber,MaximumIterationUpdateGet,Err) !test
+!   CALL CMISSDataProjectionMaximumNumberOfIterationsGet(RegionTwoUserNumber,MaximumNumberOfIterationsGet,Err) !test
+!   CALL CMISSDataProjectionNumberOfClosestElementsGet(RegionTwoUserNumber,NumberOfClosestElementsGet,Err) !test
+!   CALL CMISSDataProjectionProjectionTypeGet(RegionTwoUserNumber,ProjectionTypeGet,Err) !test
+!   CALL CMISSDataProjectionRelativeToleranceGet(RegionTwoUserNumber,RelativeToleranceGet,Err) !test
+!   CALL CMISSDataProjectionStartingXiGet(RegionTwoUserNumber,StartingXiGet,Err) !test !! This is the GP xi  
+!   
+!   !=========================================================================================================================
+!   !Start data projection
+!   CALL CMISSDataProjectionEvaluate(RegionTwoUserNumber,Err)
+!   
+!   !Get the closest elementnumber back - in an array
+!   !=========================================================================================================================
+!   !Destroy used types
+!   CALL CMISSDataProjectionDestroy(RegionTwoUserNumber,Err)
+!   CALL CMISSDataPointsDestroy(RegiontwoUserNumber,Err)
+!     
+!   CALL CMISSRegionDestroy(RegionTwoUserNumber,Err)
   !=========================================================================================================================
   !Create Data Points and set the values
-  CALL CMISSDataPointsCreateStart(RegionTwoUserNumber,SIZE(DataPointValues,1),Err)
+  CALL CMISSDataPointsCreateStart(RegionOneUserNumber,SIZE(DataPointValues,1),Err)
   DO np=1,SIZE(DataPointValues,1)
-    CALL CMISSDataPointsValuesSet(RegionTwoUserNumber,np,DataPointValues(np,:),Err)     
+    CALL CMISSDataPointsValuesSet(RegionOneUserNumber,np,DataPointValues(np,:),Err)     
   ENDDO
-  CALL CMISSDataPointsCreateFinish(RegionTwoUserNumber,Err)  
+  CALL CMISSDataPointsCreateFinish(RegionOneUserNumber,Err)  
   !=========================================================================================================================
   !=========================================================================================================================
   !Create a data projection
-  CALL CMISSDataProjectionCreateStart(RegionTwoUserNumber,DependentFieldTwoUserNumber,RegionTwoUserNumber,Err)
+  CALL CMISSDataProjectionCreateStart(RegionOneUserNumber,DependentFieldOneUserNumber,RegionOneUserNumber,Err)
   !=========================================================================================================================
   !Test parameter set functions
-  CALL CMISSDataProjectionAbsoluteToleranceSet(RegionTwoUserNumber,AbsoluteToleranceSet,Err) !test
-  CALL CMISSDataProjectionMaximumIterationUpdateSet(RegionTwoUserNumber,MaximumIterationUpdateSet,Err) !test
-  CALL CMISSDataProjectionMaximumNumberOfIterationsSet(RegionTwoUserNumber,MaximumNumberOfIterationsSet,Err) !test
-  CALL CMISSDataProjectionNumberOfClosestElementsSet(RegionTwoUserNumber,NumberOfClosestElementsSet,Err) !test
-  CALL CMISSDataProjectionProjectionTypeSet(RegionTwoUserNumber,ProjectionTypeSet,Err)
-  CALL CMISSDataProjectionRelativeToleranceSet(RegionTwoUserNumber,RelativeToleranceSet,Err) !test
-  CALL CMISSDataProjectionStartingXiSet(RegionTwoUserNumber,StartingXiSet,Err) !test
+  CALL CMISSDataProjectionAbsoluteToleranceSet(RegionOneUserNumber,AbsoluteToleranceSet,Err) !test
+  CALL CMISSDataProjectionMaximumIterationUpdateSet(RegionOneUserNumber,MaximumIterationUpdateSet,Err) !test
+  CALL CMISSDataProjectionMaximumNumberOfIterationsSet(RegionOneUserNumber,MaximumNumberOfIterationsSet,Err) !test
+  CALL CMISSDataProjectionNumberOfClosestElementsSet(RegionOneUserNumber,NumberOfClosestElementsSet,Err) !test
+  CALL CMISSDataProjectionProjectionTypeSet(RegionOneUserNumber,ProjectionTypeSet,Err)
+  CALL CMISSDataProjectionRelativeToleranceSet(RegionOneUserNumber,RelativeToleranceSet,Err) !test
+  CALL CMISSDataProjectionStartingXiSet(RegionOneUserNumber,StartingXiSet,Err) !test
   !=========================================================================================================================
   !Finish data projection  
-  CALL CMISSDataProjectionCreateFinish(RegionTwoUserNumber,Err)
+  CALL CMISSDataProjectionCreateFinish(RegionOneUserNumber,Err)
   !=========================================================================================================================
   !Test parameter get functions
-  CALL CMISSDataProjectionAbsoluteToleranceGet(RegionTwoUserNumber,AbsoluteToleranceGet,Err) !test
-  CALL CMISSDataProjectionMaximumIterationUpdateGet(RegionTwoUserNumber,MaximumIterationUpdateGet,Err) !test
-  CALL CMISSDataProjectionMaximumNumberOfIterationsGet(RegionTwoUserNumber,MaximumNumberOfIterationsGet,Err) !test
-  CALL CMISSDataProjectionNumberOfClosestElementsGet(RegionTwoUserNumber,NumberOfClosestElementsGet,Err) !test
-  CALL CMISSDataProjectionProjectionTypeGet(RegionTwoUserNumber,ProjectionTypeGet,Err) !test
-  CALL CMISSDataProjectionRelativeToleranceGet(RegionTwoUserNumber,RelativeToleranceGet,Err) !test
-  CALL CMISSDataProjectionStartingXiGet(RegionTwoUserNumber,StartingXiGet,Err) !test !! This is the GP xi  
+  CALL CMISSDataProjectionAbsoluteToleranceGet(RegionOneUserNumber,AbsoluteToleranceGet,Err) !test
+  CALL CMISSDataProjectionMaximumIterationUpdateGet(RegionOneUserNumber,MaximumIterationUpdateGet,Err) !test
+  CALL CMISSDataProjectionMaximumNumberOfIterationsGet(RegionOneUserNumber,MaximumNumberOfIterationsGet,Err) !test
+  CALL CMISSDataProjectionNumberOfClosestElementsGet(RegionOneUserNumber,NumberOfClosestElementsGet,Err) !test
+  CALL CMISSDataProjectionProjectionTypeGet(RegionOneUserNumber,ProjectionTypeGet,Err) !test
+  CALL CMISSDataProjectionRelativeToleranceGet(RegionOneUserNumber,RelativeToleranceGet,Err) !test
+  CALL CMISSDataProjectionStartingXiGet(RegionOneUserNumber,StartingXiGet,Err) !test !! This is the GP xi  
   
   !=========================================================================================================================
   !Start data projection
-  CALL CMISSDataProjectionEvaluate(RegionTwoUserNumber,Err)
+  CALL CMISSDataProjectionEvaluate(RegionOneUserNumber,Err)
   
   !Get the closest elementnumber back - in an array
   !=========================================================================================================================
   !Destroy used types
-  CALL CMISSDataProjectionDestroy(RegionTwoUserNumber,Err)
-  CALL CMISSDataPointsDestroy(RegiontwoUserNumber,Err)
+  CALL CMISSDataProjectionDestroy(RegionOneUserNumber,Err)
+  CALL CMISSDataPointsDestroy(RegionOneUserNumber,Err)
     
-  CALL CMISSRegionDestroy(RegionTwoUserNumber,Err)
+  CALL CMISSRegionDestroy(RegionOneUserNumber,Err)
   CALL CMISSCoordinateSystemDestroy(CoordinateSystemUserNumber,Err)  
   
   !=========================================================================================================================
