@@ -105,8 +105,6 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopSubiterationNumber=1
   INTEGER(CMISSIntg), PARAMETER :: SolverSolidIndex=1
   INTEGER(CMISSIntg), PARAMETER :: SolverDarcyIndex=1
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPorosity=1
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPermOverVis=2
 
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
@@ -337,7 +335,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   !Set time parameter
   DYNAMIC_SOLVER_DARCY_START_TIME=0.0_CMISSDP
   DYNAMIC_SOLVER_DARCY_TIME_INCREMENT=1.0e-3_CMISSDP
-  DYNAMIC_SOLVER_DARCY_STOP_TIME=10_CMISSIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
+  DYNAMIC_SOLVER_DARCY_STOP_TIME=2_CMISSIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
   DYNAMIC_SOLVER_DARCY_THETA=1.0_CMISSDP !2.0_CMISSDP/3.0_CMISSDP
   !Set result output parameter
   DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY=1
@@ -834,7 +832,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
     !      CMISSBoundaryConditionImpermeableWall
     DO NN=1,SIZE(surface_lin_inner,1)
       NODE_NUMBER = surface_lin_inner(NN)
-      COMPONENT_NUMBER = 1
+      COMPONENT_NUMBER = 3
       VALUE = 1.0_CMISSDP
       CALL CMISSFieldParameterSetUpdateNode(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
         & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
@@ -848,7 +846,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
     !Set all outer surface nodes impermeable
     DO NN=1,SIZE(surface_lin_outer,1)
       NODE_NUMBER = surface_lin_outer(NN)
-      COMPONENT_NUMBER = 1
+      COMPONENT_NUMBER = 3
       VALUE = 1.0_CMISSDP
       CALL CMISSFieldParameterSetUpdateNode(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
         & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
@@ -861,11 +859,18 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
     !Set all top surface nodes to Darcy inflow BC
     DO NN=1,SIZE(surface_lin_base,1)
-      VALUE = +0.0_CMISSDP  ! Mind the sign !
-      COMPONENT_NUMBER = 3
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,surface_lin_base(NN), &
-        & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
-      IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING TOP DARCY BC TO NODE", surface_lin_base(NN)
+!       VALUE = +0.0_CMISSDP  ! Mind the sign !
+!       COMPONENT_NUMBER = 3
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,surface_lin_base(NN), &
+!         & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
+!       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING TOP DARCY BC TO NODE", surface_lin_base(NN)
+
+      NODE_NUMBER = surface_lin_base(NN)
+      COMPONENT_NUMBER = 2 !normal component index
+      VALUE = 1.0_CMISSDP
+      CALL CMISSFieldParameterSetUpdateNode(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+        & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+
     ENDDO
 
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDarcy,Err)
