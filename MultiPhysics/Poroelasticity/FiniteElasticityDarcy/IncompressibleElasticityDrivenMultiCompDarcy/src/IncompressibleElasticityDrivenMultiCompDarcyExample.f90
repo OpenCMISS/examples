@@ -106,10 +106,11 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: SolverDarcyIndex=1
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPorosity=1
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPermOverVis=2
+  INTEGER(CMISSIntg) :: SourceFieldDarcyUserNumber
 
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
-
+  INTEGER(CMISSIntg) :: IndependentFieldDarcyUserNumber
   !Program types
 
   INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
@@ -172,6 +173,8 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   TYPE(CMISSFieldType) :: GeometricField
   TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: MaterialsFieldDarcy
   TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: EquationsSetFieldDarcy
+  TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: SourceFieldDarcy
+  TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: IndependentFieldDarcy
   !Boundary conditions
   TYPE(CMISSBoundaryConditionsType), ALLOCATABLE, DIMENSION(:) :: BoundaryConditionsDarcy
   !Equations sets
@@ -497,6 +500,8 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   ALLOCATE (MaterialsFieldDarcy(Ncompartments))
   ALLOCATE (BoundaryConditionsDarcy(Ncompartments))
   ALLOCATE (EquationsDarcy(Ncompartments))
+  ALLOCATE (SourceFieldDarcy(Ncompartments))
+  ALLOCATE (IndependentFieldDarcy(Ncompartments))
   !
   !================================================================================================================================
   !
@@ -598,6 +603,7 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
   CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
+  CALL CMISSDecompositionCalculateFacesSet(Decomposition,.true.,Err)
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
 
@@ -759,9 +765,9 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
        & CMISSFieldVectorDimensionType,Err)
   CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,CMISSFieldUVariableType,FieldDependentSolidNumberOfComponents,Err)
   CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,FieldDependentSolidNumberOfComponents,Err)
-  DO icompartment=3,2*Ncompartments+2
-    CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,VariableTypes(icompartment),FieldDependentFluidNumberOfComponents,Err)
-  ENDDO
+!   DO icompartment=3,2*Ncompartments+2
+!     CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,VariableTypes(icompartment),FieldDependentFluidNumberOfComponents,Err)
+!   ENDDO
 !   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,1,CMISSFieldNodeBasedInterpolation,Err)
 !   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,2,CMISSFieldNodeBasedInterpolation,Err)
 !   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,3,CMISSFieldNodeBasedInterpolation,Err)
@@ -793,7 +799,7 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   DO icompartment=3,2*Ncompartments+2
 !     CALL CMISSFieldDimensionSet(DependentFieldSolid,VariableTypes(icompartment), &
 !        & CMISSFieldVectorDimensionType,Err)
-    !CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,VariableTypes(icompartment),FieldDependentFluidNumberOfComponents,Err)
+    CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,VariableTypes(icompartment),FieldDependentFluidNumberOfComponents,Err)
     DO componentnum=1,FieldDependentFluidNumberOfComponents-1
     !set dimension type
 !     CALL CMISSFieldDimensionSet(DependentField,VariableTypes(icompartment), &
@@ -1003,6 +1009,19 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   DO icompartment = 1,Ncompartments
     MaterialsFieldUserNumberDarcy = 400+icompartment
     CALL CMISSFieldTypeInitialise(MaterialsFieldDarcy(icompartment),Err)
+    CALL CMISSFieldCreateStart(MaterialsFieldUserNumberDarcy,Region,MaterialsFieldDarcy(icompartment),Err)
+    CALL CMISSFieldTypeSet(MaterialsFieldDarcy(icompartment),CMISSFieldMaterialType,Err)
+    CALL CMISSFieldMeshDecompositionSet(MaterialsFieldDarcy(icompartment),Decomposition,Err)
+    CALL CMISSFieldGeometricFieldSet(MaterialsFieldDarcy(icompartment),GeometricField,Err)
+    CALL CMISSFieldDependentTypeSet(MaterialsFieldDarcy(icompartment),CMISSFieldIndependentType,Err)
+    CALL CMISSFieldNumberOfVariablesSet(MaterialsFieldDarcy(icompartment),3,Err)
+    CALL CMISSFieldVariableTypesSet(MaterialsFieldDarcy(icompartment),[CMISSFieldUVariableType,CMISSFieldVVariableType,&
+       & CMISSFieldU1VariableType],Err) 
+    CALL CMISSFieldNumberOfComponentsSet(MaterialsFieldDarcy(icompartment),CMISSFieldUVariableType,7,Err)
+    CALL CMISSFieldNumberOfComponentsSet(MaterialsFieldDarcy(icompartment),CMISSFieldVVariableType,Ncompartments,Err)
+    CALL CMISSFieldNumberOfComponentsSet(MaterialsFieldDarcy(icompartment),CMISSFieldU1VariableType,Nparams,Err)
+
+    CALL CMISSFieldCreateFinish(MaterialsFieldDarcy(icompartment),Err)
     CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDarcy(icompartment),MaterialsFieldUserNumberDarcy,&
          & MaterialsFieldDarcy(icompartment),Err)
     CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy(icompartment),Err)
@@ -1046,9 +1065,39 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   !
   !================================================================================================================================
   !
-
+  DO icompartment=1,Ncompartments
+     SourceFieldDarcyUserNumber = 450+icompartment
+    CALL CMISSFieldTypeInitialise(SourceFieldDarcy(icompartment),Err)
+    CALL CMISSEquationsSetSourceCreateStart(EquationsSetDarcy(icompartment),SourceFieldDarcyUserNumber,&
+        & SourceFieldDarcy(icompartment),Err)
+    CALL CMISSEquationsSetSourceCreateFinish(EquationsSetDarcy(icompartment),Err)
+  ENDDO
   !EQUATIONS
 
+  !INDEPENDENT FIELD Darcy for storing BC flags
+  DO icompartment=1,Ncompartments
+     IndependentFieldDarcyUserNumber = 470+icompartment
+    CALL CMISSFieldTypeInitialise(IndependentFieldDarcy(icompartment),Err)
+    CALL CMISSEquationsSetIndependentCreateStart(EquationsSetDarcy(icompartment),IndependentFieldDarcyUserNumber, &
+      & IndependentFieldDarcy(icompartment),Err)
+
+    CALL CMISSFieldComponentMeshComponentSet(IndependentFieldDarcy(icompartment),CMISSFieldUVariableType,1, &
+      & DarcyVelMeshComponentNumber,Err)
+    CALL CMISSFieldComponentMeshComponentSet(IndependentFieldDarcy(icompartment),CMISSFieldUVariableType,2, &
+      & DarcyVelMeshComponentNumber,Err)
+    CALL CMISSFieldComponentMeshComponentSet(IndependentFieldDarcy(icompartment),CMISSFieldUVariableType,3, &
+      & DarcyVelMeshComponentNumber,Err)
+! !   CALL CMISSFieldComponentMeshComponentSet(IndependentFieldDarcy,CMISSFieldUVariableType,4,DarcyMassIncreaseMeshComponentNumber,Err)
+
+    CALL CMISSEquationsSetIndependentCreateFinish(EquationsSetDarcy(icompartment),Err)
+
+    CALL CMISSFieldComponentValuesInitialise(IndependentFieldDarcy(icompartment),CMISSFieldUVariableType, &
+      & CMISSFieldValuesSetType,1,0.0_CMISSDP,Err)
+    CALL CMISSFieldComponentValuesInitialise(IndependentFieldDarcy(icompartment),CMISSFieldUVariableType, &
+      & CMISSFieldValuesSetType,2,0.0_CMISSDP,Err)
+    CALL CMISSFieldComponentValuesInitialise(IndependentFieldDarcy(icompartment),CMISSFieldUVariableType, & 
+      & CMISSFieldValuesSetType,3,0.0_CMISSDP,Err)
+  ENDDO
  
   DO icompartment=1,Ncompartments
     !Create the equations set equations
