@@ -65,7 +65,7 @@ endif
 
 EXAMPLE_PATH = DataProjection/
 
-EXAMPLE_NAME = 3DRectangularCartesian
+EXAMPLE_NAME = 2DRectangularCartesian
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 
