@@ -263,9 +263,9 @@ PROGRAM TRIQUADRATICCUBEEXAMPLE
       DO K=1,3
         X=(K-1)*0.5_CMISSDP
         NN=NN+1
-        CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NN,1,X,Err)
-        CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NN,2,Y,Err)
-        CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NN,3,Z,Err)
+        CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NN,1,X,Err)
+        CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NN,2,Y,Err)
+        CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NN,3,Z,Err)
       ENDDO
     ENDDO
   ENDDO
@@ -359,7 +359,7 @@ PROGRAM TRIQUADRATICCUBEEXAMPLE
 
   !Fix base of the element in z direction
   DO NN=1,9
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,NN,3, &
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NN,3, &
       & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
   ENDDO
 
@@ -368,32 +368,36 @@ PROGRAM TRIQUADRATICCUBEEXAMPLE
   CASE(1)
     !1. Move top of the element by a little?
     DO NN=19,27
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,NN,3, &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NN,3, &
         & CMISSBoundaryConditionFixed,1.1_CMISSDP,Err)
     ENDDO
   CASE(2)
     !2. Apply pressure at the top face?
     DO NN=19,27
       !NOTE: Surface pressure goes into pressure_values_set_type of the DELUDELN type
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,NN,3, &
+!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,NN,3, &
 !         & CMISSBoundaryConditionPressure,4.0_CMISSDP,Err)
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,NN,3, &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,NN,3, &
         & CMISSBoundaryConditionPressureIncremented,4.0_CMISSDP,Err)
     ENDDO
   CASE(3)
     !3. Apply force at the top nodes?
     DO NN=19,27
       !NOTE: Surface pressure goes into pressure_values_set_type of the DELUDELN type
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,NN,3, &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,NN,3, &
         & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
     ENDDO
   END SELECT
 
   !Fix two more nodes at the bottom
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,1,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,2,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,3,1,CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,3,2,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,1,1,CMISSBoundaryConditionFixed, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,1,2,CMISSBoundaryConditionFixed, &
+    & 0.0_CMISSDP,Err)
+  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,3,1,CMISSBoundaryConditionFixed, &
+  !  & 1.0_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,3,2,CMISSBoundaryConditionFixed, &
+    & 0.0_CMISSDP,Err)
 
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
 

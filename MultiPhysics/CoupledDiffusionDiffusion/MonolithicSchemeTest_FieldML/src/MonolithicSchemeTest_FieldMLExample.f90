@@ -649,7 +649,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
       VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)
       CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-        & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+        & 1,CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
   ENDDO
   CALL CMISSFieldParameterSetUpdateStart(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
@@ -886,7 +886,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 !         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION(icompartment,NODE_COUNTER)
 !         CONDITION=CMISSBoundaryConditionFixed
 !           VALUE=0.2_CMISSDP
-!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(icompartment),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(icompartment),CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
 !             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
 !       ENDDO
 !     ENDIF
@@ -897,7 +897,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
         CONDITION=CMISSBoundaryConditionFixed
           VALUE=1.0_CMISSDP
           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(1),CMISSFieldUVariableType, &
-            & CMISSNoGlobalDerivative, & 
+            & 1,CMISSNoGlobalDerivative, & 
             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
       ENDDO
     ENDIF
@@ -910,7 +910,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
         CONDITION=CMISSBoundaryConditionFixed
           VALUE=0.0_CMISSDP
           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(2),CMISSFieldDelVDelNVariableType, &
-            & CMISSNoGlobalDerivative, & 
+            & 1,CMISSNoGlobalDerivative, & 
             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
       ENDDO
     ENDIF
@@ -922,7 +922,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 !         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_THREE(NODE_COUNTER)
 !         CONDITION=CMISSBoundaryConditionFixed
 !           VALUE=0.0_CMISSDP
-!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(3),CMISSFieldU1VariableType,CMISSNoGlobalDerivative, & 
+!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(3),CMISSFieldU1VariableType,1,CMISSNoGlobalDerivative, & 
 !             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
 !       ENDDO
 !     ENDIF
@@ -934,7 +934,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_THREE(NODE_COUNTER)
         CONDITION=CMISSBoundaryConditionFixed
           VALUE=0.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(4),CMISSFieldU2VariableType,CMISSNoGlobalDerivative, & 
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(4),CMISSFieldU2VariableType,1,CMISSNoGlobalDerivative, & 
             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
       ENDDO
     ENDIF
@@ -946,7 +946,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_THREE(NODE_COUNTER)
         CONDITION=CMISSBoundaryConditionFixed
           VALUE=1.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(5),CMISSFieldU3VariableType,CMISSNoGlobalDerivative, & 
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(5),CMISSFieldU3VariableType,1,CMISSNoGlobalDerivative, & 
             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
       ENDDO
     ENDIF

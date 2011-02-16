@@ -522,8 +522,8 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
     IF(NodeDomain==ComputationalNodeNumber) THEN
       FibreFieldAngle=(/zero,zero,zero/) 
       DO component_idx=1,FieldFibreNumberOfComponents
-        CALL CMISSFieldParameterSetUpdateNode(FibreFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,DerivativeUserNumber,&
-          & node_idx,component_idx,FibreFieldAngle(component_idx),Err)
+        CALL CMISSFieldParameterSetUpdateNode(FibreFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
+          & DerivativeUserNumber,node_idx,component_idx,FibreFieldAngle(component_idx),Err)
       ENDDO
     ENDIF
     theta=atan(FIBRE_SLOPE_CHANGE*XI3+FIBRE_SLOPE_INTERSECTION)
@@ -536,7 +536,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
         IF(NodeDomain==ComputationalNodeNumber) THEN
           FibreFieldAngle=(/theta,zero,omega/)
           DO component_idx=1,FieldFibreNumberOfComponents
-            CALL CMISSFieldParameterSetUpdateNode(FibreFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+            CALL CMISSFieldParameterSetUpdateNode(FibreFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
               & DerivativeUserNumber, node_idx,component_idx,FibreFieldAngle(component_idx),Err)
           ENDDO
         ENDIF
@@ -739,8 +739,8 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
     NODE=TopSurfaceNodes(NN)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,3,ZCoord,Err)
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,NODE,3, &
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,3,ZCoord,Err)
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NODE,3, &
         & CMISSBoundaryConditionFixed,ZCoord,Err)
     ENDIF
   ENDDO
@@ -751,7 +751,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
     NODE=InnerSurfaceNodes(NN)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,NODE,ABS(InnerNormalXi), &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,NODE,ABS(InnerNormalXi), &
         & CMISSBoundaryConditionPressure,INNER_PRESSURE,Err)
     ENDIF
   ENDDO
@@ -761,7 +761,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
     NODE=OuterSurfaceNodes(NN)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,NODE,ABS(OuterNormalXi), &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,NODE,ABS(OuterNormalXi), &
         & CMISSBoundaryConditionPressure,OUTER_PRESSURE,Err)
     ENDIF
   ENDDO
@@ -773,16 +773,16 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
     NODE=TopSurfaceNodes(NN)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,2,YCoord,Err)
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,1,XCoord,Err)
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,2,YCoord,Err)
       IF(ABS(XCoord)<1.0E-6_CMISSDP) THEN
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,NODE,1, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NODE,1, &
           & CMISSBoundaryConditionFixed,XCoord,Err)
         WRITE(*,*) "FIXING NODE",NODE,"IN X DIRECTION"
         X_FIXED=.TRUE.
     ENDIF
       IF(ABS(YCoord)<1.0E-6_CMISSDP) THEN
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,NODE,2, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NODE,2, &
           & CMISSBoundaryConditionFixed,YCoord,Err)
         WRITE(*,*) "FIXING NODE",NODE,"IN Y DIRECTION"
         Y_FIXED=.TRUE.
@@ -856,7 +856,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
       NODE_NUMBER = InnerSurfaceNodesDarcyVel(NN)
       COMPONENT_NUMBER = ABS(InnerNormalXi)
       VALUE = 1.0_CMISSDP
-      CALL CMISSFieldParameterSetUpdateNode(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+      CALL CMISSFieldParameterSetUpdateNode(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
         & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
 
@@ -897,7 +897,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
       NODE_NUMBER = OuterSurfaceNodesDarcyVel(NN)
       COMPONENT_NUMBER = ABS(OuterNormalXi)
       VALUE = 1.0_CMISSDP
-      CALL CMISSFieldParameterSetUpdateNode(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+      CALL CMISSFieldParameterSetUpdateNode(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
         & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
 
@@ -913,7 +913,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
     DO NN=1,SIZE(TopSurfaceNodesDarcyVel,1)
       VALUE = -1.0_CMISSDP
       COMPONENT_NUMBER = 3
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,TopSurfaceNodesDarcyVel(NN), &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,1,TopSurfaceNodesDarcyVel(NN), &
         & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING TOP DARCY BC TO NODE", TopSurfaceNodesDarcyVel(NN)
     ENDDO

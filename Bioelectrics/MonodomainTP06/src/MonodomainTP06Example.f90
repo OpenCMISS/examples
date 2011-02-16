@@ -285,10 +285,10 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
    CALL CMISSDecompositionNodeDomainGet(Decomposition,N,1,D,Err)
    IF(D==ComputationalNodeNumber) THEN
-    CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,1,x,Err)
-    CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,2,y,Err)
+    CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,1,x,Err)
+    CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,2,y,Err)
     IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,3,z,Err)
+      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,3,z,Err)
     ELSE
       z = 0
     END IF
@@ -297,7 +297,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
     ELSE
       activ = 0.0
     END IF
-    CALL CMISSFieldParameterSetUpdateNode(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,1,activ,Err)
+    CALL CMISSFieldParameterSetUpdateNode(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,1,activ,Err)
    END IF
   END DO
   ! diffusion coefficient, related to conductivity by D = sigma/Xi Cm
@@ -409,7 +409,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
    CALL CMISSDecompositionNodeDomainGet(Decomposition,N,1,D,Err)
    IF(D==ComputationalNodeNumber) THEN
-    CALL CMISSFieldParameterSetGetNode(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,7,activ,Err)
+    CALL CMISSFieldParameterSetGetNode(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,7,activ,Err)
     WRITE(*,*) 'Node ',N,' activation ',activ
    ENDIF
   ENDDO

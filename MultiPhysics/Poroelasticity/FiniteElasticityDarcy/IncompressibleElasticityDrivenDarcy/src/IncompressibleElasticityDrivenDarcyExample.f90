@@ -735,8 +735,8 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
     NODE=Face6Nodes(NN)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,3,ZCoord,Err)
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,NODE,3, &
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,3,ZCoord,Err)
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,3, &
         & CMISSBoundaryConditionFixed,ZCoord,Err)
       WRITE(*,*) "FIXING NODE",NODE,"AT BOTTOM IN Z DIRECTION"
     ENDIF
@@ -747,8 +747,8 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
     NODE=Face5Nodes(NN)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,3,ZCoord,Err)
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,NODE,3, &
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,3,ZCoord,Err)
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,3, &
         & CMISSBoundaryConditionFixed,ZCoord,Err)
       WRITE(*,*) "FIXING NODE",NODE,"AT TOP IN Z DIRECTION"
     ENDIF
@@ -761,14 +761,14 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
     NODE=Face6Nodes(NN)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,2,YCoord,Err)
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,1,XCoord,Err)
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,2,YCoord,Err)
 
       !Fix Origin displacement in x and y (z already fixed)
       IF(ABS(XCoord)<1.0E-6_CMISSDP.AND.ABS(YCoord)<1.0E-6_CMISSDP) THEN
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,NODE,1, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,1, &
           & CMISSBoundaryConditionFixed,XCoord,Err)
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,NODE,2, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,2, &
           & CMISSBoundaryConditionFixed,YCoord,Err)
         WRITE(*,*) "FIXING ORIGIN NODE",NODE,"IN X AND Y DIRECTION"
         X_FIXED=.TRUE.
@@ -777,7 +777,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 
       !Fix nodal displacements at (X_DIM,0) in y
       IF(ABS(XCoord - X_DIM)<1.0E-6_CMISSDP .AND. ABS(YCoord)<1.0E-6_CMISSDP) THEN
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,NODE,2, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,2, &
           & CMISSBoundaryConditionFixed,YCoord,Err)
         WRITE(*,*) "FIXING NODES",NODE,"AT (X_DIM,0) IN Y DIRECTION"
         Y_FIXED=.TRUE.
@@ -785,7 +785,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 
       !Fix nodal displacements at (0,Y_DIM) in x
       IF(ABS(XCoord)<1.0E-6_CMISSDP .AND. ABS(YCoord - Y_DIM)<1.0E-6_CMISSDP) THEN
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,NODE,1, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,1, &
           & CMISSBoundaryConditionFixed,XCoord,Err)
         WRITE(*,*) "FIXING NODES",NODE,"AT (0,Y_DIM) IN X DIRECTION"
         X_FIXED=.TRUE.
@@ -834,7 +834,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
       VALUE = -2.0_CMISSDP
       COMPONENT_NUMBER = 3
       write(*,*)'Marker 0'
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,NODE,COMPONENT_NUMBER, &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,1,NODE,COMPONENT_NUMBER, &
         & CMISSBoundaryConditionFixed,VALUE,Err)
       WRITE(*,*) "SPECIFIED INFLOW AT NODE",NODE,"IN Z DIRECTION"
 
@@ -853,7 +853,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
       VALUE = 0.0_CMISSDP
       COMPONENT_NUMBER = 1
       write(*,*)'Marker 1'
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,NODE,COMPONENT_NUMBER, &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,1,NODE,COMPONENT_NUMBER, &
         & CMISSBoundaryConditionFixed,VALUE,Err)
       WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN X DIRECTION"
 !     ENDIF
@@ -866,7 +866,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
       VALUE = 0.0_CMISSDP
       COMPONENT_NUMBER = 1
       write(*,*)'Marker 2'
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,NODE,COMPONENT_NUMBER, &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,1,NODE,COMPONENT_NUMBER, &
         & CMISSBoundaryConditionFixed,VALUE,Err)
       WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN X DIRECTION"
 !     ENDIF
@@ -879,7 +879,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
       VALUE = 0.0_CMISSDP
       COMPONENT_NUMBER = 2
       write(*,*)'Marker 3'
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,NODE,COMPONENT_NUMBER, &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,1,NODE,COMPONENT_NUMBER, &
         & CMISSBoundaryConditionFixed,VALUE,Err)
       WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Y DIRECTION"
 !     ENDIF
@@ -892,7 +892,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
       VALUE = 0.0_CMISSDP
       COMPONENT_NUMBER = 2
       write(*,*)'Marker 4'
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,NODE,COMPONENT_NUMBER, &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,1,NODE,COMPONENT_NUMBER, &
         & CMISSBoundaryConditionFixed,VALUE,Err)
       WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Y DIRECTION"
 !     ENDIF
@@ -905,7 +905,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
       VALUE = 0.0_CMISSDP
       COMPONENT_NUMBER = 3
       write(*,*)'Marker 5'
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,NODE,COMPONENT_NUMBER, &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,1,NODE,COMPONENT_NUMBER, &
         & CMISSBoundaryConditionFixed,VALUE,Err)
       WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Z DIRECTION"
 !     ENDIF

@@ -678,7 +678,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   DO NN=1,NUMBER_USER_ELEMENT_NODES
     NODE_NUMBER = ElementUserNodes(NN)
-    CALL CMISSFieldParameterSetUpdateNode(SourceFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+    CALL CMISSFieldParameterSetUpdateNode(SourceFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
       & 1,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
   ENDDO
 
@@ -749,8 +749,8 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
     NODE=surface_quad_base(NN)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,3,ZCoord,Err)
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,NODE,3, &
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,3,ZCoord,Err)
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,3, &
         & CMISSBoundaryConditionFixed,ZCoord,Err)
     ENDIF
   ENDDO
@@ -762,7 +762,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       COMPONENT_NUMBER = 3  ! Does it matter which number ??? It used to be linked to the normal ... Check this !!!
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldDelUDelNVariableType,1,NODE,COMPONENT_NUMBER, &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldDelUDelNVariableType,1,1,NODE,COMPONENT_NUMBER, &
         & CMISSBoundaryConditionPressure,INNER_PRESSURE,Err)
     ENDIF
   ENDDO
@@ -773,7 +773,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       COMPONENT_NUMBER = 3  ! Does it matter which number ??? It used to be linked to the normal ... Check this !!!
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldDelUDelNVariableType,1,NODE,COMPONENT_NUMBER, &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldDelUDelNVariableType,1,1,NODE,COMPONENT_NUMBER, &
         & CMISSBoundaryConditionPressure,OUTER_PRESSURE,Err)
     ENDIF
   ENDDO
@@ -785,18 +785,18 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
     NODE=surface_quad_base(NN)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,2,YCoord,Err)
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,1,XCoord,Err)
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,2,YCoord,Err)
       IF(ABS(XCoord)<1.0E-6_CMISSDP) THEN
 !       IF(NODE==600) THEN
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,NODE,1, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,1, &
           & CMISSBoundaryConditionFixed,XCoord,Err)
         WRITE(*,*) "FIXING NODE",NODE,"IN X DIRECTION"
         X_FIXED=.TRUE.
       ENDIF
       IF(ABS(YCoord)<1.0E-6_CMISSDP) THEN
 !       IF(NODE==584) THEN
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,NODE,2, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,2, &
           & CMISSBoundaryConditionFixed,YCoord,Err)
         WRITE(*,*) "FIXING NODE",NODE,"IN Y DIRECTION"
         Y_FIXED=.TRUE.
@@ -836,7 +836,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
       NODE_NUMBER = surface_lin_inner(NN)
       COMPONENT_NUMBER = 1
       VALUE = 1.0_CMISSDP
-      CALL CMISSFieldParameterSetUpdateNode(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+      CALL CMISSFieldParameterSetUpdateNode(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
         & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
 
@@ -850,7 +850,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
       NODE_NUMBER = surface_lin_outer(NN)
       COMPONENT_NUMBER = 1
       VALUE = 1.0_CMISSDP
-      CALL CMISSFieldParameterSetUpdateNode(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+      CALL CMISSFieldParameterSetUpdateNode(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
         & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
 
@@ -863,7 +863,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
     DO NN=1,SIZE(surface_lin_base,1)
       VALUE = +0.0_CMISSDP  ! Mind the sign !
       COMPONENT_NUMBER = 3
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,surface_lin_base(NN), &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,1,surface_lin_base(NN), &
         & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING TOP DARCY BC TO NODE", surface_lin_base(NN)
     ENDDO

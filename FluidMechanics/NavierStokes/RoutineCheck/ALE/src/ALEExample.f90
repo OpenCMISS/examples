@@ -597,7 +597,7 @@ PROGRAM NAVIERSTOKESALEEXAMPLE
       CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
       IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
         CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-          & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+          & 1,CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
       ENDIF
     ENDDO
   ENDDO
@@ -791,7 +791,7 @@ PROGRAM NAVIERSTOKESALEEXAMPLE
       IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
         DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
           VALUE=0.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
             & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
         ENDDO
       ENDIF
@@ -806,7 +806,7 @@ PROGRAM NAVIERSTOKESALEEXAMPLE
       IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
         DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
           VALUE=0.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
             & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
         ENDDO
       ENDIF
@@ -821,7 +821,7 @@ PROGRAM NAVIERSTOKESALEEXAMPLE
       IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
         DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
           VALUE=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER)
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
             & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
         ENDDO
       ENDIF
@@ -841,7 +841,7 @@ PROGRAM NAVIERSTOKESALEEXAMPLE
       IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
         DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
           VALUE=0.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsMovingMesh,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsMovingMesh,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
             & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
         ENDDO
       ENDIF
@@ -856,7 +856,7 @@ PROGRAM NAVIERSTOKESALEEXAMPLE
       IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
         DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
           VALUE=BOUNDARY_CONDITIONS_MOVING_MESH(COMPONENT_NUMBER)
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsMovingMesh,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsMovingMesh,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
             & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
         ENDDO
       ENDIF

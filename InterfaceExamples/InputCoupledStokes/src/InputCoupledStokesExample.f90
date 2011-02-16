@@ -936,7 +936,7 @@ PROGRAM COUPLEDSTOKES
   DO NODE_NUMBER=1,NUMBER_OF_NODES_SPACE1
     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS1
       VALUE=CM1%N(NODE_NUMBER,COMPONENT_NUMBER)
-      CALL CMISSFieldParameterSetUpdateNode(GeometricField1,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+      CALL CMISSFieldParameterSetUpdateNode(GeometricField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, & 
         & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
   ENDDO
@@ -947,7 +947,7 @@ PROGRAM COUPLEDSTOKES
   DO NODE_NUMBER=1,NUMBER_OF_NODES_SPACE2
     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS2
       VALUE=CM2%N(NODE_NUMBER,COMPONENT_NUMBER)
-      CALL CMISSFieldParameterSetUpdateNode(GeometricField2,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+      CALL CMISSFieldParameterSetUpdateNode(GeometricField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, & 
         & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
   ENDDO
@@ -1089,7 +1089,7 @@ PROGRAM COUPLEDSTOKES
       IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
         DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS1
           VALUE=0.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions1,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions1,CMISSFieldUVariableType,CMISSNoGlobalDerivative,1, & 
             & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
         ENDDO
       ENDIF
@@ -1104,7 +1104,7 @@ PROGRAM COUPLEDSTOKES
       IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
         DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS1
           VALUE=BOUNDARY_CONDITIONS1(COMPONENT_NUMBER)
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions1,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions1,CMISSFieldUVariableType,CMISSNoGlobalDerivative,1, & 
             & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
         ENDDO
       ENDIF
@@ -1125,7 +1125,7 @@ PROGRAM COUPLEDSTOKES
       IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
         DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS2
           VALUE=0.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions2,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions2,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
             & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
         ENDDO
       ENDIF
@@ -1140,7 +1140,7 @@ PROGRAM COUPLEDSTOKES
       IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
         DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS2
           VALUE=BOUNDARY_CONDITIONS2(COMPONENT_NUMBER)
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions2,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions2,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
             & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
         ENDDO
       ENDIF
@@ -1176,7 +1176,7 @@ PROGRAM COUPLEDSTOKES
   DO NODE_NUMBER=1,NUMBER_OF_NODES_INTERFACE
     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS_INTERFACE+1
       VALUE=CM3%N(NODE_NUMBER,COMPONENT_NUMBER)
-      CALL CMISSFieldParameterSetUpdateNode(InterfaceGeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+      CALL CMISSFieldParameterSetUpdateNode(InterfaceGeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, & 
         & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
   ENDDO

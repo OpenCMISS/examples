@@ -256,15 +256,16 @@ PROGRAM EMBEDDEDMESHEXAMPLE
 
   !Field value with a function x^2 + y^2 + z^2
   DO node_idx=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
-  CALL CMISSFieldParameterSetGetNode(GeometricField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,1,x,Err)
-  CALL CMISSFieldParameterSetGetNode(GeometricField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,2,y,Err)
+  CALL CMISSFieldParameterSetGetNode(GeometricField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,node_idx,1,x,Err)
+  CALL CMISSFieldParameterSetGetNode(GeometricField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,node_idx,2,y,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
-  CALL CMISSFieldParameterSetGetNode(GeometricField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,3,z,Err)
+  CALL CMISSFieldParameterSetGetNode(GeometricField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,node_idx,3,z,Err)
   ELSE
   Z = 0
   ENDIF
   FieldValue = x**2+y**2+z**2
-  CALL CMISSFieldParameterSetUpdateNode(DependentField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,1,fieldvalue,Err)
+  CALL CMISSFieldParameterSetUpdateNode(DependentField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,node_idx,1, &
+    & fieldvalue,Err)
 
   WRITE(*,*) 'The values at the nodes for field 1',fieldvalue
   ENDDO
@@ -273,7 +274,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
    WRITe(*,*) 'nn',NumberOfNodes1
   
    DO node_idx=1,NumberofNodes1
-   CALL CMISSFieldParameterSetGetNode(DependentField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,1,value,Err)
+   CALL CMISSFieldParameterSetGetNode(DependentField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,node_idx,1,value,Err)
    WRITE(*,*) 'The values at the nodes for field 1 before',value
    ENDDO
 
@@ -377,7 +378,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
    CALL CMISSNodesNumberOfNodesGet(RegionTwoUserNumber,NumberOfNodes2,Err)
    !Before
    DO node_idx=1,NumberOfNodes2
-   CALL CMISSFieldParameterSetGetNode(DependentField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,1,value,Err)
+   CALL CMISSFieldParameterSetGetNode(DependentField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,node_idx,1,value,Err)
    WRITE(*,*) 'The values at the nodes for field 2 before',value
    ENDDO
 
@@ -389,7 +390,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
    Allocate(ParentXiCoords(NumberofComponents,NumberOfNodes1)) 
    DO node_idx = 1,NumberofNodes1
    DO dim_idx = 1,NumberOfComponents
-   CALL CMISSFieldParameterSetGetNode(GeometricField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
+   CALL CMISSFieldParameterSetGetNode(GeometricField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1, &
      & node_idx,dim_idx,value,Err)
    ParentXiCoords(dim_idx,node_idx) = value
    ENDDO
@@ -399,7 +400,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   Allocate(ChildXiCoords(NumberofComponents,NumberOfNodes2)) 
     DO node_idx = 1,NumberofNodes2
     DO dim_idx = 1,NumberOfComponents
-    CALL CMISSFieldParameterSetGetNode(GeometricField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
+    CALL CMISSFieldParameterSetGetNode(GeometricField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1, &
       & node_idx,dim_idx,value,Err)
      ChildXiCoords(dim_idx,node_idx) = value
     ENDDO
@@ -450,7 +451,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
  
    !After
    DO node_idx=1,NumberofNodes2
-   CALL CMISSFieldParameterSetGetNode(DependentField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,1,value,Err)
+   CALL CMISSFieldParameterSetGetNode(DependentField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,node_idx,1,value,Err)
    WRITE(*,*) 'The values at the nodes for field 2 after',value
    ENDDO
 
@@ -475,7 +476,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
 
    !After
    !DO gauss_idx=1,1
-   !CALL CMISSFieldParameterSetGetGaussPoint(DependentField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,gauss_idx,1,value,Err)
+   !CALL CMISSFieldParameterSetGetGaussPoint(DependentField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,gauss_idx,1,value,Err)
    !WRITE(*,*) 'The values at the nodes for field 1 after',value
    !ENDDO
   CALL CMISSFinalise(Err)

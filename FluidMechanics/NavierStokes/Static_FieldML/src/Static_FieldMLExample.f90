@@ -485,7 +485,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
       CONDITION=CMISSBoundaryConditionFixedWall
       DO COMPONENT_NUMBER=1,coordinateCount
         VALUE=0.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
           & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE, err )
       ENDDO
     ENDDO
@@ -497,7 +497,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
       CONDITION=CMISSBoundaryConditionInletWall
       DO COMPONENT_NUMBER=1,coordinateCount
         VALUE=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER)
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
           & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE, err )
       ENDDO
     ENDDO

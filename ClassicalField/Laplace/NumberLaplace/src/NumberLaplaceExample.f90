@@ -238,9 +238,9 @@ PROGRAM NUMBERLAPLACEEXAMPLE
   ELSE
     LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
   ENDIF
-  CALL CMISSBoundaryConditionsSetNode(RegionUserNumber,EquationsSetUserNumber,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
+  CALL CMISSBoundaryConditionsSetNode(RegionUserNumber,EquationsSetUserNumber,CMISSFieldUVariableType,1,1,FirstNodeNumber,1, &
     & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(RegionUserNumber,EquationsSetUserNumber,CMISSFieldUVariableType,1,LastNodeNumber,1, &
+  CALL CMISSBoundaryConditionsSetNode(RegionUserNumber,EquationsSetUserNumber,CMISSFieldUVariableType,1,1,LastNodeNumber,1, &
     & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
   !Finish the creation of the equations set boundary conditions
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(RegionUserNumber,EquationsSetUserNumber,Err)

@@ -227,7 +227,7 @@ PROGRAM ActiveContractionExample
   !Set node positions
   DO N=1,size(Nodes,2)
   DO D=1,3
-    CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,D,Nodes(D,N),Err)
+    CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,D,Nodes(D,N),Err)
   ENDDO
   ENDDO
 
@@ -249,7 +249,7 @@ PROGRAM ActiveContractionExample
   DO N=1,size(Nodes,2)
   DO D=1,3
     Fibers(D,N) = 0 ! input file gives unit vectors and opencmiss expects angles. TODO: fix.
-    CALL CMISSFieldParameterSetUpdateNode(FibreField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,D,Fibers(D,N),Err)
+    CALL CMISSFieldParameterSetUpdateNode(FibreField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,D,Fibers(D,N),Err)
   ENDDO
   ENDDO
 
@@ -363,7 +363,7 @@ CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSE
   DO I=1,size(DirichletConditions,2)
     N = INT(DirichletConditions(1,I))
     D = INT(DirichletConditions(2,I))
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,N,D,&
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,N,D,&
          & CMISSBoundaryConditionFixed, Nodes(D,N) + DirichletConditions(3,I),Err)  ! current + offset
   ENDDO
 

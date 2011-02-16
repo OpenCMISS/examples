@@ -469,14 +469,14 @@ PROGRAM TESTINGPOINTSEXAMPLE
 
     !Set all inner surface nodes to inner pressure
     DO NN=1,SIZE(InnerSurfaceNodes,1)
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,InnerSurfaceNodes(NN), &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,InnerSurfaceNodes(NN), &
         & abs(InnerNormalXi),CMISSBoundaryConditionPressureIncremented,INNER_PRESSURE,Err)   ! INNER_PRESSURE
       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING INNER PRESSURE TO NODE", InnerSurfaceNodes(NN)
     ENDDO
 
     !Set all outer surface nodes to outer pressure
     DO NN=1,SIZE(OuterSurfaceNodes,1)
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,OuterSurfaceNodes(NN), &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,OuterSurfaceNodes(NN), &
         & abs(OuterNormalXi),CMISSBoundaryConditionPressureIncremented,OUTER_PRESSURE,Err)
       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING OUTER PRESSURE TO NODE", OuterSurfaceNodes(NN)
     ENDDO
@@ -484,14 +484,14 @@ PROGRAM TESTINGPOINTSEXAMPLE
     !Set all top nodes fixed in z plane at the set height
     deformedHeight=HEIGHT*LAMBDA
     DO NN=1,SIZE(TopSurfaceNodes,1)
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,TopSurfaceNodes(NN), &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,TopSurfaceNodes(NN), &
         & 3,CMISSBoundaryConditionFixed,deformedHeight,Err)
       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING FIXED CONDITION TO NODE", TopSurfaceNodes(NN)
     ENDDO
 
     !Set all bottom nodes fixed in z plane
     DO NN=1,SIZE(BottomSurfaceNodes,1)
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,BottomSurfaceNodes(NN), &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,BottomSurfaceNodes(NN), &
         & 3,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING FIXED CONDITION TO NODE", BottomSurfaceNodes(NN)
     ENDDO
@@ -500,19 +500,19 @@ PROGRAM TESTINGPOINTSEXAMPLE
     X_FIXED=.FALSE.
     Y_FIXED=.FALSE.
     DO NN=1,SIZE(BottomSurfaceNodes,1)
-      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
         & 1,BottomSurfaceNodes(NN),1,xValue,Err)
       IF(abs(xValue)<1e-5_CMISSDP) THEN
         !Constrain it in x direction
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,BottomSurfaceNodes(NN),1, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,BottomSurfaceNodes(NN),1, &
           & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
         X_FIXED=.TRUE.
       ENDIF
-      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
         & 1,BottomSurfaceNodes(NN),2,yValue,Err)
       IF(abs(yValue)<1e-5_CMISSDP) THEN
         !Constrain it in y direction
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,BottomSurfaceNodes(NN),2, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,BottomSurfaceNodes(NN),2, &
           & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
         Y_FIXED=.TRUE.
       ENDIF

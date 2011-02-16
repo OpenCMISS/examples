@@ -174,7 +174,8 @@ MODULE IOSTUFF
           do i=1,NumberOfNodes
             read(fid,*,err=999) coord(1:NumberOfCoordinateDimensions)
             do j=1,NumberOfCoordinateDimensions
-            CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,i,j,coord(j),Err)
+            CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,i,j, &
+              & coord(j),Err)
             enddo
           enddo
           exit
@@ -425,7 +426,7 @@ MODULE IOSTUFF
                       case (CMISSFieldElementBasedInterpolation)
                         CALL CMISSFieldParameterSetUpdateElement(Field,VariableType,CMISSFieldValuesSetType,ind,i,data_dp(i),Err)
                       case (CMISSFieldNodeBasedInterpolation)
-                        CALL CMISSFieldParameterSetUpdateNode(Field,VariableType,CMISSFieldValuesSetType,1,ind,i,data_dp(i),Err)
+                        CALL CMISSFieldParameterSetUpdateNode(Field,VariableType,CMISSFieldValuesSetType,1,1,ind,i,data_dp(i),Err)
                       end select
                     enddo
                   case (CMISSFieldIntgType)
@@ -437,7 +438,7 @@ MODULE IOSTUFF
                       case (CMISSFieldElementBasedInterpolation)
                         CALL CMISSFieldParameterSetUpdateElement(Field,VariableType,CMISSFieldValuesSetType,ind,i,data_int(i),Err)
                       case (CMISSFieldNodeBasedInterpolation)
-                        CALL CMISSFieldParameterSetUpdateNode(Field,VariableType,CMISSFieldValuesSetType,1,ind,i,data_int(i),Err)
+                        CALL CMISSFieldParameterSetUpdateNode(Field,VariableType,CMISSFieldValuesSetType,1,1,ind,i,data_int(i),Err)
                       end select
                     enddo
                   end select

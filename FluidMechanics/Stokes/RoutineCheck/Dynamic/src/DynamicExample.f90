@@ -533,7 +533,7 @@ PROGRAM STOKESDYNAMICEXAMPLE
       CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
       IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
         CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-          & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+          & 1,CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
       ENDIF
     ENDDO
   ENDDO
@@ -646,7 +646,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberStokes,Region,GeometricF
       IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
         DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
           VALUE=0.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsStokes,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsStokes,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
             & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
         ENDDO
       ENDIF
@@ -661,7 +661,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberStokes,Region,GeometricF
       IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
         DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
           VALUE=BOUNDARY_CONDITIONS_STOKES(COMPONENT_NUMBER)
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsStokes,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsStokes,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
             & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
         ENDDO
       ENDIF
