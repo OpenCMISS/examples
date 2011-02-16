@@ -57,7 +57,6 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !PROGRAM LIBRARIES
 
   USE OPENCMISS
-  USE FLUID_MECHANICS_IO_ROUTINES
   USE MPI
   USE FIELDML_INPUT_ROUTINES
   USE FIELDML_UTIL_ROUTINES
@@ -105,7 +104,7 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
 
   CHARACTER(KIND=C_CHAR), PARAMETER :: NUL = C_NULL_CHAR
 
-  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: inputFilename = "../../TOOLS/NavierStokesMeshes/HEX-M2-V2-P1_FE.xml"
+  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: inputFilename = "./input/HEX-M2-V2-P1_FE.xml"
 
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputDirectory = "output"
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputFilename = outputDirectory//"/HEX-M2-V2-P1_FE_out.xml"
@@ -290,11 +289,11 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   CALL FieldmlInput_SetDofVariables( fieldmlInfo, "test_mesh.nodal_dofs", "test_mesh.element_dofs", &
     & "test_mesh.constant_dofs", err )
   
-  spaceHandle = Fieldml_GetNamedObject( fieldmlInfo%fmlHandle, "test_mesh.coordinates"//NUL )
-  velocityHandle = Fieldml_GetNamedObject( fieldmlInfo%fmlHandle, "test_mesh.velocity"//NUL )
-  pressureHandle = Fieldml_GetNamedObject( fieldmlInfo%fmlHandle, "test_mesh.pressure"//NUL )
+  spaceHandle = Fieldml_GetObjectByName( fieldmlInfo%fmlHandle, "test_mesh.coordinates"//NUL )
+  velocityHandle = Fieldml_GetObjectByName( fieldmlInfo%fmlHandle, "test_mesh.velocity"//NUL )
+  pressureHandle = Fieldml_GetObjectByName( fieldmlInfo%fmlHandle, "test_mesh.pressure"//NUL )
 
-  CALL FieldmlInput_GetMeshInfo( fieldmlInfo, "test_mesh.domain", err )
+  CALL FieldmlInput_GetMeshInfo( fieldmlInfo, "test_mesh.mesh", "test_mesh.nodes", err )
   
   CALL FieldmlInput_GetCoordinateSystemInfo( fieldmlInfo%fmlHandle, spaceHandle, coordinateType, coordinateCount, err )
   
@@ -341,13 +340,13 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   
   meshComponentCount = 2
   
-  nodeCount = Fieldml_GetEnsembleDomainElementCount( fieldmlInfo%fmlHandle, fieldmlInfo%nodesHandle )
+  nodeCount = Fieldml_GetEnsembleTypeElementCount( fieldmlInfo%fmlHandle, fieldmlInfo%nodesHandle )
   CALL CMISSNodesTypeInitialise( Nodes, err )
   CALL CMISSNodesCreateStart( Region, nodeCount, nodes, err )
   CALL CMISSNodesCreateFinish( Nodes, err )
 
-  xiDimensions = Fieldml_GetDomainComponentCount( fieldmlInfo%fmlHandle, fieldmlInfo%xiHandle )
-  elementCount = Fieldml_GetEnsembleDomainElementCount( fieldmlInfo%fmlHandle, fieldmlInfo%elementsHandle )
+  xiDimensions = Fieldml_GetTypeComponentCount( fieldmlInfo%fmlHandle, fieldmlInfo%xiHandle )
+  elementCount = Fieldml_GetEnsembleTypeElementCount( fieldmlInfo%fmlHandle, fieldmlInfo%elementsHandle )
   CALL CMISSMeshTypeInitialise( Mesh, err )
   CALL CMISSMeshCreateStart( MeshUserNumber, Region, xiDimensions, Mesh, err )
   CALL CMISSMeshNumberOfElementsSet( Mesh, elementCount, err )
@@ -608,11 +607,11 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
    CALL FieldmlOutput_AddField( outputInfo, baseName//".geometric", region, mesh, GeometricField, &
      & CMISSFieldUVariableType, err )
 
-   domainHandle = Fieldml_GetNamedObject( outputInfo%fmlHandle, "library.velocity.rc.3d"//NUL )
+   domainHandle = Fieldml_GetObjectByName( outputInfo%fmlHandle, "library.velocity.rc.3d"//NUL )
    CALL FieldmlOutput_AddFieldComponents( outputInfo, domainHandle, baseName//".velocity", Mesh, DependentFieldNavierStokes, &
      & (/1,2,3/), CMISSFieldUVariableType, err )
     
-    domainHandle = Fieldml_GetNamedObject( outputInfo%fmlHandle, "library.pressure"//NUL )
+    domainHandle = Fieldml_GetObjectByName( outputInfo%fmlHandle, "library.pressure"//NUL )
     CALL FieldmlOutput_AddFieldComponents( outputInfo, domainHandle, baseName//".pressure", Mesh, DependentFieldNavierStokes, &
       & (/4/), CMISSFieldUVariableType, err )
     

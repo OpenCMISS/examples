@@ -790,22 +790,22 @@ PROGRAM MONOLITHICSCHEMEADVECTIONDIFFUSIONFIELDMLEXAMPLE
     CouplingCoeffs(4,3)=0.0E-02_CMISSDP
     CouplingCoeffs(4,4)=0.0E-02_CMISSDP
   ELSE IF(Ncompartments==5)THEN
-    CouplingCoeffs(1,1)=0.0E-02_CMISSDP
-    CouplingCoeffs(1,2)=0.0E-02_CMISSDP
-    CouplingCoeffs(1,3)=0.0E-02_CMISSDP
-    CouplingCoeffs(1,4)=0.0E-02_CMISSDP
-    CouplingCoeffs(1,5)=0.0E-02_CMISSDP
-    CouplingCoeffs(2,1)=0.0E-02_CMISSDP
-    CouplingCoeffs(2,2)=0.0E-02_CMISSDP
-    CouplingCoeffs(2,3)=0.0E-02_CMISSDP
-    CouplingCoeffs(2,4)=0.0E-02_CMISSDP
-    CouplingCoeffs(2,5)=0.0E-02_CMISSDP
-    CouplingCoeffs(3,1)=0.0E-02_CMISSDP
-    CouplingCoeffs(3,2)=0.0E-02_CMISSDP
-    CouplingCoeffs(3,3)=0.0E-02_CMISSDP
-    CouplingCoeffs(3,4)=0.0E-02_CMISSDP
-    CouplingCoeffs(3,5)=0.0E-02_CMISSDP
-    CouplingCoeffs(4,1)=0.0E-02_CMISSDP
+    CouplingCoeffs(1,1)=1.0E-02_CMISSDP
+    CouplingCoeffs(1,2)=2.0E-02_CMISSDP
+    CouplingCoeffs(1,3)=3.0E-02_CMISSDP
+    CouplingCoeffs(1,4)=4.0E-02_CMISSDP
+    CouplingCoeffs(1,5)=5.0E-02_CMISSDP
+    CouplingCoeffs(2,1)=6.0E-02_CMISSDP
+    CouplingCoeffs(2,2)=7.0E-02_CMISSDP
+    CouplingCoeffs(2,3)=8.0E-02_CMISSDP
+    CouplingCoeffs(2,4)=9.0E-02_CMISSDP
+    CouplingCoeffs(2,5)=10.0E-02_CMISSDP
+    CouplingCoeffs(3,1)=11.0E-02_CMISSDP
+    CouplingCoeffs(3,2)=12.0E-02_CMISSDP
+    CouplingCoeffs(3,3)=13.0E-02_CMISSDP
+    CouplingCoeffs(3,4)=14.0E-02_CMISSDP
+    CouplingCoeffs(3,5)=15.0E-02_CMISSDP
+    CouplingCoeffs(4,1)=16.0E-02_CMISSDP
     CouplingCoeffs(4,2)=0.0E-02_CMISSDP
     CouplingCoeffs(4,3)=0.0E-02_CMISSDP
     CouplingCoeffs(4,4)=0.0E-02_CMISSDP
@@ -866,7 +866,10 @@ PROGRAM MONOLITHICSCHEMEADVECTIONDIFFUSIONFIELDMLEXAMPLE
   !
   !INDEPENDENT FIELDS
 
-   !create the equations set independent field variables for all equations sets 
+   !create the equations set independent field variables for all equations sets
+   !the independent fields here now need to possess both a U and a V variable type.
+   !U variable type stores the velocity field.
+   !V variable type stores the flux between this compartment and all the others - so will need to have N-compartments-1 lots of components 
   DO icompartment = 1,Ncompartments
     IndependentFieldUserNumberDiffusion=800_CMISSIntg+icompartment
     CALL CMISSFieldTypeInitialise(IndependentFieldDiffusion(icompartment),Err)

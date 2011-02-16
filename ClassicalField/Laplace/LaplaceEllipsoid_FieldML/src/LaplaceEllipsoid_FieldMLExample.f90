@@ -75,7 +75,8 @@ PROGRAM LAPLACEELLIPSOIDEXAMPLE
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: QuadraticBasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: QuadraticCollapsedBasisUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=4
   INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
@@ -83,14 +84,13 @@ PROGRAM LAPLACEELLIPSOIDEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=8
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=9
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=10
-  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber2=11
-  !Program types
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfXiCoordinates=3
+!Program types
   
   !Program variables
 
   INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
   INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
-  INTEGER(CMISSIntg) :: dimensions
   
   INTEGER(CMISSIntg) :: MPI_IERROR
 
@@ -98,7 +98,7 @@ PROGRAM LAPLACEELLIPSOIDEXAMPLE
 
   !CMISS variables
 
-  TYPE(CMISSBasisType) :: Basis, Basis2
+  TYPE(CMISSBasisType) ::  QuadraticBasis,QuadraticCollapsedBasis
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
   TYPE(CMISSCoordinateSystemType) :: CoordinateSystem,WorldCoordinateSystem
   TYPE(CMISSDecompositionType) :: Decomposition
@@ -131,9 +131,9 @@ PROGRAM LAPLACEELLIPSOIDEXAMPLE
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputDirectory = ""
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputFilename = "LaplaceEllipsoid.xml"
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "laplace_ellipsoid"
-
   TYPE(FieldmlInfoType) :: fieldmlInfo
-  
+  INTEGER(CMISSIntg) :: dimensions
+
 #ifdef WIN32
   !Initialise QuickWin
   QUICKWIN_WINDOW_CONFIG%TITLE="General Output" !Window title
@@ -156,10 +156,9 @@ PROGRAM LAPLACEELLIPSOIDEXAMPLE
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
   
-  NUMBER_GLOBAL_X_ELEMENTS=4
-  NUMBER_GLOBAL_Y_ELEMENTS=4
-  NUMBER_GLOBAL_Z_ELEMENTS=4
-  dimensions = 3
+  NUMBER_GLOBAL_X_ELEMENTS=16
+  NUMBER_GLOBAL_Y_ELEMENTS=3
+  NUMBER_GLOBAL_Z_ELEMENTS=1
   NUMBER_OF_DOMAINS=NumberOfComputationalNodes
     
   !Broadcast the number of elements in the X & Y directions and the number of partitions to the other computational nodes
@@ -171,7 +170,15 @@ PROGRAM LAPLACEELLIPSOIDEXAMPLE
   !Start the creation of a new RC coordinate system
   CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
   CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,dimensions,Err)
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+    !Set the coordinate system to be 2D
+    CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,2,Err)
+    dimensions = 2
+  ELSE
+    !Set the coordinate system to be 3D
+    CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,3,Err)
+    dimensions = 3
+  ENDIF
   !Finish the creation of the coordinate system
   CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
 
@@ -183,28 +190,30 @@ PROGRAM LAPLACEELLIPSOIDEXAMPLE
   !Finish the creation of the region
   CALL CMISSRegionCreateFinish(Region,Err)
 
-  !Start the creation of a collapsed basis 
-  CALL CMISSBasisTypeInitialise(Basis2,Err)
-  CALL CMISSBasisCreateStart(BasisUserNumber2,Basis2,Err)
-  CALL CMISSBasisTypeSet(Basis2,CMISSBasisLagrangeHermiteTPType,Err)
-  CALL CMISSBasisNumberOfXiSet(Basis2,3,Err)
-  CALL CMISSBasisInterpolationXiSet(Basis2,(/CMISSBasisQuadraticLagrangeInterpolation, &
+  !Define basis functions - tri-linear Lagrange and tri-Quadratic Lagrange, each with collapsed variant
+    !Quadratic Basis
+  CALL CMISSBasisTypeInitialise(QuadraticBasis,Err)
+  CALL CMISSBasisCreateStart(QuadraticBasisUserNumber,QuadraticBasis,Err)
+  CALL CMISSBasisInterpolationXiSet(QuadraticBasis,(/CMISSBasisQuadraticLagrangeInterpolation, &
+    & CMISSBasisQuadraticLagrangeInterpolation,CMISSBasisQuadraticLagrangeInterpolation/),Err)
+  CALL CMISSBasisQuadratureNumberOfGaussXiSet(QuadraticBasis, &
+    & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)
+  CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(QuadraticBasis,.true.,Err) !Have to do this
+  CALL CMISSBasisCreateFinish(QuadraticBasis,Err)
+
+    !Collapsed Quadratic Basis
+  CALL CMISSBasisTypeInitialise(QuadraticCollapsedBasis,Err)
+  CALL CMISSBasisCreateStart(QuadraticCollapsedBasisUserNumber,QuadraticCollapsedBasis,Err)
+  CALL CMISSBasisTypeSet(QuadraticCollapsedBasis,CMISSBasisLagrangeHermiteTPType,Err)
+  CALL CMISSBasisNumberOfXiSet(QuadraticCollapsedBasis,NumberOfXiCoordinates,Err)
+  CALL CMISSBasisInterpolationXiSet(QuadraticCollapsedBasis,(/CMISSBasisQuadraticLagrangeInterpolation, &
        & CMISSBasisQuadraticLagrangeInterpolation,CMISSBasisQuadraticLagrangeInterpolation/),Err)
-  CALL CMISSBasisCollapsedXiSet(Basis2,(/CMISSBasisXiCollapsed,CMISSBasisCollapsedAtXi0,CMISSBasisNotCollapsed/),Err)
-  CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis2, &
+  CALL CMISSBasisCollapsedXiSet(QuadraticCollapsedBasis,(/CMISSBasisXiCollapsed, &
+       & CMISSBasisCollapsedAtXi0,CMISSBasisNotCollapsed/),Err)
+  CALL CMISSBasisQuadratureNumberOfGaussXiSet(QuadraticCollapsedBasis, &
        & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)  
-  CALL CMISSBasisCreateFinish(Basis2,Err)
-  
-  !Start the creation of an ordinary basis 
-  CALL CMISSBasisTypeInitialise(Basis,Err)
-  CALL CMISSBasisCreateStart(BasisUserNumber,Basis,Err)
-  CALL CMISSBasisTypeSet(Basis,CMISSBasisLagrangeHermiteTPType,Err)
-  CALL CMISSBasisNumberOfXiSet(Basis,3,Err)
-  CALL CMISSBasisInterpolationXiSet(Basis,(/CMISSBasisQuadraticLagrangeInterpolation, &
-       & CMISSBasisQuadraticLagrangeInterpolation,CMISSBasisQuadraticLagrangeInterpolation/),Err)
-  CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis, &
-       & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)  
-  CALL CMISSBasisCreateFinish(Basis,Err)
+  CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(QuadraticCollapsedBasis,.true.,Err) !Have to do this
+  CALL CMISSBasisCreateFinish(QuadraticCollapsedBasis,Err)
 
   !Start the creation of a generated mesh in the region
   CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
@@ -212,8 +221,7 @@ PROGRAM LAPLACEELLIPSOIDEXAMPLE
   !Set up a regular x*y*z mesh
   CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshEllipsoidMeshType,Err)
   !Set the default basis
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,Basis,Err)
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,Basis2,Err)
+ CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,[QuadraticBasis,QuadraticCollapsedBasis],Err)
   !Define the mesh on the region
   
     CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/LONG_AXIS,SHORT_AXIS,WALL_THICKNESS,CUTOFF_ANGLE/),Err)
@@ -241,7 +249,7 @@ PROGRAM LAPLACEELLIPSOIDEXAMPLE
   !Set the domain to be used by the field components.
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,1,Err)
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,1,Err)
-  IF( dimensions == 3 ) THEN
+  IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
     CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,1,Err)
   ENDIF
   !Finish creating the field
@@ -284,10 +292,10 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
   !Set the first node to 0.0 and the last node to 1.0
-  FirstNodeNumber=578
-  LastNodeNumber=582!SIZE(Region%region%Nodes)
-  CALL CMISSDecompositionNodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
-  CALL CMISSDecompositionNodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
+  FirstNodeNumber=1
+  LastNodeNumber=2!SIZE(Region%region%Nodes)
+  !CALL CMISSDecompositionNodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
+  !CALL CMISSDecompositionNodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
   IF(FirstNodeDomain==ComputationalNodeNumber) THEN
     CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
       & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
@@ -360,9 +368,9 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
 
     CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".dependent", region, mesh, DependentField, &
       & CMISSFieldUVariableType, err )
-    
+
     CALL FieldmlOutput_Write( fieldmlInfo, outputFilename, err )
-    
+
     CALL FieldmlUtil_FinalizeInfo( fieldmlInfo )
   ENDIF
   
