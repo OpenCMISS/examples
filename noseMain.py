@@ -1,5 +1,6 @@
 import os, subprocess,sys,commands
 from time import strftime
+from datetime import date
 import socket
 sys.path.append(os.environ['OPENCMISS_ROOT']+"/cm/examples")
 examplesDir = os.environ['OPENCMISS_ROOT']+"/cm/examples"
@@ -83,11 +84,11 @@ def test_build_library():
   
 
 def test_example():
-  rootdir = os.getcwd()
+  rootdir = os.getcwd()+"/examples/FiniteElasticity/testingPoints"
   for root, subFolders, files in os.walk(rootdir) :
     if root.find(".svn")==-1 :
       for f in files :
-        if f=="nightlytest.prop" :
+        if f=="nightlytest.prop" or (f=="weeklytest.prop" and date.today().weekday() == 4) :
           os.chdir(root)
           yield check_build, 'build',root,"gnu"
           system = os.uname()[0].lower()
