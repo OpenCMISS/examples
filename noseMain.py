@@ -88,7 +88,7 @@ def test_example():
   for root, subFolders, files in os.walk(rootdir) :
     if root.find(".svn")==-1 :
       for f in files :
-        if f=="nightlytest.prop" or (f=="weeklytest.prop" and date.today().weekday() == 4) :
+        if f=="nightlytest.prop" or (f=="weeklytest.prop" and date.today().weekday() == 6) :
           os.chdir(root)
           yield check_build, 'build',root,"gnu"
           system = os.uname()[0].lower()
