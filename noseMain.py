@@ -84,7 +84,7 @@ def test_build_library():
   
 
 def test_example():
-  rootdir = os.getcwd()+"/examples/FiniteElasticity/testingPoints"
+  rootdir = os.getcwd()
   for root, subFolders, files in os.walk(rootdir) :
     if root.find(".svn")==-1 :
       for f in files :
