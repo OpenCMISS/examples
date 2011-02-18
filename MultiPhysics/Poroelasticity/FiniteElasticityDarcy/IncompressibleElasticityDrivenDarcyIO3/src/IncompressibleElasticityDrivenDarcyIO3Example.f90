@@ -371,7 +371,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   DIAG_LEVEL_LIST(4)=4
   DIAG_LEVEL_LIST(5)=5
 
-  DIAG_ROUTINE_LIST(1)="FINITE_ELASTICITY_GAUSS_CAUCHY_TENSOR"
+  DIAG_ROUTINE_LIST(1)="DARCY_EQUATION_MONITOR_CONVERGENCE"
 
   !CMISSAllDiagType/CMISSInDiagType/CMISSFromDiagType
   CALL CMISSDiagnosticsSetOn(CMISSInDiagType,DIAG_LEVEL_LIST,"Diagnostics",DIAG_ROUTINE_LIST,Err)
@@ -487,7 +487,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   !EQUATIONS SETS
 
-  !Create the equations set for ALE Darcy
+  !Create the equations set for Darcy
   CALL CMISSFieldTypeInitialise(EquationsSetFieldDarcy,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSetDarcy,Err)
   CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDarcy,Region,GeometricFieldDarcy,CMISSEquationsSetFluidMechanicsClass, &

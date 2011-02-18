@@ -1,10 +1,12 @@
 import os, subprocess,sys,commands
 from time import strftime
+from datetime import date
 import socket
 sys.path.append(os.environ['OPENCMISS_ROOT']+"/cm/examples")
 examplesDir = os.environ['OPENCMISS_ROOT']+"/cm/examples"
 logsDir = os.environ['OPENCMISS_ROOT']+"/build/logs"
 hostname = socket.gethostname()
+compiler = os.environ['COMPILER']
 
 def load_prop(propFile, properties) :
   properties['TestingPoint']=[]
@@ -63,7 +65,7 @@ def getVersion(compiler) :
   
 
 def test_build_library():
-  global logsDir
+  global logsDir, compiler
   rootDir=os.environ['OPENCMISS_ROOT']+"/cm"
   os.chdir(rootDir)
   logDir = os.getcwd().replace(rootDir,logsDir)
@@ -72,24 +74,25 @@ def test_build_library():
     newDir = newDir + '/' + folder
     if not os.path.isdir(newDir):
       os.mkdir(newDir)
-  logPath = logDir+"/nose_library_build"
+  logPath = logDir+"/nose_library_build_" + compiler
   open_log(logPath)
-  command = "make USEFIELDML=true COMPILER=gnu" + " >> "  + logPath + " 2>&1"
+  command = "make USEFIELDML=true COMPILER=" + compiler + " >> "  + logPath + " 2>&1"
   err = os.system(command)
   close_log(logPath)
-  add_history(logDir+"/nose_library_build_history",err)
+  add_history(logDir+"/nose_library_build_history_" + compiler,err)
   assert err==0
   
   
 
 def test_example():
+  global compiler
   rootdir = os.getcwd()
   for root, subFolders, files in os.walk(rootdir) :
     if root.find(".svn")==-1 :
       for f in files :
-        if f=="nightlytest.prop" :
+        if f=="nightlytest.prop" or (f=="weeklytest.prop" and date.today().weekday() == 6) :
           os.chdir(root)
-          yield check_build, 'build',root,"gnu"
+          yield check_build, 'build',root,compiler
           system = os.uname()[0].lower()
           arch = os.uname()[4]
           propFile= file(f, "r")
@@ -107,9 +110,9 @@ def test_example():
               testingPointPath = testpoint[0]
             os.chdir(testingPointsPath + testingPointPath)
             if len(testpoint)<=2 :            
-              yield check_run, 'run', os.getcwd(), system, arch, "gnu", root, testpoint[1], testingPointPath, False
+              yield check_run, 'run', os.getcwd(), system, arch, compiler, root, testpoint[1], testingPointPath, False
             else :
-              yield check_run, 'run', os.getcwd(), system, arch, "gnu", root, testpoint[1], testingPointPath
+              yield check_run, 'run', os.getcwd(), system, arch, compiler, root, testpoint[1], testingPointPath
               yield check_output,'check',os.getcwd(), testpoint[2], testpoint[3]
   
 def check_build(status,root,compiler):
@@ -120,12 +123,12 @@ def check_build(status,root,compiler):
     newDir = newDir + '/' + folder
     if not os.path.isdir(newDir):
       os.mkdir(newDir)
-  logPath = logDir+"/nose_build"
+  logPath = logDir+"/nose_build_" + compiler
   open_log(logPath)
   command = "make USEFIELDML=true COMPILER=" + compiler + " >> "  + logPath + " 2>&1"
   err = os.system(command)
   close_log(logPath)
-  add_history(logDir+"/nose_build_history",err)
+  add_history(logDir+"/nose_build_history_" + compiler,err)
   assert err==0
 
 def check_run(status,cwd, system,arch,compiler,masterPath,testArgs,testPath,noCheck=None):
@@ -136,14 +139,14 @@ def check_run(status,cwd, system,arch,compiler,masterPath,testArgs,testPath,noCh
     newDir = newDir + '/' + folder
     if not os.path.isdir(newDir):
       os.mkdir(newDir)
-  logPath = logDir+"/nose_run"
+  logPath = logDir+"/nose_run_" + compiler
   open_log(logPath)
   exampleName = masterPath.rpartition("/")[2]
   compiler_version = getVersion(compiler)
   command = masterPath+"/bin/"+arch+"-"+system+"/mpich2/"+compiler+compiler_version+"/"+exampleName+"Example-debug "+testArgs + " >> "  + logPath + " 2>&1"
   err = os.system(command)
   close_log(logPath)
-  add_history(logDir+"/nose_run_history",err)
+  add_history(logDir+"/nose_run_history_" + compiler,err)
   assert err==0
 
 def check_output(status, cwd, ndiffDir, outputDir):
@@ -154,7 +157,7 @@ def check_output(status, cwd, ndiffDir, outputDir):
     newDir = newDir + '/' + folder
     if not os.path.isdir(newDir):
       os.mkdir(newDir)
-  logPath = logDir+"/nose_check"
+  logPath = logDir+"/nose_check_" + compiler
   open_log(logPath)
   ndiff = os.environ['OPENCMISS_ROOT']+"/cm/utils/ndiff"
   errall =0
@@ -169,7 +172,7 @@ def check_output(status, cwd, ndiffDir, outputDir):
     f1.write("The output values are identical with the expected ones. However, the outputs may be generated from previous build. You need also check if the latest test run passes.")
     f1.close()
   close_log(logPath)
-  add_history(logDir+"/nose_check_history",errall)
+  add_history(logDir+"/nose_check_history_" + compiler,errall)
   assert errall==0 
  
 if __name__ == '__main__':
