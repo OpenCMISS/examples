@@ -67,5 +67,5 @@ EXAMPLE_PATH=ClassicalField/SCRATCH/
 
 EXAMPLE_NAME = LinearPoissonMixedNeumannDirichlet_3
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

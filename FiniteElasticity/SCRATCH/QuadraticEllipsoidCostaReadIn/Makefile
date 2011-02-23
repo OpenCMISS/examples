@@ -67,5 +67,5 @@ EXAMPLE_PATH = FiniteElasticity/SCRATCH/
 
 EXAMPLE_NAME = QuadraticEllipsoidCostaReadIn
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 
