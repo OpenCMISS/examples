@@ -41,7 +41,7 @@
 !>
 
 !> \example Meshes/Versions3DLaplace/Versions3DLaplaceExample.f90
-!! Example program to solve a Laplace equation over a cube using OpenCMISS calls. Two tricubic hermite elements are used to create the cube using versions.
+!! Example program to solve a Laplace equation over a cube using OpenCMISS calls. Two tricubic hermite elements are used to create the cube using versions to collapse a few nodes. See Example 5i1: Mesh with 2 collapsed elements on the CMISS examples website for more information about the mesh (http://cmiss.bioeng.auckland.ac.nz/development/examples/5/5i/5i1/index.html)
 !! \htmlinclude Meshes/Versions3DLaplace/Versions3DLaplace/history.html
 !!
 !<
@@ -144,11 +144,11 @@ PROGRAM VERSIONS3DLAPLACE
 
   CALL CMISSRandomSeedsSet(9999,Err)
   
-  !CALL CMISSDiagnosticsSetOn(CMISSAllDiagType,[1,2,3,4,5],"Diagnostics",["FIELD_MAPPINGS_CALCULATE"],Err)
-  CALL CMISSDiagnosticsSetOn(CMISSInDiagType,[1,2,3,4,5],"Diagnostics",[&
-    & "FIELD_GEOMETRIC_PARAMETERS_LINE_LENGTHS_CALCULATE", &
-    & "DECOMPOSITION_TOPOLOGY_LINES_CALCULATE           " &
-    & ],Err)
+
+  !CALL CMISSDiagnosticsSetOn(CMISSInDiagType,[1,2,3,4,5],"Diagnostics",[&
+  !  & "FIELD_GEOMETRIC_PARAMETERS_LINE_LENGTHS_CALCULATE", &
+  !  & "DECOMPOSITION_TOPOLOGY_LINES_CALCULATE           " &
+  ! & ],Err)
 
   !CALL CMISSOutputSetOn(Filename,Err)
 
@@ -213,6 +213,8 @@ PROGRAM VERSIONS3DLAPLACE
   CALL CMISSNodesCreateStart(Region,TotalNumberOfNodes,Nodes,Err)
   CALL CMISSNodesCreateFinish(Nodes,Err)
 
+  CALL CMISSDiagnosticsSetOn(CMISSAllDiagType,[1,2,3,4,5],"Diagnostics",["FIELD_MAPPINGS_CALCULATE"],Err)
+
   !Create elements for the mesh
   !Mesh Component 1
   CALL CMISSMeshElementsTypeInitialise(Elements(1),Err)
@@ -270,6 +272,8 @@ PROGRAM VERSIONS3DLAPLACE
   CALL CMISSMeshElementsLocalElementNodeVersionSet(Elements(3),2,2,5,6,Err) ! GlobalElementNumber,VersionNumber,DerivativeNumber,ElementNodeIndex
   CALL CMISSMeshElementsCreateFinish(Elements(3),Err)
   CALL CMISSMeshCreateFinish(Mesh,Err) 
+  
+  CALL CMISSDiagnosticsSetOff(Err)
 
   !Create a decomposition
   CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
@@ -288,8 +292,8 @@ PROGRAM VERSIONS3DLAPLACE
   CALL CMISSFieldCreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
   !Set the decomposition to use
   CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
-  CALL CMISSFieldScalingTypeSet(GeometricField,CMISSFieldUnitScaling,Err)
-  !CALL CMISSFieldScalingTypeSet(GeometricField,CMISSFieldArithmeticMeanScaling,Err)
+  !CALL CMISSFieldScalingTypeSet(GeometricField,CMISSFieldUnitScaling,Err)
+  CALL CMISSFieldScalingTypeSet(GeometricField,CMISSFieldArithmeticMeanScaling,Err)
   !Set the domain to be used by the field components.
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,1,Err)
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,1,Err)
@@ -297,10 +301,7 @@ PROGRAM VERSIONS3DLAPLACE
   !Finish creating the field
   CALL CMISSFieldCreateFinish(GeometricField,Err)
 
-  !Initialize Field Components to Zero
-  CALL CMISSFieldComponentValuesInitialise(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,ZERO,Err)
-  CALL CMISSFieldComponentValuesInitialise(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,ZERO,Err)
-  CALL CMISSFieldComponentValuesInitialise(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,ZERO,Err)
+  CALL CMISSDiagnosticsSetOn(CMISSAllDiagType,[1,2,3,4,5],"Diagnostics",["FIELD_MAPPINGS_CALCULATE"],Err)
 
   !Node 1 
   !Geometric x component
@@ -546,7 +547,10 @@ PROGRAM VERSIONS3DLAPLACE
   CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,7,8,3,ZERO,Err)
   CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,8,8,3,ZERO,Err)
 
+  CALL CMISSFieldParameterSetUpdateStart(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
   CALL CMISSFieldParameterSetUpdateFinish(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
+
+  CALL CMISSDiagnosticsSetOff(Err)
 
   EXPORT_FIELD=.TRUE.
   IF(EXPORT_FIELD) THEN
@@ -570,20 +574,20 @@ PROGRAM VERSIONS3DLAPLACE
   CALL CMISSFieldTypeInitialise(DependentField,Err)
   CALL CMISSEquationsSetDependentCreateStart(EquationsSet,DependentFieldUserNumber,DependentField,Err)
   !Set the DOFs to be contiguous across components
-  CALL CMISSFieldDOFOrderTypeSet(DependentField,CMISSFieldUVariableType,CMISSFieldSeparatedComponentDOFOrder,Err)
-  CALL CMISSFieldDOFOrderTypeSet(DependentField,CMISSFieldDelUDelNVariableType,CMISSFieldSeparatedComponentDOFOrder,Err)
+  !CALL CMISSFieldDOFOrderTypeSet(DependentField,CMISSFieldUVariableType,CMISSFieldSeparatedComponentDOFOrder,Err)
+  !CALL CMISSFieldDOFOrderTypeSet(DependentField,CMISSFieldDelUDelNVariableType,CMISSFieldSeparatedComponentDOFOrder,Err)
   !Finish the equations set dependent field variables
   CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
 
   !Initialise the field with an initial guess
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,0.5_CMISSDP,Err)
+  !CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,0.5_CMISSDP,Err)
 
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
   CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
   !Set the equations matrices sparsity type
-  CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
-  !CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsFullMatrices,Err)
+  !CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
+  CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsFullMatrices,Err)
   !Set the equations set output
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsTimingOutput,Err)
@@ -628,7 +632,10 @@ PROGRAM VERSIONS3DLAPLACE
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
   CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
-  CALL CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearDirectSolveType,Err)
+  CALL CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearIterativeSolveType,Err)
+  CALL CMISSSolverLinearIterativeAbsoluteToleranceSet(Solver,1.0E-12_CMISSDP,Err)
+  CALL CMISSSolverLinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMISSDP,Err)
+  !CALL CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearDirectSolveType,Err)
   CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverMUMPSLibrary,Err)
   !Finish the creation of the problem solver
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
@@ -641,8 +648,8 @@ PROGRAM VERSIONS3DLAPLACE
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
   CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
   !Set the solver equations sparsity
-  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
-  !CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices,Err)  
+  !CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
+  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices,Err)  
   !Add in the equations set
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
@@ -651,7 +658,14 @@ PROGRAM VERSIONS3DLAPLACE
   !Solve the problem
   CALL CMISSProblemSolve(Problem,Err)
 
-
+  EXPORT_FIELD=.TRUE.
+  IF(EXPORT_FIELD) THEN
+    CALL CMISSFieldsTypeInitialise(Fields,Err)
+    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
+    CALL CMISSFieldIONodesExport(Fields,"LaplaceSolution","FORTRAN",Err)
+    CALL CMISSFieldIOElementsExport(Fields,"LaplaceSolution","FORTRAN",Err)
+    CALL CMISSFieldsTypeFinalise(Fields,Err)
+  ENDIF
   
   !Finialise CMISS
   CALL CMISSFinalise(Err)
