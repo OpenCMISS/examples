@@ -4,7 +4,7 @@
  c.Hermite*c.Hermite, #Scale factors=16
  #Nodes=           4
  #Fields=5
- 1) coordinates,  coordinate, rectangular cartesian, #Components=2
+ 1) Coordinate, coordinate, rectangular cartesian, #Components=2
    x.   c.Hermite*c.Hermite, no modify, standard node based.
      #Nodes= 4
      1.  #Values=4
@@ -33,7 +33,7 @@
      4.  #Values=4
       Value indices:     1   2   3   4
       Scale factor indices:   13  14  15  16
- 2) general,  field,  rectangular cartesian, #Components=1
+ 2) Coordinate, field,  rectangular cartesian, #Components=1
    1.   c.Hermite*c.Hermite, no modify, standard node based.
      #Nodes= 4
      1.  #Values=4
@@ -48,7 +48,7 @@
      4.  #Values=4
       Value indices:     1   2   3   4
       Scale factor indices:   13  14  15  16
- 3) norm_dev_variable,  field,  rectangular cartesian, #Components=1
+ 3) del U/del n, field,  rectangular cartesian, #Components=1
    1.   c.Hermite*c.Hermite, no modify, standard node based.
      #Nodes= 4
      1.  #Values=4
@@ -63,14 +63,14 @@
      4.  #Values=4
       Value indices:     1   2   3   4
       Scale factor indices:   13  14  15  16
- 4) material,  field,  rectangular cartesian, #Components=3
+ 4) Coordinate, field,  rectangular cartesian, #Components=3
    1.   l.Lagrange*l.Lagrange, no modify, grid based.
      #xi1=1, #xi2=1
    2.   l.Lagrange*l.Lagrange, no modify, grid based.
      #xi1=1, #xi2=1
    3.   l.Lagrange*l.Lagrange, no modify, grid based.
      #xi1=1, #xi2=1
- 5) general,  field,  rectangular cartesian, #Components=2
+ 5) Coordinate, field,  rectangular cartesian, #Components=2
    1.   c.Hermite*c.Hermite, no modify, standard node based.
      #Nodes= 4
      1.  #Values=4

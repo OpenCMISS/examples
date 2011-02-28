@@ -1,13 +1,13 @@
  Group name: Region 2           
  #Fields=4
- 1) coordinates,  coordinate, rectangular cartesian, #Components=2
+ 1) Coordinate, coordinate, rectangular cartesian, #Components=2
    x.  Value index= 1, #Derivatives= 3(d/ds1,d/ds2,d2/ds1ds2)
    y.  Value index= 5, #Derivatives= 3(d/ds1,d/ds2,d2/ds1ds2)
- 2) general,  field,  rectangular cartesian, #Components=1
+ 2) Coordinate, field,  rectangular cartesian, #Components=1
    1.  Value index= 9, #Derivatives= 3(d/ds1,d/ds2,d2/ds1ds2)
- 3) norm_dev_variable,  field,  rectangular cartesian, #Components=1
+ 3) del U/del n, field,  rectangular cartesian, #Components=1
    1.  Value index= 13, #Derivatives= 3(d/ds1,d/ds2,d2/ds1ds2)
- 4) general,  field,  rectangular cartesian, #Components=2
+ 4) Coordinate, field,  rectangular cartesian, #Components=2
    1.  Value index= 17, #Derivatives= 3(d/ds1,d/ds2,d2/ds1ds2)
    2.  Value index= 21, #Derivatives= 3(d/ds1,d/ds2,d2/ds1ds2)
  Node:            1
