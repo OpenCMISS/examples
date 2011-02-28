@@ -4,7 +4,7 @@
  c.Lagrange*c.Lagrange, #Scale factors=16
  #Nodes=           16
  #Fields=4
- 1) coordinates,  coordinate, rectangular cartesian, #Components=2
+ 1) Coordinate, coordinate, rectangular cartesian, #Components=2
    x.   c.Lagrange*c.Lagrange, no modify, standard node based.
      #Nodes= 16
      1.  #Values=1
@@ -105,7 +105,7 @@
     16.  #Values=1
       Value indices:     1
       Scale factor indices:   16
- 2) general,  field,  rectangular cartesian, #Components=1
+ 2) Coordinate, field,  rectangular cartesian, #Components=1
    1.   c.Lagrange*c.Lagrange, no modify, standard node based.
      #Nodes= 16
      1.  #Values=1
@@ -156,7 +156,7 @@
     16.  #Values=1
       Value indices:     1
       Scale factor indices:   16
- 3) norm_dev_variable,  field,  rectangular cartesian, #Components=1
+ 3) del U/del n, field,  rectangular cartesian, #Components=1
    1.   c.Lagrange*c.Lagrange, no modify, standard node based.
      #Nodes= 16
      1.  #Values=1
@@ -207,7 +207,7 @@
     16.  #Values=1
       Value indices:     1
       Scale factor indices:   16
- 4) material,  field,  rectangular cartesian, #Components=5
+ 4) Coordinate, field,  rectangular cartesian, #Components=5
    1.   l.Lagrange*l.Lagrange, no modify, grid based.
      #xi1=1, #xi2=1
    2.   l.Lagrange*l.Lagrange, no modify, grid based.
