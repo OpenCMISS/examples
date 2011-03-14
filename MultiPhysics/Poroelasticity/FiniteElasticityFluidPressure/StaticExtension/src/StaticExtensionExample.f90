@@ -40,7 +40,7 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example MultiPhysics/Poroelasticity/FiniteElasticityFluidPressure/StaticCompression/src/StaticCompressionExample.f90
+!> \example MultiPhysics/Poroelasticity/FiniteElasticityFluidPressure/StaticExtension/src/StaticExtensionExample.f90
 !! Example program to solve a coupled finite elasticity and fluid pressure problem using OpenCMISS calls.
 !<
 
@@ -58,19 +58,29 @@ PROGRAM POROELASTICITYEXAMPLE
 
   !Test program parameters
 
-  REAL(CMISSDP), PARAMETER :: Height=1.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: Width=1.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: Length=1.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: Height=10.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: Width=10.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: Length=10.0_CMISSDP
   INTEGER(CMISSIntg), PARAMETER :: GeometricInterpolationType=CMISSBasisQuadraticLagrangeInterpolation
   INTEGER(CMISSIntg), PARAMETER :: PressureInterpolationType=CMISSBasisLinearLagrangeInterpolation
   INTEGER(CMISSIntg), PARAMETER :: NumberOfGaussXi=3
-  INTEGER(CMISSIntg), PARAMETER :: NumberGlobalXElements=2
-  INTEGER(CMISSIntg), PARAMETER :: NumberGlobalYElements=2
-  INTEGER(CMISSIntg), PARAMETER :: NumberGlobalZElements=2
-  REAL(CMISSDP) :: FluidPressureBC,ExtensionRatio
-  REAL(CMISSDP), PARAMETER :: FluidPressureBC2=0.0_CMISSDP
+  INTEGER(CMISSIntg) :: NumberElements
+  INTEGER(CMISSIntg) :: NumberGlobalXElements=2
+  INTEGER(CMISSIntg) :: NumberGlobalYElements=2
+  INTEGER(CMISSIntg) :: NumberGlobalZElements=2
+  REAL(CMISSDP) :: FixedWidth=12.0_CMISSDP
+  REAL(CMISSDP) :: FluidPressureBC=1.0E-3_CMISSDP
+  REAL(CMISSDP) :: FluidPressureBC2=0.0_CMISSDP
   REAL(CMISSDP) :: InitialPressure
-  INTEGER(CMISSIntg), PARAMETER :: Increments=20
+  INTEGER(CMISSIntg) :: Increments=10
+  LOGICAL :: FixRightSide=.TRUE.
+  REAL (CMISSDP) :: K1=2.0E-3_CMISSDP
+  REAL (CMISSDP) :: K2=33.0E-6_CMISSDP
+  REAL (CMISSDP) :: K=2.20E-1_CMISSDP
+  REAL (CMISSDP) :: M=2.18E-1_CMISSDP
+  REAL (CMISSDP) :: b=1.0_CMISSDP
+  REAL (CMISSDP) :: p_0=0.0_CMISSDP
+  REAL (CMISSDP) :: permeability=1.0E-3_CMISSDP
 
   !Object user numbers
 
@@ -93,7 +103,7 @@ PROGRAM POROELASTICITYEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: FluidEquationsSetFieldUserNumber=7
   INTEGER(CMISSIntg), PARAMETER :: FluidEquationsSetUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: SolidEquationsSetUserNumber=2
- 
+
   !Program variables
   INTEGER(CMISSIntg),ALLOCATABLE :: BottomSurfaceNodes(:),TopSurfaceNodes(:),LeftSurfaceNodes(:), &
     & RightSurfaceNodes(:),FrontSurfaceNodes(:),BackSurfaceNodes(:)
@@ -117,7 +127,7 @@ PROGRAM POROELASTICITYEXAMPLE
   TYPE(CMISSFieldType) :: GeometricField,SolidEquationsSetField,FluidEquationsSetField,DependentField, &
     & FibreField,SolidMaterialField,FluidMaterialField
   TYPE(CMISSFieldsType) :: Fields
-  TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
+  TYPE(CMISSGeneratedMeshType) :: GeneratedMesh
   TYPE(CMISSMeshType) :: Mesh
   TYPE(CMISSProblemType) :: Problem
   TYPE(CMISSControlLoopType) :: ControlLoop
@@ -126,11 +136,11 @@ PROGRAM POROELASTICITYEXAMPLE
   TYPE(CMISSSolverEquationsType) :: SolverEquations
 
   !Generic CMISS variables
-  
+
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
   INTEGER(CMISSIntg) :: EquationsSetIndex
   INTEGER(CMISSIntg) :: Err
-  
+
 #ifdef WIN32
   !Quickwin type
   LOGICAL :: QUICKWIN_STATUS=.FALSE.
@@ -149,27 +159,48 @@ PROGRAM POROELASTICITYEXAMPLE
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
   CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
   CALL CMISSDiagnosticsSetOn(CMISSInDiagType,[1,2,3,4,5],"Diagnostics",[ &
-      & "FINITE_ELASTICITY_GAUSS_CAUCHY_TENSOR", &
       & "EQUATIONS_SET_LOAD_INCREMENT_APPLY   " &
       ],Err)
 
-  !Read in arguments
+  !Read in arguments and overwrite default values
   NumberOfArguments = COMMAND_ARGUMENT_COUNT()
-  IF(NumberOfArguments == 2) THEN
+  IF(NumberOfArguments >= 1) THEN
     CALL GET_COMMAND_ARGUMENT(1,CommandArgument,ArgumentLength,ArgStatus)
     IF(ArgStatus>0) CALL HANDLE_ERROR("Error for command argument 1.")
     READ(CommandArgument(1:ArgumentLength),*) FluidPressureBC
+  ENDIF
+  IF(NumberOfArguments >= 2) THEN
     CALL GET_COMMAND_ARGUMENT(2,CommandArgument,ArgumentLength,ArgStatus)
     IF(ArgStatus>0) CALL HANDLE_ERROR("Error for command argument 2.")
-    READ(CommandArgument(1:ArgumentLength),*) ExtensionRatio
-    IF(ExtensionRatio<=0.1_CMISSDP) CALL HANDLE_ERROR("Invalid extension ratio.")
-  ELSE
-    FluidPressureBC=200.0_CMISSDP
-    ExtensionRatio=1.1_CMISSDP
+    READ(CommandArgument(1:ArgumentLength),*) FixedWidth
   ENDIF
-  InitialPressure=FluidPressureBC*0.5_CMISSDP/REAL(Increments)
+  IF(NumberOfArguments >= 3) THEN
+    CALL GET_COMMAND_ARGUMENT(3,CommandArgument,ArgumentLength,ArgStatus)
+    IF(ArgStatus>0) CALL HANDLE_ERROR("Error for command argument 3.")
+    READ(CommandArgument(1:ArgumentLength),*) Increments
+    IF(Increments<1) CALL HANDLE_ERROR("Invalid number of loading increments.")
+  ENDIF
+  IF(NumberOfArguments >= 4) THEN
+    CALL GET_COMMAND_ARGUMENT(4,CommandArgument,ArgumentLength,ArgStatus)
+    IF(ArgStatus>0) CALL HANDLE_ERROR("Error for command argument 4.")
+    READ(CommandArgument(1:ArgumentLength),*) NumberElements
+    IF(NumberElements<1) CALL HANDLE_ERROR("Invalid number of elements.")
+    NumberGlobalXElements=NumberElements
+    NumberGlobalYElements=NumberElements
+    NumberGlobalZElements=NumberElements
+  ENDIF
+  IF(FixedWidth<1.0E-5_CMISSDP) FixRightSide=.FALSE.
+  WRITE(*,*) "Fluid pressure BC:", FluidPressureBC
+  IF (FixRightSide) THEN
+    WRITE(*,*) "Fixed width:", FixedWidth
+  ELSE
+    WRITE(*,*) "Width not fixed"
+  ENDIF
+  WRITE(*,*) "Increments:", Increments
+  WRITE(*,*) "Elements:", NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
+  InitialPressure=(FluidPressureBC+FluidPressureBC2)*0.5_CMISSDP/REAL(Increments)
 
-  WRITE(Filename,'(A,"_",I0,"x",I0,"x",I0,"_",I0)') "StaticCompression",NumberGlobalXElements,NumberGlobalYElements, &
+  WRITE(Filename,'(A,"_",I0,"x",I0,"x",I0,"_",I0)') "StaticExtension",NumberGlobalXElements,NumberGlobalYElements, &
     & NumberGlobalZElements,GeometricInterpolationType
   CALL CMISSOutputSetOn(Filename,Err)
 
@@ -320,20 +351,20 @@ PROGRAM POROELASTICITYEXAMPLE
 
   !Set material constants
   !Solid constitutive law
-  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1.0_CMISSDP,Err) !K1
-  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,1.0_CMISSDP,Err) !K2
-  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,1.0E3_CMISSDP,Err) !K
-  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,1.0E2_CMISSDP,Err) !M
-  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,5,1.0_CMISSDP,Err) !b
-  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,6,0.0_CMISSDP,Err) !p_0
+  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,K1,Err)
+  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,K2,Err)
+  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,K,Err)
+  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,M,Err)
+  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,5,b,Err)
+  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,6,p_0,Err)
 
   !Permeability tensor
-  CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1.0E-7_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,permeability,Err)
   CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,0.0_CMISSDP,Err)
   CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,1.0E-7_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,permeability,Err)
   CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,5,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,6,1.0E-7_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,6,permeability,Err)
   !Density
   CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,7,1000.0_CMISSDP,Err)
 
@@ -422,14 +453,16 @@ PROGRAM POROELASTICITYEXAMPLE
     ENDIF
   ENDDO
   !Fix right surface nodes
-  DO node_idx=1,SIZE(RightSurfaceNodes,1)
-    NodeNumber=RightSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(SolidBoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,1, &
-        & CMISSBoundaryConditionFixedIncremented,Width*ExtensionRatio,Err)
-    ENDIF
-  ENDDO
+  IF (FixRightSide) THEN
+    DO node_idx=1,SIZE(RightSurfaceNodes,1)
+      NodeNumber=RightSurfaceNodes(node_idx)
+      CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
+      IF(NodeDomain==ComputationalNodeNumber) THEN
+        CALL CMISSBoundaryConditionsSetNode(SolidBoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,1, &
+          & CMISSBoundaryConditionFixedIncremented,FixedWidth,Err)
+      ENDIF
+    ENDDO
+  ENDIF
 
   !Set boundary conditions on fluid pressure
   DO node_idx=1,SIZE(PressureLeftSurfaceNodes,1)
@@ -445,7 +478,7 @@ PROGRAM POROELASTICITYEXAMPLE
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,PressureMeshComponent,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL CMISSBoundaryConditionsSetNode(FluidBoundaryConditions,CMISSFieldVVariableType,1,1,NodeNumber,1, &
-        & CMISSBoundaryConditionFixedIncremented,FluidPressureBC2,Err)
+        & CMISSBoundaryConditionFixed,FluidPressureBC2,Err)
     ENDIF
   ENDDO
 
@@ -475,10 +508,12 @@ PROGRAM POROELASTICITYEXAMPLE
   CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianFDCalculated,Err)
   CALL CMISSSolverNewtonMaximumIterationsSet(Solver,200,Err)
+  CALL CMISSSolverNewtonMaximumFunctionEvaluationsSet(Solver,10000,Err)
   CALL CMISSSolverNewtonAbsoluteToleranceSet(Solver,1.0E-10_CMISSDP,Err)
   CALL CMISSSolverNewtonRelativeToleranceSet(Solver,1.0E-9_CMISSDP,Err)
   CALL CMISSSolverNewtonLinearSolverGet(Solver,LinearSolver,Err)
-  CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearDirectSolveType,Err)
+  CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearIterativeSolveType,Err)
+  CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolver,1000,Err)
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
 
   !Create the problem solver equations
@@ -487,6 +522,7 @@ PROGRAM POROELASTICITYEXAMPLE
   CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
   CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
+  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,SolidEquationsSet,EquationsSetIndex,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,FluidEquationsSet,EquationsSetIndex,Err)
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
@@ -497,8 +533,8 @@ PROGRAM POROELASTICITYEXAMPLE
   !Output solution
   CALL CMISSFieldsTypeInitialise(Fields,Err)
   CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-  CALL CMISSFieldIONodesExport(Fields,"StaticCompression","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields,"StaticCompression","FORTRAN",Err)
+  CALL CMISSFieldIONodesExport(Fields,"StaticExtension","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields,"StaticExtension","FORTRAN",Err)
   CALL CMISSFieldsTypeFinalise(Fields,Err)
 
   CALL CMISSFinalise(Err)
@@ -515,5 +551,5 @@ CONTAINS
     WRITE(*,'(">>ERROR: ",A)') ERROR_STRING(1:LEN_TRIM(ERROR_STRING))
     STOP
   END SUBROUTINE HANDLE_ERROR
-    
+
 END PROGRAM POROELASTICITYEXAMPLE

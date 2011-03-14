@@ -65,7 +65,7 @@ endif
 
 EXAMPLE_PATH = MultiPhysics/Poroelasticity/FiniteElasticityFluidPressure/
 
-EXAMPLE_NAME = StaticCompression
+EXAMPLE_NAME = StaticExtension
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 
