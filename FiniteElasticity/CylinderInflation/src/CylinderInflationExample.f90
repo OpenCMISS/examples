@@ -290,6 +290,7 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,QuadraticMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,QuadraticMeshComponentNumber,Err)
+  CALL CMISSFieldVariableLabelSet(GeometricField,CMISSFieldUVariableType,"Geometry",Err)
   CALL CMISSFieldCreateFinish(GeometricField,Err)
 
   !Update the geometric field parameters
@@ -306,6 +307,7 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,1,LinearMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,2,LinearMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,3,LinearMeshComponentNumber,Err)
+  CALL CMISSFieldVariableLabelSet(FibreField,CMISSFieldUVariableType,"Fibre",Err)
   CALL CMISSFieldCreateFinish(FibreField,Err)
 
   !Create a material field and attach it to the geometric field  
@@ -318,6 +320,7 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   CALL CMISSFieldNumberOfComponentsSet(MaterialField,CMISSFieldUVariableType,FieldMaterialNumberOfComponents,Err)  
   CALL CMISSFieldComponentInterpolationSet(MaterialField,CMISSFieldUVariableType,1,CMISSFieldConstantInterpolation,Err)
   CALL CMISSFieldComponentInterpolationSet(MaterialField,CMISSFieldUVariableType,2,CMISSFieldConstantInterpolation,Err)
+  CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldUVariableType,"Material",Err)
   CALL CMISSFieldCreateFinish(MaterialField,Err)
 
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively.
@@ -351,6 +354,7 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,3,QuadraticMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,4,LinearMeshComponentNumber,Err)
   CALL CMISSFieldScalingTypeSet(DependentField,CMISSFieldUnitScaling,Err)
+  CALL CMISSFieldVariableLabelSet(DependentField,CMISSFieldUVariableType,"Dependent",Err)
   CALL CMISSFieldCreateFinish(DependentField,Err)
 
   CALL CMISSEquationsSetDependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)

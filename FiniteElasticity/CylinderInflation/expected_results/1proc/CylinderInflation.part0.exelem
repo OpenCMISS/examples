@@ -5,7 +5,7 @@
  l.Lagrange*l.Lagrange*l.Lagrange, #Scale factors=8
  #Nodes=           27
  #Fields=5
- 1) coordinates,  coordinate, rectangular cartesian, #Components=3
+ 1) Geometry, coordinate, rectangular cartesian, #Components=3
    x.   q.Lagrange*q.Lagrange*q.Lagrange, no modify, standard node based.
      #Nodes= 27
      1.  #Values=1
@@ -255,7 +255,7 @@
     27.  #Values=1
       Value indices:     1
       Scale factor indices:   27
- 2) fibres, anatomical, fibre, #Components=3
+ 2) Fibre, anatomical, fibre, #Components=3
    1.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
      #Nodes= 8
      1.  #Values=1
@@ -334,12 +334,12 @@
     27.  #Values=1
       Value indices:     1
       Scale factor indices:   35
- 3) material,  field,  rectangular cartesian, #Components=2
+ 3) Material, field,  rectangular cartesian, #Components=2
    1.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, grid based.
      #xi1=1, #xi2=1, #xi3=1
    2.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, grid based.
      #xi1=1, #xi2=1, #xi3=1
- 4) general,  field,  rectangular cartesian, #Components=4
+ 4) Dependent, field,  rectangular cartesian, #Components=4
    1.   q.Lagrange*q.Lagrange*q.Lagrange, no modify, standard node based.
      #Nodes= 27
      1.  #Values=1
@@ -615,7 +615,7 @@
     27.  #Values=1
       Value indices:     1
       Scale factor indices:   35
- 5) norm_dev_variable,  field,  rectangular cartesian, #Components=4
+ 5) del U/del n, field,  rectangular cartesian, #Components=4
    1.   q.Lagrange*q.Lagrange*q.Lagrange, no modify, standard node based.
      #Nodes= 27
      1.  #Values=1

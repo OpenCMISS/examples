@@ -4,7 +4,7 @@
  l.Lagrange*l.Lagrange*l.Lagrange, #Scale factors=8
  #Nodes=           8
  #Fields=5
- 1) coordinates,  coordinate, rectangular cartesian, #Components=3
+ 1) Geometry, coordinate, rectangular cartesian, #Components=3
    x.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
      #Nodes= 8
      1.  #Values=1
@@ -83,7 +83,7 @@
      8.  #Values=1
       Value indices:     1
       Scale factor indices:    8
- 2) fibres, anatomical, fibre, #Components=3
+ 2) Fibre, anatomical, fibre, #Components=3
    1.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
      #Nodes= 8
      1.  #Values=1
@@ -162,7 +162,7 @@
      8.  #Values=1
       Value indices:     1
       Scale factor indices:    8
- 3) material,  field,  rectangular cartesian, #Components=2
+ 3) Material, field,  rectangular cartesian, #Components=2
    1.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
      #Nodes= 8
      1.  #Values=1
@@ -215,7 +215,7 @@
      8.  #Values=1
       Value indices:     1
       Scale factor indices:    8
- 4) general,  field,  rectangular cartesian, #Components=4
+ 4) Dependent, field,  rectangular cartesian, #Components=4
    1.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
      #Nodes= 8
      1.  #Values=1
@@ -296,7 +296,7 @@
       Scale factor indices:    8
    4.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, grid based.
      #xi1=1, #xi2=1, #xi3=1
- 5) norm_dev_variable,  field,  rectangular cartesian, #Components=4
+ 5) del U/del n, field,  rectangular cartesian, #Components=4
    1.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
      #Nodes= 8
      1.  #Values=1
@@ -379,8 +379,8 @@
      #xi1=1, #xi2=1, #xi3=1
  Element:            1 0 0
    Values:
-     -1.3376859504331591E+01   -1.3376859504331591E+01   -1.3376859504331591E+01   -1.3376859504331591E+01   -1.3376859504331591E+01   -1.3376859504331591E+01   -1.3376859504331591E+01   -1.3376859504331591E+01
-     -1.3376859504331591E+01   -1.3376859504331591E+01   -1.3376859504331591E+01   -1.3376859504331591E+01   -1.3376859504331591E+01   -1.3376859504331591E+01   -1.3376859504331591E+01   -1.3376859504331591E+01
+     -1.3376859504331666E+01   -1.3376859504331666E+01   -1.3376859504331666E+01   -1.3376859504331666E+01   -1.3376859504331666E+01   -1.3376859504331666E+01   -1.3376859504331666E+01   -1.3376859504331666E+01
+     -1.3376859504331666E+01   -1.3376859504331666E+01   -1.3376859504331666E+01   -1.3376859504331666E+01   -1.3376859504331666E+01   -1.3376859504331666E+01   -1.3376859504331666E+01   -1.3376859504331666E+01
    Nodes:
            1           2           3           4           5           6           7           8
    Scale factors:

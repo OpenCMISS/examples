@@ -89,7 +89,6 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   !Program variables
 
   INTEGER(CMISSIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
-  INTEGER(CMISSIntg) :: MPI_IERROR
   INTEGER(CMISSIntg) :: EquationsSetIndex
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
   INTEGER(CMISSIntg) :: NodeNumber,NodeDomain,node_idx
@@ -151,12 +150,6 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   NumberGlobalYElements=5
   NumberGlobalZElements=5
   NumberOfDomains=NumberOfComputationalNodes
-
-  !Broadcast the number of elements in the X,Y and Z directions and the number of partitions to the other computational nodes
-  CALL MPI_BCAST(NumberGlobalXElements,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NumberGlobalYElements,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NumberGlobalZElements,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NumberOfDomains,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
 
   !Create a 3D rectangular cartesian coordinate system
   CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
@@ -224,6 +217,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSFieldTypeInitialise(GeometricField,Err)
   CALL CMISSFieldCreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
   CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
+  CALL CMISSFieldVariableLabelSet(GeometricField,CMISSFieldUVariableType,"Geometry",Err)
   CALL CMISSFieldCreateFinish(GeometricField,Err)
 
   !Update the geometric field parameters
@@ -235,6 +229,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSFieldTypeSet(FibreField,CMISSFieldFibreType,Err)
   CALL CMISSFieldMeshDecompositionSet(FibreField,Decomposition,Err)
   CALL CMISSFieldGeometricFieldSet(FibreField,GeometricField,Err)
+  CALL CMISSFieldVariableLabelSet(FibreField,CMISSFieldUVariableType,"Fibre",Err)
   CALL CMISSFieldCreateFinish(FibreField,Err)
 
   !Create the equations_set
@@ -247,11 +242,13 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   !Create the dependent field
   CALL CMISSFieldTypeInitialise(DependentField,Err)
   CALL CMISSEquationsSetDependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)
+  CALL CMISSFieldVariableLabelSet(DependentField,CMISSFieldUVariableType,"Dependent",Err)
   CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
 
   !Create the material field
   CALL CMISSFieldTypeInitialise(MaterialField,Err)
   CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,FieldMaterialUserNumber,MaterialField,Err)
+  CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldUVariableType,"Material",Err)
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
 
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively.
