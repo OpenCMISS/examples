@@ -283,10 +283,10 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
   ! activation params: cube near (0,0,0) of size 1.5 mm 
   DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
-    CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,1,x,Err)
-    CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,2,y,Err)
+    CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,1,x,Err)
+    CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,2,y,Err)
     IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,3,z,Err)
+      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,3,z,Err)
     ELSE
       z = 0
     END IF
@@ -296,7 +296,7 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
       activ = 0.0
     END IF
     !WRITE(*,*) N,'@',x,y,z, '->',activ
-    CALL CMISSFieldParameterSetUpdateNode(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,1,activ,Err)
+    CALL CMISSFieldParameterSetUpdateNode(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,1,activ,Err)
   END DO
   ! diffusion coefficient, related to conductivity by D = sigma/Xi Cm
   CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,FiberD,Err)
@@ -407,7 +407,7 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
   DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
    CALL CMISSDecompositionNodeDomainGet(Decomposition,N,1,D,Err)
    IF(D==ComputationalNodeNumber) THEN
-    CALL CMISSFieldParameterSetGetNode(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,7,activ,Err)
+    CALL CMISSFieldParameterSetGetNode(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,7,activ,Err)
 !    WRITE(*,*) 'Node ',N,' activation ',activ
     IF(activ > 0.0) THEN
       NA = NA+1

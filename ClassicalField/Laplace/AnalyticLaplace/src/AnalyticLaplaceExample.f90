@@ -103,6 +103,12 @@ PROGRAM ANALYTICLAPLACEEXAMPLE
   !Intialise cmiss
   CALL CMISSInitialise(WorldCoordinateSystem,WORLD_REGION,Err)
 
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+
+  CALL CMISSRandomSeedsSet(9999,Err)
+  
+  CALL CMISSDiagnosticsSetOn(CMISSAllDiagType,[1,2,3,4,5],"Diagnostics",[""],Err)
+
   NUMBER_OF_ARGUMENTS = COMMAND_ARGUMENT_COUNT()
   IF(NUMBER_OF_ARGUMENTS >= 1) THEN
     CALL GET_COMMAND_ARGUMENT(1,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
@@ -155,6 +161,7 @@ CONTAINS
     !Local Variables
     TYPE(CMISSFieldType) :: FIELD
 
+    CALL CMISSFieldTypeInitialise(FIELD,Err)
     CALL ANALYTICLAPLACE_GENERIC(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,4, &
       & FIELD)
 
@@ -179,6 +186,7 @@ CONTAINS
     !Local Variables
     TYPE(CMISSFieldType) :: FIELD
 
+    CALL CMISSFieldTypeInitialise(FIELD,Err)
     CALL ANALYTICLAPLACE_GENERIC(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,1, &
       & FIELD)
 
@@ -203,6 +211,7 @@ CONTAINS
     !Local Variables
     TYPE(CMISSFieldType) :: FIELD
 
+    CALL CMISSFieldTypeInitialise(FIELD,Err)
     CALL ANALYTICLAPLACE_GENERIC(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,7, &
       & FIELD)
 
@@ -320,9 +329,10 @@ CONTAINS
     ALLOCATE(Y_VALUES((NUMBER_OF_ELEMENTS_XI_END-NUMBER_OF_ELEMENTS_XI_START)/NUMBER_OF_ELEMENTS_XI_INTERVAL+1),STAT=ERR)
 
     DO i = NUMBER_OF_ELEMENTS_XI_START,NUMBER_OF_ELEMENTS_XI_END,NUMBER_OF_ELEMENTS_XI_INTERVAL
-      
+
+      CALL CMISSFieldTypeInitialise(FIELD,Err)
       CALL ANALYTICLAPLACE_GENERIC(i,i,0,INTERPOLATION_SPECIFICATIONS,FIELD)
-      CALL CMISSAnalyticAnalysisAbsoluteErrorGetNode(FIELD,1,1,(i+1)**2/2+1,1,VALUE,Err)
+      CALL CMISSAnalyticAnalysisAbsoluteErrorGetNode(FIELD,1,1,1,(i+1)**2/2+1,1,VALUE,Err)
 
       Y_VALUES((i-NUMBER_OF_ELEMENTS_XI_START)/NUMBER_OF_ELEMENTS_XI_INTERVAL+1)=log10(VALUE)
       X_VALUES((i-NUMBER_OF_ELEMENTS_XI_START)/NUMBER_OF_ELEMENTS_XI_INTERVAL+1)=log10(HEIGHT/i)
@@ -469,8 +479,8 @@ CONTAINS
 
     !Create the equations_set
     CALL CMISSEquationsSetTypeInitialise(EQUATIONS_SET,Err)
-      CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
-CALL CMISSEquationsSetCreateStart(1,REGION,GEOMETRIC_FIELD,CMISSEquationsSetClassicalFieldClass, &
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+    CALL CMISSEquationsSetCreateStart(1,REGION,GEOMETRIC_FIELD,CMISSEquationsSetClassicalFieldClass, &
     & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,EquationsSetFieldUserNumber,EquationsSetField, &
     & EQUATIONS_SET,Err)
     !Set the equations set to be a standard Laplace problem
@@ -478,7 +488,7 @@ CALL CMISSEquationsSetCreateStart(1,REGION,GEOMETRIC_FIELD,CMISSEquationsSetClas
     !Finish creating the equations set
     CALL CMISSEquationsSetCreateFinish(EQUATIONS_SET,Err)
   
-    !Create the equations set analytic field variables
+    !Create the equations set dependent field variables
     CALL CMISSFieldTypeInitialise(DEPENDENT_FIELD,Err)
     CALL CMISSEquationsSetDependentCreateStart(EQUATIONS_SET,2,DEPENDENT_FIELD,Err)
     !Finish the equations set dependent field variables
@@ -524,8 +534,11 @@ CALL CMISSEquationsSetCreateStart(1,REGION,GEOMETRIC_FIELD,CMISSEquationsSetClas
     CALL CMISSProblemSolversCreateStart(Problem,Err)
     CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
     !Set solver to direct type
-    CALL CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearDirectSolveType,Err)
-    CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverMUMPSLibrary,Err)
+    CALL CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearIterativeSolveType,Err)
+    CALL CMISSSolverLinearIterativeAbsoluteToleranceSet(Solver,1.0E-12_CMISSDP,Err)
+    CALL CMISSSolverLinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMISSDP,Err)
+    !CALL CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearDirectSolveType,Err)
+    !CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverMUMPSLibrary,Err)
     !Finish the creation of the problem solver
     CALL CMISSProblemSolversCreateFinish(Problem,Err)
 

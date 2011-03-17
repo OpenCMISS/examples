@@ -67,5 +67,5 @@ EXAMPLE_PATH=ClassicalField/SCRATCH/
 
 EXAMPLE_NAME = LinearPoissonWithoutSource
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

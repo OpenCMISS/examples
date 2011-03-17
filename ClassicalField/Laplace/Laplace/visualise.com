@@ -16,5 +16,5 @@ gfx modify spectrum default linear reverse range 0.0 1.0 extend_above extend_bel
 gfx modify spectrum default linear reverse range 0.0 1.0 extend_above extend_below banded number_of_bands 20 band_ratio 0.06 component 1
 gfx modify g_element LaplaceRegion node_points glyph sphere general size "0.1*0.1*0.1" centre 0,0,0 
 gfx modify g_element LaplaceRegion lines select_on material default selected_material default_selected
-gfx modify g_element LaplaceRegion surfaces select_on material default data general spectrum default selected_material default_selected render_shaded
+gfx modify g_element LaplaceRegion surfaces select_on material default data Phi spectrum default selected_material default_selected render_shaded
 gfx 

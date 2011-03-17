@@ -4,7 +4,7 @@
  q.simplex(2)*q.simplex, #Scale factors=6
  #Nodes=           6
  #Fields=3
- 1) coordinates,  coordinate, rectangular cartesian, #Components=2
+ 1) Coordinate, coordinate, rectangular cartesian, #Components=2
    x.   q.simplex(2)*q.simplex, no modify, standard node based.
      #Nodes= 6
      1.  #Values=1
@@ -45,7 +45,7 @@
      6.  #Values=1
       Value indices:     1
       Scale factor indices:    6
- 2) general,  field,  rectangular cartesian, #Components=1
+ 2) Phi, field,  rectangular cartesian, #Components=1
    1.   q.simplex(2)*q.simplex, no modify, standard node based.
      #Nodes= 6
      1.  #Values=1
@@ -66,7 +66,7 @@
      6.  #Values=1
       Value indices:     1
       Scale factor indices:    6
- 3) norm_dev_variable,  field,  rectangular cartesian, #Components=1
+ 3) del Phi/del n, field,  rectangular cartesian, #Components=1
    1.   q.simplex(2)*q.simplex, no modify, standard node based.
      #Nodes= 6
      1.  #Values=1

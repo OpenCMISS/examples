@@ -67,7 +67,7 @@ EXAMPLE_PATH=FiniteElasticity/SCRATCH/
 
 EXAMPLE_NAME = UniAxialExtensionMultElemCompressible
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 
 # customisation begins here ---
 MAIN_OBJECT_DIR = $(GLOBAL_ROOT)/object/$(LIB_ARCH_DIR)$(MT_SUFFIX)$(DEBUG_SUFFIX)$(PROF_SUFFIX)/$(MPI)/$(COMPILER)

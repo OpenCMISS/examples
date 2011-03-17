@@ -603,14 +603,14 @@ PROGRAM CUBOIDGENERICEXAMPLE
       IF(NodeDomain==ComputationalNodeNumber) THEN
         IF(BCType<0) THEN
           !Displacement type condition - get the undeformed geometric value first
-          CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node, &
+          CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,node, &
             & Component,coord,Err)
           coord=coord+Value
           IF(BCType==-777) BCType2=CMISSBoundaryConditionFixed
           IF(BCType==-888) BCType2=CMISSBoundaryConditionFixedIncremented
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,VariableType,1,node,Component,BCType2,coord,Err)
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,VariableType,1,1,node,Component,BCType2,coord,Err)
         ELSE
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,VariableType,1,node,Component,BCType,Value,Err)
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,VariableType,1,1,node,Component,BCType,Value,Err)
         ENDIF
       ENDIF
     ENDDO

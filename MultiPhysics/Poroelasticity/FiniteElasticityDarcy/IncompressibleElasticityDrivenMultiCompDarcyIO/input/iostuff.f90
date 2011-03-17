@@ -174,7 +174,8 @@ MODULE IOSTUFF
           do i=1,NumberOfNodes
             read(fid,*,err=999) coord(1:NumberOfCoordinateDimensions)
             do j=1,NumberOfCoordinateDimensions
-            CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,i,j,coord(j),Err)
+            CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,i,j, &
+              & coord(j),Err)
             enddo
           enddo
           exit
@@ -209,11 +210,14 @@ MODULE IOSTUFF
     INTEGER(CMISSIntg), parameter :: fid=78
     character*6, parameter :: MAXFMT='(A255)'
     character(len=255) :: word,field_type,interpolation_type,data_type
-    INTEGER(CMISSIntg) :: NumberOfVariables,NumberOfComponents
+    INTEGER(CMISSIntg) :: NumberOfVariables,NumberOfComponents,num_var,var_idx,var_count
     INTEGER(CMISSIntg) :: varn,mcompn,VariableType,InterpolationType,DataType
     INTEGER(CMISSIntg) :: MyComputationalNode,i,ind,Err
     INTEGER(CMISSIntg) :: data_int(100)
     REAL(CMISSDP) :: data_dp(100)
+    INTEGER(CMISSIntg), ALLOCATABLE :: VariableTypes(:),DataTypes(:),MeshComponents(:),InterpolationTypes(:), &
+       & VariableNumComponents(:)
+    LOGICAL :: field_set
 
     CALL CMISSComputationalNodeNumberGet(MyComputationalNode,Err)    
 
@@ -229,9 +233,16 @@ MODULE IOSTUFF
 !       CALL CMISSFieldMeshDecompositionGet(GeometricField,Decomposition,Err)
 !       CALL CMISSFieldMeshDecompositionSet(Field,Decomposition,Err)
 !       CALL CMISSFieldGeometricFieldSet(Field,GeometricField,Err)
+     data_int = 0.0_CMISSIntg
+     data_dp = 0.0_CMISSDP
+     num_var=0_CMISSIntg
+     var_idx=0_CMISSIntg
+     var_count=0_CMISSIntg
+     field_set=.false.
 
       do
         read(fid,FMT=MAXFMT,end=776) word
+        write(*,*) word
         ! skip blanks/comments
         if (len_trim(word)==0 .or. index(adjustl(word),"!")==1) cycle
         ! proper keywords start with a #
@@ -254,101 +265,204 @@ MODULE IOSTUFF
         elseif (trim(adjustl(word))=="#number_of_variables") then
           read(fid,*,end=777) NumberOfVariables
           CALL CMISSFieldNumberOfVariablesSet(Field,NumberOfVariables,Err)
-        elseif (trim(adjustl(word))=="#variable") then
-          read(fid,*,end=777) varn
-          select case (varn)
-          case (1)
-            VariableType=CMISSFieldUVariableType
-          case (2)
-            VariableType=CMISSFieldVVariableType
-          case (3)
-            VariableType=CMISSFieldU1VariableType
-          case (4)
-            VariableType=CMISSFieldU2VariableType
-          case default
-            write(*,*) "READ_FIELD: more than 4 variables, take care of it"
-          end select
-          ! start a variable block
+          write(*,*) NumberOfVariables
+          ALLOCATE(VariableTypes(NumberOfVariables))
+          ALLOCATE(DataTypes(NumberOfVariables))
+          ALLOCATE(MeshComponents(NumberOfVariables))
+          ALLOCATE(InterpolationTypes(NumberOfVariables))
+          ALLOCATE(VariableNumComponents(NumberOfVariables))
           do
-            read(fid,FMT=MAXFMT,end=777) word
-            ! skip blanks/comments
+            read(fid,FMT=MAXFMT,end=776) word
+            write(*,*) word
+          ! skip blanks/comments
             if (len_trim(word)==0 .or. index(adjustl(word),"!")==1) cycle
-            if (trim(adjustl(word))=="#number_of_components") then
+            if (trim(adjustl(word))=="#variable") then
+            read(fid,*,end=777) varn
+            num_var=num_var+1
+            select case (varn)
+            case (1)
+              VariableTypes(num_var)=CMISSFieldUVariableType
+            case (2)
+              VariableTypes(num_var)=CMISSFieldVVariableType
+            case (3)
+              VariableTypes(num_var)=CMISSFieldU1VariableType
+            case (4)
+              VariableTypes(num_var)=CMISSFieldU2VariableType
+            case default
+              write(*,*) "READ_FIELD: more than 4 variables, take care of it"
+            end select
+            elseif (trim(adjustl(word))=="#number_of_components") then
               read(fid,*,end=777,err=999) NumberOfComponents
-              CALL CMISSFieldNumberOfComponentsSet(Field,VariableType,NumberOfComponents,Err) 
+              VariableNumComponents(num_var) = NumberOfComponents
             elseif (trim(adjustl(word))=="#interpolation_type") then
               read(fid,FMT=MAXFMT,end=777,err=999) interpolation_type
               select case (trim(adjustl(interpolation_type)))
               case ("constant")
-                InterpolationType=CMISSFieldConstantInterpolation
+                InterpolationTypes(num_var)=CMISSFieldConstantInterpolation
               case ("elemental")
-                InterpolationType=CMISSFieldElementBasedInterpolation
+                InterpolationTypes(num_var)=CMISSFieldElementBasedInterpolation
               case ("nodal")
-                InterpolationType=CMISSFieldNodeBasedInterpolation
+                InterpolationTypes(num_var)=CMISSFieldNodeBasedInterpolation
               case default
                 write(*,*) "READ_FIELD: unsupported interpolation type encountered"
                 close(fid)
                 return
               end select
-              ! hardcoded: assume all components are interpolated the same way
-              do i=1,NumberOfComponents
-                CALL CMISSFieldComponentInterpolationSet(Field,VariableType,i,InterpolationType,Err)
-              enddo
             elseif (trim(adjustl(word))=="#mesh_component") then
               read(fid,*,end=777,err=999) mcompn
-!               if (InterpolationType==CMISSFieldNodeBasedInterpolation) then
-                do i=1,NumberOfComponents
-                  CALL CMISSFieldComponentMeshComponentSet(Field,VariableType,i,mcompn,Err)
-                enddo
-!               endif
+              MeshComponents(num_var) = mcompn
             elseif (trim(adjustl(word))=="#data_type") then
               read(fid,*,end=777,err=999) data_type
               select case (trim(data_type))
               case ("dp")
-                DataType=CMISSFieldDPType
+                DataTypes(num_var)=CMISSFieldDPType
               case ("intg")
-                DataType=CMISSFieldIntgType
+                DataTypes(num_var)=CMISSFieldIntgType
               case default
                 write(*,*) "READ_FIELD: unsupported data type encountered"
                 close(fid)
                 return
               end select
-              CALL CMISSFieldDataTypeSet(Field,VariableType,DataType,Err)
-              CALL CMISSFieldCreateFinish(Field,Err)
-            elseif (trim(adjustl(word))=="#data") then
-              ! don't know how many lines there will be - just go until blank line
-              do
-                read(fid,FMT=MAXFMT,end=777,err=999) word
-                if (len_trim(word)==0) exit ! exit if blank line
-                select case (DataType)
-                case (CMISSFieldDPType)
-                  read(word,*,end=777,err=999) ind,data_dp(1:NumberOfComponents)
+
+
+
+
+            ! start a variable block
+
+
+
+
+
+
+! !           do
+! !             read(fid,FMT=MAXFMT,end=777) word
+! !             ! skip blanks/comments
+! !             if (len_trim(word)==0 .or. index(adjustl(word),"!")==1) cycle
+! !             if (trim(adjustl(word))=="#number_of_components") then
+! !               read(fid,*,end=777,err=999) NumberOfComponents
+! !               CALL CMISSFieldNumberOfComponentsSet(Field,VariableType,NumberOfComponents,Err) 
+! !             elseif (trim(adjustl(word))=="#interpolation_type") then
+! !               read(fid,FMT=MAXFMT,end=777,err=999) interpolation_type
+! !               select case (trim(adjustl(interpolation_type)))
+! !               case ("constant")
+! !                 InterpolationType=CMISSFieldConstantInterpolation
+! !               case ("elemental")
+! !                 InterpolationType=CMISSFieldElementBasedInterpolation
+! !               case ("nodal")
+! !                 InterpolationType=CMISSFieldNodeBasedInterpolation
+! !               case default
+! !                 write(*,*) "READ_FIELD: unsupported interpolation type encountered"
+! !                 close(fid)
+! !                 return
+! !               end select
+! !               ! hardcoded: assume all components are interpolated the same way
+! !               do i=1,NumberOfComponents
+! !                 CALL CMISSFieldComponentInterpolationSet(Field,VariableType,i,InterpolationType,Err)
+! !               enddo
+! !             elseif (trim(adjustl(word))=="#mesh_component") then
+! !               read(fid,*,end=777,err=999) mcompn
+! ! !               if (InterpolationType==CMISSFieldNodeBasedInterpolation) then
+! !                 do i=1,NumberOfComponents
+! !                   write(*,*) mcompn
+! !                   CALL CMISSFieldComponentMeshComponentSet(Field,VariableType,i,mcompn,Err)
+! !                 enddo
+! ! !               endif
+! !             elseif (trim(adjustl(word))=="#data_type") then
+! !               read(fid,*,end=777,err=999) data_type
+! !               select case (trim(data_type))
+! !               case ("dp")
+! !                 DataType=CMISSFieldDPType
+! !               case ("intg")
+! !                 DataType=CMISSFieldIntgType
+! !               case default
+! !                 write(*,*) "READ_FIELD: unsupported data type encountered"
+! !                 close(fid)
+! !                 return
+! !               end select
+
+
+
+
+!              do 
+!               read(fid,FMT=MAXFMT,end=777) word
+
+              ! skip blanks/comments
+!               if (len_trim(word)==0 .or. index(adjustl(word),"!")==1) cycle
+             elseif (trim(adjustl(word))=="#data_variable_type") then
+             IF(field_set.eqv..false.)THEN
+             CALL CMISSFieldVariableTypesSet(Field,VariableTypes,Err) 
+             DO var_idx=1,NumberOfVariables
+                  VariableType=VariableTypes(var_idx)
+                  CALL CMISSFieldNumberOfComponentsSet(Field,VariableType,NumberOfComponents,Err) 
                   do i=1,NumberOfComponents
-                    select case (InterpolationType)
-                    case (CMISSFieldConstantInterpolation)
-                      CALL CMISSFieldParameterSetUpdateConstant(Field,VariableType,CMISSFieldValuesSetType,i,data_dp(i),Err)
-                    case (CMISSFieldElementBasedInterpolation)
-                      CALL CMISSFieldParameterSetUpdateElement(Field,VariableType,CMISSFieldValuesSetType,ind,i,data_dp(i),Err)
-                    case (CMISSFieldNodeBasedInterpolation)
-                      CALL CMISSFieldParameterSetUpdateNode(Field,VariableType,CMISSFieldValuesSetType,1,ind,i,data_dp(i),Err)
-                    end select
+
+                    CALL CMISSFieldComponentInterpolationSet(Field,VariableType,i,InterpolationType,Err)
+                    CALL CMISSFieldComponentMeshComponentSet(Field,VariableType,i,mcompn,Err)
+                  enddo
+
+                CALL CMISSFieldDataTypeSet(Field,VariableType,DataType,Err)
+             ENDDO
+
+             CALL CMISSFieldCreateFinish(Field,Err)
+             field_set=.true.
+             ENDIF
+
+                 read(fid,*,end=777) varn
+                 VariableType=VariableTypes(varn)
+                  var_count=var_count+1
+              elseif (trim(adjustl(word))=="#data") then
+                ! don't know how many lines there will be - just go until blank line
+                do
+
+                  read(fid,FMT=MAXFMT,end=777,err=999) word
+                  if (len_trim(word)==0) exit ! exit if blank line
+                  select case (DataTypes(var_count))
+                  case (CMISSFieldDPType)
+                    read(word,*,end=777,err=999) ind,data_dp(1:NumberOfComponents)
+                    do i=1,NumberOfComponents
+                      select case (InterpolationType)
+                      case (CMISSFieldConstantInterpolation)
+                        CALL CMISSFieldParameterSetUpdateConstant(Field,VariableType,CMISSFieldValuesSetType,i,data_dp(i),Err)
+                      case (CMISSFieldElementBasedInterpolation)
+                        CALL CMISSFieldParameterSetUpdateElement(Field,VariableType,CMISSFieldValuesSetType,ind,i,data_dp(i),Err)
+                      case (CMISSFieldNodeBasedInterpolation)
+                        CALL CMISSFieldParameterSetUpdateNode(Field,VariableType,CMISSFieldValuesSetType,1,1,ind,i,data_dp(i),Err)
+                      end select
+                    enddo
+                  case (CMISSFieldIntgType)
+                    read(word,*,end=777,err=999) ind,data_int(1:NumberOfComponents)
+                    do i=1,NumberOfComponents
+                      select case (InterpolationType)
+                      case (CMISSFieldConstantInterpolation)
+                        CALL CMISSFieldParameterSetUpdateConstant(Field,VariableType,CMISSFieldValuesSetType,i,data_int(i),Err)
+                      case (CMISSFieldElementBasedInterpolation)
+                        CALL CMISSFieldParameterSetUpdateElement(Field,VariableType,CMISSFieldValuesSetType,ind,i,data_int(i),Err)
+                      case (CMISSFieldNodeBasedInterpolation)
+                        CALL CMISSFieldParameterSetUpdateNode(Field,VariableType,CMISSFieldValuesSetType,1,1,ind,i,data_int(i),Err)
+                      end select
+                    enddo
+                  end select
+                enddo
+              elseif (trim(adjustl(word))=="#data_all") then  ! debug-option to initialise all field values in one go, NO INDEX
+                read(fid,FMT=MAXFMT,end=777,err=999) word
+                select case (DataTypes(var_count))
+                case (CMISSFieldDPType)
+                  read(word,*,end=777,err=999) data_dp(1:NumberOfComponents)
+                  do i=1,NumberOfComponents
+                    CALL CMISSFieldComponentValuesInitialise(Field,VariableType,CMISSFieldValuesSetType, &
+                      & i,data_dp(i),Err)
                   enddo
                 case (CMISSFieldIntgType)
-                  read(word,*,end=777,err=999) ind,data_int(1:NumberOfComponents)
+                  read(word,*,end=777,err=999) data_int(1:NumberOfComponents)
                   do i=1,NumberOfComponents
-                    select case (InterpolationType)
-                    case (CMISSFieldConstantInterpolation)
-                      CALL CMISSFieldParameterSetUpdateConstant(Field,VariableType,CMISSFieldValuesSetType,i,data_int(i),Err)
-                    case (CMISSFieldElementBasedInterpolation)
-                      CALL CMISSFieldParameterSetUpdateElement(Field,VariableType,CMISSFieldValuesSetType,ind,i,data_int(i),Err)
-                    case (CMISSFieldNodeBasedInterpolation)
-                      CALL CMISSFieldParameterSetUpdateNode(Field,VariableType,CMISSFieldValuesSetType,1,ind,i,data_int(i),Err)
-                    end select
+                    CALL CMISSFieldComponentValuesInitialise(Field,VariableType,CMISSFieldValuesSetType, &
+                      & i,data_int(i),Err)
                   enddo
                 end select
-              enddo
+              endif
+            enddo
             endif
-          enddo
+           enddo
         endif
       enddo
     endif

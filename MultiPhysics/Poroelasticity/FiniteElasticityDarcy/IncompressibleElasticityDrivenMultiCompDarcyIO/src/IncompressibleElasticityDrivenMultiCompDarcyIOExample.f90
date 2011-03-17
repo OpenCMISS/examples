@@ -931,37 +931,47 @@ CALL READ_NODES('input/example-nodes-3els',GeometricFieldSolid)
   !MATERIALS FIELDS
   !Auto-created field contains a U variable type to store the diffusion coefficient(s)
   !It also contains a V variable type to store the coupling coefficients 
+! call READ_FIELD('input/example-field-darcy',MaterialsFieldUserNumberDarcy,Region,GeometricField,MaterialsFieldDarcy)
+!   DO icompartment = 1,Ncompartments
+!     MaterialsFieldUserNumberDarcy = 400+icompartment
+!     CALL CMISSFieldTypeInitialise(MaterialsFieldDarcy(icompartment),Err)
+!     CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDarcy(icompartment),MaterialsFieldUserNumberDarcy,&
+!          & MaterialsFieldDarcy(icompartment),Err)
+!     CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy(icompartment),Err)
+!   END DO
+!   DO icompartment = 1,Ncompartments
+!     CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy(icompartment),CMISSFieldUVariableType, &
+!       & CMISSFieldValuesSetType, &
+!       & MaterialsFieldUserNumberDarcyPorosity,POROSITY_PARAM_DARCY,Err)
+!     CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy(icompartment),CMISSFieldUVariableType, &
+!       & CMISSFieldValuesSetType, &
+!       & MaterialsFieldUserNumberDarcyPermOverVis,PERM_OVER_VIS_PARAM_DARCY,Err)
+!   END DO
+!   DO icompartment = 1, Ncompartments
+!     DO COMPONENT_NUMBER=1, Ncompartments
+!       CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy(icompartment),CMISSFieldVVariableType, &
+!          & CMISSFieldValuesSetType,COMPONENT_NUMBER,CouplingCoeffs(icompartment,COMPONENT_NUMBER),Err)
+! !         CALL CMISSFieldParameterSetUpdateConstant(MaterialsFieldDarcy(icompartment),CMISSFieldVVariableType, &
+! !           & CMISSFieldValuesSetType,COMPONENT_NUMBER,CouplingCoeffs(icompartment,COMPONENT_NUMBER),Err)
+!     END DO
+!   END DO
+!   DO icompartment = 1, Ncompartments
+!     DO COMPONENT_NUMBER=1,Nparams
+!       CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy(icompartment),CMISSFieldU1VariableType, &
+!          & CMISSFieldValuesSetType,COMPONENT_NUMBER,ConstitutiveParams(icompartment,COMPONENT_NUMBER),Err)
+! !         CALL CMISSFieldParameterSetUpdateConstant(MaterialsFieldDarcy(icompartment),CMISSFieldVVariableType, &
+! !           & CMISSFieldValuesSetType,COMPONENT_NUMBER,CouplingCoeffs(icompartment,COMPONENT_NUMBER),Err)
+!     END DO
+!   END DO
   DO icompartment = 1,Ncompartments
-    MaterialsFieldUserNumberDarcy = 400+icompartment
-    CALL CMISSFieldTypeInitialise(MaterialsFieldDarcy(icompartment),Err)
+     MaterialsFieldUserNumberDarcy = 400+icompartment
+call READ_FIELD('input/new-format-field-darcy',MaterialsFieldUserNumberDarcy,Region,GeometricField, &
+   & MaterialsFieldDarcy(icompartment))
     CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDarcy(icompartment),MaterialsFieldUserNumberDarcy,&
          & MaterialsFieldDarcy(icompartment),Err)
     CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy(icompartment),Err)
-  END DO
-  DO icompartment = 1,Ncompartments
-    CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy(icompartment),CMISSFieldUVariableType, &
-      & CMISSFieldValuesSetType, &
-      & MaterialsFieldUserNumberDarcyPorosity,POROSITY_PARAM_DARCY,Err)
-    CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy(icompartment),CMISSFieldUVariableType, &
-      & CMISSFieldValuesSetType, &
-      & MaterialsFieldUserNumberDarcyPermOverVis,PERM_OVER_VIS_PARAM_DARCY,Err)
-  END DO
-  DO icompartment = 1, Ncompartments
-    DO COMPONENT_NUMBER=1, Ncompartments
-      CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy(icompartment),CMISSFieldVVariableType, &
-         & CMISSFieldValuesSetType,COMPONENT_NUMBER,CouplingCoeffs(icompartment,COMPONENT_NUMBER),Err)
-!         CALL CMISSFieldParameterSetUpdateConstant(MaterialsFieldDarcy(icompartment),CMISSFieldVVariableType, &
-!           & CMISSFieldValuesSetType,COMPONENT_NUMBER,CouplingCoeffs(icompartment,COMPONENT_NUMBER),Err)
-    END DO
-  END DO
-  DO icompartment = 1, Ncompartments
-    DO COMPONENT_NUMBER=1,Nparams
-      CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy(icompartment),CMISSFieldU1VariableType, &
-         & CMISSFieldValuesSetType,COMPONENT_NUMBER,ConstitutiveParams(icompartment,COMPONENT_NUMBER),Err)
-!         CALL CMISSFieldParameterSetUpdateConstant(MaterialsFieldDarcy(icompartment),CMISSFieldVVariableType, &
-!           & CMISSFieldValuesSetType,COMPONENT_NUMBER,CouplingCoeffs(icompartment,COMPONENT_NUMBER),Err)
-    END DO
-  END DO
+  ENDDO
+
   !Create the equations set materials field variables for ALE Darcy
 !   CALL CMISSFieldTypeInitialise(MaterialsFieldDarcy,Err)
 !   CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDarcy,MaterialsFieldUserNumberDarcy, &
@@ -1189,7 +1199,7 @@ FaceXi=[ -2,  2,  1, -1,  3, -3]
       NODE=Face11Nodes(NN)
 ! !     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
 ! !     IF(NodeDomain==ComputationalNodeNumber) THEN
-        VALUE = -2.0_CMISSDP
+        VALUE = -1.0_CMISSDP
         COMPONENT_NUMBER = 3
         write(*,*)'Marker 0'
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldVVariableType,1,NODE,COMPONENT_NUMBER,&
@@ -1272,33 +1282,16 @@ FaceXi=[ -2,  2,  1, -1,  3, -3]
     !Compartment TWO boundary conditions!
     ! At the top impose Darcy velocity in z direction
     IF(icompartment==2) THEN
-!     DO NN=1,SIZE(Face11Nodes,1)
-!       NODE=Face11Nodes(NN)
-! ! !     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-! ! !     IF(NodeDomain==ComputationalNodeNumber) THEN
-!         VALUE = -2.0_CMISSDP
-!         COMPONENT_NUMBER = 3
-!         write(*,*)'Marker 0'
-!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,NODE,COMPONENT_NUMBER,&
-!           & CMISSBoundaryConditionFixed,VALUE,Err)
-!         WRITE(*,*) "SPECIFIED INFLOW AT NODE",NODE,"IN Z DIRECTION"
-! 
-! ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
-! ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,2,YCoord,Err)
-! ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,3,ZCoord,Err)
-! ! !       WRITE(*,*) "XCoord, YCoord, ZCoord = ",XCoord, YCoord, ZCoord
-! ! !     ENDIF
-!     ENDDO
     DO NN=1,SIZE(Face11Nodes,1)
       NODE=Face11Nodes(NN)
 ! !     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
 ! !     IF(NodeDomain==ComputationalNodeNumber) THEN
-        VALUE = 0.0_CMISSDP
+        VALUE = -1.0_CMISSDP
         COMPONENT_NUMBER = 3
         write(*,*)'Marker 0'
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,NODE,COMPONENT_NUMBER,&
           & CMISSBoundaryConditionFixed,VALUE,Err)
-        WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Z DIRECTION"
+        WRITE(*,*) "SPECIFIED INFLOW AT NODE",NODE,"IN Z DIRECTION"
 
 ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
 ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,2,YCoord,Err)
@@ -1306,6 +1299,23 @@ FaceXi=[ -2,  2,  1, -1,  3, -3]
 ! !       WRITE(*,*) "XCoord, YCoord, ZCoord = ",XCoord, YCoord, ZCoord
 ! !     ENDIF
     ENDDO
+!     DO NN=1,SIZE(Face11Nodes,1)
+!       NODE=Face11Nodes(NN)
+! ! !     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+! ! !     IF(NodeDomain==ComputationalNodeNumber) THEN
+!         VALUE = 0.0_CMISSDP
+!         COMPONENT_NUMBER = 3
+!         write(*,*)'Marker 0'
+!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,NODE,COMPONENT_NUMBER,&
+!           & CMISSBoundaryConditionFixed,VALUE,Err)
+!         WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Z DIRECTION"
+! 
+! ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
+! ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,2,YCoord,Err)
+! ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,3,ZCoord,Err)
+! ! !       WRITE(*,*) "XCoord, YCoord, ZCoord = ",XCoord, YCoord, ZCoord
+! ! !     ENDIF
+!     ENDDO
 
     !All other faces are impermeable
     DO NN=1,SIZE(Face7Nodes,1)

@@ -106,10 +106,11 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: SolverDarcyIndex=1
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPorosity=1
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPermOverVis=2
+  INTEGER(CMISSIntg) :: SourceFieldDarcyUserNumber
 
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
-
+  INTEGER(CMISSIntg) :: IndependentFieldDarcyUserNumber
   !Program types
 
   INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
@@ -172,6 +173,8 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   TYPE(CMISSFieldType) :: GeometricField
   TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: MaterialsFieldDarcy
   TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: EquationsSetFieldDarcy
+  TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: SourceFieldDarcy
+  TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: IndependentFieldDarcy
   !Boundary conditions
   TYPE(CMISSBoundaryConditionsType), ALLOCATABLE, DIMENSION(:) :: BoundaryConditionsDarcy
   !Equations sets
@@ -497,6 +500,8 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   ALLOCATE (MaterialsFieldDarcy(Ncompartments))
   ALLOCATE (BoundaryConditionsDarcy(Ncompartments))
   ALLOCATE (EquationsDarcy(Ncompartments))
+  ALLOCATE (SourceFieldDarcy(Ncompartments))
+  ALLOCATE (IndependentFieldDarcy(Ncompartments))
   !
   !================================================================================================================================
   !
@@ -598,6 +603,7 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
   CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
+  CALL CMISSDecompositionCalculateFacesSet(Decomposition,.true.,Err)
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
 
@@ -759,9 +765,9 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
        & CMISSFieldVectorDimensionType,Err)
   CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,CMISSFieldUVariableType,FieldDependentSolidNumberOfComponents,Err)
   CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,CMISSFieldDelUDelNVariableType,FieldDependentSolidNumberOfComponents,Err)
-  DO icompartment=3,2*Ncompartments+2
-    CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,VariableTypes(icompartment),FieldDependentFluidNumberOfComponents,Err)
-  ENDDO
+!   DO icompartment=3,2*Ncompartments+2
+!     CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,VariableTypes(icompartment),FieldDependentFluidNumberOfComponents,Err)
+!   ENDDO
 !   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,1,CMISSFieldNodeBasedInterpolation,Err)
 !   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,2,CMISSFieldNodeBasedInterpolation,Err)
 !   CALL CMISSFieldComponentInterpolationSet(DependentFieldSolid,CMISSFieldUVariableType,3,CMISSFieldNodeBasedInterpolation,Err)
@@ -793,7 +799,7 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   DO icompartment=3,2*Ncompartments+2
 !     CALL CMISSFieldDimensionSet(DependentFieldSolid,VariableTypes(icompartment), &
 !        & CMISSFieldVectorDimensionType,Err)
-    !CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,VariableTypes(icompartment),FieldDependentFluidNumberOfComponents,Err)
+    CALL CMISSFieldNumberOfComponentsSet(DependentFieldSolid,VariableTypes(icompartment),FieldDependentFluidNumberOfComponents,Err)
     DO componentnum=1,FieldDependentFluidNumberOfComponents-1
     !set dimension type
 !     CALL CMISSFieldDimensionSet(DependentField,VariableTypes(icompartment), &
@@ -1003,6 +1009,19 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   DO icompartment = 1,Ncompartments
     MaterialsFieldUserNumberDarcy = 400+icompartment
     CALL CMISSFieldTypeInitialise(MaterialsFieldDarcy(icompartment),Err)
+    CALL CMISSFieldCreateStart(MaterialsFieldUserNumberDarcy,Region,MaterialsFieldDarcy(icompartment),Err)
+    CALL CMISSFieldTypeSet(MaterialsFieldDarcy(icompartment),CMISSFieldMaterialType,Err)
+    CALL CMISSFieldMeshDecompositionSet(MaterialsFieldDarcy(icompartment),Decomposition,Err)
+    CALL CMISSFieldGeometricFieldSet(MaterialsFieldDarcy(icompartment),GeometricField,Err)
+    CALL CMISSFieldDependentTypeSet(MaterialsFieldDarcy(icompartment),CMISSFieldIndependentType,Err)
+    CALL CMISSFieldNumberOfVariablesSet(MaterialsFieldDarcy(icompartment),3,Err)
+    CALL CMISSFieldVariableTypesSet(MaterialsFieldDarcy(icompartment),[CMISSFieldUVariableType,CMISSFieldVVariableType,&
+       & CMISSFieldU1VariableType],Err) 
+    CALL CMISSFieldNumberOfComponentsSet(MaterialsFieldDarcy(icompartment),CMISSFieldUVariableType,7,Err)
+    CALL CMISSFieldNumberOfComponentsSet(MaterialsFieldDarcy(icompartment),CMISSFieldVVariableType,Ncompartments,Err)
+    CALL CMISSFieldNumberOfComponentsSet(MaterialsFieldDarcy(icompartment),CMISSFieldU1VariableType,Nparams,Err)
+
+    CALL CMISSFieldCreateFinish(MaterialsFieldDarcy(icompartment),Err)
     CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDarcy(icompartment),MaterialsFieldUserNumberDarcy,&
          & MaterialsFieldDarcy(icompartment),Err)
     CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy(icompartment),Err)
@@ -1046,9 +1065,39 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   !
   !================================================================================================================================
   !
-
+  DO icompartment=1,Ncompartments
+     SourceFieldDarcyUserNumber = 450+icompartment
+    CALL CMISSFieldTypeInitialise(SourceFieldDarcy(icompartment),Err)
+    CALL CMISSEquationsSetSourceCreateStart(EquationsSetDarcy(icompartment),SourceFieldDarcyUserNumber,&
+        & SourceFieldDarcy(icompartment),Err)
+    CALL CMISSEquationsSetSourceCreateFinish(EquationsSetDarcy(icompartment),Err)
+  ENDDO
   !EQUATIONS
 
+  !INDEPENDENT FIELD Darcy for storing BC flags
+  DO icompartment=1,Ncompartments
+     IndependentFieldDarcyUserNumber = 470+icompartment
+    CALL CMISSFieldTypeInitialise(IndependentFieldDarcy(icompartment),Err)
+    CALL CMISSEquationsSetIndependentCreateStart(EquationsSetDarcy(icompartment),IndependentFieldDarcyUserNumber, &
+      & IndependentFieldDarcy(icompartment),Err)
+
+    CALL CMISSFieldComponentMeshComponentSet(IndependentFieldDarcy(icompartment),CMISSFieldUVariableType,1, &
+      & DarcyVelMeshComponentNumber,Err)
+    CALL CMISSFieldComponentMeshComponentSet(IndependentFieldDarcy(icompartment),CMISSFieldUVariableType,2, &
+      & DarcyVelMeshComponentNumber,Err)
+    CALL CMISSFieldComponentMeshComponentSet(IndependentFieldDarcy(icompartment),CMISSFieldUVariableType,3, &
+      & DarcyVelMeshComponentNumber,Err)
+! !   CALL CMISSFieldComponentMeshComponentSet(IndependentFieldDarcy,CMISSFieldUVariableType,4,DarcyMassIncreaseMeshComponentNumber,Err)
+
+    CALL CMISSEquationsSetIndependentCreateFinish(EquationsSetDarcy(icompartment),Err)
+
+    CALL CMISSFieldComponentValuesInitialise(IndependentFieldDarcy(icompartment),CMISSFieldUVariableType, &
+      & CMISSFieldValuesSetType,1,0.0_CMISSDP,Err)
+    CALL CMISSFieldComponentValuesInitialise(IndependentFieldDarcy(icompartment),CMISSFieldUVariableType, &
+      & CMISSFieldValuesSetType,2,0.0_CMISSDP,Err)
+    CALL CMISSFieldComponentValuesInitialise(IndependentFieldDarcy(icompartment),CMISSFieldUVariableType, & 
+      & CMISSFieldValuesSetType,3,0.0_CMISSDP,Err)
+  ENDDO
  
   DO icompartment=1,Ncompartments
     !Create the equations set equations
@@ -1133,8 +1182,8 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
     NODE=Face6Nodes(NN)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,3,ZCoord,Err)
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,NODE,3, &
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,3,ZCoord,Err)
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,3, &
         & CMISSBoundaryConditionFixed,ZCoord,Err)
       WRITE(*,*) "FIXING NODE",NODE,"AT BOTTOM IN Z DIRECTION"
     ENDIF
@@ -1145,8 +1194,8 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
     NODE=Face5Nodes(NN)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,3,ZCoord,Err)
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,NODE,3, &
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,3,ZCoord,Err)
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,3, &
         & CMISSBoundaryConditionFixed,ZCoord,Err)
       WRITE(*,*) "FIXING NODE",NODE,"AT TOP IN Z DIRECTION"
     ENDIF
@@ -1159,14 +1208,14 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
     NODE=Face6Nodes(NN)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,2,YCoord,Err)
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,1,XCoord,Err)
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,2,YCoord,Err)
 
       !Fix Origin displacement in x and y (z already fixed)
       IF(ABS(XCoord)<1.0E-6_CMISSDP.AND.ABS(YCoord)<1.0E-6_CMISSDP) THEN
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,NODE,1, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,1, &
           & CMISSBoundaryConditionFixed,XCoord,Err)
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,NODE,2, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,2, &
           & CMISSBoundaryConditionFixed,YCoord,Err)
         WRITE(*,*) "FIXING ORIGIN NODE",NODE,"IN X AND Y DIRECTION"
         X_FIXED=.TRUE.
@@ -1175,7 +1224,7 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
 
       !Fix nodal displacements at (X_DIM,0) in y
       IF(ABS(XCoord - X_DIM)<1.0E-6_CMISSDP .AND. ABS(YCoord)<1.0E-6_CMISSDP) THEN
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,NODE,2, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,2, &
           & CMISSBoundaryConditionFixed,YCoord,Err)
         WRITE(*,*) "FIXING NODES",NODE,"AT (X_DIM,0) IN Y DIRECTION"
         Y_FIXED=.TRUE.
@@ -1183,7 +1232,7 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
 
       !Fix nodal displacements at (0,Y_DIM) in x
       IF(ABS(XCoord)<1.0E-6_CMISSDP .AND. ABS(YCoord - Y_DIM)<1.0E-6_CMISSDP) THEN
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,NODE,1, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,1, &
           & CMISSBoundaryConditionFixed,XCoord,Err)
         WRITE(*,*) "FIXING NODES",NODE,"AT (0,Y_DIM) IN X DIRECTION"
         X_FIXED=.TRUE.
@@ -1234,8 +1283,8 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
         VALUE = -1.0_CMISSDP
         COMPONENT_NUMBER = 3
         write(*,*)'Marker 0'
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldVVariableType,1,NODE,COMPONENT_NUMBER,&
-          & CMISSBoundaryConditionFixed,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldVVariableType,1,1,NODE, &
+          & COMPONENT_NUMBER, CMISSBoundaryConditionFixed,VALUE,Err)
         WRITE(*,*) "SPECIFIED INFLOW AT NODE",NODE,"IN Z DIRECTION"
 
 ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
@@ -1253,8 +1302,8 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
         VALUE = 0.0_CMISSDP
         COMPONENT_NUMBER = 1
         write(*,*)'Marker 1'
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldVVariableType,1,NODE,COMPONENT_NUMBER,&
-          & CMISSBoundaryConditionFixed,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldVVariableType,1,1,NODE, &
+          & COMPONENT_NUMBER, CMISSBoundaryConditionFixed,VALUE,Err)
         WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN X DIRECTION"
 ! !     ENDIF
     ENDDO
@@ -1266,8 +1315,8 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
         VALUE = 0.0_CMISSDP
         COMPONENT_NUMBER = 1
         write(*,*)'Marker 2'
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldVVariableType,1,NODE,COMPONENT_NUMBER,&
-          & CMISSBoundaryConditionFixed,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldVVariableType,1,1,NODE, &
+          & COMPONENT_NUMBER, CMISSBoundaryConditionFixed,VALUE,Err)
         WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN X DIRECTION"
 ! !     ENDIF
     ENDDO
@@ -1279,8 +1328,8 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
         VALUE = 0.0_CMISSDP
         COMPONENT_NUMBER = 2
         write(*,*)'Marker 3'
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldVVariableType,1,NODE,COMPONENT_NUMBER,&
-          & CMISSBoundaryConditionFixed,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldVVariableType,1,1,NODE, &
+          & COMPONENT_NUMBER, CMISSBoundaryConditionFixed,VALUE,Err)
         WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Y DIRECTION"
 ! !     ENDIF
     ENDDO
@@ -1292,8 +1341,8 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
         VALUE = 0.0_CMISSDP
         COMPONENT_NUMBER = 2
         write(*,*)'Marker 4'
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldVVariableType,1,NODE,COMPONENT_NUMBER,&
-          & CMISSBoundaryConditionFixed,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldVVariableType,1,1,NODE, &
+          & COMPONENT_NUMBER, CMISSBoundaryConditionFixed,VALUE,Err)
         WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Y DIRECTION"
 ! !     ENDIF
     ENDDO
@@ -1305,8 +1354,8 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
         VALUE = 0.0_CMISSDP
         COMPONENT_NUMBER = 3
         write(*,*)'Marker 5'
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldVVariableType,1,NODE,COMPONENT_NUMBER,&
-          & CMISSBoundaryConditionFixed,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldVVariableType,1,1,NODE, &
+          & COMPONENT_NUMBER, CMISSBoundaryConditionFixed,VALUE,Err)
         WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Z DIRECTION"
 ! !     ENDIF
     ENDDO
@@ -1321,8 +1370,8 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
         VALUE = -1.0_CMISSDP
         COMPONENT_NUMBER = 3
         write(*,*)'Marker 0'
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,NODE,COMPONENT_NUMBER,&
-          & CMISSBoundaryConditionFixed,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,1,NODE, &
+          & COMPONENT_NUMBER, CMISSBoundaryConditionFixed,VALUE,Err)
         WRITE(*,*) "SPECIFIED INFLOW AT NODE",NODE,"IN Z DIRECTION"
 
 ! !       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
@@ -1338,7 +1387,7 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
 !         VALUE = 0.0_CMISSDP
 !         COMPONENT_NUMBER = 3
 !         write(*,*)'Marker 0'
-!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,NODE,COMPONENT_NUMBER,&
+!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,1,NODE,COMPONENT_NUMBER,&
 !           & CMISSBoundaryConditionFixed,VALUE,Err)
 !         WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Z DIRECTION"
 ! 
@@ -1357,8 +1406,8 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
         VALUE = 0.0_CMISSDP
         COMPONENT_NUMBER = 1
         write(*,*)'Marker 1'
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,NODE,COMPONENT_NUMBER,&
-          & CMISSBoundaryConditionFixed,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,1,NODE, &
+          & COMPONENT_NUMBER, CMISSBoundaryConditionFixed,VALUE,Err)
         WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN X DIRECTION"
 ! !     ENDIF
     ENDDO
@@ -1370,8 +1419,8 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
         VALUE = 0.0_CMISSDP
         COMPONENT_NUMBER = 1
         write(*,*)'Marker 2'
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,NODE,COMPONENT_NUMBER,&
-          & CMISSBoundaryConditionFixed,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,1,NODE, &
+          & COMPONENT_NUMBER, CMISSBoundaryConditionFixed,VALUE,Err)
         WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN X DIRECTION"
 ! !     ENDIF
     ENDDO
@@ -1383,8 +1432,8 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
         VALUE = 0.0_CMISSDP
         COMPONENT_NUMBER = 2
         write(*,*)'Marker 3'
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,NODE,COMPONENT_NUMBER,&
-          & CMISSBoundaryConditionFixed,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,1,NODE, &
+          & COMPONENT_NUMBER, CMISSBoundaryConditionFixed,VALUE,Err)
         WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Y DIRECTION"
 ! !     ENDIF
     ENDDO
@@ -1396,8 +1445,8 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
         VALUE = 0.0_CMISSDP
         COMPONENT_NUMBER = 2
         write(*,*)'Marker 4'
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,NODE,COMPONENT_NUMBER,&
-          & CMISSBoundaryConditionFixed,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,1,NODE, &
+          & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
         WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Y DIRECTION"
 ! !     ENDIF
     ENDDO
@@ -1409,8 +1458,8 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
         VALUE = 0.0_CMISSDP
         COMPONENT_NUMBER = 3
         write(*,*)'Marker 5'
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,NODE,COMPONENT_NUMBER,&
-          & CMISSBoundaryConditionFixed,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,1,NODE, &
+          & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
         WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Z DIRECTION"
 ! !     ENDIF
     ENDDO

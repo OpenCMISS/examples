@@ -4,7 +4,7 @@
  q.Lagrange*q.Lagrange*q.Lagrange, #Scale factors=27
  #Nodes=           27
  #Fields=3
- 1) coordinates,  coordinate, rectangular cartesian, #Components=3
+ 1) Coordinate, coordinate, rectangular cartesian, #Components=3
    x.   q.Lagrange*q.Lagrange*q.Lagrange, no modify, standard node based.
      #Nodes= 27
      1.  #Values=1
@@ -254,7 +254,7 @@
     27.  #Values=1
       Value indices:     1
       Scale factor indices:   27
- 2) general,  field,  rectangular cartesian, #Components=1
+ 2) Phi, field,  rectangular cartesian, #Components=1
    1.   q.Lagrange*q.Lagrange*q.Lagrange, no modify, standard node based.
      #Nodes= 27
      1.  #Values=1
@@ -338,7 +338,7 @@
     27.  #Values=1
       Value indices:     1
       Scale factor indices:   27
- 3) norm_dev_variable,  field,  rectangular cartesian, #Components=1
+ 3) del Phi/del n, field,  rectangular cartesian, #Components=1
    1.   q.Lagrange*q.Lagrange*q.Lagrange, no modify, standard node based.
      #Nodes= 27
      1.  #Values=1

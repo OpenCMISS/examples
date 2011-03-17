@@ -288,7 +288,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
     NodeNumber=LeftSurfaceNodes(node_idx)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,NodeNumber,1, &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,1, &
         & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
     ENDIF
   ENDDO
@@ -297,7 +297,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
     NodeNumber=RightSurfaceNodes(node_idx)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,NodeNumber,1, &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,1, &
         & CMISSBoundaryConditionFixed,1.1_CMISSDP*WIDTH,Err)
     ENDIF
   ENDDO
@@ -307,7 +307,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
     NodeNumber=FrontSurfaceNodes(node_idx)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,NodeNumber,2, &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,2, &
         & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
     ENDIF
   ENDDO
@@ -317,7 +317,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
     NodeNumber=BottomSurfaceNodes(node_idx)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,NodeNumber,3, &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,3, &
         & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
     ENDIF
   ENDDO

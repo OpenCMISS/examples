@@ -1,14 +1,14 @@
  Group name: Region 2           
  #Fields=4
- 1) coordinates,  coordinate, rectangular cartesian, #Components=3
+ 1) Coordinate, coordinate, rectangular cartesian, #Components=3
    x.  Value index= 1, #Derivatives= 7(d/ds1,d/ds2,d2/ds1ds2,d/ds3,d2/ds1ds3,d2/ds2ds3,d3/ds1ds2ds3)
    y.  Value index= 9, #Derivatives= 7(d/ds1,d/ds2,d2/ds1ds2,d/ds3,d2/ds1ds3,d2/ds2ds3,d3/ds1ds2ds3)
    z.  Value index= 17, #Derivatives= 7(d/ds1,d/ds2,d2/ds1ds2,d/ds3,d2/ds1ds3,d2/ds2ds3,d3/ds1ds2ds3)
- 2) general,  field,  rectangular cartesian, #Components=1
+ 2) Coordinate, field,  rectangular cartesian, #Components=1
    1.  Value index= 25, #Derivatives= 7(d/ds1,d/ds2,d2/ds1ds2,d/ds3,d2/ds1ds3,d2/ds2ds3,d3/ds1ds2ds3)
- 3) norm_dev_variable,  field,  rectangular cartesian, #Components=1
+ 3) del U/del n, field,  rectangular cartesian, #Components=1
    1.  Value index= 33, #Derivatives= 7(d/ds1,d/ds2,d2/ds1ds2,d/ds3,d2/ds1ds3,d2/ds2ds3,d3/ds1ds2ds3)
- 4) general,  field,  rectangular cartesian, #Components=3
+ 4) Coordinate, field,  rectangular cartesian, #Components=3
    1.  Value index= 41, #Derivatives= 7(d/ds1,d/ds2,d2/ds1ds2,d/ds3,d2/ds1ds3,d2/ds2ds3,d3/ds1ds2ds3)
    2.  Value index= 49, #Derivatives= 7(d/ds1,d/ds2,d2/ds1ds2,d/ds3,d2/ds1ds3,d2/ds2ds3,d3/ds1ds2ds3)
    3.  Value index= 57, #Derivatives= 7(d/ds1,d/ds2,d2/ds1ds2,d/ds3,d2/ds1ds3,d2/ds2ds3,d3/ds1ds2ds3)

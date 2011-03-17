@@ -146,14 +146,13 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcy=8
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDarcy=12
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberDarcy=22
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldDarcyUserNumber=42
 
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopSolidNumber=1
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopFluidNumber=2
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopSubiterationNumber=1
   INTEGER(CMISSIntg), PARAMETER :: SolverSolidIndex=1
   INTEGER(CMISSIntg), PARAMETER :: SolverDarcyIndex=1
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPorosity=1
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPermOverVis=2
 
   !Program types
 
@@ -231,7 +230,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
 
   TYPE(CMISSFieldType) :: MaterialsFieldDarcy
   TYPE(CMISSFieldType) :: EquationsSetFieldDarcy
-
+  TYPE(CMISSFieldType) :: SourceFieldDarcy
   !Boundary conditions
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDarcy
   !Equations sets
@@ -256,6 +255,9 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
   REAL(CMISSDP) :: DYNAMIC_SOLVER_DARCY_STOP_TIME
   REAL(CMISSDP) :: DYNAMIC_SOLVER_DARCY_THETA
   REAL(CMISSDP) :: DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
+
+  INTEGER(CMISSIntg),allocatable :: ElementUserNodes(:)
+  INTEGER(CMISSIntg) :: NUMBER_USER_ELEMENT_NODES, ELEMENT_NUMBER
 
 #ifdef WIN32
   !Quickwin type
@@ -295,7 +297,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
   !Set time parameter
   DYNAMIC_SOLVER_DARCY_START_TIME=0.0_CMISSDP
   DYNAMIC_SOLVER_DARCY_TIME_INCREMENT=1.0e-3_CMISSDP
-  DYNAMIC_SOLVER_DARCY_STOP_TIME=20_CMISSIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
+  DYNAMIC_SOLVER_DARCY_STOP_TIME=2_CMISSIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
   DYNAMIC_SOLVER_DARCY_THETA=1.0_CMISSDP !2.0_CMISSDP/3.0_CMISSDP
   !Set result output parameter
   DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY=1
@@ -374,7 +376,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
 !     & (/CMISSBasisHighQuadratureScheme,CMISSBasisHighQuadratureScheme,CMISSBasisHighQuadratureScheme/),Err)
   CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(QuadraticBasis,.true.,Err) !Have to do this
   CALL CMISSBasisCreateFinish(QuadraticBasis,Err)
-
+  
     !Collapsed Quadratic Basis
   CALL CMISSBasisTypeInitialise(QuadraticCollapsedBasis,Err)
   CALL CMISSBasisCreateStart(QuadraticCollapsedBasisUserNumber,QuadraticCollapsedBasis,Err)
@@ -493,7 +495,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
   CALL CMISSFieldTypeInitialise(FibreFieldSolid,Err)
   CALL CMISSFieldCreateStart(FieldFibreUserNumber,Region,FibreFieldSolid,Err)
   CALL CMISSFieldTypeSet(FibreFieldSolid,CMISSFieldFibreType,Err)
-  CALL CMISSFieldMeshDecompositionSet(FibreFieldSolid,Decomposition,Err)        
+  CALL CMISSFieldMeshDecompositionSet(FibreFieldSolid,Decomposition,Err)
   CALL CMISSFieldGeometricFieldSet(FibreFieldSolid,GeometricFieldSolid,Err)
   CALL CMISSFieldNumberOfVariablesSet(FibreFieldSolid,FieldFibreNumberOfVariables,Err)
   CALL CMISSFieldNumberOfComponentsSet(FibreFieldSolid,CMISSFieldUVariableType,FieldFibreNumberOfComponents,Err)  
@@ -522,8 +524,8 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
     IF(NodeDomain==ComputationalNodeNumber) THEN
       FibreFieldAngle=(/zero,zero,zero/) 
       DO component_idx=1,FieldFibreNumberOfComponents
-        CALL CMISSFieldParameterSetUpdateNode(FibreFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,DerivativeUserNumber,&
-          & node_idx,component_idx,FibreFieldAngle(component_idx),Err)
+        CALL CMISSFieldParameterSetUpdateNode(FibreFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
+          & DerivativeUserNumber,node_idx,component_idx,FibreFieldAngle(component_idx),Err)
       ENDDO
     ENDIF
     theta=atan(FIBRE_SLOPE_CHANGE*XI3+FIBRE_SLOPE_INTERSECTION)
@@ -536,7 +538,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
         IF(NodeDomain==ComputationalNodeNumber) THEN
           FibreFieldAngle=(/theta,zero,omega/)
           DO component_idx=1,FieldFibreNumberOfComponents
-            CALL CMISSFieldParameterSetUpdateNode(FibreFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+            CALL CMISSFieldParameterSetUpdateNode(FibreFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
               & DerivativeUserNumber, node_idx,component_idx,FibreFieldAngle(component_idx),Err)
           ENDDO
         ENDIF
@@ -684,9 +686,51 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
     & MaterialsFieldDarcy,Err)
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
   CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-    & MaterialsFieldUserNumberDarcyPorosity,POROSITY_PARAM_DARCY,Err)
+    & 1,POROSITY_PARAM_DARCY,Err)
   CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-    & MaterialsFieldUserNumberDarcyPermOverVis,PERM_OVER_VIS_PARAM_DARCY,Err)
+    & 2,PERM_OVER_VIS_PARAM_DARCY,Err)
+
+  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+    & 3,0.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+    & 4,0.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+    & 5,PERM_OVER_VIS_PARAM_DARCY,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+    & 6,0.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+    & 7,PERM_OVER_VIS_PARAM_DARCY,Err)
+
+  !
+  !================================================================================================================================
+  !
+
+  !Source field
+  CALL CMISSFieldTypeInitialise(SourceFieldDarcy,Err)
+  CALL CMISSEquationsSetSourceCreateStart(EquationsSetDarcy,SourceFieldDarcyUserNumber,SourceFieldDarcy,Err)
+  CALL CMISSEquationsSetSourceCreateFinish(EquationsSetDarcy,Err)
+
+!   ELEMENT_NUMBER = 5
+!   COMPONENT_NUMBER = 4
+!   VALUE = 4.2_CMISSDP
+! !   CALL CMISSFieldParameterSetUpdateElement(RegionUserNumber,SourceFieldDarcyUserNumber,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+! !     & ELEMENT_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+! 
+!   NUMBER_USER_ELEMENT_NODES = 27  !hardcoding is bad - but how to access the number of element nodes ?
+!                                   !- there is no CMISS library call available for this
+!                                   !- traversing the structure of 'CMISSMeshElementsType' does not work either,
+!                                   !  since certain members are private
+! 
+!   allocate( ElementUserNodes(NUMBER_USER_ELEMENT_NODES) )
+! 
+!   CALL CMISSMeshElementsNodesGet(RegionUserNumber,MeshUserNumber,QuadraticMeshComponentNumber,ELEMENT_NUMBER, &
+!     & ElementUserNodes,Err)
+! 
+!   DO NN=1,NUMBER_USER_ELEMENT_NODES
+!     NODE_NUMBER = ElementUserNodes(NN)
+!     CALL CMISSFieldParameterSetUpdateNode(SourceFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+!       & 1,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+!   ENDDO
 
   !
   !================================================================================================================================
@@ -706,7 +750,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
   CALL CMISSEquationsSetEquationsCreateStart(EquationsSetSolid,Equations,Err)
   CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
   CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
-  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetSolid,Err)   
+  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetSolid,Err)
 
   !
   !================================================================================================================================
@@ -739,32 +783,32 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
     NODE=TopSurfaceNodes(NN)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,3,ZCoord,Err)
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,NODE,3, &
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,3,ZCoord,Err)
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NODE,3, &
         & CMISSBoundaryConditionFixed,ZCoord,Err)
     ENDIF
   ENDDO
 
-!   !Apply inner surface pressure
-!   !NOTE: Surface pressure goes into pressure_values_set_type of the DELUDELN type
-!   DO NN=1,SIZE(InnerSurfaceNodes,1)
-!     NODE=InnerSurfaceNodes(NN)
-!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-!     IF(NodeDomain==ComputationalNodeNumber) THEN
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,NODE,ABS(InnerNormalXi), &
-!         & CMISSBoundaryConditionPressure,INNER_PRESSURE,Err)
-!     ENDIF
-!   ENDDO
-! 
-!   !Apply outer surface pressure
-!   DO NN=1,SIZE(OuterSurfaceNodes,1)
-!     NODE=OuterSurfaceNodes(NN)
-!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-!     IF(NodeDomain==ComputationalNodeNumber) THEN
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,NODE,ABS(OuterNormalXi), &
-!         & CMISSBoundaryConditionPressure,OUTER_PRESSURE,Err)
-!     ENDIF
-!   ENDDO
+  !Apply inner surface pressure
+  !NOTE: Surface pressure goes into pressure_values_set_type of the DELUDELN type
+  DO NN=1,SIZE(InnerSurfaceNodes,1)
+    NODE=InnerSurfaceNodes(NN)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,NODE,ABS(InnerNormalXi), &
+        & CMISSBoundaryConditionPressure,INNER_PRESSURE,Err)
+    ENDIF
+  ENDDO
+
+  !Apply outer surface pressure
+  DO NN=1,SIZE(OuterSurfaceNodes,1)
+    NODE=OuterSurfaceNodes(NN)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,NODE,ABS(OuterNormalXi), &
+        & CMISSBoundaryConditionPressure,OUTER_PRESSURE,Err)
+    ENDIF
+  ENDDO
 
   !Fix more nodes at the base to stop free body motion
   X_FIXED=.FALSE.
@@ -773,16 +817,16 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
     NODE=TopSurfaceNodes(NN)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,2,YCoord,Err)
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,1,XCoord,Err)
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,2,YCoord,Err)
       IF(ABS(XCoord)<1.0E-6_CMISSDP) THEN
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,NODE,1, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NODE,1, &
           & CMISSBoundaryConditionFixed,XCoord,Err)
         WRITE(*,*) "FIXING NODE",NODE,"IN X DIRECTION"
         X_FIXED=.TRUE.
-    ENDIF
+      ENDIF
       IF(ABS(YCoord)<1.0E-6_CMISSDP) THEN
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,NODE,2, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NODE,2, &
           & CMISSBoundaryConditionFixed,YCoord,Err)
         WRITE(*,*) "FIXING NODE",NODE,"IN Y DIRECTION"
         Y_FIXED=.TRUE.
@@ -856,7 +900,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
       NODE_NUMBER = InnerSurfaceNodesDarcyVel(NN)
       COMPONENT_NUMBER = ABS(InnerNormalXi)
       VALUE = 1.0_CMISSDP
-      CALL CMISSFieldParameterSetUpdateNode(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+      CALL CMISSFieldParameterSetUpdateNode(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
         & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
 
@@ -897,7 +941,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
       NODE_NUMBER = OuterSurfaceNodesDarcyVel(NN)
       COMPONENT_NUMBER = ABS(OuterNormalXi)
       VALUE = 1.0_CMISSDP
-      CALL CMISSFieldParameterSetUpdateNode(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+      CALL CMISSFieldParameterSetUpdateNode(IndependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
         & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
 
@@ -913,7 +957,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
     DO NN=1,SIZE(TopSurfaceNodesDarcyVel,1)
       VALUE = -1.0_CMISSDP
       COMPONENT_NUMBER = 3
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,TopSurfaceNodesDarcyVel(NN), &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,1,TopSurfaceNodesDarcyVel(NN), &
         & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING TOP DARCY BC TO NODE", TopSurfaceNodesDarcyVel(NN)
     ENDDO
@@ -1041,11 +1085,11 @@ CALL CMISSProblemSolversCreateFinish(Problem,Err)
   !
 
   !Output solution  
-  CALL CMISSFieldsTypeInitialise(Fields,Err)
-  CALL CMISSFieldsTypeCreate(Region,Fields,Err)
+    CALL CMISSFieldsTypeInitialise(Fields,Err)
+    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
   CALL CMISSFieldIONodesExport(Fields,"QuadraticEllipsoidDrivenDarcy","FORTRAN",Err)
   CALL CMISSFieldIOElementsExport(Fields,"QuadraticEllipsoidDrivenDarcy","FORTRAN",Err)
-  CALL CMISSFieldsTypeFinalise(Fields,Err)
+    CALL CMISSFieldsTypeFinalise(Fields,Err)
 
   !
   !================================================================================================================================
