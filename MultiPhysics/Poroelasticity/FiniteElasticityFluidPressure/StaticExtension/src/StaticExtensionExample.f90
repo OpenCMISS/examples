@@ -96,8 +96,7 @@ PROGRAM POROELASTICITYEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: FibreFieldUserNumber=3
-  INTEGER(CMISSIntg), PARAMETER :: FieldFluidMaterialUserNumber=4
-  INTEGER(CMISSIntg), PARAMETER :: FieldSolidMaterialUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=4
   INTEGER(CMISSIntg), PARAMETER :: SolidEquationsSetFieldUserNumber=6
   INTEGER(CMISSIntg), PARAMETER :: FluidEquationsSetFieldUserNumber=7
   INTEGER(CMISSIntg), PARAMETER :: FluidEquationsSetUserNumber=1
@@ -124,7 +123,7 @@ PROGRAM POROELASTICITYEXAMPLE
   TYPE(CMISSEquationsType) :: SolidEquations,FluidEquations
   TYPE(CMISSEquationsSetType) :: SolidEquationsSet,FluidEquationsSet
   TYPE(CMISSFieldType) :: GeometricField,SolidEquationsSetField,FluidEquationsSetField,DependentField, &
-    & FibreField,SolidMaterialField,FluidMaterialField
+    & FibreField,MaterialField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh
   TYPE(CMISSMeshType) :: Mesh
@@ -311,14 +310,14 @@ PROGRAM POROELASTICITYEXAMPLE
   CALL CMISSEquationsSetTypeInitialise(SolidEquationsSet,Err)
   CALL CMISSFieldTypeInitialise(SolidEquationsSetField,Err)
   CALL CMISSEquationsSetCreateStart(SolidEquationsSetUserNumber,Region,FibreField,CMISSEquationsSetElasticityClass, &
-    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetElasticityFluidPressureStaticSubtype, &
+    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetElasticityFluidPressureStaticINRIASubtype, &
     & SolidEquationsSetFieldUserNumber,SolidEquationsSetField,SolidEquationsSet,Err)
   CALL CMISSEquationsSetCreateFinish(SolidEquationsSet,Err)
 
   CALL CMISSEquationsSetTypeInitialise(FluidEquationsSet,Err)
   CALL CMISSFieldTypeInitialise(FluidEquationsSetField,Err)
   CALL CMISSEquationsSetCreateStart(FluidEquationsSetUserNumber,Region,FibreField,CMISSEquationsSetFluidMechanicsClass, &
-    & CMISSEquationsSetDarcyPressureEquationType,CMISSEquationsSetElasticityFluidPressureStaticSubtype, &
+    & CMISSEquationsSetDarcyPressureEquationType,CMISSEquationsSetElasticityFluidPressureStaticINRIASubtype, &
     & FluidEquationsSetFieldUserNumber,FluidEquationsSetField,FluidEquationsSet,Err)
   CALL CMISSEquationsSetCreateFinish(FluidEquationsSet,Err)
 
@@ -338,34 +337,30 @@ PROGRAM POROELASTICITYEXAMPLE
   CALL CMISSEquationsSetDependentCreateFinish(SolidEquationsSet,Err)
 
   !Create the material field
-  CALL CMISSFieldTypeInitialise(FluidMaterialField,Err)
-  CALL CMISSEquationsSetMaterialsCreateStart(FluidEquationsSet,FieldFluidMaterialUserNumber,FluidMaterialField,Err)
-  CALL CMISSFieldVariableLabelSet(FluidMaterialField,CMISSFieldUVariableType,"FluidMaterial",Err)
+  CALL CMISSFieldTypeInitialise(MaterialField,Err)
+  CALL CMISSEquationsSetMaterialsCreateStart(FluidEquationsSet,FieldMaterialUserNumber,MaterialField,Err)
+  CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldUVariableType,"SolidMaterial",Err)
+  CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldU1VariableType,"FluidMaterial",Err)
   CALL CMISSEquationsSetMaterialsCreateFinish(FluidEquationsSet,Err)
-
-  CALL CMISSFieldTypeInitialise(SolidMaterialField,Err)
-  CALL CMISSEquationsSetMaterialsCreateStart(SolidEquationsSet,FieldSolidMaterialUserNumber,SolidMaterialField,Err)
-  CALL CMISSFieldVariableLabelSet(SolidMaterialField,CMISSFieldUVariableType,"SolidMaterial",Err)
-  CALL CMISSEquationsSetMaterialsCreateFinish(SolidEquationsSet,Err)
 
   !Set material constants
   !Solid constitutive law
-  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,K1,Err)
-  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,K2,Err)
-  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,K,Err)
-  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,M,Err)
-  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,5,b,Err)
-  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,6,p_0,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,K1,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,K2,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,K,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,M,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,5,b,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,6,p_0,Err)
 
   !Permeability tensor
-  CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,permeability,Err)
-  CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,permeability,Err)
-  CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,5,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,6,permeability,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,1,permeability,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,2,0.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,3,0.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,4,permeability,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,5,0.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,6,permeability,Err)
   !Density
-  CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,7,1000.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,7,1000.0_CMISSDP,Err)
 
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(FluidEquations,Err)
