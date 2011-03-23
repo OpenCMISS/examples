@@ -94,7 +94,7 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
 
   !Component 1, 2 are Mooney-Rivlin constants.  Component 3 is membrane thickness.
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
-  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfVariables=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfVariables=1
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfComponents=3
 
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=4

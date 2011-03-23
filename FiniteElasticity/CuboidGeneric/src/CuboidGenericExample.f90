@@ -96,7 +96,7 @@ PROGRAM CUBOIDGENERICEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: FieldFibreNumberOfComponents=3
 
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
-  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfVariables=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfVariables=1
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfComponents=2
 
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=4
