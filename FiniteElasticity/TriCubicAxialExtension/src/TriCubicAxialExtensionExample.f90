@@ -782,6 +782,7 @@ PROGRAM TRICUBICAXIALEXTENSIONEXAMPLE
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
   CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianFDCalculated,Err)
+  CALL CMISSSolverNewtonRelativeToleranceSet(Solver,1.0E-10,Err)
   CALL CMISSSolverNewtonLinearSolverGet(Solver,LinearSolver,Err)
   CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearDirectSolveType,Err)
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
