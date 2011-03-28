@@ -40,9 +40,8 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/Poiseuille/42Master/src/42MasterExample.f90
+!> \example FluidMechanics/Poiseuille/Static/src/StaticExample.f90
 !! Example program to solve a static Poiseuille equation using openCMISS calls.
-!! \htmlinclude ClassicalField/Poiseuille/42Master/history.html
 !<
 
 !> Main program
