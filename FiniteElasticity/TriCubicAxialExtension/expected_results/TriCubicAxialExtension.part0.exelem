@@ -4,8 +4,8 @@
  c.Hermite*c.Hermite*c.Hermite, #Scale factors=64
  l.Lagrange*l.Lagrange*l.Lagrange, #Scale factors=8
  #Nodes=           8
- #Fields=5
- 1) coordinates,  coordinate, rectangular cartesian, #Components=3
+ #Fields=6
+ 1) Coordinate, coordinate, rectangular cartesian, #Components=3
    x.   c.Hermite*c.Hermite*c.Hermite, no modify, standard node based.
      #Nodes= 8
      1.  #Values=8
@@ -84,7 +84,7 @@
      8.  #Values=8
       Value indices:     1   2   3   4   5   6   7   8
       Scale factor indices:   57  58  59  60  61  62  63  64
- 2) fibres, anatomical, fibre, #Components=3
+ 2) Coordinate, anatomical, fibre, #Components=3
    1.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
      #Nodes= 8
      1.  #Values=1
@@ -163,7 +163,7 @@
      8.  #Values=1
       Value indices:     1
       Scale factor indices:   72
- 3) general,  field,  rectangular cartesian, #Components=4
+ 3) Coordinate, field,  rectangular cartesian, #Components=4
    1.   c.Hermite*c.Hermite*c.Hermite, no modify, standard node based.
      #Nodes= 8
      1.  #Values=8
@@ -268,7 +268,7 @@
      8.  #Values=1
       Value indices:     1
       Scale factor indices:   72
- 4) norm_dev_variable,  field,  rectangular cartesian, #Components=4
+ 4) del U/del n, field,  rectangular cartesian, #Components=4
    1.   c.Hermite*c.Hermite*c.Hermite, no modify, standard node based.
      #Nodes= 8
      1.  #Values=8
@@ -373,15 +373,19 @@
      8.  #Values=1
       Value indices:     1
       Scale factor indices:   72
- 5) material,  field,  rectangular cartesian, #Components=2
+ 5) Parameters, field,  rectangular cartesian, #Components=2
    1.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, grid based.
      #xi1=1, #xi2=1, #xi3=1
    2.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, grid based.
+     #xi1=1, #xi2=1, #xi3=1
+ 6) Density, field,  unknown field variable type, #Components=1
+   1.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, grid based.
      #xi1=1, #xi2=1, #xi3=1
  Element:            1 0 0
    Values:
      2.0000000000000000E+00   2.0000000000000000E+00   2.0000000000000000E+00   2.0000000000000000E+00   2.0000000000000000E+00   2.0000000000000000E+00   2.0000000000000000E+00   2.0000000000000000E+00
      4.0000000000000000E+00   4.0000000000000000E+00   4.0000000000000000E+00   4.0000000000000000E+00   4.0000000000000000E+00   4.0000000000000000E+00   4.0000000000000000E+00   4.0000000000000000E+00
+     0.0000000000000000E+00   0.0000000000000000E+00   0.0000000000000000E+00   0.0000000000000000E+00   0.0000000000000000E+00   0.0000000000000000E+00   0.0000000000000000E+00   0.0000000000000000E+00
    Nodes:
            1           2           3           4           5           6           7           8
    Scale factors:
