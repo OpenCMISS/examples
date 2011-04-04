@@ -271,6 +271,7 @@ PROGRAM LARGEQUADRATICTETEXAMPLE
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,MeshComponentNumberQuad,Err)
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,MeshComponentNumberQuad,Err)
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,MeshComponentNumberQuad,Err)
+  CALL CMISSFieldVariableLabelSet(GeometricField,CMISSFieldUVariableType,"Geometry",Err)
   CALL CMISSFieldCreateFinish(GeometricField,Err)
 
   !node 1
@@ -391,6 +392,7 @@ PROGRAM LARGEQUADRATICTETEXAMPLE
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,1,MeshComponentNumberQuad,Err)
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,2,MeshComponentNumberQuad,Err)
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,3,MeshComponentNumberQuad,Err)
+  CALL CMISSFieldVariableLabelSet(FibreField,CMISSFieldUVariableType,"Fibre",Err)
   CALL CMISSFieldCreateFinish(FibreField,Err)
 
   !Rotation Angles (radians)
@@ -412,6 +414,7 @@ PROGRAM LARGEQUADRATICTETEXAMPLE
   CALL CMISSFieldNumberOfComponentsSet(MaterialField,CMISSFieldUVariableType,FieldMaterialNumberOfComponents,Err)  
   CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,1,MeshComponentNumberQuad,Err)
   CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,2,MeshComponentNumberQuad,Err)
+  CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldUVariableType,"Material",Err)
   CALL CMISSFieldCreateFinish(MaterialField,Err)
 
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively.
@@ -436,6 +439,7 @@ PROGRAM LARGEQUADRATICTETEXAMPLE
   CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,2,MeshComponentNumberQuad,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,3,MeshComponentNumberQuad,Err)  
   CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,4,MeshComponentNumberLin,Err)  
+  CALL CMISSFieldVariableLabelSet(DependentField,CMISSFieldUVariableType,"Dependent",Err)
   CALL CMISSFieldCreateFinish(DependentField,Err)  
 
   !Create the equations_set
@@ -574,6 +578,7 @@ CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSE
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
   CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianFDCalculated,Err)
+  CALL CMISSSolverTypeInitialise(LinearSolver,Err)
   CALL CMISSSolverNewtonLinearSolverGet(Solver,LinearSolver,Err)
   CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearDirectSolveType,Err)
   CALL CMISSProblemSolversCreateFinish(Problem,Err)

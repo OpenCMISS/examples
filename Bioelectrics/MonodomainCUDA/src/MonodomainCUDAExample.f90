@@ -254,7 +254,7 @@ PROGRAM MONODOMAINCUDAEXAMPLE
 
   DO N=0,NUMBER_OF_NODES-1
     DO M=0, NumberOfMeshDimensions-1
-      CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N+1 &
+      CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N+1 &
       & ,M+1,NODE_COORDINATES_F90(N*NumberOfMeshDimensions+M+1),Err)
     ENDDO
   ENDDO
@@ -282,9 +282,9 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   !Finish the equations set materials field variables
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
 
-  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,100.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,100.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,100.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,20.00_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,20.00_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,20.00_CMISSDP,Err)
 
   !Create the equations set source field variables
   CALL CMISSFieldTypeInitialise(SourceField,Err)
@@ -329,7 +329,7 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   CALL CMISSCellMLFieldMapsCreateFinish(CellML,Err)
 
   !todo - get vm initialial value.
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,-80.00_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,-92.50_CMISSDP,Err)
 
   !Start the creation of the CellML models field
   CALL CMISSFieldTypeInitialise(CellMLModelsField,Err)
@@ -385,15 +385,15 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
   !Set the first 3175 nodes to flux of 0.0
   DO N=1,3175
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,N,1, &
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,N,1, &
       & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
   ENDDO
   !Finish the creation of the equations set boundary conditions
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
 
   !Set the Stimulus at node 1
-  CALL CMISSFieldParameterSetUpdateNode(CellMLParametersField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,4000,1, &
-    & 100.0_CMISSDP,Err)
+  CALL CMISSFieldParameterSetUpdateNode(CellMLParametersField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,4000,1, &
+    & -10.0_CMISSDP,Err)
 
   !Start the creation of a problem.
   CALL CMISSProblemTypeInitialise(Problem,Err)
@@ -413,7 +413,7 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   !Set the times
   CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,0.10_CMISSDP,0.01_CMISSDP,Err)
   !Set the output
-  CALL CMISSControlLoopOutputTypeSet(ControlLoop,CMISSControlLoopTimingOutput,Err)
+  !CALL CMISSControlLoopOutputTypeSet(ControlLoop,CMISSControlLoopTimingOutput,Err)
   !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
 
@@ -473,7 +473,7 @@ PROGRAM MONODOMAINCUDAEXAMPLE
 
   !Now turn the stimulus off
   !Set the Stimulus at node 1
-  CALL CMISSFieldParameterSetUpdateNode(CellMLParametersField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,4000,1, &
+  CALL CMISSFieldParameterSetUpdateNode(CellMLParametersField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,4000,1, &
     & 0.0_CMISSDP,Err)
 
   !Set the time loop for another 900 ms

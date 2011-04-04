@@ -82,8 +82,6 @@ def test_build_library():
   add_history(logDir+"/nose_library_build_history_" + compiler,err)
   assert err==0
   
-  
-
 def test_example():
   global compiler
   rootdir = os.getcwd()
@@ -113,7 +111,10 @@ def test_example():
               yield check_run, 'run', os.getcwd(), system, arch, compiler, root, testpoint[1], testingPointPath, False
             else :
               yield check_run, 'run', os.getcwd(), system, arch, compiler, root, testpoint[1], testingPointPath
-              yield check_output,'check',os.getcwd(), testpoint[2], testpoint[3]
+              if len(testpoint)<=4 :
+                yield check_output,'check',os.getcwd(), testpoint[2], testpoint[3]
+              else :
+                yield check_output,'check',os.getcwd(), testpoint[2], testpoint[3], testpoint[4]
   
 def check_build(status,root,compiler):
   global examplesDir, logsDir
@@ -149,7 +150,7 @@ def check_run(status,cwd, system,arch,compiler,masterPath,testArgs,testPath,noCh
   add_history(logDir+"/nose_run_history_" + compiler,err)
   assert err==0
 
-def check_output(status, cwd, ndiffDir, outputDir):
+def check_output(status, cwd, ndiffDir, outputDir,tolerance=None):
   global examplesDir, logsDir
   logDir = os.getcwd().replace(examplesDir,logsDir)
   newDir = ''
@@ -163,7 +164,10 @@ def check_output(status, cwd, ndiffDir, outputDir):
   errall =0
   for outputFile in os.listdir(ndiffDir) :
     if outputFile!='.svn' :
-      command = ndiff+" --tolerance=1e-10 "+ndiffDir+"/"+outputFile+" "+outputDir+"/"+outputFile + ' >> '  + logPath + " 2>&1"
+      if tolerance != None :
+        command = ndiff+" --tolerance=" + tolerance +" "+ndiffDir+"/"+outputFile+" "+outputDir+"/"+outputFile + ' >> '  + logPath + " 2>&1"
+      else :
+        command = ndiff+" "+ndiffDir+"/"+outputFile+" "+outputDir+"/"+outputFile + ' >> '  + logPath + " 2>&1" 
       err = os.system(command)
       if err!=0 :
         errall = -1
