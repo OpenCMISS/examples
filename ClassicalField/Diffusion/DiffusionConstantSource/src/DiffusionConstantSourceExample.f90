@@ -279,9 +279,9 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   !Set the equations matrices sparsity type
   CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
   !Set the equations set output
-  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
+  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsTimingOutput,Err)
-  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsMatrixOutput,Err)
+  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsMatrixOutput,Err)
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsElementMatrixOutput,Err)
   !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
@@ -320,7 +320,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
 
   !Create the problem control
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
-  !CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
+  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   !Get the control loop
   CALL CMISSProblemControlLoopGet(Problem,ControlLoopNode,ControlLoop,Err)
   !Set the times
@@ -343,8 +343,8 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
-  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
-  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
+  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   CALL CMISSSolverDynamicLinearSolverGet(Solver,LinearSolver,Err)
   CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolver,10000,Err)
   !Finish the creation of the problem solver

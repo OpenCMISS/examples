@@ -104,13 +104,13 @@ PROGRAM MONODOMAINEXAMPLE
 
   INTEGER(CMISSIntg) :: gK1component,gNacomponent,stimcomponent,node_idx
 
-  INTEGER(CMISSIntg), PARAMETER :: NUMBER_OF_ELEMENTS=25
+  INTEGER(CMISSIntg), PARAMETER :: NUMBER_OF_ELEMENTS=1000
 
   REAL(CMISSDP) :: X,Y,DISTANCE,gK1_VALUE,gNa_VALUE
   
   REAL(CMISSDP), PARAMETER :: STIM_VALUE = 100.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: STIM_STOP = 0.10_CMISSDP
-  REAL(CMISSDP), PARAMETER :: TIME_STOP = 1.50_CMISSDP
+  REAL(CMISSDP), PARAMETER :: TIME_STOP = 1.00_CMISSDP
   REAL(CMISSDP), PARAMETER :: ODE_TIME_STEP = 0.00001_CMISSDP
   REAL(CMISSDP), PARAMETER :: PDE_TIME_STEP = 0.001_CMISSDP
   REAL(CMISSDP), PARAMETER :: CONDUCTIVITY = 0.1_CMISSDP
@@ -516,7 +516,8 @@ PROGRAM MONODOMAINEXAMPLE
   !Set the times
   CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,STIM_STOP,PDE_TIME_STEP,Err)
   !Set the output
-  CALL CMISSControlLoopOutputTypeSet(ControlLoop,CMISSControlLoopTimingOutput,Err)
+  !CALL CMISSControlLoopOutputTypeSet(ControlLoop,CMISSControlLoopTimingOutput,Err)
+  CALL CMISSControlLoopOutputTypeSet(ControlLoop,CMISSControlLoopNoOutput,Err)
   !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
  
@@ -528,9 +529,10 @@ PROGRAM MONODOMAINEXAMPLE
   !Set the DAE time step to by 10 us
   CALL CMISSSolverDAETimeStepSet(Solver,ODE_TIME_STEP,Err)
   !CALL CMISSSolverDAESolverTypeSet(Solver,CMISSSolverDAEExternal,Err)
-  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
+  !CALL CMISSSolverExternalDAESolverParametersSet(Solver,1024,5,5,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
-  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
+  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
   !Get the second (Parabolic) solver
@@ -591,14 +593,14 @@ PROGRAM MONODOMAINEXAMPLE
   !Solve the problem for the next 900 ms
   CALL CMISSProblemSolve(Problem,Err)
   
-  EXPORT_FIELD=.TRUE.
-  IF(EXPORT_FIELD) THEN
-    CALL CMISSFieldsTypeInitialise(Fields,Err)
-    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"MonodomainExample","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"MonodomainExample","FORTRAN",Err)
-    CALL CMISSFieldsTypeFinalise(Fields,Err)
-  ENDIF
+  !EXPORT_FIELD=.TRUE.
+  !IF(EXPORT_FIELD) THEN
+  !  CALL CMISSFieldsTypeInitialise(Fields,Err)
+  !  CALL CMISSFieldsTypeCreate(Region,Fields,Err) CMISSSolverDAETimeStepSet
+  !  CALL CMISSFieldIONodesExport(Fields,"MonodomainExample","FORTRAN",Err)
+  !  CALL CMISSFieldIOElementsExport(Fields,"MonodomainExample","FORTRAN",Err)
+  !  CALL CMISSFieldsTypeFinalise(Fields,Err)
+  !ENDIF
   
   !Finialise CMISS
   CALL CMISSFinalise(Err)
