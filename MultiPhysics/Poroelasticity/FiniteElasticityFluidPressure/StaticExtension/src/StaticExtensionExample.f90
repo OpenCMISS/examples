@@ -69,7 +69,7 @@ PROGRAM POROELASTICITYEXAMPLE
   INTEGER(CMISSIntg) :: NumberGlobalYElements=2
   INTEGER(CMISSIntg) :: NumberGlobalZElements=2
   REAL(CMISSDP) :: FixedWidth=12.0_CMISSDP
-  REAL(CMISSDP) :: FluidPressureBC=1.0E-3_CMISSDP
+  REAL(CMISSDP) :: FluidPressureBC=0.5E-3_CMISSDP
   REAL(CMISSDP) :: FluidPressureBC2=0.0_CMISSDP
   REAL(CMISSDP) :: InitialPressure
   INTEGER(CMISSIntg) :: Increments=10
@@ -432,6 +432,8 @@ PROGRAM POROELASTICITYEXAMPLE
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL CMISSBoundaryConditionsSetNode(SolidBoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,1, &
         & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+      CALL CMISSBoundaryConditionsSetNode(FluidBoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,1, &
+        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
     ENDIF
   ENDDO
   !Set y=0 nodes to no y displacement
@@ -440,6 +442,8 @@ PROGRAM POROELASTICITYEXAMPLE
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL CMISSBoundaryConditionsSetNode(SolidBoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,2, &
+        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+      CALL CMISSBoundaryConditionsSetNode(FluidBoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,2, &
         & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
     ENDIF
   ENDDO
@@ -450,6 +454,8 @@ PROGRAM POROELASTICITYEXAMPLE
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL CMISSBoundaryConditionsSetNode(SolidBoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,3, &
         & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+      CALL CMISSBoundaryConditionsSetNode(FluidBoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,3, &
+        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
     ENDIF
   ENDDO
   !Fix right surface nodes
@@ -459,6 +465,8 @@ PROGRAM POROELASTICITYEXAMPLE
       CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
       IF(NodeDomain==ComputationalNodeNumber) THEN
         CALL CMISSBoundaryConditionsSetNode(SolidBoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,1, &
+          & CMISSBoundaryConditionFixedIncremented,FixedWidth,Err)
+        CALL CMISSBoundaryConditionsSetNode(FluidBoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,1, &
           & CMISSBoundaryConditionFixedIncremented,FixedWidth,Err)
       ENDIF
     ENDDO
@@ -471,6 +479,8 @@ PROGRAM POROELASTICITYEXAMPLE
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL CMISSBoundaryConditionsSetNode(FluidBoundaryConditions,CMISSFieldVVariableType,1,1,NodeNumber,1, &
         & CMISSBoundaryConditionFixedIncremented,FluidPressureBC,Err)
+      CALL CMISSBoundaryConditionsSetNode(SolidBoundaryConditions,CMISSFieldVVariableType,1,1,NodeNumber,1, &
+        & CMISSBoundaryConditionFixedIncremented,FluidPressureBC,Err)
     ENDIF
   ENDDO
   DO node_idx=1,SIZE(PressureRightSurfaceNodes,1)
@@ -478,6 +488,8 @@ PROGRAM POROELASTICITYEXAMPLE
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,PressureMeshComponent,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL CMISSBoundaryConditionsSetNode(FluidBoundaryConditions,CMISSFieldVVariableType,1,1,NodeNumber,1, &
+        & CMISSBoundaryConditionFixed,FluidPressureBC2,Err)
+      CALL CMISSBoundaryConditionsSetNode(SolidBoundaryConditions,CMISSFieldVVariableType,1,1,NodeNumber,1, &
         & CMISSBoundaryConditionFixed,FluidPressureBC2,Err)
     ENDIF
   ENDDO
@@ -522,7 +534,7 @@ PROGRAM POROELASTICITYEXAMPLE
   CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
   CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
-  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices,Err)
+  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,SolidEquationsSet,EquationsSetIndex,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,FluidEquationsSet,EquationsSetIndex,Err)
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
