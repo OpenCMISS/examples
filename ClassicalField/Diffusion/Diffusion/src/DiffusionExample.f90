@@ -348,6 +348,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   !Create the problem control
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
   !Get the control loop
+  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
   !Set the times
   CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,1.001_CMISSDP,0.001_CMISSDP,Err)

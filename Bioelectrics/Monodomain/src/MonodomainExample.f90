@@ -97,20 +97,30 @@ PROGRAM MONODOMAINEXAMPLE
   INTEGER(CMISSIntg) :: MPI_IERROR
 
   LOGICAL :: EXPORT_FIELD
+  LOGICAL :: CUDA = .FALSE.
 
   INTEGER(CMISSIntg) :: N,CELL_TYPE
+  CHARACTER(len=32) :: ARG1
+  CHARACTER(len=32) :: ARG2
+  CHARACTER(len=32) :: ARG3
+  CHARACTER(len=32) :: ARG4
+  CHARACTER(len=32) :: ARG5
+  CHARACTER(len=200) :: FILENAME
 
   INTEGER(CMISSIntg) :: n98ModelIndex,JRWModelIndex,LRdModelIndex
 
   INTEGER(CMISSIntg) :: gK1component,gNacomponent,stimcomponent,node_idx
 
-  INTEGER(CMISSIntg), PARAMETER :: NUMBER_OF_ELEMENTS=1000
+  INTEGER(CMISSIntg) :: NUMBER_OF_ELEMENTS=400
+  INTEGER(CMISSIntg) :: THREADS_PER_BLOCK=1024
+  INTEGER(CMISSIntg) :: NUMBER_OF_PARTITIONS=1
+  INTEGER(CMISSIntg) :: NUMBER_OF_STREAMS=1
 
   REAL(CMISSDP) :: X,Y,DISTANCE,gK1_VALUE,gNa_VALUE
   
   REAL(CMISSDP), PARAMETER :: STIM_VALUE = 100.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: STIM_STOP = 0.10_CMISSDP
-  REAL(CMISSDP), PARAMETER :: TIME_STOP = 1.00_CMISSDP
+  REAL(CMISSDP), PARAMETER :: TIME_STOP = 0.40_CMISSDP
   REAL(CMISSDP), PARAMETER :: ODE_TIME_STEP = 0.00001_CMISSDP
   REAL(CMISSDP), PARAMETER :: PDE_TIME_STEP = 0.001_CMISSDP
   REAL(CMISSDP), PARAMETER :: CONDUCTIVITY = 0.1_CMISSDP
@@ -161,6 +171,39 @@ PROGRAM MONODOMAINEXAMPLE
   IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
 #endif
 
+  IF(IARGC()==5) THEN
+    CALL GETARG(1, ARG1)
+    IF(ARG1 .EQ. 'CUDAON') THEN
+      CUDA = .TRUE.
+    ELSE IF(ARG1 .EQ. 'CUDAOFF') THEN
+      CUDA = .FALSE.
+    ELSE 
+      WRITE (*,*) 'CUDA Logical Parameter is not correctly formatted'
+    ENDIF
+    CALL GETARG(2, ARG2)
+    CALL GETARG(3, ARG3)
+    CALL GETARG(4, ARG4)
+    CALL GETARG(5, ARG5)
+
+    IF (CUDA) THEN
+      WRITE (FILENAME,'(A,A,A,A,A,A,A,A,A,A)') 'Results/MonodomainExample-', TRIM(ARG1), '-', TRIM(ARG2), '-', &
+        & TRIM(ARG3), '-', TRIM(ARG4), '-', TRIM(ARG5)
+    ELSE 
+      WRITE (FILENAME,'(A,A,A,A)') 'Results/MonodomainExample-', TRIM(ARG1), '-', TRIM(ARG2)
+    ENDIF
+    
+    WRITE (*,'(A,X,A,X,A,X,A,X,A)') TRIM(ARG1), TRIM(ARG2), &
+      & TRIM(ARG3), TRIM(ARG4), TRIM(ARG5)
+
+    READ (ARG2, '(i10)') NUMBER_OF_ELEMENTS
+    READ (ARG3, '(i10)') THREADS_PER_BLOCK
+    READ (ARG4, '(i10)') NUMBER_OF_PARTITIONS
+    READ (ARG5, '(i10)') NUMBER_OF_STREAMS
+  ELSE  
+    WRITE (*,*) 'Wrong Number of CL Arguments, simulation run without CUDA by default'
+  ENDIF
+
+
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
@@ -174,7 +217,7 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSOutputSetOn("Monodomain",Err)
     
   NUMBER_GLOBAL_X_ELEMENTS=NUMBER_OF_ELEMENTS
-  NUMBER_GLOBAL_Y_ELEMENTS=NUMBER_OF_ELEMENTS
+  NUMBER_GLOBAL_Y_ELEMENTS=100
   NUMBER_GLOBAL_Z_ELEMENTS=0
   NUMBER_OF_DOMAINS=NumberOfComputationalNodes
   
@@ -528,8 +571,10 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
   !Set the DAE time step to by 10 us
   CALL CMISSSolverDAETimeStepSet(Solver,ODE_TIME_STEP,Err)
-  !CALL CMISSSolverDAESolverTypeSet(Solver,CMISSSolverDAEExternal,Err)
-  !CALL CMISSSolverExternalDAESolverParametersSet(Solver,1024,5,5,Err)
+  IF(CUDA) THEN
+    CALL CMISSSolverDAESolverTypeSet(Solver,CMISSSolverDAEExternal,Err)
+    CALL CMISSSolverExternalDAESolverParametersSet(Solver,THREADS_PER_BLOCK,NUMBER_OF_PARTITIONS,NUMBER_OF_STREAMS,Err)
+  ENDIF
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
@@ -538,8 +583,8 @@ PROGRAM MONODOMAINEXAMPLE
   !Get the second (Parabolic) solver
   CALL CMISSSolverTypeInitialise(Solver,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,2,Solver,Err)
-  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
-  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
+  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
@@ -593,14 +638,14 @@ PROGRAM MONODOMAINEXAMPLE
   !Solve the problem for the next 900 ms
   CALL CMISSProblemSolve(Problem,Err)
   
-  !EXPORT_FIELD=.TRUE.
-  !IF(EXPORT_FIELD) THEN
-  !  CALL CMISSFieldsTypeInitialise(Fields,Err)
-  !  CALL CMISSFieldsTypeCreate(Region,Fields,Err) CMISSSolverDAETimeStepSet
-  !  CALL CMISSFieldIONodesExport(Fields,"MonodomainExample","FORTRAN",Err)
-  !  CALL CMISSFieldIOElementsExport(Fields,"MonodomainExample","FORTRAN",Err)
-  !  CALL CMISSFieldsTypeFinalise(Fields,Err)
-  !ENDIF
+  EXPORT_FIELD=.TRUE.
+  IF(EXPORT_FIELD) THEN
+    CALL CMISSFieldsTypeInitialise(Fields,Err)
+    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
+    CALL CMISSFieldIONodesExport(Fields,FILENAME,"FORTRAN",Err)
+    CALL CMISSFieldIOElementsExport(Fields,FILENAME,"FORTRAN",Err)
+    CALL CMISSFieldsTypeFinalise(Fields,Err)
+  ENDIF
   
   !Finialise CMISS
   CALL CMISSFinalise(Err)
