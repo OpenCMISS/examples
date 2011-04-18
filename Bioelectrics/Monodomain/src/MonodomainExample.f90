@@ -501,7 +501,7 @@ PROGRAM MONODOMAINEXAMPLE
 
   !CALL CMISSCellMLFieldComponentGet(CellML,n98ModelIndex,CMISSCellMLParametersFieldType,"membrane/IStim",stimcomponent,Err)
   !Set the Stimulus at half the bottom nodes
-  DO node_idx=1,NUMBER_OF_ELEMENTS/2
+  DO node_idx=1,NUMBER_GLOBAL_Y_ELEMENTS/2
     IF(FirstNodeDomain==ComputationalNodeNumber) THEN
       !CALL CMISSFieldParameterSetUpdateNode(CellMLParametersField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,node_idx, &
       !  & stimcomponent,STIM_VALUE,Err)
@@ -575,16 +575,16 @@ PROGRAM MONODOMAINEXAMPLE
     CALL CMISSSolverDAESolverTypeSet(Solver,CMISSSolverDAEExternal,Err)
     CALL CMISSSolverExternalDAESolverParametersSet(Solver,THREADS_PER_BLOCK,NUMBER_OF_PARTITIONS,NUMBER_OF_STREAMS,Err)
   ENDIF
-  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
+  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
-  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
   !Get the second (Parabolic) solver
   CALL CMISSSolverTypeInitialise(Solver,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,2,Solver,Err)
-  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
-  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
+  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
@@ -625,7 +625,7 @@ PROGRAM MONODOMAINEXAMPLE
 
   !Now turn the stimulus off
   !Set the Stimulus at node 1
-  DO node_idx=1,NUMBER_OF_ELEMENTS/2
+  DO node_idx=1,NUMBER_GLOBAL_Y_ELEMENTS/2
     IF(FirstNodeDomain==ComputationalNodeNumber) THEN
       CALL CMISSFieldParameterSetUpdateNode(CellMLParametersField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,node_idx, &
         & 1,0.0_CMISSDP,Err) !stimcomponent,0.0_CMISSDP,Err)
