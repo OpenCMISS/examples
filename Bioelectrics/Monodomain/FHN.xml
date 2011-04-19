@@ -1,0 +1,355 @@
+<?xml version="1.0"?>
+<!--
+This CellML file was generated on 30/10/2007 at 14:23:50 using:
+
+COR (0.9.31.801)
+Copyright 2002-2007 Dr Alan Garny
+http://COR.physiol.ox.ac.uk/ - COR@physiol.ox.ac.uk
+
+CellML 1.0 was used to generate this cellular model
+http://www.CellML.org/
+--><model xmlns="http://www.cellml.org/cellml/1.0#" xmlns:cmeta="http://www.cellml.org/metadata/1.0#" xml:base="" cmeta:id="fitzhugh_arimoto_yoshizawa_1961" name="fitzhugh_arimoto_yoshizawa_1961">
+
+<documentation xmlns="http://cellml.org/tmp-documentation">
+<article>
+  <articleinfo>
+  <title>The FitzHugh-Nagumo Simplified Cardiac Myocyte Model</title>
+  <author>
+    <firstname>Catherine</firstname>
+          <surname>Lloyd</surname>
+    <affiliation>
+      <shortaffil>Bioengineering Institute, University of Auckland</shortaffil>
+    </affiliation>
+  </author>
+</articleinfo>
+  <section id="sec_status">
+    <title>Model Status</title>
+    <para>
+      This version of the model has been curated by Penny Noble using
+      COR and is also known to read in to JSim and PCEnv. There is also a PCEnv session file associated with this model.
+    </para>
+  </section>
+  <sect1 id="sec_structure">
+<title>Model Structure</title>
+
+<para>
+Often it is not necessary to model the ionic currents of a cell with the accuracy and complexity inherent in the biophysically based models.  With a view to investigating phenomena on a larger spatial and temporal scale, several ionic current models have been developed that do not seek to model subcellular processes but only to provide an action potential at a minimal computational cost. 
+</para>
+
+<para>
+The FitzHugh-Nagumo model (1961) is based on the cubic excitation model (see <ulink url="${HTML_EXMPL_HMN_SIMPLE}">The Polynomial Model, 1975</ulink>), but it also includes a recovery variable so both depolarisation and repolarisation can be modelled.  In 1994, Rogers and McCulloch modified the original model to generate a more realistic action potential.  The velocity of the upstroke was increased and the large hyperpolarisation at the end of the recovery phase was removed.  The model parameters were also updated.  In 1996, this form of the already modified FitzHugh_Nagumo model was further updated by Aliev and Panfilov.  They altered the equation which modelled the change of the recovery variable to provide a more realistic restitution period and to allow for reentrant phenomena.
+</para>
+
+<para>
+The complete original paper references are cited below:
+</para>
+
+<para>
+Impulses and physiological states in theoretical models of nerve membrane, FitzHugh, R.A., 1961, <ulink url="http://www.biophysj.org/">
+            <emphasis>Biophys. J.</emphasis>
+          </ulink>, 1, 445-466.  
+</para>
+
+<para>
+An active pulse transmission line simulating nerve axon, Nagumo, J., Animoto, S., Yoshizawa, S., 1962, <emphasis>Proc. Inst. Radio Engineers</emphasis>, 50, 2061-2070.
+</para> 
+
+<para>
+A collocation-Galerkin finite element model of cardiac action potential propagation, Rogers, J.M., McCulloch, A.D., 1994a, <ulink url="http://www.ieee.org/organizations/pubs/pub_preview/bme_toc.html">
+            <emphasis>IEEE Trans. Biomed. Eng.</emphasis>
+          </ulink>, 41, 743-757.  
+</para>
+
+<para>
+A simple two-variable model of cardiac excitation, Aliev, R.R. and Panfilov, A.V., 1996, <ulink url="http://www.theo-physik.uni-kiel.de/theo-physik/schuster/contents/csf95.html#7_2">
+            <emphasis>Chaos, Solitons and Fractals</emphasis>
+          </ulink>, 7, 293-301.  <ulink url="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&amp;db=PubMed&amp;list_uids=8796189&amp;dopt=Abstract">PubMed ID: 8796189</ulink>
+</para>
+
+<para>
+The raw CellML description of the simplified cardiac myocyte models can be downloaded in various formats as described in <xref linkend="sec_download_this_model"/>.  For an example of a more complete documentation for an electrophysiological model, see <ulink url="${HTML_EXMPL_HHSA_INTRO}">The Hodgkin-Huxley Squid Axon Model, 1952</ulink>. 
+</para>
+
+</sect1>
+</article>
+</documentation>
+
+   <units name="millisecond">
+      <unit prefix="milli" units="second"/>
+   </units>
+   <units name="per_millisecond">
+      <unit exponent="-1" prefix="milli" units="second"/>
+   </units>
+   <component name="Main">
+      <variable cmeta:id="Main_t" name="t" units="millisecond"/>
+      <variable cmeta:id="Main_v" initial_value="0" name="v" units="dimensionless"/>
+      <variable cmeta:id="Main_w" initial_value="0" name="w" units="dimensionless"/>
+      <variable initial_value="-0.08" name="alpha" units="dimensionless"/>
+      <variable initial_value="3" name="gamma" units="dimensionless"/>
+      <variable initial_value="0.005" name="epsilon" units="dimensionless"/>
+      <variable name="I" initial_value="0.00" units="dimensionless"/>
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+         <apply>
+            <eq/>
+            <apply>
+               <diff/>
+               <bvar>
+                  <ci>t</ci>
+               </bvar>
+               <ci>v</ci>
+            </apply>
+            <apply>
+               <times/>
+               <cn xmlns:cellml="http://www.cellml.org/cellml/1.0#" cellml:units="per_millisecond">1</cn>
+               <apply>
+                  <plus/>
+                  <apply>
+                     <minus/>
+                     <apply>
+                        <times/>
+                        <ci>v</ci>
+                        <apply>
+                           <minus/>
+                           <ci>v</ci>
+                           <ci>alpha</ci>
+                        </apply>
+                        <apply>
+                           <minus/>
+                           <cn xmlns:cellml="http://www.cellml.org/cellml/1.0#" cellml:units="dimensionless">1</cn>
+                           <ci>v</ci>
+                        </apply>
+                     </apply>
+                     <ci>w</ci>
+                  </apply>
+                  <ci>I</ci>
+               </apply>
+            </apply>
+         </apply>
+         <apply>
+            <eq/>
+            <apply>
+               <diff/>
+               <bvar>
+                  <ci>t</ci>
+               </bvar>
+               <ci>w</ci>
+            </apply>
+            <apply>
+               <times/>
+               <cn xmlns:cellml="http://www.cellml.org/cellml/1.0#" cellml:units="per_millisecond">1</cn>
+               <ci>epsilon</ci>
+               <apply>
+                  <minus/>
+                  <ci>v</ci>
+                  <apply>
+                     <times/>
+                     <ci>gamma</ci>
+                     <ci>w</ci>
+                  </apply>
+               </apply>
+            </apply>
+         </apply>
+      </math>
+   </component>
+
+
+
+
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Seq rdf:about="rdf:#07b512cc-4f1b-4d2d-b799-eb0881cf02cb">
+    <rdf:li rdf:resource="rdf:#f626c559-a8f6-4022-9c51-e2899523a518"/>
+    <rdf:li rdf:resource="rdf:#428cefae-c0aa-46fe-a07a-292ce508b939"/>
+    <rdf:li rdf:resource="rdf:#1f95f45f-e68d-4753-8a8a-cd63b33f06b5"/>
+  </rdf:Seq>
+  <rdf:Seq rdf:about="rdf:#70020a66-87bd-47e6-bf99-4b022ff93c86">
+    <rdf:li rdf:resource="rdf:#216d5f1c-4117-45ba-8e24-1e906366d3a1"/>
+  </rdf:Seq>
+  <rdf:Description rdf:about="rdf:#8f9963e5-31ce-4a22-a33b-aee2b7b44dd7">
+    <vCard:Given xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">J</vCard:Given>
+    <vCard:Family xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">Nagumo</vCard:Family>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#544c4afa-8650-4519-a391-e323a5708d47">
+    <vCard:N xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" rdf:resource="rdf:#a1a24936-0b6a-480a-b261-b4f770ed2c59"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#bbc278cb-f81f-4953-a07e-500ea417997e">
+    <dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/" rdf:resource="rdf:#cc68d714-d5d4-4d64-b7e3-b73bf6f1b347"/>
+    <rdf:value/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#5b427783-ca6b-4827-8ec3-b9085c4132e5">
+    <bqs:Pubmed_id xmlns:bqs="http://www.cellml.org/bqs/1.0#"/>
+    <bqs:JournalArticle xmlns:bqs="http://www.cellml.org/bqs/1.0#" rdf:resource="rdf:#af68fa55-f396-4553-86f6-30362f2a13a2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#9d7d1d95-2d16-4654-b58d-b92e918379a5">
+    <vCard:Given xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">S</vCard:Given>
+    <vCard:Family xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">Yoshizawa</vCard:Family>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#6bdfbb74-d93f-429d-a63c-9b60d164c23b">
+    <dcterms:W3CDTF xmlns:dcterms="http://purl.org/dc/terms/">1962-10-01 00:00</dcterms:W3CDTF>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#294caa36-7734-4866-9792-2e472719c4f2">
+    <vCard:ORG xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" rdf:resource="rdf:#c86513bf-6838-4cf9-880e-994b59bb170b"/>
+    <vCard:EMAIL xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" rdf:resource="rdf:#9907d4cc-7a91-490a-8472-f16fb0b2807e"/>
+    <vCard:N xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" rdf:resource="rdf:#42b1e24e-2190-4c2a-9a2a-4d0e8583bd7f"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#a1a24936-0b6a-480a-b261-b4f770ed2c59">
+    <vCard:Given xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">Peter</vCard:Given>
+    <vCard:Family xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">Villiger</vCard:Family>
+    <vCard:Other xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">J</vCard:Other>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#6c0b77d7-0974-4b1e-8b6c-e2ce3825cda4">
+    <dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/" rdf:resource="rdf:#07b512cc-4f1b-4d2d-b799-eb0881cf02cb"/>
+    <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">An active pulse transmission line simulating nerve axon</dc:title>
+    <bqs:volume xmlns:bqs="http://www.cellml.org/bqs/1.0#">50</bqs:volume>
+    <bqs:first_page xmlns:bqs="http://www.cellml.org/bqs/1.0#">2061</bqs:first_page>
+    <bqs:Journal xmlns:bqs="http://www.cellml.org/bqs/1.0#" rdf:resource="rdf:#563f87c9-44b7-40e5-8baf-465ccf91ea8e"/>
+    <dcterms:issued xmlns:dcterms="http://purl.org/dc/terms/" rdf:resource="rdf:#6bdfbb74-d93f-429d-a63c-9b60d164c23b"/>
+    <bqs:last_page xmlns:bqs="http://www.cellml.org/bqs/1.0#">2070</bqs:last_page>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#a6262423-2533-4e2d-8016-abe657b87b6b">
+    <vCard:Given xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">J</vCard:Given>
+    <vCard:Family xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">Nagumo</vCard:Family>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#fc6bde02-d31b-4f7a-9aff-3e797f805248">
+    <vCard:Given xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">Penny</vCard:Given>
+    <vCard:Family xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">Noble</vCard:Family>
+    <vCard:Other xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">J</vCard:Other>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#3d6b0a64-3ee8-4e8b-b25f-6b0f010ed34f">
+    <rdf:type rdf:resource="http://www.cellml.org/bqs/1.0#Person"/>
+    <vCard:N xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" rdf:resource="rdf:#a6262423-2533-4e2d-8016-abe657b87b6b"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#cc68d714-d5d4-4d64-b7e3-b73bf6f1b347">
+    <vCard:FN xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#f626c559-a8f6-4022-9c51-e2899523a518">
+    <rdf:type rdf:resource="http://www.cellml.org/bqs/1.0#Person"/>
+    <vCard:N xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" rdf:resource="rdf:#8f9963e5-31ce-4a22-a33b-aee2b7b44dd7"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#fbbb6212-5807-4d91-98cb-25798450e3a9">
+    <dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/" rdf:resource="rdf:#2ae7a1e5-5826-4a8a-ab6a-8e0bc7a2e80e"/>
+    <rdf:value/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#42b1e24e-2190-4c2a-9a2a-4d0e8583bd7f">
+    <vCard:Given xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">Penny</vCard:Given>
+    <vCard:Family xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">Noble</vCard:Family>
+    <vCard:Other xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#$7oZPu1">
+    <ns7:endingValue xmlns:ns7="http://www.cellml.org/metadata/simulation/1.0#">1000</ns7:endingValue>
+    <ns7:nonstandard-pointDensity xmlns:ns7="http://www.cellml.org/metadata/simulation/1.0#">10000</ns7:nonstandard-pointDensity>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#$6oZPu1">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="rdf:#$7oZPu1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="">
+    <dc:publisher xmlns:dc="http://purl.org/dc/elements/1.1/">Department of Physiology, Anatomy &amp; Genetics, University of Oxford</dc:publisher>
+    <cmeta:comment rdf:resource="rdf:#bbc278cb-f81f-4953-a07e-500ea417997e"/>
+    <dcterms:created xmlns:dcterms="http://purl.org/dc/terms/" rdf:resource="rdf:#d1a57943-336a-4369-82b0-ae76c4a0d5d9"/>
+    <dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/" rdf:resource="rdf:#294caa36-7734-4866-9792-2e472719c4f2"/>
+    <cmeta:modification rdf:resource="rdf:#6b7bfb3b-0fdc-49c4-8a79-9e18b43f2030"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#185ee9d6-4e48-4011-8127-cf3395d0d958">
+    <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">Biophysical Journal</dc:title>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#dc215be0-9869-4291-901b-4ca9f1b5e087">
+    <vCard:Given xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">S</vCard:Given>
+    <vCard:Family xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">Arimoto</vCard:Family>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#998280bd-f679-4c1c-a654-a68cf75762fe">
+    <bqs:Pubmed_id xmlns:bqs="http://www.cellml.org/bqs/1.0#"/>
+    <bqs:JournalArticle xmlns:bqs="http://www.cellml.org/bqs/1.0#" rdf:resource="rdf:#6c0b77d7-0974-4b1e-8b6c-e2ce3825cda4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#af68fa55-f396-4553-86f6-30362f2a13a2">
+    <dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/" rdf:resource="rdf:#70020a66-87bd-47e6-bf99-4b022ff93c86"/>
+    <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">Impulses and Physiological States in Theoretical Models of Nerve Membrane</dc:title>
+    <bqs:volume xmlns:bqs="http://www.cellml.org/bqs/1.0#">1</bqs:volume>
+    <bqs:first_page xmlns:bqs="http://www.cellml.org/bqs/1.0#">445</bqs:first_page>
+    <bqs:Journal xmlns:bqs="http://www.cellml.org/bqs/1.0#" rdf:resource="rdf:#185ee9d6-4e48-4011-8127-cf3395d0d958"/>
+    <dcterms:issued xmlns:dcterms="http://purl.org/dc/terms/" rdf:resource="rdf:#42138188-3d0d-4d8d-8b45-41039d298ff4"/>
+    <bqs:last_page xmlns:bqs="http://www.cellml.org/bqs/1.0#">466</bqs:last_page>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#d1a57943-336a-4369-82b0-ae76c4a0d5d9">
+    <dcterms:W3CDTF xmlns:dcterms="http://purl.org/dc/terms/">2005-06-14T00:00:00+00:00</dcterms:W3CDTF>
+  </rdf:Description>
+  <rdf:Description rdf:about="#fitzhugh_arimoto_yoshizawa_1961">
+    <ns7:simulation xmlns:ns7="http://www.cellml.org/metadata/simulation/1.0#" rdf:resource="rdf:#$5oZPu1"/>
+    <bqs:reference xmlns:bqs="http://www.cellml.org/bqs/1.0#" rdf:resource="rdf:#5b427783-ca6b-4827-8ec3-b9085c4132e5"/>
+    <bqs:reference xmlns:bqs="http://www.cellml.org/bqs/1.0#" rdf:resource="rdf:#998280bd-f679-4c1c-a654-a68cf75762fe"/>
+<bqs:reference xmlns:bqs="http://www.cellml.org/bqs/1.0#" rdf:parseType="Resource">
+  <dc:subject xmlns:dc="http://purl.org/dc/elements/1.1/" rdf:parseType="Resource">
+    <bqs:subject_type>keyword</bqs:subject_type>
+    <rdf:value>
+      <rdf:Bag>
+        <rdf:li>simplified model</rdf:li>
+        <rdf:li>neuron</rdf:li>
+        <rdf:li>electrophysiology</rdf:li>
+        <rdf:li>cardiac</rdf:li>
+        <rdf:li>Myocyte</rdf:li>
+      </rdf:Bag>
+    </rdf:value>
+  </dc:subject>
+</bqs:reference>
+    <cmeta:comment rdf:resource="rdf:#fbbb6212-5807-4d91-98cb-25798450e3a9"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#6043ea80-2628-41ba-8df8-f0cbe34d22a5">
+    <dcterms:modified xmlns:dcterms="http://purl.org/dc/terms/" rdf:resource="rdf:#ced487df-80a8-413f-bb1b-458659b1640b"/>
+    <rdf:value>added metadata</rdf:value>
+    <cmeta:modifier rdf:resource="rdf:#544c4afa-8650-4519-a391-e323a5708d47"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#6b7bfb3b-0fdc-49c4-8a79-9e18b43f2030">
+    <dcterms:modified xmlns:dcterms="http://purl.org/dc/terms/" rdf:resource="rdf:#0313b367-644b-4f37-9b35-aa8fff838ccc"/>
+    <rdf:value>Units checked, curated.</rdf:value>
+    <cmeta:modifier rdf:resource="rdf:#e4e1be29-a030-49d4-9c49-f5fae0ec70d8"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#216d5f1c-4117-45ba-8e24-1e906366d3a1">
+    <rdf:type rdf:resource="http://www.cellml.org/bqs/1.0#Person"/>
+    <vCard:N xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" rdf:resource="rdf:#0bb659e7-c01b-4384-98fe-e47f5e718fd8"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#6abb2ddf-62fe-4a10-b568-a12ea2e2ca85">
+    <dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/" rdf:resource="rdf:#8cca07d6-a776-44cd-a7a1-5c31a31bae0b"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#0313b367-644b-4f37-9b35-aa8fff838ccc">
+    <dcterms:W3CDTF xmlns:dcterms="http://purl.org/dc/terms/">2007-11-29T12:16:16+13:00</dcterms:W3CDTF>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#$5oZPu1">
+    <ns7:boundIntervals xmlns:ns7="http://www.cellml.org/metadata/simulation/1.0#" rdf:resource="rdf:#$6oZPu1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#c86513bf-6838-4cf9-880e-994b59bb170b">
+    <vCard:Orgname xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">Oxford University</vCard:Orgname>
+    <vCard:Orgunit xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">The Bioengineering Institute</vCard:Orgunit>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#563f87c9-44b7-40e5-8baf-465ccf91ea8e">
+    <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">Biophysical Journal</dc:title>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#e4e1be29-a030-49d4-9c49-f5fae0ec70d8">
+    <vCard:N xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" rdf:resource="rdf:#fc6bde02-d31b-4f7a-9aff-3e797f805248"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#0bb659e7-c01b-4384-98fe-e47f5e718fd8">
+    <vCard:Given xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">Richard</vCard:Given>
+    <vCard:Family xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">Fitzhugh</vCard:Family>
+    <vCard:Other xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">A</vCard:Other>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#428cefae-c0aa-46fe-a07a-292ce508b939">
+    <rdf:type rdf:resource="http://www.cellml.org/bqs/1.0#Person"/>
+    <vCard:N xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" rdf:resource="rdf:#dc215be0-9869-4291-901b-4ca9f1b5e087"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#2ae7a1e5-5826-4a8a-ab6a-8e0bc7a2e80e">
+    <vCard:FN xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#9907d4cc-7a91-490a-8472-f16fb0b2807e">
+    <rdf:type rdf:resource="http://imc.org/vCard/3.0#internet"/>
+    <rdf:value>penny.noble@physiol.ox.ac.uk</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#42138188-3d0d-4d8d-8b45-41039d298ff4">
+    <dcterms:W3CDTF xmlns:dcterms="http://purl.org/dc/terms/">1961-01-01</dcterms:W3CDTF>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#1f95f45f-e68d-4753-8a8a-cd63b33f06b5">
+    <rdf:type rdf:resource="http://www.cellml.org/bqs/1.0#Person"/>
+    <vCard:N xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" rdf:resource="rdf:#9d7d1d95-2d16-4654-b58d-b92e918379a5"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#ced487df-80a8-413f-bb1b-458659b1640b">
+    <dcterms:W3CDTF xmlns:dcterms="http://purl.org/dc/terms/">2006-03-31</dcterms:W3CDTF>
+  </rdf:Description>
+</rdf:RDF>
+</model>
