@@ -96,7 +96,7 @@ PROGRAM MONODOMAINEXAMPLE
   
   INTEGER(CMISSIntg) :: MPI_IERROR
 
-  LOGICAL :: EXPORT_FIELD
+  LOGICAL :: EXPORT_FIELD = .FALSE.
   LOGICAL :: CUDA = .FALSE.
 
   INTEGER(CMISSIntg) :: N,CELL_TYPE
@@ -116,7 +116,8 @@ PROGRAM MONODOMAINEXAMPLE
   INTEGER(CMISSIntg) :: NUMBER_OF_PARTITIONS=1
   INTEGER(CMISSIntg) :: NUMBER_OF_STREAMS=1
 
-  REAL(CMISSDP) :: X,Y,DISTANCE,gK1_VALUE,gNa_VALUE
+  REAL(CMISSDP) :: X,Y,DISTANCE,gK1_VALUE,gNa_VALUE,TIME,TEMP
+  REAL :: TIMEARRAY(2)
   
   REAL(CMISSDP), PARAMETER :: STIM_VALUE = 100.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: STIM_STOP = 0.10_CMISSDP
@@ -171,7 +172,7 @@ PROGRAM MONODOMAINEXAMPLE
   IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
 #endif
 
-  IF(IARGC()==5) THEN
+  IF(IARGC()>=5) THEN
     CALL GETARG(1, ARG1)
     IF(ARG1 .EQ. 'CUDAON') THEN
       CUDA = .TRUE.
@@ -192,14 +193,21 @@ PROGRAM MONODOMAINEXAMPLE
       WRITE (FILENAME,'(A,A,A,A)') 'Results/MonodomainExample-', TRIM(ARG1), '-', TRIM(ARG2)
     ENDIF
     
-    WRITE (*,'(A,X,A,X,A,X,A,X,A)') TRIM(ARG1), TRIM(ARG2), &
-      & TRIM(ARG3), TRIM(ARG4), TRIM(ARG5)
+    !WRITE (*,'(A,X,A,X,A,X,A,X,A)') TRIM(ARG1), TRIM(ARG2), &
+    !  & TRIM(ARG3), TRIM(ARG4), TRIM(ARG5)
 
     READ (ARG2, '(i10)') NUMBER_OF_ELEMENTS
     READ (ARG3, '(i10)') THREADS_PER_BLOCK
     READ (ARG4, '(i10)') NUMBER_OF_PARTITIONS
     READ (ARG5, '(i10)') NUMBER_OF_STREAMS
-  ELSE  
+
+    IF(IARGC()==6) THEN
+      CALL GETARG(6, ARG1)
+      IF(ARG1 .EQ. 'OUTPUT') THEN
+        EXPORT_FIELD=.TRUE.
+      ENDIF
+    ENDIF
+  ELSE
     WRITE (*,*) 'Wrong Number of CL Arguments, simulation run without CUDA by default'
   ENDIF
 
@@ -620,9 +628,14 @@ PROGRAM MONODOMAINEXAMPLE
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
 
+  WRITE (*,'(A)') 'Stimulus ON'
+
+  TEMP = DTIME(TIMEARRAY)
   !Solve the problem for the first STIM_STOP
   CALL CMISSProblemSolve(Problem,Err)
+  TIME = DTIME(TIMEARRAY)
 
+  WRITE (*,'(A)') 'Stimulus OFF'
   !Now turn the stimulus off
   !Set the Stimulus at node 1
   DO node_idx=1,NUMBER_GLOBAL_Y_ELEMENTS/2
@@ -635,10 +648,18 @@ PROGRAM MONODOMAINEXAMPLE
   !Set the time loop from STIM_STOP to TIME_STOP
   CALL CMISSControlLoopTimesSet(ControlLoop,STIM_STOP,TIME_STOP,PDE_TIME_STEP,Err)
   
+  TEMP = DTIME(TIMEARRAY)
   !Solve the problem for the next 900 ms
   CALL CMISSProblemSolve(Problem,Err)
-  
-  EXPORT_FIELD=.TRUE.
+  TIME = TIME + DTIME(TIMEARRAY)
+
+  WRITE (*,'(A,F10.3)') 'Total run time = ', TIME  
+
+
+  OPEN (7, FILE = TRIM(FILENAME) // '.txt', ACCESS = 'APPEND')
+  WRITE (7,'(A,F10.3)') 'Total run time = ', TIME  
+  CLOSE (7)
+
   IF(EXPORT_FIELD) THEN
     CALL CMISSFieldsTypeInitialise(Fields,Err)
     CALL CMISSFieldsTypeCreate(Region,Fields,Err)
@@ -650,7 +671,7 @@ PROGRAM MONODOMAINEXAMPLE
   !Finialise CMISS
   CALL CMISSFinalise(Err)
 
-  WRITE(*,'(A)') "Program successfully completed."
+  !WRITE(*,'(A)') "Program successfully completed."
   
   STOP
   
