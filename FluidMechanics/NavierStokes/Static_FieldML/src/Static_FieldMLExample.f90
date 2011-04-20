@@ -104,7 +104,7 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
 
   CHARACTER(KIND=C_CHAR), PARAMETER :: NUL = C_NULL_CHAR
 
-  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: inputFilename = "./input/HEX-M2-V2-P1_FE.xml"
+  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: inputFilename = "../../TOOLS/NavierStokesMeshes/HEX-M2-V2-P1_FE.xml"
 
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputDirectory = "output"
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputFilename = outputDirectory//"/HEX-M2-V2-P1_FE_out.xml"
