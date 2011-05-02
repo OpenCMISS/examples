@@ -144,7 +144,7 @@
      #xi1=1, #xi2=1, #xi3=1
    3.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, grid based.
      #xi1=1, #xi2=1, #xi3=1
- 5) Coordinate, field,  rectangular cartesian, #Components=1
+ 5) Source, field,  rectangular cartesian, #Components=1
    1.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
      #Nodes= 8
      1.  #Values=1
