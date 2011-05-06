@@ -65,7 +65,7 @@ endif
 
 EXAMPLE_PATH = FiniteElasticity/
 
-EXAMPLE_NAME = MooneyRivlinInCellML
+EXAMPLE_NAME = ConvergenceStudy
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 
