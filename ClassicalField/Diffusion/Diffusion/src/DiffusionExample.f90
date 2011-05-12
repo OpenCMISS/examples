@@ -40,9 +40,9 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/Diffusion/LinearConvergenceTest/src/LinearConvergenceTestExample.f90
+!> \example ClassicalField/Diffusion/Diffusion/src/DiffusionExample.f90
 !! Example program to solve a diffusion equation using openCMISS calls.
-!! \htmlinclude ClassicalField/Diffusion/LinearConvergenceTest/history.html
+!! \htmlinclude ClassicalField/Diffusion/Diffusion/history.html
 !<
 
 !> Main program
@@ -58,6 +58,10 @@ PROGRAM DIFFUSIONEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
 
   !Test program parameters
 
@@ -78,7 +82,7 @@ PROGRAM DIFFUSIONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=11
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopNode=0
   INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=12
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=13
+
   !Program types
   
   !Program variables
@@ -99,7 +103,7 @@ PROGRAM DIFFUSIONEXAMPLE
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField,AnalyticField,EquationsSetField
+  TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField,AnalyticField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
   TYPE(CMISSMeshType) :: Mesh
@@ -142,8 +146,8 @@ PROGRAM DIFFUSIONEXAMPLE
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
-  NUMBER_GLOBAL_X_ELEMENTS=40
-  NUMBER_GLOBAL_Y_ELEMENTS=40
+  NUMBER_GLOBAL_X_ELEMENTS=10
+  NUMBER_GLOBAL_Y_ELEMENTS=10
   NUMBER_GLOBAL_Z_ELEMENTS=0
   NUMBER_OF_DOMAINS=NumberOfComputationalNodes
 
@@ -183,6 +187,8 @@ PROGRAM DIFFUSIONEXAMPLE
     !Set the basis to be a bilinear Lagrange basis
     !CALL CMISSBasisTypeSet(Basis,CMISSBasisLagrangeHermiteTPType,Err)
     CALL CMISSBasisNumberOfXiSet(Basis,2,Err)
+!    CALL CMISSBasisInterpolationXiSet(Basis,(/3,3/),Err)
+!    CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,(/4,4/),Err) 
   ELSE
     !Set the basis to be a trilinear Lagrange basis
     CALL CMISSBasisNumberOfXiSet(Basis,3,Err)
@@ -238,14 +244,13 @@ PROGRAM DIFFUSIONEXAMPLE
   CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
   
   !Create the equations_set
-  CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetNoSourceDiffusionSubtype,&
-    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSet,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetNoSourceDiffusionSubtype,EquationsSetFieldUserNumber, &
+    & EquationsSetField,EquationsSet,Err)
   !Set the equations set to be a standard Laplace problem
-!   CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
-!     & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetNoSourceDiffusionSubtype,Err)
+  
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
@@ -341,11 +346,9 @@ PROGRAM DIFFUSIONEXAMPLE
   CALL CMISSProblemCreateFinish(Problem,Err)
 
   !Create the problem control
-  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
-
-  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   !Get the control loop
+  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
   !Set the times
   CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,1.001_CMISSDP,0.001_CMISSDP,Err)
@@ -395,15 +398,15 @@ PROGRAM DIFFUSIONEXAMPLE
   CALL CMISSProblemSolve(Problem,Err)
 
   !Output Analytic analysis
-  Call CMISSAnalyticAnalysisOutput(DependentField,"DiffusionAnalytics_x40_y40_L_T1",Err)
+  Call CMISSAnalyticAnalysisOutput(DependentField,"DiffusionAnalytics_x4_y4_q_T1",Err)
 
 
   EXPORT_FIELD=.TRUE.
   IF(EXPORT_FIELD) THEN
     CALL CMISSFieldsTypeInitialise(Fields,Err)
     CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"Diffusion_x40_y40_L_T1","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"Diffusion_x40_y40_L_T1","FORTRAN",Err)
+    CALL CMISSFieldIONodesExport(Fields,"Diffusion_x4_y4_q_T1","FORTRAN",Err)
+    CALL CMISSFieldIOElementsExport(Fields,"Diffusion_x4_y4_q_T1","FORTRAN",Err)
     CALL CMISSFieldsTypeFinalise(Fields,Err)
 
   ENDIF

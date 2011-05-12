@@ -1,5 +1,5 @@
 !> \file
-!> $Id: DiffusionExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve a diffusion equation using openCMISS calls.
 !>
@@ -40,9 +40,9 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/Diffusion/src/DiffusionExample.f90
+!> \example ClassicalField/Diffusion/CubicConvergenceTest/src/CubicConvergenceTestExample.f90
 !! Example program to solve a diffusion equation using openCMISS calls.
-!! \htmlinclude ClassicalField/Diffusion/history.html
+!! \htmlinclude ClassicalField/Diffusion/CubicConvergenceTest/history.html
 !<
 
 !> Main program
@@ -58,6 +58,10 @@ PROGRAM DIFFUSIONEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
 
   !Test program parameters
 
@@ -241,10 +245,12 @@ PROGRAM DIFFUSIONEXAMPLE
   
   !Create the equations_set
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,EquationsSet,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetNoSourceDiffusionSubtype,EquationsSetFieldUserNumber, &
+    & EquationsSetField,EquationsSet,Err)
   !Set the equations set to be a standard Laplace problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetNoSourceDiffusionSubtype,Err)
+  
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
@@ -340,7 +346,9 @@ PROGRAM DIFFUSIONEXAMPLE
   CALL CMISSProblemCreateFinish(Problem,Err)
 
   !Create the problem control
+  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
+  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   !Get the control loop
   CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
   !Set the times

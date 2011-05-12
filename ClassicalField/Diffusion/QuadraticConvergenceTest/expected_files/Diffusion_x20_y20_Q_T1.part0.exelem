@@ -1,10 +1,10 @@
- Region: /Region 2           
+ Group name: Region 2           
  Shape.  Dimension=2
  #Scale factor sets= 1
  q.Lagrange*q.Lagrange, #Scale factors=9
  #Nodes=           9
  #Fields=4
- 1) coordinates,  coordinate, rectangular cartesian, #Components=2
+ 1) Coordinate, coordinate, rectangular cartesian, #Components=2
    x.   q.Lagrange*q.Lagrange, no modify, standard node based.
      #Nodes= 9
      1.  #Values=1
@@ -63,7 +63,7 @@
      9.  #Values=1
       Value indices:     1
       Scale factor indices:    9
- 2) general,  field,  rectangular cartesian, #Components=1
+ 2) U, field,  rectangular cartesian, #Components=1
    1.   q.Lagrange*q.Lagrange, no modify, standard node based.
      #Nodes= 9
      1.  #Values=1
@@ -93,7 +93,7 @@
      9.  #Values=1
       Value indices:     1
       Scale factor indices:    9
- 3) norm_dev_variable,  field,  rectangular cartesian, #Components=1
+ 3) del U/del n, field,  rectangular cartesian, #Components=1
    1.   q.Lagrange*q.Lagrange, no modify, standard node based.
      #Nodes= 9
      1.  #Values=1
@@ -123,7 +123,7 @@
      9.  #Values=1
       Value indices:     1
       Scale factor indices:    9
- 4) material,  field,  rectangular cartesian, #Components=2
+ 4) Material, field,  rectangular cartesian, #Components=2
    1.   l.Lagrange*l.Lagrange, no modify, grid based.
      #xi1=1, #xi2=1
    2.   l.Lagrange*l.Lagrange, no modify, grid based.

@@ -5,7 +5,7 @@
 # $Id$
 #
 #----------------------------------------------------------------------------------------------------------------------------------
-# Makefile for compiling openCMISS examples
+# Makefile for compiling OpenCMISS examples
 #
 # Original by Chris Bradley adapted from the CMISS Makefile by Karl Tomlinson 
 # Changes:
@@ -26,7 +26,7 @@
 # License for the specific language governing rights and limitations
 # under the License.
 #
-# The Original Code is openCMISS
+# The Original Code is OpenCMISS
 #
 # The Initial Developer of the Original Code is University of Auckland,
 # Auckland, New Zealand and University of Oxford, Oxford, United
@@ -55,8 +55,8 @@ MAKEFLAGS = --no-builtin-rules --warn-undefined-variables
 #----------------------------------------------------------------------------------------------------------------------------------
 
 ifndef OPENCMISS_ROOT
-  OPENCMISS_ROOT := ../../../..
-  GLOBAL_ROOT := $(CURDIR)/../../../..
+  OPENCMISS_ROOT := ../../..
+  GLOBAL_ROOT := $(CURDIR)/../../..
 else
   GLOBAL_ROOT := ${OPENCMISS_ROOT}/cm
 endif
@@ -65,7 +65,7 @@ endif
 
 EXAMPLE_PATH=ClassicalField/Diffusion/
 
-EXAMPLE_NAME = QuadraticConvergenceTest
+EXAMPLE_NAME = DiffusionExponentialSource
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 

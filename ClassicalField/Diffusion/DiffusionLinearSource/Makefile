@@ -2,7 +2,7 @@
 #
 # For use with GNU make.
 #
-# $Id: Makefile 27 2007-07-24 16:52:51Z cpb $
+# $Id$
 #
 #----------------------------------------------------------------------------------------------------------------------------------
 # Makefile for compiling openCMISS examples
@@ -63,9 +63,9 @@ endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_PATH=ClassicalField/
+EXAMPLE_PATH=ClassicalField/Diffusion/
 
-EXAMPLE_NAME = Diffusion
+EXAMPLE_NAME = DiffusionLinearSource
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

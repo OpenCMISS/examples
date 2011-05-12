@@ -1,7 +1,7 @@
 !> \file
 !> $Id$
 !> \author Chris Bradley
-!> \brief This is an example program to solve a diffusion equation using openCMISS calls.
+!> \brief This is an example program to solve a diffusion equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -17,7 +17,7 @@
 !> License for the specific language governing rights and limitations
 !> under the License.
 !>
-!> The Original Code is openCMISS
+!> The Original Code is OpenCMISS
 !>
 !> The Initial Developer of the Original Code is University of Auckland,
 !> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -40,13 +40,15 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/Diffusion/LinearConvergenceTest/src/LinearConvergenceTestExample.f90
+!> \example ClassicalField/Diffusion/DiffusionExponentialSource/src/DiffusionExponentialSourceExample.f90
 !! Example program to solve a diffusion equation using openCMISS calls.
-!! \htmlinclude ClassicalField/Diffusion/LinearConvergenceTest/history.html
+!!
+!! \htmlinclude ClassicalField/Diffusion/DiffusionExponentialSource/history.html
 !<
 
 !> Main program
-PROGRAM DIFFUSIONEXAMPLE
+PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
+
 
 
   USE OPENCMISS
@@ -59,11 +61,14 @@ PROGRAM DIFFUSIONEXAMPLE
 
   IMPLICIT NONE
 
+
+
   !Test program parameters
 
-  REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: WIDTH=1.0_CMISSDP
+  INTEGER(CMISSIntg), PARAMETER :: NUMBER_GLOBAL_X_ELEMENTS=20
+
   REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: END_TIME=0.1001_CMISSDP
   
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
@@ -75,31 +80,24 @@ PROGRAM DIFFUSIONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=8
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=9
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=10
-  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=12
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopNode=0
-  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=12
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=14
   !Program types
   
   !Program variables
-
-  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
-  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
   
-  INTEGER(CMISSIntg) :: MPI_IERROR
-
-  !INTEGER(INTG) :: first_global_dof,first_local_dof,first_local_rank,last_global_dof,last_local_dof,last_local_rank,rank_idx
-  !INTEGER(INTG) :: EQUATIONS_SET_INDEX
-  !TYPE(DOMAIN_MAPPING_TYPE), POINTER :: DEPENDENT_DOF_MAPPING
-  
-    !CMISS variables
+  !CMISS variables
 
   TYPE(CMISSBasisType) :: Basis
+  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
   TYPE(CMISSCoordinateSystemType) :: CoordinateSystem,WorldCoordinateSystem
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField,AnalyticField,EquationsSetField
+  TYPE(CMISSFieldType) :: GeometricField,DependentField,EquationsSetField,MaterialsField,SourceField,AnalyticField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
   TYPE(CMISSMeshType) :: Mesh
@@ -109,8 +107,6 @@ PROGRAM DIFFUSIONEXAMPLE
   TYPE(CMISSSolverType) :: Solver, LinearSolver
   TYPE(CMISSSolverEquationsType) :: SolverEquations
 
-  LOGICAL :: EXPORT_FIELD
-
 #ifdef WIN32
   !Quickwin type
   LOGICAL :: QUICKWIN_STATUS=.FALSE.
@@ -119,10 +115,9 @@ PROGRAM DIFFUSIONEXAMPLE
   
   !Generic CMISS variables
   
-  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
   INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
   INTEGER(CMISSIntg) :: Err
-
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -138,40 +133,18 @@ PROGRAM DIFFUSIONEXAMPLE
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  !Get the computational nodes information
-  CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
-  CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
-
-  NUMBER_GLOBAL_X_ELEMENTS=40
-  NUMBER_GLOBAL_Y_ELEMENTS=40
-  NUMBER_GLOBAL_Z_ELEMENTS=0
-  NUMBER_OF_DOMAINS=NumberOfComputationalNodes
-
-  !Set all diganostic levels on for testing
-
-  CALL MPI_BCAST(NUMBER_GLOBAL_X_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_GLOBAL_Y_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_GLOBAL_Z_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_OF_DOMAINS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-
   !Start the creation of a new RC coordinate system
   CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
   CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
-  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    !Set the coordinate system to be 2D
-    CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,2,Err)
-  ELSE
-    !Set the coordinate system to be 3D
-    CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,3,Err)
-  ENDIF
+  !Set the coordinate system to be 1D
+  CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,1,Err)
   !Finish the creation of the coordinate system
   CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
   
-
   !Start the creation of the region
   CALL CMISSRegionTypeInitialise(Region,Err)
   CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegion,Region,Err)
-  !Set the regions coordinate system to the 2D RC coordinate system that we have created
+  !Set the regions coordinate system to the 1D RC coordinate system that we have created
   CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
   !Finish the creation of the region
   CALL CMISSRegionCreateFinish(Region,Err)
@@ -179,17 +152,11 @@ PROGRAM DIFFUSIONEXAMPLE
   !Start the creation of a basis (default is trilinear lagrange)
   CALL CMISSBasisTypeInitialise(Basis,Err)
   CALL CMISSBasisCreateStart(BasisUserNumber,Basis,Err)
-  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    !Set the basis to be a bilinear Lagrange basis
-    !CALL CMISSBasisTypeSet(Basis,CMISSBasisLagrangeHermiteTPType,Err)
-    CALL CMISSBasisNumberOfXiSet(Basis,2,Err)
-  ELSE
-    !Set the basis to be a trilinear Lagrange basis
-    CALL CMISSBasisNumberOfXiSet(Basis,3,Err)
-  ENDIF
+  !Set the basis to be a linear Lagrange basis
+  CALL CMISSBasisNumberOfXiSet(Basis,1,Err)
   !Finish the creation of the basis
-  CALL CMISSBasisCreateFinish(Basis,Err)
-
+  CALL CMISSBasisCreateFinish(BASIS,Err)
+  
   !Start the creation of a generated mesh in the region
   CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
   CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
@@ -198,14 +165,8 @@ PROGRAM DIFFUSIONEXAMPLE
   !Set the default basis
   CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,Basis,Err)   
   !Define the mesh on the region
-  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/WIDTH,HEIGHT/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS/),Err)
-  ELSE
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/WIDTH,HEIGHT,LENGTH/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
-      & NUMBER_GLOBAL_Z_ELEMENTS/),Err)
-  ENDIF
+  CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,[LENGTH],Err)
+  CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS],Err)
   !Finish the creation of a generated mesh in the region
   CALL CMISSMeshTypeInitialise(Mesh,Err)
   CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
@@ -215,7 +176,7 @@ PROGRAM DIFFUSIONEXAMPLE
   CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NUMBER_OF_DOMAINS,Err)
+  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,1,Err)
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
   
@@ -226,26 +187,18 @@ PROGRAM DIFFUSIONEXAMPLE
   CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
   !Set the domain to be used by the field components.
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,1,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,1,Err)
-  IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
-    CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,1,Err)
-  ENDIF
   !Finish creating the field
   CALL CMISSFieldCreateFinish(GeometricField,Err)
-  
-  
+       
   !Update the geometric field parameters
   CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
   
   !Create the equations_set
-  CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
+  CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
   CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetNoSourceDiffusionSubtype,&
-    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSet,Err)
-  !Set the equations set to be a standard Laplace problem
-!   CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
-!     & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetNoSourceDiffusionSubtype,Err)
+    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetExponentialSourceDiffusionSubtype,EquationsSetFieldUserNumber, &
+    & EquationsSetField,EquationsSet,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
@@ -260,21 +213,15 @@ PROGRAM DIFFUSIONEXAMPLE
   CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,MaterialsFieldUserNumber,MaterialsField,Err)
   !Finish the equations set dependent field variables
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,-1.0_CMISSDP,Err)
 
   !Create the equations set analytic field variables
   CALL CMISSFieldTypeInitialise(AnalyticField,Err)
-  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN  
-    CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSEquationsSetDiffusionTwoDim1,AnalyticFieldUserNumber, & 
-      & AnalyticField,Err)
-  ELSE
-    WRITE(*,'(A)') "Three dimensions is not implemented."
-    STOP
-  ENDIF
-  
+  CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSEquationsSetExponentialSourceDiffusionOneDim1, & 
+    & AnalyticFieldUserNumber,AnalyticField,Err)
   !Finish the equations set analytic field variables
   CALL CMISSEquationsSetAnalyticCreateFinish(EquationsSet,Err)
   
-
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
   CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
@@ -287,48 +234,8 @@ PROGRAM DIFFUSIONEXAMPLE
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsElementMatrixOutput,Err)
   !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
-
+  
   !Create the equations set boundary conditions
-  !Find the first and last dof numbers and ranks
-!   NULLIFY(FIELD_VARIABLE)
-!   CALL FIELD_VARIABLE_GET(EQUATIONS_SET%DEPENDENT%DEPENDENT_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VARIABLE,ERR,ERROR,*999)
-!   DEPENDENT_DOF_MAPPING=>FIELD_VARIABLE%DOMAIN_MAPPING
-!   first_global_dof=1
-!   first_local_dof=0
-!   first_local_rank=0
-!   DO rank_idx=1,DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(first_global_dof)%NUMBER_OF_DOMAINS
-!     IF(DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(first_global_dof)%LOCAL_TYPE(rank_idx)/=DOMAIN_LOCAL_GHOST) THEN
-!       first_local_dof=DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(first_global_dof)%LOCAL_NUMBER(rank_idx)
-!       first_local_rank=DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(first_global_dof)%DOMAIN_NUMBER(rank_idx)
-!       EXIT
-!     ENDIF
-!   ENDDO !rank_idx  
-!   NULLIFY(FIELD_VARIABLE)
-!   CALL FIELD_VARIABLE_GET(EQUATIONS_SET%DEPENDENT%DEPENDENT_FIELD,FIELD_DELUDELN_VARIABLE_TYPE,FIELD_VARIABLE,ERR,ERROR,*999)
-!   DEPENDENT_DOF_MAPPING=>FIELD_VARIABLE%DOMAIN_MAPPING
-!   last_global_dof=DEPENDENT_DOF_MAPPING%NUMBER_OF_GLOBAL
-!   last_local_dof=0
-!   last_local_rank=0
-!   DO rank_idx=1,DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(last_global_dof)%NUMBER_OF_DOMAINS
-!     IF(DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(last_global_dof)%LOCAL_TYPE(rank_idx)/=DOMAIN_LOCAL_GHOST) THEN
-!       last_local_dof=DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(last_global_dof)%LOCAL_NUMBER(rank_idx)
-!       last_local_rank=DEPENDENT_DOF_MAPPING%GLOBAL_TO_LOCAL_MAP(last_global_dof)%DOMAIN_NUMBER(rank_idx)
-!       EXIT
-!     ENDIF
-!   ENDDO !rank_idx
-!   NULLIFY(BOUNDARY_CONDITIONS)
-!   CALL EQUATIONS_SET_BOUNDARY_CONDITIONS_CREATE_START(EQUATIONS_SET,BOUNDARY_CONDITIONS,ERR,ERROR,*999)
-!   IF(MY_COMPUTATIONAL_NODE_NUMBER==first_local_rank) &
-!     & CALL BOUNDARY_CONDITIONS_SET_LOCAL_DOF(BOUNDARY_CONDITIONS,FIELD_U_VARIABLE_TYPE,first_local_dof, &
-!     & BOUNDARY_CONDITION_FIXED,1.0_DP,ERR,ERROR,*999)
-!   IF(MY_COMPUTATIONAL_NODE_NUMBER==last_local_rank) &
-!     & CALL BOUNDARY_CONDITIONS_SET_LOCAL_DOF(BOUNDARY_CONDITIONS,FIELD_DELUDELN_VARIABLE_TYPE,last_local_dof, &
-!     & BOUNDARY_CONDITION_FIXED,1.0_DP,ERR,ERROR,*999)
-!   CALL EQUATIONS_SET_BOUNDARY_CONDITIONS_CREATE_FINISH(EQUATIONS_SET,ERR,ERROR,*999)
-   
-  !Create the equations set boundary conditions
-!   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-!   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
   CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
 
   !Create the problem
@@ -336,31 +243,21 @@ PROGRAM DIFFUSIONEXAMPLE
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
   !Set the problem to be a No Source Diffusion problem
   CALL CMISSProblemSpecificationSet(Problem,CMISSProblemClassicalFieldClass,CMISSProblemDiffusionEquationType, &
-    & CMISSProblemNoSourceDiffusionSubtype,Err)
+    & CMISSProblemNonlinearSourceDiffusionSubtype,Err)
   !Finish the creation of a problem.
   CALL CMISSProblemCreateFinish(Problem,Err)
 
   !Create the problem control
-  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
-
   CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   !Get the control loop
   CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
   !Set the times
-  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,1.001_CMISSDP,0.001_CMISSDP,Err)
+  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,END_TIME,0.001_CMISSDP,Err)
   !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
 
-
   !Start the creation of the problem solvers
-
-! !   !For the Direct Solver MUMPS, uncomment the below two lines and comment out the above five
-! !   CALL SOLVER_LINEAR_TYPE_SET(LINEAR_SOLVER,SOLVER_LINEAR_DIRECT_SOLVE_TYPE,ERR,ERROR,*999)
-! !   CALL SOLVER_LINEAR_DIRECT_TYPE_SET(LINEAR_SOLVER,SOLVER_DIRECT_MUMPS,ERR,ERROR,*999) 
-! 
-!   CALL PROBLEM_SOLVERS_CREATE_FINISH(PROBLEM,ERR,ERROR,*999)
-
   CALL CMISSSolverTypeInitialise(Solver,Err)
   CALL CMISSSolverTypeInitialise(LinearSolver,Err)
   CALL CMISSProblemSolversCreateStart(Problem,Err)
@@ -374,7 +271,6 @@ PROGRAM DIFFUSIONEXAMPLE
   CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolver,1000,Err)
   !Finish the creation of the problem solver
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
-
 
   !Create the problem solver equations
   CALL CMISSSolverTypeInitialise(Solver,Err)
@@ -395,34 +291,21 @@ PROGRAM DIFFUSIONEXAMPLE
   CALL CMISSProblemSolve(Problem,Err)
 
   !Output Analytic analysis
-  Call CMISSAnalyticAnalysisOutput(DependentField,"DiffusionAnalytics_x40_y40_L_T1",Err)
+  CALL CMISSEquationsSetAnalyticTimeSet(EquationsSet,END_TIME,Err)
+  CALL CMISSEquationsSetAnalyticEvaluate(EquationsSet,Err)
+  CALL CMISSAnalyticAnalysisOutput(DependentField,"DiffusionExponentialSourceAnalytics",Err)
 
+  !Output fields
+  CALL CMISSFieldsTypeInitialise(Fields,Err)
+  CALL CMISSFieldsTypeCreate(Region,Fields,Err)
+  CALL CMISSFieldIONodesExport(Fields,"DiffusionExponentialSource","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields,"DiffusionExponentialSource","FORTRAN",Err)
+  CALL CMISSFieldsTypeFinalise(Fields,Err)
 
-  EXPORT_FIELD=.TRUE.
-  IF(EXPORT_FIELD) THEN
-    CALL CMISSFieldsTypeInitialise(Fields,Err)
-    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"Diffusion_x40_y40_L_T1","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"Diffusion_x40_y40_L_T1","FORTRAN",Err)
-    CALL CMISSFieldsTypeFinalise(Fields,Err)
-
-  ENDIF
-  
-  !Output timing summary
-  !CALL TIMING_SUMMARY_OUTPUT(ERR,ERROR,*999)
-
-  !Calculate the stop times and write out the elapsed user and system times
-!   CALL CPU_TIMER(USER_CPU,STOP_USER_TIME,ERR,ERROR,*999)
-!   CALL CPU_TIMER(SYSTEM_CPU,STOP_SYSTEM_TIME,ERR,ERROR,*999)
-! 
-!   CALL WRITE_STRING_TWO_VALUE(GENERAL_OUTPUT_TYPE,"User time = ",STOP_USER_TIME(1)-START_USER_TIME(1),", System time = ", &
-!     & STOP_SYSTEM_TIME(1)-START_SYSTEM_TIME(1),ERR,ERROR,*999)
-!   
-  !CALL CMISS_FINALISE(ERR,ERROR,*999)
-  !CALL CMISSFinalise(Err)
+  !Finalise and quit
+  CALL CMISSFinalise(Err)
   WRITE(*,'(A)') "Program successfully completed."
-  
 
   STOP
   
-END PROGRAM DIFFUSIONEXAMPLE
+END PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE

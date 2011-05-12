@@ -55,8 +55,8 @@ MAKEFLAGS = --no-builtin-rules --warn-undefined-variables
 #----------------------------------------------------------------------------------------------------------------------------------
 
 ifndef OPENCMISS_ROOT
-  OPENCMISS_ROOT := ../../../..
-  GLOBAL_ROOT := $(CURDIR)/../../../..
+  OPENCMISS_ROOT := ../../..
+  GLOBAL_ROOT := $(CURDIR)/../../..
 else
   GLOBAL_ROOT := ${OPENCMISS_ROOT}/cm
 endif
@@ -65,7 +65,7 @@ endif
 
 EXAMPLE_PATH=ClassicalField/Diffusion/
 
-EXAMPLE_NAME = QuadraticConvergenceTest
+EXAMPLE_NAME = Diffusion
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 
