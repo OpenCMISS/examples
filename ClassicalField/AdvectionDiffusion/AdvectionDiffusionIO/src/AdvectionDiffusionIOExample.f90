@@ -1,5 +1,5 @@
 !> \file
-!> $Id: AdvectionDiffusionIOExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve an advection-diffusion equation using openCMISS calls.
 !>
@@ -42,9 +42,8 @@
 
 !> \example ClassicalField/AdvectionDiffusion/AdvectionDiffusionIO/src/AdvectionDiffusionIOExample.f90
 !! Example program to solve a diffusion equation using openCMISS calls.
-!! \par Latest Builds:
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/Diffusion/build-intel'>Linux Intel Build</a>
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/Diffusion/build-gnu'>Linux GNU Build</a>
+!!
+!! \htmlinclude ClassicalField/AdvectionDiffusion/AdvectionDiffusionIO/history.html
 !<
 
 !> Main program
@@ -71,6 +70,10 @@ PROGRAM ADVECTIONDIFFUSIONIOEXAMPLE
   !PROGRAM VARIABLES AND TYPES
 
   IMPLICIT NONE
+
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
 
   !Test program parameters
 
@@ -448,7 +451,7 @@ PROGRAM ADVECTIONDIFFUSIONIOEXAMPLE
     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
       VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)
       CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-        & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+        & 1,CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
   ENDDO
   CALL CMISSFieldParameterSetUpdateStart(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
@@ -462,12 +465,11 @@ PROGRAM ADVECTIONDIFFUSIONIOEXAMPLE
  
   !Create the equations_set
   CALL CMISSEquationsSetTypeInitialise(EquationsSetAdvecDiff,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberAdvecDiff,Region,GeometricField,EquationsSetAdvecDiff,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberAdvecDiff,Region,GeometricField,CMISSEquationsSetClassicalFieldClass,&
+    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetNoSourceAdvectionDiffusionSubtype,& 
+    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSetAdvecDiff,Err)
   !Set the equations set to be a standard Laplace problem
-!   CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
-!     & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetNoSourceStaticAdvecDiffSubtype,Err)
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetAdvecDiff,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetNoSourceAdvectionDiffusionSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetAdvecDiff,Err)
 
@@ -573,7 +575,7 @@ PROGRAM ADVECTIONDIFFUSIONIOEXAMPLE
 !       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
         VALUE=0.0_CMISSDP
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsAdvecDiff,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONCENTRATION,CONDITION,VALUE,Err)
+          & 1,NODE_NUMBER,MESH_COMPONENT_NUMBER_CONCENTRATION,CONDITION,VALUE,Err)
 !       ENDDO
     ENDDO
   ENDIF
@@ -585,7 +587,7 @@ PROGRAM ADVECTIONDIFFUSIONIOEXAMPLE
 !       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
         VALUE=0.1_CMISSDP
         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsAdvecDiff,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONCENTRATION,CONDITION,VALUE,Err)
+          & 1,NODE_NUMBER,MESH_COMPONENT_NUMBER_CONCENTRATION,CONDITION,VALUE,Err)
 !       ENDDO
     ENDDO
   ENDIF
@@ -610,7 +612,7 @@ PROGRAM ADVECTIONDIFFUSIONIOEXAMPLE
   !Get the control loop
   CALL CMISSProblemControlLoopGet(Problem,ControlLoopNode,ControlLoop,Err)
   !Set the times
-  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,3.0_CMISSDP,0.1_CMISSDP,Err)
+  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,0.03_CMISSDP,0.01_CMISSDP,Err)
   !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
 

@@ -1,5 +1,5 @@
 !> \file
-!> $Id: LinearPoissonMixedNeumannDirichlet_3Example.f90 20 2010-05-28 20:22:52Z cpb $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve a nonlinear Poisson equation using openCMISS calls.
 !>
@@ -56,6 +56,10 @@ PROGRAM LINEARPOISSONEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
 
   !Test program parameters
 
@@ -151,7 +155,7 @@ PROGRAM LINEARPOISSONEXAMPLE
 !  DIAG_ROUTINE_LIST(1)="FIELD_MAPPINGS_CALCULATE"
 
   !CMISSAllDiagType/CMISSInDiagType/CMISSFromDiagType
-!  CALL CMISSDiagnosticsSetOn(CMISSInDiagType,DIAG_LEVEL_LIST,"LinearPoissonDiagnostics",DIAG_ROUTINE_LIST,Err)
+  CALL CMISSDiagnosticsSetOn(CMISSAllDiagType,[1,2,3,4,5],"Diagnostics",[""],Err)
 
   NUMBER_GLOBAL_X_ELEMENTS=8
   NUMBER_GLOBAL_Y_ELEMENTS=8
@@ -258,10 +262,12 @@ PROGRAM LINEARPOISSONEXAMPLE
   
   !Create the equations_set
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,EquationsSet,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetPoissonEquationType,CMISSEquationsSetConstantSourcePoissonSubtype,EquationsSetFieldUserNumber, &
+    & EquationsSetField,EquationsSet,Err)
   !Set the equations set to be a standard Laplace problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetPoissonEquationType,CMISSEquationsSetConstantSourcePoissonSubtype,Err)
+  
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 

@@ -66,6 +66,7 @@
 #define DEPENDENT_FIELD_USER_NUMBER 8
 #define EQUATIONS_SET_USER_NUMBER 9
 #define PROBLEM_USER_NUMBER 10
+#define EQUATIONS_SET_FIELD_USER_NUMBER 11
 
 #define MAX_COORDINATES 3
 
@@ -77,7 +78,7 @@ int main()
   CMISSDecompositionType Decomposition=(CMISSDecompositionType)NULL;
   CMISSEquationsType Equations=(CMISSEquationsType)NULL;
   CMISSEquationsSetType EquationsSet=(CMISSEquationsSetType)NULL;
-  CMISSFieldType GeometricField=(CMISSFieldType)NULL,DependentField=(CMISSFieldType)NULL;
+  CMISSFieldType GeometricField=(CMISSFieldType)NULL,DependentField=(CMISSFieldType)NULL,EquationsSetField=(CMISSFieldType)NULL;
   CMISSFieldsType Fields=(CMISSFieldsType)NULL;
   CMISSGeneratedMeshType GeneratedMesh=(CMISSGeneratedMeshType)NULL;
   CMISSMeshType Mesh=(CMISSMeshType)NULL;
@@ -198,9 +199,9 @@ int main()
   
       /* Create the equations_set */
       Err = CMISSEquationsSetTypeInitialise(&EquationsSet);
-      Err = CMISSEquationsSetCreateStart(EQUATIONS_SET_USER_NUMBER,Region,GeometricField,&EquationsSet);
+      Err = CMISSEquationsSetCreateStart(EQUATIONS_SET_USER_NUMBER,Region,GeometricField,CMISSEquationsSetClassicalFieldClass,CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,EQUATIONS_SET_FIELD_USER_NUMBER,EquationsSetField,&EquationsSet);
       /* Set the equations set to be a standard Laplace problem */
-      Err = CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass,CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype);
+      //Err = CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass,CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype);
       /* Finish creating the equations set */
       Err = CMISSEquationsSetCreateFinish(EquationsSet);
       

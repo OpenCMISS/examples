@@ -1,5 +1,5 @@
 !> \file
-!> $Id: NumberLaplaceExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve a Laplace equation using OpenCMISS calls with objects accessed by user number.
 !>
@@ -74,6 +74,8 @@ PROGRAM NUMBERLAPLACEEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=8
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=9
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=11
+  
  
   !Program types
   
@@ -200,10 +202,13 @@ PROGRAM NUMBERLAPLACEEXAMPLE
   CALL CMISSGeneratedMeshGeometricParametersCalculate(RegionUserNumber,GeometricFieldUserNumber,GeneratedMeshUserNumber,Err)
   
   !Create the equations_set
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,RegionUserNumber,GeometricFieldUserNumber,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,RegionUserNumber,GeometricFieldUserNumber,&
+     & CMISSEquationsSetClassicalFieldClass, &
+     & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,EquationsSetFieldUserNumber,&
+     & Err)
   !Set the equations set to be a standard Laplace problem
-  CALL CMISSEquationsSetSpecificationSet(RegionUserNumber,EquationsSetUserNumber,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,Err)
+!   CALL CMISSEquationsSetSpecificationSet(RegionUserNumber,EquationsSetUserNumber,CMISSEquationsSetClassicalFieldClass, &
+!     & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(RegionUserNumber,EquationsSetUserNumber,Err)
 
@@ -233,9 +238,9 @@ PROGRAM NUMBERLAPLACEEXAMPLE
   ELSE
     LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
   ENDIF
-  CALL CMISSBoundaryConditionsSetNode(RegionUserNumber,EquationsSetUserNumber,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
+  CALL CMISSBoundaryConditionsSetNode(RegionUserNumber,EquationsSetUserNumber,CMISSFieldUVariableType,1,1,FirstNodeNumber,1, &
     & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(RegionUserNumber,EquationsSetUserNumber,CMISSFieldUVariableType,1,LastNodeNumber,1, &
+  CALL CMISSBoundaryConditionsSetNode(RegionUserNumber,EquationsSetUserNumber,CMISSFieldUVariableType,1,1,LastNodeNumber,1, &
     & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
   !Finish the creation of the equations set boundary conditions
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(RegionUserNumber,EquationsSetUserNumber,Err)

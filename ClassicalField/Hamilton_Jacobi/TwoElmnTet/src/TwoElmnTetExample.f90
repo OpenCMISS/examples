@@ -1,5 +1,5 @@
 !> \file
-!> $Id: TwoElmnTetExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id$
 !> \author Ali PASHAEI
 !> \brief This is an example program to solve a Hamilton-Jacobi (Eikonal form) equation using openCMISS calls.
 !>
@@ -267,15 +267,18 @@ PROGRAM TwoElmnTet
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
   !CALL CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearDirectSolveType,Err)
   !CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverMUMPSLibrary,Err)
+  CALL CMISSSolverEquationsSetAdd(Solver,EquationsSet,EquationsSetIndex,Err)
+  PRINT *,"EquationsSetIndex: ",EquationsSetIndex
   !Finish the creation of the problem solver
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
   
   !Start the creation of the problem solver equations
- ! CALL CMISSSolverTypeInitialise(Solver,Err)
- ! CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
- ! CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
-  !Get the solve equations
- ! CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
+  !CALL CMISSSolverTypeInitialise(Solver,Err)
+  !CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
+
+  
+  !CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
+  !CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
  ! CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
   !Set the solver equations sparsity
  ! CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
@@ -283,7 +286,7 @@ PROGRAM TwoElmnTet
   !Add in the equations set
   !CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
- !CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+  !CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
   
   !Solve
   CALL CMISSProblemSolve(Problem,Err)

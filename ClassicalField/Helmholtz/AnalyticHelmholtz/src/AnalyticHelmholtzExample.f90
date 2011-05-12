@@ -1,5 +1,5 @@
 !> \file
-!> $Id: AnalyticHelmholtzExample.f90 20 2010-05-20 15:09:52Z cpb $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve an Analytic Helmholtz equation using OpenCMISS calls.
 !>
@@ -58,6 +58,10 @@ PROGRAM ANALYTICHELMHOLTZEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
 
   !Test program parameters
 
@@ -214,7 +218,7 @@ CONTAINS
     DO i = NUMBER_OF_ELEMENTS_XI_START,NUMBER_OF_ELEMENTS_XI_END,NUMBER_OF_ELEMENTS_XI_INTERVAL
       
       CALL ANALYTICHELMHOLTZ_GENERIC(i,i,0,INTERPOLATION_SPECIFICATIONS,FIELD)
-      CALL CMISSAnalyticAnalysisAbsoluteErrorGetNode(FIELD,1,1,(i+1)**2/2+1,1,VALUE,Err)
+      CALL CMISSAnalyticAnalysisAbsoluteErrorGetNode(FIELD,1,1,1,(i+1)**2/2+1,1,VALUE,Err)
 
       Y_VALUES((i-NUMBER_OF_ELEMENTS_XI_START)/NUMBER_OF_ELEMENTS_XI_INTERVAL+1)=log10(VALUE)
       X_VALUES((i-NUMBER_OF_ELEMENTS_XI_START)/NUMBER_OF_ELEMENTS_XI_INTERVAL+1)=log10(HEIGHT/i)
@@ -365,10 +369,12 @@ CONTAINS
 
     !Create the equations set
     CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-    CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,EquationsSet,Err)
+      CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetHelmholtzEquationType,CMISSEquationsSetStandardHelmholtzSubtype,EquationsSetFieldUserNumber, &
+    & EquationsSetField,EquationsSet,Err)
     !Set the equations set to be a standard Helmholtz problem
-    CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
-      & CMISSEquationsSetHelmholtzEquationType,CMISSEquationsSetStandardHelmholtzSubtype,Err)
+    
     !Finish creating the equations set
     CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
   

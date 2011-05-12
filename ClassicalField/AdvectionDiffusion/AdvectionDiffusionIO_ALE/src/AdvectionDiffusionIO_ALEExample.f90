@@ -1,5 +1,5 @@
 !> \file
-!> $Id: AdvectionDiffusionIOExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve an ALE formulation of the advection-diffusion equation using openCMISS calls.
 !>
@@ -71,6 +71,10 @@ PROGRAM ADVECTIONDIFFUSIONIOALEEXAMPLE
   !PROGRAM VARIABLES AND TYPES
 
   IMPLICIT NONE
+
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
 
   !Test program parameters
 
@@ -447,7 +451,7 @@ PROGRAM ADVECTIONDIFFUSIONIOALEEXAMPLE
   DO NODE_NUMBER=1,NUMBER_OF_NODES_SPACE
     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
       VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)
-      CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+      CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, & 
         & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
   ENDDO
@@ -462,12 +466,11 @@ PROGRAM ADVECTIONDIFFUSIONIOALEEXAMPLE
  
   !Create the equations_set
   CALL CMISSEquationsSetTypeInitialise(EquationsSetAdvecDiff,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberAdvecDiff,Region,GeometricField,EquationsSetAdvecDiff,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberAdvecDiff,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetNoSourceALEAdvectionDiffusionSubtype,&
+    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSetAdvecDiff,Err)
   !Set the equations set to be a standard Laplace problem
-!   CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
-!     & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetNoSourceStaticAdvecDiffSubtype,Err)
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetAdvecDiff,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetNoSourceALEAdvectionDiffusionSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetAdvecDiff,Err)
 
@@ -572,7 +575,7 @@ PROGRAM ADVECTIONDIFFUSIONIOALEEXAMPLE
       CONDITION=CMISSBoundaryConditionFixed
 !       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
         VALUE=0.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsAdvecDiff,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsAdvecDiff,CMISSFieldUVariableType,CMISSNoGlobalDerivative,1, & 
           & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONCENTRATION,CONDITION,VALUE,Err)
 !       ENDDO
     ENDDO
@@ -584,7 +587,7 @@ PROGRAM ADVECTIONDIFFUSIONIOALEEXAMPLE
       CONDITION=CMISSBoundaryConditionFixed
 !       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
         VALUE=0.1_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsAdvecDiff,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsAdvecDiff,CMISSFieldUVariableType,CMISSNoGlobalDerivative,1, & 
           & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONCENTRATION,CONDITION,VALUE,Err)
 !       ENDDO
     ENDDO

@@ -1,5 +1,5 @@
 !> \file
-!> $Id: ParallelLaplaceExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve a Laplace equation in parallel using OpenCMISS calls.
 !>
@@ -57,7 +57,7 @@ PROGRAM PARALLELLAPLACEEXAMPLE
 
   IMPLICIT NONE
 
-  !Test program parameters
+   !Test program parameters
 
   REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: WIDTH=2.0_CMISSDP
@@ -71,9 +71,10 @@ PROGRAM PARALLELLAPLACEEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=8
-  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=9
-  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=10
-  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=12
  
   !Program types
   
@@ -83,7 +84,7 @@ PROGRAM PARALLELLAPLACEEXAMPLE
   
   INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
   
-  CHARACTER(LEN=255) :: COMMAND_ARGUMENT
+  CHARACTER(LEN=255) :: COMMAND_ARGUMENT,Filename
 
   !CMISS variables
 
@@ -92,7 +93,7 @@ PROGRAM PARALLELLAPLACEEXAMPLE
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,DependentField,AnalyticField
+  TYPE(CMISSFieldType) :: GeometricField,DependentField,EquationsSetField,AnalyticField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
   TYPE(CMISSMeshType) :: Mesh
@@ -143,13 +144,11 @@ PROGRAM PARALLELLAPLACEEXAMPLE
     IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 4.")
     READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*) INTERPOLATION_TYPE
     IF(INTERPOLATION_TYPE<=0.OR.INTERPOLATION_TYPE>9) CALL HANDLE_ERROR("Invalid Interpolation specification.")
-  ELSE IF(NUMBER_OF_ARGUMENTS == 0) THEN
-    NUMBER_GLOBAL_X_ELEMENTS=10
-    NUMBER_GLOBAL_Y_ELEMENTS=10
-    NUMBER_GLOBAL_Z_ELEMENTS=10
-    INTERPOLATION_TYPE=1
   ELSE
-    CALL HANDLE_ERROR("Invalid number of arguments.")
+    NUMBER_GLOBAL_X_ELEMENTS=25
+    NUMBER_GLOBAL_Y_ELEMENTS=25
+    NUMBER_GLOBAL_Z_ELEMENTS=25
+    INTERPOLATION_TYPE=1
   ENDIF
   
   !Intialise OpenCMISS
@@ -157,9 +156,12 @@ PROGRAM PARALLELLAPLACEEXAMPLE
 
   CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
 
-  !CALL CMISSDiagnosticsSetOn(CMISSInDiagType,(/1,2,3,4,5/),"Diagnostics",(/"SOLVER_MAPPING_CALCULATE"/),Err)
+  CALL CMISSDiagnosticsSetOn(CMISSInDiagType,[1,2,3,4,5],"Diagnostics",["DISTRIBUTED_VECTOR_UPDATE_START"],Err)
 
-  CALL CMISSOutputSetOn("Testing",Err)
+  WRITE(Filename,'(A,"_",I0,"_",I0,"_",I0,"_",I0)') "Laplace",NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
+    & NUMBER_GLOBAL_Z_ELEMENTS,INTERPOLATION_TYPE
+  
+  !CALL CMISSOutputSetOn(Filename,Err)
 
   !Get the computational nodes information
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -248,10 +250,10 @@ PROGRAM PARALLELLAPLACEEXAMPLE
   
   !Create the equations_set
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,EquationsSet,Err)
-  !Set the equations set to be a standard Laplace problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,Err)
+  CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,EquationsSetFieldUserNumber, &
+    & EquationsSetField,EquationsSet,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
@@ -280,8 +282,8 @@ PROGRAM PARALLELLAPLACEEXAMPLE
   !Set the equations matrices sparsity type
   CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
   !Set the equations set output
-  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
-  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsTimingOutput,Err)
+  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
+  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsTimingOutput,Err)
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsMatrixOutput,Err)
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsElementMatrixOutput,Err)
   !Finish the equations set equations
@@ -311,8 +313,8 @@ PROGRAM PARALLELLAPLACEEXAMPLE
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
-  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
-  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
+  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
+  !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
   CALL CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearDirectSolveType,Err)
   CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverMUMPSLibrary,Err)
   !Finish the creation of the problem solver
@@ -333,17 +335,18 @@ PROGRAM PARALLELLAPLACEEXAMPLE
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
 
-  !Compute Analytic analysis
-  CALL CMISSAnalyticAnalysisOutput(DependentField,"ParallelLaplace",Err)
-  
   !Solve the problem
   CALL CMISSProblemSolve(Problem,Err)
 
-  CALL CMISSFieldsTypeInitialise(Fields,Err)
-  CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-  CALL CMISSFieldIONodesExport(Fields,"ParallelLaplace","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields,"ParallelLaplace","FORTRAN",Err)
-  CALL CMISSFieldsTypeFinalise(Fields,Err)
+  !Compute Analytic analysis
+  !CALL CMISSAnalyticAnalysisOutput(DependentField,"ParallelLaplace",Err)
+  
+  !Export result
+  !CALL CMISSFieldsTypeInitialise(Fields,Err)
+  !CALL CMISSFieldsTypeCreate(Region,Fields,Err)
+  !CALL CMISSFieldIONodesExport(Fields,"ParallelLaplace","FORTRAN",Err)
+  !CALL CMISSFieldIOElementsExport(Fields,"ParallelLaplace","FORTRAN",Err)
+  !CALL CMISSFieldsTypeFinalise(Fields,Err)
   
   !Finialise CMISS
   CALL CMISSFinalise(Err)

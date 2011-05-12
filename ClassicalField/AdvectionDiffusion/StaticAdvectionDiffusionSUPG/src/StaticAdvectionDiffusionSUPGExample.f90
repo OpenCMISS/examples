@@ -1,5 +1,5 @@
 !> \file
-!> $Id: StaticAdvectionDiffusionSUPGExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve a diffusion equation using openCMISS calls.
 !>
@@ -59,6 +59,10 @@ PROGRAM STATICADVECTIONDIFFUSIONSUPGEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
 
   !Test program parameters
 
@@ -238,12 +242,11 @@ PROGRAM STATICADVECTIONDIFFUSIONSUPGEXAMPLE
   
   !Create the equations_set
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,EquationsSet,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetConstantSourceStaticAdvecDiffSUPGSubtype,&
+    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSet,Err)
   !Set the equations set to be a standard Laplace problem
-!   CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
-!     & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetNoSourceStaticAdvecDiffSubtype,Err)
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetConstantSourceStaticAdvecDiffSUPGSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
@@ -355,6 +358,7 @@ CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
 
   !Create the problem control
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
+  !CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   !Get the control loop
   !CALL CMISSProblemControlLoopGet(Problem,ControlLoopNode,ControlLoop,Err)
   !Set the times

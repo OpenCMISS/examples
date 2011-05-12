@@ -1,5 +1,5 @@
 !> \file
-!> $Id: DiffusionExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve a diffusion equation using openCMISS calls.
 !>
@@ -42,9 +42,8 @@
 
 !> \example ClassicalField/AdvectionDiffusion/StaticAdvectionDiffusion/src/StaticAdvectionDiffusionExample.f90
 !! Example program to solve a diffusion equation using openCMISS calls.
-!! \par Latest Builds:
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/Diffusion/build-intel'>Linux Intel Build</a>
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/Diffusion/build-gnu'>Linux GNU Build</a>
+!!
+!! \htmlinclude ClassicalField/AdvectionDiffusion/StaticAdvectionDiffusion/history.html
 !<
 
 !> Main program
@@ -59,6 +58,10 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
 
   !Test program parameters
 
@@ -140,8 +143,8 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  NUMBER_GLOBAL_X_ELEMENTS=20
-  NUMBER_GLOBAL_Y_ELEMENTS=40
+  NUMBER_GLOBAL_X_ELEMENTS=80
+  NUMBER_GLOBAL_Y_ELEMENTS=160
   NUMBER_GLOBAL_Z_ELEMENTS=0
   NUMBER_OF_DOMAINS=1
 
@@ -238,12 +241,11 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   
   !Create the equations_set
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,EquationsSet,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetConstantSourceStaticAdvecDiffSubtype,&
+    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSet,Err)
   !Set the equations set to be a standard Laplace problem
-!   CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
-!     & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetNoSourceStaticAdvecDiffSubtype,Err)
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetConstantSourceStaticAdvecDiffSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
@@ -355,6 +357,7 @@ CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
 
   !Create the problem control
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
+  !CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   !Get the control loop
   !CALL CMISSProblemControlLoopGet(Problem,ControlLoopNode,ControlLoop,Err)
   !Set the times

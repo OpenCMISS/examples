@@ -1,5 +1,5 @@
 !> \file
-!> $Id: AnalyticLaplaceExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve an Analytic Laplace equation using OpenCMISS calls.
 !>
@@ -59,6 +59,10 @@ PROGRAM ANALYTICLAPLACEEXAMPLE
 
   IMPLICIT NONE
 
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
+
   !Test program parameters
 
   REAL(CMISSDP), PARAMETER :: ORIGIN(2)=(/-3.141592653579_CMISSDP/2, -3.141592653579_CMISSDP/2/)
@@ -72,7 +76,10 @@ PROGRAM ANALYTICLAPLACEEXAMPLE
 
   TYPE(CMISSRegionType) :: WORLD_REGION
   TYPE(CMISSCoordinateSystemType) :: WorldCoordinateSystem
-  
+
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS,INTERPOLATION
+  CHARACTER(LEN=255) :: COMMAND_ARGUMENT
+
 #ifdef WIN32
   !Quickwin type
   LOGICAL :: QUICKWIN_STATUS=.FALSE.
@@ -96,12 +103,40 @@ PROGRAM ANALYTICLAPLACEEXAMPLE
   !Intialise cmiss
   CALL CMISSInitialise(WorldCoordinateSystem,WORLD_REGION,Err)
 
-  CALL ANALYTICLAPLACE_TESTCASE_BILINEAR_SIMPLEX_CONVERGENCE(2,6,2)
-  CALL ANALYTICLAPLACE_TESTCASE_LINEAR_SIMPLEX_EXPORT(2,2,0)
-  CALL ANALYTICLAPLACE_TESTCASE_BILINEAR_LAGRANGE_CONVERGENCE(2,6,2)
-  CALL ANALYTICLAPLACE_TESTCASE_LINEAR_LAGRANGE_EXPORT(2,2,0)
-  CALL ANALYTICLAPLACE_TESTCASE_BICUBIC_HERMITE_CONVERGENCE(2,10,2)
-  CALL ANALYTICLAPLACE_TESTCASE_CUBIC_HERMITE_EXPORT(2,2,0)
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+
+  CALL CMISSRandomSeedsSet(9999,Err)
+  
+  CALL CMISSDiagnosticsSetOn(CMISSAllDiagType,[1,2,3,4,5],"Diagnostics",[""],Err)
+
+  NUMBER_OF_ARGUMENTS = COMMAND_ARGUMENT_COUNT()
+  IF(NUMBER_OF_ARGUMENTS >= 1) THEN
+    CALL GET_COMMAND_ARGUMENT(1,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
+    IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 1.")
+    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*) INTERPOLATION
+
+    SELECT CASE(INTERPOLATION)
+    CASE(1)
+      CALL ANALYTICLAPLACE_TESTCASE_BILINEAR_LAGRANGE_CONVERGENCE(2,6,2)
+      CALL ANALYTICLAPLACE_TESTCASE_LINEAR_LAGRANGE_EXPORT(2,2,0)
+    CASE(4)
+      CALL ANALYTICLAPLACE_TESTCASE_BICUBIC_HERMITE_CONVERGENCE(2,10,2)
+      CALL ANALYTICLAPLACE_TESTCASE_CUBIC_HERMITE_EXPORT(2,2,0)
+    CASE(7)
+      CALL ANALYTICLAPLACE_TESTCASE_BILINEAR_SIMPLEX_CONVERGENCE(2,6,2)
+      CALL ANALYTICLAPLACE_TESTCASE_LINEAR_SIMPLEX_EXPORT(2,2,0)
+    CASE DEFAULT
+      CALL HANDLE_ERROR("Invalid interpolation specified.")
+    END SELECT
+  ELSE
+    !Run all tests
+    CALL ANALYTICLAPLACE_TESTCASE_BILINEAR_SIMPLEX_CONVERGENCE(2,6,2)
+    CALL ANALYTICLAPLACE_TESTCASE_LINEAR_SIMPLEX_EXPORT(2,2,0)
+    CALL ANALYTICLAPLACE_TESTCASE_BILINEAR_LAGRANGE_CONVERGENCE(2,6,2)
+    CALL ANALYTICLAPLACE_TESTCASE_LINEAR_LAGRANGE_EXPORT(2,2,0)
+    CALL ANALYTICLAPLACE_TESTCASE_BICUBIC_HERMITE_CONVERGENCE(2,10,2)
+    CALL ANALYTICLAPLACE_TESTCASE_CUBIC_HERMITE_EXPORT(2,2,0)
+  ENDIF
 
   CALL CMISSFinalise(Err)
 
@@ -126,6 +161,7 @@ CONTAINS
     !Local Variables
     TYPE(CMISSFieldType) :: FIELD
 
+    CALL CMISSFieldTypeInitialise(FIELD,Err)
     CALL ANALYTICLAPLACE_GENERIC(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,4, &
       & FIELD)
 
@@ -150,6 +186,7 @@ CONTAINS
     !Local Variables
     TYPE(CMISSFieldType) :: FIELD
 
+    CALL CMISSFieldTypeInitialise(FIELD,Err)
     CALL ANALYTICLAPLACE_GENERIC(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,1, &
       & FIELD)
 
@@ -174,6 +211,7 @@ CONTAINS
     !Local Variables
     TYPE(CMISSFieldType) :: FIELD
 
+    CALL CMISSFieldTypeInitialise(FIELD,Err)
     CALL ANALYTICLAPLACE_GENERIC(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,7, &
       & FIELD)
 
@@ -271,7 +309,7 @@ CONTAINS
   !================================================================================================================================
   !   
   
-  !>Check if the convergence of bilinear langrange interpolation is expected.
+  !>Check if the convergence of the specified interpolation is expected.
   SUBROUTINE ANALYTICLAPLACE_GENERIC_CONVERGENCE(NUMBER_OF_ELEMENTS_XI_START,NUMBER_OF_ELEMENTS_XI_END, &
     & NUMBER_OF_ELEMENTS_XI_INTERVAL,INTERPOLATION_SPECIFICATIONS,X_VALUES,Y_VALUES)
   
@@ -291,9 +329,10 @@ CONTAINS
     ALLOCATE(Y_VALUES((NUMBER_OF_ELEMENTS_XI_END-NUMBER_OF_ELEMENTS_XI_START)/NUMBER_OF_ELEMENTS_XI_INTERVAL+1),STAT=ERR)
 
     DO i = NUMBER_OF_ELEMENTS_XI_START,NUMBER_OF_ELEMENTS_XI_END,NUMBER_OF_ELEMENTS_XI_INTERVAL
-      
+
+      CALL CMISSFieldTypeInitialise(FIELD,Err)
       CALL ANALYTICLAPLACE_GENERIC(i,i,0,INTERPOLATION_SPECIFICATIONS,FIELD)
-      CALL CMISSAnalyticAnalysisAbsoluteErrorGetNode(FIELD,1,1,(i+1)**2/2+1,1,VALUE,Err)
+      CALL CMISSAnalyticAnalysisAbsoluteErrorGetNode(FIELD,1,1,1,(i+1)**2/2+1,1,VALUE,Err)
 
       Y_VALUES((i-NUMBER_OF_ELEMENTS_XI_START)/NUMBER_OF_ELEMENTS_XI_INTERVAL+1)=log10(VALUE)
       X_VALUES((i-NUMBER_OF_ELEMENTS_XI_START)/NUMBER_OF_ELEMENTS_XI_INTERVAL+1)=log10(HEIGHT/i)
@@ -440,14 +479,16 @@ CONTAINS
 
     !Create the equations_set
     CALL CMISSEquationsSetTypeInitialise(EQUATIONS_SET,Err)
-    CALL CMISSEquationsSetCreateStart(1,REGION,GEOMETRIC_FIELD,EQUATIONS_SET,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+    CALL CMISSEquationsSetCreateStart(1,REGION,GEOMETRIC_FIELD,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,EquationsSetFieldUserNumber,EquationsSetField, &
+    & EQUATIONS_SET,Err)
     !Set the equations set to be a standard Laplace problem
-    CALL CMISSEquationsSetSpecificationSet(EQUATIONS_SET,CMISSEquationsSetClassicalFieldClass, &
-      & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,Err)
+    
     !Finish creating the equations set
     CALL CMISSEquationsSetCreateFinish(EQUATIONS_SET,Err)
   
-    !Create the equations set analytic field variables
+    !Create the equations set dependent field variables
     CALL CMISSFieldTypeInitialise(DEPENDENT_FIELD,Err)
     CALL CMISSEquationsSetDependentCreateStart(EQUATIONS_SET,2,DEPENDENT_FIELD,Err)
     !Finish the equations set dependent field variables
@@ -492,6 +533,12 @@ CONTAINS
     CALL CMISSSolverTypeInitialise(Solver,Err)
     CALL CMISSProblemSolversCreateStart(Problem,Err)
     CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
+    !Set solver to direct type
+    CALL CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearIterativeSolveType,Err)
+    CALL CMISSSolverLinearIterativeAbsoluteToleranceSet(Solver,1.0E-12_CMISSDP,Err)
+    CALL CMISSSolverLinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMISSDP,Err)
+    !CALL CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearDirectSolveType,Err)
+    !CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverMUMPSLibrary,Err)
     !Finish the creation of the problem solver
     CALL CMISSProblemSolversCreateFinish(Problem,Err)
 
@@ -532,5 +579,14 @@ CONTAINS
     CALL CMISSCoordinateSystemDestroy(CoordinateSystemUserNumber,Err)
 
   END SUBROUTINE ANALYTICLAPLACE_GENERIC_CLEAN
+
+  SUBROUTINE HANDLE_ERROR(ERROR_STRING)
+
+    CHARACTER(LEN=*), INTENT(IN) :: ERROR_STRING
+
+    WRITE(*,'(">>ERROR: ",A)') ERROR_STRING(1:LEN_TRIM(ERROR_STRING))
+    STOP
+
+  END SUBROUTINE HANDLE_ERROR
 
 END PROGRAM ANALYTICLAPLACEEXAMPLE 
