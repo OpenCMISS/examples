@@ -1,5 +1,5 @@
 !> \file
-!> $Id: CoupledDiffusionAdvectionDiffusionExample.f90 20 2009-05-28 20:22:52Z chrm76 $
+!> $Id$
 !> \authors Andrew Cookson
 !> \brief This is an example program to solve a coupled diffusion & advection-diffusion equation using openCMISS calls.
 !>
@@ -64,6 +64,9 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
 
   USE OPENCMISS
   USE FLUID_MECHANICS_IO_ROUTINES
+  USE FIELDML_OUTPUT_ROUTINES
+  USE FIELDML_UTIL_ROUTINES
+  USE FIELDML_API
   USE MPI
 
 #ifdef WIN32
@@ -95,6 +98,8 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDiffusion=13
   INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumberAdvectionDiffusion=15
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberAdvectionDiffusion=22
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberDiffusion=23
 
   INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: NumberOfUserDomains=1
@@ -214,6 +219,8 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
   TYPE(CMISSFieldType) :: SourceFieldAdvectionDiffusion
   TYPE(CMISSFieldType) :: SourceFieldDiffusion
   TYPE(CMISSFieldType) :: InDependentFieldAdvectionDiffusion
+  TYPE(CMISSFieldType) :: EquationsSetFieldAdvectionDiffusion
+  TYPE(CMISSFieldType) :: EquationsSetFieldDiffusion
   !Boundary conditions
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsAdvectionDiffusion
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDiffusion
@@ -252,6 +259,14 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
 !   CHARACTER(LEN=255) :: DIAG_ROUTINE_LIST(8) !,TIMING_ROUTINE_LIST(1)
   CHARACTER(LEN=255) :: DIAG_ROUTINE_LIST(1) !,TIMING_ROUTINE_LIST(1)
 
+  !FieldML variables
+  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "advection_diffusion_advection"
+  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputDirectory = ""
+  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputFilename = "AdvectionDiffusionAdvection.xml"
+
+  INTEGER(C_INT) :: equationsSetDomain
+
+  TYPE(FieldmlInfoType) :: fieldmlInfo
   
   !
   !--------------------------------------------------------------------------------------------------------------------------------
@@ -404,7 +419,7 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
 !   DIAG_ROUTINE_LIST(3)="DARCY_EQUATION_PRE_SOLVE_ALE_UPDATE_MESH"
 !   DIAG_ROUTINE_LIST(4)="DARCY_EQUATION_PRE_SOLVE_UPDATE_BOUNDARY_CONDITIONS"
 !   DIAG_ROUTINE_LIST(5)="DARCY_EQUATION_PRE_SOLVE_MAT_PROPERTIES"
-!   DIAG_ROUTINE_LIST(6)="GALERKIN_PROJECTION_FINITE_ELEMENT_CALCULATE"
+!   DIAG_ROUTINE_LIST(6)="FITTING_FINITE_ELEMENT_CALCULATE"
 !   DIAG_ROUTINE_LIST(7)="FINITE_ELASTICITY_FINITE_ELEMENT_JACOBIAN_EVALUATE"
 !   DIAG_ROUTINE_LIST(8)="FINITE_ELASTICITY_FINITE_ELEMENT_RESIDUAL_EVALUATE"
 !   DIAG_ROUTINE_LIST(1)="PROBLEM_SOLVER_EQUATIONS_SOLVE"
@@ -640,7 +655,7 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
   DO NODE_NUMBER=1,NUMBER_OF_NODES_GEOMETRY
     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
       VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)
-      CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+      CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, & 
         & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
   ENDDO
@@ -656,21 +671,28 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
   !EQUATIONS SETS
 
   !Create the equations set for diffusion_one
+  CALL CMISSFieldTypeInitialise(EquationsSetFieldAdvectionDiffusion,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSetAdvectionDiffusion,Err)
   CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberAdvectionDiffusion,Region,GeometricField,&
-    & EquationsSetAdvectionDiffusion,Err)
+    & CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetCoupledSourceDiffusionAdvecDiffusionSubtype,&
+    & EquationsSetFieldUserNumberAdvectionDiffusion,EquationsSetFieldAdvectionDiffusion,EquationsSetAdvectionDiffusion,Err)
   !Set the equations set to be a linear source diffusion problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetAdvectionDiffusion,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetCoupledSourceDiffusionAdvecDiffusionSubtype,Err)
+!   CALL CMISSEquationsSetSpecificationSet(EquationsSetAdvectionDiffusion,CMISSEquationsSetClassicalFieldClass, &
+!     & CMISSEquationsSetAdvectionDiffusionEquationType,CMISSEquationsSetCoupledSourceDiffusionAdvecDiffusionSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetAdvectionDiffusion,Err)
 
   !Create the equations set for diffusion_two
+  CALL CMISSFieldTypeInitialise(EquationsSetFieldDiffusion,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSetDiffusion,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDiffusion,Region,GeometricField,EquationsSetDiffusion,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDiffusion,Region,GeometricField,&
+    & CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetCoupledSourceDiffusionAdvecDiffusionSubtype,&
+    & EquationsSetFieldUserNumberDiffusion,EquationsSetFieldDiffusion,EquationsSetDiffusion,Err)
   !Set the equations set to be a constant source diffusion problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetDiffusion,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetCoupledSourceDiffusionAdvecDiffusionSubtype,Err)
+!   CALL CMISSEquationsSetSpecificationSet(EquationsSetDiffusion,CMISSEquationsSetClassicalFieldClass, &
+!     & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetCoupledSourceDiffusionAdvecDiffusionSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetDiffusion,Err)
   !-------------------------------------------------------------------------------------
@@ -862,8 +884,8 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
       CONDITION=CMISSBoundaryConditionFixed
 !       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
         VALUE=0.1_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsAdvectionDiffusion,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsAdvectionDiffusion,CMISSFieldUVariableType,1, &
+         & CMISSNoGlobalDerivative,NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
 !       ENDDO
     ENDDO
   ENDIF
@@ -878,8 +900,8 @@ PROGRAM COUPLEDDIFFUSIONADVECTIONDIFFUSIONEXAMPLE
       CONDITION=CMISSBoundaryConditionFixed
 !       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
         VALUE=0.2_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion,CMISSFieldVVariableType,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_TWO,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion,CMISSFieldVVariableType,1, &
+          & CMISSNoGlobalDerivative,NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_TWO,CONDITION,VALUE,Err)
 !       ENDDO
     ENDDO
   ENDIF
@@ -1027,11 +1049,30 @@ WRITE(*,'(A)') "Solver two equations got."
   EXPORT_FIELD_IO=.TRUE.
   IF(EXPORT_FIELD_IO) THEN
     WRITE(*,'(A)') "Exporting fields..."
-    CALL CMISSFieldsTypeInitialise(Fields,Err)
-    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"CoupledSourceDiffusionAdvectionDiffusion","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"CoupledSourceDiffusionAdvectionDiffusion","FORTRAN",Err)
-    CALL CMISSFieldsTypeFinalise(Fields,Err)
+!    CALL CMISSFieldsTypeInitialise(Fields,Err)
+!    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
+!    CALL CMISSFieldIONodesExport(Fields,"CoupledSourceDiffusionAdvectionDiffusion","FORTRAN",Err)
+!    CALL CMISSFieldIOElementsExport(Fields,"CoupledSourceDiffusionAdvectionDiffusion","FORTRAN",Err)
+!    CALL CMISSFieldsTypeFinalise(Fields,Err)
+
+    CALL FieldmlOutput_InitializeInfo( Region, Mesh, NUMBER_OF_DIMENSIONS, outputDirectory, basename, fieldmlInfo, err )
+
+    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".geometric", region, mesh, GeometricField, &
+      & CMISSFieldUVariableType, err )
+
+    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".dependent", region, mesh, DependentField, &
+      & CMISSFieldUVariableType, err )
+
+    CALL FieldmlOutput_CreateEnsembleDomain( fieldmlInfo, baseName//".equation_set", 3, equationsSetDomain, err )
+
+    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".equation_set.advection_diffusion", mesh, &
+      & EquationsSetFieldDiffusion, CMISSFieldUVariableType, equationsSetDomain, err )
+
+    CALL FieldmlOutput_Write( fieldmlInfo, outputFilename, err )
+
+    CALL FieldmlUtil_FinalizeInfo( fieldmlInfo )
+
+
     WRITE(*,'(A)') "Field exported!"
   ENDIF
 

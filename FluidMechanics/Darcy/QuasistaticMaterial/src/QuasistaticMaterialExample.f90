@@ -1,5 +1,5 @@
 !> \file
-!> $Id: DarcyExample.f90 20 2009-05-28 20:22:52Z chrm76 $
+!> $Id$
 !> \author Christian Michler
 !> \brief This is an example program to solve a Darcy equation using openCMISS calls.
 !>
@@ -42,10 +42,8 @@
 
 !> \example FluidMechanics/Darcy/QuasistaticMaterial/src/QuasistaticMaterialExample.f90
 !! Example program to solve a QuasistaticMaterial ALE Darcy equation using OpenCMISS calls.
-!! \par Latest Builds:
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FluidMechanics/Darcy/QuasistaticMaterial/build-intel'>Linux Intel Build</a>
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FluidMechanics/Darcy/QuasistaticMaterial/build-intel'>Linux GNU Build</a>
 !!
+!! !! \htmlinclude FluidMechanics/Darcy/QuasistaticMaterial/history.html
 !<
 
 ! ! 
@@ -95,8 +93,9 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDarcy=12
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberMatProperties=13
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberDarcy=21
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberMatProperties=22
 
-  INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: SolverMatPropertiesUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: SolverDarcyUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPorosity=1
@@ -202,6 +201,8 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   TYPE(CMISSFieldType) :: DependentFieldMatProperties
   TYPE(CMISSFieldType) :: MaterialsFieldDarcy
   TYPE(CMISSFieldType) :: MaterialsFieldMatProperties
+  TYPE(CMISSFieldType) :: EquationsSetFieldDarcy
+  TYPE(CMISSFieldType) :: EquationsSetFieldMatProperties  
 !   TYPE(CMISSFieldType) :: IndependentFieldDarcy
 !   TYPE(CMISSFieldType) :: IndependentFieldMatProperties
   !Boundary conditions
@@ -223,6 +224,8 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   !Solver equations
   TYPE(CMISSSolverEquationsType) :: SolverEquationsDarcy
   TYPE(CMISSSolverEquationsType) :: SolverEquationsMatProperties
+  !Computational information
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber,NodeDomain
 
 #ifdef WIN32
   !Quickwin type
@@ -259,7 +262,11 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
 
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+  !CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+
+  !Get the computational nodes information
+  CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
+  CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
   !
   !================================================================================================================================
@@ -319,7 +326,6 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   EQUATIONS_MAT_PROPERTIES_OUTPUT=CMISSEquationsNoOutput
   !Set time parameter
   LINEAR_SOLVER_DARCY_START_TIME=0.0_CMISSDP
-!   LINEAR_SOLVER_DARCY_STOP_TIME=5.0_CMISSDP 
   LINEAR_SOLVER_DARCY_STOP_TIME=1.0_CMISSDP 
   LINEAR_SOLVER_DARCY_TIME_INCREMENT=0.125_CMISSDP
   !Set result output parameter
@@ -352,7 +358,7 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   DIAG_ROUTINE_LIST(3)="DARCY_EQUATION_PRE_SOLVE_ALE_UPDATE_MESH"
   DIAG_ROUTINE_LIST(4)="DARCY_EQUATION_PRE_SOLVE_UPDATE_BOUNDARY_CONDITIONS"
   DIAG_ROUTINE_LIST(5)="DARCY_EQUATION_PRE_SOLVE_MAT_PROPERTIES"
-  DIAG_ROUTINE_LIST(6)="GALERKIN_PROJECTION_FINITE_ELEMENT_CALCULATE"
+  DIAG_ROUTINE_LIST(6)="FITTING_FINITE_ELEMENT_CALCULATE"
 
   !CMISSAllDiagType/CMISSInDiagType/CMISSFromDiagType
 !   CALL CMISSDiagnosticsSetOn(CMISSInDiagType,DIAG_LEVEL_LIST,"DarcyDiagnostics",DIAG_ROUTINE_LIST,Err)
@@ -543,7 +549,7 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,DomainUserNumber,Err)
+  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
 
@@ -569,7 +575,7 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   DO NODE_NUMBER=1,NUMBER_OF_NODES_GEOMETRY
     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
       VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)
-      CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+      CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, & 
         & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
   ENDDO
@@ -583,20 +589,26 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   !EQUATIONS SETS
 
   !Create the equations set for ALE Darcy
+  CALL CMISSFieldTypeInitialise(EquationsSetFieldDarcy,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSetDarcy,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDarcy,Region,GeometricField,EquationsSetDarcy,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDarcy,Region,GeometricField,CMISSEquationsSetFluidMechanicsClass, &
+    & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetALEDarcySubtype,EquationsSetFieldUserNumberDarcy,&
+    & EquationsSetFieldDarcy,EquationsSetDarcy,Err)
   !Set the equations set to be a ALE Darcy problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetDarcy,CMISSEquationsSetFluidMechanicsClass, &
-    & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetALEDarcySubtype,Err)
+!   CALL CMISSEquationsSetSpecificationSet(EquationsSetDarcy,CMISSEquationsSetFluidMechanicsClass, &
+!     & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetALEDarcySubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetDarcy,Err)
 
   !Create the equations set for deformation-dependent material properties
+  CALL CMISSFieldTypeInitialise(EquationsSetFieldMatProperties,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSetMatProperties,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberMatProperties,Region,GeometricField,EquationsSetMatProperties,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberMatProperties,Region,GeometricField,CMISSEquationsSetFittingClass,&
+    & CMISSEquationsSetDataFittingEquationType,CMISSEquationsSetMatPropertiesDataFittingSubtype,&
+    & EquationsSetFieldUserNumberMatProperties,EquationsSetFieldMatProperties,EquationsSetMatProperties,Err)
   !Set the equations set to be a deformation-dependent material properties problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetMatProperties,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetGalerkinProjectionEquationType,CMISSEquationsSetMatPropertiesGalerkinProjectionSubtype,Err)
+!   CALL CMISSEquationsSetSpecificationSet(EquationsSetMatProperties,CMISSEquationsSetFittingClass, &
+!     & CMISSEquationsSetDataFittingEquationType,CMISSEquationsSetMatPropertiesDataFittingSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetMatProperties,Err)
 
@@ -752,32 +764,33 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
     DO NODE_NUMBER=1_CMISSIntg,NUMBER_OF_NODES_GEOMETRY
       COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
       COORD_Y = CM%N(NODE_NUMBER,2_CMISSIntg)
+      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,MESH_COMPONENT_NUMBER_VELOCITY,NodeDomain,Err)
 
-      IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
+      IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !x-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,CMISSNoGlobalDerivative,1, & 
           & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
-      IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
+      IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !x-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,CMISSNoGlobalDerivative,1, & 
           & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
-      IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
+      IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !y-velocity
         VALUE = 2.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,CMISSNoGlobalDerivative,1, & 
           & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
-      IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
+      IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !y-velocity
         VALUE = 2.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,CMISSNoGlobalDerivative,1, & 
           & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
       END IF
     END DO
@@ -786,46 +799,47 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
       COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
       COORD_Y = CM%N(NODE_NUMBER,2_CMISSIntg)
       COORD_Z = CM%N(NODE_NUMBER,3_CMISSIntg)
+      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,MESH_COMPONENT_NUMBER_VELOCITY,NodeDomain,Err)
 
-      IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
+      IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !x-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,CMISSNoGlobalDerivative,1, & 
           & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
-      IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
+      IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !x-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,CMISSNoGlobalDerivative,1, & 
           & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
-      IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
+      IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !y-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,CMISSNoGlobalDerivative,1, & 
           & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
-      IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
+      IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !y-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,CMISSNoGlobalDerivative,1, & 
           & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
-      IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) ) THEN
+      IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !z-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,CMISSNoGlobalDerivative,1, & 
           & NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
-      IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) THEN
+      IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !z-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,CMISSNoGlobalDerivative,1, & 
           & NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
       END IF
     END DO
@@ -977,7 +991,7 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   ENDIF
 
   !Finialise CMISS
-!   CALL CMISSFinalise(Err)
+  CALL CMISSFinalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
   

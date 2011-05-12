@@ -1,5 +1,5 @@
 !> \file
-!> $Id: DarcyAnalyticExample.f90 20 2009-05-28 20:22:52Z chrm76 $
+!> $Id$
 !> \author Christian Michler
 !> \brief This is an example program to solve an analytic Darcy equation using openCMISS calls.
 !>
@@ -42,10 +42,8 @@
 
 !> \example FluidMechanics/Darcy/Analytic/src/AnalyticExample.f90
 !! Example program to solve an analytic Darcy equation using OpenCMISS calls.
-!! \par Latest Builds:
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FluidMechanics/Darcy/Analytic/build-intel'>Linux Intel Build</a>
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FluidMechanics/Darcy/Analytic/build-intel'>Linux GNU Build</a>
 !!
+!! \htmlinclude FluidMechanics/Darcy/Analytic/history.html
 !<
 
 ! ! 
@@ -77,6 +75,10 @@ PROGRAM DARCYANALYTICEXAMPLE
   !PROGRAM VARIABLES AND TYPES
 
   IMPLICIT NONE
+
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
 
   !Test program parameters
 
@@ -564,7 +566,7 @@ PROGRAM DARCYANALYTICEXAMPLE
   DO NODE_NUMBER=1,NUMBER_OF_NODES_GEOMETRY
     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
       VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)
-      CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+      CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, & 
         & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
   ENDDO
@@ -579,10 +581,12 @@ PROGRAM DARCYANALYTICEXAMPLE
 
   !Create the equations set for ALE Darcy
   CALL CMISSEquationsSetTypeInitialise(EquationsSetDarcy,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDarcy,Region,GeometricField,EquationsSetDarcy,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDarcy,Region,GeometricField,CMISSEquationsSetFluidMechanicsClass, &
+    & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetStandardDarcySubtype,EquationsSetFieldUserNumber,EquationsSetField, &
+    & EquationsSetDarcy,Err)
   !Set the equations set to be a ALE Darcy problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetDarcy,CMISSEquationsSetFluidMechanicsClass, &
-    & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetStandardDarcySubtype,Err)
+  
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetDarcy,Err)
 
@@ -783,7 +787,7 @@ PROGRAM DARCYANALYTICEXAMPLE
   ENDIF
 
   !Finialise CMISS
-!   CALL CMISSFinalise(Err)
+  CALL CMISSFinalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
 

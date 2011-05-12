@@ -1,5 +1,5 @@
 ! \file
-!> $Id: LinearElasticityExample.f90 20 2009-02-15 13:26:52Z cpb $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve a linear elasticity equation using openCMISS calls.
 !>
@@ -55,6 +55,10 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
 #endif
 
   IMPLICIT NONE
+
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
 
   !Test program parameters
 
@@ -248,16 +252,16 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
   CALL CMISSFieldCreateFinish(GeometricField,Err)
 
   !Set geometric node coordinates (x)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,1,0.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2,1,LENGTH,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,3,1,0.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,4,1,LENGTH,Err)
+  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,1,1,0.0_CMISSDP,Err)
+  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,2,1,LENGTH,Err)
+  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,3,1,0.0_CMISSDP,Err)
+  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,4,1,LENGTH,Err)
 
   !Set geometric node coordinates (y)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,2,0.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2,2,0.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,3,2,WIDTH,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,4,2,WIDTH,Err)
+  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,1,2,0.0_CMISSDP,Err)
+  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,2,2,0.0_CMISSDP,Err)
+  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,3,2,WIDTH,Err)
+  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,4,2,WIDTH,Err)
 
   !Create a dependent field with two variables and three components
   CALL CMISSFieldTypeInitialise(DependentField,Err)
@@ -294,9 +298,11 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
 
   !Create a Elasticity Class, Linear Elasticity type, no subtype, EquationsSet
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,GeometricField,EquationsSet,Err)
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetElasticityClass,CMISSEquationsSetLinearElasticityType, &
-    & CMISSEquationsSetPlaneStressSubtype,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,GeometricField,CMISSEquationsSetElasticityClass, &
+    & CMISSEquationsSetLinearElasticityType,CMISSEquationsSetPlaneStressSubtype,EquationsSetFieldUserNumber,EquationsSetField, &
+    & EquationsSet,Err)
+  
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
   CALL CMISSEquationsSetDependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err) 
@@ -323,17 +329,17 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
 
   !Fix nodes 1,3 at x=0
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,1,CMISSBoundaryConditionFixed,ZERO,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,3,1,CMISSBoundaryConditionFixed,ZERO,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,1,1,CMISSBoundaryConditionFixed,ZERO,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,3,1,CMISSBoundaryConditionFixed,ZERO,Err)
 
   !Fix nodes 1,2 at y=0
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,2,CMISSBoundaryConditionFixed,ZERO,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,2,2,CMISSBoundaryConditionFixed,ZERO,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,1,2,CMISSBoundaryConditionFixed,ZERO,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,2,2,CMISSBoundaryConditionFixed,ZERO,Err)
 
   !Apply force at nodes 2,4 at x=l
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,2,1,CMISSBoundaryConditionFixed, &
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,2,1,CMISSBoundaryConditionFixed, &
     & -800.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,4,1,CMISSBoundaryConditionFixed, &
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,4,1,CMISSBoundaryConditionFixed, &
     & -800.0_CMISSDP,Err)
 
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)

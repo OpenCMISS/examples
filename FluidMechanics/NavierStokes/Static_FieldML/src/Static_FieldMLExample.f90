@@ -1,5 +1,5 @@
 !> \file
-!> $Id: StaticExample.f90 20 2009-10-28 20:22:52Z sebk $
+!> $Id$
 !> \author Sebastian Krittian
 !> \brief This is an example program to solve a static Navier-Stokes equation using OpenCMISS calls.
 !>
@@ -40,9 +40,9 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example FluidMechanics/NavierStokes/Static/src/StaticExample.f90
+!> \example FluidMechanics/NavierStokes/Static_FieldML/src/Static_FieldMLExample.f90
 !! Example program to solve a static Navier-Stokes equation using OpenCMISS calls.
-!! \htmlinclude FluidMechanics/NavierStokes/Static/history.html
+!! \htmlinclude FluidMechanics/NavierStokes/Static_FieldML/history.html
 !!
 !<
 
@@ -57,7 +57,6 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !PROGRAM LIBRARIES
 
   USE OPENCMISS
-  USE FLUID_MECHANICS_IO_ROUTINES
   USE MPI
   USE FIELDML_INPUT_ROUTINES
   USE FIELDML_UTIL_ROUTINES
@@ -75,6 +74,10 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !PROGRAM VARIABLES AND TYPES
 
   IMPLICIT NONE
+
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
 
   !Test program parameters
 
@@ -280,17 +283,17 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   !
   !================================================================================================================================
   !
-  
+ 
   CALL FieldmlInput_InitializeFromFile( fieldmlInfo, inputFilename, err )
 
   CALL FieldmlInput_SetDofVariables( fieldmlInfo, "test_mesh.nodal_dofs", "test_mesh.element_dofs", &
     & "test_mesh.constant_dofs", err )
   
-  spaceHandle = Fieldml_GetNamedObject( fieldmlInfo%fmlHandle, "test_mesh.coordinates"//NUL )
-  velocityHandle = Fieldml_GetNamedObject( fieldmlInfo%fmlHandle, "test_mesh.velocity"//NUL )
-  pressureHandle = Fieldml_GetNamedObject( fieldmlInfo%fmlHandle, "test_mesh.pressure"//NUL )
+  spaceHandle = Fieldml_GetObjectByName( fieldmlInfo%fmlHandle, "test_mesh.coordinates"//NUL )
+  velocityHandle = Fieldml_GetObjectByName( fieldmlInfo%fmlHandle, "test_mesh.velocity"//NUL )
+  pressureHandle = Fieldml_GetObjectByName( fieldmlInfo%fmlHandle, "test_mesh.pressure"//NUL )
 
-  CALL FieldmlInput_GetMeshInfo( fieldmlInfo, "test_mesh.domain", err )
+  CALL FieldmlInput_GetMeshInfo( fieldmlInfo, "test_mesh.mesh", "test_mesh.nodes", err )
   
   CALL FieldmlInput_GetCoordinateSystemInfo( fieldmlInfo%fmlHandle, spaceHandle, coordinateType, coordinateCount, err )
   
@@ -337,13 +340,13 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   
   meshComponentCount = 2
   
-  nodeCount = Fieldml_GetEnsembleDomainElementCount( fieldmlInfo%fmlHandle, fieldmlInfo%nodesHandle )
+  nodeCount = Fieldml_GetEnsembleTypeElementCount( fieldmlInfo%fmlHandle, fieldmlInfo%nodesHandle )
   CALL CMISSNodesTypeInitialise( Nodes, err )
   CALL CMISSNodesCreateStart( Region, nodeCount, nodes, err )
   CALL CMISSNodesCreateFinish( Nodes, err )
 
-  xiDimensions = Fieldml_GetDomainComponentCount( fieldmlInfo%fmlHandle, fieldmlInfo%xiHandle )
-  elementCount = Fieldml_GetEnsembleDomainElementCount( fieldmlInfo%fmlHandle, fieldmlInfo%elementsHandle )
+  xiDimensions = Fieldml_GetTypeComponentCount( fieldmlInfo%fmlHandle, fieldmlInfo%xiHandle )
+  elementCount = Fieldml_GetEnsembleTypeElementCount( fieldmlInfo%fmlHandle, fieldmlInfo%elementsHandle )
   CALL CMISSMeshTypeInitialise( Mesh, err )
   CALL CMISSMeshCreateStart( MeshUserNumber, Region, xiDimensions, Mesh, err )
   CALL CMISSMeshNumberOfElementsSet( Mesh, elementCount, err )
@@ -387,10 +390,12 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
 
   !Create the equations set for static Navier-Stokes
   CALL CMISSEquationsSetTypeInitialise(EquationsSetNavierStokes, err )
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField,EquationsSetNavierStokes, err )
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField, &
+    & CMISSEquationsSetFluidMechanicsClass,CMISSEquationsSetNavierStokesEquationType,CMISSEquationsSetStaticNavierStokesSubtype, &
+    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSetNavierStokes,err)
   !Set the equations set to be a static Navier-Stokes problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetNavierStokes,CMISSEquationsSetFluidMechanicsClass, &
-    & CMISSEquationsSetNavierStokesEquationType,CMISSEquationsSetStaticNavierStokesSubtype, err )
+  
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSetNavierStokes, err )
 
@@ -479,7 +484,7 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
       CONDITION=CMISSBoundaryConditionFixedWall
       DO COMPONENT_NUMBER=1,coordinateCount
         VALUE=0.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
           & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE, err )
       ENDDO
     ENDDO
@@ -491,7 +496,7 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
       CONDITION=CMISSBoundaryConditionInletWall
       DO COMPONENT_NUMBER=1,coordinateCount
         VALUE=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER)
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
           & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE, err )
       ENDDO
     ENDDO
@@ -589,7 +594,7 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
 
   !Solve the problem
   WRITE(*,'(A)') "Solving problem..."
-  CALL CMISSProblemSolve(Problem, err )
+!  CALL CMISSProblemSolve(Problem, err )
   WRITE(*,'(A)') "Problem solved!"
 
   !
@@ -597,18 +602,18 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   !
 
   !OUTPUT
-  
     CALL FieldmlOutput_InitializeInfo( Region, Mesh, xiDimensions, outputDirectory, basename, outputInfo, err )
 
-    CALL FieldmlOutput_AddField( outputInfo, baseName//".geometric", region, mesh, GeometricField, err )
+   CALL FieldmlOutput_AddField( outputInfo, baseName//".geometric", region, mesh, GeometricField, &
+     & CMISSFieldUVariableType, err )
 
-    domainHandle = Fieldml_GetNamedObject( outputInfo%fmlHandle, "library.velocity.rc.3d"//NUL )
-    CALL FieldmlOutput_AddFieldComponents( outputInfo, domainHandle, baseName//".velocity", Mesh, DependentFieldNavierStokes, &
-      & (/1,2,3/), err )
+   domainHandle = Fieldml_GetObjectByName( outputInfo%fmlHandle, "library.velocity.rc.3d"//NUL )
+   CALL FieldmlOutput_AddFieldComponents( outputInfo, domainHandle, baseName//".velocity", Mesh, DependentFieldNavierStokes, &
+     & (/1,2,3/), CMISSFieldUVariableType, err )
     
-    domainHandle = Fieldml_GetNamedObject( outputInfo%fmlHandle, "library.pressure"//NUL )
+    domainHandle = Fieldml_GetObjectByName( outputInfo%fmlHandle, "library.pressure"//NUL )
     CALL FieldmlOutput_AddFieldComponents( outputInfo, domainHandle, baseName//".pressure", Mesh, DependentFieldNavierStokes, &
-      & (/4/), err )
+      & (/4/), CMISSFieldUVariableType, err )
     
     CALL FieldmlOutput_Write( outputInfo, outputFilename, err )
     

@@ -2,7 +2,7 @@
 #
 # For use with GNU make.
 #
-# $Id: Makefile 27 2007-07-24 16:52:51Z cpb $
+# $Id$
 #
 #----------------------------------------------------------------------------------------------------------------------------------
 # Makefile for compiling openCMISS examples
@@ -66,11 +66,7 @@ endif
 EXAMPLE_PATH = LinearElasticity/Analytic/
 EXAMPLE_NAME = Extension
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
-
-# customisation begins here ---
-MAIN_OBJECT_DIR = $(GLOBAL_ROOT)/object/$(LIB_ARCH_DIR)$(MT_SUFFIX)$(DEBUG_SUFFIX)$(PROF_SUFFIX)/$(MPI)/$(COMPILER)
-MAIN_SOURCE_DIR = $(GLOBAL_ROOT)/src
+include $(GLOBAL_ROOT)/ExampleMakefile
 
 # let's assume test_framework_routine.o has been built in main_object, copy them over
 # redefine preliminaries

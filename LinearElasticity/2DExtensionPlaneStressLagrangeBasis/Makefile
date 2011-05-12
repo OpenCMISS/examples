@@ -2,7 +2,7 @@
 #
 # For use with GNU make.
 #
-# $Id: Makefile 27 2007-07-24 16:52:51Z cpb $
+# $Id$
 #
 #----------------------------------------------------------------------------------------------------------------------------------
 # Makefile for compiling openCMISS examples
@@ -67,5 +67,5 @@ EXAMPLE_PATH = LinearElasticity/
 
 EXAMPLE_NAME = 2DExtensionPlaneStressLagrangeBasis
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+include $(GLOBAL_ROOT)/ExampleMakefile
 

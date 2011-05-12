@@ -1,5 +1,5 @@
 !> \file
-!> $Id: CoupledLaplaceExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program which solves a weakly coupled Laplace equation in two regions using openCMISS calls.
 !>
@@ -64,9 +64,7 @@ PROGRAM COUPLEDLAPLACE
   REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: WIDTH=2.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
-  REAL(CMISSDP) :: XI(2)
-  INTEGER(CMISSIntg) :: I 
-
+ 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystem1UserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystem2UserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: Region1UserNumber=3
@@ -87,20 +85,21 @@ PROGRAM COUPLEDLAPLACE
   INTEGER(CMISSIntg), PARAMETER :: DependentField2UserNumber=23
   INTEGER(CMISSIntg), PARAMETER :: LagrangeFieldUserNumber=26
   INTEGER(CMISSIntg), PARAMETER :: CoupledProblemUserNumber=27
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetField1UserNumber=40
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetField2UserNumber=41
  
   !Program types
   
   !Program variables
 
-  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
-  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
-  
-  INTEGER(CMISSIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, &
+    & INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI
+  CHARACTER(LEN=255) :: COMMAND_ARGUMENT
 
   INTEGER(CMISSIntg) :: EquationsSet1Index,EquationsSet2Index
   INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
   INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain
-  INTEGER(CMISSIntg) :: Mesh1Index,Mesh2Index
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
 
   !CMISS variables
@@ -111,11 +110,11 @@ PROGRAM COUPLEDLAPLACE
   TYPE(CMISSDecompositionType) :: Decomposition1,Decomposition2
   TYPE(CMISSEquationsType) :: Equations1,Equations2
   TYPE(CMISSEquationsSetType) :: EquationsSet1,EquationsSet2
-  TYPE(CMISSFieldType) :: GeometricField1,GeometricField2,DependentField1, &
-    & DependentField2,LagrangeField
+  TYPE(CMISSFieldType) :: GeometricField1,GeometricField2,DependentField1,DependentField2,EquationsSetField1,EquationsSetField2
   TYPE(CMISSFieldsType) :: Fields1,Fields2
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh1,GeneratedMesh2
   TYPE(CMISSMeshType) :: Mesh1,Mesh2
+  TYPE(CMISSNodesType) :: Nodes
   TYPE(CMISSProblemType) :: CoupledProblem
   TYPE(CMISSRegionType) :: Region1,Region2,WorldRegion
   TYPE(CMISSSolverType) :: CoupledSolver
@@ -142,6 +141,34 @@ PROGRAM COUPLEDLAPLACE
   IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
 #endif
 
+
+  NUMBER_OF_ARGUMENTS = COMMAND_ARGUMENT_COUNT()
+  IF(NUMBER_OF_ARGUMENTS == 4) THEN
+    CALL GET_COMMAND_ARGUMENT(1,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
+    IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 1.")
+    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*) NUMBER_GLOBAL_X_ELEMENTS
+    IF(NUMBER_GLOBAL_X_ELEMENTS<=0) CALL HANDLE_ERROR("Invalid number of X elements.")
+    CALL GET_COMMAND_ARGUMENT(2,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
+    IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 2.")
+    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*) NUMBER_GLOBAL_Y_ELEMENTS
+    IF(NUMBER_GLOBAL_Y_ELEMENTS<=0) CALL HANDLE_ERROR("Invalid number of Y elements.")
+    CALL GET_COMMAND_ARGUMENT(3,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
+    IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 3.")
+    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*) NUMBER_GLOBAL_Z_ELEMENTS
+    IF(NUMBER_GLOBAL_Y_ELEMENTS<0) CALL HANDLE_ERROR("Invalid number of Z elements.")
+    CALL GET_COMMAND_ARGUMENT(4,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
+    IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 4.")
+    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*) INTERPOLATION_TYPE
+    IF(INTERPOLATION_TYPE<=0.OR.INTERPOLATION_TYPE>3) CALL HANDLE_ERROR("Invalid Interpolation specification.")
+  ELSE IF(NUMBER_OF_ARGUMENTS == 0) THEN
+    NUMBER_GLOBAL_X_ELEMENTS=2
+    NUMBER_GLOBAL_Y_ELEMENTS=2
+    NUMBER_GLOBAL_Z_ELEMENTS=0
+    INTERPOLATION_TYPE=1
+  ELSE
+    CALL HANDLE_ERROR("Invalid number of arguments.")
+  ENDIF
+
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
@@ -149,24 +176,13 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
  
   !Set diganostics for testing
-  CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,(/1,2,3,4,5/),"Diagnostics",(/"SOLVER_MAPPING_CALCULATE         ", &
-    & "SOLVER_MATRIX_STRUCTURE_CALCULATE"/),Err)
+  !CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,[1,2,3,4,5],"Diagnostics",["SOLVER_MAPPING_CALCULATE         ", &
+  !  & "SOLVER_MATRIX_STRUCTURE_CALCULATE"],Err)
   
   !Get the computational nodes information
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
   
-  NUMBER_GLOBAL_X_ELEMENTS=2
-  NUMBER_GLOBAL_Y_ELEMENTS=2
-  NUMBER_GLOBAL_Z_ELEMENTS=0
-  NUMBER_OF_DOMAINS=NumberOfComputationalNodes
-    
-  !Broadcast the number of elements in the X & Y directions and the number of partitions to the other computational nodes
-  CALL MPI_BCAST(NUMBER_GLOBAL_X_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_GLOBAL_Y_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_GLOBAL_Z_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_OF_DOMAINS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-
   !Start the creation of a new RC coordinate system for the first region
   PRINT *, ' == >> CREATING COORDINATE SYSTEM(1) << == '
   CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem1,Err)
@@ -229,20 +245,31 @@ PROGRAM COUPLEDLAPLACE
   !Finish the creation of the basis
   CALL CMISSBasisCreateFinish(Basis1,Err)
    
-  !Start the creation of a bI/tri-quadratic-Lagrange basis
+  SELECT CASE(INTERPOLATION_TYPE)
+  CASE(1)
+    NUMBER_OF_GAUSS_XI=2
+  CASE(2)
+    NUMBER_OF_GAUSS_XI=3
+  CASE(3,4)
+    NUMBER_OF_GAUSS_XI=4
+  CASE DEFAULT
+    CALL HANDLE_ERROR("Invalid interpolation type.")
+  END SELECT
+  !Start the creation of a bI/tri-XXX-Lagrange basis
   PRINT *, ' == >> CREATING BASIS(2) << == '
   CALL CMISSBasisTypeInitialise(Basis2,Err)
   CALL CMISSBasisCreateStart(Basis2UserNumber,Basis2,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    !Set the basis to be a bilinear Lagrange basis
+    !Set the basis to be a bi-XXX Lagrange basis
     CALL CMISSBasisNumberOfXiSet(Basis2,2,Err)
-    CALL CMISSBasisInterpolationXiSet(Basis2,(/CMISSBasisQuadraticLagrangeInterpolation, &
-      & CMISSBasisQuadraticLagrangeInterpolation/),Err)
+    CALL CMISSBasisInterpolationXiSet(Basis2,[INTERPOLATION_TYPE,INTERPOLATION_TYPE],Err)
+    CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis2,[NUMBER_OF_GAUSS_XI,NUMBER_OF_GAUSS_XI],Err)
   ELSE
-    !Set the basis to be a trilinear Lagrange basis
+    !Set the basis to be a tri-XXX Lagrange basis
     CALL CMISSBasisNumberOfXiSet(Basis2,3,Err)
-    CALL CMISSBasisInterpolationXiSet(Basis2,(/CMISSBasisQuadraticLagrangeInterpolation, &
-      & CMISSBasisQuadraticLagrangeInterpolation,CMISSBasisQuadraticLagrangeInterpolation/),Err)
+    CALL CMISSBasisInterpolationXiSet(Basis2,[INTERPOLATION_TYPE,INTERPOLATION_TYPE,INTERPOLATION_TYPE],Err)
+    CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis2,[NUMBER_OF_GAUSS_XI,NUMBER_OF_GAUSS_XI, &
+      & NUMBER_OF_GAUSS_XI],Err)
   ENDIF
   !Finish the creation of the basis
   CALL CMISSBasisCreateFinish(Basis2,Err)
@@ -257,13 +284,13 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSGeneratedMeshBasisSet(GeneratedMesh1,Basis1,Err)   
   !Define the mesh on the first region
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh1,(/WIDTH,HEIGHT/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh1,(/NUMBER_GLOBAL_X_ELEMENTS, &
-      & NUMBER_GLOBAL_Y_ELEMENTS/),Err)
+    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh1,[WIDTH,HEIGHT],Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh1,[NUMBER_GLOBAL_X_ELEMENTS, &
+      & NUMBER_GLOBAL_Y_ELEMENTS],Err)
   ELSE
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh1,(/WIDTH,HEIGHT,LENGTH/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh1,(/NUMBER_GLOBAL_X_ELEMENTS, &
-      & NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS/),Err)
+    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh1,[WIDTH,HEIGHT,LENGTH],Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh1,[NUMBER_GLOBAL_X_ELEMENTS, &
+      & NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS],Err)
   ENDIF    
   !Finish the creation of a generated mesh in the first region
   CALL CMISSMeshTypeInitialise(Mesh1,Err)
@@ -279,15 +306,15 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSGeneratedMeshBasisSet(GeneratedMesh2,Basis2,Err)   
   !Define the mesh on the second region
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    CALL CMISSGeneratedMeshOriginSet(GeneratedMesh2,(/WIDTH,0.0_CMISSDP/),Err)
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh2,(/WIDTH,HEIGHT/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh2,(/NUMBER_GLOBAL_X_ELEMENTS, &
-      & NUMBER_GLOBAL_Y_ELEMENTS/),Err)
+    CALL CMISSGeneratedMeshOriginSet(GeneratedMesh2,[WIDTH,0.0_CMISSDP],Err)
+    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh2,[WIDTH,HEIGHT],Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh2,[NUMBER_GLOBAL_X_ELEMENTS, &
+      & NUMBER_GLOBAL_Y_ELEMENTS],Err)
   ELSE
-    CALL CMISSGeneratedMeshOriginSet(GeneratedMesh2,(/WIDTH,0.0_CMISSDP,0.0_CMISSDP/),Err)
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh2,(/WIDTH,HEIGHT,LENGTH/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh2,(/NUMBER_GLOBAL_X_ELEMENTS, &
-      & NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS/),Err)
+    CALL CMISSGeneratedMeshOriginSet(GeneratedMesh2,[WIDTH,0.0_CMISSDP,0.0_CMISSDP],Err)
+    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh2,[WIDTH,HEIGHT,LENGTH],Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh2,[NUMBER_GLOBAL_X_ELEMENTS, &
+      & NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS],Err)
   ENDIF    
   !Finish the creation of a generated mesh in the second region
   CALL CMISSMeshTypeInitialise(Mesh2,Err)
@@ -299,7 +326,7 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSDecompositionCreateStart(Decomposition1UserNumber,Mesh1,Decomposition1,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL CMISSDecompositionTypeSet(Decomposition1,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition1,NUMBER_OF_DOMAINS,Err)
+  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition1,NumberOfComputationalNodes,Err)
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition1,Err)
 
@@ -309,7 +336,7 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSDecompositionCreateStart(Decomposition2UserNumber,Mesh2,Decomposition2,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL CMISSDecompositionTypeSet(Decomposition2,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition2,NUMBER_OF_DOMAINS,Err)
+  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition2,NumberOfComputationalNodes,Err)
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition2,Err)
   
@@ -350,21 +377,22 @@ PROGRAM COUPLEDLAPLACE
 
   !Create the equations set for the first region
   PRINT *, ' == >> CREATING EQUATION SET(1) << == '
+  CALL CMISSFieldTypeInitialise(EquationsSetField1,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSet1,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSet1UserNumber,Region1,GeometricField1,EquationsSet1,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSet1UserNumber,Region1,GeometricField1,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,EquationsSetField1UserNumber,&
+    & EquationsSetField1,EquationsSet1,Err)
   !Set the equations set to be a standard Laplace problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet1,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet1,Err)
 
   !Create the equations set for the second region
   PRINT *, ' == >> CREATING EQUATION SET(2) << == '
+  CALL CMISSFieldTypeInitialise(EquationsSetField2,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSet2,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSet2UserNumber,Region2,GeometricField2,EquationsSet2,Err)
-  !Set the equations set to be a standard Laplace problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet2,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSet2UserNumber,Region2,GeometricField2,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,EquationsSetField2UserNumber,&
+    & EquationsSetField2,EquationsSet2,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet2,Err)
 
@@ -418,7 +446,7 @@ PROGRAM COUPLEDLAPLACE
   FirstNodeNumber=1
   CALL CMISSDecompositionNodeDomainGet(Decomposition1,FirstNodeNumber,1,FirstNodeDomain,Err)
   IF(FirstNodeDomain==ComputationalNodeNumber) THEN
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions1,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions1,CMISSFieldUVariableType,1,1,FirstNodeNumber,1, &
       & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
   ENDIF
   !Finish the creation of the equations set boundary conditions
@@ -429,14 +457,12 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions2,Err)
   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet2,BoundaryConditions2,Err)
   !Set the last node to 1.0
-  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS*2+1)*(NUMBER_GLOBAL_Y_ELEMENTS*2+1)
-  ELSE
-    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS*2+1)*(NUMBER_GLOBAL_Y_ELEMENTS*2+1)*(NUMBER_GLOBAL_Z_ELEMENTS*2+1)
-  ENDIF
+  CALL CMISSNodesTypeInitialise(Nodes,Err)
+  CALL CMISSRegionNodesGet(Region2,Nodes,Err)
+  CALL CMISSNodesNumberOfNodesGet(Nodes,LastNodeNumber,Err)
   CALL CMISSDecompositionNodeDomainGet(Decomposition2,LastNodeNumber,1,LastNodeDomain,Err)
   IF(LastNodeDomain==ComputationalNodeNumber) THEN
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions2,CMISSFieldUVariableType,1,LastNodeNumber,1, &
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions2,CMISSFieldUVariableType,1,1,LastNodeNumber,1, &
       & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
   ENDIF
   !Finish the creation of the equations set boundary conditions
@@ -499,13 +525,13 @@ PROGRAM COUPLEDLAPLACE
   PRINT *, ' == >> EXPORTING FIELDS << == '
   CALL CMISSFieldsTypeInitialise(Fields1,Err)
   CALL CMISSFieldsTypeCreate(Region1,Fields1,Err)
-  CALL CMISSFieldIONodesExport(Fields1,"TwoRegion_1","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields1,"TwoRegion_1","FORTRAN",Err)
+  CALL CMISSFieldIONodesExport(Fields1,"UnCoupledLaplace_1","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields1,"UnCoupledLaplace_1","FORTRAN",Err)
   CALL CMISSFieldsTypeFinalise(Fields1,Err)
   CALL CMISSFieldsTypeInitialise(Fields2,Err)
   CALL CMISSFieldsTypeCreate(Region2,Fields2,Err)
-  CALL CMISSFieldIONodesExport(Fields2,"TwoRegion_2","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields2,"TwoRegion_2","FORTRAN",Err)
+  CALL CMISSFieldIONodesExport(Fields2,"UnCoupledLaplace_2","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields2,"UnCoupledLaplace_2","FORTRAN",Err)
   CALL CMISSFieldsTypeFinalise(Fields2,Err)
   
   !Finialise CMISS
@@ -514,5 +540,16 @@ PROGRAM COUPLEDLAPLACE
   WRITE(*,'(A)') "Program successfully completed."
 
   STOP
- 
+  
+CONTAINS
+
+  SUBROUTINE HANDLE_ERROR(ERROR_STRING)
+
+    CHARACTER(LEN=*), INTENT(IN) :: ERROR_STRING
+
+    WRITE(*,'(">>ERROR: ",A)') ERROR_STRING(1:LEN_TRIM(ERROR_STRING))
+    STOP
+
+  END SUBROUTINE HANDLE_ERROR
+     
 END PROGRAM COUPLEDLAPLACE

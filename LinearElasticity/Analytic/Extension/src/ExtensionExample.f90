@@ -1,5 +1,5 @@
 !> \file
-!> $Id: ANALYTIC_LINEAR_ELASTICITYExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve an Analytic Laplace equation using OpenCMISS calls.
 !>
@@ -58,6 +58,10 @@ PROGRAM ANALYTIC_LINEAR_ELASTICITYEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
 
   !Test program parameters
 
@@ -383,9 +387,10 @@ CONTAINS
 
     !Create a Elasticity Class, Linear Elasticity type, no subtype, EquationsSet
     CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-    CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,GeometricField,EquationsSet,Err)
-    CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetElasticityClass,CMISSEquationsSetLinearElasticityType, &
-      & EquationSetSubtype,Err)
+      CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,GeometricField,CMISSEquationsSetElasticityClass, &
+    & CMISSEquationsSetLinearElasticityType,EquationSetSubtype,EquationsSetFieldUserNumber,EquationsSetField,EquationsSet,Err)
+    
     CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
     CALL CMISSEquationsSetDependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err) 

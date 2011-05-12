@@ -1,5 +1,5 @@
 !> \file
-!> $Id: TwoRegionsExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program which sets up a field in two regions using openCMISS calls.
 !>
@@ -92,7 +92,8 @@ PROGRAM TWOREGIONSEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: InterfaceConditionUserNumber=25
   INTEGER(CMISSIntg), PARAMETER :: LagrangeFieldUserNumber=26
   INTEGER(CMISSIntg), PARAMETER :: CoupledProblemUserNumber=27
- 
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetField1UserNumber=40
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetField2UserNumber=41
   !Program types
   
   !Program variables
@@ -120,7 +121,7 @@ PROGRAM TWOREGIONSEXAMPLE
   TYPE(CMISSEquationsType) :: Equations1,Equations2
   TYPE(CMISSEquationsSetType) :: EquationsSet1,EquationsSet2
   TYPE(CMISSFieldType) :: GeometricField1,GeometricField2,InterfaceGeometricField,DependentField1, &
-    & DependentField2,LagrangeField
+    & DependentField2,LagrangeField,EquationsSetField1,EquationsSetField2
   TYPE(CMISSFieldsType) :: Fields1,Fields2,InterfaceFields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh1,GeneratedMesh2,InterfaceGeneratedMesh
   TYPE(CMISSInterfaceType) :: Interface
@@ -431,23 +432,24 @@ PROGRAM TWOREGIONSEXAMPLE
   !Update the geometric field parameters for the second field
   CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField2,GeneratedMesh2,Err)
 
-  !Create the equations set for the first region
+ !Create the equations set for the first region
   PRINT *, ' == >> CREATING EQUATION SET(1) << == '
+  CALL CMISSFieldTypeInitialise(EquationsSetField1,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSet1,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSet1UserNumber,Region1,GeometricField1,EquationsSet1,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSet1UserNumber,Region1,GeometricField1,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,EquationsSetField1UserNumber,&
+    & EquationsSetField1,EquationsSet1,Err)
   !Set the equations set to be a standard Laplace problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet1,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet1,Err)
 
   !Create the equations set for the second region
   PRINT *, ' == >> CREATING EQUATION SET(2) << == '
+  CALL CMISSFieldTypeInitialise(EquationsSetField2,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSet2,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSet2UserNumber,Region2,GeometricField2,EquationsSet2,Err)
-  !Set the equations set to be a standard Laplace problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet2,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSet2UserNumber,Region2,GeometricField2,CMISSEquationsSetClassicalFieldClass, &
+    & CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,EquationsSetField2UserNumber,&
+    & EquationsSetField2,EquationsSet2,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet2,Err)
 
@@ -501,7 +503,7 @@ PROGRAM TWOREGIONSEXAMPLE
   FirstNodeNumber=1
   CALL CMISSDecompositionNodeDomainGet(Decomposition1,FirstNodeNumber,1,FirstNodeDomain,Err)
   IF(FirstNodeDomain==ComputationalNodeNumber) THEN
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions1,CMISSFieldUVariableType,1,FirstNodeNumber,1, &
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions1,CMISSFieldUVariableType,1,1,FirstNodeNumber,1, &
       & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
   ENDIF
   !Finish the creation of the equations set boundary conditions
@@ -519,7 +521,7 @@ PROGRAM TWOREGIONSEXAMPLE
   ENDIF
   CALL CMISSDecompositionNodeDomainGet(Decomposition2,LastNodeNumber,1,LastNodeDomain,Err)
   IF(LastNodeDomain==ComputationalNodeNumber) THEN
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions2,CMISSFieldUVariableType,1,LastNodeNumber,1, &
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions2,CMISSFieldUVariableType,1,1,LastNodeNumber,1, &
       & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
   ENDIF
   !Finish the creation of the equations set boundary conditions
