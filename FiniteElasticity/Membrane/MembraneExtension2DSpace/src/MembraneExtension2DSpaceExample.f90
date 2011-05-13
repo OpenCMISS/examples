@@ -1,5 +1,5 @@
 !> \file
-!> $Id: UniAxialExtensionExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve a finite elasticity equation using openCMISS calls.
 !>
@@ -58,6 +58,10 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
 #endif
 
   IMPLICIT NONE
+
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
 
   !Test program parameters
 
@@ -295,9 +299,11 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
   CALL CMISSFieldCreateFinish(DependentField,Err)
 
   !Create the equations_set
-  CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,EquationsSet,Err)
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetElasticityClass, &
-    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetMembraneSubtype,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSEquationsSetElasticityClass, &
+    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetMembraneSubtype,EquationsSetFieldUserNumber,EquationsSetField, &
+    & EquationsSet,Err)
+  
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
   CALL CMISSEquationsSetDependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)

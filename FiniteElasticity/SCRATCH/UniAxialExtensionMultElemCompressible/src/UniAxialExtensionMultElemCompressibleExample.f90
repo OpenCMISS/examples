@@ -1,5 +1,5 @@
 !> \file
-!> $Id: UniAxialExtensionMultElemCompressible.f90 20 2009-05-28 20:22:52Z chrm76 $
+!> $Id$
 !> \authors Christian Michler
 !> \brief This is an example program to solve a Compressible Finite Elastiticity equation using openCMISS calls and FLUID_MECHANICS_IO_ROUTINES.
 !>
@@ -86,6 +86,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=4
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=13
 
   INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: NonlinearSolverSolidUserNumber=1
@@ -222,7 +223,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsSolid
   TYPE(CMISSEquationsType) :: EquationsSolid
   TYPE(CMISSEquationsSetType) :: EquationsSetSolid
-  TYPE(CMISSFieldType) :: GeometricFieldSolid,FibreFieldSolid,MaterialFieldSolid,DependentFieldSolid
+  TYPE(CMISSFieldType) :: GeometricFieldSolid,FibreFieldSolid,MaterialFieldSolid,DependentFieldSolid,EquationsSetField
   TYPE(CMISSSolverEquationsType) :: SolverEquationsSolid
   TYPE(CMISSMeshElementsType) :: MeshElementsSolid
 
@@ -528,11 +529,15 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !EQUATIONS SETS
 
   !Create the equations_set
-  CALL CMISSEquationsSetCreateStart(EquationSetSolidUserNumber,Region,FibreFieldSolid,EquationsSetSolid,Err)
-  CALL CMISSEquationsSetSpecificationSet(EquationsSetSolid,CMISSEquationsSetElasticityClass, &
-!     & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetNoSubtype,Err)
-!     & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetMooneyRivlinSubtype,Err)
-    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetCompressibleFiniteElasticitySubtype,Err)
+  CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+  CALL CMISSEquationsSetTypeInitialise(EquationsSetSolid,Err)
+  CALL CMISSEquationsSetCreateStart(EquationSetSolidUserNumber,Region,FibreFieldSolid,CMISSEquationsSetElasticityClass, &
+    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetCompressibleFiniteElasticitySubtype, &
+    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSetSolid,Err)
+!   CALL CMISSEquationsSetSpecificationSet(EquationsSetSolid,CMISSEquationsSetElasticityClass, &
+! !     & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetNoSubtype,Err)
+! !     & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetMooneyRivlinSubtype,Err)
+!     & ,Err)
   CALL CMISSEquationsSetCreateFinish(EquationsSetSolid,Err)
 
   !

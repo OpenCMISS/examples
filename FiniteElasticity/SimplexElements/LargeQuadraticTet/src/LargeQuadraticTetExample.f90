@@ -1,5 +1,5 @@
 !> \file
-!> $Id: LargeQuadraticTetExample.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve a finite elasticity equation using openCMISS calls.
 !>
@@ -42,9 +42,8 @@
 
 !> \example FiniteElasticity/SimplexElements/LargeQuadraticTet/src/LargeQuadraticTetExample.f90
 !! Example program to solve a finite elasticity equation using openCMISS calls.
-!! \par Latest Builds:
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/SimplexElements/LargeQuadraticTet/build-intel'>Linux Intel Build</a>
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/SimplexElements/LargeQuadraticTet/build-gnu'>Linux GNU Build</a>
+!!
+!! \htmlinclude FiniteElasticity/SimplexElements/LargeQuadraticTet/history.html
 !<
 
 !> Main program
@@ -58,6 +57,10 @@ PROGRAM LARGEQUADRATICTETEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
 
   !Test program parameters
 
@@ -436,9 +439,11 @@ PROGRAM LARGEQUADRATICTETEXAMPLE
   CALL CMISSFieldCreateFinish(DependentField,Err)  
 
   !Create the equations_set
-  CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,EquationsSet,Err)
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetElasticityClass, &
-    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetMooneyRivlinSubtype,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSEquationsSetElasticityClass, &
+    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetMooneyRivlinSubtype,EquationsSetFieldUserNumber,EquationsSetField, &
+    & EquationsSet,Err)
+  
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
   CALL CMISSEquationsSetDependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err) 
