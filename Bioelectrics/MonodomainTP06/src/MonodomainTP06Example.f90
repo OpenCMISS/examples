@@ -1,5 +1,5 @@
 !> \file
-!> $Id: MonodomainTP06Example.f90 20 2007-05-28 20:22:52Z cpb $
+!> $Id$
 !> \author Ishani Roy & Sander Land
 !> \brief This is an example program to solve a Monodomain equation using OpenCMISS calls.
 !>
@@ -58,6 +58,10 @@ PROGRAM MONODOMAINTP06EXAMPLE
 
   IMPLICIT NONE
 
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(CMISSFieldType) :: EquationsSetField
+
+
   REAL(CMISSDP), PARAMETER :: HEIGHT=7.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: WIDTH=20.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
@@ -79,8 +83,10 @@ PROGRAM MONODOMAINTP06EXAMPLE
   !Program types
   
   !Program variables
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
+  CHARACTER(LEN=255) :: COMMAND_ARGUMENT
 
-  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, N
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, N, D
   INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
   
   INTEGER(CMISSIntg) :: MPI_IERROR
@@ -88,7 +94,8 @@ PROGRAM MONODOMAINTP06EXAMPLE
   LOGICAL :: EXPORT_FIELD
 
 
-  REAL(CMISSDP), PARAMETER :: START_TIME = 0.0, END_TIME = 75.0, DT = 0.1, DX=0.2, ACTIV_R = 1.5+1e-6   ! ms ms ms mm mm
+  !REAL(CMISSDP) :: START_TIME = 0.0, END_TIME = 75.0, DT = 0.05_CMISSDP, DX=0.2, ACTIV_R = 1.5+1e-6   ! ms ms ms mm mm
+  REAL(CMISSDP) :: START_TIME = 0.0, END_TIME = 0.1, DT = 0.05_CMISSDP, DX=0.2, ACTIV_R = 1.5+1e-6   ! ms ms ms mm mm
   REAL(CMISSDP), PARAMETER  :: FiberD = 0.095298372513562, TransverseD = 0.0125758411473;
 
   REAL(CMISSDP) :: x,y,z,activ
@@ -134,6 +141,20 @@ PROGRAM MONODOMAINTP06EXAMPLE
   IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
 #endif
 
+ NUMBER_OF_ARGUMENTS = COMMAND_ARGUMENT_COUNT()
+  IF(NUMBER_OF_ARGUMENTS >= 1) THEN
+    CALL GET_COMMAND_ARGUMENT(1,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
+    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*), DX
+  END IF
+  IF(NUMBER_OF_ARGUMENTS >= 2) THEN
+    CALL GET_COMMAND_ARGUMENT(2,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
+    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*), DT
+  END IF
+  IF(NUMBER_OF_ARGUMENTS >= 3) THEN
+    CALL GET_COMMAND_ARGUMENT(3,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
+    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*), END_TIME
+  END IF
+
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
@@ -152,7 +173,9 @@ PROGRAM MONODOMAINTP06EXAMPLE
 !  NUMBER_GLOBAL_Z_ELEMENTS= 0
 
 
-  WRITE(*,*) 'Solving on ', NUMBER_GLOBAL_X_ELEMENTS*NUMBER_GLOBAL_Y_ELEMENTS*MAX(NUMBER_GLOBAL_Z_ELEMENTS,1),' ELEMENTS'
+  WRITE(*,*) '[',ComputationalNodeNumber,'] Solving ', NUMBER_GLOBAL_X_ELEMENTS*NUMBER_GLOBAL_Y_ELEMENTS*&
+             & MAX(NUMBER_GLOBAL_Z_ELEMENTS,1),' elements on ', NumberOfComputationalNodes,' processors with DT=',DT,&
+             & 'for T from 0 to ',END_TIME
   NUMBER_OF_DOMAINS=NumberOfComputationalNodes
     
   !Broadcast the number of elements in the X & Y directions and the number of partitions to the other computational nodes
@@ -243,9 +266,11 @@ PROGRAM MONODOMAINTP06EXAMPLE
   
   !Create the equations_set
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,EquationsSet,Err)
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSProblemBioelectricsClass,&
-    & CMISSEquationsSetMonodomainSSEquationType,CMISSEquationsSetMonodomainTenTusscher06Subtype,Err)
+    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetBioelectricsClass, &
+    & CMISSEquationsSetMonodomainSSEquationType,CMISSEquationsSetMonodomainTenTusscher06Subtype,EquationsSetFieldUserNumber, &
+    & EquationsSetField,EquationsSet,Err)
+  
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
@@ -258,12 +283,12 @@ PROGRAM MONODOMAINTP06EXAMPLE
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
   ! activation params: cube near (0,0,0) of size 1.5 mm 
   DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
-
-
-    CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,1,x,Err)
-    CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,2,y,Err)
+   CALL CMISSDecompositionNodeDomainGet(Decomposition,N,1,D,Err)
+   IF(D==ComputationalNodeNumber) THEN
+    CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,1,x,Err)
+    CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,2,y,Err)
     IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,3,z,Err)
+      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,3,z,Err)
     ELSE
       z = 0
     END IF
@@ -272,7 +297,8 @@ PROGRAM MONODOMAINTP06EXAMPLE
     ELSE
       activ = 0.0
     END IF
-    CALL CMISSFieldParameterSetUpdateNode(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,N,1,activ,Err)
+    CALL CMISSFieldParameterSetUpdateNode(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,1,activ,Err)
+   END IF
   END DO
   ! diffusion coefficient, related to conductivity by D = sigma/Xi Cm
   CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,FiberD,Err)
@@ -284,6 +310,7 @@ PROGRAM MONODOMAINTP06EXAMPLE
   IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
     CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,6,0.0_CMISSDP,Err)
   END IF
+  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,7,0.0_CMISSDP,Err)
 
   ! create/init independent field
   CALL CMISSFieldTypeInitialise(IndependentField,Err)
@@ -378,8 +405,18 @@ PROGRAM MONODOMAINTP06EXAMPLE
     CALL CMISSFieldsTypeFinalise(Fields,Err)
   ENDIF
   
+  !Read activation times
+  DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
+   CALL CMISSDecompositionNodeDomainGet(Decomposition,N,1,D,Err)
+   IF(D==ComputationalNodeNumber) THEN
+    CALL CMISSFieldParameterSetGetNode(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,7,activ,Err)
+    WRITE(*,*) 'Node ',N,' activation ',activ
+   ENDIF
+  ENDDO
+
+
   !Finialise CMISS
-  !CALL CMISSFinalise(Err)
+  CALL CMISSFinalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
   

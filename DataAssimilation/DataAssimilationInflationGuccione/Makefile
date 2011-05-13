@@ -2,7 +2,7 @@
 #
 # For use with GNU make.
 #
-# $Id$
+# $Id: Makefile 1717 2010-11-11 15:40:41Z jackisawesome $
 #
 #----------------------------------------------------------------------------------------------------------------------------------
 # Makefile for compiling openCMISS examples
@@ -55,15 +55,18 @@ MAKEFLAGS = --no-builtin-rules --warn-undefined-variables
 #----------------------------------------------------------------------------------------------------------------------------------
 
 ifndef OPENCMISS_ROOT
-  OPENCMISS_ROOT := ../..
-  GLOBAL_ROOT := $(CURDIR)/../..
+  OPENCMISS_ROOT := ../../..
+  GLOBAL_ROOT := $(CURDIR)/../../..
 else
   GLOBAL_ROOT := ${OPENCMISS_ROOT}/cm
 endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_NAME = cellml
+EXAMPLE_PATH = DataAssimilation/
 
-include $(GLOBAL_ROOT)/ExampleMakefile
+EXAMPLE_NAME = DataAssimilationInflationGuccione
+
+# include $(GLOBAL_ROOT)/NewExampleMakefile
+include ./NewExampleMakefile
 

@@ -1,0 +1,39 @@
+#0  PetscError (line=150, func=0x27832a5 "PetscMallocValidate", file=0x278329d "mtr.c", 
+    dir=0x27831e0 "src/sys/memory/", n=78, p=1, mess=0x27832a3 " ") at err.c:451
+#1  0x00000000014efb1a in PetscMallocValidate (line=1102, function=0x27dc4e9 "SNESComputeFunction", 
+    file=0x27db514 "snes.c", dir=0x27db450 "src/snes/interface/") at mtr.c:150
+#2  0x0000000001c27b54 in SNESComputeFunction (snes=0x3545900, x=0x3512370, y=0x357a240) at snes.c:1102
+#3  0x0000000001c42220 in SNESSolve_LS (snes=0x3545900) at ls.c:159
+#4  0x0000000001c30bdf in SNESSolve (snes=0x3545900, b=0x357b830, x=0x3512370) at snes.c:2255
+#5  0x0000000001658d94 in snessolve_ (snes=0x353d130, b=0x35126c0, x=0x356ff90, __ierr=0x2b2dd6c) at zsnesf.c:172
+#6  0x00000000008c7f8c in petsc_snessolve (snes_=( 55859456 ), b=( 56080432 ), x=( 55649136 ), err=0, 
+    error=( <object is not allocated> )) at /home/scratch/opencmiss/cm/src/cmiss_petsc.f90:4260
+#7  0x00000000005a5dff in solver_newton_linesearch_solve (linesearch_solver=0x353d0f0, err=0, 
+    error=( <object is not allocated> )) at /home/scratch/opencmiss/cm/src/solver_routines.f90:12219
+#8  0x00000000005a1e68 in solver_newton_solve (newton_solver=0x353cf50, err=0, error=( <object is not allocated> ))
+    at /home/scratch/opencmiss/cm/src/solver_routines.f90:12843
+#9  0x000000000059bb20 in solver_nonlinear_solve (nonlinear_solver=0x352eb90, err=0, 
+    error=( <object is not allocated> )) at /home/scratch/opencmiss/cm/src/solver_routines.f90:13727
+#10 0x0000000000595ac9 in solver_solve (solver=0x353ce80, err=0, error=( <object is not allocated> ))
+    at /home/scratch/opencmiss/cm/src/solver_routines.f90:14290
+#11 0x000000000056aed4 in problem_solver_equations_static_nonlinear_solve (solver_equations=0x3539130, err=0, 
+    error=( <object is not allocated> )) at /home/scratch/opencmiss/cm/src/problem_routines.f90:2335
+#12 0x000000000056c783 in problem_solver_equations_solve (solver_equations=0x3539130, err=0, 
+---Type <return> to continue, or q <return> to quit---
+    error=( <object is not allocated> )) at /home/scratch/opencmiss/cm/src/problem_routines.f90:1845
+#13 0x000000000056ab2b in problem_solver_solve (solver=0x353ce80, err=0, error=( <object is not allocated> ))
+    at /home/scratch/opencmiss/cm/src/problem_routines.f90:2389
+#14 0x0000000000575567 in problem_control_loop_solve (control_loop=0x353cd90, err=0, 
+    error=( <object is not allocated> )) at /home/scratch/opencmiss/cm/src/problem_routines.f90:574
+#15 0x000000000056f2eb in problem_solve (problem=0x3536c80, err=0, error=( <object is not allocated> ))
+    at /home/scratch/opencmiss/cm/src/problem_routines.f90:1511
+#16 0x000000000044f4cb in cmissproblemsolveobj (problem=( 0x3536c80 ), err=0)
+    at /home/scratch/opencmiss/cm/src/opencmiss.f90:37548
+#17 0x0000000000416585 in uniaxialextensionexample_solve (theta=(1, 1)) at ./src/UniAxialExtensionExample.f90:403
+#18 0x000000000041606b in model_opeartor_01 (model=0x35f9530, app_context=0x35cf7d0)
+    at ./src/data_assimilation_uniextension.cpp:25
+#19 0x0000000000415013 in filter_time_update (filter=0x35ff5a0, model=0x35f9530, app_context=0x35cf7d0)
+    at ../common/data_assimilation_routines.h:1133
+#20 0x00000000004163e1 in test01 (argc=1, args=0x7fffffffd298) at ./src/data_assimilation_uniextension.cpp:84
+#21 0x0000000000416448 in main (argc=1, args=0x7fffffffd298) at ./src/data_assimilation_uniextension.cpp:100
+(gdb) src/snes/interface/cd /home/scratch/opencmissextras/cm/external/packages/PETSc/petsc-3.1-p7/src/src/snes
