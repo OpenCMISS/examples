@@ -1,0 +1,18 @@
+! Use strictly numbers for all the options here
+-basis_displacement=3
+-basis_pressure=2
+-numElsX=2
+-numElsY=2
+-numElsZ=2
+-xLeng=1.0
+-yLeng=1.0
+-zLeng=1.0
+-incrementSteps=2
+
+! -bc surface component bctype value
+! 1..6: front back right left top bottom
+! types allowed: displacement displacementIncremented fixed fixedIncremented pressure pressureIncremented
+-bc bottom 1 displacement 0.0
+-bc bottom 2 displacement 0.0
+-bc bottom 3 displacement 0.0
+-bc top 3 pressure 4.0

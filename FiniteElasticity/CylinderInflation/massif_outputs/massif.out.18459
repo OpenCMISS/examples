@@ -1,0 +1,1879 @@
+desc: (none)
+cmd: ./bin/x86_64-linux/mpich2/gnu/CylinderInflationExample
+time_unit: i
+#-----------
+snapshot=0
+#-----------
+time=0
+mem_heap_B=0
+mem_heap_extra_B=0
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=1
+#-----------
+time=677701989
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=detailed
+n8: 11029330 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 8391248 0x14DF040: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 8391248 0x14CE235: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 8391248 0x14D561F: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 8391248 0x14A977F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 8391248 0x1477712: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 8391248 0x1477275: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 8391248 0x1490F0A: MPI_INIT (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 8391248 0x604DD2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+         n1: 8391248 0x5F6B38: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+          n1: 8391248 0x4DDC8D: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+           n1: 8391248 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n0: 8391248 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n0: 1064073 in 553 places, all below massif's threshold (01.00%)
+ n2: 466393 0xC6DFC8: PetscMallocAlign(unsigned long, int, char const*, char const*, char const*, void**) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 393498 0xD143E7: MatSeqAIJSetPreallocation_SeqAIJ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 393498 0xD15C0A: MatSeqAIJSetPreallocation(_p_Mat*, int, int const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 393498 0xD5EBFC: MatCreateMPIAIJ(int, int, int, int, int, int, int const*, int, int const*, _p_Mat**) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 393498 0xC1216E: matcreatempiaij_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 393498 0x5FB9E1: __cmiss_petsc_MOD_petsc_matcreatempiaij (cmiss_petsc.f90:2267)
+       n1: 393498 0x6822C7: __distributed_matrix_vector_MOD_distributed_matrix_petsc_create_finish (distributed_matrix_vector.f90:1947)
+        n1: 393498 0x683917: __distributed_matrix_vector_MOD_distributed_matrix_create_finish (distributed_matrix_vector.f90:621)
+         n1: 393498 0x575315: __solver_matrices_routines_MOD_solver_matrices_create_finish (solver_matrices_routines.f90:154)
+          n1: 393498 0x51A413: __solver_routines_MOD_solver_newton_linesearch_create_finish (solver_routines.f90:10947)
+           n1: 393498 0x522ADA: __solver_routines_MOD_solver_newton_create_finish (solver_routines.f90:10369)
+            n1: 393498 0x522E5A: __solver_routines_MOD_solver_nonlinear_create_finish (solver_routines.f90:12522)
+             n1: 393498 0x5256C3: __solver_routines_MOD_solver_equations_create_finish (solver_routines.f90:4648)
+              n1: 393498 0x9346B9: __finite_elasticity_routines_MOD_finite_elasticity_problem_setup (finite_elasticity_routines.f90:3101)
+               n1: 393498 0x6B6A8E: __elasticity_routines_MOD_elasticity_problem_setup (elasticity_routines.f90:374)
+                n1: 393498 0x4DFBBA: __problem_routines_MOD_problem_setup (problem_routines.f90:895)
+                 n1: 393498 0x4E94B2: __problem_routines_MOD_problem_solver_equations_create_finish (problem_routines.f90:2149)
+                  n1: 393498 0x4BF7C7: __opencmiss_MOD_cmissproblemsolverequationscreatefinishobj (opencmiss.f90:35383)
+                   n1: 393498 0x409209: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                    n0: 393498 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n0: 72895 in 70 places, all below massif's threshold (01.00%)
+ n1: 418560 0xAA9581: __matrix_vector_MOD_matrix_create_finish (matrix_vector.f90:557)
+  n1: 418560 0x668D6C: __distributed_matrix_vector_MOD_distributed_matrix_cmiss_create_finish (distributed_matrix_vector.f90:489)
+   n1: 418560 0x68384F: __distributed_matrix_vector_MOD_distributed_matrix_create_finish (distributed_matrix_vector.f90:619)
+    n1: 418560 0x6F0AEF: __equations_matrices_routines_MOD_equations_matrices_create_finish (equations_matrices_routines.f90:393)
+     n1: 418560 0x92F98B: __finite_elasticity_routines_MOD_finite_elasticity_equations_set_setup (finite_elasticity_routines.f90:2812)
+      n1: 418560 0x6B6006: __elasticity_routines_MOD_elasticity_equations_set_setup (elasticity_routines.f90:256)
+       n1: 418560 0x7002EC: __equations_set_routines_MOD_equations_set_setup (equations_set_routines.f90:3548)
+        n1: 418560 0x705445: __equations_set_routines_MOD_equations_set_equations_create_finish (equations_set_routines.f90:3603)
+         n1: 418560 0x4494DA: __opencmiss_MOD_cmissequationssetequationscreatefinishobj (opencmiss.f90:18714)
+          n1: 418560 0x408FA6: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n0: 418560 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 209280 0xAB43BA: __matrix_vector_MOD_matrix_storage_locations_set (matrix_vector.f90:1592)
+  n1: 209280 0x685BAF: __distributed_matrix_vector_MOD_distributed_matrix_storage_locations_set (distributed_matrix_vector.f90:2209)
+   n1: 209280 0x6F0A93: __equations_matrices_routines_MOD_equations_matrices_create_finish (equations_matrices_routines.f90:389)
+    n1: 209280 0x92F98B: __finite_elasticity_routines_MOD_finite_elasticity_equations_set_setup (finite_elasticity_routines.f90:2812)
+     n1: 209280 0x6B6006: __elasticity_routines_MOD_elasticity_equations_set_setup (elasticity_routines.f90:256)
+      n1: 209280 0x7002EC: __equations_set_routines_MOD_equations_set_setup (equations_set_routines.f90:3548)
+       n1: 209280 0x705445: __equations_set_routines_MOD_equations_set_equations_create_finish (equations_set_routines.f90:3603)
+        n1: 209280 0x4494DA: __opencmiss_MOD_cmissequationssetequationscreatefinishobj (opencmiss.f90:18714)
+         n1: 209280 0x408FA6: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n0: 209280 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 182704 0x7C0274: __field_routines_MOD_field_mappings_calculate (field_routines.f90:6849)
+  n1: 182704 0x8F67F2: __field_routines_MOD_field_create_finish (field_routines.f90:3685)
+   n2: 182704 0x45992F: __opencmiss_MOD_cmissfieldcreatefinishobj (opencmiss.f90:21076)
+    n1: 116736 0x408E40: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n0: 116736 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n0: 65968 in 3 places, all below massif's threshold (01.00%)
+ n1: 166320 0x5C5C8F: __basis_routines_MOD_basis_quadrature_create (basis_routines.f90:2769)
+  n1: 166320 0x5C5E18: __basis_routines_MOD_basis_lhtp_basis_create (basis_routines.f90:2089)
+   n1: 166320 0x5CCAA6: __basis_routines_MOD_basis_lhtp_family_create (basis_routines.f90:2262)
+    n1: 166320 0x5D61D0: __basis_routines_MOD_basis_create_finish (basis_routines.f90:366)
+     n2: 166320 0x418032: __opencmiss_MOD_cmissbasiscreatefinishobj (opencmiss.f90:8661)
+      n1: 128304 0x408653: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n0: 128304 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n0: 38016 in 1 place, below massif's threshold (01.00%)
+ n1: 130752 0x688C85: __distributed_matrix_vector_MOD_distributed_matrix_storage_locations_set (distributed_matrix_vector.f90:2251)
+  n1: 130752 0x5752C5: __solver_matrices_routines_MOD_solver_matrices_create_finish (solver_matrices_routines.f90:150)
+   n1: 130752 0x51A413: __solver_routines_MOD_solver_newton_linesearch_create_finish (solver_routines.f90:10947)
+    n1: 130752 0x522ADA: __solver_routines_MOD_solver_newton_create_finish (solver_routines.f90:10369)
+     n1: 130752 0x522E5A: __solver_routines_MOD_solver_nonlinear_create_finish (solver_routines.f90:12522)
+      n1: 130752 0x5256C3: __solver_routines_MOD_solver_equations_create_finish (solver_routines.f90:4648)
+       n1: 130752 0x9346B9: __finite_elasticity_routines_MOD_finite_elasticity_problem_setup (finite_elasticity_routines.f90:3101)
+        n1: 130752 0x6B6A8E: __elasticity_routines_MOD_elasticity_problem_setup (elasticity_routines.f90:374)
+         n1: 130752 0x4DFBBA: __problem_routines_MOD_problem_setup (problem_routines.f90:895)
+          n1: 130752 0x4E94B2: __problem_routines_MOD_problem_solver_equations_create_finish (problem_routines.f90:2149)
+           n1: 130752 0x4BF7C7: __opencmiss_MOD_cmissproblemsolverequationscreatefinishobj (opencmiss.f90:35383)
+            n1: 130752 0x409209: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n0: 130752 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+#-----------
+snapshot=2
+#-----------
+time=1374243369
+mem_heap_B=11031677
+mem_heap_extra_B=269651
+mem_stacks_B=0
+heap_tree=detailed
+n8: 11031677 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 8391248 0x14DF040: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 8391248 0x14CE235: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 8391248 0x14D561F: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 8391248 0x14A977F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 8391248 0x1477712: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 8391248 0x1477275: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 8391248 0x1490F0A: MPI_INIT (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 8391248 0x604DD2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+         n1: 8391248 0x5F6B38: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+          n1: 8391248 0x4DDC8D: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+           n1: 8391248 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n0: 8391248 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n0: 1066420 in 553 places, all below massif's threshold (01.00%)
+ n2: 466393 0xC6DFC8: PetscMallocAlign(unsigned long, int, char const*, char const*, char const*, void**) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 393498 0xD143E7: MatSeqAIJSetPreallocation_SeqAIJ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 393498 0xD15C0A: MatSeqAIJSetPreallocation(_p_Mat*, int, int const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 393498 0xD5EBFC: MatCreateMPIAIJ(int, int, int, int, int, int, int const*, int, int const*, _p_Mat**) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 393498 0xC1216E: matcreatempiaij_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 393498 0x5FB9E1: __cmiss_petsc_MOD_petsc_matcreatempiaij (cmiss_petsc.f90:2267)
+       n1: 393498 0x6822C7: __distributed_matrix_vector_MOD_distributed_matrix_petsc_create_finish (distributed_matrix_vector.f90:1947)
+        n1: 393498 0x683917: __distributed_matrix_vector_MOD_distributed_matrix_create_finish (distributed_matrix_vector.f90:621)
+         n1: 393498 0x575315: __solver_matrices_routines_MOD_solver_matrices_create_finish (solver_matrices_routines.f90:154)
+          n1: 393498 0x51A413: __solver_routines_MOD_solver_newton_linesearch_create_finish (solver_routines.f90:10947)
+           n1: 393498 0x522ADA: __solver_routines_MOD_solver_newton_create_finish (solver_routines.f90:10369)
+            n1: 393498 0x522E5A: __solver_routines_MOD_solver_nonlinear_create_finish (solver_routines.f90:12522)
+             n1: 393498 0x5256C3: __solver_routines_MOD_solver_equations_create_finish (solver_routines.f90:4648)
+              n1: 393498 0x9346B9: __finite_elasticity_routines_MOD_finite_elasticity_problem_setup (finite_elasticity_routines.f90:3101)
+               n1: 393498 0x6B6A8E: __elasticity_routines_MOD_elasticity_problem_setup (elasticity_routines.f90:374)
+                n1: 393498 0x4DFBBA: __problem_routines_MOD_problem_setup (problem_routines.f90:895)
+                 n1: 393498 0x4E94B2: __problem_routines_MOD_problem_solver_equations_create_finish (problem_routines.f90:2149)
+                  n1: 393498 0x4BF7C7: __opencmiss_MOD_cmissproblemsolverequationscreatefinishobj (opencmiss.f90:35383)
+                   n1: 393498 0x409209: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                    n0: 393498 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n0: 72895 in 70 places, all below massif's threshold (01.00%)
+ n1: 418560 0xAA9581: __matrix_vector_MOD_matrix_create_finish (matrix_vector.f90:557)
+  n1: 418560 0x668D6C: __distributed_matrix_vector_MOD_distributed_matrix_cmiss_create_finish (distributed_matrix_vector.f90:489)
+   n1: 418560 0x68384F: __distributed_matrix_vector_MOD_distributed_matrix_create_finish (distributed_matrix_vector.f90:619)
+    n1: 418560 0x6F0AEF: __equations_matrices_routines_MOD_equations_matrices_create_finish (equations_matrices_routines.f90:393)
+     n1: 418560 0x92F98B: __finite_elasticity_routines_MOD_finite_elasticity_equations_set_setup (finite_elasticity_routines.f90:2812)
+      n1: 418560 0x6B6006: __elasticity_routines_MOD_elasticity_equations_set_setup (elasticity_routines.f90:256)
+       n1: 418560 0x7002EC: __equations_set_routines_MOD_equations_set_setup (equations_set_routines.f90:3548)
+        n1: 418560 0x705445: __equations_set_routines_MOD_equations_set_equations_create_finish (equations_set_routines.f90:3603)
+         n1: 418560 0x4494DA: __opencmiss_MOD_cmissequationssetequationscreatefinishobj (opencmiss.f90:18714)
+          n1: 418560 0x408FA6: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n0: 418560 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 209280 0xAB43BA: __matrix_vector_MOD_matrix_storage_locations_set (matrix_vector.f90:1592)
+  n1: 209280 0x685BAF: __distributed_matrix_vector_MOD_distributed_matrix_storage_locations_set (distributed_matrix_vector.f90:2209)
+   n1: 209280 0x6F0A93: __equations_matrices_routines_MOD_equations_matrices_create_finish (equations_matrices_routines.f90:389)
+    n1: 209280 0x92F98B: __finite_elasticity_routines_MOD_finite_elasticity_equations_set_setup (finite_elasticity_routines.f90:2812)
+     n1: 209280 0x6B6006: __elasticity_routines_MOD_elasticity_equations_set_setup (elasticity_routines.f90:256)
+      n1: 209280 0x7002EC: __equations_set_routines_MOD_equations_set_setup (equations_set_routines.f90:3548)
+       n1: 209280 0x705445: __equations_set_routines_MOD_equations_set_equations_create_finish (equations_set_routines.f90:3603)
+        n1: 209280 0x4494DA: __opencmiss_MOD_cmissequationssetequationscreatefinishobj (opencmiss.f90:18714)
+         n1: 209280 0x408FA6: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n0: 209280 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 182704 0x7C0274: __field_routines_MOD_field_mappings_calculate (field_routines.f90:6849)
+  n1: 182704 0x8F67F2: __field_routines_MOD_field_create_finish (field_routines.f90:3685)
+   n2: 182704 0x45992F: __opencmiss_MOD_cmissfieldcreatefinishobj (opencmiss.f90:21076)
+    n1: 116736 0x408E40: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n0: 116736 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n0: 65968 in 3 places, all below massif's threshold (01.00%)
+ n1: 166320 0x5C5C8F: __basis_routines_MOD_basis_quadrature_create (basis_routines.f90:2769)
+  n1: 166320 0x5C5E18: __basis_routines_MOD_basis_lhtp_basis_create (basis_routines.f90:2089)
+   n1: 166320 0x5CCAA6: __basis_routines_MOD_basis_lhtp_family_create (basis_routines.f90:2262)
+    n1: 166320 0x5D61D0: __basis_routines_MOD_basis_create_finish (basis_routines.f90:366)
+     n2: 166320 0x418032: __opencmiss_MOD_cmissbasiscreatefinishobj (opencmiss.f90:8661)
+      n1: 128304 0x408653: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n0: 128304 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n0: 38016 in 1 place, below massif's threshold (01.00%)
+ n1: 130752 0x688C85: __distributed_matrix_vector_MOD_distributed_matrix_storage_locations_set (distributed_matrix_vector.f90:2251)
+  n1: 130752 0x5752C5: __solver_matrices_routines_MOD_solver_matrices_create_finish (solver_matrices_routines.f90:150)
+   n1: 130752 0x51A413: __solver_routines_MOD_solver_newton_linesearch_create_finish (solver_routines.f90:10947)
+    n1: 130752 0x522ADA: __solver_routines_MOD_solver_newton_create_finish (solver_routines.f90:10369)
+     n1: 130752 0x522E5A: __solver_routines_MOD_solver_nonlinear_create_finish (solver_routines.f90:12522)
+      n1: 130752 0x5256C3: __solver_routines_MOD_solver_equations_create_finish (solver_routines.f90:4648)
+       n1: 130752 0x9346B9: __finite_elasticity_routines_MOD_finite_elasticity_problem_setup (finite_elasticity_routines.f90:3101)
+        n1: 130752 0x6B6A8E: __elasticity_routines_MOD_elasticity_problem_setup (elasticity_routines.f90:374)
+         n1: 130752 0x4DFBBA: __problem_routines_MOD_problem_setup (problem_routines.f90:895)
+          n1: 130752 0x4E94B2: __problem_routines_MOD_problem_solver_equations_create_finish (problem_routines.f90:2149)
+           n1: 130752 0x4BF7C7: __opencmiss_MOD_cmissproblemsolverequationscreatefinishobj (opencmiss.f90:35383)
+            n1: 130752 0x409209: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n0: 130752 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+#-----------
+snapshot=3
+#-----------
+time=1687442170
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=detailed
+n8: 11029330 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 8391248 0x14DF040: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 8391248 0x14CE235: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 8391248 0x14D561F: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 8391248 0x14A977F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 8391248 0x1477712: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 8391248 0x1477275: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 8391248 0x1490F0A: MPI_INIT (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 8391248 0x604DD2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+         n1: 8391248 0x5F6B38: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+          n1: 8391248 0x4DDC8D: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+           n1: 8391248 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n0: 8391248 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n0: 1064073 in 553 places, all below massif's threshold (01.00%)
+ n2: 466393 0xC6DFC8: PetscMallocAlign(unsigned long, int, char const*, char const*, char const*, void**) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 393498 0xD143E7: MatSeqAIJSetPreallocation_SeqAIJ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 393498 0xD15C0A: MatSeqAIJSetPreallocation(_p_Mat*, int, int const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 393498 0xD5EBFC: MatCreateMPIAIJ(int, int, int, int, int, int, int const*, int, int const*, _p_Mat**) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 393498 0xC1216E: matcreatempiaij_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 393498 0x5FB9E1: __cmiss_petsc_MOD_petsc_matcreatempiaij (cmiss_petsc.f90:2267)
+       n1: 393498 0x6822C7: __distributed_matrix_vector_MOD_distributed_matrix_petsc_create_finish (distributed_matrix_vector.f90:1947)
+        n1: 393498 0x683917: __distributed_matrix_vector_MOD_distributed_matrix_create_finish (distributed_matrix_vector.f90:621)
+         n1: 393498 0x575315: __solver_matrices_routines_MOD_solver_matrices_create_finish (solver_matrices_routines.f90:154)
+          n1: 393498 0x51A413: __solver_routines_MOD_solver_newton_linesearch_create_finish (solver_routines.f90:10947)
+           n1: 393498 0x522ADA: __solver_routines_MOD_solver_newton_create_finish (solver_routines.f90:10369)
+            n1: 393498 0x522E5A: __solver_routines_MOD_solver_nonlinear_create_finish (solver_routines.f90:12522)
+             n1: 393498 0x5256C3: __solver_routines_MOD_solver_equations_create_finish (solver_routines.f90:4648)
+              n1: 393498 0x9346B9: __finite_elasticity_routines_MOD_finite_elasticity_problem_setup (finite_elasticity_routines.f90:3101)
+               n1: 393498 0x6B6A8E: __elasticity_routines_MOD_elasticity_problem_setup (elasticity_routines.f90:374)
+                n1: 393498 0x4DFBBA: __problem_routines_MOD_problem_setup (problem_routines.f90:895)
+                 n1: 393498 0x4E94B2: __problem_routines_MOD_problem_solver_equations_create_finish (problem_routines.f90:2149)
+                  n1: 393498 0x4BF7C7: __opencmiss_MOD_cmissproblemsolverequationscreatefinishobj (opencmiss.f90:35383)
+                   n1: 393498 0x409209: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                    n0: 393498 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n0: 72895 in 70 places, all below massif's threshold (01.00%)
+ n1: 418560 0xAA9581: __matrix_vector_MOD_matrix_create_finish (matrix_vector.f90:557)
+  n1: 418560 0x668D6C: __distributed_matrix_vector_MOD_distributed_matrix_cmiss_create_finish (distributed_matrix_vector.f90:489)
+   n1: 418560 0x68384F: __distributed_matrix_vector_MOD_distributed_matrix_create_finish (distributed_matrix_vector.f90:619)
+    n1: 418560 0x6F0AEF: __equations_matrices_routines_MOD_equations_matrices_create_finish (equations_matrices_routines.f90:393)
+     n1: 418560 0x92F98B: __finite_elasticity_routines_MOD_finite_elasticity_equations_set_setup (finite_elasticity_routines.f90:2812)
+      n1: 418560 0x6B6006: __elasticity_routines_MOD_elasticity_equations_set_setup (elasticity_routines.f90:256)
+       n1: 418560 0x7002EC: __equations_set_routines_MOD_equations_set_setup (equations_set_routines.f90:3548)
+        n1: 418560 0x705445: __equations_set_routines_MOD_equations_set_equations_create_finish (equations_set_routines.f90:3603)
+         n1: 418560 0x4494DA: __opencmiss_MOD_cmissequationssetequationscreatefinishobj (opencmiss.f90:18714)
+          n1: 418560 0x408FA6: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n0: 418560 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 209280 0xAB43BA: __matrix_vector_MOD_matrix_storage_locations_set (matrix_vector.f90:1592)
+  n1: 209280 0x685BAF: __distributed_matrix_vector_MOD_distributed_matrix_storage_locations_set (distributed_matrix_vector.f90:2209)
+   n1: 209280 0x6F0A93: __equations_matrices_routines_MOD_equations_matrices_create_finish (equations_matrices_routines.f90:389)
+    n1: 209280 0x92F98B: __finite_elasticity_routines_MOD_finite_elasticity_equations_set_setup (finite_elasticity_routines.f90:2812)
+     n1: 209280 0x6B6006: __elasticity_routines_MOD_elasticity_equations_set_setup (elasticity_routines.f90:256)
+      n1: 209280 0x7002EC: __equations_set_routines_MOD_equations_set_setup (equations_set_routines.f90:3548)
+       n1: 209280 0x705445: __equations_set_routines_MOD_equations_set_equations_create_finish (equations_set_routines.f90:3603)
+        n1: 209280 0x4494DA: __opencmiss_MOD_cmissequationssetequationscreatefinishobj (opencmiss.f90:18714)
+         n1: 209280 0x408FA6: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n0: 209280 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 182704 0x7C0274: __field_routines_MOD_field_mappings_calculate (field_routines.f90:6849)
+  n1: 182704 0x8F67F2: __field_routines_MOD_field_create_finish (field_routines.f90:3685)
+   n2: 182704 0x45992F: __opencmiss_MOD_cmissfieldcreatefinishobj (opencmiss.f90:21076)
+    n1: 116736 0x408E40: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n0: 116736 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n0: 65968 in 3 places, all below massif's threshold (01.00%)
+ n1: 166320 0x5C5C8F: __basis_routines_MOD_basis_quadrature_create (basis_routines.f90:2769)
+  n1: 166320 0x5C5E18: __basis_routines_MOD_basis_lhtp_basis_create (basis_routines.f90:2089)
+   n1: 166320 0x5CCAA6: __basis_routines_MOD_basis_lhtp_family_create (basis_routines.f90:2262)
+    n1: 166320 0x5D61D0: __basis_routines_MOD_basis_create_finish (basis_routines.f90:366)
+     n2: 166320 0x418032: __opencmiss_MOD_cmissbasiscreatefinishobj (opencmiss.f90:8661)
+      n1: 128304 0x408653: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n0: 128304 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n0: 38016 in 1 place, below massif's threshold (01.00%)
+ n1: 130752 0x688C85: __distributed_matrix_vector_MOD_distributed_matrix_storage_locations_set (distributed_matrix_vector.f90:2251)
+  n1: 130752 0x5752C5: __solver_matrices_routines_MOD_solver_matrices_create_finish (solver_matrices_routines.f90:150)
+   n1: 130752 0x51A413: __solver_routines_MOD_solver_newton_linesearch_create_finish (solver_routines.f90:10947)
+    n1: 130752 0x522ADA: __solver_routines_MOD_solver_newton_create_finish (solver_routines.f90:10369)
+     n1: 130752 0x522E5A: __solver_routines_MOD_solver_nonlinear_create_finish (solver_routines.f90:12522)
+      n1: 130752 0x5256C3: __solver_routines_MOD_solver_equations_create_finish (solver_routines.f90:4648)
+       n1: 130752 0x9346B9: __finite_elasticity_routines_MOD_finite_elasticity_problem_setup (finite_elasticity_routines.f90:3101)
+        n1: 130752 0x6B6A8E: __elasticity_routines_MOD_elasticity_problem_setup (elasticity_routines.f90:374)
+         n1: 130752 0x4DFBBA: __problem_routines_MOD_problem_setup (problem_routines.f90:895)
+          n1: 130752 0x4E94B2: __problem_routines_MOD_problem_solver_equations_create_finish (problem_routines.f90:2149)
+           n1: 130752 0x4BF7C7: __opencmiss_MOD_cmissproblemsolverequationscreatefinishobj (opencmiss.f90:35383)
+            n1: 130752 0x409209: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n0: 130752 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+#-----------
+snapshot=4
+#-----------
+time=2176609665
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=5
+#-----------
+time=2540578389
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=6
+#-----------
+time=3045948792
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=7
+#-----------
+time=3447170166
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=detailed
+n8: 11029330 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 8391248 0x14DF040: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 8391248 0x14CE235: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 8391248 0x14D561F: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 8391248 0x14A977F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 8391248 0x1477712: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 8391248 0x1477275: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 8391248 0x1490F0A: MPI_INIT (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 8391248 0x604DD2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+         n1: 8391248 0x5F6B38: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+          n1: 8391248 0x4DDC8D: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+           n1: 8391248 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n0: 8391248 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n0: 1064073 in 555 places, all below massif's threshold (01.00%)
+ n2: 466393 0xC6DFC8: PetscMallocAlign(unsigned long, int, char const*, char const*, char const*, void**) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 393498 0xD143E7: MatSeqAIJSetPreallocation_SeqAIJ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 393498 0xD15C0A: MatSeqAIJSetPreallocation(_p_Mat*, int, int const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 393498 0xD5EBFC: MatCreateMPIAIJ(int, int, int, int, int, int, int const*, int, int const*, _p_Mat**) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 393498 0xC1216E: matcreatempiaij_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 393498 0x5FB9E1: __cmiss_petsc_MOD_petsc_matcreatempiaij (cmiss_petsc.f90:2267)
+       n1: 393498 0x6822C7: __distributed_matrix_vector_MOD_distributed_matrix_petsc_create_finish (distributed_matrix_vector.f90:1947)
+        n1: 393498 0x683917: __distributed_matrix_vector_MOD_distributed_matrix_create_finish (distributed_matrix_vector.f90:621)
+         n1: 393498 0x575315: __solver_matrices_routines_MOD_solver_matrices_create_finish (solver_matrices_routines.f90:154)
+          n1: 393498 0x51A413: __solver_routines_MOD_solver_newton_linesearch_create_finish (solver_routines.f90:10947)
+           n1: 393498 0x522ADA: __solver_routines_MOD_solver_newton_create_finish (solver_routines.f90:10369)
+            n1: 393498 0x522E5A: __solver_routines_MOD_solver_nonlinear_create_finish (solver_routines.f90:12522)
+             n1: 393498 0x5256C3: __solver_routines_MOD_solver_equations_create_finish (solver_routines.f90:4648)
+              n1: 393498 0x9346B9: __finite_elasticity_routines_MOD_finite_elasticity_problem_setup (finite_elasticity_routines.f90:3101)
+               n1: 393498 0x6B6A8E: __elasticity_routines_MOD_elasticity_problem_setup (elasticity_routines.f90:374)
+                n1: 393498 0x4DFBBA: __problem_routines_MOD_problem_setup (problem_routines.f90:895)
+                 n1: 393498 0x4E94B2: __problem_routines_MOD_problem_solver_equations_create_finish (problem_routines.f90:2149)
+                  n1: 393498 0x4BF7C7: __opencmiss_MOD_cmissproblemsolverequationscreatefinishobj (opencmiss.f90:35383)
+                   n1: 393498 0x409209: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                    n0: 393498 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n0: 72895 in 70 places, all below massif's threshold (01.00%)
+ n1: 418560 0xAA9581: __matrix_vector_MOD_matrix_create_finish (matrix_vector.f90:557)
+  n1: 418560 0x668D6C: __distributed_matrix_vector_MOD_distributed_matrix_cmiss_create_finish (distributed_matrix_vector.f90:489)
+   n1: 418560 0x68384F: __distributed_matrix_vector_MOD_distributed_matrix_create_finish (distributed_matrix_vector.f90:619)
+    n1: 418560 0x6F0AEF: __equations_matrices_routines_MOD_equations_matrices_create_finish (equations_matrices_routines.f90:393)
+     n1: 418560 0x92F98B: __finite_elasticity_routines_MOD_finite_elasticity_equations_set_setup (finite_elasticity_routines.f90:2812)
+      n1: 418560 0x6B6006: __elasticity_routines_MOD_elasticity_equations_set_setup (elasticity_routines.f90:256)
+       n1: 418560 0x7002EC: __equations_set_routines_MOD_equations_set_setup (equations_set_routines.f90:3548)
+        n1: 418560 0x705445: __equations_set_routines_MOD_equations_set_equations_create_finish (equations_set_routines.f90:3603)
+         n1: 418560 0x4494DA: __opencmiss_MOD_cmissequationssetequationscreatefinishobj (opencmiss.f90:18714)
+          n1: 418560 0x408FA6: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n0: 418560 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 209280 0xAB43BA: __matrix_vector_MOD_matrix_storage_locations_set (matrix_vector.f90:1592)
+  n1: 209280 0x685BAF: __distributed_matrix_vector_MOD_distributed_matrix_storage_locations_set (distributed_matrix_vector.f90:2209)
+   n1: 209280 0x6F0A93: __equations_matrices_routines_MOD_equations_matrices_create_finish (equations_matrices_routines.f90:389)
+    n1: 209280 0x92F98B: __finite_elasticity_routines_MOD_finite_elasticity_equations_set_setup (finite_elasticity_routines.f90:2812)
+     n1: 209280 0x6B6006: __elasticity_routines_MOD_elasticity_equations_set_setup (elasticity_routines.f90:256)
+      n1: 209280 0x7002EC: __equations_set_routines_MOD_equations_set_setup (equations_set_routines.f90:3548)
+       n1: 209280 0x705445: __equations_set_routines_MOD_equations_set_equations_create_finish (equations_set_routines.f90:3603)
+        n1: 209280 0x4494DA: __opencmiss_MOD_cmissequationssetequationscreatefinishobj (opencmiss.f90:18714)
+         n1: 209280 0x408FA6: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n0: 209280 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 182704 0x7C0274: __field_routines_MOD_field_mappings_calculate (field_routines.f90:6849)
+  n1: 182704 0x8F67F2: __field_routines_MOD_field_create_finish (field_routines.f90:3685)
+   n2: 182704 0x45992F: __opencmiss_MOD_cmissfieldcreatefinishobj (opencmiss.f90:21076)
+    n1: 116736 0x408E40: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n0: 116736 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n0: 65968 in 3 places, all below massif's threshold (01.00%)
+ n1: 166320 0x5C5C8F: __basis_routines_MOD_basis_quadrature_create (basis_routines.f90:2769)
+  n1: 166320 0x5C5E18: __basis_routines_MOD_basis_lhtp_basis_create (basis_routines.f90:2089)
+   n1: 166320 0x5CCAA6: __basis_routines_MOD_basis_lhtp_family_create (basis_routines.f90:2262)
+    n1: 166320 0x5D61D0: __basis_routines_MOD_basis_create_finish (basis_routines.f90:366)
+     n2: 166320 0x418032: __opencmiss_MOD_cmissbasiscreatefinishobj (opencmiss.f90:8661)
+      n1: 128304 0x408653: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n0: 128304 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n0: 38016 in 1 place, below massif's threshold (01.00%)
+ n1: 130752 0x688C85: __distributed_matrix_vector_MOD_distributed_matrix_storage_locations_set (distributed_matrix_vector.f90:2251)
+  n1: 130752 0x5752C5: __solver_matrices_routines_MOD_solver_matrices_create_finish (solver_matrices_routines.f90:150)
+   n1: 130752 0x51A413: __solver_routines_MOD_solver_newton_linesearch_create_finish (solver_routines.f90:10947)
+    n1: 130752 0x522ADA: __solver_routines_MOD_solver_newton_create_finish (solver_routines.f90:10369)
+     n1: 130752 0x522E5A: __solver_routines_MOD_solver_nonlinear_create_finish (solver_routines.f90:12522)
+      n1: 130752 0x5256C3: __solver_routines_MOD_solver_equations_create_finish (solver_routines.f90:4648)
+       n1: 130752 0x9346B9: __finite_elasticity_routines_MOD_finite_elasticity_problem_setup (finite_elasticity_routines.f90:3101)
+        n1: 130752 0x6B6A8E: __elasticity_routines_MOD_elasticity_problem_setup (elasticity_routines.f90:374)
+         n1: 130752 0x4DFBBA: __problem_routines_MOD_problem_setup (problem_routines.f90:895)
+          n1: 130752 0x4E94B2: __problem_routines_MOD_problem_solver_equations_create_finish (problem_routines.f90:2149)
+           n1: 130752 0x4BF7C7: __opencmiss_MOD_cmissproblemsolverequationscreatefinishobj (opencmiss.f90:35383)
+            n1: 130752 0x409209: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n0: 130752 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+#-----------
+snapshot=8
+#-----------
+time=3851560488
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=9
+#-----------
+time=4324047408
+mem_heap_B=11029834
+mem_heap_extra_B=269662
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=10
+#-----------
+time=4962059897
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=11
+#-----------
+time=5480851519
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=12
+#-----------
+time=5820958946
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=13
+#-----------
+time=6281888784
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=14
+#-----------
+time=6855059239
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=15
+#-----------
+time=7612499324
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=16
+#-----------
+time=8329373185
+mem_heap_B=11029367
+mem_heap_extra_B=269569
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=17
+#-----------
+time=8810238025
+mem_heap_B=11031456
+mem_heap_extra_B=269600
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=18
+#-----------
+time=9294138954
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=19
+#-----------
+time=10021910186
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=20
+#-----------
+time=10583219348
+mem_heap_B=11034198
+mem_heap_extra_B=269634
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=21
+#-----------
+time=10986743293
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=22
+#-----------
+time=11581548528
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=23
+#-----------
+time=12181601821
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=24
+#-----------
+time=12540693898
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=25
+#-----------
+time=13025421057
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=26
+#-----------
+time=13384511872
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=27
+#-----------
+time=13864143389
+mem_heap_B=11029330
+mem_heap_extra_B=269550
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=28
+#-----------
+time=14338475170
+mem_heap_B=11031520
+mem_heap_extra_B=269600
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=29
+#-----------
+time=14725280184
+mem_heap_B=12376542
+mem_heap_extra_B=271690
+mem_stacks_B=0
+heap_tree=peak
+n13: 12376542 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 8391248 0x14DF040: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 8391248 0x14CE235: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 8391248 0x14D561F: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 8391248 0x14A977F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 8391248 0x1477712: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 8391248 0x1477275: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 8391248 0x1490F0A: MPI_INIT (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 8391248 0x604DD2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+         n1: 8391248 0x5F6B38: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+          n1: 8391248 0x4DDC8D: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+           n1: 8391248 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n0: 8391248 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n0: 1002075 in 644 places, all below massif's threshold (01.00%)
+ n4: 747975 0xC6DFC8: PetscMallocAlign(unsigned long, int, char const*, char const*, char const*, void**) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 398364 0xD143E7: MatSeqAIJSetPreallocation_SeqAIJ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n2: 398364 0xD15C0A: MatSeqAIJSetPreallocation(_p_Mat*, int, int const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 393498 0xD5EBFC: MatCreateMPIAIJ(int, int, int, int, int, int, int const*, int, int const*, _p_Mat**) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 393498 0xC1216E: matcreatempiaij_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 393498 0x5FB9E1: __cmiss_petsc_MOD_petsc_matcreatempiaij (cmiss_petsc.f90:2267)
+       n1: 393498 0x6822C7: __distributed_matrix_vector_MOD_distributed_matrix_petsc_create_finish (distributed_matrix_vector.f90:1947)
+        n1: 393498 0x683917: __distributed_matrix_vector_MOD_distributed_matrix_create_finish (distributed_matrix_vector.f90:621)
+         n1: 393498 0x575315: __solver_matrices_routines_MOD_solver_matrices_create_finish (solver_matrices_routines.f90:154)
+          n1: 393498 0x51A413: __solver_routines_MOD_solver_newton_linesearch_create_finish (solver_routines.f90:10947)
+           n1: 393498 0x522ADA: __solver_routines_MOD_solver_newton_create_finish (solver_routines.f90:10369)
+            n1: 393498 0x522E5A: __solver_routines_MOD_solver_nonlinear_create_finish (solver_routines.f90:12522)
+             n1: 393498 0x5256C3: __solver_routines_MOD_solver_equations_create_finish (solver_routines.f90:4648)
+              n1: 393498 0x9346B9: __finite_elasticity_routines_MOD_finite_elasticity_problem_setup (finite_elasticity_routines.f90:3101)
+               n1: 393498 0x6B6A8E: __elasticity_routines_MOD_elasticity_problem_setup (elasticity_routines.f90:374)
+                n1: 393498 0x4DFBBA: __problem_routines_MOD_problem_setup (problem_routines.f90:895)
+                 n1: 393498 0x4E94B2: __problem_routines_MOD_problem_solver_equations_create_finish (problem_routines.f90:2149)
+                  n1: 393498 0x4BF7C7: __opencmiss_MOD_cmissproblemsolverequationscreatefinishobj (opencmiss.f90:35383)
+                   n1: 393498 0x409209: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                    n0: 393498 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n0: 4866 in 1 place, below massif's threshold (01.00%)
+  n1: 130752 0xD96679: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 130752 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 130752 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 130752 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 130752 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 130752 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 130752 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 130752 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 130752 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 130752 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 130752 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+             n1: 130752 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+              n1: 130752 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+               n1: 130752 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                n1: 130752 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                 n1: 130752 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                  n1: 130752 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                   n1: 130752 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                    n1: 130752 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                     n1: 130752 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                      n1: 130752 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                       n0: 130752 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 130752 0xD966F0: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 130752 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 130752 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 130752 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 130752 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 130752 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 130752 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 130752 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 130752 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 130752 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 130752 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+             n1: 130752 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+              n1: 130752 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+               n1: 130752 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                n1: 130752 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                 n1: 130752 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                  n1: 130752 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                   n1: 130752 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                    n1: 130752 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                     n1: 130752 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                      n1: 130752 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                       n0: 130752 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n0: 88107 in 87 places, all below massif's threshold (01.00%)
+ n1: 448536 0x1297DB5: dmumps_142_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 448536 0x130C361: dmumps_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 448536 0x1260A19: dmumps_f77_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 448536 0x125E3CF: dmumps_c (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 448536 0xD96CE9: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 448536 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 448536 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 448536 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 448536 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 448536 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 448536 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 448536 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n1: 448536 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+              n1: 448536 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+               n1: 448536 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+                n1: 448536 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+                 n1: 448536 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+                  n1: 448536 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                   n1: 448536 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                    n1: 448536 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                     n1: 448536 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                      n1: 448536 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                       n1: 448536 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                        n1: 448536 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                         n1: 448536 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                          n0: 448536 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 418560 0xAA9581: __matrix_vector_MOD_matrix_create_finish (matrix_vector.f90:557)
+  n1: 418560 0x668D6C: __distributed_matrix_vector_MOD_distributed_matrix_cmiss_create_finish (distributed_matrix_vector.f90:489)
+   n1: 418560 0x68384F: __distributed_matrix_vector_MOD_distributed_matrix_create_finish (distributed_matrix_vector.f90:619)
+    n1: 418560 0x6F0AEF: __equations_matrices_routines_MOD_equations_matrices_create_finish (equations_matrices_routines.f90:393)
+     n1: 418560 0x92F98B: __finite_elasticity_routines_MOD_finite_elasticity_equations_set_setup (finite_elasticity_routines.f90:2812)
+      n1: 418560 0x6B6006: __elasticity_routines_MOD_elasticity_equations_set_setup (elasticity_routines.f90:256)
+       n1: 418560 0x7002EC: __equations_set_routines_MOD_equations_set_setup (equations_set_routines.f90:3548)
+        n1: 418560 0x705445: __equations_set_routines_MOD_equations_set_equations_create_finish (equations_set_routines.f90:3603)
+         n1: 418560 0x4494DA: __opencmiss_MOD_cmissequationssetequationscreatefinishobj (opencmiss.f90:18714)
+          n1: 418560 0x408FA6: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n0: 418560 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 261504 0x1297FF5: dmumps_142_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 261504 0x130C361: dmumps_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 261504 0x1260A19: dmumps_f77_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 261504 0x125E3CF: dmumps_c (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 261504 0xD96CE9: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 261504 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 261504 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 261504 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 261504 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 261504 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 261504 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 261504 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n1: 261504 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+              n1: 261504 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+               n1: 261504 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+                n1: 261504 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+                 n1: 261504 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+                  n1: 261504 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                   n1: 261504 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                    n1: 261504 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                     n1: 261504 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                      n1: 261504 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                       n1: 261504 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                        n1: 261504 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                         n1: 261504 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                          n0: 261504 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 209280 0xAB43BA: __matrix_vector_MOD_matrix_storage_locations_set (matrix_vector.f90:1592)
+  n1: 209280 0x685BAF: __distributed_matrix_vector_MOD_distributed_matrix_storage_locations_set (distributed_matrix_vector.f90:2209)
+   n1: 209280 0x6F0A93: __equations_matrices_routines_MOD_equations_matrices_create_finish (equations_matrices_routines.f90:389)
+    n1: 209280 0x92F98B: __finite_elasticity_routines_MOD_finite_elasticity_equations_set_setup (finite_elasticity_routines.f90:2812)
+     n1: 209280 0x6B6006: __elasticity_routines_MOD_elasticity_equations_set_setup (elasticity_routines.f90:256)
+      n1: 209280 0x7002EC: __equations_set_routines_MOD_equations_set_setup (equations_set_routines.f90:3548)
+       n1: 209280 0x705445: __equations_set_routines_MOD_equations_set_equations_create_finish (equations_set_routines.f90:3603)
+        n1: 209280 0x4494DA: __opencmiss_MOD_cmissequationssetequationscreatefinishobj (opencmiss.f90:18714)
+         n1: 209280 0x408FA6: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n0: 209280 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 182704 0x7C0274: __field_routines_MOD_field_mappings_calculate (field_routines.f90:6849)
+  n1: 182704 0x8F67F2: __field_routines_MOD_field_create_finish (field_routines.f90:3685)
+   n1: 182704 0x45992F: __opencmiss_MOD_cmissfieldcreatefinishobj (opencmiss.f90:21076)
+    n0: 182704 in 4 places, all below massif's threshold (01.00%)
+ n1: 166320 0x5C5C8F: __basis_routines_MOD_basis_quadrature_create (basis_routines.f90:2769)
+  n1: 166320 0x5C5E18: __basis_routines_MOD_basis_lhtp_basis_create (basis_routines.f90:2089)
+   n1: 166320 0x5CCAA6: __basis_routines_MOD_basis_lhtp_family_create (basis_routines.f90:2262)
+    n1: 166320 0x5D61D0: __basis_routines_MOD_basis_create_finish (basis_routines.f90:366)
+     n2: 166320 0x418032: __opencmiss_MOD_cmissbasiscreatefinishobj (opencmiss.f90:8661)
+      n1: 128304 0x408653: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n0: 128304 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n0: 38016 in 1 place, below massif's threshold (01.00%)
+ n1: 144000 0x129A310: dmumps_142_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 144000 0x130C361: dmumps_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 144000 0x1260A19: dmumps_f77_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 144000 0x125E3CF: dmumps_c (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 144000 0xD96CE9: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 144000 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 144000 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 144000 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 144000 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 144000 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 144000 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 144000 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n1: 144000 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+              n1: 144000 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+               n1: 144000 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+                n1: 144000 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+                 n1: 144000 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+                  n1: 144000 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                   n1: 144000 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                    n1: 144000 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                     n1: 144000 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                      n1: 144000 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                       n1: 144000 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                        n1: 144000 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                         n1: 144000 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                          n0: 144000 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n2: 140420 0x12C9604: __dmumps_comm_buffer_MOD_dmumps_2 (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 140000 0x12C9671: __dmumps_comm_buffer_MOD_dmumps_53 (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 140000 0x129A12E: dmumps_142_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 140000 0x130C361: dmumps_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 140000 0x1260A19: dmumps_f77_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 140000 0x125E3CF: dmumps_c (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 140000 0xD96CE9: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 140000 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 140000 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 140000 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 140000 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 140000 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n1: 140000 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+              n1: 140000 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+               n1: 140000 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                n1: 140000 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                 n1: 140000 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+                  n1: 140000 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+                   n1: 140000 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+                    n1: 140000 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                     n1: 140000 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                      n1: 140000 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                       n1: 140000 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                        n1: 140000 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                         n1: 140000 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                          n1: 140000 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                           n1: 140000 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                            n0: 140000 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n0: 420 in 2 places, all below massif's threshold (01.00%)
+ n1: 133168 0x13093A3: dmumps_24_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 133168 0x12B1F1D: dmumps_26_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 133168 0x130ADE9: dmumps_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 133168 0x1260A19: dmumps_f77_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 133168 0x125E3CF: dmumps_c (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 133168 0xD96C68: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 133168 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 133168 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 133168 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 133168 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 133168 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 133168 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n1: 133168 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+              n1: 133168 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+               n1: 133168 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                n1: 133168 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+                 n1: 133168 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+                  n1: 133168 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+                   n1: 133168 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                    n1: 133168 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                     n1: 133168 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                      n1: 133168 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                       n1: 133168 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                        n1: 133168 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                         n1: 133168 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                          n1: 133168 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                           n0: 133168 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 130752 0x688C85: __distributed_matrix_vector_MOD_distributed_matrix_storage_locations_set (distributed_matrix_vector.f90:2251)
+  n1: 130752 0x5752C5: __solver_matrices_routines_MOD_solver_matrices_create_finish (solver_matrices_routines.f90:150)
+   n1: 130752 0x51A413: __solver_routines_MOD_solver_newton_linesearch_create_finish (solver_routines.f90:10947)
+    n1: 130752 0x522ADA: __solver_routines_MOD_solver_newton_create_finish (solver_routines.f90:10369)
+     n1: 130752 0x522E5A: __solver_routines_MOD_solver_nonlinear_create_finish (solver_routines.f90:12522)
+      n1: 130752 0x5256C3: __solver_routines_MOD_solver_equations_create_finish (solver_routines.f90:4648)
+       n1: 130752 0x9346B9: __finite_elasticity_routines_MOD_finite_elasticity_problem_setup (finite_elasticity_routines.f90:3101)
+        n1: 130752 0x6B6A8E: __elasticity_routines_MOD_elasticity_problem_setup (elasticity_routines.f90:374)
+         n1: 130752 0x4DFBBA: __problem_routines_MOD_problem_setup (problem_routines.f90:895)
+          n1: 130752 0x4E94B2: __problem_routines_MOD_problem_solver_equations_create_finish (problem_routines.f90:2149)
+           n1: 130752 0x4BF7C7: __opencmiss_MOD_cmissproblemsolverequationscreatefinishobj (opencmiss.f90:35383)
+            n1: 130752 0x409209: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n0: 130752 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+#-----------
+snapshot=30
+#-----------
+time=15197366310
+mem_heap_B=11932122
+mem_heap_extra_B=271846
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=31
+#-----------
+time=15787474219
+mem_heap_B=11930133
+mem_heap_extra_B=271843
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=32
+#-----------
+time=16141538893
+mem_heap_B=11928059
+mem_heap_extra_B=271805
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=33
+#-----------
+time=16706947627
+mem_heap_B=11928090
+mem_heap_extra_B=271830
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=34
+#-----------
+time=17036313248
+mem_heap_B=11928085
+mem_heap_extra_B=271819
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=35
+#-----------
+time=17530361848
+mem_heap_B=11928059
+mem_heap_extra_B=271821
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=36
+#-----------
+time=18024694716
+mem_heap_B=12376794
+mem_heap_extra_B=271782
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=37
+#-----------
+time=18354069712
+mem_heap_B=11932816
+mem_heap_extra_B=271824
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=38
+#-----------
+time=18848118211
+mem_heap_B=11928059
+mem_heap_extra_B=271789
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=39
+#-----------
+time=19177483932
+mem_heap_B=11928210
+mem_heap_extra_B=271814
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=40
+#-----------
+time=19671532538
+mem_heap_B=11926815
+mem_heap_extra_B=271713
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=41
+#-----------
+time=20330271501
+mem_heap_B=11932700
+mem_heap_extra_B=271780
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=42
+#-----------
+time=20824320002
+mem_heap_B=11927948
+mem_heap_extra_B=271740
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=43
+#-----------
+time=21319368781
+mem_heap_B=12376786
+mem_heap_extra_B=271838
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=44
+#-----------
+time=21648734627
+mem_heap_B=11928726
+mem_heap_extra_B=271978
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=45
+#-----------
+time=22307466227
+mem_heap_B=11926914
+mem_heap_extra_B=271862
+mem_stacks_B=0
+heap_tree=detailed
+n10: 11926914 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 8391248 0x14DF040: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 8391248 0x14CE235: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 8391248 0x14D561F: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 8391248 0x14A977F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 8391248 0x1477712: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 8391248 0x1477275: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 8391248 0x1490F0A: MPI_INIT (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 8391248 0x604DD2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+         n1: 8391248 0x5F6B38: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+          n1: 8391248 0x4DDC8D: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+           n1: 8391248 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n0: 8391248 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n0: 1098123 in 660 places, all below massif's threshold (01.00%)
+ n4: 748223 0xC6DFC8: PetscMallocAlign(unsigned long, int, char const*, char const*, char const*, void**) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 398364 0xD143E7: MatSeqAIJSetPreallocation_SeqAIJ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n2: 398364 0xD15C0A: MatSeqAIJSetPreallocation(_p_Mat*, int, int const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 393498 0xD5EBFC: MatCreateMPIAIJ(int, int, int, int, int, int, int const*, int, int const*, _p_Mat**) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 393498 0xC1216E: matcreatempiaij_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 393498 0x5FB9E1: __cmiss_petsc_MOD_petsc_matcreatempiaij (cmiss_petsc.f90:2267)
+       n1: 393498 0x6822C7: __distributed_matrix_vector_MOD_distributed_matrix_petsc_create_finish (distributed_matrix_vector.f90:1947)
+        n1: 393498 0x683917: __distributed_matrix_vector_MOD_distributed_matrix_create_finish (distributed_matrix_vector.f90:621)
+         n1: 393498 0x575315: __solver_matrices_routines_MOD_solver_matrices_create_finish (solver_matrices_routines.f90:154)
+          n1: 393498 0x51A413: __solver_routines_MOD_solver_newton_linesearch_create_finish (solver_routines.f90:10947)
+           n1: 393498 0x522ADA: __solver_routines_MOD_solver_newton_create_finish (solver_routines.f90:10369)
+            n1: 393498 0x522E5A: __solver_routines_MOD_solver_nonlinear_create_finish (solver_routines.f90:12522)
+             n1: 393498 0x5256C3: __solver_routines_MOD_solver_equations_create_finish (solver_routines.f90:4648)
+              n1: 393498 0x9346B9: __finite_elasticity_routines_MOD_finite_elasticity_problem_setup (finite_elasticity_routines.f90:3101)
+               n1: 393498 0x6B6A8E: __elasticity_routines_MOD_elasticity_problem_setup (elasticity_routines.f90:374)
+                n1: 393498 0x4DFBBA: __problem_routines_MOD_problem_setup (problem_routines.f90:895)
+                 n1: 393498 0x4E94B2: __problem_routines_MOD_problem_solver_equations_create_finish (problem_routines.f90:2149)
+                  n1: 393498 0x4BF7C7: __opencmiss_MOD_cmissproblemsolverequationscreatefinishobj (opencmiss.f90:35383)
+                   n1: 393498 0x409209: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                    n0: 393498 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n0: 4866 in 1 place, below massif's threshold (01.00%)
+  n1: 130752 0xD96679: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 130752 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 130752 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 130752 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 130752 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 130752 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 130752 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 130752 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 130752 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 130752 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 130752 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+             n1: 130752 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+              n1: 130752 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+               n1: 130752 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                n1: 130752 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                 n1: 130752 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                  n1: 130752 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                   n1: 130752 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                    n1: 130752 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                     n1: 130752 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                      n1: 130752 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                       n0: 130752 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 130752 0xD966F0: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 130752 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 130752 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 130752 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 130752 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 130752 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 130752 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 130752 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 130752 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 130752 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 130752 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+             n1: 130752 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+              n1: 130752 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+               n1: 130752 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                n1: 130752 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                 n1: 130752 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                  n1: 130752 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                   n1: 130752 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                    n1: 130752 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                     n1: 130752 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                      n1: 130752 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                       n0: 130752 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n0: 88355 in 87 places, all below massif's threshold (01.00%)
+ n1: 448536 0x1297DB5: dmumps_142_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 448536 0x130C361: dmumps_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 448536 0x1260A19: dmumps_f77_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 448536 0x125E3CF: dmumps_c (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 448536 0xD96CE9: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 448536 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 448536 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 448536 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 448536 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 448536 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 448536 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 448536 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n1: 448536 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+              n1: 448536 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+               n1: 448536 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+                n1: 448536 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+                 n1: 448536 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+                  n1: 448536 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                   n1: 448536 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                    n1: 448536 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                     n1: 448536 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                      n1: 448536 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                       n1: 448536 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                        n1: 448536 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                         n1: 448536 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                          n0: 448536 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 418560 0xAA9581: __matrix_vector_MOD_matrix_create_finish (matrix_vector.f90:557)
+  n1: 418560 0x668D6C: __distributed_matrix_vector_MOD_distributed_matrix_cmiss_create_finish (distributed_matrix_vector.f90:489)
+   n1: 418560 0x68384F: __distributed_matrix_vector_MOD_distributed_matrix_create_finish (distributed_matrix_vector.f90:619)
+    n1: 418560 0x6F0AEF: __equations_matrices_routines_MOD_equations_matrices_create_finish (equations_matrices_routines.f90:393)
+     n1: 418560 0x92F98B: __finite_elasticity_routines_MOD_finite_elasticity_equations_set_setup (finite_elasticity_routines.f90:2812)
+      n1: 418560 0x6B6006: __elasticity_routines_MOD_elasticity_equations_set_setup (elasticity_routines.f90:256)
+       n1: 418560 0x7002EC: __equations_set_routines_MOD_equations_set_setup (equations_set_routines.f90:3548)
+        n1: 418560 0x705445: __equations_set_routines_MOD_equations_set_equations_create_finish (equations_set_routines.f90:3603)
+         n1: 418560 0x4494DA: __opencmiss_MOD_cmissequationssetequationscreatefinishobj (opencmiss.f90:18714)
+          n1: 418560 0x408FA6: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n0: 418560 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 209280 0xAB43BA: __matrix_vector_MOD_matrix_storage_locations_set (matrix_vector.f90:1592)
+  n1: 209280 0x685BAF: __distributed_matrix_vector_MOD_distributed_matrix_storage_locations_set (distributed_matrix_vector.f90:2209)
+   n1: 209280 0x6F0A93: __equations_matrices_routines_MOD_equations_matrices_create_finish (equations_matrices_routines.f90:389)
+    n1: 209280 0x92F98B: __finite_elasticity_routines_MOD_finite_elasticity_equations_set_setup (finite_elasticity_routines.f90:2812)
+     n1: 209280 0x6B6006: __elasticity_routines_MOD_elasticity_equations_set_setup (elasticity_routines.f90:256)
+      n1: 209280 0x7002EC: __equations_set_routines_MOD_equations_set_setup (equations_set_routines.f90:3548)
+       n1: 209280 0x705445: __equations_set_routines_MOD_equations_set_equations_create_finish (equations_set_routines.f90:3603)
+        n1: 209280 0x4494DA: __opencmiss_MOD_cmissequationssetequationscreatefinishobj (opencmiss.f90:18714)
+         n1: 209280 0x408FA6: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n0: 209280 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 182704 0x7C0274: __field_routines_MOD_field_mappings_calculate (field_routines.f90:6849)
+  n1: 182704 0x8F67F2: __field_routines_MOD_field_create_finish (field_routines.f90:3685)
+   n1: 182704 0x45992F: __opencmiss_MOD_cmissfieldcreatefinishobj (opencmiss.f90:21076)
+    n0: 182704 in 4 places, all below massif's threshold (01.00%)
+ n1: 166320 0x5C5C8F: __basis_routines_MOD_basis_quadrature_create (basis_routines.f90:2769)
+  n1: 166320 0x5C5E18: __basis_routines_MOD_basis_lhtp_basis_create (basis_routines.f90:2089)
+   n1: 166320 0x5CCAA6: __basis_routines_MOD_basis_lhtp_family_create (basis_routines.f90:2262)
+    n1: 166320 0x5D61D0: __basis_routines_MOD_basis_create_finish (basis_routines.f90:366)
+     n2: 166320 0x418032: __opencmiss_MOD_cmissbasiscreatefinishobj (opencmiss.f90:8661)
+      n1: 128304 0x408653: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n0: 128304 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n0: 38016 in 1 place, below massif's threshold (01.00%)
+ n1: 133168 0x13093A3: dmumps_24_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 133168 0x12B1F1D: dmumps_26_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 133168 0x130ADE9: dmumps_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 133168 0x1260A19: dmumps_f77_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 133168 0x125E3CF: dmumps_c (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 133168 0xD96C68: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 133168 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 133168 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 133168 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 133168 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 133168 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 133168 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n1: 133168 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+              n1: 133168 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+               n1: 133168 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                n1: 133168 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+                 n1: 133168 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+                  n1: 133168 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+                   n1: 133168 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                    n1: 133168 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                     n1: 133168 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                      n1: 133168 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                       n1: 133168 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                        n1: 133168 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                         n1: 133168 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                          n1: 133168 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                           n0: 133168 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 130752 0x688C85: __distributed_matrix_vector_MOD_distributed_matrix_storage_locations_set (distributed_matrix_vector.f90:2251)
+  n1: 130752 0x5752C5: __solver_matrices_routines_MOD_solver_matrices_create_finish (solver_matrices_routines.f90:150)
+   n1: 130752 0x51A413: __solver_routines_MOD_solver_newton_linesearch_create_finish (solver_routines.f90:10947)
+    n1: 130752 0x522ADA: __solver_routines_MOD_solver_newton_create_finish (solver_routines.f90:10369)
+     n1: 130752 0x522E5A: __solver_routines_MOD_solver_nonlinear_create_finish (solver_routines.f90:12522)
+      n1: 130752 0x5256C3: __solver_routines_MOD_solver_equations_create_finish (solver_routines.f90:4648)
+       n1: 130752 0x9346B9: __finite_elasticity_routines_MOD_finite_elasticity_problem_setup (finite_elasticity_routines.f90:3101)
+        n1: 130752 0x6B6A8E: __elasticity_routines_MOD_elasticity_problem_setup (elasticity_routines.f90:374)
+         n1: 130752 0x4DFBBA: __problem_routines_MOD_problem_setup (problem_routines.f90:895)
+          n1: 130752 0x4E94B2: __problem_routines_MOD_problem_solver_equations_create_finish (problem_routines.f90:2149)
+           n1: 130752 0x4BF7C7: __opencmiss_MOD_cmissproblemsolverequationscreatefinishobj (opencmiss.f90:35383)
+            n1: 130752 0x409209: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n0: 130752 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+#-----------
+snapshot=46
+#-----------
+time=22801521577
+mem_heap_B=11932700
+mem_heap_extra_B=271844
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=47
+#-----------
+time=23460255222
+mem_heap_B=11930138
+mem_heap_extra_B=271870
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=48
+#-----------
+time=23954309244
+mem_heap_B=11932816
+mem_heap_extra_B=271888
+mem_stacks_B=0
+heap_tree=detailed
+n10: 11932816 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 8391248 0x14DF040: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 8391248 0x14CE235: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 8391248 0x14D561F: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 8391248 0x14A977F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 8391248 0x1477712: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 8391248 0x1477275: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 8391248 0x1490F0A: MPI_INIT (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 8391248 0x604DD2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+         n1: 8391248 0x5F6B38: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+          n1: 8391248 0x4DDC8D: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+           n1: 8391248 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n0: 8391248 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n0: 1104025 in 660 places, all below massif's threshold (01.00%)
+ n4: 748223 0xC6DFC8: PetscMallocAlign(unsigned long, int, char const*, char const*, char const*, void**) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 398364 0xD143E7: MatSeqAIJSetPreallocation_SeqAIJ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n2: 398364 0xD15C0A: MatSeqAIJSetPreallocation(_p_Mat*, int, int const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 393498 0xD5EBFC: MatCreateMPIAIJ(int, int, int, int, int, int, int const*, int, int const*, _p_Mat**) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 393498 0xC1216E: matcreatempiaij_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 393498 0x5FB9E1: __cmiss_petsc_MOD_petsc_matcreatempiaij (cmiss_petsc.f90:2267)
+       n1: 393498 0x6822C7: __distributed_matrix_vector_MOD_distributed_matrix_petsc_create_finish (distributed_matrix_vector.f90:1947)
+        n1: 393498 0x683917: __distributed_matrix_vector_MOD_distributed_matrix_create_finish (distributed_matrix_vector.f90:621)
+         n1: 393498 0x575315: __solver_matrices_routines_MOD_solver_matrices_create_finish (solver_matrices_routines.f90:154)
+          n1: 393498 0x51A413: __solver_routines_MOD_solver_newton_linesearch_create_finish (solver_routines.f90:10947)
+           n1: 393498 0x522ADA: __solver_routines_MOD_solver_newton_create_finish (solver_routines.f90:10369)
+            n1: 393498 0x522E5A: __solver_routines_MOD_solver_nonlinear_create_finish (solver_routines.f90:12522)
+             n1: 393498 0x5256C3: __solver_routines_MOD_solver_equations_create_finish (solver_routines.f90:4648)
+              n1: 393498 0x9346B9: __finite_elasticity_routines_MOD_finite_elasticity_problem_setup (finite_elasticity_routines.f90:3101)
+               n1: 393498 0x6B6A8E: __elasticity_routines_MOD_elasticity_problem_setup (elasticity_routines.f90:374)
+                n1: 393498 0x4DFBBA: __problem_routines_MOD_problem_setup (problem_routines.f90:895)
+                 n1: 393498 0x4E94B2: __problem_routines_MOD_problem_solver_equations_create_finish (problem_routines.f90:2149)
+                  n1: 393498 0x4BF7C7: __opencmiss_MOD_cmissproblemsolverequationscreatefinishobj (opencmiss.f90:35383)
+                   n1: 393498 0x409209: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                    n0: 393498 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n0: 4866 in 1 place, below massif's threshold (01.00%)
+  n1: 130752 0xD96679: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 130752 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 130752 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 130752 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 130752 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 130752 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 130752 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 130752 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 130752 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 130752 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 130752 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+             n1: 130752 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+              n1: 130752 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+               n1: 130752 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                n1: 130752 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                 n1: 130752 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                  n1: 130752 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                   n1: 130752 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                    n1: 130752 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                     n1: 130752 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                      n1: 130752 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                       n0: 130752 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 130752 0xD966F0: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 130752 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 130752 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 130752 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 130752 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 130752 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 130752 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 130752 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 130752 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 130752 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 130752 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+             n1: 130752 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+              n1: 130752 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+               n1: 130752 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                n1: 130752 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                 n1: 130752 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                  n1: 130752 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                   n1: 130752 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                    n1: 130752 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                     n1: 130752 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                      n1: 130752 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                       n0: 130752 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n0: 88355 in 87 places, all below massif's threshold (01.00%)
+ n1: 448536 0x1297DB5: dmumps_142_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 448536 0x130C361: dmumps_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 448536 0x1260A19: dmumps_f77_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 448536 0x125E3CF: dmumps_c (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 448536 0xD96CE9: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 448536 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 448536 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 448536 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 448536 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 448536 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 448536 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 448536 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n1: 448536 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+              n1: 448536 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+               n1: 448536 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+                n1: 448536 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+                 n1: 448536 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+                  n1: 448536 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                   n1: 448536 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                    n1: 448536 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                     n1: 448536 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                      n1: 448536 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                       n1: 448536 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                        n1: 448536 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                         n1: 448536 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                          n0: 448536 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 418560 0xAA9581: __matrix_vector_MOD_matrix_create_finish (matrix_vector.f90:557)
+  n1: 418560 0x668D6C: __distributed_matrix_vector_MOD_distributed_matrix_cmiss_create_finish (distributed_matrix_vector.f90:489)
+   n1: 418560 0x68384F: __distributed_matrix_vector_MOD_distributed_matrix_create_finish (distributed_matrix_vector.f90:619)
+    n1: 418560 0x6F0AEF: __equations_matrices_routines_MOD_equations_matrices_create_finish (equations_matrices_routines.f90:393)
+     n1: 418560 0x92F98B: __finite_elasticity_routines_MOD_finite_elasticity_equations_set_setup (finite_elasticity_routines.f90:2812)
+      n1: 418560 0x6B6006: __elasticity_routines_MOD_elasticity_equations_set_setup (elasticity_routines.f90:256)
+       n1: 418560 0x7002EC: __equations_set_routines_MOD_equations_set_setup (equations_set_routines.f90:3548)
+        n1: 418560 0x705445: __equations_set_routines_MOD_equations_set_equations_create_finish (equations_set_routines.f90:3603)
+         n1: 418560 0x4494DA: __opencmiss_MOD_cmissequationssetequationscreatefinishobj (opencmiss.f90:18714)
+          n1: 418560 0x408FA6: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n0: 418560 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 209280 0xAB43BA: __matrix_vector_MOD_matrix_storage_locations_set (matrix_vector.f90:1592)
+  n1: 209280 0x685BAF: __distributed_matrix_vector_MOD_distributed_matrix_storage_locations_set (distributed_matrix_vector.f90:2209)
+   n1: 209280 0x6F0A93: __equations_matrices_routines_MOD_equations_matrices_create_finish (equations_matrices_routines.f90:389)
+    n1: 209280 0x92F98B: __finite_elasticity_routines_MOD_finite_elasticity_equations_set_setup (finite_elasticity_routines.f90:2812)
+     n1: 209280 0x6B6006: __elasticity_routines_MOD_elasticity_equations_set_setup (elasticity_routines.f90:256)
+      n1: 209280 0x7002EC: __equations_set_routines_MOD_equations_set_setup (equations_set_routines.f90:3548)
+       n1: 209280 0x705445: __equations_set_routines_MOD_equations_set_equations_create_finish (equations_set_routines.f90:3603)
+        n1: 209280 0x4494DA: __opencmiss_MOD_cmissequationssetequationscreatefinishobj (opencmiss.f90:18714)
+         n1: 209280 0x408FA6: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n0: 209280 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 182704 0x7C0274: __field_routines_MOD_field_mappings_calculate (field_routines.f90:6849)
+  n1: 182704 0x8F67F2: __field_routines_MOD_field_create_finish (field_routines.f90:3685)
+   n1: 182704 0x45992F: __opencmiss_MOD_cmissfieldcreatefinishobj (opencmiss.f90:21076)
+    n0: 182704 in 4 places, all below massif's threshold (01.00%)
+ n1: 166320 0x5C5C8F: __basis_routines_MOD_basis_quadrature_create (basis_routines.f90:2769)
+  n1: 166320 0x5C5E18: __basis_routines_MOD_basis_lhtp_basis_create (basis_routines.f90:2089)
+   n1: 166320 0x5CCAA6: __basis_routines_MOD_basis_lhtp_family_create (basis_routines.f90:2262)
+    n1: 166320 0x5D61D0: __basis_routines_MOD_basis_create_finish (basis_routines.f90:366)
+     n2: 166320 0x418032: __opencmiss_MOD_cmissbasiscreatefinishobj (opencmiss.f90:8661)
+      n1: 128304 0x408653: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n0: 128304 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n0: 38016 in 1 place, below massif's threshold (01.00%)
+ n1: 133168 0x13093A3: dmumps_24_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 133168 0x12B1F1D: dmumps_26_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 133168 0x130ADE9: dmumps_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 133168 0x1260A19: dmumps_f77_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 133168 0x125E3CF: dmumps_c (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 133168 0xD96C68: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 133168 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 133168 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 133168 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 133168 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 133168 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 133168 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n1: 133168 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+              n1: 133168 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+               n1: 133168 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                n1: 133168 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+                 n1: 133168 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+                  n1: 133168 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+                   n1: 133168 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                    n1: 133168 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                     n1: 133168 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                      n1: 133168 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                       n1: 133168 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                        n1: 133168 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                         n1: 133168 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                          n1: 133168 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                           n0: 133168 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 130752 0x688C85: __distributed_matrix_vector_MOD_distributed_matrix_storage_locations_set (distributed_matrix_vector.f90:2251)
+  n1: 130752 0x5752C5: __solver_matrices_routines_MOD_solver_matrices_create_finish (solver_matrices_routines.f90:150)
+   n1: 130752 0x51A413: __solver_routines_MOD_solver_newton_linesearch_create_finish (solver_routines.f90:10947)
+    n1: 130752 0x522ADA: __solver_routines_MOD_solver_newton_create_finish (solver_routines.f90:10369)
+     n1: 130752 0x522E5A: __solver_routines_MOD_solver_nonlinear_create_finish (solver_routines.f90:12522)
+      n1: 130752 0x5256C3: __solver_routines_MOD_solver_equations_create_finish (solver_routines.f90:4648)
+       n1: 130752 0x9346B9: __finite_elasticity_routines_MOD_finite_elasticity_problem_setup (finite_elasticity_routines.f90:3101)
+        n1: 130752 0x6B6A8E: __elasticity_routines_MOD_elasticity_problem_setup (elasticity_routines.f90:374)
+         n1: 130752 0x4DFBBA: __problem_routines_MOD_problem_setup (problem_routines.f90:895)
+          n1: 130752 0x4E94B2: __problem_routines_MOD_problem_solver_equations_create_finish (problem_routines.f90:2149)
+           n1: 130752 0x4BF7C7: __opencmiss_MOD_cmissproblemsolverequationscreatefinishobj (opencmiss.f90:35383)
+            n1: 130752 0x409209: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n0: 130752 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+#-----------
+snapshot=49
+#-----------
+time=24613040619
+mem_heap_B=11928635
+mem_heap_extra_B=271797
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=50
+#-----------
+time=24926239529
+mem_heap_B=11930074
+mem_heap_extra_B=271790
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=51
+#-----------
+time=25239438352
+mem_heap_B=11926843
+mem_heap_extra_B=271725
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=52
+#-----------
+time=25552637229
+mem_heap_B=11933829
+mem_heap_extra_B=271923
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=53
+#-----------
+time=25865836542
+mem_heap_B=11928218
+mem_heap_extra_B=271806
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=54
+#-----------
+time=26179035428
+mem_heap_B=11930133
+mem_heap_extra_B=271779
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=55
+#-----------
+time=26492234475
+mem_heap_B=11928861
+mem_heap_extra_B=271939
+mem_stacks_B=0
+heap_tree=detailed
+n10: 11928861 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 8391248 0x14DF040: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 8391248 0x14CE235: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 8391248 0x14D561F: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 8391248 0x14A977F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 8391248 0x1477712: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 8391248 0x1477275: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 8391248 0x1490F0A: MPI_INIT (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 8391248 0x604DD2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+         n1: 8391248 0x5F6B38: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+          n1: 8391248 0x4DDC8D: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+           n1: 8391248 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n0: 8391248 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n0: 1100070 in 660 places, all below massif's threshold (01.00%)
+ n4: 748223 0xC6DFC8: PetscMallocAlign(unsigned long, int, char const*, char const*, char const*, void**) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 398364 0xD143E7: MatSeqAIJSetPreallocation_SeqAIJ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n2: 398364 0xD15C0A: MatSeqAIJSetPreallocation(_p_Mat*, int, int const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 393498 0xD5EBFC: MatCreateMPIAIJ(int, int, int, int, int, int, int const*, int, int const*, _p_Mat**) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 393498 0xC1216E: matcreatempiaij_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 393498 0x5FB9E1: __cmiss_petsc_MOD_petsc_matcreatempiaij (cmiss_petsc.f90:2267)
+       n1: 393498 0x6822C7: __distributed_matrix_vector_MOD_distributed_matrix_petsc_create_finish (distributed_matrix_vector.f90:1947)
+        n1: 393498 0x683917: __distributed_matrix_vector_MOD_distributed_matrix_create_finish (distributed_matrix_vector.f90:621)
+         n1: 393498 0x575315: __solver_matrices_routines_MOD_solver_matrices_create_finish (solver_matrices_routines.f90:154)
+          n1: 393498 0x51A413: __solver_routines_MOD_solver_newton_linesearch_create_finish (solver_routines.f90:10947)
+           n1: 393498 0x522ADA: __solver_routines_MOD_solver_newton_create_finish (solver_routines.f90:10369)
+            n1: 393498 0x522E5A: __solver_routines_MOD_solver_nonlinear_create_finish (solver_routines.f90:12522)
+             n1: 393498 0x5256C3: __solver_routines_MOD_solver_equations_create_finish (solver_routines.f90:4648)
+              n1: 393498 0x9346B9: __finite_elasticity_routines_MOD_finite_elasticity_problem_setup (finite_elasticity_routines.f90:3101)
+               n1: 393498 0x6B6A8E: __elasticity_routines_MOD_elasticity_problem_setup (elasticity_routines.f90:374)
+                n1: 393498 0x4DFBBA: __problem_routines_MOD_problem_setup (problem_routines.f90:895)
+                 n1: 393498 0x4E94B2: __problem_routines_MOD_problem_solver_equations_create_finish (problem_routines.f90:2149)
+                  n1: 393498 0x4BF7C7: __opencmiss_MOD_cmissproblemsolverequationscreatefinishobj (opencmiss.f90:35383)
+                   n1: 393498 0x409209: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                    n0: 393498 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n0: 4866 in 1 place, below massif's threshold (01.00%)
+  n1: 130752 0xD96679: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 130752 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 130752 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 130752 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 130752 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 130752 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 130752 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 130752 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 130752 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 130752 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 130752 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+             n1: 130752 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+              n1: 130752 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+               n1: 130752 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                n1: 130752 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                 n1: 130752 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                  n1: 130752 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                   n1: 130752 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                    n1: 130752 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                     n1: 130752 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                      n1: 130752 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                       n0: 130752 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 130752 0xD966F0: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 130752 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 130752 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 130752 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 130752 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 130752 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 130752 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 130752 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 130752 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 130752 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 130752 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+             n1: 130752 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+              n1: 130752 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+               n1: 130752 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                n1: 130752 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                 n1: 130752 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                  n1: 130752 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                   n1: 130752 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                    n1: 130752 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                     n1: 130752 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                      n1: 130752 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                       n0: 130752 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n0: 88355 in 87 places, all below massif's threshold (01.00%)
+ n1: 448536 0x1297DB5: dmumps_142_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 448536 0x130C361: dmumps_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 448536 0x1260A19: dmumps_f77_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 448536 0x125E3CF: dmumps_c (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 448536 0xD96CE9: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 448536 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 448536 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 448536 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 448536 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 448536 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 448536 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 448536 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n1: 448536 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+              n1: 448536 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+               n1: 448536 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+                n1: 448536 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+                 n1: 448536 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+                  n1: 448536 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                   n1: 448536 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                    n1: 448536 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                     n1: 448536 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                      n1: 448536 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                       n1: 448536 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                        n1: 448536 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                         n1: 448536 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                          n0: 448536 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 418560 0xAA9581: __matrix_vector_MOD_matrix_create_finish (matrix_vector.f90:557)
+  n1: 418560 0x668D6C: __distributed_matrix_vector_MOD_distributed_matrix_cmiss_create_finish (distributed_matrix_vector.f90:489)
+   n1: 418560 0x68384F: __distributed_matrix_vector_MOD_distributed_matrix_create_finish (distributed_matrix_vector.f90:619)
+    n1: 418560 0x6F0AEF: __equations_matrices_routines_MOD_equations_matrices_create_finish (equations_matrices_routines.f90:393)
+     n1: 418560 0x92F98B: __finite_elasticity_routines_MOD_finite_elasticity_equations_set_setup (finite_elasticity_routines.f90:2812)
+      n1: 418560 0x6B6006: __elasticity_routines_MOD_elasticity_equations_set_setup (elasticity_routines.f90:256)
+       n1: 418560 0x7002EC: __equations_set_routines_MOD_equations_set_setup (equations_set_routines.f90:3548)
+        n1: 418560 0x705445: __equations_set_routines_MOD_equations_set_equations_create_finish (equations_set_routines.f90:3603)
+         n1: 418560 0x4494DA: __opencmiss_MOD_cmissequationssetequationscreatefinishobj (opencmiss.f90:18714)
+          n1: 418560 0x408FA6: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n0: 418560 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 209280 0xAB43BA: __matrix_vector_MOD_matrix_storage_locations_set (matrix_vector.f90:1592)
+  n1: 209280 0x685BAF: __distributed_matrix_vector_MOD_distributed_matrix_storage_locations_set (distributed_matrix_vector.f90:2209)
+   n1: 209280 0x6F0A93: __equations_matrices_routines_MOD_equations_matrices_create_finish (equations_matrices_routines.f90:389)
+    n1: 209280 0x92F98B: __finite_elasticity_routines_MOD_finite_elasticity_equations_set_setup (finite_elasticity_routines.f90:2812)
+     n1: 209280 0x6B6006: __elasticity_routines_MOD_elasticity_equations_set_setup (elasticity_routines.f90:256)
+      n1: 209280 0x7002EC: __equations_set_routines_MOD_equations_set_setup (equations_set_routines.f90:3548)
+       n1: 209280 0x705445: __equations_set_routines_MOD_equations_set_equations_create_finish (equations_set_routines.f90:3603)
+        n1: 209280 0x4494DA: __opencmiss_MOD_cmissequationssetequationscreatefinishobj (opencmiss.f90:18714)
+         n1: 209280 0x408FA6: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n0: 209280 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 182704 0x7C0274: __field_routines_MOD_field_mappings_calculate (field_routines.f90:6849)
+  n1: 182704 0x8F67F2: __field_routines_MOD_field_create_finish (field_routines.f90:3685)
+   n1: 182704 0x45992F: __opencmiss_MOD_cmissfieldcreatefinishobj (opencmiss.f90:21076)
+    n0: 182704 in 4 places, all below massif's threshold (01.00%)
+ n1: 166320 0x5C5C8F: __basis_routines_MOD_basis_quadrature_create (basis_routines.f90:2769)
+  n1: 166320 0x5C5E18: __basis_routines_MOD_basis_lhtp_basis_create (basis_routines.f90:2089)
+   n1: 166320 0x5CCAA6: __basis_routines_MOD_basis_lhtp_family_create (basis_routines.f90:2262)
+    n1: 166320 0x5D61D0: __basis_routines_MOD_basis_create_finish (basis_routines.f90:366)
+     n2: 166320 0x418032: __opencmiss_MOD_cmissbasiscreatefinishobj (opencmiss.f90:8661)
+      n1: 128304 0x408653: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n0: 128304 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n0: 38016 in 1 place, below massif's threshold (01.00%)
+ n1: 133168 0x13093A3: dmumps_24_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 133168 0x12B1F1D: dmumps_26_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 133168 0x130ADE9: dmumps_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 133168 0x1260A19: dmumps_f77_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 133168 0x125E3CF: dmumps_c (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 133168 0xD96C68: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 133168 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 133168 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 133168 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 133168 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 133168 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 133168 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n1: 133168 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+              n1: 133168 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+               n1: 133168 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                n1: 133168 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+                 n1: 133168 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+                  n1: 133168 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+                   n1: 133168 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                    n1: 133168 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                     n1: 133168 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                      n1: 133168 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                       n1: 133168 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                        n1: 133168 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                         n1: 133168 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                          n1: 133168 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                           n0: 133168 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 130752 0x688C85: __distributed_matrix_vector_MOD_distributed_matrix_storage_locations_set (distributed_matrix_vector.f90:2251)
+  n1: 130752 0x5752C5: __solver_matrices_routines_MOD_solver_matrices_create_finish (solver_matrices_routines.f90:150)
+   n1: 130752 0x51A413: __solver_routines_MOD_solver_newton_linesearch_create_finish (solver_routines.f90:10947)
+    n1: 130752 0x522ADA: __solver_routines_MOD_solver_newton_create_finish (solver_routines.f90:10369)
+     n1: 130752 0x522E5A: __solver_routines_MOD_solver_nonlinear_create_finish (solver_routines.f90:12522)
+      n1: 130752 0x5256C3: __solver_routines_MOD_solver_equations_create_finish (solver_routines.f90:4648)
+       n1: 130752 0x9346B9: __finite_elasticity_routines_MOD_finite_elasticity_problem_setup (finite_elasticity_routines.f90:3101)
+        n1: 130752 0x6B6A8E: __elasticity_routines_MOD_elasticity_problem_setup (elasticity_routines.f90:374)
+         n1: 130752 0x4DFBBA: __problem_routines_MOD_problem_setup (problem_routines.f90:895)
+          n1: 130752 0x4E94B2: __problem_routines_MOD_problem_solver_equations_create_finish (problem_routines.f90:2149)
+           n1: 130752 0x4BF7C7: __opencmiss_MOD_cmissproblemsolverequationscreatefinishobj (opencmiss.f90:35383)
+            n1: 130752 0x409209: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n0: 130752 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+#-----------
+snapshot=56
+#-----------
+time=26805433372
+mem_heap_B=11932122
+mem_heap_extra_B=271782
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=57
+#-----------
+time=27118632307
+mem_heap_B=11930133
+mem_heap_extra_B=271779
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=58
+#-----------
+time=27431831124
+mem_heap_B=11928127
+mem_heap_extra_B=271793
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=59
+#-----------
+time=27745030001
+mem_heap_B=11931797
+mem_heap_extra_B=271787
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=60
+#-----------
+time=28058228829
+mem_heap_B=11930688
+mem_heap_extra_B=271744
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=61
+#-----------
+time=28371427630
+mem_heap_B=11931491
+mem_heap_extra_B=271773
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=62
+#-----------
+time=28684626470
+mem_heap_B=11928090
+mem_heap_extra_B=271782
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=63
+#-----------
+time=28997825415
+mem_heap_B=11929749
+mem_heap_extra_B=271795
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=64
+#-----------
+time=29311024320
+mem_heap_B=11928059
+mem_heap_extra_B=271773
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=65
+#-----------
+time=29624223141
+mem_heap_B=11928059
+mem_heap_extra_B=271773
+mem_stacks_B=0
+heap_tree=detailed
+n10: 11928059 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 8391248 0x14DF040: MPIDI_CH3I_Seg_commit (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 8391248 0x14CE235: MPID_nem_init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 8391248 0x14D561F: MPIDI_CH3_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 8391248 0x14A977F: MPID_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 8391248 0x1477712: MPIR_Init_thread (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 8391248 0x1477275: PMPI_Init (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 8391248 0x1490F0A: MPI_INIT (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 8391248 0x604DD2: __comp_environment_MOD_computational_environment_initialise (computational_environment.f90:560)
+         n1: 8391248 0x5F6B38: __cmiss_MOD_cmiss_initialise (cmiss.f90:216)
+          n1: 8391248 0x4DDC8D: __opencmiss_MOD_cmissinitialiseobj (opencmiss.f90:5357)
+           n1: 8391248 0x408185: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n0: 8391248 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n0: 1099268 in 660 places, all below massif's threshold (01.00%)
+ n4: 748223 0xC6DFC8: PetscMallocAlign(unsigned long, int, char const*, char const*, char const*, void**) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 398364 0xD143E7: MatSeqAIJSetPreallocation_SeqAIJ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n2: 398364 0xD15C0A: MatSeqAIJSetPreallocation(_p_Mat*, int, int const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 393498 0xD5EBFC: MatCreateMPIAIJ(int, int, int, int, int, int, int const*, int, int const*, _p_Mat**) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 393498 0xC1216E: matcreatempiaij_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 393498 0x5FB9E1: __cmiss_petsc_MOD_petsc_matcreatempiaij (cmiss_petsc.f90:2267)
+       n1: 393498 0x6822C7: __distributed_matrix_vector_MOD_distributed_matrix_petsc_create_finish (distributed_matrix_vector.f90:1947)
+        n1: 393498 0x683917: __distributed_matrix_vector_MOD_distributed_matrix_create_finish (distributed_matrix_vector.f90:621)
+         n1: 393498 0x575315: __solver_matrices_routines_MOD_solver_matrices_create_finish (solver_matrices_routines.f90:154)
+          n1: 393498 0x51A413: __solver_routines_MOD_solver_newton_linesearch_create_finish (solver_routines.f90:10947)
+           n1: 393498 0x522ADA: __solver_routines_MOD_solver_newton_create_finish (solver_routines.f90:10369)
+            n1: 393498 0x522E5A: __solver_routines_MOD_solver_nonlinear_create_finish (solver_routines.f90:12522)
+             n1: 393498 0x5256C3: __solver_routines_MOD_solver_equations_create_finish (solver_routines.f90:4648)
+              n1: 393498 0x9346B9: __finite_elasticity_routines_MOD_finite_elasticity_problem_setup (finite_elasticity_routines.f90:3101)
+               n1: 393498 0x6B6A8E: __elasticity_routines_MOD_elasticity_problem_setup (elasticity_routines.f90:374)
+                n1: 393498 0x4DFBBA: __problem_routines_MOD_problem_setup (problem_routines.f90:895)
+                 n1: 393498 0x4E94B2: __problem_routines_MOD_problem_solver_equations_create_finish (problem_routines.f90:2149)
+                  n1: 393498 0x4BF7C7: __opencmiss_MOD_cmissproblemsolverequationscreatefinishobj (opencmiss.f90:35383)
+                   n1: 393498 0x409209: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                    n0: 393498 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n0: 4866 in 1 place, below massif's threshold (01.00%)
+  n1: 130752 0xD96679: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 130752 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 130752 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 130752 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 130752 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 130752 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 130752 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 130752 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 130752 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 130752 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 130752 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+             n1: 130752 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+              n1: 130752 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+               n1: 130752 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                n1: 130752 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                 n1: 130752 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                  n1: 130752 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                   n1: 130752 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                    n1: 130752 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                     n1: 130752 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                      n1: 130752 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                       n0: 130752 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 130752 0xD966F0: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 130752 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 130752 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 130752 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 130752 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 130752 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 130752 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 130752 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 130752 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 130752 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 130752 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+             n1: 130752 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+              n1: 130752 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+               n1: 130752 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                n1: 130752 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                 n1: 130752 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                  n1: 130752 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                   n1: 130752 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                    n1: 130752 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                     n1: 130752 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                      n1: 130752 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                       n0: 130752 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n0: 88355 in 87 places, all below massif's threshold (01.00%)
+ n1: 448536 0x1297DB5: dmumps_142_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 448536 0x130C361: dmumps_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 448536 0x1260A19: dmumps_f77_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 448536 0x125E3CF: dmumps_c (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 448536 0xD96CE9: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 448536 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 448536 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 448536 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 448536 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 448536 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 448536 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 448536 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n1: 448536 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+              n1: 448536 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+               n1: 448536 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+                n1: 448536 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+                 n1: 448536 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+                  n1: 448536 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                   n1: 448536 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                    n1: 448536 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                     n1: 448536 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                      n1: 448536 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                       n1: 448536 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                        n1: 448536 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                         n1: 448536 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                          n0: 448536 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 418560 0xAA9581: __matrix_vector_MOD_matrix_create_finish (matrix_vector.f90:557)
+  n1: 418560 0x668D6C: __distributed_matrix_vector_MOD_distributed_matrix_cmiss_create_finish (distributed_matrix_vector.f90:489)
+   n1: 418560 0x68384F: __distributed_matrix_vector_MOD_distributed_matrix_create_finish (distributed_matrix_vector.f90:619)
+    n1: 418560 0x6F0AEF: __equations_matrices_routines_MOD_equations_matrices_create_finish (equations_matrices_routines.f90:393)
+     n1: 418560 0x92F98B: __finite_elasticity_routines_MOD_finite_elasticity_equations_set_setup (finite_elasticity_routines.f90:2812)
+      n1: 418560 0x6B6006: __elasticity_routines_MOD_elasticity_equations_set_setup (elasticity_routines.f90:256)
+       n1: 418560 0x7002EC: __equations_set_routines_MOD_equations_set_setup (equations_set_routines.f90:3548)
+        n1: 418560 0x705445: __equations_set_routines_MOD_equations_set_equations_create_finish (equations_set_routines.f90:3603)
+         n1: 418560 0x4494DA: __opencmiss_MOD_cmissequationssetequationscreatefinishobj (opencmiss.f90:18714)
+          n1: 418560 0x408FA6: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n0: 418560 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 209280 0xAB43BA: __matrix_vector_MOD_matrix_storage_locations_set (matrix_vector.f90:1592)
+  n1: 209280 0x685BAF: __distributed_matrix_vector_MOD_distributed_matrix_storage_locations_set (distributed_matrix_vector.f90:2209)
+   n1: 209280 0x6F0A93: __equations_matrices_routines_MOD_equations_matrices_create_finish (equations_matrices_routines.f90:389)
+    n1: 209280 0x92F98B: __finite_elasticity_routines_MOD_finite_elasticity_equations_set_setup (finite_elasticity_routines.f90:2812)
+     n1: 209280 0x6B6006: __elasticity_routines_MOD_elasticity_equations_set_setup (elasticity_routines.f90:256)
+      n1: 209280 0x7002EC: __equations_set_routines_MOD_equations_set_setup (equations_set_routines.f90:3548)
+       n1: 209280 0x705445: __equations_set_routines_MOD_equations_set_equations_create_finish (equations_set_routines.f90:3603)
+        n1: 209280 0x4494DA: __opencmiss_MOD_cmissequationssetequationscreatefinishobj (opencmiss.f90:18714)
+         n1: 209280 0x408FA6: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n0: 209280 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 182704 0x7C0274: __field_routines_MOD_field_mappings_calculate (field_routines.f90:6849)
+  n1: 182704 0x8F67F2: __field_routines_MOD_field_create_finish (field_routines.f90:3685)
+   n1: 182704 0x45992F: __opencmiss_MOD_cmissfieldcreatefinishobj (opencmiss.f90:21076)
+    n0: 182704 in 4 places, all below massif's threshold (01.00%)
+ n1: 166320 0x5C5C8F: __basis_routines_MOD_basis_quadrature_create (basis_routines.f90:2769)
+  n1: 166320 0x5C5E18: __basis_routines_MOD_basis_lhtp_basis_create (basis_routines.f90:2089)
+   n1: 166320 0x5CCAA6: __basis_routines_MOD_basis_lhtp_family_create (basis_routines.f90:2262)
+    n1: 166320 0x5D61D0: __basis_routines_MOD_basis_create_finish (basis_routines.f90:366)
+     n2: 166320 0x418032: __opencmiss_MOD_cmissbasiscreatefinishobj (opencmiss.f90:8661)
+      n1: 128304 0x408653: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n0: 128304 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n0: 38016 in 1 place, below massif's threshold (01.00%)
+ n1: 133168 0x13093A3: dmumps_24_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+  n1: 133168 0x12B1F1D: dmumps_26_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+   n1: 133168 0x130ADE9: dmumps_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+    n1: 133168 0x1260A19: dmumps_f77_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+     n1: 133168 0x125E3CF: dmumps_c (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+      n1: 133168 0xD96C68: MatFactorNumeric_MUMPS(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+       n1: 133168 0xCFAC18: MatLUFactorNumeric(_p_Mat*, _p_Mat*, MatFactorInfo const*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+        n1: 133168 0xF19F61: PCSetUp_LU(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+         n1: 133168 0xFE67E0: PCSetUp(_p_PC*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+          n1: 133168 0xF3B00F: KSPSetUp(_p_KSP*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+           n1: 133168 0xF3BBE1: KSPSolve(_p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+            n1: 133168 0xF7821D: SNES_KSPSolve(_p_SNES*, _p_KSP*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n1: 133168 0xF889E6: SNESSolve_LS(_p_SNES*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+              n1: 133168 0xF7E23D: SNESSolve(_p_SNES*, _p_Vec*, _p_Vec*) (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+               n1: 133168 0xC145B7: snessolve_ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                n1: 133168 0x5FEF25: __cmiss_petsc_MOD_petsc_snessolve (cmiss_petsc.f90:3909)
+                 n1: 133168 0x520B69: __solver_routines_MOD_solver_newton_linesearch_solve (solver_routines.f90:11312)
+                  n1: 133168 0x5212ED: __solver_routines_MOD_solver_newton_solve (solver_routines.f90:11936)
+                   n1: 133168 0x52166D: __solver_routines_MOD_solver_nonlinear_solve (solver_routines.f90:12820)
+                    n1: 133168 0x52F5F9: __solver_routines_MOD_solver_solve (solver_routines.f90:13383)
+                     n1: 133168 0x4E535A: __problem_routines_MOD_problem_solver_equations_static_nonlinear_solve (problem_routines.f90:2077)
+                      n1: 133168 0x4E5E15: __problem_routines_MOD_problem_solver_equations_solve (problem_routines.f90:1587)
+                       n1: 133168 0x4E71B0: __problem_routines_MOD_problem_control_loop_solve (problem_routines.f90:334)
+                        n1: 133168 0x4E8A17: __problem_routines_MOD_problem_solve (problem_routines.f90:1273)
+                         n1: 133168 0x4BEB25: __opencmiss_MOD_cmissproblemsolveobj (opencmiss.f90:35185)
+                          n1: 133168 0x409214: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+                           n0: 133168 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+ n1: 130752 0x688C85: __distributed_matrix_vector_MOD_distributed_matrix_storage_locations_set (distributed_matrix_vector.f90:2251)
+  n1: 130752 0x5752C5: __solver_matrices_routines_MOD_solver_matrices_create_finish (solver_matrices_routines.f90:150)
+   n1: 130752 0x51A413: __solver_routines_MOD_solver_newton_linesearch_create_finish (solver_routines.f90:10947)
+    n1: 130752 0x522ADA: __solver_routines_MOD_solver_newton_create_finish (solver_routines.f90:10369)
+     n1: 130752 0x522E5A: __solver_routines_MOD_solver_nonlinear_create_finish (solver_routines.f90:12522)
+      n1: 130752 0x5256C3: __solver_routines_MOD_solver_equations_create_finish (solver_routines.f90:4648)
+       n1: 130752 0x9346B9: __finite_elasticity_routines_MOD_finite_elasticity_problem_setup (finite_elasticity_routines.f90:3101)
+        n1: 130752 0x6B6A8E: __elasticity_routines_MOD_elasticity_problem_setup (elasticity_routines.f90:374)
+         n1: 130752 0x4DFBBA: __problem_routines_MOD_problem_setup (problem_routines.f90:895)
+          n1: 130752 0x4E94B2: __problem_routines_MOD_problem_solver_equations_create_finish (problem_routines.f90:2149)
+           n1: 130752 0x4BF7C7: __opencmiss_MOD_cmissproblemsolverequationscreatefinishobj (opencmiss.f90:35383)
+            n1: 130752 0x409209: MAIN__ (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+             n0: 130752 0x14DF628: main (in /home/scratch/jacl/opencmiss/cm/examples/FiniteElasticity/CylinderInflation/bin/x86_64-linux/mpich2/gnu/CylinderInflationExample)
+#-----------
+snapshot=66
+#-----------
+time=29937422050
+mem_heap_B=11929749
+mem_heap_extra_B=271795
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=67
+#-----------
+time=30250620857
+mem_heap_B=11930138
+mem_heap_extra_B=271790
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=68
+#-----------
+time=30563819714
+mem_heap_B=11929308
+mem_heap_extra_B=271804
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=69
+#-----------
+time=30877018538
+mem_heap_B=11932122
+mem_heap_extra_B=271798
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=70
+#-----------
+time=31190217374
+mem_heap_B=11930683
+mem_heap_extra_B=271757
+mem_stacks_B=0
+heap_tree=empty
