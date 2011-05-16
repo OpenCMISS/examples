@@ -1,5 +1,5 @@
 !> \file
-!> $Id$
+!> $Id: MixedBoundaryConditionsExample.f90 20 2007-05-28 20:22:52Z cpb $
 !> \author Kumar Mithraratne
 !> \brief This is an example program to solve a finite elasticity equation using openCMISS calls.
 !>
@@ -58,10 +58,6 @@ PROGRAM MIXEDBOUNDARYCONDITIONSEXAMPLE
 #endif
 
   IMPLICIT NONE
-
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(CMISSFieldType) :: EquationsSetField
-
 
   !Test program parameters
 
@@ -240,11 +236,9 @@ PROGRAM MIXEDBOUNDARYCONDITIONSEXAMPLE
   CALL CMISSFieldCreateFinish(FibreField,Err)
 
   !Create the equations_set
-    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
-CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSEquationsSetElasticityClass, &
-    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetMooneyRivlinSubtype,EquationsSetFieldUserNumber,EquationsSetField, &
-    & EquationsSet,Err)
-  
+  CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,EquationsSet,Err)
+  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetElasticityClass, &
+    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetMooneyRivlinSubtype,Err)
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
   !Create the dependent field

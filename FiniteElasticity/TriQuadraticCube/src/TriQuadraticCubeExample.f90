@@ -1,5 +1,5 @@
 !> \file
-!> $Id$
+!> $Id: UniAxialExtensionExample.f90 20 2007-05-28 20:22:52Z cpb $
 !> \author Chris Bradley
 !> \brief This is an example program to solve a finite elasticity equation using openCMISS calls.
 !>
@@ -98,7 +98,6 @@ PROGRAM TRIQUADRATICCUBEEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponents=4
 
   INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
   !Program types
@@ -120,7 +119,7 @@ PROGRAM TRIQUADRATICCUBEEXAMPLE
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,FibreField,MaterialField,DependentField,EquationsSetField
+  TYPE(CMISSFieldType) :: GeometricField,FibreField,MaterialField,DependentField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSProblemType) :: Problem
   TYPE(CMISSRegionType) :: Region,WorldRegion
@@ -128,7 +127,6 @@ PROGRAM TRIQUADRATICCUBEEXAMPLE
   TYPE(CMISSSolverEquationsType) :: SolverEquations
   TYPE(CMISSNodesType) :: Nodes
   TYPE(CMISSMeshElementsType) :: QuadraticElements,LinearElements
-  TYPE(CMISSControlLoopType) :: ControlLoop
 
   !Other variables
   INTEGER(CMISSIntg) :: NN,I,J,K,BC_TYPE
@@ -239,7 +237,6 @@ PROGRAM TRIQUADRATICCUBEEXAMPLE
   CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
   CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
-  CALL CMISSDecompositionCalculateFacesSet(Decomposition,.TRUE.,Err)
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
 
   !Create a field to put the geometry (default is geometry)
@@ -300,11 +297,9 @@ PROGRAM TRIQUADRATICCUBEEXAMPLE
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,6.0_CMISSDP,Err)
 
   !Create the equations_set
-  CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
-  CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSEquationsSetElasticityClass, &
-    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetNoSubtype,EquationsSetFieldUserNumber,EquationsSetField,&
-    & EquationsSet,Err)
+  CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,EquationsSet,Err)
+  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetElasticityClass, &
+    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetNoSubtype,Err)
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
   !Create the dependent field with 2 variables and 4 components (3 displacement, 1 pressure)
@@ -363,7 +358,7 @@ PROGRAM TRIQUADRATICCUBEEXAMPLE
       & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
   ENDDO
 
-  BC_TYPE=2 ! 1=displacement 2=surface pressure 3=force
+  BC_TYPE=1 ! 1=displacement 2=surface pressure 3=force
   SELECT CASE(BC_TYPE)
   CASE(1)
     !1. Move top of the element by a little?
@@ -375,10 +370,8 @@ PROGRAM TRIQUADRATICCUBEEXAMPLE
     !2. Apply pressure at the top face?
     DO NN=19,27
       !NOTE: Surface pressure goes into pressure_values_set_type of the DELUDELN type
-!       CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,NN,3, &
-!         & CMISSBoundaryConditionPressure,4.0_CMISSDP,Err)
       CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,NN,3, &
-        & CMISSBoundaryConditionPressureIncremented,4.0_CMISSDP,Err)
+        & CMISSBoundaryConditionPressure,4.0_CMISSDP,Err)
     ENDDO
   CASE(3)
     !3. Apply force at the top nodes?
@@ -406,11 +399,7 @@ PROGRAM TRIQUADRATICCUBEEXAMPLE
 
   !Create the problem control loop
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
-  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
-  CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
-  CALL CMISSControlLoopMaximumIterationsSet(ControlLoop,3,Err)
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
-  
 
   !Create the problem solvers
   CALL CMISSSolverTypeInitialise(Solver,Err)
