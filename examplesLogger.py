@@ -25,15 +25,15 @@ def logExample(path) :
    for log in logs :
      if log.startswith('intel_library_build') :
        intellibrarylog=log.split('|');
-     if log.startswith('gnu_library_build') :
+     if log.startswith('gnu_4.4_library_build') :
        gnulibrarylog=log.split('|');
-     if log.startswith('intel_'+path+'_build') :
-       intelexamplelog=log.split('|');
-     if log.startswith('gnu_'+path+'_build') :
+#     if log.startswith('intel_'+path+'_build') :
+#       intelexamplelog=log.split('|');
+     if log.startswith('gnu_4.4_'+path+'_build') :
        gnuexamplelog=log.split('|');
-     if log.startswith('intel_'+path+'_test') :
-       inteltestlog=log.split('|');
-     if log.startswith('gnu_'+path+'_test') :
+#     if log.startswith('intel_'+path+'_test') :
+#       inteltestlog=log.split('|');
+     if log.startswith('gnu_4.4_'+path+'_test') :
        gnutestlog=log.split('|');
    newDir = logDir;
    for folder in path.split('/') :
@@ -53,35 +53,35 @@ def logExample(path) :
    else :
      f.write("<td><font color='red'>Fail</font></td>")
    f.write("<td>"+intellibrarylog[2]+"</td></tr>")
-   f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/"+path+"/build-intel'>Example Build</a></td>")
-   if(intelexamplelog[1].startswith('success')) :
-     f.write("<td><font color='green'>Success</font></td>")
-   else :
-     f.write("<td><font color='red'>Fail</font></td>")
-   f.write("<td>"+intelexamplelog[2]+"</td></tr>")
-   if(len(inteltestlog)>1) :
-     f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/"+path+"/test1-intel'>Example Test</a></td>")
-     if(inteltestlog[1].startswith('success')) :
-       f.write("<td><font color='green'>Success</font></td>")
-     else :
-       f.write("<td><font color='red'>Fail</font></td>")
-     f.write("<td>"+inteltestlog[2]+"</td></tr>")
+#   f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/"+path+"/build-intel'>Example Build</a></td>")
+#   if(intelexamplelog[1].startswith('success')) :
+#     f.write("<td><font color='green'>Success</font></td>")
+#   else :
+#     f.write("<td><font color='red'>Fail</font></td>")
+#   f.write("<td>"+intelexamplelog[2]+"</td></tr>")
+#   if(len(inteltestlog)>1) :
+#     f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/"+path+"/test1-intel'>Example Test</a></td>")
+#     if(inteltestlog[1].startswith('success')) :
+#       f.write("<td><font color='green'>Success</font></td>")
+#     else :
+#       f.write("<td><font color='red'>Fail</font></td>")
+#     f.write("<td>"+inteltestlog[2]+"</td></tr>")
    
    f.write("<tr><td><b>GNU Build</b></td><td/><td/></tr>")
-   f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/build-gnu'>OpenCMISS Library</a></td>")
+   f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/build-gnu_4.4'>OpenCMISS Library</a></td>")
    if(gnulibrarylog[1].startswith('success')) :
      f.write("<td><font color='green'>Success</font></td>")
    else :
      f.write("<td><font color='red'>Fail</font></td>")
    f.write("<td>"+gnulibrarylog[2]+"</td></tr>")
-   f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/"+path+"/build-gnu'>Example Build</a></td>")
+   f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/"+path+"/build-gnu_4.4'>Example Build</a></td>")
    if(gnuexamplelog[1].startswith('success')) :
      f.write("<td><font color='green'>Success</font></td>")
    else :
      f.write("<td><font color='red'>Fail</font></td>")
    f.write("<td>"+gnuexamplelog[2]+"</td></tr>")
    if(len(gnutestlog)>1) :
-     f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/"+path+"/test1-gnu'>Example Test</a></td>")
+     f.write("<tr><td><a href='"+rootUrl+"logs_x86_64-linux/"+path+"/test1-gnu_4.4'>Example Test</a></td>")
      if(gnutestlog[1].startswith('success')) :
        f.write("<td><font color='green'>Success</font></td>")
      else :
@@ -93,7 +93,7 @@ def logExample(path) :
    return;
 
 for log in logs :
-  if log.startswith('intel_') :
+  if log.startswith('gnu_4.4_') :
     paths=log.split('|');
-    if(paths[0].endswith('_build') and (not log.startswith('intel_library_build')))  :
-      logExample(path=paths[0].replace('intel_','').replace('_build',''));
+    if(paths[0].endswith('_build') and (not log.startswith('gnu_4.4_library_build')))  :
+      logExample(path=paths[0].replace('gnu_4.4_','').replace('_build',''));
