@@ -52,9 +52,7 @@ PROGRAM LAPLACEELLIPSOIDEXAMPLE
   USE OPENCMISS
   USE MPI
   USE FIELDML_API
-  USE FIELDML_OUTPUT_ROUTINES
-  USE FIELDML_UTIL_ROUTINES
-
+  USE FIELDML_TYPES
 
 #ifdef WIN32
   USE IFQWIN
@@ -360,18 +358,18 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
 !    CALL CMISSFieldIONodesExport(Fields,"NewLaplace","FORTRAN",Err)
 !    CALL CMISSFieldIOElementsExport(Fields,"NewLaplace","FORTRAN",Err)
 !    CALL CMISSFieldsTypeFinalise(Fields,Err)
-    CALL FieldmlOutput_InitializeInfo( Region, Mesh, dimensions, outputDirectory, basename, fieldmlInfo, err )
+    CALL CMISSFieldmlOutput_InitialiseInfo( Region, Mesh, dimensions, outputDirectory, basename, fieldmlInfo, err )
     Err = Fieldml_SetDebug( fieldmlInfo%fmlHandle, 1 )
 
-    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".geometric", region, mesh, GeometricField, &
+    CALL CMISSFieldmlOutput_AddField( fieldmlInfo, baseName//".geometric", region, mesh, GeometricField, &
       & CMISSFieldUVariableType, err )
 
-    CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".dependent", region, mesh, DependentField, &
+    CALL CMISSFieldmlOutput_AddField( fieldmlInfo, baseName//".dependent", region, mesh, DependentField, &
       & CMISSFieldUVariableType, err )
 
-    CALL FieldmlOutput_Write( fieldmlInfo, outputFilename, err )
+    CALL CMISSFieldmlOutput_Write( fieldmlInfo, outputFilename, err )
 
-    CALL FieldmlUtil_FinalizeInfo( fieldmlInfo )
+    CALL CMISSFieldmlUtil_FinaliseInfo( fieldmlInfo, err )
   ENDIF
   
   !Finialise CMISS
