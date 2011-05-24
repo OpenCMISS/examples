@@ -66,7 +66,7 @@ PROGRAM MOONEYRIVLININCELLMLEXAMPLE
   INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT!,Filename
 !  INTEGER(CMISSIntg), PARAMETER :: NumberOfElementsInEachDirection=10
-  INTEGER(CMISSIntg), PARAMETER :: DependentFieldAutoCreate=0 ! 1=yes   0=no
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldAutoCreate=1 ! 1=yes   0=no
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   
@@ -414,6 +414,20 @@ PROGRAM MOONEYRIVLININCELLMLEXAMPLE
     CALL CMISSFieldCreateFinish(DependentField,Err)
   ENDIF !DependentFieldAutoCreate
 
+  !Create the equations_set
+  CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+  CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
+  CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSEquationsSetElasticityClass, &
+    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetConstitutiveLawInCellMLEvaluateSubtype,EquationsSetFieldUserNumber, &
+    & EquationsSetField,EquationsSet,Err)
+  CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
+
+  CALL CMISSEquationsSetDependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)
+  CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
+
+  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,FieldMaterialUserNumber,MaterialField,Err)  
+  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
+
   !Create the CellML environment
   CALL CMISSCellMLTypeInitialise(CellML,Err)
   CALL CMISSCellMLCreateStart(CellMLUserNumber,Region,CellML,Err)
@@ -481,19 +495,6 @@ PROGRAM MOONEYRIVLININCELLMLEXAMPLE
 
 !Actually, don't need to create this at all - they're automatically created
 ! CALL CMISSFieldParameterSetCreate(DependentField,CMISSFieldDelUDelNVariableType,CMISSFieldPressureValuesSetType,Err)
-
-  !Create the equations_set
-  CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
-  CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSEquationsSetElasticityClass, &
-    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetConstitutiveLawInCellMLEvaluateSubtype,EquationsSetFieldUserNumber, &
-    & EquationsSetField,EquationsSet,Err)
-  CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
-  CALL CMISSEquationsSetDependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)
-  CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
-
-  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,FieldMaterialUserNumber,MaterialField,Err)  
-  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
 
   !Create the CellML models field
   CALL CMISSFieldTypeInitialise(CellMLModelsField,Err)
