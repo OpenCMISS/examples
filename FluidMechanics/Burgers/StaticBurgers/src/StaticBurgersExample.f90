@@ -1,5 +1,5 @@
 !> \file
-!> $Id: BurgersExample.f90 1902 2011-05-10 04:58:45Z davidladd $
+!> $Id: StaticBurgersExample.f90 1902 2011-05-10 04:58:45Z davidladd $
 !> \author David Ladd
 !> \brief This is an example program to solve a viscous burgers equation using openCMISS calls.
 !>
@@ -46,7 +46,7 @@
 !<
 
 !> Main program
-PROGRAM STATICEXAMPLE
+PROGRAM STATICBURGERSEXAMPLE
 
 
   USE OPENCMISS
@@ -484,4 +484,4 @@ PROGRAM STATICEXAMPLE
 
   STOP
   
-END PROGRAM STATICEXAMPLE
+END PROGRAM STATICBURGERSEXAMPLE

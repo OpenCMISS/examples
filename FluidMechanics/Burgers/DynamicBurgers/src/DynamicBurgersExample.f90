@@ -1,7 +1,7 @@
 !> \file
-!> $Id: BurgersExample.f90 1902 2011-05-10 04:58:45Z davidladd $
+!> $Id: DynamicBurgersExample.f90 1902 2011-05-10 04:58:45Z davidladd $
 !> \author David Ladd
-!> \brief This is an example program to solve a viscous burgers equation using openCMISS calls.
+!> \brief This is an example program to solve a transient viscous burgers equation using openCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -46,7 +46,7 @@
 !<
 
 !> Main program
-PROGRAM STATICEXAMPLE
+PROGRAM DYNAMICBURGERSEXAMPLE
 
 
   USE OPENCMISS
@@ -96,6 +96,8 @@ PROGRAM STATICEXAMPLE
 
   INTEGER(CMISSIntg) :: NONLINEAR_SOLVER_OUTPUT_TYPE
   INTEGER(CMISSIntg) :: LINEAR_SOLVER_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: EQUATIONS_OUTPUT
 
   REAL(CMISSDP) :: DIVERGENCE_TOLERANCE
   REAL(CMISSDP) :: RELATIVE_TOLERANCE
@@ -103,6 +105,12 @@ PROGRAM STATICEXAMPLE
   REAL(CMISSDP) :: LINESEARCH_ALPHA
 
   LOGICAL :: LINEAR_SOLVER_DIRECT_FLAG
+
+  INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_OUTPUT_FREQUENCY
+  REAL(CMISSDP) :: DYNAMIC_SOLVER_START_TIME
+  REAL(CMISSDP) :: DYNAMIC_SOLVER_STOP_TIME
+  REAL(CMISSDP) :: DYNAMIC_SOLVER_THETA
+  REAL(CMISSDP) :: DYNAMIC_SOLVER_TIME_INCREMENT
 
   REAL(CMISSDP) :: NU_PARAM
   REAL(CMISSDP) :: LENGTH
@@ -130,7 +138,7 @@ PROGRAM STATICEXAMPLE
   TYPE(CMISSProblemType) :: Problem
   TYPE(CMISSControlLoopType) :: ControlLoop
   TYPE(CMISSRegionType) :: Region,WorldRegion
-  TYPE(CMISSSolverType) :: Solver, LinearSolver, NonlinearSolver
+  TYPE(CMISSSolverType) :: DynamicSolver,NonlinearSolver,LinearSolver
   TYPE(CMISSSolverEquationsType) :: SolverEquations
 
   LOGICAL :: EXPORT_FIELD
@@ -178,6 +186,20 @@ PROGRAM STATICEXAMPLE
   NU_PARAM = 1.0_CMISSDP
   ! Set length of domain
   LENGTH = 1.0_CMISSDP
+
+  !Set output parameters
+  !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
+  DYNAMIC_SOLVER_OUTPUT_TYPE=CMISSSolverNoOutput
+  NONLINEAR_SOLVER_OUTPUT_TYPE=CMISSSolverNoOutput
+  LINEAR_SOLVER_OUTPUT_TYPE=CMISSSolverNoOutput
+  !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
+  EQUATIONS_OUTPUT=CMISSEquationsNoOutput
+
+  !Set time parameter
+  DYNAMIC_SOLVER_START_TIME=0.0_CMISSDP
+  DYNAMIC_SOLVER_STOP_TIME=5.0_CMISSDP 
+  DYNAMIC_SOLVER_TIME_INCREMENT=1.0_CMISSDP
+  DYNAMIC_SOLVER_THETA=1.0_CMISSDP
 
   !Set solver parameters
   LINEAR_SOLVER_DIRECT_FLAG=.FALSE.
@@ -278,11 +300,11 @@ PROGRAM STATICEXAMPLE
   !EQUATIONS SETS
   !-----------------------------------------------------------------------------------------------------------
   
-  !Create the equations_set for a static nonlinear burgers equation
+  !Create the equations_set for a dynamic nonlinear burgers equation
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
   CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
   CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetBurgersEquationType,CMISSEquationsSetStaticBurgersSubtype,EquationsSetFieldUserNumber, &
+    & CMISSEquationsSetBurgersEquationType,CMISSEquationsSetDynamicBurgersSubtype,EquationsSetFieldUserNumber, &
     & EquationsSetField,EquationsSet,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
@@ -377,7 +399,7 @@ PROGRAM STATICEXAMPLE
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
   !Set the problem to be a static Burgers problem
   CALL CMISSProblemSpecificationSet(Problem,CMISSProblemClassicalFieldClass,CMISSProblemBurgersEquationType, &
-    & CMISSProblemStaticBurgersSubtype,Err)
+    & CMISSProblemDynamicBurgersSubtype,Err)
   !Finish the creation of a problem.
   CALL CMISSProblemCreateFinish(Problem,Err)
 
@@ -385,7 +407,13 @@ PROGRAM STATICEXAMPLE
   CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
   !Get the control loop
-  !CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
+  CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
+
+  !Set the times
+  CALL CMISSControlLoopTimesSet(ControlLoop,DYNAMIC_SOLVER_START_TIME,DYNAMIC_SOLVER_STOP_TIME, & 
+    & DYNAMIC_SOLVER_TIME_INCREMENT,Err)
+  !Set the output timing
+  CALL CMISSControlLoopTimeOutputSet(ControlLoop,DYNAMIC_SOLVER_OUTPUT_FREQUENCY,Err)
 
   !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
@@ -394,26 +422,33 @@ PROGRAM STATICEXAMPLE
   !SOLVER
   !-----------------------------------------------------------------------------------------------------------
   !Start the creation of the problem solvers
-  !CALL CMISSSolverTypeInitialise(Solver,Err)
+  CALL CMISSSolverTypeInitialise(DynamicSolver,Err)
   CALL CMISSSolverTypeInitialise(NonlinearSolver,Err)
   CALL CMISSSolverTypeInitialise(LinearSolver,Err)
   CALL CMISSProblemSolversCreateStart(Problem,Err)
 
-  !Get the nonlinear solver
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverUserNumber,NonlinearSolver,Err)
+  !Get the dymamic solver
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverUserNumber,DynamicSolver,Err)
+  !Set the output type
+  CALL CMISSSolverOutputTypeSet(DynamicSolver,DYNAMIC_SOLVER_OUTPUT_TYPE,Err)
+  !Set theta
+  CALL CMISSSolverDynamicThetaSet(DynamicSolver,DYNAMIC_SOLVER_THETA,Err)
+
+  !Get the dynamic nonlinear solver
+  CALL CMISSSolverDynamicNonlinearSolverGet(DynamicSolver,NonlinearSolver,Err)
   !Set the nonlinear Jacobian type
   CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolver,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
-  !Set the output type (No/Progress/Timing/Solver)
-  CALL CMISSSolverOutputTypeSet(NonlinearSolver,CMISSSolverSolverMatrixOutput,Err)
+  !Set the output type
+  CALL CMISSSolverOutputTypeSet(NonlinearSolver,NONLINEAR_SOLVER_OUTPUT_TYPE,Err)
   !Set the solver settings
   CALL CMISSSolverNewtonAbsoluteToleranceSet(NonlinearSolver,ABSOLUTE_TOLERANCE,Err)
   CALL CMISSSolverNewtonRelativeToleranceSet(NonlinearSolver,RELATIVE_TOLERANCE,Err)
-  !Get the nonlinear linear solver
+  !Get the dynamic nonlinear linear solver
   CALL CMISSSolverNewtonLinearSolverGet(NonlinearSolver,LinearSolver,Err)
   !Set the output type
-  CALL CMISSSolverOutputTypeSet(LinearSolver,CMISSSolverSolverMatrixOutput,Err)
-
+  CALL CMISSSolverOutputTypeSet(LinearSolver,LINEAR_SOLVER_OUTPUT_TYPE,Err)
   !Set the solver settings
+
   IF(LINEAR_SOLVER_DIRECT_FLAG) THEN
     CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearDirectSolveType,Err)
     CALL CMISSSolverLibraryTypeSet(LinearSolver,CMISSSolverMUMPSLibrary,Err)
@@ -436,9 +471,9 @@ PROGRAM STATICEXAMPLE
   CALL CMISSSolverTypeInitialise(LinearSolver,Err)
   CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
   CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
-  !Get the solver equations
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,LinearSolver,Err)
-  CALL CMISSSolverSolverEquationsGet(LinearSolver,SolverEquations,Err)
+  !Get the dynamic solver equations
+  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,DynamicSolver,Err)
+  CALL CMISSSolverSolverEquationsGet(DynamicSolver,SolverEquations,Err)
   !Set the solver equations sparsity (Sparse/Full)
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices,Err)  
   !Add in the equations set
@@ -484,4 +519,4 @@ PROGRAM STATICEXAMPLE
 
   STOP
   
-END PROGRAM STATICEXAMPLE
+END PROGRAM DYNAMICBURGERSEXAMPLE
