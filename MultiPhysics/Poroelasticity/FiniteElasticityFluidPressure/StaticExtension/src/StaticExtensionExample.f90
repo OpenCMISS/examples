@@ -468,7 +468,7 @@ PROGRAM POROELASTICITYEXAMPLE
     NodeNumber=LeftSurfaceNodes(node_idx)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,1, &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber,1, &
         & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
     ENDIF
   ENDDO
@@ -477,7 +477,7 @@ PROGRAM POROELASTICITYEXAMPLE
     NodeNumber=FrontSurfaceNodes(node_idx)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,2, &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber,2, &
         & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
     ENDIF
   ENDDO
@@ -486,7 +486,7 @@ PROGRAM POROELASTICITYEXAMPLE
     NodeNumber=BottomSurfaceNodes(node_idx)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,3, &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber,3, &
         & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
     ENDIF
   ENDDO
@@ -496,7 +496,7 @@ PROGRAM POROELASTICITYEXAMPLE
       NodeNumber=RightSurfaceNodes(node_idx)
       CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
       IF(NodeDomain==ComputationalNodeNumber) THEN
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,1, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber,1, &
           & CMISSBoundaryConditionFixedIncremented,FixedWidth,Err)
       ENDIF
     ENDDO
@@ -507,7 +507,7 @@ PROGRAM POROELASTICITYEXAMPLE
     NodeNumber=PressureLeftSurfaceNodes(node_idx)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,PressureMeshComponent,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldVVariableType,1,1,NodeNumber,1, &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldVVariableType,1,1,NodeNumber,1, &
         & CMISSBoundaryConditionFixedIncremented,FluidPressureBC,Err)
     ENDIF
   ENDDO
@@ -515,7 +515,7 @@ PROGRAM POROELASTICITYEXAMPLE
     NodeNumber=PressureRightSurfaceNodes(node_idx)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,PressureMeshComponent,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldVVariableType,1,1,NodeNumber,1, &
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldVVariableType,1,1,NodeNumber,1, &
         & CMISSBoundaryConditionFixed,FluidPressureBC2,Err)
     ENDIF
   ENDDO
