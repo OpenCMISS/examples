@@ -40,9 +40,9 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/Burgers/src/BurgersExample.f90
+!> \example FluidMechanics/Burgers/StaticBurgers/src/BurgersExample.f90
 !! Example program to solve a burgers equation using openCMISS calls.
-!! \htmlinclude ClassicalField/Burgers/history.html
+!! \htmlinclude FluidMechanics/Burgers/StaticBurgers/history.html
 !<
 
 !> Main program
@@ -281,7 +281,7 @@ PROGRAM STATICBURGERSEXAMPLE
   !Create the equations_set for a static nonlinear burgers equation
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
   CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetFluidMechanicsClass, &
     & CMISSEquationsSetBurgersEquationType,CMISSEquationsSetStaticBurgersSubtype,EquationsSetFieldUserNumber, &
     & EquationsSetField,EquationsSet,Err)
   !Finish creating the equations set
@@ -376,7 +376,7 @@ PROGRAM STATICBURGERSEXAMPLE
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
   !Set the problem to be a static Burgers problem
-  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemClassicalFieldClass,CMISSProblemBurgersEquationType, &
+  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemFluidMechanicsClass,CMISSProblemBurgersEquationType, &
     & CMISSProblemStaticBurgersSubtype,Err)
   !Finish the creation of a problem.
   CALL CMISSProblemCreateFinish(Problem,Err)
