@@ -1,7 +1,7 @@
 !> \file
-!> $Id: BurgersExample.f90 1902 2011-05-10 04:58:45Z davidladd $
+!> $Id: GeneralisedBurgersExample.f90 1902 2011-05-10 04:58:45Z davidladd $
 !> \author David Ladd
-!> \brief This is an example program to solve a transient viscous burgers equation using OpenCMISS calls.
+!> \brief This is an example program to solve a generalised Burgers's equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -40,13 +40,13 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example FluidMechanics/Burgers/Burgers/src/BurgersExample.f90
-!! Example program to solve a burgers equation using openCMISS calls.
-!! \htmlinclude FluidMechanics/Burgers/Burgers/history.html
+!> \example ClassicalField/Burgers/src/GeneralisedBurgersExample.f90
+!! Example program to solve a generalised Burgers equation using OpenCMISS calls.
+!! \htmlinclude ClassicalField/Burgers/history.html
 !<
 
 !> Main program
-PROGRAM BURGERSEXAMPLE
+PROGRAM GENERALISEDBURGERSEXAMPLE
 
 
   USE OPENCMISS
@@ -63,10 +63,9 @@ PROGRAM BURGERSEXAMPLE
   ! PROGRAM VARIABLES AND TYPES
   !-----------------------------------------------------------------------------------------------------------
 
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(CMISSFieldType) :: EquationsSetField
-
   !Test program parameters
+  
+  REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
   
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
@@ -75,52 +74,18 @@ PROGRAM BURGERSEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=8
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=9
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=10
-  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=12
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopNode=0
-  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=13
   INTEGER(CMISSIntg), PARAMETER :: SolverUserNumber=1
   
   !Program variables
 
   INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS
-  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
-  INTEGER(CMISSIntg) :: COMPONENT_NUMBER
-
-  INTEGER(CMISSIntg) :: MAXIMUM_ITERATIONS
-  INTEGER(CMISSIntg) :: RESTART_VALUE
-  
-  INTEGER(CMISSIntg) :: MPI_IERROR
-
-  INTEGER(CMISSIntg) :: NONLINEAR_SOLVER_OUTPUT_TYPE
-  INTEGER(CMISSIntg) :: LINEAR_SOLVER_OUTPUT_TYPE
-  INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_OUTPUT_TYPE
-  INTEGER(CMISSIntg) :: EQUATIONS_OUTPUT
-
-  REAL(CMISSDP) :: DIVERGENCE_TOLERANCE
-  REAL(CMISSDP) :: RELATIVE_TOLERANCE
-  REAL(CMISSDP) :: ABSOLUTE_TOLERANCE
-  REAL(CMISSDP) :: LINESEARCH_ALPHA
-
-  LOGICAL :: LINEAR_SOLVER_DIRECT_FLAG
-
-  INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_OUTPUT_FREQUENCY
-  REAL(CMISSDP) :: DYNAMIC_SOLVER_START_TIME
-  REAL(CMISSDP) :: DYNAMIC_SOLVER_STOP_TIME
-  REAL(CMISSDP) :: DYNAMIC_SOLVER_THETA
-  REAL(CMISSDP) :: DYNAMIC_SOLVER_TIME_INCREMENT
-
-  REAL(CMISSDP) :: NU_PARAM
-  REAL(CMISSDP) :: LENGTH
-
-  INTEGER(CMISSIntg) :: NODE_NUMBER
-  INTEGER(CMISSIntg) :: ELEMENT_NUMBER
-  INTEGER(CMISSIntg) :: NODE_COUNTER
-  INTEGER(CMISSIntg) :: CONDITION
-
-  INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber,FirstNodeDomain,LastNodeDomain
   
   !Program types
 
@@ -130,7 +95,7 @@ PROGRAM BURGERSEXAMPLE
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField,AnalyticField
+  TYPE(CMISSFieldType) ::  AnalyticField,DependentField,EquationsSetField,GeometricField,MaterialsField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
   TYPE(CMISSMeshType) :: Mesh
@@ -141,8 +106,6 @@ PROGRAM BURGERSEXAMPLE
   TYPE(CMISSSolverType) :: DynamicSolver,NonlinearSolver,LinearSolver
   TYPE(CMISSSolverEquationsType) :: SolverEquations
 
-  LOGICAL :: EXPORT_FIELD
-
 #ifdef WIN32
   !Quickwin type
   LOGICAL :: QUICKWIN_STATUS=.FALSE.
@@ -151,10 +114,12 @@ PROGRAM BURGERSEXAMPLE
   
   !Generic CMISS variables
   
-  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber,BoundaryNodeDomain
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
   INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
+  INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain
   INTEGER(CMISSIntg) :: Err
-
+  LOGICAL :: LINEAR_SOLVER_DIRECT_FLAG
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -167,53 +132,16 @@ PROGRAM BURGERSEXAMPLE
   IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
 #endif
 
+  NUMBER_GLOBAL_X_ELEMENTS=3
+    
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
+
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
 
   !Get the computational nodes information
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
-
-  !-----------------------------------------------------------------------------------------------------------
-  ! PROBLEM CONTROL PANEL
-  !-----------------------------------------------------------------------------------------------------------
-  
-  ! Set number of elements for FEM discretization
-  NUMBER_GLOBAL_X_ELEMENTS=4
-  NUMBER_OF_DOMAINS=NumberOfComputationalNodes
-
-  ! Set viscous coefficient
-  NU_PARAM = 1.0_CMISSDP
-  ! Set length of domain
-  LENGTH = 1.0_CMISSDP
-
-  !Set output parameters
-  !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
-  DYNAMIC_SOLVER_OUTPUT_TYPE=CMISSSolverNoOutput
-  NONLINEAR_SOLVER_OUTPUT_TYPE=CMISSSolverNoOutput
-  LINEAR_SOLVER_OUTPUT_TYPE=CMISSSolverNoOutput
-  !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
-  EQUATIONS_OUTPUT=CMISSEquationsNoOutput
-
-  !Set time parameter
-  DYNAMIC_SOLVER_START_TIME=0.0_CMISSDP
-  DYNAMIC_SOLVER_STOP_TIME=5.0_CMISSDP 
-  DYNAMIC_SOLVER_TIME_INCREMENT=1.0_CMISSDP
-  DYNAMIC_SOLVER_THETA=1.0_CMISSDP
-
-  !Set solver parameters
-  LINEAR_SOLVER_DIRECT_FLAG=.FALSE.
-  RELATIVE_TOLERANCE=1.0E-6_CMISSDP !default: 1.0E-05_CMISSDP
-  ABSOLUTE_TOLERANCE=1.0E-6_CMISSDP !default: 1.0E-10_CMISSDP
-  DIVERGENCE_TOLERANCE=1.0E5 !default: 1.0E5
-  MAXIMUM_ITERATIONS=100000 !default: 100000
-  RESTART_VALUE=3000 !default: 30
-  LINESEARCH_ALPHA=1.0
-
-
-  !Set all diganostic levels on for testing
-  CALL MPI_BCAST(NUMBER_GLOBAL_X_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_OF_DOMAINS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
 
   !-----------------------------------------------------------------------------------------------------------
   !COORDINATE SYSTEM
@@ -247,8 +175,8 @@ PROGRAM BURGERSEXAMPLE
   CALL CMISSBasisTypeSet(Basis,CMISSBasisLagrangeHermiteTPType,Err)
   CALL CMISSBasisNumberOfXiSet(Basis,1,Err)
   !Set the basis xi interpolation and number of Gauss points
-  CALL CMISSBasisInterpolationXiSet(Basis,(/CMISSBasisLinearLagrangeInterpolation/),Err)
-  CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,(/2/),Err)
+  CALL CMISSBasisInterpolationXiSet(Basis,[CMISSBasisLinearLagrangeInterpolation],Err)
+  CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,[2],Err)
   !Finish the creation of the basis
   CALL CMISSBasisCreateFinish(Basis,Err)
 
@@ -263,8 +191,8 @@ PROGRAM BURGERSEXAMPLE
   !Set the default basis
   CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,Basis,Err)   
   !Define the mesh on the region
-  CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/LENGTH/),Err)
-  CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS/),Err)
+  CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,[LENGTH],Err)
+  CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS],Err)
   !Finish the creation of a generated mesh in the region
   CALL CMISSMeshTypeInitialise(Mesh,Err)
   CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
@@ -278,7 +206,7 @@ PROGRAM BURGERSEXAMPLE
   CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NUMBER_OF_DOMAINS,Err)
+  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
   
@@ -300,11 +228,11 @@ PROGRAM BURGERSEXAMPLE
   !EQUATIONS SETS
   !-----------------------------------------------------------------------------------------------------------
   
-  !Create the equations_set for a dynamic nonlinear burgers equation
+  !Create the equations_set for a Generalised Burgers's equation
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
   CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
   CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetFluidMechanicsClass, &
-    & CMISSEquationsSetBurgersEquationType,CMISSEquationsSetBurgersSubtype,EquationsSetFieldUserNumber, &
+    & CMISSEquationsSetBurgersEquationType,CMISSEquationsSetGeneralisedBurgersSubtype,EquationsSetFieldUserNumber, &
     & EquationsSetField,EquationsSet,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
@@ -315,17 +243,8 @@ PROGRAM BURGERSEXAMPLE
   !Create the equations set dependent field variables
   CALL CMISSFieldTypeInitialise(DependentField,Err)
   CALL CMISSEquationsSetDependentCreateStart(EquationsSet,DependentFieldUserNumber,DependentField,Err)
-  !Set the mesh component to be used by the field components.
-  COMPONENT_NUMBER = 1
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
-    & COMPONENT_NUMBER,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
-    & COMPONENT_NUMBER,Err)
   !Finish the equations set dependent field variables
   CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
-  !Initialise dependent field
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & COMPONENT_NUMBER,0.0_CMISSDP,Err)
 
   !-----------------------------------------------------------------------------------------------------------
   ! MATERIALS FIELD
@@ -336,18 +255,25 @@ PROGRAM BURGERSEXAMPLE
   !Finish the equations set material field variables
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
   !Initialise materials field
+  !Set A
   CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,NU_PARAM,Err)
+    & 1,1.0_CMISSDP,Err)
+  !Set B
+  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+    & 2,-1.0_CMISSDP,Err)
+  !Set C
+  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+    & 3,1.0_CMISSDP,Err)
 
   !-----------------------------------------------------------------------------------------------------------
   ! ANALYTIC FIELD
   !-----------------------------------------------------------------------------------------------------------
   !Create the equations set analytic field variables
-  !CALL CMISSFieldTypeInitialise(AnalyticField,Err)
-  !CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSEquationsSetBurgersOneDim1,AnalyticFieldUserNumber, & 
-  ! & AnalyticField,Err)
+  CALL CMISSFieldTypeInitialise(AnalyticField,Err)
+  CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSEquationsSetBurgersOneDim1,AnalyticFieldUserNumber, & 
+   & AnalyticField,Err)
   !Finish the equations set analytic field variables
-  !CALL CMISSEquationsSetAnalyticCreateFinish(EquationsSet,Err)
+  CALL CMISSEquationsSetAnalyticCreateFinish(EquationsSet,Err)
 
   !-----------------------------------------------------------------------------------------------------------  
   ! EQUATIONS
@@ -366,30 +292,9 @@ PROGRAM BURGERSEXAMPLE
   !BOUNDARY CONDITIONS
   !-----------------------------------------------------------------------------------------------------------
   !Set up the boundary conditions
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-  !Set the fixed boundary conditions at the first node and last nodes
-  FirstNodeNumber=1
-  COMPONENT_NUMBER=1
-  CALL CMISSNodesTypeInitialise(Nodes,Err)
-  CALL CMISSRegionNodesGet(Region,Nodes,Err)
-  CALL CMISSNodesNumberOfNodesGet(Nodes,LastNodeNumber,Err)
-  CALL CMISSDecompositionNodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
-  CALL CMISSDecompositionNodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
-  IF(FirstNodeDomain==ComputationalNodeNumber) THEN
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1, &
-      & CMISSNoGlobalDerivative,FirstNodeNumber,COMPONENT_NUMBER,CMISSBoundaryConditionFixed, &
-      & 1.0_CMISSDP,Err)
-  ENDIF
-  IF(LastNodeDomain==ComputationalNodeNumber) THEN
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1, &
-      & CMISSNoGlobalDerivative,LastNodeNumber,COMPONENT_NUMBER,CMISSBoundaryConditionFixed, &
-      & 0.0_CMISSDP,Err)
-  ENDIF
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
 
   !Create the equations set boundary conditions
-  !CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
+  CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
 
   !-----------------------------------------------------------------------------------------------------------
   !PROBLEM
@@ -408,13 +313,10 @@ PROGRAM BURGERSEXAMPLE
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
   !Get the control loop
   CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
-
   !Set the times
-  CALL CMISSControlLoopTimesSet(ControlLoop,DYNAMIC_SOLVER_START_TIME,DYNAMIC_SOLVER_STOP_TIME, & 
-    & DYNAMIC_SOLVER_TIME_INCREMENT,Err)
+  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,1.0_CMISSDP,0.1_CMISSDP,Err)
   !Set the output timing
-  CALL CMISSControlLoopTimeOutputSet(ControlLoop,DYNAMIC_SOLVER_OUTPUT_FREQUENCY,Err)
-
+  CALL CMISSControlLoopTimeOutputSet(ControlLoop,1,Err)
   !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
 
@@ -430,35 +332,30 @@ PROGRAM BURGERSEXAMPLE
   !Get the dymamic solver
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverUserNumber,DynamicSolver,Err)
   !Set the output type
-  CALL CMISSSolverOutputTypeSet(DynamicSolver,DYNAMIC_SOLVER_OUTPUT_TYPE,Err)
+  CALL CMISSSolverOutputTypeSet(DynamicSolver,CMISSSolverNoOutput,Err)
   !Set theta
-  CALL CMISSSolverDynamicThetaSet(DynamicSolver,DYNAMIC_SOLVER_THETA,Err)
+  CALL CMISSSolverDynamicThetaSet(DynamicSolver,0.5_CMISSDP,Err)
 
   !Get the dynamic nonlinear solver
   CALL CMISSSolverDynamicNonlinearSolverGet(DynamicSolver,NonlinearSolver,Err)
   !Set the nonlinear Jacobian type
-  CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolver,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
+  CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolver,CMISSSolverNewtonJacobianFDCalculated,Err)
   !Set the output type
-  CALL CMISSSolverOutputTypeSet(NonlinearSolver,NONLINEAR_SOLVER_OUTPUT_TYPE,Err)
-  !Set the solver settings
-  CALL CMISSSolverNewtonAbsoluteToleranceSet(NonlinearSolver,ABSOLUTE_TOLERANCE,Err)
-  CALL CMISSSolverNewtonRelativeToleranceSet(NonlinearSolver,RELATIVE_TOLERANCE,Err)
+  CALL CMISSSolverOutputTypeSet(NonlinearSolver,CMISSSolverNoOutput,Err)
   !Get the dynamic nonlinear linear solver
   CALL CMISSSolverNewtonLinearSolverGet(NonlinearSolver,LinearSolver,Err)
   !Set the output type
-  CALL CMISSSolverOutputTypeSet(LinearSolver,LINEAR_SOLVER_OUTPUT_TYPE,Err)
+  CALL CMISSSolverOutputTypeSet(LinearSolver,CMISSSolverNoOutput,Err)
   !Set the solver settings
 
+  LINEAR_SOLVER_DIRECT_FLAG=.FALSE.
   IF(LINEAR_SOLVER_DIRECT_FLAG) THEN
     CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearDirectSolveType,Err)
     CALL CMISSSolverLibraryTypeSet(LinearSolver,CMISSSolverMUMPSLibrary,Err)
   ELSE
     CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearIterativeSolveType,Err)
-    CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolver,MAXIMUM_ITERATIONS,Err)
-    CALL CMISSSolverLinearIterativeDivergenceToleranceSet(LinearSolver,DIVERGENCE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeRelativeToleranceSet(LinearSolver,RELATIVE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeAbsoluteToleranceSet(LinearSolver,ABSOLUTE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeGMRESRestartSet(LinearSolver,RESTART_VALUE,Err)
+    CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolver,10000,Err)
+    CALL CMISSSolverLinearIterativeGMRESRestartSet(LinearSolver,50,Err)
   ENDIF
   !Finish the creation of the problem solver
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
@@ -472,6 +369,7 @@ PROGRAM BURGERSEXAMPLE
   CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
   CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
   !Get the dynamic solver equations
+  CALL CMISSSolverTypeInitialise(DynamicSolver,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,DynamicSolver,Err)
   CALL CMISSSolverSolverEquationsGet(DynamicSolver,SolverEquations,Err)
   !Set the solver equations sparsity (Sparse/Full)
@@ -490,33 +388,17 @@ PROGRAM BURGERSEXAMPLE
   !OUTPUT
   !-----------------------------------------------------------------------------------------------------------
   !Output Analytic analysis
-  !Call CMISSAnalyticAnalysisOutput(DependentField,"BurgersAnalytics_1D",Err)
+  Call CMISSAnalyticAnalysisOutput(DependentField,"BurgersAnalytics_1D",Err)
 
   !export fields
-  EXPORT_FIELD=.TRUE.
-  IF(EXPORT_FIELD) THEN
-    CALL CMISSFieldsTypeInitialise(Fields,Err)
-    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"Burgers_1D","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"Burgers_1D","FORTRAN",Err)
-    CALL CMISSFieldsTypeFinalise(Fields,Err)
-  ENDIF
-  
-  !Output timing summary
-  !CALL TIMING_SUMMARY_OUTPUT(ERR,ERROR,*999)
+  CALL CMISSFieldsTypeInitialise(Fields,Err)
+  CALL CMISSFieldsTypeCreate(Region,Fields,Err)
+  CALL CMISSFieldIONodesExport(Fields,"Burgers_1D","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields,"Burgers_1D","FORTRAN",Err)
+  CALL CMISSFieldsTypeFinalise(Fields,Err)
 
-  !Calculate the stop times and write out the elapsed user and system times
-!   CALL CPU_TIMER(USER_CPU,STOP_USER_TIME,ERR,ERROR,*999)
-!   CALL CPU_TIMER(SYSTEM_CPU,STOP_SYSTEM_TIME,ERR,ERROR,*999)
-! 
-!   CALL WRITE_STRING_TWO_VALUE(GENERAL_OUTPUT_TYPE,"User time = ",STOP_USER_TIME(1)-START_USER_TIME(1),", System time = ", &
-!     & STOP_SYSTEM_TIME(1)-START_SYSTEM_TIME(1),ERR,ERROR,*999)
-!   
-  !CALL CMISS_FINALISE(ERR,ERROR,*999)
-  !CALL CMISSFinalise(Err)
   WRITE(*,'(A)') "Program successfully completed."
-  
 
   STOP
   
-END PROGRAM BURGERSEXAMPLE
+END PROGRAM GENERALISEDBURGERSEXAMPLE

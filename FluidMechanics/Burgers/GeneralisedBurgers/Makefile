@@ -65,7 +65,7 @@ endif
 
 EXAMPLE_PATH=FluidMechanics/Burgers/
 
-EXAMPLE_NAME = StaticBurgers
+EXAMPLE_NAME = GeneralisedBurgers
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 
