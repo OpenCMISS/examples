@@ -190,9 +190,9 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   !FieldML parsing variables
   TYPE(FieldmlInfoType) :: fieldmlInfo, outputInfo
   
-  INTEGER(CMISSIntg) :: spaceHandle, velocityHandle, pressureHandle, meshComponentCount
+  INTEGER(CMISSIntg) :: spaceHandle, meshComponentCount
   
-  INTEGER(CMISSIntg) :: domainHandle, nodeCount, elementCount
+  INTEGER(CMISSIntg) :: typeHandle, nodeCount, elementCount
   INTEGER(CMISSIntg) :: coordinateType, coordinateCount, xiDimensions
   
 #ifdef WIN32
@@ -288,8 +288,6 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
     & "test_mesh.constant_dofs", err )
   
   spaceHandle = Fieldml_GetObjectByName( fieldmlInfo%fmlHandle, "test_mesh.coordinates"//NUL )
-  velocityHandle = Fieldml_GetObjectByName( fieldmlInfo%fmlHandle, "test_mesh.velocity"//NUL )
-  pressureHandle = Fieldml_GetObjectByName( fieldmlInfo%fmlHandle, "test_mesh.pressure"//NUL )
 
   CALL CMISSFieldmlInput_ReadMeshInfo( fieldmlInfo, "test_mesh.mesh", "test_mesh.nodes", err )
   
@@ -338,13 +336,13 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   
   meshComponentCount = 2
   
-  nodeCount = Fieldml_GetEnsembleTypeElementCount( fieldmlInfo%fmlHandle, fieldmlInfo%nodesHandle )
+  nodeCount = Fieldml_GetMemberCount( fieldmlInfo%fmlHandle, fieldmlInfo%nodesHandle )
   CALL CMISSNodesTypeInitialise( Nodes, err )
   CALL CMISSNodesCreateStart( Region, nodeCount, nodes, err )
   CALL CMISSNodesCreateFinish( Nodes, err )
 
   xiDimensions = Fieldml_GetTypeComponentCount( fieldmlInfo%fmlHandle, fieldmlInfo%xiHandle )
-  elementCount = Fieldml_GetEnsembleTypeElementCount( fieldmlInfo%fmlHandle, fieldmlInfo%elementsHandle )
+  elementCount = Fieldml_GetMemberCount( fieldmlInfo%fmlHandle, fieldmlInfo%elementsHandle )
   CALL CMISSMeshTypeInitialise( Mesh, err )
   CALL CMISSMeshCreateStart( MeshUserNumber, Region, xiDimensions, Mesh, err )
   CALL CMISSMeshNumberOfElementsSet( Mesh, elementCount, err )
@@ -602,15 +600,15 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
   !OUTPUT
     CALL CMISSFieldmlOutput_InitialiseInfo( Region, Mesh, xiDimensions, outputDirectory, basename, outputInfo, err )
 
-   CALL CMISSFieldmlOutput_AddField( outputInfo, baseName//".geometric", region, mesh, GeometricField, &
-     & CMISSFieldUVariableType, err )
+    CALL CMISSFieldmlUtil_Import( outputInfo, "coordinates.rc.3d"//NUL, typeHandle, err )
+    CALL CMISSFieldmlOutput_AddField( outputInfo, baseName//".geometric", region, mesh, GeometricField, &
+      & CMISSFieldUVariableType, err )
 
-   domainHandle = Fieldml_GetObjectByName( outputInfo%fmlHandle, "library.velocity.rc.3d"//NUL )
-   CALL CMISSFieldmlOutput_AddFieldComponents( outputInfo, domainHandle, baseName//".velocity", Mesh,DependentFieldNavierStokes, &
-     & (/1,2,3/), CMISSFieldUVariableType, err )
+    CALL CMISSFieldmlOutput_AddFieldComponents( outputInfo, typeHandle, baseName//".velocity", Mesh,DependentFieldNavierStokes, &
+      & (/1,2,3/), CMISSFieldUVariableType, err )
     
-    domainHandle = Fieldml_GetObjectByName( outputInfo%fmlHandle, "library.pressure"//NUL )
-    CALL CMISSFieldmlOutput_AddFieldComponents( outputInfo, domainHandle, baseName//".pressure", Mesh,DependentFieldNavierStokes,&
+    CALL CMISSFieldmlUtil_Import( outputInfo, "real.1d"//NUL, typeHandle, err )
+    CALL CMISSFieldmlOutput_AddFieldComponents( outputInfo, typeHandle, baseName//".pressure", Mesh,DependentFieldNavierStokes,&
       & (/4/), CMISSFieldUVariableType, err )
     
     CALL CMISSFieldmlOutput_Write( outputInfo, outputFilename, err )
