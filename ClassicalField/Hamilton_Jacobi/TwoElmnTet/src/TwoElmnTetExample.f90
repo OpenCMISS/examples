@@ -90,7 +90,7 @@ PROGRAM TwoElmnTet
   CHARACTER (LEN=100) :: STRING
   
   TYPE(CMISSMeshType) :: Mesh
-  TYPE(CMISSFieldType) :: GeometricField, DependentField
+  TYPE(CMISSFieldType) :: GeometricField, DependentField, EquationsSetFieldField
   TYPE(CMISSProblemType) :: Problem
   TYPE(CMISSSolverType) :: Solver
   TYPE(CMISSEquationsSetType) :: EquationsSet
@@ -219,10 +219,9 @@ PROGRAM TwoElmnTet
   
   !Create the equations_set
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(77001,Region,GeometricField,EquationsSet,Err)
-  !Set the equations set to be a standard hj problem
-  CALL CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetFMMClass, &
-    & CMISSEquationsSetHJEquationType,CMISSEquationsSetStandardHJSubtype,Err)
+  CALL CMISSEquationsSetCreateStart(77001,Region,GeometricField,CMISSEquationsSetFMMClass, &
+        & CMISSEquationsSetHJEquationType,CMISSEquationsSetStandardHJSubtype,13312,& 
+        & EquationsSetFieldField,EquationsSet,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
 
