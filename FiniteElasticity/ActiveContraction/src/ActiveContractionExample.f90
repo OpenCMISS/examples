@@ -60,7 +60,7 @@ PROGRAM ActiveContractionExample
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: QuadraticBasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CubicBasisUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: LinearBasisUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
@@ -72,7 +72,7 @@ PROGRAM ActiveContractionExample
   INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumber=6
 
   INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshComponents=2
-  INTEGER(CMISSIntg), PARAMETER :: QuadraticMeshComponentNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CubicMeshComponentNumber=1
   INTEGER(CMISSIntg), PARAMETER :: LinearMeshComponentNumber=2
 
 
@@ -93,19 +93,21 @@ PROGRAM ActiveContractionExample
 
   INTEGER(CMISSIntg) :: EquationsSetIndex  
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
-  INTEGER(CMISSIntg) :: D, E, N, I
+  INTEGER(CMISSIntg) :: D, E, N, I, DERIV
 
   REAL(CMISSDP) :: TMP
   REAL(CMISSDP), DIMENSION(1:7) :: COSTA_PARAMS =  (/ 0.2, 30.0, 12.0, 14.0, 14.0, 10.0, 18.0 /) ! a bff bfs bfn bss bsn bnn
 
   INTEGER(CMISSIntg), dimension(:,:), allocatable :: Elements
   REAL(CMISSDP)     , dimension(:,:), allocatable :: Nodes
+  REAL(CMISSDP) :: NodeCoords(24)
   REAL(CMISSDP)     , dimension(:,:), allocatable :: DirichletConditions
   REAL(CMISSDP)     , dimension(:,:), allocatable :: Fibers
+  REAL(CMISSDP) :: FiberOrientation(3)
   REAL(CMISSDP)     , dimension(:,:), allocatable :: ActivationTimes
 
   !CMISS variables
-  TYPE(CMISSBasisType) :: QuadraticBasis, LinearBasis
+  TYPE(CMISSBasisType) :: CubicBasis, LinearBasis
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
   TYPE(CMISSCoordinateSystemType) :: CoordinateSystem, WorldCoordinateSystem
   TYPE(CMISSMeshType) :: Mesh
@@ -118,7 +120,7 @@ PROGRAM ActiveContractionExample
   TYPE(CMISSRegionType) :: Region,WorldRegion
   TYPE(CMISSSolverType) :: Solver,LinearSolver
   TYPE(CMISSSolverEquationsType) :: SolverEquations
-  TYPE(CMISSMeshElementsType) :: QuadraticElements,LinearElements
+  TYPE(CMISSMeshElementsType) :: CubicElements,LinearElements
   TYPE(CMISSNodesType) :: CMNodes
   TYPE(CMISSControlLoopType) :: ControlLoop
 
@@ -138,14 +140,6 @@ PROGRAM ActiveContractionExample
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
 
-!  open(unit = 2, file = "./data/hollowcylq-221.in")
-!  open(unit = 3, file = "./data/hollowcylq-221.in.gpactiv")
-  open(unit = 2, file = "./data/lvq-842.in")
-  open(unit = 3, file = "./data/lvq-842.in.gpactiv")
-  call read_mesh(2, Elements, Nodes, DirichletConditions, Fibers)
-  call read_activation_times(3, ActivationTimes)
-  close(2)
-  close(3)
 
   NumberOfDomains=NumberOfComputationalNodes
 
@@ -161,43 +155,39 @@ PROGRAM ActiveContractionExample
   CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
   CALL CMISSRegionCreateFinish(Region,Err)
 
-  !Define basis functions - tri-linear Lagrange and tri-Quadratic Lagrange
+  !Define basis functions - tri-linear Lagrange and tri-Cubic Hermite
   CALL CMISSBasisTypeInitialise(LinearBasis,Err)
   CALL CMISSBasisCreateStart(LinearBasisUserNumber,LinearBasis,Err)
   CALL CMISSBasisCreateFinish(LinearBasis,Err)
 
-  CALL CMISSBasisTypeInitialise(QuadraticBasis,Err)
-  CALL CMISSBasisCreateStart(QuadraticBasisUserNumber,QuadraticBasis,Err)
-  CALL CMISSBasisInterpolationXiSet(QuadraticBasis,(/CMISSBasisQuadraticLagrangeInterpolation, &
-    & CMISSBasisQuadraticLagrangeInterpolation,CMISSBasisQuadraticLagrangeInterpolation/),Err)
-  CALL CMISSBasisQuadratureNumberOfGaussXiSet(QuadraticBasis, &
+  CALL CMISSBasisTypeInitialise(CubicBasis,Err)
+  CALL CMISSBasisCreateStart(CubicBasisUserNumber,CubicBasis,Err)
+  CALL CMISSBasisInterpolationXiSet(CubicBasis,(/CMISSBasisCubicHermiteInterpolation, &
+    & CMISSBasisCubicHermiteInterpolation,CMISSBasisCubicHermiteInterpolation/),Err)
+  CALL CMISSBasisQuadratureNumberOfGaussXiSet(CubicBasis, &
     & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)
-  CALL CMISSBasisCreateFinish(QuadraticBasis,Err)
+  CALL CMISSBasisCreateFinish(CubicBasis,Err)
 
-  !Create a mesh with two components, Quadratic for geometry and fibers and linear lagrange
+  !Create a mesh with two components, Cubic for geometry and fibers and linear lagrange
   !for hydrostatic pressure and material properties
   CALL CMISSMeshTypeInitialise(Mesh,Err)
   CALL CMISSMeshCreateStart(MeshUserNumber,Region,3,Mesh,Err) ! dim = 3
   CALL CMISSMeshNumberOfComponentsSet(Mesh,NumberOfMeshComponents,Err)
-  CALL CMISSMeshNumberOfElementsSet(Mesh,size(Elements,2),Err) ! num elts
+  CALL CMISSMeshNumberOfElementsSet(Mesh,1,Err) ! num elts
   
   !define nodes for the mesh
   CALL CMISSNodesTypeInitialise(CMNodes,Err)
-  CALL CMISSNodesCreateStart(Region,size(Nodes,2),CMNodes,Err) ! num nodes
+  CALL CMISSNodesCreateStart(Region,8,CMNodes,Err) ! num nodes
   CALL CMISSNodesCreateFinish(CMNodes,Err)
-  !Quadratic component : from file
-  CALL CMISSMeshElementsTypeInitialise(QuadraticElements,Err)
-  CALL CMISSMeshElementsCreateStart(Mesh,QuadraticMeshComponentNumber,QuadraticBasis,QuadraticElements,Err)
-  DO E=1,size(Elements,2)
-    CALL CMISSMeshElementsNodesSet(QuadraticElements,E, Elements(ROTATE_ELEM,E),Err)
-  ENDDO
-  CALL CMISSMeshElementsCreateFinish(QuadraticElements,Err)
+  !Cubic component : from file
+  CALL CMISSMeshElementsTypeInitialise(CubicElements,Err)
+  CALL CMISSMeshElementsCreateStart(Mesh,CubicMeshComponentNumber,CubicBasis,CubicElements,Err)
+  CALL CMISSMeshElementsNodesSet(CubicElements,1,(/1,2,3,4,5,6,7,8/),Err)
+  CALL CMISSMeshElementsCreateFinish(CubicElements,Err)
   !linear Lagrange component: numbers do not need to be continuous from 1? -> use quadratic nodeno on corners
   CALL CMISSMeshElementsTypeInitialise(LinearElements,Err)
   CALL CMISSMeshElementsCreateStart(Mesh,LinearMeshComponentNumber,LinearBasis,LinearElements,Err)
-  DO E=1,size(Elements,2)
-    CALL CMISSMeshElementsNodesSet(LinearElements,E, Elements( (/1,3,7,9,19,21,25,27/),E),Err)
-  ENDDO
+  CALL CMISSMeshElementsNodesSet(LinearElements,1,(/1,2,3,4,5,6,7,8/),Err)
   CALL CMISSMeshElementsCreateFinish(LinearElements,Err)
 
   !finish mesh creation
@@ -219,18 +209,30 @@ PROGRAM ActiveContractionExample
   CALL CMISSFieldTypeSet(GeometricField,CMISSFieldGeometricType,Err)  
   CALL CMISSFieldNumberOfVariablesSet(GeometricField,1,Err) ! 1 var
   CALL CMISSFieldNumberOfComponentsSet(GeometricField,CMISSFieldUVariableType,3,Err)   ! 3 components of geom field
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,QuadraticMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,QuadraticMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,CubicMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,CubicMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,CubicMeshComponentNumber,Err)
   CALL CMISSFieldCreateFinish(GeometricField,Err)
 
   !Set node positions
-  DO N=1,size(Nodes,2)
-  DO D=1,3
-    CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,D,Nodes(D,N),Err)
+  open(unit = 2, file = "./data/cubic.in")
+  DO N=1,8
+    read (2,*) NodeCoords(:)
+    DO D=1,3
+      DO DERIV=1,8
+        CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,DERIV, &
+          & N,D,NodeCoords((D-1)*8+DERIV),Err)
+      ENDDO
+    ENDDO
   ENDDO
-  ENDDO
+  close(2)
 
+  !DEBUG OUTPUT: Check, if the element is set correctly (cmgui visualization indicates: yes)
+  CALL CMISSFieldsTypeInitialise(Fields,Err)
+  CALL CMISSFieldsTypeCreate(Region,Fields,Err)
+  CALL CMISSFieldIONodesExport(Fields,"UndeformedMeshOutput","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields,"UndeformedMeshOutput","FORTRAN",Err)
+  CALL CMISSFieldsTypeFinalise(Fields,Err)
 
   !Create a fibre field and attach it to the geometric field  
   CALL CMISSFieldTypeInitialise(FibreField,Err)
@@ -240,17 +242,24 @@ PROGRAM ActiveContractionExample
   CALL CMISSFieldGeometricFieldSet(FibreField,GeometricField,Err)
   CALL CMISSFieldNumberOfComponentsSet(FibreField,CMISSFieldUVariableType,3,Err)   ! 1 var, 3 components -> angles!
   DO D=1,3
-    CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,D,QuadraticMeshComponentNumber,Err) ! quadratic interp
+    CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,D,CubicMeshComponentNumber,Err) ! Cubic interp
     CALL CMISSFieldComponentInterpolationSet(FibreField,CMISSFieldUVariableType,D,CMISSFieldNodeBasedInterpolation,Err) ! node based
   ENDDO
   CALL CMISSFieldCreateFinish(FibreField,Err)
 
   !Set fiber directions
-  DO N=1,size(Nodes,2)
-  DO D=1,3
-    Fibers(D,N) = 0 ! input file gives unit vectors and opencmiss expects angles. TODO: fix.
-    CALL CMISSFieldParameterSetUpdateNode(FibreField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,D,Fibers(D,N),Err)
-  ENDDO
+  FiberOrientation=(/1,0,0/) ! all fiber directions (1,0,0)
+  DO N=1,8
+    DO D=1,3
+      ! set constant value for every node
+      CALL CMISSFieldParameterSetUpdateNode(FibreField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1, &
+        & N,D,FiberOrientation(D),Err)
+      ! all derivatives = 0 (constant field)
+      DO DERIV=2,8
+        CALL CMISSFieldParameterSetUpdateNode(FibreField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+            & 1,DERIV,N,D,0.0_CMISSDP,Err)
+      ENDDO
+    ENDDO
   ENDDO
 
 
@@ -326,13 +335,7 @@ CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSE
 
 !  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldVVariableType,CMISSFieldValuesSetType,1,2.0_CMISSDP,Err) ! activate at time 2. TODO: inhomogeneous
   ! inhomogeneous activation times from file
-  DO E=1,size(Elements,2)
-  DO I=1,27
-    CALL CMISSFieldParameterSetUpdateGaussPoint(MaterialField,CMISSFieldVVariableType,CMISSFieldValuesSetType, &
-    & E, I, 1, ActivationTimes(E,ROTATE_ELEM(I)), Err) ! rotating an element with 27 nodes can be done in the same way as the Gauss points
-  ENDDO
-  ENDDO
-
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldVVariableType,CMISSFieldValuesSetType,1,10000.0_CMISSDP,Err)
   ! create independent field
   CALL CMISSFieldTypeInitialise(IndependentField,Err)
   CALL CMISSEquationsSetIndependentCreateStart(EquationsSet,IndependentFieldUserNumber,IndependentField,Err)
@@ -360,12 +363,6 @@ CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSE
   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
 
 
-  DO I=1,size(DirichletConditions,2)
-    N = INT(DirichletConditions(1,I))
-    D = INT(DirichletConditions(2,I))
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,N,D,&
-         & CMISSBoundaryConditionFixed, Nodes(D,N) + DirichletConditions(3,I),Err)  ! current + offset
-  ENDDO
 
 
   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
