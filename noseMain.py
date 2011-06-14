@@ -74,7 +74,7 @@ def test_build_library():
     newDir = newDir + '/' + folder
     if not os.path.isdir(newDir):
       os.mkdir(newDir)
-  logPath = logDir+"/nose_library_build_" + compiler
+  logPath = logDir+"/nose_library_build_" + compiler + str(date.today())
   open_log(logPath)
   command = "make USEFIELDML=true COMPILER=" + compiler + " >> "  + logPath + " 2>&1"
   err = os.system(command)
@@ -124,7 +124,7 @@ def check_build(status,root,compiler):
     newDir = newDir + '/' + folder
     if not os.path.isdir(newDir):
       os.mkdir(newDir)
-  logPath = logDir+"/nose_build_" + compiler
+  logPath = logDir+"/nose_build_" + compiler + str(date.today())
   open_log(logPath)
   command = "make USEFIELDML=true COMPILER=" + compiler + " >> "  + logPath + " 2>&1"
   err = os.system(command)
@@ -140,7 +140,7 @@ def check_run(status,cwd, system,arch,compiler,masterPath,testArgs,testPath,noCh
     newDir = newDir + '/' + folder
     if not os.path.isdir(newDir):
       os.mkdir(newDir)
-  logPath = logDir+"/nose_run_" + compiler
+  logPath = logDir+"/nose_run_" + compiler + str(date.today())
   open_log(logPath)
   exampleName = masterPath.rpartition("/")[2]
   compiler_version = getVersion(compiler)
@@ -158,7 +158,7 @@ def check_output(status, cwd, ndiffDir, outputDir,tolerance=None):
     newDir = newDir + '/' + folder
     if not os.path.isdir(newDir):
       os.mkdir(newDir)
-  logPath = logDir+"/nose_check_" + compiler
+  logPath = logDir+"/nose_check_" + compiler + str(date.today())
   open_log(logPath)
   ndiff = os.environ['OPENCMISS_ROOT']+"/cm/utils/ndiff"
   errall =0
