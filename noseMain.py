@@ -7,6 +7,7 @@ examplesDir = os.environ['OPENCMISS_ROOT']+"/cm/examples"
 logsDir = os.environ['OPENCMISS_ROOT']+"/build/logs"
 hostname = socket.gethostname()
 compiler = os.environ['COMPILER']
+configfile = os.environ['CONFIGURE']
 
 def load_prop(propFile, properties) :
   properties['TestingPoint']=[]
@@ -88,7 +89,7 @@ def test_example():
   for root, subFolders, files in os.walk(rootdir) :
     if root.find(".svn")==-1 :
       for f in files :
-        if f=="nightlytest.prop" or (f=="weeklytest.prop" and date.today().weekday() == 6) :
+        if f==configfile :
           os.chdir(root)
           yield check_build, 'build',root,compiler
           system = os.uname()[0].lower()
