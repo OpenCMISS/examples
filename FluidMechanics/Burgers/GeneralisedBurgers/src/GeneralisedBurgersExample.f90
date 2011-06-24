@@ -66,7 +66,11 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   !Test program parameters
   
   REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
-  
+  INTEGER(CMISSIntg), PARAMETER :: NUMBER_GLOBAL_X_ELEMENTS=6
+  REAL(CMISSDP), PARAMETER :: START_TIME=0.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: STOP_TIME=0.1_CMISSDP
+  REAL(CMISSDP), PARAMETER :: TIME_INCREMENT=0.01_CMISSDP
+    
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
@@ -85,12 +89,9 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   
   !Program variables
 
-  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS
-  
   !Program types
 
   TYPE(CMISSBasisType) :: Basis
-  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
   TYPE(CMISSCoordinateSystemType) :: CoordinateSystem,WorldCoordinateSystem
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
@@ -99,7 +100,6 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
   TYPE(CMISSMeshType) :: Mesh
-  TYPE(CMISSNodesType) :: Nodes
   TYPE(CMISSProblemType) :: Problem
   TYPE(CMISSControlLoopType) :: ControlLoop
   TYPE(CMISSRegionType) :: Region,WorldRegion
@@ -116,8 +116,6 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
   INTEGER(CMISSIntg) :: EquationsSetIndex
-  INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
-  INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain
   INTEGER(CMISSIntg) :: Err
   LOGICAL :: LINEAR_SOLVER_DIRECT_FLAG
   
@@ -131,14 +129,15 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   !If attempt fails set with system estimated values
   IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
 #endif
-
-  NUMBER_GLOBAL_X_ELEMENTS=3
     
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
   CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
 
+
+  CALL CMISSOutputSetOn("Burgers1DAnalytic",Err)
+  
   !Get the computational nodes information
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
@@ -176,7 +175,7 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   CALL CMISSBasisNumberOfXiSet(Basis,1,Err)
   !Set the basis xi interpolation and number of Gauss points
   CALL CMISSBasisInterpolationXiSet(Basis,[CMISSBasisLinearLagrangeInterpolation],Err)
-  CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,[2],Err)
+  CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,[3],Err)
   !Finish the creation of the basis
   CALL CMISSBasisCreateFinish(Basis,Err)
 
@@ -270,8 +269,8 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   !-----------------------------------------------------------------------------------------------------------
   !Create the equations set analytic field variables
   CALL CMISSFieldTypeInitialise(AnalyticField,Err)
-  CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSEquationsSetBurgersOneDim1,AnalyticFieldUserNumber, & 
-   & AnalyticField,Err)
+  CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSEquationsSetGeneralisedBurgersOneDim1, &
+    & AnalyticFieldUserNumber,AnalyticField,Err)
   !Finish the equations set analytic field variables
   CALL CMISSEquationsSetAnalyticCreateFinish(EquationsSet,Err)
 
@@ -284,7 +283,7 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   !Set the equations matrices sparsity type (Sparse/Full)
   CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsFullMatrices,Err)
   !Set the equations set output (NoOutput/TimingOutput/MatrixOutput/SolverMatrix/ElementMatrixOutput)
-  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
+  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsElementMatrixOutput,Err)
   !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
 
@@ -314,7 +313,7 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   !Get the control loop
   CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
   !Set the times
-  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,1.0_CMISSDP,0.1_CMISSDP,Err)
+  CALL CMISSControlLoopTimesSet(ControlLoop,START_TIME,STOP_TIME,TIME_INCREMENT,Err)
   !Set the output timing
   CALL CMISSControlLoopTimeOutputSet(ControlLoop,1,Err)
   !Finish creating the problem control loop
@@ -332,20 +331,21 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   !Get the dymamic solver
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverUserNumber,DynamicSolver,Err)
   !Set the output type
-  CALL CMISSSolverOutputTypeSet(DynamicSolver,CMISSSolverNoOutput,Err)
+  CALL CMISSSolverOutputTypeSet(DynamicSolver,CMISSSolverSolverMatrixOutput,Err)
   !Set theta
   CALL CMISSSolverDynamicThetaSet(DynamicSolver,0.5_CMISSDP,Err)
 
   !Get the dynamic nonlinear solver
   CALL CMISSSolverDynamicNonlinearSolverGet(DynamicSolver,NonlinearSolver,Err)
   !Set the nonlinear Jacobian type
-  CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolver,CMISSSolverNewtonJacobianFDCalculated,Err)
+  !CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolver,CMISSSolverNewtonJacobianFDCalculated,Err)
+  CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolver,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
   !Set the output type
-  CALL CMISSSolverOutputTypeSet(NonlinearSolver,CMISSSolverNoOutput,Err)
+  CALL CMISSSolverOutputTypeSet(NonlinearSolver,CMISSSolverSolverMatrixOutput,Err)
   !Get the dynamic nonlinear linear solver
   CALL CMISSSolverNewtonLinearSolverGet(NonlinearSolver,LinearSolver,Err)
   !Set the output type
-  CALL CMISSSolverOutputTypeSet(LinearSolver,CMISSSolverNoOutput,Err)
+  CALL CMISSSolverOutputTypeSet(LinearSolver,CMISSSolverSolverMatrixOutput,Err)
   !Set the solver settings
 
   LINEAR_SOLVER_DIRECT_FLAG=.FALSE.
@@ -388,7 +388,7 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   !OUTPUT
   !-----------------------------------------------------------------------------------------------------------
   !Output Analytic analysis
-  Call CMISSAnalyticAnalysisOutput(DependentField,"BurgersAnalytics_1D",Err)
+  Call CMISSAnalyticAnalysisOutput(DependentField,"BurgersAnalytic_1D",Err)
 
   !export fields
   CALL CMISSFieldsTypeInitialise(Fields,Err)
