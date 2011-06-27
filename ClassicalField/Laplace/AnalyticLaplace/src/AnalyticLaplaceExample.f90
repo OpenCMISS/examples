@@ -560,7 +560,7 @@ CONTAINS
     CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
     CALL CMISSSolverEquationsBoundaryConditionsCreateStart(Solver_Equations,BoundaryConditions,Err)
     !Set up the boundary conditions as per the analytic solution
-    CALL CMISSEquationsSetBoundaryConditionsAnalytic(EQUATIONS_SET,BoundaryConditions,Err)
+    CALL CMISSProblemSolverEquationsBoundaryConditionsAnalytic(Solver_Equations,Err)
     CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(Solver_Equations,Err)
 
     !Solve the problem
