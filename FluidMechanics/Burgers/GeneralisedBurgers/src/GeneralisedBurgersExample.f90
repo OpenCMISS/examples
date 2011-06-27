@@ -269,7 +269,7 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   !-----------------------------------------------------------------------------------------------------------
   !Create the equations set analytic field variables
   CALL CMISSFieldTypeInitialise(AnalyticField,Err)
-  CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSEquationsSetGeneralisedBurgersOneDim1, &
+  CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSEquationsSetGeneralisedBurgersOneDim2, &
     & AnalyticFieldUserNumber,AnalyticField,Err)
   !Finish the equations set analytic field variables
   CALL CMISSEquationsSetAnalyticCreateFinish(EquationsSet,Err)
@@ -340,6 +340,8 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   !Set the nonlinear Jacobian type
   !CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolver,CMISSSolverNewtonJacobianFDCalculated,Err)
   CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolver,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
+  !Set the line search
+  CALL CMISSSolverNewtonLineSearchTypeSet(NonlinearSolver,CMISSSolverNewtonLinesearchNone,Err)
   !Set the output type
   CALL CMISSSolverOutputTypeSet(NonlinearSolver,CMISSSolverSolverMatrixOutput,Err)
   !Get the dynamic nonlinear linear solver
