@@ -65,7 +65,7 @@ endif
 
 EXAMPLE_PATH = FiniteElasticity/
 
-EXAMPLE_NAME = ActiveContraction
+EXAMPLE_NAME = ActiveContractionCH2QL
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 
