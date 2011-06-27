@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program which solves a weakly coupled Laplace equation in two regions using OpenCMISS calls.
 !>

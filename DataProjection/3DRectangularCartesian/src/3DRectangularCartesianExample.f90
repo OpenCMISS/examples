@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \author Tim Wu
 !> \brief This is an example program to solve 3D data points embedding in 3D cartesian elements using openCMISS calls.
 !>

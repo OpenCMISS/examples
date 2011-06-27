@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \author Christian Michler
 !> \brief This is an example program to solve a dynamic Darcy equation using openCMISS calls.
 !>

@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \author David Nickerson <nickerso@users.sourceforge.net>
 !> \brief An example demonstrating and testing the implementation of the openCMISS(cellml) API.
 !>

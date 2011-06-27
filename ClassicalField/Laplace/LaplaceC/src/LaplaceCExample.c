@@ -1,6 +1,5 @@
 /*
  * \file
- * $Id: LaplaceCExample.c 20 2007-05-28 20:22:52Z cpb $
  * \author Chris Bradley
  * \brief This is an example program to solve Laplace's equation using OpenCMISS calls from C.
  *

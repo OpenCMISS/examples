@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program which sets up a field which uses a mixed Lagrange and Simplex mesh using openCMISS calls.
 !>

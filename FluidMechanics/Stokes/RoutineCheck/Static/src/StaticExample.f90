@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \author Sebastian Krittian
 !> \brief This is an example program to solve a static Stokes equation using OpenCMISS calls.
 !>

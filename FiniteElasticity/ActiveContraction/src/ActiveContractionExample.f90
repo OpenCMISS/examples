@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \author Sander Land
 !> \brief This is an example program to solve active contraction based finite elasticity equation using openCMISS calls.
 !>

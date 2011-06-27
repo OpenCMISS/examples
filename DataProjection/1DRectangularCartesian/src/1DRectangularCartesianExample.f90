@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \author Tim Wu
 !> \brief This is an example program to solve 3D data points projecting onto 1D cartesian elements using OpenCMISS calls.
 !>

@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \authors Christian Michler
 !> \brief This is an example program to solve a Compressible Finite Elastiticity equation using openCMISS calls and FLUID_MECHANICS_IO_ROUTINES.
 !>

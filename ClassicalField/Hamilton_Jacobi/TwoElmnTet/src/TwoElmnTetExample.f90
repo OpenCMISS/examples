@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \author Ali PASHAEI
 !> \brief This is an example program to solve a Hamilton-Jacobi (Eikonal form) equation using openCMISS calls.
 !>

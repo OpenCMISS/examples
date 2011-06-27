@@ -1,5 +1,4 @@
 !> \file
-!> $Id: MooneyRivlinInCellMLExample.f90 -1   $
 !> \author Chris Bradley
 !> \brief This is an example program to solve a finite elasticity equation using openCMISS calls.
 !>

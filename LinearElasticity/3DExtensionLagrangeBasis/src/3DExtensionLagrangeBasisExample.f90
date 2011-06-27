@@ -1,5 +1,4 @@
 ! \file
-!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve a linear elasticity equation using openCMISS calls.
 !>

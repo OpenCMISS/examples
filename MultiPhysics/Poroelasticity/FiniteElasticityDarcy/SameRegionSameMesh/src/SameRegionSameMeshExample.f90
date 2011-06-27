@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \authors Christian Michler, Jack Lee
 !> \brief This is an example program to solve a coupled Finite Elastiticity Darcy equation using openCMISS calls.
 !>

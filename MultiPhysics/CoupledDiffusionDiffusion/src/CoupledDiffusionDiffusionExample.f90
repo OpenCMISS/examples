@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \authors Andrew Cookson
 !> \brief This is an example program to solve a coupled diffusion-diffusion equation using openCMISS calls.
 !>

@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve a 1D diffusion equation and compare it to the analytic solution using OpenCMISS calls.
 !>

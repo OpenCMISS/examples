@@ -1,5 +1,4 @@
 !> \file
-!> $Id: QuadraticEllipsoidExample.f90 1714 2010-11-10 15:43:15Z jackisawesome $
 !> \author Chris Bradley
 !> \brief This is an example program to solve a finite elasticity equation using openCMISS calls.
 !>

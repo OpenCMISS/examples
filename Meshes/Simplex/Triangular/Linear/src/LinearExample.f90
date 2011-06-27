@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to set up a generated mesh of quadratic Simplex triangle elements.
 !>

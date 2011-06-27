@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \author Sebastian Krittian
 !> \brief This is a master example program to solve static, dynamic and ALE Stokes equations using OpenCMISS calls.
 !>

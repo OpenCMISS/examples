@@ -2,7 +2,6 @@
 #
 # For use with GNU make.
 #
-# $Id: Makefile 1717 2010-11-11 15:40:41Z jackisawesome $
 #
 #----------------------------------------------------------------------------------------------------------------------------------
 # Makefile for compiling openCMISS examples

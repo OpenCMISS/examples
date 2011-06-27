@@ -1,5 +1,4 @@
 !> \file
-!> $Id: StaticCompressionExample.f90 1881 2011-02-04 20:58:37Z areeve $
 !> \author Adam Reeve
 !> \brief This is an example program to solve a coupled finite elasticity and fluid pressure problem using OpenCMISS calls.
 !>

@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve the ALE formulation of the diffusion equation using openCMISS calls.
 !>

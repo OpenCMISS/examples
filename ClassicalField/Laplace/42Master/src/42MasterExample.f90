@@ -1,5 +1,4 @@
 !> \file
-!> $Id: 42MasterExample.f90 1575 2010-09-29 03:27:41Z chrispbradley $
 !> \author Chris Bradley
 !> \brief This is an example program to solve a Laplace equation using OpenCMISS calls.
 !>

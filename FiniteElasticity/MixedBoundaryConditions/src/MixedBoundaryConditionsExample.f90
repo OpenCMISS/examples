@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \author Kumar Mithraratne
 !> \brief This is an example program to solve a finite elasticity equation using openCMISS calls.
 !>

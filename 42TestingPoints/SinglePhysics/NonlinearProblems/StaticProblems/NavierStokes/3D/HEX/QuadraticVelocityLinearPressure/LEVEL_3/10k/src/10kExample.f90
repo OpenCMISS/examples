@@ -1,5 +1,4 @@
 !> \file
-!> $Id: LEVEL_2Example.f90 1544 2010-09-23 09:38:31Z krittian $
 !> \author Sebastian Krittian
 !> \brief This is an example program to solve an analytic static Navier-Stokes equation using OpenCMISS calls.
 !>

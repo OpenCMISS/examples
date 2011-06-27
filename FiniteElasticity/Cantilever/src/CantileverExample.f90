@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \author Adam Reeve
 !> \brief This is an example program to solve a finite elasticity equation using openCMISS calls.
 !>

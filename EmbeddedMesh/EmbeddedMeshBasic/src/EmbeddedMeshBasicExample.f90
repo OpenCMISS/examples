@@ -1,5 +1,4 @@
 !> \file
-!> $Id: EmbeddedMeshBasicExample.f90 1528 2010-12-07 01:32:29Z  $
 !> \author Ishani Roy
 !> \brief This is an example program to solve an embedded meshing problem on a simple cube
 !>        Currently some of the pre processing information is assumed, which will be automated

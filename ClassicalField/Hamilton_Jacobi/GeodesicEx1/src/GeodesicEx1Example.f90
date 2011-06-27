@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \author Ali PASHAEI
 !> \brief This is an example program to find the geodesic using openCMISS calls.
 !>

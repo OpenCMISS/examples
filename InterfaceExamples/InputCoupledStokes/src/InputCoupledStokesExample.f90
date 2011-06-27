@@ -1,5 +1,4 @@
 !> \file
-!> $Id: InputCoupledStokesExample.f90 -1   $
 !> \author Chris Bradley
 !> \brief This is an example program which solves a weakly coupled Stokes equation in two regions using OpenCMISS calls.
 !>

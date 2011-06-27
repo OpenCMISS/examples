@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve an ALE formulation of the advection-diffusion equation using openCMISS calls.
 !>

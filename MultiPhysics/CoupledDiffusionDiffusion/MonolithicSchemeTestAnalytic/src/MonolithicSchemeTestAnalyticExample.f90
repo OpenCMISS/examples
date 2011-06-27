@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \authors Andrew Cookson
 !> \brief This is an example program to solve coupled multi-compartment diffusion equations in monolithic scheme using openCMISS calls.
 !>

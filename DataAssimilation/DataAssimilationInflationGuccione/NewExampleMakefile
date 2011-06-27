@@ -2,7 +2,6 @@
 #
 # For use with GNU make.
 #
-# $Id: NewExampleMakefile 1865 2011-01-16 23:57:19Z chrispbradley $
 #
 #----------------------------------------------------------------------------------------------------------------------------------
 # ExampleMakefile for compiling OpenCMISS examples

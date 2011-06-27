@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \author Chris Bradley
 !> \brief This is an example program to solve an Analytic Laplace equation using OpenCMISS calls.
 !>

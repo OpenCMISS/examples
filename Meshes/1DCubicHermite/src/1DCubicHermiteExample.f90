@@ -1,5 +1,4 @@
 !> \file
-!> $Id: 1DCubicHermiteExample.f90 1528 2010-09-21 01:32:29Z chrispbradley $
 !> \author Chris Bradley
 !> \brief This is an example program which sets up a 1D cubic Hermite mesh using OpenCMISS calls.
 !>

@@ -1,5 +1,4 @@
 !> \file
-!> $Id$
 !> \author Ishani Roy & Sander Land
 !> \brief This is an example program to solve a Monodomain equation using OpenCMISS calls.
 !>
