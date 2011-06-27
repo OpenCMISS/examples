@@ -1,7 +1,7 @@
 !> \file
 !> $Id$
 !> \author Chris Bradley
-!> \brief This is an example program to solve a diffusion equation using OpenCMISS calls.
+!> \brief This is an example program to solve a 1D diffusion equation and compare it to the analytic solution using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -40,14 +40,14 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/Diffusion/DiffusionExponentialSource/src/DiffusionExponentialSourceExample.f90
-!! Example program to solve a diffusion equation using openCMISS calls.
+!> \example ClassicalField/Diffusion/Analytic1DDiffusion/src/Analytic1DDiffusionExample.f90
+!! Example program to solve a 1D diffusion equation using OpenCMISS calls.
 !!
-!! \htmlinclude ClassicalField/Diffusion/DiffusionExponentialSource/history.html
+!! \htmlinclude ClassicalField/Diffusion/Analytic1DDiffusion/history.html
 !<
 
 !> Main program
-PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
+PROGRAM ANALYTIC1DDIFFUSIONEXAMPLE
 
   USE OPENCMISS
 
@@ -59,10 +59,16 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
 
   !Test program parameters
 
-  INTEGER(CMISSIntg), PARAMETER :: NUMBER_GLOBAL_X_ELEMENTS=4
+  REAL(CMISSDP), PARAMETER ::    PI=3.141592653589793238462643383279502884197_CMISSDP
 
+  INTEGER(CMISSIntg), PARAMETER :: NUMBER_GLOBAL_X_ELEMENTS=6
   REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: END_TIME=0.1001_CMISSDP
+  REAL(CMISSDP), PARAMETER :: END_TIME=0.1_CMISSDP
+  REAL(CMISSDP), PARAMETER :: TIME_STEP=0.01_CMISSDP
+  REAL(CMISSDP), PARAMETER :: A=1.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: B=PI/2.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: C=0.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: K=1.0_CMISSDP
   
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
@@ -95,7 +101,7 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
   TYPE(CMISSProblemType) :: Problem
   TYPE(CMISSControlLoopType) :: ControlLoop
   TYPE(CMISSRegionType) :: Region,WorldRegion
-  TYPE(CMISSSolverType) :: Solver, NonlinearSolver
+  TYPE(CMISSSolverType) :: Solver, LinearSolver
   TYPE(CMISSSolverEquationsType) :: SolverEquations
 
 #ifdef WIN32
@@ -123,6 +129,10 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+
+  CALL CMISSOutputSetOn("Diffusion1DAnalytic",Err)
+  
   !Start the creation of a new RC coordinate system
   CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
   CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
@@ -152,7 +162,7 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
   !Start the creation of a generated mesh in the region
   CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
   CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
-  !Set up a regular x*y*z mesh
+  !Set up a regular mesh
   CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
   !Set the default basis
   CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,Basis,Err)   
@@ -189,7 +199,7 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
   CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
   CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetExponentialSourceDiffusionSubtype,EquationsSetFieldUserNumber, &
+    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetNoSourceDiffusionSubtype,EquationsSetFieldUserNumber, &
     & EquationsSetField,EquationsSet,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
@@ -205,14 +215,24 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
   CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,MaterialsFieldUserNumber,MaterialsField,Err)
   !Finish the equations set dependent field variables
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,-1.0_CMISSDP,Err)
-
+  !Set the conductivity
+  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,K,Err)
+ 
   !Create the equations set analytic field variables
   CALL CMISSFieldTypeInitialise(AnalyticField,Err)
-  CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSEquationsSetExponentialSourceDiffusionOneDim1, & 
+  CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSEquationsSetDiffusionOneDim1, & 
     & AnalyticFieldUserNumber,AnalyticField,Err)
   !Finish the equations set analytic field variables
   CALL CMISSEquationsSetAnalyticCreateFinish(EquationsSet,Err)
+  !Set the analytic field parameters
+  !Set the multiplicative constant. 
+  CALL CMISSFieldComponentValuesInitialise(AnalyticField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,A,Err)
+  !Set the phase. 
+  CALL CMISSFieldComponentValuesInitialise(AnalyticField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,B,Err)
+  !Set the offset. 
+  CALL CMISSFieldComponentValuesInitialise(AnalyticField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,C,Err)
+  !Set the length to be the length of the mesh
+  CALL CMISSFieldComponentValuesInitialise(AnalyticField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,LENGTH,Err)
   
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
@@ -223,7 +243,7 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsTimingOutput,Err)
   !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsMatrixOutput,Err)
-  !CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsElementMatrixOutput,Err)
+  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsElementMatrixOutput,Err)
   !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
   
@@ -235,7 +255,7 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
   !Set the problem to be a No Source Diffusion problem
   CALL CMISSProblemSpecificationSet(Problem,CMISSProblemClassicalFieldClass,CMISSProblemDiffusionEquationType, &
-    & CMISSProblemNonlinearSourceDiffusionSubtype,Err)
+    & CMISSProblemlinearSourceDiffusionSubtype,Err)
   !Finish the creation of a problem.
   CALL CMISSProblemCreateFinish(Problem,Err)
 
@@ -245,25 +265,22 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
   !Get the control loop
   CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
   !Set the times
-  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,END_TIME,0.001_CMISSDP,Err)
+  CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,END_TIME,TIME_STEP,Err)
   !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
 
   !Start the creation of the problem solvers
   CALL CMISSSolverTypeInitialise(Solver,Err)
-  CALL CMISSSolverTypeInitialise(NonlinearSolver,Err)
+  CALL CMISSSolverTypeInitialise(LinearSolver,Err)
   CALL CMISSProblemSolversCreateStart(Problem,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
-  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
-  CALL CMISSSolverDynamicNonlinearSolverGet(Solver,NonlinearSolver,Err)
-  CALL CMISSSolverOutputTypeSet(NonlinearSolver,CMISSSolverProgressOutput,Err)
-  !Set the nonlinear Jacobian type
-  CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolver,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
-  !CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolver,CMISSSolverNewtonJacobianFDCalculated,Err)
+  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err)
+  CALL CMISSSolverDynamicLinearSolverGet(Solver,LinearSolver,Err)
+  CALL CMISSSolverOutputTypeSet(LinearSolver,CMISSSolverProgressOutput,Err)
   !Finish the creation of the problem solver
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
 
@@ -288,13 +305,13 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
   !Output Analytic analysis
   !CALL CMISSEquationsSetAnalyticTimeSet(EquationsSet,END_TIME,Err)
   !CALL CMISSEquationsSetAnalyticEvaluate(EquationsSet,Err)
-  CALL CMISSAnalyticAnalysisOutput(DependentField,"DiffusionExponentialSourceAnalytic",Err)
+  CALL CMISSAnalyticAnalysisOutput(DependentField,"Diffusion1DAnalytic",Err)
 
   !Output fields
   CALL CMISSFieldsTypeInitialise(Fields,Err)
   CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-  CALL CMISSFieldIONodesExport(Fields,"DiffusionExponentialSource","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields,"DiffusionExponentialSource","FORTRAN",Err)
+  CALL CMISSFieldIONodesExport(Fields,"Diffusion1DAnalytic","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields,"Diffusion1DAnalytic","FORTRAN",Err)
   CALL CMISSFieldsTypeFinalise(Fields,Err)
 
   !Finalise and quit
@@ -303,4 +320,4 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
 
   STOP
   
-END PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
+END PROGRAM ANALYTIC1DDIFFUSIONEXAMPLE

@@ -1,7 +1,7 @@
 !> \file
 !> $Id$
 !> \author Tim Wu
-!> \brief This is an example program to solve 3D data points projecting onto 1D cartesian elements using openCMISS calls.
+!> \brief This is an example program to solve 3D data points projecting onto 1D cartesian elements using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -17,7 +17,7 @@
 !> License for the specific language governing rights and limitations
 !> under the License.
 !>
-!> The Original Code is openCMISS
+!> The Original Code is OpenCMISS
 !>
 !> The Initial Developer of the Original Code is University of Auckland,
 !> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -60,7 +60,7 @@ PROGRAM DataProjection1DRectangularCartesian
   INTEGER(CMISSIntg),PARAMETER :: MeshUserNumber=1
   INTEGER(CMISSIntg),PARAMETER :: RegionUserNumber=1
 
-  REAL(CMISSDP), PARAMETER :: CoordinateSystemOrigin(3)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)  
+  REAL(CMISSDP), PARAMETER :: CoordinateSystemOrigin(3)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP]  
   !Program types
 
   !Program variables   
@@ -71,7 +71,7 @@ PROGRAM DataProjection1DRectangularCartesian
   INTEGER(CMISSIntg) :: NumberOfDomains=2
   INTEGER(CMISSIntg) :: NumberOfNodes
   INTEGER(CMISSIntg) :: NumberOfXi=1
-  INTEGER(CMISSIntg) :: BasisInterpolation(1)=(/CMISSBasisCubicHermiteInterpolation/)
+  INTEGER(CMISSIntg) :: BasisInterpolation(1)=(/CMISSBasisCubicHermiteInterpolation]
   INTEGER(CMISSIntg) :: WorldCoordinateSystemUserNumber
   INTEGER(CMISSIntg) :: WorldRegionUserNumber
   
@@ -92,7 +92,7 @@ PROGRAM DataProjection1DRectangularCartesian
   REAL(CMISSDP) :: MaximumIterationUpdateSet=0.4_CMISSDP !default is 0.5
   INTEGER(CMISSIntg) :: NumberOfClosestElementsSet=3 !default is 2/4/8 for 1/2/3 dimensional projection 
   INTEGER(CMISSIntg) :: ProjectionTypeSet=CMISSDataProjectionAllElementsProjectionType !same as default
-  REAL(CMISSDP) :: StartingXiSet(1)=(/0.4_CMISSDP/) !default is 0.5
+  REAL(CMISSDP) :: StartingXiSet(1)=[0.4_CMISSDP] !default is 0.5
   REAL(CMISSDP) :: AbsoluteToleranceGet
   REAL(CMISSDP) :: RelativeToleranceGet
   INTEGER(CMISSIntg) :: MaximumNumberOfIterationsGet
@@ -126,35 +126,35 @@ PROGRAM DataProjection1DRectangularCartesian
 #endif
     
   !Intialise data points
-  DataPointValues(1,:)=(/20.5_CMISSDP,1.8_CMISSDP,0.0_CMISSDP/)
-  DataPointValues(2,:)=(/33.2_CMISSDP,-4.8_CMISSDP,0.0_CMISSDP/)  
-  DataPointValues(3,:)=(/9.6_CMISSDP,10.0_CMISSDP,0.0_CMISSDP/)  
-  DataPointValues(4,:)=(/50.0_CMISSDP,-3.0_CMISSDP,6.0_CMISSDP/)  
-  DataPointValues(5,:)=(/44.0_CMISSDP,10.0_CMISSDP,18.6_CMISSDP/)  
+  DataPointValues(1,:)=[20.5_CMISSDP,1.8_CMISSDP,0.0_CMISSDP]
+  DataPointValues(2,:)=[33.2_CMISSDP,-4.8_CMISSDP,0.0_CMISSDP]  
+  DataPointValues(3,:)=[9.6_CMISSDP,10.0_CMISSDP,0.0_CMISSDP]  
+  DataPointValues(4,:)=[50.0_CMISSDP,-3.0_CMISSDP,6.0_CMISSDP]  
+  DataPointValues(5,:)=[44.0_CMISSDP,10.0_CMISSDP,18.6_CMISSDP]  
   
-  ElementUserNodes(1,:)=(/1,2/)
-  ElementUserNodes(2,:)=(/2,3/)
-  ElementUserNodes(3,:)=(/3,4/)
-  ElementUserNodes(4,:)=(/4,5/)
-  ElementUserNodes(5,:)=(/5,6/)        
+  ElementUserNodes(1,:)=[1,2]
+  ElementUserNodes(2,:)=[2,3]
+  ElementUserNodes(3,:)=[3,4]
+  ElementUserNodes(4,:)=[4,5]
+  ElementUserNodes(5,:)=[5,6]        
   
-  FieldValues(1,1,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !no der, node 1
-  FieldValues(2,1,:)=(/10.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !first der, node 1
+  FieldValues(1,1,:)=[0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP] !no der, node 1
+  FieldValues(2,1,:)=[10.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP] !first der, node 1
   
-  FieldValues(1,2,:)=(/10.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !no der, node 2
-  FieldValues(2,2,:)=(/10.0_CMISSDP,-10.0_CMISSDP,0.0_CMISSDP/) !first der, node 2
+  FieldValues(1,2,:)=[10.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP] !no der, node 2
+  FieldValues(2,2,:)=[10.0_CMISSDP,-10.0_CMISSDP,0.0_CMISSDP] !first der, node 2
   
-  FieldValues(1,3,:)=(/20.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !no der, node 3
-  FieldValues(2,3,:)=(/10.0_CMISSDP,20.0_CMISSDP,0.0_CMISSDP/) !first der, node 3
+  FieldValues(1,3,:)=[20.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP] !no der, node 3
+  FieldValues(2,3,:)=[10.0_CMISSDP,20.0_CMISSDP,0.0_CMISSDP] !first der, node 3
   
-  FieldValues(1,4,:)=(/30.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !no der, node 4
-  FieldValues(2,4,:)=(/10.0_CMISSDP,10.0_CMISSDP,0.0_CMISSDP/) !first der, node 4
+  FieldValues(1,4,:)=[30.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP] !no der, node 4
+  FieldValues(2,4,:)=[10.0_CMISSDP,10.0_CMISSDP,0.0_CMISSDP] !first der, node 4
   
-  FieldValues(1,5,:)=(/40.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !no der, node 5
-  FieldValues(2,5,:)=(/10.0_CMISSDP,-15.0_CMISSDP,0.0_CMISSDP/) !first der, node 5
+  FieldValues(1,5,:)=[40.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP] !no der, node 5
+  FieldValues(2,5,:)=[10.0_CMISSDP,-15.0_CMISSDP,0.0_CMISSDP] !first der, node 5
   
-  FieldValues(1,6,:)=(/50.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !no der, node 6
-  FieldValues(2,6,:)=(/10.0_CMISSDP,-5.0_CMISSDP,0.0_CMISSDP/) !first der, node 6
+  FieldValues(1,6,:)=[50.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP] !no der, node 6
+  FieldValues(2,6,:)=[10.0_CMISSDP,-5.0_CMISSDP,0.0_CMISSDP] !first der, node 6
   
   !Intialise cmiss
   CALL CMISSInitialise(WorldCoordinateSystemUserNumber,WorldRegionUserNumber,Err)

@@ -1,0 +1,16 @@
+For the static nonlinear newton iteration problem, with 4 elements on x(0-->1) with 
+
+u(x): u(0)=1, u(1)=0
+
+expected values:
+
+Iteration	u2	u3	u4
+0		0	0	0
+1		0.80645	0.53763	0.26882
+2		0.80496	0.56709	0.29368
+3		0.80492	0.56704	0.29369
+
+Exact		0.80531	0.56763	0.29412
+
+*pg. 216, Intermediate Finite Element Method: Fluid Flow and Heat Transfer Applications, Heinrich and Pepper, 1999
+		

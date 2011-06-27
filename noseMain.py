@@ -58,9 +58,9 @@ def getVersion(compiler) :
   if operating_system == 'Linux':
     if compiler == 'gnu':
       version_info = commands.getoutput('gfortran -v')
-      if version_info.find('gcc version 4.5') != -1:
+      if version_info.find('gcc version 4.5.') != -1:
         return '_4.5'
-      elif version_info.find('gcc version 4.4') != -1 :
+      elif version_info.find('gcc version 4.4.') != -1 :
         return '_4.4'
   return ''
   

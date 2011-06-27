@@ -1,7 +1,7 @@
 !> \file
 !> $Id$
 !> \author Chris Bradley
-!> \brief This is an example program to solve a diffusion equation using OpenCMISS calls.
+!> \brief This is an example program to solve a nonlinear diffusion equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -40,14 +40,14 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/Diffusion/DiffusionExponentialSource/src/DiffusionExponentialSourceExample.f90
-!! Example program to solve a diffusion equation using openCMISS calls.
+!> \example ClassicalField/Diffusion/DiffusionQuadraticSource/src/DiffusionQuadraticSourceExample.f90
+!! Example program to solve a diffusion equation using OpenCMISS calls.
 !!
-!! \htmlinclude ClassicalField/Diffusion/DiffusionExponentialSource/history.html
+!! \htmlinclude ClassicalField/Diffusion/DiffusionQuadraticSource/history.html
 !<
 
 !> Main program
-PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
+PROGRAM DIFFUSIONQUADRATICSOURCEEXAMPLE
 
   USE OPENCMISS
 
@@ -59,10 +59,11 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
 
   !Test program parameters
 
-  INTEGER(CMISSIntg), PARAMETER :: NUMBER_GLOBAL_X_ELEMENTS=4
+  INTEGER(CMISSIntg), PARAMETER :: NUMBER_GLOBAL_X_ELEMENTS=6
 
   REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: END_TIME=0.1001_CMISSDP
+  REAL(CMISSDP), PARAMETER :: END_TIME=0.100_CMISSDP
+  REAL(CMISSDP), PARAMETER :: TIME_STEP=0.01_CMISSDP
   
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
@@ -134,7 +135,7 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
   !Start the creation of the region
   CALL CMISSRegionTypeInitialise(Region,Err)
   CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegion,Region,Err)
-  !Label the Region
+  !Label the region
   CALL CMISSRegionLabelSet(Region,"Region",Err)
   !Set the regions coordinate system to the 1D RC coordinate system that we have created
   CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
@@ -152,7 +153,7 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
   !Start the creation of a generated mesh in the region
   CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
   CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
-  !Set up a regular x*y*z mesh
+  !Set up a regular mesh
   CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
   !Set the default basis
   CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,Basis,Err)   
@@ -189,7 +190,7 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
   CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
   CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetClassicalFieldClass, &
-    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetExponentialSourceDiffusionSubtype,EquationsSetFieldUserNumber, &
+    & CMISSEquationsSetDiffusionEquationType,CMISSEquationsSetQuadraticSourceDiffusionSubtype,EquationsSetFieldUserNumber, &
     & EquationsSetField,EquationsSet,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
@@ -205,7 +206,8 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
   CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,MaterialsFieldUserNumber,MaterialsField,Err)
   !Finish the equations set dependent field variables
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,-1.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,0.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,-1.0_CMISSDP,Err)
 
   !Create the equations set analytic field variables
   CALL CMISSFieldTypeInitialise(AnalyticField,Err)
@@ -260,10 +262,9 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
   CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   CALL CMISSSolverDynamicNonlinearSolverGet(Solver,NonlinearSolver,Err)
-  CALL CMISSSolverOutputTypeSet(NonlinearSolver,CMISSSolverProgressOutput,Err)
   !Set the nonlinear Jacobian type
-  CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolver,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
-  !CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolver,CMISSSolverNewtonJacobianFDCalculated,Err)
+  !CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolver,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
+  CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolver,CMISSSolverNewtonJacobianFDCalculated,Err)
   !Finish the creation of the problem solver
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
 
@@ -286,15 +287,15 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
   CALL CMISSProblemSolve(Problem,Err)
 
   !Output Analytic analysis
-  !CALL CMISSEquationsSetAnalyticTimeSet(EquationsSet,END_TIME,Err)
-  !CALL CMISSEquationsSetAnalyticEvaluate(EquationsSet,Err)
-  CALL CMISSAnalyticAnalysisOutput(DependentField,"DiffusionExponentialSourceAnalytic",Err)
+  CALL CMISSEquationsSetAnalyticTimeSet(EquationsSet,END_TIME,Err)
+  CALL CMISSEquationsSetAnalyticEvaluate(EquationsSet,Err)
+  CALL CMISSAnalyticAnalysisOutput(DependentField,"DiffusionQuadraticSourceAnalytic",Err)
 
   !Output fields
   CALL CMISSFieldsTypeInitialise(Fields,Err)
   CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-  CALL CMISSFieldIONodesExport(Fields,"DiffusionExponentialSource","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields,"DiffusionExponentialSource","FORTRAN",Err)
+  CALL CMISSFieldIONodesExport(Fields,"DiffusionQuadraticSource","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields,"DiffusionQuadraticSource","FORTRAN",Err)
   CALL CMISSFieldsTypeFinalise(Fields,Err)
 
   !Finalise and quit
@@ -303,4 +304,4 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
 
   STOP
   
-END PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
+END PROGRAM DIFFUSIONQUADRATICSOURCEEXAMPLE
