@@ -1,0 +1,11 @@
+# Built files
+object/
+bin/
+
+# OpenCMISS output
+*.diag
+*.out
+
+# Editor files
+*.swp
+*~
