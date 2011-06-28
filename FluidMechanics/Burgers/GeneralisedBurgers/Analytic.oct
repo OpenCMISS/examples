@@ -1,0 +1,184 @@
+a=1.0
+b=1.0
+c=1.0
+D=1.0
+E=1.0
+L=3
+theta=0.5
+deltat=0.01
+
+t=0.0
+
+x=[0.0;0.5;1.0;1.5;2.0;2.5;3.0]
+
+alpha=[0;0;0;0;0;0;0]
+
+analyticu=(D+a*x)/(E+c*t)
+
+K=[[-2,2,0,0,0,0,0];
+   [2,-4,2,0,0,0,0];
+   [0,2,-4,2,0,0,0];
+   [0,0,2,-4,2,0,0];
+   [0,0,0,2,-4,2,0];
+   [0,0,0,0,2,-4,2];
+   [0,0,0,0,0,2,-2]]
+
+C=[[1/6,1/12,0,0,0,0,0];
+   [1/12,1/3,1/12,0,0,0,0];
+   [0,1/12,1/3,1/12,0,0,0];
+   [0,0,1/12,1/3,1/12,0,0];
+   [0,0,0,1/12,1/3,1/12,0];
+   [0,0,0,0,1/12,1/3,1/12];
+   [0,0,0,0,0,1/12,1/6]]
+
+A=C+theta*deltat*K
+
+u=analyticu
+
+g=[c/6.0*(u(2)*u(2)+u(1)*u(2)-2*u(1)*u(1));
+      c/6.0*(2*u(3)*u(3)+u(1)*u(2)-u(2)*u(3)-2*u(1)*u(1));
+      c/6.0*(2*u(4)*u(4)+u(2)*u(3)-u(3)*u(4)-2*u(2)*u(2));
+      c/6.0*(2*u(5)*u(5)+u(3)*u(4)-u(4)*u(5)-2*u(3)*u(3));
+      c/6.0*(2*u(6)*u(6)+u(4)*u(5)-u(5)*u(6)-2*u(4)*u(4));
+      c/6.0*(2*u(7)*u(7)+u(5)*u(6)-u(6)*u(7)-2*u(5)*u(5));
+      c/6.0*(2*u(7)*u(7)-u(6)*u(7)-u(6)*u(6))]
+
+t=t+deltat
+
+analyticu=(D+a*x)/(E+c*t)
+
+u(1)=analyticu(1)
+u(7)=analyticu(7)
+
+prevu=u
+
+prevg=g
+
+meanpredictedu=u
+
+predictedu=u
+
+g=[c/6.0*(u(2)*u(2)+u(1)*u(2)-2*u(1)*u(1));
+   c/6.0*(2*u(3)*u(3)+u(1)*u(2)-u(2)*u(3)-2*u(1)*u(1));
+   c/6.0*(2*u(4)*u(4)+u(2)*u(3)-u(3)*u(4)-2*u(2)*u(2));
+   c/6.0*(2*u(5)*u(5)+u(3)*u(4)-u(4)*u(5)-2*u(3)*u(3));
+   c/6.0*(2*u(6)*u(6)+u(4)*u(5)-u(5)*u(6)-2*u(4)*u(4));
+   c/6.0*(2*u(7)*u(7)+u(5)*u(6)-u(6)*u(7)-2*u(5)*u(5));
+   c/6.0*(2*u(7)*u(7)-u(6)*u(7)-u(6)*u(6))]
+
+normg=sqrt(g(1)*g(1)+g(2)*g(2)+g(3)*g(3)+g(4)*g(4)+g(5)*g(5)+g(6)*g(6)+g(7)*g(7))
+
+delgdelu=[[c/6.0*(u(2)-4*u(1)),c/6.0*(2*u(2)+u(1)),0,0,0,0,0];
+          [c/6.0*(-u(2)-2*u(1)),c/6.0*(u(3)-u(1)),c/6.0*(2*u(3)+u(2)),0,0,0,0];
+          [0,c/6.0*(-u(3)-2*u(2)),c/6.0*(u(4)-u(2)),c/6.0*(2*u(4)+u(3)),0,0,0];
+          [0,0,c/6.0*(-u(4)-2*u(3)),c/6.0*(u(5)-u(3)),c/6.0*(2*u(5)+u(4)),0,0];
+          [0,0,0,c/6.0*(-u(5)-2*u(4)),c/6.0*(u(6)-u(4)),c/6.0*(2*u(6)+u(5)),0];
+          [0,0,0,0,c/6.0*(-u(6)-2*u(5)),c/6.0*(u(7)-u(5)),c/6.0*(2*u(7)+u(6))];
+          [0,0,0,0,0,c/6.0*(-u(7)-2*u(6)),c/6.0*(4*u(7)-u(6))]]
+
+J=delgdelu+A
+
+b=K*meanpredictedu
+
+residual=A*alpha+theta*g
+
+rhs=-(1-theta)*prevg-b
+
+reducedJ=J(2:6,2:6)
+
+reducedresidual=residual(2:6)
+
+reducedrhs=rhs(2:6)
+
+reducedalpha=alpha(2:6)
+
+freducedresidualnorm=sqrt(reducedresidual(1)*reducedresidual(1)+reducedresidual(2)*reducedresidual(2)+reducedresidual(3)*reducedresidual(3)+reducedresidual(4)*reducedresidual(4)+reducedresidual(5)*reducedresidual(5))
+
+freducedalphanorm=sqrt(reducedalpha(1)*reducedalpha(1)+reducedalpha(2)*reducedalpha(2)+reducedalpha(3)*reducedalpha(3)+reducedalpha(4)*reducedalpha(4)+reducedalpha(5)*reducedalpha(5))
+
+deltaalpha=reducedJ\-reducedresidual
+
+steplength=1.0
+
+alpha(2:6)=alpha(2:6)+steplength*deltaalpha
+
+u=u+deltat*alpha
+
+error(1)=100.0*(u(1)-analyticu(1))/analyticu(1)
+error(2)=100.0*(u(2)-analyticu(2))/analyticu(2)
+error(3)=100.0*(u(3)-analyticu(3))/analyticu(3)
+error(4)=100.0*(u(4)-analyticu(4))/analyticu(4)
+error(5)=100.0*(u(5)-analyticu(5))/analyticu(5)
+error(6)=100.0*(u(6)-analyticu(6))/analyticu(6)
+error(7)=100.0*(u(7)-analyticu(7))/analyticu(7)
+
+t=t+deltat
+
+analyticu=(D+a*x)/(E+c*t)
+
+u(1)=analyticu(1)
+u(7)=analyticu(7)
+
+prevu=u
+
+prevg=g
+
+meanpredictedu=u
+
+predictedu=u
+
+g=[c/6.0*(u(2)*u(2)+u(1)*u(2)-2*u(1)*u(1));
+   c/6.0*(2*u(3)*u(3)+u(1)*u(2)-u(2)*u(3)-2*u(1)*u(1));
+   c/6.0*(2*u(4)*u(4)+u(2)*u(3)-u(3)*u(4)-2*u(2)*u(2));
+   c/6.0*(2*u(5)*u(5)+u(3)*u(4)-u(4)*u(5)-2*u(3)*u(3));
+   c/6.0*(2*u(6)*u(6)+u(4)*u(5)-u(5)*u(6)-2*u(4)*u(4));
+   c/6.0*(2*u(7)*u(7)+u(5)*u(6)-u(6)*u(7)-2*u(5)*u(5));
+   c/6.0*(2*u(7)*u(7)-u(6)*u(7)-u(6)*u(6))]
+
+normg=sqrt(g(1)*g(1)+g(2)*g(2)+g(3)*g(3)+g(4)*g(4)+g(5)*g(5)+g(6)*g(6)+g(7)*g(7))
+
+delgdelu=[[c/6.0*(u(2)-4*u(1)),c/6.0*(2*u(2)+u(1)),0,0,0,0,0];
+          [c/6.0*(-u(2)-2*u(1)),c/6.0*(u(3)-u(1)),c/6.0*(2*u(3)+u(2)),0,0,0,0];
+          [0,c/6.0*(-u(3)-2*u(2)),c/6.0*(u(4)-u(2)),c/6.0*(2*u(4)+u(3)),0,0,0];
+          [0,0,c/6.0*(-u(4)-2*u(3)),c/6.0*(u(5)-u(3)),c/6.0*(2*u(5)+u(4)),0,0];
+          [0,0,0,c/6.0*(-u(5)-2*u(4)),c/6.0*(u(6)-u(4)),c/6.0*(2*u(6)+u(5)),0];
+          [0,0,0,0,c/6.0*(-u(6)-2*u(5)),c/6.0*(u(7)-u(5)),c/6.0*(2*u(7)+u(6))];
+          [0,0,0,0,0,c/6.0*(-u(7)-2*u(6)),c/6.0*(4*u(7)-u(6))]]
+
+J=delgdelu+A
+
+b=K*meanpredictedu
+
+residual=A*alpha+theta*g
+
+rhs=-(1-theta)*prevg-b
+
+reducedJ=J(2:6,2:6)
+
+reducedresidual=residual(2:6)
+
+reducedrhs=rhs(2:6)
+
+reducedalpha=alpha(2:6)
+
+freducedresidualnorm=sqrt(reducedresidual(1)*reducedresidual(1)+reducedresidual(2)*reducedresidual(2)+reducedresidual(3)*reducedresidual(3)+reducedresidual(4)*reducedresidual(4)+reducedresidual(5)*reducedresidual(5))
+
+freducedalphanorm=sqrt(reducedalpha(1)*reducedalpha(1)+reducedalpha(2)*reducedalpha(2)+reducedalpha(3)*reducedalpha(3)+reducedalpha(4)*reducedalpha(4)+reducedalpha(5)*reducedalpha(5))
+
+deltaalpha=reducedJ\-reducedresidual
+
+steplength=1.0
+
+alpha(2:6)=alpha(2:6)+steplength*deltaalpha
+
+u=u+deltat*alpha
+
+
+error(1)=100.0*(u(1)-analyticu(1))/analyticu(1)
+error(2)=100.0*(u(2)-analyticu(2))/analyticu(2)
+error(3)=100.0*(u(3)-analyticu(3))/analyticu(3)
+error(4)=100.0*(u(4)-analyticu(4))/analyticu(4)
+error(5)=100.0*(u(5)-analyticu(5))/analyticu(5)
+error(6)=100.0*(u(6)-analyticu(6))/analyticu(6)
+error(7)=100.0*(u(7)-analyticu(7))/analyticu(7)
+
