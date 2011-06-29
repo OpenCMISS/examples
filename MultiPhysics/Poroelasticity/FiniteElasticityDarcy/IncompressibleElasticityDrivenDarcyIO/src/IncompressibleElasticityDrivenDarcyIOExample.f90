@@ -818,8 +818,9 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
   !
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
 
-  ! end Solid
-  !--------------------------------------------------------------------------------------------------------------------------------
+  !
+  !================================================================================================================================
+  !
 
   !------------------------------------
   ! ASSIGN BOUNDARY CONDITIONS - SOLID (absolute nodal parameters)
@@ -939,7 +940,7 @@ FaceXi=[ -2,  2,  1, -1,  3, -3]
   !------------------------------------
   ! ASSIGN BOUNDARY CONDITIONS - FLUID
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDarcy,Err)
-  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsSolid,BoundaryConditionsDarcy,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsDarcy,BoundaryConditionsDarcy,Err)
 
 !   !Get surfaces
 !   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,DarcyVelMeshComponentNumber,CMISSGeneratedMeshRegularFrontSurface, &
@@ -1064,7 +1065,7 @@ FaceXi=[ -2,  2,  1, -1,  3, -3]
 !     ENDIF
   ENDDO
 
-  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsSolid,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsDarcy,Err)
 
   !
   !================================================================================================================================

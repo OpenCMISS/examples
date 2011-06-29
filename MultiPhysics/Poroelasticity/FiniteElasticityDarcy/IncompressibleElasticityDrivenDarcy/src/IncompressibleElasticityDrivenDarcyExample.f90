@@ -706,6 +706,8 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   CALL CMISSFieldComponentValuesInitialise(DependentFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,0.0_CMISSDP, &
     & Err)
 
+  ! end Solid
+  !--------------------------------------------------------------------------------------------------------------------------------
 
   !
   !================================================================================================================================
@@ -810,8 +812,9 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
 
-  ! end Solid
-  !--------------------------------------------------------------------------------------------------------------------------------
+  !
+  !================================================================================================================================
+  !
 
   !------------------------------------
   ! ASSIGN BOUNDARY CONDITIONS - SOLID (absolute nodal parameters)
@@ -913,7 +916,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !------------------------------------
   ! ASSIGN BOUNDARY CONDITIONS - FLUID
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDarcy,Err)
-  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsSolid,BoundaryConditionsDarcy,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsDarcy,BoundaryConditionsDarcy,Err)
 
   !Get surfaces
   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,DarcyVelMeshComponentNumber,CMISSGeneratedMeshRegularFrontSurface, &
@@ -1020,7 +1023,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 !     ENDIF
   ENDDO
 
-  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsSolid,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsDarcy,Err)
 
   !
   !================================================================================================================================

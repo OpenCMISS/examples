@@ -749,21 +749,6 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
   ! end Solid
   !--------------------------------------------------------------------------------------------------------------------------------
 
-  !------------------------------------
-  ! Grab surfaces to assign boundary conditions
-
-  CALL READ_SURFACE('input/surface-lin-inner',surface_lin_inner)
-  CALL READ_SURFACE('input/surface-lin-outer',surface_lin_outer)
-  CALL READ_SURFACE('input/surface-lin-base',surface_lin_base)
-  CALL READ_SURFACE('input/surface-quad-inner',surface_quad_inner)
-  CALL READ_SURFACE('input/surface-quad-outer',surface_quad_outer)
-  CALL READ_SURFACE('input/surface-quad-base',surface_quad_base)
-
-  !
-  !================================================================================================================================
-  !
-
-
   !
   !================================================================================================================================
   !
@@ -867,6 +852,15 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
   !
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
 
+  !------------------------------------
+  ! Grab surfaces to assign boundary conditions
+
+  CALL READ_SURFACE('input/surface-lin-inner',surface_lin_inner)
+  CALL READ_SURFACE('input/surface-lin-outer',surface_lin_outer)
+  CALL READ_SURFACE('input/surface-lin-base',surface_lin_base)
+  CALL READ_SURFACE('input/surface-quad-inner',surface_quad_inner)
+  CALL READ_SURFACE('input/surface-quad-outer',surface_quad_outer)
+  CALL READ_SURFACE('input/surface-quad-base',surface_quad_base)
 
   !------------------------------------
   ! ASSIGN BOUNDARY CONDITIONS - SOLID (absolute nodal parameters)
@@ -958,7 +952,7 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
 
   !BCs Darcy
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDarcy,Err)
-  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsSolid,BoundaryConditionsDarcy,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsDarcy,BoundaryConditionsDarcy,Err)
 
     !In 'generated_mesh_routines.f90/GENERATED_MESH_ELLIPSOID_SURFACE_GET' there is a bug:
     !  BASIS=>ELLIPSOID_MESH%BASES(MESH_COMPONENT)%PTR does not account for the fact that:
@@ -1128,7 +1122,7 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
 
 
 
-  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsSolid,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsDarcy,Err)
 
   !
   !================================================================================================================================

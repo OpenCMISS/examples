@@ -807,46 +807,6 @@ PROGRAM COUPLEDSOURCEDIFFUSIONDIFFUSIONEXAMPLE
   !================================================================================================================================
   !
 
-!--------------------------------------------------------------------------------------------------------------------------------
-
-  !BOUNDARY CONDITIONS
-  !Start the creation of the equations set boundary conditions for diffusion_one
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDiffusionOne,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDiffusionOne,BoundaryConditionsDiffusionOne,Err)
-  IF(INLET_WALL_NODES_DIFFUSION_ONE_FLAG) THEN
-    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE
-      NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_ONE(NODE_COUNTER)
-      CONDITION=CMISSBoundaryConditionFixed
-!       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-        VALUE=0.1_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusionOne,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
-!       ENDDO
-    ENDDO
-  ENDIF
-  !Finish the creation of the equations set boundary conditions for diffusion_one
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDiffusionOne,Err)
-  !Start the creation of the equations set boundary conditions for diffusion_two
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDiffusionTwo,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDiffusionTwo,BoundaryConditionsDiffusionTwo,Err)
-  IF(INLET_WALL_NODES_DIFFUSION_TWO_FLAG) THEN
-    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO
-      NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_TWO(NODE_COUNTER)
-      CONDITION=CMISSBoundaryConditionFixed
-!       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-        VALUE=0.2_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusionTwo,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_TWO,CONDITION,VALUE,Err)
-!       ENDDO
-    ENDDO
-  ENDIF
-  !Finish the creation of the equations set boundary conditions for diffusion_two
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDiffusionTwo,Err)
-  !
-  !
-  !================================================================================================================================
-  !
-
   WRITE(*,'(A)') "start creation of a problem"
   !PROBLEMS
 
@@ -959,6 +919,45 @@ WRITE(*,'(A)') "Solver two equations got."
  !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
 
+  !
+  !================================================================================================================================
+  !
+
+!--------------------------------------------------------------------------------------------------------------------------------
+
+  !BOUNDARY CONDITIONS
+  !Start the creation of the equations set boundary conditions for diffusion_one
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDiffusionOne,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsDiffusionOne,BoundaryConditionsDiffusionOne,Err)
+  IF(INLET_WALL_NODES_DIFFUSION_ONE_FLAG) THEN
+    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE
+      NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_ONE(NODE_COUNTER)
+      CONDITION=CMISSBoundaryConditionFixed
+!       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+        VALUE=0.1_CMISSDP
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusionOne,DependentFieldDiffusionOne,CMISSFieldUVariableType,1, &
+          & CMISSNoGlobalDerivative,NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
+!       ENDDO
+    ENDDO
+  ENDIF
+  !Finish the creation of the equations set boundary conditions for diffusion_one
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsDiffusionOne,Err)
+  !Start the creation of the equations set boundary conditions for diffusion_two
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDiffusionTwo,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsDiffusionTwo,BoundaryConditionsDiffusionTwo,Err)
+  IF(INLET_WALL_NODES_DIFFUSION_TWO_FLAG) THEN
+    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO
+      NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_TWO(NODE_COUNTER)
+      CONDITION=CMISSBoundaryConditionFixed
+!       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+        VALUE=0.2_CMISSDP
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusionTwo,DependentFieldDiffusionTwo,CMISSFieldUVariableType,1, &
+          & CMISSNoGlobalDerivative,NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_TWO,CONDITION,VALUE,Err)
+!       ENDDO
+    ENDDO
+  ENDIF
+  !Finish the creation of the equations set boundary conditions for diffusion_two
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsDiffusionTwo,Err)
 
   !
   !================================================================================================================================

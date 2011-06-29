@@ -930,7 +930,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   !BCs Darcy
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDarcy,Err)
-  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsSolid,BoundaryConditionsDarcy,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsDarcy,BoundaryConditionsDarcy,Err)
 
 
     !  I N N E R   S U R F A C E
@@ -983,7 +983,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
     ENDDO
 
-  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsSolid,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsDarcy,Err)
 
   !
   !================================================================================================================================

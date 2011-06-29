@@ -230,7 +230,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENMULTICOMPDARCYEXAMPLE
   TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: MaterialsFieldDarcy
   TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: EquationsSetFieldDarcy
   !Boundary conditions
-  TYPE(CMISSBoundaryConditionsType), ALLOCATABLE, DIMENSION(:) :: BoundaryConditionsDarcy
+  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDarcy
   !Equations sets
   TYPE(CMISSEquationsSetType), ALLOCATABLE, DIMENSION(:) :: EquationsSetDarcy
   !Equations
@@ -320,7 +320,6 @@ PROGRAM QUADRATICELLIPSOIDDRIVENMULTICOMPDARCYEXAMPLE
   ALLOCATE (EquationsSetDarcy(Ncompartments))
   ALLOCATE (EquationsSetFieldDarcy(Ncompartments))
   ALLOCATE (MaterialsFieldDarcy(Ncompartments))
-  ALLOCATE (BoundaryConditionsDarcy(Ncompartments))
   ALLOCATE (EquationsDarcy(Ncompartments))
   !
   !================================================================================================================================
@@ -936,7 +935,6 @@ PROGRAM QUADRATICELLIPSOIDDRIVENMULTICOMPDARCYEXAMPLE
     & 3,DependentFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,Err)
 !   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,-14.0_CMISSDP,Err)
   CALL CMISSFieldComponentValuesInitialise(DependentFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,0.0_CMISSDP,Err)
-  ENDDO
 
   !
   !================================================================================================================================
@@ -1135,9 +1133,9 @@ PROGRAM QUADRATICELLIPSOIDDRIVENMULTICOMPDARCYEXAMPLE
   !
 
   !BCs Darcy
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDarcy,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsDarcy,BoundaryConditionsDarcy,Err)
   DO icompartment=1,Ncompartments
-    CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDarcy(icompartment),Err)
-    CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDarcy(icompartment),BoundaryConditionsDarcy(icompartment),Err)
 
     !In 'generated_mesh_routines.f90/GENERATED_MESH_ELLIPSOID_SURFACE_GET' there is a bug:
     !  BASIS=>ELLIPSOID_MESH%BASES(MESH_COMPONENT)%PTR does not account for the fact that:
@@ -1216,7 +1214,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENMULTICOMPDARCYEXAMPLE
       DO NN=1,SIZE(TopSurfaceNodesDarcyVel,1)
         VALUE = -0.25_CMISSDP
         COMPONENT_NUMBER = 3
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldVVariableType,1,1, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldSolid,CMISSFieldVVariableType,1,1, &
           & TopSurfaceNodesDarcyVel(NN), &
           & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
         IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING TOP DARCY BC TO NODE", TopSurfaceNodesDarcyVel(NN)
@@ -1227,7 +1225,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENMULTICOMPDARCYEXAMPLE
       DO NN=1,SIZE(TopSurfaceNodesDarcyVel,1)
         VALUE = -0.25_CMISSDP
         COMPONENT_NUMBER = 3
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU1VariableType,1,1, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldSolid,CMISSFieldU1VariableType,1,1, &
           & TopSurfaceNodesDarcyVel(NN), &
           & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
         IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING TOP DARCY BC TO NODE", TopSurfaceNodesDarcyVel(NN)
@@ -1237,7 +1235,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENMULTICOMPDARCYEXAMPLE
       DO NN=1,SIZE(TopSurfaceNodesDarcyVel,1)
         VALUE = -0.25_CMISSDP
         COMPONENT_NUMBER = 3
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU2VariableType,1,1, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldSolid,CMISSFieldU2VariableType,1,1, &
           & TopSurfaceNodesDarcyVel(NN), &
           & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
         IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING TOP DARCY BC TO NODE", TopSurfaceNodesDarcyVel(NN)
@@ -1247,7 +1245,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENMULTICOMPDARCYEXAMPLE
       DO NN=1,SIZE(TopSurfaceNodesDarcyVel,1)
         VALUE = -0.25_CMISSDP
         COMPONENT_NUMBER = 3
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy(icompartment),CMISSFieldU3VariableType,1,1, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldSolid,CMISSFieldU3VariableType,1,1, &
           & TopSurfaceNodesDarcyVel(NN), &
           & COMPONENT_NUMBER,CMISSBoundaryConditionFixed,VALUE,Err)
         IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING TOP DARCY BC TO NODE", TopSurfaceNodesDarcyVel(NN)
@@ -1255,7 +1253,8 @@ PROGRAM QUADRATICELLIPSOIDDRIVENMULTICOMPDARCYEXAMPLE
     ENDIF
 
 
-    CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDarcy(icompartment),Err)
+  ENDDO
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsDarcy,Err)
 
   !
   !================================================================================================================================

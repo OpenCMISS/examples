@@ -1053,11 +1053,11 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !BOUNDARY CONDITIONS
   !Start the creation of the equations set boundary conditions for Darcy
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDarcy,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDarcy,BoundaryConditionsDarcy,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsDarcy,BoundaryConditionsDarcy,Err)
 
   !Prescribe boundary conditions (absolute nodal parameters)
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsSolid,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetSolid,BoundaryConditionsSolid,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsSolid,BoundaryConditionsSolid,Err)
 
   !--- BCs on normal velocity only
   CONDITION = CMISSBoundaryConditionMovedWall
@@ -1070,29 +1070,29 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
       IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
         !x-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISSFieldUVariableType,1, &
+          & CMISSNoGlobalDerivative,NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
         !x-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISSFieldUVariableType,1, &
+          & CMISSNoGlobalDerivative,NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
         !y-velocity
         VALUE = 2.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISSFieldUVariableType,1, &
+          & CMISSNoGlobalDerivative,NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
         !y-velocity
         VALUE = 2.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISSFieldUVariableType,1, &
+          & CMISSNoGlobalDerivative,NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
       END IF
     END DO
   ELSE IF( CM%D==3_CMISSIntg ) THEN
@@ -1104,74 +1104,74 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
       IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
         !x-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISSFieldUVariableType,1, &
+          & CMISSNoGlobalDerivative,NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
 
         VALUE = 0.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentFieldSolid,CMISSFieldUVariableType,1,1, &
           & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
         !x-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISSFieldUVariableType,1, &
+          & CMISSNoGlobalDerivative,NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
 
         VALUE = 1.1_CMISSDP  ! * WIDTH
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentFieldSolid,CMISSFieldUVariableType,1,1, &
           & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
         !y-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISSFieldUVariableType,1, &
+          & CMISSNoGlobalDerivative,NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
 
         VALUE = 0.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentFieldSolid,CMISSFieldUVariableType,1,1, &
           & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
         !y-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISSFieldUVariableType,1, &
+          & CMISSNoGlobalDerivative,NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) ) THEN
         !z-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISSFieldUVariableType,1, &
+          & CMISSNoGlobalDerivative,NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
 
         VALUE = 0.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1, &
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentFieldSolid,CMISSFieldUVariableType,1,1, &
           & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) THEN
         !z-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISSFieldUVariableType,1, &
+          & CMISSNoGlobalDerivative,NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
       END IF
     END DO
   END IF
 
   !Finish the creation of the equations set boundary conditions for Darcy
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDarcy,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsDarcy,Err)
   !Finish the creation of the equations set boundary conditions for the solid
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetSolid,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsSolid,Err)
   !
   !Start the creation of the equations set boundary conditions for deformation-dependent material properties
   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsMatProperties,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetMatProperties,BoundaryConditionsMatProperties,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsMatProperties,BoundaryConditionsMatProperties,Err)
   !(No boundary conditions requrired for deformation-dependent material properties)
   !Finish the creation of the equations set boundary conditions for deformation-dependent material properties
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetMatProperties,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsMatProperties,Err)
 
 
   !
