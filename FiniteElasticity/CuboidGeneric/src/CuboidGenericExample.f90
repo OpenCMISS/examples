@@ -461,8 +461,8 @@ PROGRAM CUBOIDGENERICEXAMPLE
     CASE (6)
       Nodes=>Face6Nodes
     END SELECT
-    CALL SET_BC(Decomposition,GeometricField,BoundaryConditions,VariableType,INT(BC(I,3)),Nodes,INT(BC(I,2)),BC(I,4), &
-      & ComputationalNodeNumber)
+    CALL SET_BC(Decomposition,DependentField,GeometricField,BoundaryConditions,VariableType,INT(BC(I,3)),Nodes,INT(BC(I,2)), &
+      & BC(I,4),ComputationalNodeNumber)
   ENDDO
 
   CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
@@ -581,9 +581,10 @@ PROGRAM CUBOIDGENERICEXAMPLE
 
   !-------------------------------------------------------------------
   !> Sets a given boundary condition to a group of nodes
-  SUBROUTINE SET_BC(Decomposition,GeometricField,BoundaryConditions,VariableType,BCType,Nodes,Component,Value, &
+  SUBROUTINE SET_BC(Decomposition,DependentField,GeometricField,BoundaryConditions,VariableType,BCType,Nodes,Component,Value, &
     & ComputationalNodeNumber)
     TYPE(CMISSDecompositionType),INTENT(IN) :: Decomposition
+    TYPE(CMISSFieldType),INTENT(IN) :: DependentField
     TYPE(CMISSFieldType),INTENT(IN) :: GeometricField    
     TYPE(CMISSBoundaryConditionsType),INTENT(INOUT) :: BoundaryConditions
     INTEGER(CMISSIntg),INTENT(IN) :: VariableType
@@ -607,9 +608,9 @@ PROGRAM CUBOIDGENERICEXAMPLE
           coord=coord+Value
           IF(BCType==-777) BCType2=CMISSBoundaryConditionFixed
           IF(BCType==-888) BCType2=CMISSBoundaryConditionFixedIncremented
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,VariableType,1,1,node,Component,BCType2,coord,Err)
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,VariableType,1,1,node,Component,BCType2,coord,Err)
         ELSE
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,VariableType,1,1,node,Component,BCType,Value,Err)
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,VariableType,1,1,node,Component,BCType,Value,Err)
         ENDIF
       ENDIF
     ENDDO
