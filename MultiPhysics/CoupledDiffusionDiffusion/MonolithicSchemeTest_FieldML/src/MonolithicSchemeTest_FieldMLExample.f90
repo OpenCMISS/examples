@@ -270,7 +270,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 
 
   !FieldML variables
-  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputDirectory = " "
+  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputDirectory = ""
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputFilename = "MonolithicMultiCompDiffusion.xml"
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "monolithic_multicomp_diffusion"
 

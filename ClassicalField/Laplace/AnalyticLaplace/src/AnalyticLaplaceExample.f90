@@ -557,9 +557,9 @@ CONTAINS
     !Finish the creation of the problem solver equations
     CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
 
+    !Set up the boundary conditions as per the analytic solution
     CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
     CALL CMISSSolverEquationsBoundaryConditionsCreateStart(Solver_Equations,BoundaryConditions,Err)
-    !Set up the boundary conditions as per the analytic solution
     CALL CMISSProblemSolverEquationsBoundaryConditionsAnalytic(Solver_Equations,Err)
     CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(Solver_Equations,Err)
 

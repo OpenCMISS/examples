@@ -733,11 +733,6 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   !================================================================================================================================
   !
 
-
-  !
-  !================================================================================================================================
-  !
-
   !PROBLEMS
 
   CALL CMISSProblemTypeInitialise(Problem,Err)
@@ -837,6 +832,10 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsDarcy,EquationsSetDarcy,EquationsSetIndex,Err)
   !
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !
+  !================================================================================================================================
+  !
 
   !------------------------------------
   ! ASSIGN BOUNDARY CONDITIONS - SOLID (absolute nodal parameters)

@@ -450,10 +450,6 @@ PROGRAM TESTINGPOINTSEXAMPLE
     & 3,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,Err)
   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,-14.0_CMISSDP,Err)
 
-  !Set the bc using the analytic solution routine
-  IF(TRIM(ARG_LEVEL)=="2".OR.TRIM(ARG_LEVEL)=="3") THEN
-  ENDIF
-
   !Define the problem
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
@@ -490,6 +486,9 @@ PROGRAM TESTINGPOINTSEXAMPLE
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !Set the bc using the analytic solution routine
+  IF(TRIM(ARG_LEVEL)=="2".OR.TRIM(ARG_LEVEL)=="3") THEN
     CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
   ELSE
     !Set BC manually
@@ -568,6 +567,7 @@ PROGRAM TESTINGPOINTSEXAMPLE
       ENDIF
     ENDIF
     CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
+  ENDIF
 
   !Solve problem
   CALL CMISSProblemSolve(Problem,Err)

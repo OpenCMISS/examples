@@ -271,7 +271,7 @@ PROGRAM MONOLITHICSCHEMEADVECTIONDIFFUSIONFIELDMLEXAMPLE
 
 
   !FieldML variables
-  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputDirectory = " "
+  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputDirectory = ""
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputFilename = "MonolithicMultiCompAdvectionDiffusion.xml"
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "monolithic_multicomp_advection_diffusion"
 
