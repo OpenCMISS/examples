@@ -60,15 +60,15 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
   IMPLICIT NONE
 
   !Test program parameters
-  
+
   REAL(CMISSDP), PARAMETER :: PI=3.14159_CMISSDP
   REAL(CMISSDP), PARAMETER :: LONG_AXIS=2.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: SHORT_AXIS=1.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: WALL_THICKNESS=0.5_CMISSDP
   REAL(CMISSDP), PARAMETER :: CUTOFF_ANGLE=1.5708_CMISSDP
   REAL(CMISSDP), PARAMETER :: FIBRE_SLOPE_ENDO=1.73205_CMISSDP !Slope of fibres in base endocardium = 60 degrees
-  REAL(CMISSDP), PARAMETER :: FIBRE_SLOPE_EPI=-1.73205_CMISSDP !Slope change of fibres from 60 to -60 degrees in transmural direction 
-  REAL(CMISSDP), PARAMETER :: SHEET_SLOPE_BASE_ENDO=1.0_CMISSDP !Slope of sheet at base endocardium 
+  REAL(CMISSDP), PARAMETER :: FIBRE_SLOPE_EPI=-1.73205_CMISSDP !Slope change of fibres from 60 to -60 degrees in transmural direction
+  REAL(CMISSDP), PARAMETER :: SHEET_SLOPE_BASE_ENDO=1.0_CMISSDP !Slope of sheet at base endocardium
   REAL(CMISSDP), DIMENSION(1:7) :: COSTA_PARAMS =  (/ 0.2, 30.0, 12.0, 14.0, 14.0, 10.0, 18.0 /) ! a bff bfs bfn bss bsn bnn
   REAL(CMISSDP), PARAMETER :: INNER_PRESSURE=1.0_CMISSDP  !Positive is compressive
   REAL(CMISSDP), PARAMETER :: OUTER_PRESSURE=0.0_CMISSDP  !Positive is compressive
@@ -89,7 +89,7 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: DerivativeUserNumber=1
-  
+
   INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshDimensions=3
   INTEGER(CMISSIntg), PARAMETER :: NumberOfXiCoordinates=3
   INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshComponents=2
@@ -123,9 +123,9 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
   !Program variables
 
   INTEGER(CMISSIntg) :: MPI_IERROR
-  INTEGER(CMISSIntg) :: EquationsSetIndex  
+  INTEGER(CMISSIntg) :: EquationsSetIndex
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  REAL(CMISSDP) :: FibreFieldAngle(3) 
+  REAL(CMISSDP) :: FibreFieldAngle(3)
   REAL(CMISSDP) :: nu,theta,omega,XI3,XI3delta,XI2delta, zero
   INTEGER(CMISSIntg) ::i,j,k,time_step,component_idx,node_idx,TOTAL_NUMBER_NODES_XI(3)
   CHARACTER(LEN=50) :: fileName,fileNumber
@@ -233,7 +233,7 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
   CALL CMISSBasisCollapsedXiSet(QuadraticCollapsedBasis,(/CMISSBasisXiCollapsed, &
        & CMISSBasisCollapsedAtXi0,CMISSBasisNotCollapsed/),Err)
   CALL CMISSBasisQuadratureNumberOfGaussXiSet(QuadraticCollapsedBasis, &
-       & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)  
+       & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)
   CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(QuadraticCollapsedBasis,.true.,Err) !Have to do this
   CALL CMISSBasisCreateFinish(QuadraticCollapsedBasis,Err)
 
@@ -269,7 +269,7 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
   CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/LONG_AXIS,SHORT_AXIS,WALL_THICKNESS,CUTOFF_ANGLE/),Err)
   CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NumberGlobalXElements,NumberGlobalYElements, &
     & NumberGlobalZElements/),Err)
-  
+
   !Finish the creation of a generated mesh in the region
   CALL CMISSMeshTypeInitialise(Mesh,Err)
   CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
@@ -286,9 +286,9 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
   CALL CMISSFieldTypeInitialise(GeometricField,Err)
   CALL CMISSFieldCreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
   CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
-  CALL CMISSFieldTypeSet(GeometricField,CMISSFieldGeometricType,Err)  
+  CALL CMISSFieldTypeSet(GeometricField,CMISSFieldGeometricType,Err)
   CALL CMISSFieldNumberOfVariablesSet(GeometricField,FieldGeometryNumberOfVariables,Err)
-  CALL CMISSFieldNumberOfComponentsSet(GeometricField,CMISSFieldUVariableType,FieldGeometryNumberOfComponents,Err)  
+  CALL CMISSFieldNumberOfComponentsSet(GeometricField,CMISSFieldUVariableType,FieldGeometryNumberOfComponents,Err)
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,QuadraticMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,QuadraticMeshComponentNumber,Err)
@@ -297,32 +297,32 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
   !Update the geometric field parameters
   CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
 
-  !Create a fibre field and attach it to the geometric field  
+  !Create a fibre field and attach it to the geometric field
   CALL CMISSFieldTypeInitialise(FibreField,Err)
   CALL CMISSFieldCreateStart(FieldFibreUserNumber,Region,FibreField,Err)
   CALL CMISSFieldTypeSet(FibreField,CMISSFieldFibreType,Err)
-  CALL CMISSFieldMeshDecompositionSet(FibreField,Decomposition,Err)        
+  CALL CMISSFieldMeshDecompositionSet(FibreField,Decomposition,Err)
   CALL CMISSFieldGeometricFieldSet(FibreField,GeometricField,Err)
   CALL CMISSFieldNumberOfVariablesSet(FibreField,FieldFibreNumberOfVariables,Err)
-  CALL CMISSFieldNumberOfComponentsSet(FibreField,CMISSFieldUVariableType,FieldFibreNumberOfComponents,Err)  
+  CALL CMISSFieldNumberOfComponentsSet(FibreField,CMISSFieldUVariableType,FieldFibreNumberOfComponents,Err)
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,2,QuadraticMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,3,QuadraticMeshComponentNumber,Err)
   CALL CMISSFieldCreateFinish(FibreField,Err)
 
   !Set Fibre directions (this block is parallel-untested)
-  node_idx=0  
+  node_idx=0
   !This is valid only for quadratic basis functions
   TOTAL_NUMBER_NODES_XI(1)=NumberGlobalXElements*2
   TOTAL_NUMBER_NODES_XI(2)=NumberGlobalYElements*2+1
   TOTAL_NUMBER_NODES_XI(3)=NumberGlobalZElements*2+1
-   
+
   !Map the correct node number (cn) to geometric node number (gn) G(gn)=cn
   NumberOfCornerNodes=(NumberGlobalZElements+1)*(NumberGlobalYElements*NumberGlobalXElements+1)
   TotalNumberOfNodes=(TOTAL_NUMBER_NODES_XI(3))*((TOTAL_NUMBER_NODES_XI(2)-1)*TOTAL_NUMBER_NODES_XI(1)+1)
-  
+
   ALLOCATE(G(TotalNumberOfNodes),STAT=Err)
-    
+
   CornerNode=0
   !Numbering of not corner nodes starts where Corner nodes end
   NotCornerNode=NumberOfCornerNodes
@@ -339,7 +339,7 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
         CornerNode=CornerNode+1
         G(gn)=CornerNode
      ENDIF
-     DO j=2,TOTAL_NUMBER_NODES_XI(2)  
+     DO j=2,TOTAL_NUMBER_NODES_XI(2)
         DO i=1,TOTAL_NUMBER_NODES_XI(1)
             gn=gn+1
             IF ((mod(i,2)==0).OR.(mod(j,2)==0).OR.(mod(k,2)==0)) THEN
@@ -355,7 +355,7 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
       ENDDO
    ENDDO
 
-            
+
   XI2delta=(PI-CUTOFF_ANGLE)/(TOTAL_NUMBER_NODES_XI(2)-1)
   XI3=0
   XI3delta=(1.0)/(TOTAL_NUMBER_NODES_XI(3)-1)
@@ -368,14 +368,14 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
     CorrectNodeNumber=G(node_idx)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,CorrectNodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      FibreFieldAngle=(/zero,zero,zero/) 
+      FibreFieldAngle=(/zero,zero,zero/)
       DO component_idx=1,FieldFibreNumberOfComponents
         CALL CMISSFieldParameterSetUpdateNode(FibreField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,DerivativeUserNumber, &
           & CorrectNodeNumber,component_idx,FibreFieldAngle(component_idx),Err)
       ENDDO
     ENDIF
-    theta=atan((FIBRE_SLOPE_EPI-FIBRE_SLOPE_ENDO)*XI3+FIBRE_SLOPE_ENDO) 
-    DO j=2, TOTAL_NUMBER_NODES_XI(2) 
+    theta=atan((FIBRE_SLOPE_EPI-FIBRE_SLOPE_ENDO)*XI3+FIBRE_SLOPE_ENDO)
+    DO j=2, TOTAL_NUMBER_NODES_XI(2)
       nu=PI-XI2delta*(j-1)
       omega=PI/2+cos(2*nu)*atan(SHEET_SLOPE_BASE_ENDO)*(-2*XI3+1)
       DO i=1, TOTAL_NUMBER_NODES_XI(1)
@@ -394,14 +394,14 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
     XI3=XI3+XI3delta
   ENDDO
 
-  !Create a material field and attach it to the geometric field  
+  !Create a material field and attach it to the geometric field
   CALL CMISSFieldTypeInitialise(MaterialField,Err)
   CALL CMISSFieldCreateStart(FieldMaterialUserNumber,Region,MaterialField,Err)
   CALL CMISSFieldTypeSet(MaterialField,CMISSFieldMaterialType,Err)
-  CALL CMISSFieldMeshDecompositionSet(MaterialField,Decomposition,Err)        
+  CALL CMISSFieldMeshDecompositionSet(MaterialField,Decomposition,Err)
   CALL CMISSFieldGeometricFieldSet(MaterialField,GeometricField,Err)
   CALL CMISSFieldNumberOfVariablesSet(MaterialField,FieldMaterialNumberOfVariables,Err)
-  CALL CMISSFieldNumberOfComponentsSet(MaterialField,CMISSFieldUVariableType,FieldMaterialNumberOfComponents,Err)  
+  CALL CMISSFieldNumberOfComponentsSet(MaterialField,CMISSFieldUVariableType,FieldMaterialNumberOfComponents,Err)
 !   CALL CMISSFieldComponentInterpolationSet(MaterialField,CMISSFieldUVariableType,1,CMISSFieldConstantInterpolation,Err)
 !   CALL CMISSFieldComponentInterpolationSet(MaterialField,CMISSFieldUVariableType,2,CMISSFieldConstantInterpolation,Err)
   CALL CMISSFieldCreateFinish(MaterialField,Err)
@@ -446,7 +446,7 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
   CALL CMISSEquationsSetDependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)
   CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
 
-  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,FieldMaterialUserNumber,MaterialField,Err)  
+  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,FieldMaterialUserNumber,MaterialField,Err)
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
 
   !Create the equations set equations
@@ -454,7 +454,7 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
   CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
   CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
   CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
-  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)   
+  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
 
   !Initialise dependent field from undeformed geometry and displacement bcs and set hydrostatic pressure
   CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
@@ -491,7 +491,7 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
   !Create the problem solver equations
   CALL CMISSSolverTypeInitialise(Solver,Err)
   CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
-  CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)   
+  CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
   CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
@@ -584,7 +584,7 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
     !Solve problem
     CALL CMISSProblemSolve(Problem,Err)
 
-    !Output solution  
+    !Output solution
     CALL CMISSFieldsTypeInitialise(Fields,Err)
     CALL CMISSFieldsTypeCreate(Region,Fields,Err)
     WRITE(fileNumber,'(I3.3)') time_step
