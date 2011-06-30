@@ -197,7 +197,7 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   TYPE(CMISSFieldType) :: MaterialsFieldNavierStokes
   TYPE(CMISSFieldType) :: AnalyticFieldNavierStokes
   !Boundary conditions
-!   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsNavierStokes
+   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsNavierStokes
   !Equations sets
   TYPE(CMISSEquationsSetType) :: EquationsSetNavierStokes
   !Equations
@@ -682,15 +682,6 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetNavierStokes,Err)
 
-  !
-  !================================================================================================================================
-  !
-
-  !BOUNDARY CONDITIONS
-
-  !Set up the boundary conditions as per the analytic solution
-  CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSetNavierStokes,Err)
-
 
   !
   !================================================================================================================================
@@ -785,6 +776,18 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsNavierStokes,EquationsSetNavierStokes,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !
+  !================================================================================================================================
+  !
+
+  !BOUNDARY CONDITIONS
+
+  !Set up the boundary conditions as per the analytic solution
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsNavierStokes,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsNavierStokes,BoundaryConditionsNavierStokes,Err)
+  CALL CMISSProblemSolverEquationsBoundaryConditionsAnalytic(SolverEquationsNavierStokes,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsNavierStokes,Err)
 
   !
   !================================================================================================================================

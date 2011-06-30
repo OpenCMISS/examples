@@ -111,6 +111,7 @@ PROGRAM DIFFUSIONEXAMPLE
   TYPE(CMISSRegionType) :: Region,WorldRegion
   TYPE(CMISSSolverType) :: Solver, LinearSolver
   TYPE(CMISSSolverEquationsType) :: SolverEquations
+  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
 
   LOGICAL :: EXPORT_FIELD
 
@@ -333,7 +334,6 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   !Create the equations set boundary conditions
 !   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
 !   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-  CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
 
   !Create the problem
   CALL CMISSProblemTypeInitialise(Problem,Err)
@@ -393,6 +393,10 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+  CALL CMISSProblemSolverEquationsBoundaryConditionsAnalytic(SolverEquations,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve the problem
   CALL CMISSProblemSolve(Problem,Err)

@@ -394,44 +394,6 @@ PROGRAM CUBOIDGENERICEXAMPLE
     & 3,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,Err)
   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,-14.0_CMISSDP,Err)
 
-  !BC Assignment
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-
-  !Get surfaces - will fix two nodes on bottom face, pressure conditions inside
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularFrontSurface,Face1Nodes,FaceXi(1),Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularBackSurface,Face2Nodes,FaceXi(2),Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularRightSurface,Face3Nodes,FaceXi(3),Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularLeftSurface,Face4Nodes,FaceXi(4),Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularTopSurface,Face5Nodes,FaceXi(5),Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularBottomSurface,Face6Nodes,FaceXi(6),Err)
-
-  DO I=1,SIZE(BC,1)
-    IF(INT(BC(I,3))==CMISSBoundaryConditionPressure.OR.INT(BC(I,3))==CMISSBoundaryConditionPressureIncremented) THEN
-      VariableType=CMISSFieldDelUDelNVariableType
-    ELSE
-      VariableType=CMISSFieldUVariableType
-    ENDIF
-    SELECT CASE (INT(BC(I,1)))
-    CASE (1)
-      Nodes=>Face1Nodes
-    CASE (2)
-      Nodes=>Face2Nodes
-    CASE (3)
-      Nodes=>Face3Nodes    
-    CASE (4)
-      Nodes=>Face4Nodes    
-    CASE (5)
-      Nodes=>Face5Nodes    
-    CASE (6)
-      Nodes=>Face6Nodes    
-    END SELECT    
-    CALL SET_BC(Decomposition,GeometricField,BoundaryConditions,VariableType,INT(BC(I,3)),Nodes,INT(BC(I,2)),BC(I,4), &
-      & ComputationalNodeNumber)
-  ENDDO
-
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
-
   !Define the problem
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
@@ -466,6 +428,44 @@ PROGRAM CUBOIDGENERICEXAMPLE
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !BC Assignment
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+
+  !Get surfaces - will fix two nodes on bottom face, pressure conditions inside
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularFrontSurface,Face1Nodes,FaceXi(1),Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularBackSurface,Face2Nodes,FaceXi(2),Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularRightSurface,Face3Nodes,FaceXi(3),Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularLeftSurface,Face4Nodes,FaceXi(4),Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularTopSurface,Face5Nodes,FaceXi(5),Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularBottomSurface,Face6Nodes,FaceXi(6),Err)
+
+  DO I=1,SIZE(BC,1)
+    IF(INT(BC(I,3))==CMISSBoundaryConditionPressure.OR.INT(BC(I,3))==CMISSBoundaryConditionPressureIncremented) THEN
+      VariableType=CMISSFieldDelUDelNVariableType
+    ELSE
+      VariableType=CMISSFieldUVariableType
+    ENDIF
+    SELECT CASE (INT(BC(I,1)))
+    CASE (1)
+      Nodes=>Face1Nodes
+    CASE (2)
+      Nodes=>Face2Nodes
+    CASE (3)
+      Nodes=>Face3Nodes
+    CASE (4)
+      Nodes=>Face4Nodes
+    CASE (5)
+      Nodes=>Face5Nodes
+    CASE (6)
+      Nodes=>Face6Nodes
+    END SELECT
+    CALL SET_BC(Decomposition,GeometricField,BoundaryConditions,VariableType,INT(BC(I,3)),Nodes,INT(BC(I,2)),BC(I,4), &
+      & ComputationalNodeNumber)
+  ENDDO
+
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve problem
   CALL CMISSProblemSolve(Problem,Err)

@@ -354,21 +354,6 @@ CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSE
     & 3,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,Err)
   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,-0.0_CMISSDP,Err) ! -8?
 
-  !Prescribe boundary conditions (absolute nodal parameters)
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-
-
-  DO I=1,size(DirichletConditions,2)
-    N = INT(DirichletConditions(1,I))
-    D = INT(DirichletConditions(2,I))
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,N,D,&
-         & CMISSBoundaryConditionFixed, Nodes(D,N) + DirichletConditions(3,I),Err)  ! current + offset
-  ENDDO
-
-
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
-
   !Define the problem
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
@@ -404,6 +389,21 @@ CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSE
   CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !Prescribe boundary conditions (absolute nodal parameters)
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+
+
+  DO I=1,size(DirichletConditions,2)
+    N = INT(DirichletConditions(1,I))
+    D = INT(DirichletConditions(2,I))
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,N,D,&
+         & CMISSBoundaryConditionFixed, Nodes(D,N) + DirichletConditions(3,I),Err)  ! current + offset
+  ENDDO
+
+
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve problem
   CALL CMISSProblemSolve(Problem,Err)

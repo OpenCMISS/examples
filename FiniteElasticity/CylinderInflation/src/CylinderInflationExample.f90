@@ -469,11 +469,6 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
 !   ENDIF
 ! 
 !   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
-!! END OF MANUAL BC ASSIGNMENT
-
-
-  !Set the bc using the analytic solution routine
-  CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
 
   !Define the problem
   CALL CMISSProblemTypeInitialise(Problem,Err)
@@ -510,6 +505,14 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+!! END OF MANUAL BC ASSIGNMENT
+
+
+  !Set the bc using the analytic solution routine
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+  CALL CMISSProblemSolverEquationsBoundaryConditionsAnalytic(SolverEquations,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve problem
   CALL CMISSProblemSolve(Problem,Err)

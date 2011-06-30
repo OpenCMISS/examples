@@ -116,6 +116,7 @@ PROGRAM LINEARPOISSONEXAMPLE
   TYPE(CMISSRegionType) :: Region,WorldRegion
   TYPE(CMISSSolverType) :: Solver,LinearSolver
   TYPE(CMISSSolverEquationsType) :: SolverEquations
+  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
   INTEGER(CMISSIntg) :: MAXIMUM_ITERATIONS
   INTEGER(CMISSIntg) :: RESTART_VALUE
 
@@ -320,9 +321,6 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
 
-  !Set up the boundary conditions as per the analytic solution
-  CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
-
   !Start the creation of a problem.
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
@@ -384,6 +382,12 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
 
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !Set up the boundary conditions as per the analytic solution
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+  CALL CMISSProblemSolverEquationsBoundaryConditionsAnalytic(SolverEquations,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve the problem
   CALL CMISSProblemSolve(Problem,Err)

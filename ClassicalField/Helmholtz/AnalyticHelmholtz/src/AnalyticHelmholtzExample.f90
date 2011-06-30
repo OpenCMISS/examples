@@ -271,6 +271,7 @@ CONTAINS
     TYPE(CMISSRegionType) :: Region
     TYPE(CMISSSolverType) :: Solver
     TYPE(CMISSSolverEquationsType) :: SolverEquations
+    TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
     
     NUMBER_OF_DOMAINS=1
 
@@ -403,9 +404,6 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
     !Set the equations matrices sparsity type
     CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
     CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
-
-    !Set up the boundary conditions as per the analytic solution
-    CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
   
     !Create the problem
     CALL CMISSProblemTypeInitialise(Problem,Err)
@@ -442,6 +440,12 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
     CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
     !Finish the creation of the problem solver equations
     CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+    !Set up the boundary conditions as per the analytic solution
+    CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+    CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+    CALL CMISSProblemSolverEquationsBoundaryConditionsAnalytic(SolverEquations,Err)
+    CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
 
     !Solve the problem
     CALL CMISSProblemSolve(Problem,Err)

@@ -270,56 +270,6 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
     & 3,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,Err)
   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,-8.0_CMISSDP,Err)
 
-  !Prescribe boundary conditions (absolute nodal parameters)
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularBottomSurface,BottomSurfaceNodes,BottomNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularLeftSurface,LeftSurfaceNodes,LeftNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularRightSurface,RightSurfaceNodes,RightNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularFrontSurface,FrontSurfaceNodes,BackNormalXi,Err)
-
-  !Set x=0 nodes to no x displacment in x. Set x=WIDTH nodes to 10% x displacement
-  DO node_idx=1,SIZE(LeftSurfaceNodes,1)
-    NodeNumber=LeftSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,1, &
-        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-    ENDIF
-  ENDDO
-
-  DO node_idx=1,SIZE(RightSurfaceNodes,1)
-    NodeNumber=RightSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,1, &
-        & CMISSBoundaryConditionFixed,1.1_CMISSDP*WIDTH,Err)
-    ENDIF
-  ENDDO
-
-  !Set y=0 nodes to no y displacement
-  DO node_idx=1,SIZE(FrontSurfaceNodes,1)
-    NodeNumber=FrontSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,2, &
-        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-    ENDIF
-  ENDDO
-
-  !Set z=0 nodes to no z displacement
-  DO node_idx=1,SIZE(BottomSurfaceNodes,1)
-    NodeNumber=BottomSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,3, &
-        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-    ENDIF
-  ENDDO
-
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
-
   !Define the problem
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
@@ -350,6 +300,56 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !Prescribe boundary conditions (absolute nodal parameters)
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularBottomSurface,BottomSurfaceNodes,BottomNormalXi,Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularLeftSurface,LeftSurfaceNodes,LeftNormalXi,Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularRightSurface,RightSurfaceNodes,RightNormalXi,Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularFrontSurface,FrontSurfaceNodes,BackNormalXi,Err)
+
+  !Set x=0 nodes to no x displacment in x. Set x=WIDTH nodes to 10% x displacement
+  DO node_idx=1,SIZE(LeftSurfaceNodes,1)
+    NodeNumber=LeftSurfaceNodes(node_idx)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber,1, &
+        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+    ENDIF
+  ENDDO
+
+  DO node_idx=1,SIZE(RightSurfaceNodes,1)
+    NodeNumber=RightSurfaceNodes(node_idx)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber,1, &
+        & CMISSBoundaryConditionFixed,1.1_CMISSDP*WIDTH,Err)
+    ENDIF
+  ENDDO
+
+  !Set y=0 nodes to no y displacement
+  DO node_idx=1,SIZE(FrontSurfaceNodes,1)
+    NodeNumber=FrontSurfaceNodes(node_idx)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber,2, &
+        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+    ENDIF
+  ENDDO
+
+  !Set z=0 nodes to no z displacement
+  DO node_idx=1,SIZE(BottomSurfaceNodes,1)
+    NodeNumber=BottomSurfaceNodes(node_idx)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber,3, &
+        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+    ENDIF
+  ENDDO
+
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve problem
   CALL CMISSProblemSolve(Problem,Err)
