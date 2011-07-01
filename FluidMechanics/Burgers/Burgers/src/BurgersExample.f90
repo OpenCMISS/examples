@@ -361,32 +361,6 @@ PROGRAM BURGERSEXAMPLE
   !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
 
-  !-----------------------------------------------------------------------------------------------------------
-  !BOUNDARY CONDITIONS
-  !-----------------------------------------------------------------------------------------------------------
-  !Set up the boundary conditions
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-  !Set the fixed boundary conditions at the first node and last nodes
-  FirstNodeNumber=1
-  COMPONENT_NUMBER=1
-  CALL CMISSNodesTypeInitialise(Nodes,Err)
-  CALL CMISSRegionNodesGet(Region,Nodes,Err)
-  CALL CMISSNodesNumberOfNodesGet(Nodes,LastNodeNumber,Err)
-  CALL CMISSDecompositionNodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
-  CALL CMISSDecompositionNodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
-  IF(FirstNodeDomain==ComputationalNodeNumber) THEN
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1, &
-      & CMISSNoGlobalDerivative,FirstNodeNumber,COMPONENT_NUMBER,CMISSBoundaryConditionFixed, &
-      & 1.0_CMISSDP,Err)
-  ENDIF
-  IF(LastNodeDomain==ComputationalNodeNumber) THEN
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1, &
-      & CMISSNoGlobalDerivative,LastNodeNumber,COMPONENT_NUMBER,CMISSBoundaryConditionFixed, &
-      & 0.0_CMISSDP,Err)
-  ENDIF
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
-
   !Create the equations set boundary conditions
   !CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
 
@@ -479,6 +453,32 @@ PROGRAM BURGERSEXAMPLE
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !-----------------------------------------------------------------------------------------------------------
+  !BOUNDARY CONDITIONS
+  !-----------------------------------------------------------------------------------------------------------
+  !Set up the boundary conditions
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+  !Set the fixed boundary conditions at the first node and last nodes
+  FirstNodeNumber=1
+  COMPONENT_NUMBER=1
+  CALL CMISSNodesTypeInitialise(Nodes,Err)
+  CALL CMISSRegionNodesGet(Region,Nodes,Err)
+  CALL CMISSNodesNumberOfNodesGet(Nodes,LastNodeNumber,Err)
+  CALL CMISSDecompositionNodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
+  CALL CMISSDecompositionNodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
+  IF(FirstNodeDomain==ComputationalNodeNumber) THEN
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1, &
+      & CMISSNoGlobalDerivative,FirstNodeNumber,COMPONENT_NUMBER,CMISSBoundaryConditionFixed, &
+      & 1.0_CMISSDP,Err)
+  ENDIF
+  IF(LastNodeDomain==ComputationalNodeNumber) THEN
+    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1, &
+      & CMISSNoGlobalDerivative,LastNodeNumber,COMPONENT_NUMBER,CMISSBoundaryConditionFixed, &
+      & 0.0_CMISSDP,Err)
+  ENDIF
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
   !-----------------------------------------------------------------------------------------------------------
   !SOLVE
   !-----------------------------------------------------------------------------------------------------------

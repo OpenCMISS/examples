@@ -361,6 +361,7 @@ CONTAINS
 
     TYPE(CMISSBasisType) :: Basis
     TYPE(CMISSCoordinateSystemType) :: CoordinateSystem
+    TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
     TYPE(CMISSGeneratedMeshType) :: GENERATED_MESH
     TYPE(CMISSMeshType) :: MESH
     TYPE(CMISSDecompositionType) :: DECOMPOSITION
@@ -514,9 +515,6 @@ CONTAINS
     CALL CMISSEquationsSparsityTypeSet(EQUATIONS,CMISSEquationsSparseMatrices,Err)
     CALL CMISSEquationsSetEquationsCreateFinish(EQUATIONS_SET,Err)
 
-    !Set up the boundary conditions as per the analytic solution
-    CALL CMISSEquationsSetBoundaryConditionsAnalytic(EQUATIONS_SET,Err)
-  
     !Create the problem
     CALL CMISSProblemTypeInitialise(PROBLEM,Err)
     CALL CMISSProblemCreateStart(1,PROBLEM,Err)
@@ -558,6 +556,12 @@ CONTAINS
     CALL CMISSSolverEquationsEquationsSetAdd(Solver_Equations,Equations_Set,EquationsSetIndex,Err)
     !Finish the creation of the problem solver equations
     CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+    !Set up the boundary conditions as per the analytic solution
+    CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+    CALL CMISSSolverEquationsBoundaryConditionsCreateStart(Solver_Equations,BoundaryConditions,Err)
+    CALL CMISSProblemSolverEquationsBoundaryConditionsAnalytic(Solver_Equations,Err)
+    CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(Solver_Equations,Err)
 
     !Solve the problem
     CALL CMISSProblemSolve(PROBLEM,Err)

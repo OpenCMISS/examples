@@ -714,248 +714,6 @@ CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
   CALL CMISSFieldComponentValuesInitialise(DependentFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,0.0_CMISSDP, &
     & Err)
 
-  ! end Solid
-  !--------------------------------------------------------------------------------------------------------------------------------
-
-  !------------------------------------
-  ! ASSIGN BOUNDARY CONDITIONS - SOLID (absolute nodal parameters)
-  !Solid is computed in absolute position, rather than displacement. Thus BCs for absolute position
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsSolid,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetSolid,BoundaryConditionsSolid,Err)
-
-!   !Get surfaces 
-!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,SolidDisplMeshComponentNumber,CMISSGeneratedMeshRegularFrontSurface, &
-!     & Face1Nodes,FaceXi(1),Err)
-!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,SolidDisplMeshComponentNumber,CMISSGeneratedMeshRegularBackSurface, &
-!     & Face2Nodes,FaceXi(2),Err)
-!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,SolidDisplMeshComponentNumber,CMISSGeneratedMeshRegularRightSurface, &
-!     & Face3Nodes,FaceXi(3),Err)
-!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,SolidDisplMeshComponentNumber,CMISSGeneratedMeshRegularLeftSurface, &
-!     & Face4Nodes,FaceXi(4),Err)
-!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,SolidDisplMeshComponentNumber,CMISSGeneratedMeshRegularTopSurface, &
-!     & Face5Nodes,FaceXi(5),Err)
-!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,SolidDisplMeshComponentNumber,CMISSGeneratedMeshRegularBottomSurface, &
-!     & Face6Nodes,FaceXi(6),Err)
-
-! ! write(*,'("Face1Nodes=[",100I3,"]")') Face1Nodes
-! ! write(*,'("Face2Nodes=[",100I3,"]")') Face2Nodes
-! ! write(*,'("Face3Nodes=[",100I3,"]")') Face3Nodes
-! ! write(*,'("Face4Nodes=[",100I3,"]")') Face4Nodes
-! ! write(*,'("Face5Nodes=[",100I3,"]")') Face5Nodes
-! ! write(*,'("Face6Nodes=[",100I3,"]")') Face6Nodes
-! ! write(*,'("FaceXi=[",100I3,"]")') FaceXi
-! 
-allocate(Face1Nodes(21),Face2Nodes(21),Face3Nodes(21),Face4Nodes(21),Face5Nodes(9),Face6Nodes(9))
-Face1Nodes=[  1, 17,  2, 22, 23, 24,  5, 31,  6, 36, 37, 38,  9, 45, 10, 50, 51, 52, 13, 59, 14]
-Face2Nodes=[  3, 21,  4, 28, 29, 30,  7, 35,  8, 42, 43, 44, 11, 49, 12, 56, 57, 58, 15, 63, 16]
-Face3Nodes=[  2, 20,  4, 24, 27, 30,  6, 34,  8, 38, 41, 44, 10, 48, 12, 52, 55, 58, 14, 62, 16]
-Face4Nodes=[  1, 18,  3, 22, 25, 28,  5, 32,  7, 36, 39, 42,  9, 46, 11, 50, 53, 56, 13, 60, 15]
-Face5Nodes=[ 13, 59, 14, 60, 61, 62, 15, 63, 16]
-Face6Nodes=[  1, 17,  2, 18, 19, 20,  3, 21,  4]
-FaceXi=[ -2,  2,  1, -1,  3, -3]
-
-
-  ! Fix the bottom in z direction
-  DO NN=1,SIZE(Face6Nodes,1)
-    NODE=Face6Nodes(NN)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,3,ZCoord,Err)
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,3, &
-        & CMISSBoundaryConditionFixed,ZCoord,Err)
-      WRITE(*,*) "FIXING NODE",NODE,"AT BOTTOM IN Z DIRECTION"
-    ENDIF
-  ENDDO
-
-  ! Fix the top in z direction
-  DO NN=1,SIZE(Face5Nodes,1)
-    NODE=Face5Nodes(NN)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,3,ZCoord,Err)
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,3, &
-        & CMISSBoundaryConditionFixed,ZCoord,Err)
-      WRITE(*,*) "FIXING NODE",NODE,"AT TOP IN Z DIRECTION"
-    ENDIF
-  ENDDO
-
-  !Fix more nodes at the bottom to stop free body motion
-  X_FIXED=.FALSE.
-  Y_FIXED=.FALSE.
-  DO NN=1,SIZE(Face6Nodes,1)
-    NODE=Face6Nodes(NN)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,1,XCoord,Err)
-      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,2,YCoord,Err)
-
-      !Fix Origin displacement in x and y (z already fixed)
-      IF(ABS(XCoord)<1.0E-6_CMISSDP.AND.ABS(YCoord)<1.0E-6_CMISSDP) THEN
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,1, &
-          & CMISSBoundaryConditionFixed,XCoord,Err)
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,2, &
-          & CMISSBoundaryConditionFixed,YCoord,Err)
-        WRITE(*,*) "FIXING ORIGIN NODE",NODE,"IN X AND Y DIRECTION"
-        X_FIXED=.TRUE.
-        Y_FIXED=.TRUE.
-      ENDIF
-
-      !Fix nodal displacements at (X_DIM,0) in y
-      IF(ABS(XCoord - X_DIM)<1.0E-6_CMISSDP .AND. ABS(YCoord)<1.0E-6_CMISSDP) THEN
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,2, &
-          & CMISSBoundaryConditionFixed,YCoord,Err)
-        WRITE(*,*) "FIXING NODES",NODE,"AT (X_DIM,0) IN Y DIRECTION"
-        Y_FIXED=.TRUE.
-      ENDIF
-
-      !Fix nodal displacements at (0,Y_DIM) in x
-      IF(ABS(XCoord)<1.0E-6_CMISSDP .AND. ABS(YCoord - Y_DIM)<1.0E-6_CMISSDP) THEN
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1,NODE,1, &
-          & CMISSBoundaryConditionFixed,XCoord,Err)
-        WRITE(*,*) "FIXING NODES",NODE,"AT (0,Y_DIM) IN X DIRECTION"
-        X_FIXED=.TRUE.
-      ENDIF
-
-    ENDIF
-  ENDDO
-!   CALL MPI_REDUCE(X_FIXED,X_OKAY,1,MPI_LOGICAL,MPI_LOR,0,MPI_COMM_WORLD,MPI_IERROR)
-!   CALL MPI_REDUCE(Y_FIXED,Y_OKAY,1,MPI_LOGICAL,MPI_LOR,0,MPI_COMM_WORLD,MPI_IERROR)
-!   IF(ComputationalNodeNumber==0) THEN
-!     IF(.NOT.(X_OKAY.AND.Y_OKAY)) THEN
-!       WRITE(*,*) "Free body motion could not be prevented!"
-!       CALL CMISSFinalise(Err)
-!       STOP
-!     ENDIF
-!   ENDIF
-
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetSolid,Err)
-  !------------------------------------
-
-
-  !------------------------------------
-  ! ASSIGN BOUNDARY CONDITIONS - FLUID
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDarcy,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDarcy,BoundaryConditionsDarcy,Err)
-
-!   !Get surfaces 
-!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,DarcyVelMeshComponentNumber,CMISSGeneratedMeshRegularFrontSurface, &
-!     & Face7Nodes,FaceXi(1),Err)
-!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,DarcyVelMeshComponentNumber,CMISSGeneratedMeshRegularBackSurface, &
-!     & Face8Nodes,FaceXi(2),Err)
-!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,DarcyVelMeshComponentNumber,CMISSGeneratedMeshRegularRightSurface, &
-!     & Face9Nodes,FaceXi(3),Err)
-!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,DarcyVelMeshComponentNumber,CMISSGeneratedMeshRegularLeftSurface, &
-!     & Face10Nodes,FaceXi(4),Err)
-!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,DarcyVelMeshComponentNumber,CMISSGeneratedMeshRegularTopSurface, &
-!     & Face11Nodes,FaceXi(5),Err)
-!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,DarcyVelMeshComponentNumber,CMISSGeneratedMeshRegularBottomSurface, &
-!     & Face12Nodes,FaceXi(6),Err)
-
-! ! write(*,'("Face7Nodes=[",100I3,"]")') Face7Nodes
-! ! write(*,'("Face8Nodes=[",100I3,"]")') Face8Nodes
-! ! write(*,'("Face9Nodes=[",100I3,"]")') Face9Nodes
-! ! write(*,'("Face10Nodes=[",100I3,"]")') Face10Nodes
-! ! write(*,'("Face11Nodes=[",100I3,"]")') Face11Nodes
-! ! write(*,'("Face12Nodes=[",100I3,"]")') Face12Nodes
-! ! write(*,'("FaceXi=[",100I3,"]")') FaceXi
-
-allocate(Face7Nodes(8),Face8Nodes(8),Face9Nodes(8),Face10Nodes(8),Face11Nodes(4),Face12Nodes(4))
-Face7Nodes=[  1,  2,  5,  6,  9, 10, 13, 14]
-Face8Nodes=[  3,  4,  7,  8, 11, 12, 15, 16]
-Face9Nodes=[  2,  4,  6,  8, 10, 12, 14, 16]
-Face10Nodes=[  1,  3,  5,  7,  9, 11, 13, 15]
-Face11Nodes=[ 13, 14, 15, 16]
-Face12Nodes=[  1,  2,  3,  4]
-FaceXi=[ -2,  2,  1, -1,  3, -3]
-
-
-  ! At the top impose Darcy velocity in z direction
-  DO NN=1,SIZE(Face11Nodes,1)
-    NODE=Face11Nodes(NN)
-!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-!     IF(NodeDomain==ComputationalNodeNumber) THEN
-      VALUE = -2.0_CMISSDP
-      COMPONENT_NUMBER = 3
-      write(*,*)'Marker 0'
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,1,NODE,COMPONENT_NUMBER, &
-        & CMISSBoundaryConditionFixed,VALUE,Err)
-      WRITE(*,*) "SPECIFIED INFLOW AT NODE",NODE,"IN Z DIRECTION"
-
-!       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
-!       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,2,YCoord,Err)
-!       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,3,ZCoord,Err)
-!       WRITE(*,*) "XCoord, YCoord, ZCoord = ",XCoord, YCoord, ZCoord
-!     ENDIF
-  ENDDO
-
-  !All other faces are impermeable
-  DO NN=1,SIZE(Face7Nodes,1)
-    NODE=Face7Nodes(NN)
-!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-!     IF(NodeDomain==ComputationalNodeNumber) THEN
-      VALUE = 0.0_CMISSDP
-      COMPONENT_NUMBER = 1
-      write(*,*)'Marker 1'
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,1,NODE,COMPONENT_NUMBER, &
-        & CMISSBoundaryConditionFixed,VALUE,Err)
-      WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN X DIRECTION"
-!     ENDIF
-  ENDDO
-
-  DO NN=1,SIZE(Face8Nodes,1)
-    NODE=Face8Nodes(NN)
-!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-!     IF(NodeDomain==ComputationalNodeNumber) THEN
-      VALUE = 0.0_CMISSDP
-      COMPONENT_NUMBER = 1
-      write(*,*)'Marker 2'
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,1,NODE,COMPONENT_NUMBER, &
-        & CMISSBoundaryConditionFixed,VALUE,Err)
-      WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN X DIRECTION"
-!     ENDIF
-  ENDDO
-
-  DO NN=1,SIZE(Face9Nodes,1)
-    NODE=Face9Nodes(NN)
-!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-!     IF(NodeDomain==ComputationalNodeNumber) THEN
-      VALUE = 0.0_CMISSDP
-      COMPONENT_NUMBER = 2
-      write(*,*)'Marker 3'
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,1,NODE,COMPONENT_NUMBER, &
-        & CMISSBoundaryConditionFixed,VALUE,Err)
-      WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Y DIRECTION"
-!     ENDIF
-  ENDDO
-
-  DO NN=1,SIZE(Face10Nodes,1)
-    NODE=Face10Nodes(NN)
-!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-!     IF(NodeDomain==ComputationalNodeNumber) THEN
-      VALUE = 0.0_CMISSDP
-      COMPONENT_NUMBER = 2
-      write(*,*)'Marker 4'
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,1,NODE,COMPONENT_NUMBER, &
-        & CMISSBoundaryConditionFixed,VALUE,Err)
-      WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Y DIRECTION"
-!     ENDIF
-  ENDDO
-
-  DO NN=1,SIZE(Face12Nodes,1)
-    NODE=Face12Nodes(NN)
-!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-!     IF(NodeDomain==ComputationalNodeNumber) THEN
-      VALUE = 0.0_CMISSDP
-      COMPONENT_NUMBER = 3
-      write(*,*)'Marker 5'
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,1,1,NODE,COMPONENT_NUMBER, &
-        & CMISSBoundaryConditionFixed,VALUE,Err)
-      WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Z DIRECTION"
-!     ENDIF
-  ENDDO
-
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDarcy,Err)
-
 
   !
   !================================================================================================================================
@@ -1059,6 +817,255 @@ FaceXi=[ -2,  2,  1, -1,  3, -3]
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsDarcy,EquationsSetDarcy,EquationsSetIndex,Err)
   !
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !
+  !================================================================================================================================
+  !
+
+  !------------------------------------
+  ! ASSIGN BOUNDARY CONDITIONS - SOLID (absolute nodal parameters)
+  !Solid is computed in absolute position, rather than displacement. Thus BCs for absolute position
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsSolid,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsSolid,BoundaryConditionsSolid,Err)
+
+!   !Get surfaces
+!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,SolidDisplMeshComponentNumber,CMISSGeneratedMeshRegularFrontSurface, &
+!     & Face1Nodes,FaceXi(1),Err)
+!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,SolidDisplMeshComponentNumber,CMISSGeneratedMeshRegularBackSurface, &
+!     & Face2Nodes,FaceXi(2),Err)
+!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,SolidDisplMeshComponentNumber,CMISSGeneratedMeshRegularRightSurface, &
+!     & Face3Nodes,FaceXi(3),Err)
+!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,SolidDisplMeshComponentNumber,CMISSGeneratedMeshRegularLeftSurface, &
+!     & Face4Nodes,FaceXi(4),Err)
+!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,SolidDisplMeshComponentNumber,CMISSGeneratedMeshRegularTopSurface, &
+!     & Face5Nodes,FaceXi(5),Err)
+!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,SolidDisplMeshComponentNumber,CMISSGeneratedMeshRegularBottomSurface, &
+!     & Face6Nodes,FaceXi(6),Err)
+
+! ! write(*,'("Face1Nodes=[",100I3,"]")') Face1Nodes
+! ! write(*,'("Face2Nodes=[",100I3,"]")') Face2Nodes
+! ! write(*,'("Face3Nodes=[",100I3,"]")') Face3Nodes
+! ! write(*,'("Face4Nodes=[",100I3,"]")') Face4Nodes
+! ! write(*,'("Face5Nodes=[",100I3,"]")') Face5Nodes
+! ! write(*,'("Face6Nodes=[",100I3,"]")') Face6Nodes
+! ! write(*,'("FaceXi=[",100I3,"]")') FaceXi
+!
+allocate(Face1Nodes(21),Face2Nodes(21),Face3Nodes(21),Face4Nodes(21),Face5Nodes(9),Face6Nodes(9))
+Face1Nodes=[  1, 17,  2, 22, 23, 24,  5, 31,  6, 36, 37, 38,  9, 45, 10, 50, 51, 52, 13, 59, 14]
+Face2Nodes=[  3, 21,  4, 28, 29, 30,  7, 35,  8, 42, 43, 44, 11, 49, 12, 56, 57, 58, 15, 63, 16]
+Face3Nodes=[  2, 20,  4, 24, 27, 30,  6, 34,  8, 38, 41, 44, 10, 48, 12, 52, 55, 58, 14, 62, 16]
+Face4Nodes=[  1, 18,  3, 22, 25, 28,  5, 32,  7, 36, 39, 42,  9, 46, 11, 50, 53, 56, 13, 60, 15]
+Face5Nodes=[ 13, 59, 14, 60, 61, 62, 15, 63, 16]
+Face6Nodes=[  1, 17,  2, 18, 19, 20,  3, 21,  4]
+FaceXi=[ -2,  2,  1, -1,  3, -3]
+
+
+  ! Fix the bottom in z direction
+  DO NN=1,SIZE(Face6Nodes,1)
+    NODE=Face6Nodes(NN)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,3,ZCoord,Err)
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentFieldSolid,CMISSFieldUVariableType,1,1,NODE,3, &
+        & CMISSBoundaryConditionFixed,ZCoord,Err)
+      WRITE(*,*) "FIXING NODE",NODE,"AT BOTTOM IN Z DIRECTION"
+    ENDIF
+  ENDDO
+
+  ! Fix the top in z direction
+  DO NN=1,SIZE(Face5Nodes,1)
+    NODE=Face5Nodes(NN)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,3,ZCoord,Err)
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentFieldSolid,CMISSFieldUVariableType,1,1,NODE,3, &
+        & CMISSBoundaryConditionFixed,ZCoord,Err)
+      WRITE(*,*) "FIXING NODE",NODE,"AT TOP IN Z DIRECTION"
+    ENDIF
+  ENDDO
+
+  !Fix more nodes at the bottom to stop free body motion
+  X_FIXED=.FALSE.
+  Y_FIXED=.FALSE.
+  DO NN=1,SIZE(Face6Nodes,1)
+    NODE=Face6Nodes(NN)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,1,XCoord,Err)
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldSolid,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,2,YCoord,Err)
+
+      !Fix Origin displacement in x and y (z already fixed)
+      IF(ABS(XCoord)<1.0E-6_CMISSDP.AND.ABS(YCoord)<1.0E-6_CMISSDP) THEN
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentFieldSolid,CMISSFieldUVariableType,1,1,NODE,1, &
+          & CMISSBoundaryConditionFixed,XCoord,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentFieldSolid,CMISSFieldUVariableType,1,1,NODE,2, &
+          & CMISSBoundaryConditionFixed,YCoord,Err)
+        WRITE(*,*) "FIXING ORIGIN NODE",NODE,"IN X AND Y DIRECTION"
+        X_FIXED=.TRUE.
+        Y_FIXED=.TRUE.
+      ENDIF
+
+      !Fix nodal displacements at (X_DIM,0) in y
+      IF(ABS(XCoord - X_DIM)<1.0E-6_CMISSDP .AND. ABS(YCoord)<1.0E-6_CMISSDP) THEN
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentFieldSolid,CMISSFieldUVariableType,1,1,NODE,2, &
+          & CMISSBoundaryConditionFixed,YCoord,Err)
+        WRITE(*,*) "FIXING NODES",NODE,"AT (X_DIM,0) IN Y DIRECTION"
+        Y_FIXED=.TRUE.
+      ENDIF
+
+      !Fix nodal displacements at (0,Y_DIM) in x
+      IF(ABS(XCoord)<1.0E-6_CMISSDP .AND. ABS(YCoord - Y_DIM)<1.0E-6_CMISSDP) THEN
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentFieldSolid,CMISSFieldUVariableType,1,1,NODE,1, &
+          & CMISSBoundaryConditionFixed,XCoord,Err)
+        WRITE(*,*) "FIXING NODES",NODE,"AT (0,Y_DIM) IN X DIRECTION"
+        X_FIXED=.TRUE.
+      ENDIF
+
+    ENDIF
+  ENDDO
+!   CALL MPI_REDUCE(X_FIXED,X_OKAY,1,MPI_LOGICAL,MPI_LOR,0,MPI_COMM_WORLD,MPI_IERROR)
+!   CALL MPI_REDUCE(Y_FIXED,Y_OKAY,1,MPI_LOGICAL,MPI_LOR,0,MPI_COMM_WORLD,MPI_IERROR)
+!   IF(ComputationalNodeNumber==0) THEN
+!     IF(.NOT.(X_OKAY.AND.Y_OKAY)) THEN
+!       WRITE(*,*) "Free body motion could not be prevented!"
+!       CALL CMISSFinalise(Err)
+!       STOP
+!     ENDIF
+!   ENDIF
+
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsSolid,Err)
+  !------------------------------------
+
+
+  !------------------------------------
+  ! ASSIGN BOUNDARY CONDITIONS - FLUID
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDarcy,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsDarcy,BoundaryConditionsDarcy,Err)
+
+!   !Get surfaces
+!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,DarcyVelMeshComponentNumber,CMISSGeneratedMeshRegularFrontSurface, &
+!     & Face7Nodes,FaceXi(1),Err)
+!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,DarcyVelMeshComponentNumber,CMISSGeneratedMeshRegularBackSurface, &
+!     & Face8Nodes,FaceXi(2),Err)
+!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,DarcyVelMeshComponentNumber,CMISSGeneratedMeshRegularRightSurface, &
+!     & Face9Nodes,FaceXi(3),Err)
+!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,DarcyVelMeshComponentNumber,CMISSGeneratedMeshRegularLeftSurface, &
+!     & Face10Nodes,FaceXi(4),Err)
+!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,DarcyVelMeshComponentNumber,CMISSGeneratedMeshRegularTopSurface, &
+!     & Face11Nodes,FaceXi(5),Err)
+!   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,DarcyVelMeshComponentNumber,CMISSGeneratedMeshRegularBottomSurface, &
+!     & Face12Nodes,FaceXi(6),Err)
+
+! ! write(*,'("Face7Nodes=[",100I3,"]")') Face7Nodes
+! ! write(*,'("Face8Nodes=[",100I3,"]")') Face8Nodes
+! ! write(*,'("Face9Nodes=[",100I3,"]")') Face9Nodes
+! ! write(*,'("Face10Nodes=[",100I3,"]")') Face10Nodes
+! ! write(*,'("Face11Nodes=[",100I3,"]")') Face11Nodes
+! ! write(*,'("Face12Nodes=[",100I3,"]")') Face12Nodes
+! ! write(*,'("FaceXi=[",100I3,"]")') FaceXi
+
+allocate(Face7Nodes(8),Face8Nodes(8),Face9Nodes(8),Face10Nodes(8),Face11Nodes(4),Face12Nodes(4))
+Face7Nodes=[  1,  2,  5,  6,  9, 10, 13, 14]
+Face8Nodes=[  3,  4,  7,  8, 11, 12, 15, 16]
+Face9Nodes=[  2,  4,  6,  8, 10, 12, 14, 16]
+Face10Nodes=[  1,  3,  5,  7,  9, 11, 13, 15]
+Face11Nodes=[ 13, 14, 15, 16]
+Face12Nodes=[  1,  2,  3,  4]
+FaceXi=[ -2,  2,  1, -1,  3, -3]
+
+
+  ! At the top impose Darcy velocity in z direction
+  DO NN=1,SIZE(Face11Nodes,1)
+    NODE=Face11Nodes(NN)
+!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+!     IF(NodeDomain==ComputationalNodeNumber) THEN
+      VALUE = -2.0_CMISSDP
+      COMPONENT_NUMBER = 3
+      write(*,*)'Marker 0'
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldSolid,CMISSFieldVVariableType,1,1,NODE, &
+        & COMPONENT_NUMBER, &
+        & CMISSBoundaryConditionFixed,VALUE,Err)
+      WRITE(*,*) "SPECIFIED INFLOW AT NODE",NODE,"IN Z DIRECTION"
+
+!       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,1,XCoord,Err)
+!       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,2,YCoord,Err)
+!       CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,NODE,3,ZCoord,Err)
+!       WRITE(*,*) "XCoord, YCoord, ZCoord = ",XCoord, YCoord, ZCoord
+!     ENDIF
+  ENDDO
+
+  !All other faces are impermeable
+  DO NN=1,SIZE(Face7Nodes,1)
+    NODE=Face7Nodes(NN)
+!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+!     IF(NodeDomain==ComputationalNodeNumber) THEN
+      VALUE = 0.0_CMISSDP
+      COMPONENT_NUMBER = 1
+      write(*,*)'Marker 1'
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldSolid,CMISSFieldVVariableType,1,1,NODE, &
+        & COMPONENT_NUMBER, &
+        & CMISSBoundaryConditionFixed,VALUE,Err)
+      WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN X DIRECTION"
+!     ENDIF
+  ENDDO
+
+  DO NN=1,SIZE(Face8Nodes,1)
+    NODE=Face8Nodes(NN)
+!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+!     IF(NodeDomain==ComputationalNodeNumber) THEN
+      VALUE = 0.0_CMISSDP
+      COMPONENT_NUMBER = 1
+      write(*,*)'Marker 2'
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldSolid,CMISSFieldVVariableType,1,1,NODE, &
+        & COMPONENT_NUMBER, &
+        & CMISSBoundaryConditionFixed,VALUE,Err)
+      WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN X DIRECTION"
+!     ENDIF
+  ENDDO
+
+  DO NN=1,SIZE(Face9Nodes,1)
+    NODE=Face9Nodes(NN)
+!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+!     IF(NodeDomain==ComputationalNodeNumber) THEN
+      VALUE = 0.0_CMISSDP
+      COMPONENT_NUMBER = 2
+      write(*,*)'Marker 3'
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldSolid,CMISSFieldVVariableType,1,1,NODE, &
+        & COMPONENT_NUMBER, &
+        & CMISSBoundaryConditionFixed,VALUE,Err)
+      WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Y DIRECTION"
+!     ENDIF
+  ENDDO
+
+  DO NN=1,SIZE(Face10Nodes,1)
+    NODE=Face10Nodes(NN)
+!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+!     IF(NodeDomain==ComputationalNodeNumber) THEN
+      VALUE = 0.0_CMISSDP
+      COMPONENT_NUMBER = 2
+      write(*,*)'Marker 4'
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldSolid,CMISSFieldVVariableType,1,1,NODE, &
+        & COMPONENT_NUMBER, &
+        & CMISSBoundaryConditionFixed,VALUE,Err)
+      WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Y DIRECTION"
+!     ENDIF
+  ENDDO
+
+  DO NN=1,SIZE(Face12Nodes,1)
+    NODE=Face12Nodes(NN)
+!     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+!     IF(NodeDomain==ComputationalNodeNumber) THEN
+      VALUE = 0.0_CMISSDP
+      COMPONENT_NUMBER = 3
+      write(*,*)'Marker 5'
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldSolid,CMISSFieldVVariableType,1,1,NODE, &
+        & COMPONENT_NUMBER, &
+        & CMISSBoundaryConditionFixed,VALUE,Err)
+      WRITE(*,*) "SPECIFIED IMPERMEABLE WALL AT NODE",NODE,"IN Z DIRECTION"
+!     ENDIF
+  ENDDO
+
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsDarcy,Err)
 
   !
   !================================================================================================================================

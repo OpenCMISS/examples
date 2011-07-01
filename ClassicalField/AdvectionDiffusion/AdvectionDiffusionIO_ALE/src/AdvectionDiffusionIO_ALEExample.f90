@@ -562,42 +562,6 @@ PROGRAM ADVECTIONDIFFUSIONIOALEEXAMPLE
   !================================================================================================================================
   !
 
- !BOUNDARY CONDITIONS
-
-  !Start the creation of the equations set boundary conditions for Poisson
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsAdvecDiff,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetAdvecDiff,BoundaryConditionsAdvecDiff,Err)
-  !Set fixed wall nodes
-  IF(FIXED_WALL_NODES_ADVECTION_DIFFUSION_FLAG) THEN
-    DO NODE_COUNTER=1,NUMBER_OF_FIXED_WALL_NODES_ADVECTION_DIFFUSION
-      NODE_NUMBER=FIXED_WALL_NODES_ADVECTION_DIFFUSION(NODE_COUNTER)
-      CONDITION=CMISSBoundaryConditionFixed
-!       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-        VALUE=0.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsAdvecDiff,CMISSFieldUVariableType,CMISSNoGlobalDerivative,1, & 
-          & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONCENTRATION,CONDITION,VALUE,Err)
-!       ENDDO
-    ENDDO
-  ENDIF
-  !Set velocity boundary conditions
-  IF(INLET_WALL_NODES_ADVECTION_DIFFUSION_FLAG) THEN
-    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_ADVECTION_DIFFUSION
-      NODE_NUMBER=INLET_WALL_NODES_ADVECTION_DIFFUSION(NODE_COUNTER)
-      CONDITION=CMISSBoundaryConditionFixed
-!       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-        VALUE=0.1_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsAdvecDiff,CMISSFieldUVariableType,CMISSNoGlobalDerivative,1, & 
-          & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONCENTRATION,CONDITION,VALUE,Err)
-!       ENDDO
-    ENDDO
-  ENDIF
-  !Finish the creation of the equations set boundary conditions
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetAdvecDiff,Err)  
-
-  !
-  !================================================================================================================================
-  !
-
   !Start the creation of a problem.
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
@@ -663,6 +627,44 @@ PROGRAM ADVECTIONDIFFUSIONIOALEEXAMPLE
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsAdvecDiff,EquationsSetAdvecDiff,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !
+  !================================================================================================================================
+  !
+
+ !BOUNDARY CONDITIONS
+
+  !Start the creation of the equations set boundary conditions for Poisson
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsAdvecDiff,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsAdvecDiff,BoundaryConditionsAdvecDiff,Err)
+  !Set fixed wall nodes
+  IF(FIXED_WALL_NODES_ADVECTION_DIFFUSION_FLAG) THEN
+    DO NODE_COUNTER=1,NUMBER_OF_FIXED_WALL_NODES_ADVECTION_DIFFUSION
+      NODE_NUMBER=FIXED_WALL_NODES_ADVECTION_DIFFUSION(NODE_COUNTER)
+      CONDITION=CMISSBoundaryConditionFixed
+!       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+        VALUE=0.0_CMISSDP
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsAdvecDiff,DependentFieldAdvecDiff,CMISSFieldUVariableType, &
+          & CMISSNoGlobalDerivative,1, &
+          & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONCENTRATION,CONDITION,VALUE,Err)
+!       ENDDO
+    ENDDO
+  ENDIF
+  !Set velocity boundary conditions
+  IF(INLET_WALL_NODES_ADVECTION_DIFFUSION_FLAG) THEN
+    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_ADVECTION_DIFFUSION
+      NODE_NUMBER=INLET_WALL_NODES_ADVECTION_DIFFUSION(NODE_COUNTER)
+      CONDITION=CMISSBoundaryConditionFixed
+!       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+        VALUE=0.1_CMISSDP
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsAdvecDiff,DependentFieldAdvecDiff,CMISSFieldUVariableType, &
+          & CMISSNoGlobalDerivative,1, &
+          & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONCENTRATION,CONDITION,VALUE,Err)
+!       ENDDO
+    ENDDO
+  ENDIF
+  !Finish the creation of the equations set boundary conditions
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsAdvecDiff,Err)
 
   !
   !================================================================================================================================

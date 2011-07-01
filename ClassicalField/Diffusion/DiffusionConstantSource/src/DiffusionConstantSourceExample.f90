@@ -302,8 +302,6 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
 !   !Finish the creation of the equations set boundary conditions
 !   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
 
-  CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
-
 
 
 
@@ -364,6 +362,11 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+  CALL CMISSProblemSolverEquationsBoundaryConditionsAnalytic(SolverEquations,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve the problem
   CALL CMISSProblemSolve(Problem,Err)

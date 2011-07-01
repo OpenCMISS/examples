@@ -978,106 +978,6 @@ PROGRAM NAVIERSTOKESMASTEREXAMPLE
   !================================================================================================================================
   !
 
-  !BOUNDARY CONDITIONS
-
-  IF(.NOT.ANALYTIC_FLAG) THEN
-    !Start the creation of the equations set boundary conditions for Navier-Stokes
-    CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsNavierStokes,Err)
-    CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetNavierStokes,BoundaryConditionsNavierStokes,Err)
-    !Set fixed wall nodes
-    IF(FIXED_WALL_NODES_NAVIER_STOKES_FLAG) THEN
-      DO NODE_COUNTER=1,NUMBER_OF_FIXED_WALL_NODES_NAVIER_STOKES
-        NODE_NUMBER=FIXED_WALL_NODES_NAVIER_STOKES(NODE_COUNTER)
-        CONDITION=CMISSBoundaryConditionFixedWall
-        CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
-        IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
-          DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-            VALUE=0.0_CMISSDP
-            CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
-              & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
-          ENDDO
-        ENDIF
-      ENDDO
-    ENDIF
-    !Set moved wall nodes
-    IF(MOVED_WALL_NODES_NAVIER_STOKES_FLAG) THEN
-      DO NODE_COUNTER=1,NUMBER_OF_MOVED_WALL_NODES_NAVIER_STOKES
-        NODE_NUMBER=MOVED_WALL_NODES_NAVIER_STOKES(NODE_COUNTER)
-        CONDITION=CMISSBoundaryConditionMovedWall
-        CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
-        IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
-          DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-            VALUE=0.0_CMISSDP
-            CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
-              & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
-          ENDDO
-        ENDIF
-      ENDDO
-    ENDIF
-    !Set velocity boundary conditions
-    IF(INLET_WALL_NODES_NAVIER_STOKES_FLAG) THEN
-      DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_NAVIER_STOKES
-        NODE_NUMBER=INLET_WALL_NODES_NAVIER_STOKES(NODE_COUNTER)
-        CONDITION=CMISSBoundaryConditionInletWall
-        CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
-        IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
-          DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-            VALUE=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER)
-            CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
-              & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
-          ENDDO
-        ENDIF
-      ENDDO
-    ENDIF
-    !Finish the creation of the equations set boundary conditions
-    CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetNavierStokes,Err)
-
-    IF(ALE_SOLVER_NAVIER_STOKES_FLAG) THEN
-      !Start the creation of the equations set boundary conditions for moving mesh
-      CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsMovingMesh,Err)
-      CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetMovingMesh,BoundaryConditionsMovingMesh,Err)
-      !Set fixed wall nodes
-      IF(FIXED_WALL_NODES_MOVING_MESH_FLAG) THEN
-        DO NODE_COUNTER=1,NUMBER_OF_FIXED_WALL_NODES_MOVING_MESH
-          NODE_NUMBER=FIXED_WALL_NODES_MOVING_MESH(NODE_COUNTER)
-          CONDITION=CMISSBoundaryConditionFixedWall
-          CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
-          IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
-            DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-              VALUE=0.0_CMISSDP
-              CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsMovingMesh,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
-                & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
-            ENDDO
-          ENDIF
-        ENDDO
-      ENDIF
-      !Set moved wall nodes
-      IF(MOVED_WALL_NODES_MOVING_MESH_FLAG) THEN
-        DO NODE_COUNTER=1,NUMBER_OF_MOVED_WALL_NODES_MOVING_MESH
-          NODE_NUMBER=MOVED_WALL_NODES_MOVING_MESH(NODE_COUNTER)
-          CONDITION=CMISSBoundaryConditionMovedWall
-          CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
-          IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
-            DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-              VALUE=BOUNDARY_CONDITIONS_MOVING_MESH(COMPONENT_NUMBER)
-              CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsMovingMesh,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
-               & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
-            ENDDO 
-          ENDIF
-        ENDDO
-      ENDIF
-      !Finish the creation of the equations set boundary conditions
-      CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetMovingMesh,Err)
-    ENDIF
-  ELSE
-    !Set up the boundary conditions as per the analytic solution
-    CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSetNavierStokes,Err)
-  ENDIF
-
-  !
-  !================================================================================================================================
-  !
-
   !PROBLEMS
 
   !Start the creation of a problem.
@@ -1243,6 +1143,108 @@ PROGRAM NAVIERSTOKESMASTEREXAMPLE
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsNavierStokes,EquationsSetNavierStokes,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !
+  !================================================================================================================================
+  !
+
+  !BOUNDARY CONDITIONS
+
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsNavierStokes,Err)
+  IF(.NOT.ANALYTIC_FLAG) THEN
+    !Start the creation of the equations set boundary conditions for Navier-Stokes
+    CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsNavierStokes,BoundaryConditionsNavierStokes,Err)
+    !Set fixed wall nodes
+    IF(FIXED_WALL_NODES_NAVIER_STOKES_FLAG) THEN
+      DO NODE_COUNTER=1,NUMBER_OF_FIXED_WALL_NODES_NAVIER_STOKES
+        NODE_NUMBER=FIXED_WALL_NODES_NAVIER_STOKES(NODE_COUNTER)
+        CONDITION=CMISSBoundaryConditionFixedWall
+        CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
+        IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
+          DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+            VALUE=0.0_CMISSDP
+            CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,DependentFieldNavierStokes, &
+              & CMISSFieldUVariableType,1,CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
+          ENDDO
+        ENDIF
+      ENDDO
+    ENDIF
+    !Set moved wall nodes
+    IF(MOVED_WALL_NODES_NAVIER_STOKES_FLAG) THEN
+      DO NODE_COUNTER=1,NUMBER_OF_MOVED_WALL_NODES_NAVIER_STOKES
+        NODE_NUMBER=MOVED_WALL_NODES_NAVIER_STOKES(NODE_COUNTER)
+        CONDITION=CMISSBoundaryConditionMovedWall
+        CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
+        IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
+          DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+            VALUE=0.0_CMISSDP
+            CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,DependentFieldNavierStokes, &
+              & CMISSFieldUVariableType,1,CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
+          ENDDO
+        ENDIF
+      ENDDO
+    ENDIF
+    !Set velocity boundary conditions
+    IF(INLET_WALL_NODES_NAVIER_STOKES_FLAG) THEN
+      DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_NAVIER_STOKES
+        NODE_NUMBER=INLET_WALL_NODES_NAVIER_STOKES(NODE_COUNTER)
+        CONDITION=CMISSBoundaryConditionInletWall
+        CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
+        IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
+          DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+            VALUE=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER)
+            CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,DependentFieldNavierStokes, &
+              & CMISSFieldUVariableType,1,CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
+          ENDDO
+        ENDIF
+      ENDDO
+    ENDIF
+    !Finish the creation of the equations set boundary conditions
+    CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsNavierStokes,Err)
+
+    IF(ALE_SOLVER_NAVIER_STOKES_FLAG) THEN
+      !Start the creation of the equations set boundary conditions for moving mesh
+      CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsMovingMesh,Err)
+      CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsMovingMesh,BoundaryConditionsMovingMesh,Err)
+      !Set fixed wall nodes
+      IF(FIXED_WALL_NODES_MOVING_MESH_FLAG) THEN
+        DO NODE_COUNTER=1,NUMBER_OF_FIXED_WALL_NODES_MOVING_MESH
+          NODE_NUMBER=FIXED_WALL_NODES_MOVING_MESH(NODE_COUNTER)
+          CONDITION=CMISSBoundaryConditionFixedWall
+          CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
+          IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
+            DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+              VALUE=0.0_CMISSDP
+              CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh,CMISSFieldUVariableType,1, &
+                & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
+            ENDDO
+          ENDIF
+        ENDDO
+      ENDIF
+      !Set moved wall nodes
+      IF(MOVED_WALL_NODES_MOVING_MESH_FLAG) THEN
+        DO NODE_COUNTER=1,NUMBER_OF_MOVED_WALL_NODES_MOVING_MESH
+          NODE_NUMBER=MOVED_WALL_NODES_MOVING_MESH(NODE_COUNTER)
+          CONDITION=CMISSBoundaryConditionMovedWall
+          CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
+          IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
+            DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+              VALUE=BOUNDARY_CONDITIONS_MOVING_MESH(COMPONENT_NUMBER)
+              CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh,CMISSFieldUVariableType,1, &
+                & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
+            ENDDO
+          ENDIF
+        ENDDO
+      ENDIF
+      !Finish the creation of the equations set boundary conditions
+      CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsMovingMesh,Err)
+    ENDIF
+  ELSE
+    !Set up the boundary conditions as per the analytic solution
+    CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsNavierStokes,BoundaryConditionsNavierStokes,Err)
+    CALL CMISSProblemSolverEquationsBoundaryConditionsAnalytic(SolverEquationsNavierStokes,Err)
+    CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsNavierStokes,Err)
+  ENDIF
 
   !
   !================================================================================================================================

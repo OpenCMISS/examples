@@ -419,29 +419,6 @@ PROGRAM MONODOMAINEXAMPLE
   !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
 
-  !Start the creation of the equations set boundary conditions
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-  !Set the first node to 0.0 and the last node to 1.0
-  FirstNodeNumber=1
-  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)
-  ELSE
-    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
-  ENDIF
-  CALL CMISSDecompositionNodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
-  CALL CMISSDecompositionNodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
-  IF(FirstNodeDomain==ComputationalNodeNumber) THEN
-    !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,FirstNodeNumber,1, &
-    !  & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-  ENDIF
-  IF(LastNodeDomain==ComputationalNodeNumber) THEN
-    !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,LastNodeNumber,1, &
-    !  & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
-  ENDIF
-  !Finish the creation of the equations set boundary conditions
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
-
   CALL CMISSCellMLFieldComponentGet(CellML,n98ModelIndex,CMISSCellMLParametersFieldType,"membrane/IStim",stimcomponent,Err)
   !Set the Stimulus at half the bottom nodes
   DO node_idx=1,NUMBER_OF_ELEMENTS/2
@@ -555,6 +532,29 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !Start the creation of the equations set boundary conditions
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+  !Set the first node to 0.0 and the last node to 1.0
+  FirstNodeNumber=1
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)
+  ELSE
+    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
+  ENDIF
+  CALL CMISSDecompositionNodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
+  CALL CMISSDecompositionNodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
+  IF(FirstNodeDomain==ComputationalNodeNumber) THEN
+    !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,FirstNodeNumber,1, &
+    !  & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+  ENDIF
+  IF(LastNodeDomain==ComputationalNodeNumber) THEN
+    !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,LastNodeNumber,1, &
+    !  & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
+  ENDIF
+  !Finish the creation of the equations set boundary conditions
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve the problem for the first STIM_STOP
   !CALL CMISSProblemSolve(Problem,Err)

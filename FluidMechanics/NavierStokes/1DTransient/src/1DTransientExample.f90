@@ -660,63 +660,6 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetNavierStokes,Err)
 
-  !
-  !================================================================================================================================
-  !
-
-  !BOUNDARY CONDITIONS
-
-  !Start the creation of the equations set boundary conditions for Navier-Stokes
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsNavierStokes,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetNavierStokes,BoundaryConditionsNavierStokes,Err)
-
-  !Set velocity boundary conditions
-  IF(INLET_WALL_NODES_NAVIER_STOKES_FLAG) THEN
-    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_NAVIER_STOKES
-      NODE_NUMBER=INLET_WALL_NODES_NAVIER_STOKES(NODE_COUNTER)
-      CONDITION=CMISSBoundaryConditionInletWall
-      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
-      IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
-        DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-          VALUE=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER)
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, &
-          & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
-        ENDDO
-      ENDIF
-    ENDDO
-  ENDIF
-
-  !Set area boundary conditions
-  IF(OUTLET_WALL_NODES_NAVIER_STOKES_FLAG) THEN
-    DO NODE_COUNTER=1,NUMBER_OF_OUTLET_WALL_NODES_NAVIER_STOKES
-      NODE_NUMBER=OUTLET_WALL_NODES_NAVIER_STOKES(NODE_COUNTER)
-      CONDITION=CMISSBoundaryConditionFixed
-      DO COMPONENT_NUMBER=2,NUMBER_OF_DIMENSIONS+1
-        VALUE=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER)
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, &
-          & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
-      ENDDO
-    ENDDO
-  ENDIF
-
-  !Set pressure boundary conditions
-!  IF(INLET_WALL_NODES_NAVIER_STOKES_FLAG) THEN
-!    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_NAVIER_STOKES
-!      NODE_NUMBER=INLET_WALL_NODES_NAVIER_STOKES(NODE_COUNTER)
-!      CONDITION=CMISSBoundaryConditionInletWall
-!      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
-!      IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
-!        DO COMPONENT_NUMBER=3,NUMBER_OF_DIMENSIONS+2
-!          VALUE=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER)
-!          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, &
-!          & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
-!        ENDDO
-!      ENDIF
-!    ENDDO
-!  ENDIF
-  !Finish the creation of the equations set boundary conditions
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetNavierStokes,Err)
-
 
   !
   !================================================================================================================================
@@ -816,6 +759,65 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsNavierStokes,EquationsSetNavierStokes,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !
+  !================================================================================================================================
+  !
+
+  !BOUNDARY CONDITIONS
+
+  !Start the creation of the equations set boundary conditions for Navier-Stokes
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsNavierStokes,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsNavierStokes,BoundaryConditionsNavierStokes,Err)
+
+  !Set velocity boundary conditions
+  IF(INLET_WALL_NODES_NAVIER_STOKES_FLAG) THEN
+    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_NAVIER_STOKES
+      NODE_NUMBER=INLET_WALL_NODES_NAVIER_STOKES(NODE_COUNTER)
+      CONDITION=CMISSBoundaryConditionInletWall
+      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
+      IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
+        DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+          VALUE=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER)
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,DependentFieldNavierStokes,CMISSFieldUVariableType,1, &
+            & CMISSNoGlobalDerivative, &
+          & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
+        ENDDO
+      ENDIF
+    ENDDO
+  ENDIF
+
+  !Set area boundary conditions
+  IF(OUTLET_WALL_NODES_NAVIER_STOKES_FLAG) THEN
+    DO NODE_COUNTER=1,NUMBER_OF_OUTLET_WALL_NODES_NAVIER_STOKES
+      NODE_NUMBER=OUTLET_WALL_NODES_NAVIER_STOKES(NODE_COUNTER)
+      CONDITION=CMISSBoundaryConditionFixed
+      DO COMPONENT_NUMBER=2,NUMBER_OF_DIMENSIONS+1
+        VALUE=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,DependentFieldNavierStokes,CMISSFieldUVariableType,1, &
+          & CMISSNoGlobalDerivative, &
+          & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
+      ENDDO
+    ENDDO
+  ENDIF
+
+  !Set pressure boundary conditions
+!  IF(INLET_WALL_NODES_NAVIER_STOKES_FLAG) THEN
+!    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_NAVIER_STOKES
+!      NODE_NUMBER=INLET_WALL_NODES_NAVIER_STOKES(NODE_COUNTER)
+!      CONDITION=CMISSBoundaryConditionInletWall
+!      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
+!      IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
+!        DO COMPONENT_NUMBER=3,NUMBER_OF_DIMENSIONS+2
+!          VALUE=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER)
+!          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,DependentFieldNavierStokes,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, &
+!          & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
+!        ENDDO
+!      ENDIF
+!    ENDDO
+!  ENDIF
+  !Finish the creation of the equations set boundary conditions
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsNavierStokes,Err)
 
   !
   !================================================================================================================================

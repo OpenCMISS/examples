@@ -331,31 +331,6 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
 
-  !Set up the boundary conditions
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularLeftSurface,LeftSurfaceNodes,LeftNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularRightSurface,RightSurfaceNodes,RightNormalXi,Err)
-  !Set the fixed boundary conditions on opposide sides
-  DO node_idx=1,SIZE(LeftSurfaceNodes,1)
-    NodeNumber=LeftSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,1, &
-        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-    ENDIF
-  ENDDO
-  DO node_idx=1,SIZE(RightSurfaceNodes,1)
-    NodeNumber=RightSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,1, &
-        & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
-    ENDIF
-  ENDDO
-  !Finish the creation of the equations set boundary conditions
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
-
   !Start the creation of a problem.
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
@@ -409,6 +384,31 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !Set up the boundary conditions
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularLeftSurface,LeftSurfaceNodes,LeftNormalXi,Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularRightSurface,RightSurfaceNodes,RightNormalXi,Err)
+  !Set the fixed boundary conditions on opposide sides
+  DO node_idx=1,SIZE(LeftSurfaceNodes,1)
+    NodeNumber=LeftSurfaceNodes(node_idx)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber,1, &
+        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+    ENDIF
+  ENDDO
+  DO node_idx=1,SIZE(RightSurfaceNodes,1)
+    NodeNumber=RightSurfaceNodes(node_idx)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber,1, &
+        & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
+    ENDIF
+  ENDDO
+  !Finish the creation of the equations set boundary conditions
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve the problem
   CALL CMISSProblemSolve(Problem,Err)

@@ -638,67 +638,6 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !================================================================================================================================
   !
 
-  !BOUNDARY CONDITIONS
-
-  !Prescribe boundary conditions (absolute nodal parameters)
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsSolid,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetSolid,BoundaryConditionsSolid,Err)
-
-  !--- BCs on displacement only
-  CONDITION = CMISSBoundaryConditionDirichlet
-
-  DO NODE_NUMBER=1_CMISSIntg,NUMBER_OF_NODES_GEOMETRY  !What if different number of nodes geometry and velocity ?
-    COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
-    COORD_Y = CM%N(NODE_NUMBER,2_CMISSIntg)
-    COORD_Z = CM%N(NODE_NUMBER,3_CMISSIntg)
-
-    IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
-      !x-displacement
-      VALUE = 0.0_CMISSDP
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1, &
-        & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-    END IF
-    !
-    IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
-      !x-displacement
-      VALUE = 1.05_CMISSDP  ! * WIDTH
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1, &
-        & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-    END IF
-    !
-    IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
-      !y-displacement
-      VALUE = 0.0_CMISSDP
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1, &
-        & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-    END IF
-    !
-    IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
-      !y-displacement
-      ! do nothing ???
-    END IF
-    !
-    IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) ) THEN
-      !z-displacement
-      VALUE = 0.0_CMISSDP
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1,1, &
-        & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-    END IF
-    !
-    IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) THEN
-      !z-displacement
-      ! do nothing ???
-    END IF
-  END DO
-
-  !Finish the creation of the equations set boundary conditions
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetSolid,Err)
-
-
-  !
-  !================================================================================================================================
-  !
-
   !PROBLEMS
 
   !Start the creation of a problem.
@@ -808,6 +747,67 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+
+  !
+  !================================================================================================================================
+  !
+
+  !BOUNDARY CONDITIONS
+
+  !Prescribe boundary conditions (absolute nodal parameters)
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsSolid,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsSolid,BoundaryConditionsSolid,Err)
+
+  !--- BCs on displacement only
+  CONDITION = CMISSBoundaryConditionDirichlet
+
+  DO NODE_NUMBER=1_CMISSIntg,NUMBER_OF_NODES_GEOMETRY  !What if different number of nodes geometry and velocity ?
+    COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
+    COORD_Y = CM%N(NODE_NUMBER,2_CMISSIntg)
+    COORD_Z = CM%N(NODE_NUMBER,3_CMISSIntg)
+
+    IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
+      !x-displacement
+      VALUE = 0.0_CMISSDP
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentFieldSolid,CMISSFieldUVariableType,1,1, &
+        & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+    END IF
+    !
+    IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
+      !x-displacement
+      VALUE = 1.05_CMISSDP  ! * WIDTH
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentFieldSolid,CMISSFieldUVariableType,1,1, &
+        & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+    END IF
+    !
+    IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
+      !y-displacement
+      VALUE = 0.0_CMISSDP
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentFieldSolid,CMISSFieldUVariableType,1,1, &
+        & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+    END IF
+    !
+    IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
+      !y-displacement
+      ! do nothing ???
+    END IF
+    !
+    IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) ) THEN
+      !z-displacement
+      VALUE = 0.0_CMISSDP
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentFieldSolid,CMISSFieldUVariableType,1,1, &
+        & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+    END IF
+    !
+    IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) THEN
+      !z-displacement
+      ! do nothing ???
+    END IF
+  END DO
+
+  !Finish the creation of the equations set boundary conditions
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsSolid,Err)
 
 
   !

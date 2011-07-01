@@ -118,7 +118,7 @@ PROGRAM POROELASTICITYEXAMPLE
   !CMISS variables
 
   TYPE(CMISSBasisType) :: GeometricBasis,PressureBasis
-  TYPE(CMISSBoundaryConditionsType) :: SolidBoundaryConditions,FluidBoundaryConditions
+  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
   TYPE(CMISSCoordinateSystemType) :: CoordinateSystem,WorldCoordinateSystem
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: SolidEquations,FluidEquations
@@ -389,113 +389,6 @@ PROGRAM POROELASTICITYEXAMPLE
     & 3,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,Err)
   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldVVariableType,CMISSFieldValuesSetType,1,InitialPressure,Err)
 
-  !Prescribe boundary conditions (absolute nodal parameters)
-  CALL CMISSBoundaryConditionsTypeInitialise(SolidBoundaryConditions,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(SolidEquationsSet,SolidBoundaryConditions,Err)
-
-  CALL CMISSBoundaryConditionsTypeInitialise(FluidBoundaryConditions,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(FluidEquationsSet,FluidBoundaryConditions,Err)
-
-  !Get geometric nodes
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,GeometricMeshComponent, &
-      & CMISSGeneratedMeshRegularBottomSurface,BottomSurfaceNodes,BottomNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,GeometricMeshComponent, &
-      & CMISSGeneratedMeshRegularTopSurface,TopSurfaceNodes,TopNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,GeometricMeshComponent, &
-      & CMISSGeneratedMeshRegularLeftSurface,LeftSurfaceNodes,LeftNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,GeometricMeshComponent, &
-      & CMISSGeneratedMeshRegularRightSurface,RightSurfaceNodes,RightNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,GeometricMeshComponent, &
-      & CMISSGeneratedMeshRegularFrontSurface,FrontSurfaceNodes,FrontNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,GeometricMeshComponent, &
-      & CMISSGeneratedMeshRegularBackSurface,BackSurfaceNodes,BackNormalXi,Err)
-  !Get pressure nodes
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,PressureMeshComponent, &
-      & CMISSGeneratedMeshRegularBottomSurface,PressureBottomSurfaceNodes,BottomNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,PressureMeshComponent, &
-      & CMISSGeneratedMeshRegularTopSurface,PressureTopSurfaceNodes,TopNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,PressureMeshComponent, &
-      & CMISSGeneratedMeshRegularLeftSurface,PressureLeftSurfaceNodes,LeftNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,PressureMeshComponent, &
-      & CMISSGeneratedMeshRegularRightSurface,PressureRightSurfaceNodes,RightNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,PressureMeshComponent, &
-      & CMISSGeneratedMeshRegularFrontSurface,PressureFrontSurfaceNodes,FrontNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,PressureMeshComponent, &
-      & CMISSGeneratedMeshRegularBackSurface,PressureBackSurfaceNodes,BackNormalXi,Err)
-
-  !Set boundary conditions on geometry
-  !Set x=0 nodes to no x displacment in x
-  DO node_idx=1,SIZE(LeftSurfaceNodes,1)
-    NodeNumber=LeftSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(SolidBoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,1, &
-        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-      CALL CMISSBoundaryConditionsSetNode(FluidBoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,1, &
-        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-    ENDIF
-  ENDDO
-  !Set y=0 nodes to no y displacement
-  DO node_idx=1,SIZE(FrontSurfaceNodes,1)
-    NodeNumber=FrontSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(SolidBoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,2, &
-        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-      CALL CMISSBoundaryConditionsSetNode(FluidBoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,2, &
-        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-    ENDIF
-  ENDDO
-  !Set z=0 nodes to no z displacement
-  DO node_idx=1,SIZE(BottomSurfaceNodes,1)
-    NodeNumber=BottomSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(SolidBoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,3, &
-        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-      CALL CMISSBoundaryConditionsSetNode(FluidBoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,3, &
-        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-    ENDIF
-  ENDDO
-  !Fix right surface nodes
-  IF (FixRightSide) THEN
-    DO node_idx=1,SIZE(RightSurfaceNodes,1)
-      NodeNumber=RightSurfaceNodes(node_idx)
-      CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
-        CALL CMISSBoundaryConditionsSetNode(SolidBoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,1, &
-          & CMISSBoundaryConditionFixedIncremented,FixedWidth,Err)
-        CALL CMISSBoundaryConditionsSetNode(FluidBoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,1, &
-          & CMISSBoundaryConditionFixedIncremented,FixedWidth,Err)
-      ENDIF
-    ENDDO
-  ENDIF
-
-  !Set boundary conditions on fluid pressure
-  DO node_idx=1,SIZE(PressureLeftSurfaceNodes,1)
-    NodeNumber=PressureLeftSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,PressureMeshComponent,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(FluidBoundaryConditions,CMISSFieldVVariableType,1,1,NodeNumber,1, &
-        & CMISSBoundaryConditionFixedIncremented,FluidPressureBC,Err)
-      CALL CMISSBoundaryConditionsSetNode(SolidBoundaryConditions,CMISSFieldVVariableType,1,1,NodeNumber,1, &
-        & CMISSBoundaryConditionFixedIncremented,FluidPressureBC,Err)
-    ENDIF
-  ENDDO
-  DO node_idx=1,SIZE(PressureRightSurfaceNodes,1)
-    NodeNumber=PressureRightSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,PressureMeshComponent,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(FluidBoundaryConditions,CMISSFieldVVariableType,1,1,NodeNumber,1, &
-        & CMISSBoundaryConditionFixed,FluidPressureBC2,Err)
-      CALL CMISSBoundaryConditionsSetNode(SolidBoundaryConditions,CMISSFieldVVariableType,1,1,NodeNumber,1, &
-        & CMISSBoundaryConditionFixed,FluidPressureBC2,Err)
-    ENDIF
-  ENDDO
-
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(SolidEquationsSet,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(FluidEquationsSet,Err)
-
   !Define the problem
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
@@ -537,6 +430,97 @@ PROGRAM POROELASTICITYEXAMPLE
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,SolidEquationsSet,EquationsSetIndex,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,FluidEquationsSet,EquationsSetIndex,Err)
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !Set the boundary conditions for the solver equations
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+
+  !Get geometric nodes
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,GeometricMeshComponent, &
+      & CMISSGeneratedMeshRegularBottomSurface,BottomSurfaceNodes,BottomNormalXi,Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,GeometricMeshComponent, &
+      & CMISSGeneratedMeshRegularTopSurface,TopSurfaceNodes,TopNormalXi,Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,GeometricMeshComponent, &
+      & CMISSGeneratedMeshRegularLeftSurface,LeftSurfaceNodes,LeftNormalXi,Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,GeometricMeshComponent, &
+      & CMISSGeneratedMeshRegularRightSurface,RightSurfaceNodes,RightNormalXi,Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,GeometricMeshComponent, &
+      & CMISSGeneratedMeshRegularFrontSurface,FrontSurfaceNodes,FrontNormalXi,Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,GeometricMeshComponent, &
+      & CMISSGeneratedMeshRegularBackSurface,BackSurfaceNodes,BackNormalXi,Err)
+  !Get pressure nodes
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,PressureMeshComponent, &
+      & CMISSGeneratedMeshRegularBottomSurface,PressureBottomSurfaceNodes,BottomNormalXi,Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,PressureMeshComponent, &
+      & CMISSGeneratedMeshRegularTopSurface,PressureTopSurfaceNodes,TopNormalXi,Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,PressureMeshComponent, &
+      & CMISSGeneratedMeshRegularLeftSurface,PressureLeftSurfaceNodes,LeftNormalXi,Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,PressureMeshComponent, &
+      & CMISSGeneratedMeshRegularRightSurface,PressureRightSurfaceNodes,RightNormalXi,Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,PressureMeshComponent, &
+      & CMISSGeneratedMeshRegularFrontSurface,PressureFrontSurfaceNodes,FrontNormalXi,Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,PressureMeshComponent, &
+      & CMISSGeneratedMeshRegularBackSurface,PressureBackSurfaceNodes,BackNormalXi,Err)
+
+  !Set boundary conditions on geometry
+  !Set x=0 nodes to no x displacment in x
+  DO node_idx=1,SIZE(LeftSurfaceNodes,1)
+    NodeNumber=LeftSurfaceNodes(node_idx)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber,1, &
+        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+    ENDIF
+  ENDDO
+  !Set y=0 nodes to no y displacement
+  DO node_idx=1,SIZE(FrontSurfaceNodes,1)
+    NodeNumber=FrontSurfaceNodes(node_idx)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber,2, &
+        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+    ENDIF
+  ENDDO
+  !Set z=0 nodes to no z displacement
+  DO node_idx=1,SIZE(BottomSurfaceNodes,1)
+    NodeNumber=BottomSurfaceNodes(node_idx)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber,3, &
+        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+    ENDIF
+  ENDDO
+  !Fix right surface nodes
+  IF (FixRightSide) THEN
+    DO node_idx=1,SIZE(RightSurfaceNodes,1)
+      NodeNumber=RightSurfaceNodes(node_idx)
+      CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
+      IF(NodeDomain==ComputationalNodeNumber) THEN
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber,1, &
+          & CMISSBoundaryConditionFixedIncremented,FixedWidth,Err)
+      ENDIF
+    ENDDO
+  ENDIF
+
+  !Set boundary conditions on fluid pressure
+  DO node_idx=1,SIZE(PressureLeftSurfaceNodes,1)
+    NodeNumber=PressureLeftSurfaceNodes(node_idx)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,PressureMeshComponent,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldVVariableType,1,1,NodeNumber,1, &
+        & CMISSBoundaryConditionFixedIncremented,FluidPressureBC,Err)
+    ENDIF
+  ENDDO
+  DO node_idx=1,SIZE(PressureRightSurfaceNodes,1)
+    NodeNumber=PressureRightSurfaceNodes(node_idx)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,PressureMeshComponent,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldVVariableType,1,1,NodeNumber,1, &
+        & CMISSBoundaryConditionFixed,FluidPressureBC2,Err)
+    ENDIF
+  ENDDO
+
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve problem
   CALL CMISSProblemSolve(Problem,Err)

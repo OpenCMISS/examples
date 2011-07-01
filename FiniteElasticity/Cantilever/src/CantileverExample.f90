@@ -297,34 +297,6 @@ PROGRAM CANTILEVEREXAMPLE
     & 3,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,Err)
   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,-14.0_CMISSDP,Err)
 
-  !Prescribe boundary conditions (absolute nodal parameters)
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularLeftSurface,LeftSurfaceNodes,LeftNormalXi,Err)
-
-  !Fix x=0 nodes
-  DO node_idx=1,SIZE(LeftSurfaceNodes,1)
-    NodeNumber=LeftSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      DO component_idx=1,3
-        CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NodeNumber, &
-          & component_idx,Value,Err)
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NodeNumber,component_idx, &
-          & CMISSBoundaryConditionFixed,Value,Err)
-        DO deriv_idx=3,8
-          CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,deriv_idx, &
-              & NodeNumber,component_idx,Value,Err)
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,deriv_idx,NodeNumber,component_idx, &
-            & CMISSBoundaryConditionFixed,Value,Err)
-        ENDDO
-      ENDDO
-    ENDIF
-  ENDDO
-
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
-
   !Define the problem
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
@@ -359,6 +331,36 @@ PROGRAM CANTILEVEREXAMPLE
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !Prescribe boundary conditions (absolute nodal parameters)
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularLeftSurface,LeftSurfaceNodes,LeftNormalXi,Err)
+
+  !Fix x=0 nodes
+  DO node_idx=1,SIZE(LeftSurfaceNodes,1)
+    NodeNumber=LeftSurfaceNodes(node_idx)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      DO component_idx=1,3
+        CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NodeNumber, &
+          & component_idx,Value,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber, &
+          & component_idx, &
+          & CMISSBoundaryConditionFixed,Value,Err)
+        DO deriv_idx=3,8
+          CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,deriv_idx, &
+              & NodeNumber,component_idx,Value,Err)
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,deriv_idx,NodeNumber, &
+            & component_idx, &
+            & CMISSBoundaryConditionFixed,Value,Err)
+        ENDDO
+      ENDDO
+    ENDIF
+  ENDDO
+
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve problem
   CALL CMISSProblemSolve(Problem,Err)

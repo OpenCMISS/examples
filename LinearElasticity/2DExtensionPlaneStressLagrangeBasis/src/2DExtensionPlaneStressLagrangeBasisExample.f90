@@ -322,26 +322,6 @@ CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,GeometricField,CM
                                             !CMISSEquationsMatrixOutput !<All below and equation matrices output.
                                             !CMISSEquationsElementMatrixOutput !<All below and Element matrices output.
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
-
-  !Prescribe boundary conditions
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-
-  !Fix nodes 1,3 at x=0
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,1,1,CMISSBoundaryConditionFixed,ZERO,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,3,1,CMISSBoundaryConditionFixed,ZERO,Err)
-
-  !Fix nodes 1,2 at y=0
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,1,2,CMISSBoundaryConditionFixed,ZERO,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,2,2,CMISSBoundaryConditionFixed,ZERO,Err)
-
-  !Apply force at nodes 2,4 at x=l
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,2,1,CMISSBoundaryConditionFixed, &
-    & -800.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,4,1,CMISSBoundaryConditionFixed, &
-    & -800.0_CMISSDP,Err)
-
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
   
   !Define the problem
   CALL CMISSProblemTypeInitialise(Problem,Err)
@@ -393,6 +373,32 @@ CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,GeometricField,CM
                                                           !CMISSSolverEquationsFullMatrices !<Use fully populated solver matrices.
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !Prescribe boundary conditions
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+
+  !Fix nodes 1,3 at x=0
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,1,1, &
+    & CMISSBoundaryConditionFixed,ZERO,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,3,1, &
+    & CMISSBoundaryConditionFixed,ZERO,Err)
+
+  !Fix nodes 1,2 at y=0
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,1,2, &
+    & CMISSBoundaryConditionFixed,ZERO,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,2,2, &
+    & CMISSBoundaryConditionFixed,ZERO,Err)
+
+  !Apply force at nodes 2,4 at x=l
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldDelUDelNVariableType,1,1,2,1, &
+    & CMISSBoundaryConditionFixed, &
+    & -800.0_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldDelUDelNVariableType,1,1,4,1, &
+    & CMISSBoundaryConditionFixed, &
+    & -800.0_CMISSDP,Err)
+
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !=SOLVE Problem==================================================================================================================
   !Solve the Problem
