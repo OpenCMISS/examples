@@ -520,42 +520,6 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   !================================================================================================================================
   !
 
- !BOUNDARY CONDITIONS
-
-  !Start the creation of the equations set boundary conditions for Poisson
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-  !Set fixed wall nodes
-  IF(FIXED_WALL_NODES_ADVECTION_DIFFUSION_FLAG) THEN
-    DO NODE_COUNTER=1,NUMBER_OF_FIXED_WALL_NODES_ADVECTION_DIFFUSION
-      NODE_NUMBER=FIXED_WALL_NODES_ADVECTION_DIFFUSION(NODE_COUNTER)
-      CONDITION=CMISSBoundaryConditionFixed
-!       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-        VALUE=0.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONCENTRATION,CONDITION,VALUE,Err)
-!       ENDDO
-    ENDDO
-  ENDIF
-  !Set velocity boundary conditions
-  IF(INLET_WALL_NODES_ADVECTION_DIFFUSION_FLAG) THEN
-    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_ADVECTION_DIFFUSION
-      NODE_NUMBER=INLET_WALL_NODES_ADVECTION_DIFFUSION(NODE_COUNTER)
-      CONDITION=CMISSBoundaryConditionFixed
-!       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-        VALUE=0.1_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-          & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONCENTRATION,CONDITION,VALUE,Err)
-!       ENDDO
-    ENDDO
-  ENDIF
-  !Finish the creation of the equations set boundary conditions
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)  
-
-  !
-  !================================================================================================================================
-  !
-
   !Create the problem
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
@@ -623,6 +587,42 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,C
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !
+  !================================================================================================================================
+  !
+
+ !BOUNDARY CONDITIONS
+
+  !Start the creation of the equations set boundary conditions for Poisson
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+  !Set fixed wall nodes
+  IF(FIXED_WALL_NODES_ADVECTION_DIFFUSION_FLAG) THEN
+    DO NODE_COUNTER=1,NUMBER_OF_FIXED_WALL_NODES_ADVECTION_DIFFUSION
+      NODE_NUMBER=FIXED_WALL_NODES_ADVECTION_DIFFUSION(NODE_COUNTER)
+      CONDITION=CMISSBoundaryConditionFixed
+!       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+        VALUE=0.0_CMISSDP
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
+          & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONCENTRATION,CONDITION,VALUE,Err)
+!       ENDDO
+    ENDDO
+  ENDIF
+  !Set velocity boundary conditions
+  IF(INLET_WALL_NODES_ADVECTION_DIFFUSION_FLAG) THEN
+    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_ADVECTION_DIFFUSION
+      NODE_NUMBER=INLET_WALL_NODES_ADVECTION_DIFFUSION(NODE_COUNTER)
+      CONDITION=CMISSBoundaryConditionFixed
+!       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+        VALUE=0.1_CMISSDP
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
+          & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONCENTRATION,CONDITION,VALUE,Err)
+!       ENDDO
+    ENDDO
+  ENDIF
+  !Finish the creation of the equations set boundary conditions
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
  !
   !================================================================================================================================
   !

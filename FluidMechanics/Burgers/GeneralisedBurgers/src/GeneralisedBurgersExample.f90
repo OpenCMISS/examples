@@ -104,6 +104,7 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   TYPE(CMISSRegionType) :: Region,WorldRegion
   TYPE(CMISSSolverType) :: DynamicSolver,NonlinearSolver,LinearSolver
   TYPE(CMISSSolverEquationsType) :: SolverEquations
+  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
 
 #ifdef WIN32
   !Quickwin type
@@ -287,14 +288,6 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
 
   !-----------------------------------------------------------------------------------------------------------
-  !BOUNDARY CONDITIONS
-  !-----------------------------------------------------------------------------------------------------------
-  !Set up the boundary conditions
-
-  !Create the equations set boundary conditions
-  CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
-
-  !-----------------------------------------------------------------------------------------------------------
   !PROBLEM
   !-----------------------------------------------------------------------------------------------------------
   !Create the problem
@@ -379,6 +372,17 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !-----------------------------------------------------------------------------------------------------------
+  !BOUNDARY CONDITIONS
+  !-----------------------------------------------------------------------------------------------------------
+  !Set up the boundary conditions
+
+  !Create the equations set boundary conditions
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+  CALL CMISSProblemSolverEquationsBoundaryConditionsAnalytic(SolverEquations,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
   !-----------------------------------------------------------------------------------------------------------
   !SOLVE
   !-----------------------------------------------------------------------------------------------------------

@@ -253,7 +253,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: MaterialsFieldDiffusion
   TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: SourceFieldDiffusion
   TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: AnalyticFieldDiffusion
-  TYPE(CMISSBoundaryConditionsType), ALLOCATABLE, DIMENSION(:) :: BoundaryConditionsDiffusion
+  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDiffusion
   TYPE(CMISSEquationsSetType), ALLOCATABLE, DIMENSION(:) :: EquationsSetDiffusion
   TYPE(CMISSEquationsType), ALLOCATABLE, DIMENSION(:) :: EquationsDiffusion
   TYPE(CMISSFieldType), ALLOCATABLE, DIMENSION(:) :: EquationsSetFieldDiffusion
@@ -476,7 +476,6 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   ALLOCATE (EquationsSetFieldDiffusion(Ncompartments))
   ALLOCATE (MaterialsFieldDiffusion(Ncompartments))
   ALLOCATE (SourceFieldDiffusion(Ncompartments))
-  ALLOCATE (BoundaryConditionsDiffusion(Ncompartments))
   ALLOCATE (EquationsDiffusion(Ncompartments))
   ALLOCATE (AnalyticFieldDiffusion(Ncompartments))
 
@@ -967,93 +966,6 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   !
   !================================================================================================================================
   !
-  !BOUNDARY CONDITIONS
-
-
-  DO icompartment=1,Ncompartments
-!     CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDiffusion(icompartment),Err)
-!     CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDiffusion(icompartment),&
-!          &  BoundaryConditionsDiffusion(icompartment),Err)
-! !     IF(INLET_WALL_NODES_DIFFUSION_FLAG(icompartment)) THEN
-! !       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION(icompartment)
-! !         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION(icompartment,NODE_COUNTER)
-! !         CONDITION=CMISSBoundaryConditionFixed
-! !           VALUE=0.2_CMISSDP
-! !           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(icompartment),CMISSFieldUVariableType,CMISSNoGlobalDerivative, & 
-! !             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
-! !       ENDDO
-! !     ENDIF
-!    IF(icompartment==1)THEN
-!     IF(INLET_WALL_NODES_DIFFUSION_ONE_FLAG) THEN
-!       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE
-!         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_ONE(NODE_COUNTER)
-!         CONDITION=CMISSBoundaryConditionFixed
-!           VALUE=1.0_CMISSDP
-!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(1),CMISSFieldUVariableType, &
-!             & CMISSNoGlobalDerivative, & 
-!             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
-!       ENDDO
-!     ENDIF
-!    ENDIF
-! 
-!    IF(icompartment==2)THEN
-!     IF(INLET_WALL_NODES_DIFFUSION_TWO_FLAG) THEN
-!       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO
-!         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_TWO(NODE_COUNTER)
-!         CONDITION=CMISSBoundaryConditionFixed
-!           VALUE=0.0_CMISSDP
-!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(2),CMISSFieldDelVDelNVariableType, &
-!             & CMISSNoGlobalDerivative, & 
-!             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
-!       ENDDO
-!     ENDIF
-!    ENDIF
-! 
-! !    IF(icompartment==3)THEN
-! !     IF(INLET_WALL_NODES_DIFFUSION_THREE_FLAG) THEN
-! !       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE
-! !         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_THREE(NODE_COUNTER)
-! !         CONDITION=CMISSBoundaryConditionFixed
-! !           VALUE=0.0_CMISSDP
-! !           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(3),CMISSFieldU1VariableType,CMISSNoGlobalDerivative, & 
-! !             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
-! !       ENDDO
-! !     ENDIF
-! !    ENDIF
-! 
-!    IF(icompartment==4)THEN
-!     IF(INLET_WALL_NODES_DIFFUSION_THREE_FLAG) THEN
-!       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE
-!         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_THREE(NODE_COUNTER)
-!         CONDITION=CMISSBoundaryConditionFixed
-!           VALUE=0.0_CMISSDP
-!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(4),CMISSFieldU2VariableType,CMISSNoGlobalDerivative, & 
-!             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
-!       ENDDO
-!     ENDIF
-!    ENDIF
-! 
-!    IF(icompartment==5)THEN
-!     IF(INLET_WALL_NODES_DIFFUSION_THREE_FLAG) THEN
-!       DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE
-!         NODE_NUMBER=INLET_WALL_NODES_DIFFUSION_THREE(NODE_COUNTER)
-!         CONDITION=CMISSBoundaryConditionFixed
-!           VALUE=1.0_CMISSDP
-!           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDiffusion(5),CMISSFieldU3VariableType,CMISSNoGlobalDerivative, & 
-!             & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONC_ONE,CONDITION,VALUE,Err)
-!       ENDDO
-!     ENDIF
-!    ENDIF
-! 
-! 
-!     CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDiffusion(icompartment),Err)
-
-    CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSetDiffusion(icompartment),Err)
-
-  ENDDO
-  !
-  !================================================================================================================================
-  !
   !PROBLEMS
 
   !Start the creation of a problem.
@@ -1126,6 +1038,16 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !
+  !================================================================================================================================
+  !
+
+  !BOUNDARY CONDITIONS
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsDiffusion,BoundaryConditionsDiffusion,Err)
+  CALL CMISSProblemSolverEquationsBoundaryConditionsAnalytic(SolverEquationsDiffusion,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsDiffusion,Err)
+
   !
   !================================================================================================================================
   !

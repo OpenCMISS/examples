@@ -228,22 +228,6 @@ PROGRAM NUMBERLAPLACEEXAMPLE
   !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(RegionUserNumber,EquationsSetUserNumber,Err)
 
-  !Start the creation of the equations set boundary conditions
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(RegionUserNumber,EquationsSetUserNumber,Err)
-  !Set the first node to 0.0 and the last node to 1.0
-  FirstNodeNumber=1
-  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)
-  ELSE
-    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
-  ENDIF
-  CALL CMISSBoundaryConditionsSetNode(RegionUserNumber,EquationsSetUserNumber,CMISSFieldUVariableType,1,1,FirstNodeNumber,1, &
-    & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(RegionUserNumber,EquationsSetUserNumber,CMISSFieldUVariableType,1,1,LastNodeNumber,1, &
-    & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
-  !Finish the creation of the equations set boundary conditions
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(RegionUserNumber,EquationsSetUserNumber,Err)
-  
   !Start the creation of a problem.
   CALL CMISSProblemCreateStart(ProblemUserNumber,Err)
   !Set the problem to be a standard Laplace problem
@@ -277,6 +261,22 @@ PROGRAM NUMBERLAPLACEEXAMPLE
     & EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(ProblemUserNumber,Err)
+
+  !Start the creation of the equations set boundary conditions
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(ProblemUserNumber,CMISSControlLoopNode,1,Err)
+  !Set the first node to 0.0 and the last node to 1.0
+  FirstNodeNumber=1
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)
+  ELSE
+    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
+  ENDIF
+  CALL CMISSBoundaryConditionsSetNode(RegionUserNumber,ProblemUserNumber,CMISSControlLoopNode,1,DependentFieldUserNumber, &
+    & CMISSFieldUVariableType,1,1,FirstNodeNumber,1,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(RegionUserNumber,ProblemUserNumber,CMISSControlLoopNode,1,DependentFieldUserNumber, &
+    & CMISSFieldUVariableType,1,1,LastNodeNumber,1,CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
+  !Finish the creation of the equations set boundary conditions
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(ProblemUserNumber,CMISSControlLoopNode,1,Err)
 
   !Solve the problem
   CALL CMISSProblemSolve(ProblemUserNumber,Err)

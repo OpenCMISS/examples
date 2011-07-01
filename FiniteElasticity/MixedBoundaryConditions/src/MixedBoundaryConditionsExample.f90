@@ -276,49 +276,6 @@ CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSE
     & 3,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,Err)
   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,-8.0_CMISSDP,Err)
 
-  !Prescribe boundary conditions (absolute nodal parameters)
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,1,1,CMISSBoundaryConditionFixed, &
-    & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,3,1,CMISSBoundaryConditionFixed, &
-    & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,5,1,CMISSBoundaryConditionFixed, &
-    & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,7,1,CMISSBoundaryConditionFixed, &
-    & 0.0_CMISSDP,Err)
-
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,1,2,CMISSBoundaryConditionFixed, &
-    & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,2,2,CMISSBoundaryConditionFixed, &
-    & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,5,2,CMISSBoundaryConditionFixed, &
-    & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,6,2,CMISSBoundaryConditionFixed, &
-    & 0.0_CMISSDP,Err)
-
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,1,3,CMISSBoundaryConditionFixed, &
-    & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,2,3,CMISSBoundaryConditionFixed, &
-    & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,3,3,CMISSBoundaryConditionFixed, &
-    & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,4,3,CMISSBoundaryConditionFixed, &
-    & 0.0_CMISSDP,Err)
-  
-  !Prescribe boundary conditions (nodal forces)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,2,1,CMISSBoundaryConditionFixed, &
-      & 1.1_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,4,1,CMISSBoundaryConditionFixed, &
-      & 1.1_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,6,1,CMISSBoundaryConditionFixed, &
-      & 1.1_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,8,1,CMISSBoundaryConditionFixed, &
-      & 1.1_CMISSDP,Err)
-
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
-
   !Define the problem
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
@@ -349,6 +306,65 @@ CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSE
   CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !Prescribe boundary conditions (absolute nodal parameters)
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,1,1, &
+    & CMISSBoundaryConditionFixed, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,3,1, &
+    & CMISSBoundaryConditionFixed, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,5,1, &
+    & CMISSBoundaryConditionFixed, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,7,1, &
+    & CMISSBoundaryConditionFixed, &
+    & 0.0_CMISSDP,Err)
+
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,1,2, &
+    & CMISSBoundaryConditionFixed, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,2,2, &
+    & CMISSBoundaryConditionFixed, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,5,2, &
+    & CMISSBoundaryConditionFixed, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,6,2, &
+    & CMISSBoundaryConditionFixed, &
+    & 0.0_CMISSDP,Err)
+
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,1,3, &
+    & CMISSBoundaryConditionFixed, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,2,3, &
+    & CMISSBoundaryConditionFixed, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,3,3, &
+    & CMISSBoundaryConditionFixed, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,4,3, &
+    & CMISSBoundaryConditionFixed, &
+    & 0.0_CMISSDP,Err)
+
+  !Prescribe boundary conditions (nodal forces)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldDelUDelNVariableType,1,1,2,1, &
+    & CMISSBoundaryConditionFixed, &
+      & 1.1_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldDelUDelNVariableType,1,1,4,1, &
+    & CMISSBoundaryConditionFixed, &
+      & 1.1_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldDelUDelNVariableType,1,1,6,1, &
+    & CMISSBoundaryConditionFixed, &
+      & 1.1_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldDelUDelNVariableType,1,1,8,1, &
+    & CMISSBoundaryConditionFixed, &
+      & 1.1_CMISSDP,Err)
+
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve problem
   CALL CMISSProblemSolve(Problem,Err)

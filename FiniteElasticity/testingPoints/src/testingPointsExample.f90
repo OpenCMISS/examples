@@ -450,84 +450,6 @@ PROGRAM TESTINGPOINTSEXAMPLE
     & 3,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,Err)
   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,-14.0_CMISSDP,Err)
 
-  !Set the bc using the analytic solution routine
-  IF(TRIM(ARG_LEVEL)=="2".OR.TRIM(ARG_LEVEL)=="3") THEN
-    CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
-  ELSE
-    !Set BC manually
-    !Prescribe boundary conditions (absolute nodal parameters)
-    CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-    CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-
-    !Get surfaces - will fix two nodes on bottom face, pressure conditions inside
-    CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshCylinderTopSurfaceType,TopSurfaceNodes,TopNormalXi,Err)
-    CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshCylinderBottomSurfaceType,BottomSurfaceNodes, &
-      & BottomNormalXi,Err)
-    CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshCylinderInnerSurfaceType,InnerSurfaceNodes,InnerNormalXi,Err)
-    CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshCylinderOuterSurfaceType,OuterSurfaceNodes,OuterNormalXi,Err)
-
-    !Set all inner surface nodes to inner pressure
-    DO NN=1,SIZE(InnerSurfaceNodes,1)
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,InnerSurfaceNodes(NN), &
-        & abs(InnerNormalXi),CMISSBoundaryConditionPressureIncremented,INNER_PRESSURE,Err)   ! INNER_PRESSURE
-      IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING INNER PRESSURE TO NODE", InnerSurfaceNodes(NN)
-    ENDDO
-
-    !Set all outer surface nodes to outer pressure
-    DO NN=1,SIZE(OuterSurfaceNodes,1)
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,OuterSurfaceNodes(NN), &
-        & abs(OuterNormalXi),CMISSBoundaryConditionPressureIncremented,OUTER_PRESSURE,Err)
-      IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING OUTER PRESSURE TO NODE", OuterSurfaceNodes(NN)
-    ENDDO
-
-    !Set all top nodes fixed in z plane at the set height
-    deformedHeight=HEIGHT*LAMBDA
-    DO NN=1,SIZE(TopSurfaceNodes,1)
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,TopSurfaceNodes(NN), &
-        & 3,CMISSBoundaryConditionFixed,deformedHeight,Err)
-      IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING FIXED CONDITION TO NODE", TopSurfaceNodes(NN)
-    ENDDO
-
-    !Set all bottom nodes fixed in z plane
-    DO NN=1,SIZE(BottomSurfaceNodes,1)
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,BottomSurfaceNodes(NN), &
-        & 3,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-      IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING FIXED CONDITION TO NODE", BottomSurfaceNodes(NN)
-    ENDDO
-
-    !Set two nodes on the bottom surface to axial displacement only
-    X_FIXED=.FALSE.
-    Y_FIXED=.FALSE.
-    DO NN=1,SIZE(BottomSurfaceNodes,1)
-      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
-        & 1,BottomSurfaceNodes(NN),1,xValue,Err)
-      IF(abs(xValue)<1e-5_CMISSDP) THEN
-        !Constrain it in x direction
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,BottomSurfaceNodes(NN),1, &
-          & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-        X_FIXED=.TRUE.
-      ENDIF
-      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
-        & 1,BottomSurfaceNodes(NN),2,yValue,Err)
-      IF(abs(yValue)<1e-5_CMISSDP) THEN
-        !Constrain it in y direction
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,BottomSurfaceNodes(NN),2, &
-          & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
-        Y_FIXED=.TRUE.
-      ENDIF
-    ENDDO
-    !Check
-    CALL MPI_REDUCE(X_FIXED,X_OKAY,1,MPI_LOGICAL,MPI_LOR,0,MPI_COMM_WORLD,MPI_IERROR)
-    CALL MPI_REDUCE(Y_FIXED,Y_OKAY,1,MPI_LOGICAL,MPI_LOR,0,MPI_COMM_WORLD,MPI_IERROR)
-    IF(ComputationalNodeNumber==0) THEN
-      IF(.NOT.(X_OKAY.AND.Y_OKAY)) THEN
-        WRITE(*,*) "Could not fix nodes to prevent rigid body motion"
-        STOP
-      ENDIF
-    ENDIF
-    CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
-  ENDIF
-
   !Define the problem
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
@@ -564,6 +486,88 @@ PROGRAM TESTINGPOINTSEXAMPLE
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !Set the bc using the analytic solution routine
+  IF(TRIM(ARG_LEVEL)=="2".OR.TRIM(ARG_LEVEL)=="3") THEN
+    CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
+  ELSE
+    !Set BC manually
+    !Prescribe boundary conditions (absolute nodal parameters)
+    CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+    CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+
+    !Get surfaces - will fix two nodes on bottom face, pressure conditions inside
+    CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshCylinderTopSurfaceType,TopSurfaceNodes,TopNormalXi,Err)
+    CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshCylinderBottomSurfaceType,BottomSurfaceNodes, &
+      & BottomNormalXi,Err)
+    CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshCylinderInnerSurfaceType,InnerSurfaceNodes,InnerNormalXi,Err)
+    CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshCylinderOuterSurfaceType,OuterSurfaceNodes,OuterNormalXi,Err)
+
+    !Set all inner surface nodes to inner pressure
+    DO NN=1,SIZE(InnerSurfaceNodes,1)
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldDelUDelNVariableType,1,1, &
+        & InnerSurfaceNodes(NN), &
+        & abs(InnerNormalXi),CMISSBoundaryConditionPressureIncremented,INNER_PRESSURE,Err)   ! INNER_PRESSURE
+      IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING INNER PRESSURE TO NODE", InnerSurfaceNodes(NN)
+    ENDDO
+
+    !Set all outer surface nodes to outer pressure
+    DO NN=1,SIZE(OuterSurfaceNodes,1)
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldDelUDelNVariableType,1,1, &
+        & OuterSurfaceNodes(NN), &
+        & abs(OuterNormalXi),CMISSBoundaryConditionPressureIncremented,OUTER_PRESSURE,Err)
+      IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING OUTER PRESSURE TO NODE", OuterSurfaceNodes(NN)
+    ENDDO
+
+    !Set all top nodes fixed in z plane at the set height
+    deformedHeight=HEIGHT*LAMBDA
+    DO NN=1,SIZE(TopSurfaceNodes,1)
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,TopSurfaceNodes(NN), &
+        & 3,CMISSBoundaryConditionFixed,deformedHeight,Err)
+      IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING FIXED CONDITION TO NODE", TopSurfaceNodes(NN)
+    ENDDO
+
+    !Set all bottom nodes fixed in z plane
+    DO NN=1,SIZE(BottomSurfaceNodes,1)
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,BottomSurfaceNodes(NN), &
+        & 3,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+      IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING FIXED CONDITION TO NODE", BottomSurfaceNodes(NN)
+    ENDDO
+
+    !Set two nodes on the bottom surface to axial displacement only
+    X_FIXED=.FALSE.
+    Y_FIXED=.FALSE.
+    DO NN=1,SIZE(BottomSurfaceNodes,1)
+      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
+        & 1,BottomSurfaceNodes(NN),1,xValue,Err)
+      IF(abs(xValue)<1e-5_CMISSDP) THEN
+        !Constrain it in x direction
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,BottomSurfaceNodes(NN), &
+          & 1, &
+          & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+        X_FIXED=.TRUE.
+      ENDIF
+      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
+        & 1,BottomSurfaceNodes(NN),2,yValue,Err)
+      IF(abs(yValue)<1e-5_CMISSDP) THEN
+        !Constrain it in y direction
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,BottomSurfaceNodes(NN), &
+          & 2, &
+          & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+        Y_FIXED=.TRUE.
+      ENDIF
+    ENDDO
+    !Check
+    CALL MPI_REDUCE(X_FIXED,X_OKAY,1,MPI_LOGICAL,MPI_LOR,0,MPI_COMM_WORLD,MPI_IERROR)
+    CALL MPI_REDUCE(Y_FIXED,Y_OKAY,1,MPI_LOGICAL,MPI_LOR,0,MPI_COMM_WORLD,MPI_IERROR)
+    IF(ComputationalNodeNumber==0) THEN
+      IF(.NOT.(X_OKAY.AND.Y_OKAY)) THEN
+        WRITE(*,*) "Could not fix nodes to prevent rigid body motion"
+        STOP
+      ENDIF
+    ENDIF
+    CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
+  ENDIF
 
   !Solve problem
   CALL CMISSProblemSolve(Problem,Err)

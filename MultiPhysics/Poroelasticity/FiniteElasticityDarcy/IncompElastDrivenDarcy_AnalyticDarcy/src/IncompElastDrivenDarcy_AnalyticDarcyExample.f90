@@ -922,248 +922,6 @@ PROGRAM INCOMPELASTDRIVENDARCYANALYTICDARCYEXAMPLE
   ! end Solid
   !--------------------------------------------------------------------------------------------------------------------------------
 
-  !BOUNDARY CONDITIONS
-  !Start the creation of the equations set boundary conditions for Darcy
-!   CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDarcy,Err)
-!   CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetDarcy,BoundaryConditionsDarcy,Err)
-
-  CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSetDarcy,Err)
-
-
-  !Prescribe boundary conditions (absolute nodal parameters)
-  !Solid is computed in absolute position, rather than displacement. Thus BCs for absolute position
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsSolid,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetSolid,BoundaryConditionsSolid,Err)
-
-!   !--- BCs on normal velocity only
-!   CONDITION = CMISSBoundaryConditionMovedWall
-! 
-!   IF( CM%D==2_CMISSIntg ) THEN !CM%D = number of dimensions, ie 2D
-!     DO NODE_NUMBER=1_CMISSIntg,NUMBER_OF_NODES_GEOMETRY
-!       COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
-!       COORD_Y = CM%N(NODE_NUMBER,2_CMISSIntg)
-! 
-!       IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
-!         !x-velocity
-!         VALUE = 1.0_CMISSDP
-!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
-!           & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
-!       END IF
-!       !
-!       IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
-!         !x-velocity
-!         VALUE = 1.0_CMISSDP
-!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
-!           & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
-!       END IF
-!       !
-!       IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
-!         !y-velocity
-!         VALUE = 2.0_CMISSDP
-!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
-!           & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
-!       END IF
-!       !
-!       IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
-!         !y-velocity
-!         VALUE = 2.0_CMISSDP
-!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
-!           & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
-!       END IF
-!     END DO
-!   ELSE IF( CM%D==3_CMISSIntg ) THEN ! 3D geometry
-!     DO NODE_NUMBER=1_CMISSIntg,NUMBER_OF_NODES_GEOMETRY  !What if different number of nodes geometry and velocity ?
-!       COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
-!       COORD_Y = CM%N(NODE_NUMBER,2_CMISSIntg)
-!       COORD_Z = CM%N(NODE_NUMBER,3_CMISSIntg)
-! 
-!       IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
-! !         !x-velocity: F L U I D ( V Variable type )
-! !         VALUE = 10.0_CMISSDP
-! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
-! ! !           & NODE_NUMBER,4_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err) !BC on pressure component
-! ! !           & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionMovedWall,VALUE,Err) !inflow
-! !           & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err) !time-dependent inflow
-! 
-! !         !x-position: S O L I D ( U Variable Type)
-! ! !         VALUE = 1.0_CMISSDP * DOMAIN_X1
-! !         VALUE = COORD_X
-! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
-! !           & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-! 
-! !         EDGE_COUNT = 0_CMISSIntg
-! !         IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) EDGE_COUNT = EDGE_COUNT + 1_CMISSIntg
-! !         IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) EDGE_COUNT = EDGE_COUNT + 1_CMISSIntg
-! !         IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) ) EDGE_COUNT = EDGE_COUNT + 1_CMISSIntg
-! !         IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) EDGE_COUNT = EDGE_COUNT + 1_CMISSIntg
-! ! 
-! !         IF(EDGE_COUNT == 2_CMISSIntg) THEN !it is a corner node
-! !           VALUE = COORD_Y
-! !           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
-! !             & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-! ! 
-! !           VALUE = COORD_Z
-! !           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
-! !             & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-! !         END IF
-!       END IF
-!       !
-!       IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
-! !         !x-velocity: F L U I D
-! !         VALUE = 10.0_CMISSDP
-! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
-! ! !           & NODE_NUMBER,4_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err) !BC on pressure component
-! ! !           & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionMovedWall,VALUE,Err) !impermeable wall, zero flux
-! !           & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err) !impermeable wall, zero flux
-! 
-! !         !x-position: S O L I D
-! !         VALUE = COORD_X
-! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1, &
-! !           & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-! !         
-! !         !Fix point 1
-! !         IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
-! !           IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) THEN
-! !             VALUE = COORD_Y
-! !             CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
-! !               & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-! ! 
-! !             VALUE = COORD_Z
-! !             CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
-! !               & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-! !           END IF
-! !         END IF
-! !         !(Fix) point 2
-! !         IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
-! !           IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) THEN
-! !             VALUE = COORD_Z
-! !             CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
-! !               & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-! !           END IF
-! !         END IF
-! !         !(Fix) point 3
-! !         IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
-! !           IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) ) THEN
-! !             VALUE = COORD_Y
-! !             CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
-! !               & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-! !           END IF
-! !         END IF
-! 
-! 
-!       END IF
-!       !
-!       IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
-! !         !y-velocity: F L U I D
-! !         VALUE = 0.0_CMISSDP
-! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
-! !           & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionMovedWall,VALUE,Err)
-! ! 
-! !         !y-position: S O L I D
-! !         VALUE = 1.0_CMISSDP * DOMAIN_Y1
-! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
-! ! !           & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionMovedWallIncremented,VALUE,Err)
-! !           & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-!       END IF
-!       !
-!       IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
-! !         !y-velocity: F L U I D
-! !         VALUE = 0.0_CMISSDP
-! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
-! !           & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionMovedWall,VALUE,Err)
-! ! 
-! ! !         !y-position: S O L I D
-! ! !         VALUE = 1.1_CMISSDP * DOMAIN_Y2
-! ! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1, &
-! ! !           & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-!       END IF
-!       !
-!       IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) ) THEN
-!         !z-velocity: F L U I D
-!         !mass-correction: F L U I D
-!         VALUE = 0.1_CMISSDP
-!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
-! !           & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-! !           & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionCorrectionMassIncrease,VALUE,Err)
-! !           & NODE_NUMBER,4_CMISSIntg,CMISSBoundaryConditionCorrectionMassIncrease,VALUE,Err)
-!           & NODE_NUMBER,4_CMISSIntg,CMISSBoundaryConditionFree,VALUE,Err)
-! 
-! !         !z-position: S O L I D
-! !         VALUE = 1.0_CMISSDP * DOMAIN_Z1
-! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
-! !           & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-!       END IF
-!       !
-!       IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) THEN
-! !         !z-velocity: F L U I D
-! !         VALUE = 0.0_CMISSDP
-! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
-! !           & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-! 
-! !         VALUE = COORD_X
-! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1, &
-! !           & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-! ! 
-! !         VALUE = COORD_Y
-! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
-! !           & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-! ! 
-! !         VALUE = COORD_Z
-! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
-! !           & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-! 
-!         !x-position: S O L I D
-!         VALUE = COORD_Z
-!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,1, &
-!           & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-!         
-!         !Fix point 1
-!         IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
-!           IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
-!             VALUE = COORD_Y
-!             CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
-!               & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-! 
-!             VALUE = COORD_X
-!             CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
-!               & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-!           END IF
-!         END IF
-!         !(Fix) point 2
-!         IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
-!           IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
-!             VALUE = COORD_X
-!             CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
-!               & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-!           END IF
-!         END IF
-!         !(Fix) point 3
-!         IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
-!           IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
-!             VALUE = COORD_Y
-!             CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
-!               & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
-!           END IF
-!         END IF
-! 
-! 
-!       END IF
-!     END DO
-!   END IF
-
-  !Finish the creation of the equations set boundary conditions for Darcy
-  !CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetDarcy,Err)
-  !Finish the creation of the equations set boundary conditions for the solid
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetSolid,Err)
-  !
-  !Start the creation of the equations set boundary conditions for deformation-dependent material properties
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsMatProperties,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetMatProperties,BoundaryConditionsMatProperties,Err)
-  !(No boundary conditions requrired for deformation-dependent material properties)
-  !Finish the creation of the equations set boundary conditions for deformation-dependent material properties
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetMatProperties,Err)
-
-
   !
   !================================================================================================================================
   !
@@ -1316,6 +1074,252 @@ PROGRAM INCOMPELASTDRIVENDARCYANALYTICDARCYEXAMPLE
   !
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !
+  !================================================================================================================================
+  !
+
+  !BOUNDARY CONDITIONS
+  !Start the creation of the equations set boundary conditions for Darcy
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDarcy,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsDarcy,BoundaryConditionsDarcy,Err)
+
+  CALL CMISSProblemSolverEquationsBoundaryConditionsAnalytic(SolverEquationsDarcy,Err)
+
+
+  !Prescribe boundary conditions (absolute nodal parameters)
+  !Solid is computed in absolute position, rather than displacement. Thus BCs for absolute position
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsSolid,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsSolid,BoundaryConditionsSolid,Err)
+
+!   !--- BCs on normal velocity only
+!   CONDITION = CMISSBoundaryConditionMovedWall
+! 
+!   IF( CM%D==2_CMISSIntg ) THEN !CM%D = number of dimensions, ie 2D
+!     DO NODE_NUMBER=1_CMISSIntg,NUMBER_OF_NODES_GEOMETRY
+!       COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
+!       COORD_Y = CM%N(NODE_NUMBER,2_CMISSIntg)
+! 
+!       IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
+!         !x-velocity
+!         VALUE = 1.0_CMISSDP
+!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentField,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
+!           & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+!       END IF
+!       !
+!       IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
+!         !x-velocity
+!         VALUE = 1.0_CMISSDP
+!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentField,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
+!           & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+!       END IF
+!       !
+!       IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
+!         !y-velocity
+!         VALUE = 2.0_CMISSDP
+!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentField,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
+!           & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+!       END IF
+!       !
+!       IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
+!         !y-velocity
+!         VALUE = 2.0_CMISSDP
+!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentField,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
+!           & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+!       END IF
+!     END DO
+!   ELSE IF( CM%D==3_CMISSIntg ) THEN ! 3D geometry
+!     DO NODE_NUMBER=1_CMISSIntg,NUMBER_OF_NODES_GEOMETRY  !What if different number of nodes geometry and velocity ?
+!       COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
+!       COORD_Y = CM%N(NODE_NUMBER,2_CMISSIntg)
+!       COORD_Z = CM%N(NODE_NUMBER,3_CMISSIntg)
+! 
+!       IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
+! !         !x-velocity: F L U I D ( V Variable type )
+! !         VALUE = 10.0_CMISSDP
+! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,,DependentFieldCMISSFieldVVariableType,CMISSNoGlobalDerivative, &
+! ! !           & NODE_NUMBER,4_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err) !BC on pressure component
+! ! !           & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionMovedWall,VALUE,Err) !inflow
+! !           & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err) !time-dependent inflow
+! 
+! !         !x-position: S O L I D ( U Variable Type)
+! ! !         VALUE = 1.0_CMISSDP * DOMAIN_X1
+! !         VALUE = COORD_X
+! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentField,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
+! !           & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+! 
+! !         EDGE_COUNT = 0_CMISSIntg
+! !         IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) EDGE_COUNT = EDGE_COUNT + 1_CMISSIntg
+! !         IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) EDGE_COUNT = EDGE_COUNT + 1_CMISSIntg
+! !         IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) ) EDGE_COUNT = EDGE_COUNT + 1_CMISSIntg
+! !         IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) EDGE_COUNT = EDGE_COUNT + 1_CMISSIntg
+! ! 
+! !         IF(EDGE_COUNT == 2_CMISSIntg) THEN !it is a corner node
+! !           VALUE = COORD_Y
+! !           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentField,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
+! !             & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+! ! 
+! !           VALUE = COORD_Z
+! !           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentField,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
+! !             & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+! !         END IF
+!       END IF
+!       !
+!       IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
+! !         !x-velocity: F L U I D
+! !         VALUE = 10.0_CMISSDP
+! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentField,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
+! ! !           & NODE_NUMBER,4_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err) !BC on pressure component
+! ! !           & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionMovedWall,VALUE,Err) !impermeable wall, zero flux
+! !           & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err) !impermeable wall, zero flux
+! 
+! !         !x-position: S O L I D
+! !         VALUE = COORD_X
+! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentField,CMISSFieldUVariableType,1, &
+! !           & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+! !         
+! !         !Fix point 1
+! !         IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
+! !           IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) THEN
+! !             VALUE = COORD_Y
+! !             CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentField,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
+! !               & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+! ! 
+! !             VALUE = COORD_Z
+! !             CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentField,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
+! !               & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+! !           END IF
+! !         END IF
+! !         !(Fix) point 2
+! !         IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
+! !           IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) THEN
+! !             VALUE = COORD_Z
+! !             CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentField,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
+! !               & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+! !           END IF
+! !         END IF
+! !         !(Fix) point 3
+! !         IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
+! !           IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) ) THEN
+! !             VALUE = COORD_Y
+! !             CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentField,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
+! !               & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+! !           END IF
+! !         END IF
+! 
+! 
+!       END IF
+!       !
+!       IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
+! !         !y-velocity: F L U I D
+! !         VALUE = 0.0_CMISSDP
+! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentField,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
+! !           & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionMovedWall,VALUE,Err)
+! ! 
+! !         !y-position: S O L I D
+! !         VALUE = 1.0_CMISSDP * DOMAIN_Y1
+! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentField,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
+! ! !           & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionMovedWallIncremented,VALUE,Err)
+! !           & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+!       END IF
+!       !
+!       IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
+! !         !y-velocity: F L U I D
+! !         VALUE = 0.0_CMISSDP
+! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentField,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
+! !           & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionMovedWall,VALUE,Err)
+! ! 
+! ! !         !y-position: S O L I D
+! ! !         VALUE = 1.1_CMISSDP * DOMAIN_Y2
+! ! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentField,CMISSFieldUVariableType,1, &
+! ! !           & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+!       END IF
+!       !
+!       IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) ) THEN
+!         !z-velocity: F L U I D
+!         !mass-correction: F L U I D
+!         VALUE = 0.1_CMISSDP
+!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentField,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
+! !           & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+! !           & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionCorrectionMassIncrease,VALUE,Err)
+! !           & NODE_NUMBER,4_CMISSIntg,CMISSBoundaryConditionCorrectionMassIncrease,VALUE,Err)
+!           & NODE_NUMBER,4_CMISSIntg,CMISSBoundaryConditionFree,VALUE,Err)
+! 
+! !         !z-position: S O L I D
+! !         VALUE = 1.0_CMISSDP * DOMAIN_Z1
+! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentField,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
+! !           & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+!       END IF
+!       !
+!       IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) THEN
+! !         !z-velocity: F L U I D
+! !         VALUE = 0.0_CMISSDP
+! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentField,CMISSFieldVVariableType,CMISSNoGlobalDerivative, &
+! !           & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+! 
+! !         VALUE = COORD_X
+! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentField,CMISSFieldUVariableType,1, &
+! !           & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+! ! 
+! !         VALUE = COORD_Y
+! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentField,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
+! !           & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+! ! 
+! !         VALUE = COORD_Z
+! !         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentField,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
+! !           & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+! 
+!         !x-position: S O L I D
+!         VALUE = COORD_Z
+!         CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentField,CMISSFieldUVariableType,1, &
+!           & NODE_NUMBER,3_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+!         
+!         !Fix point 1
+!         IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
+!           IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
+!             VALUE = COORD_Y
+!             CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentField,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
+!               & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+! 
+!             VALUE = COORD_X
+!             CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentField,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
+!               & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+!           END IF
+!         END IF
+!         !(Fix) point 2
+!         IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
+!           IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
+!             VALUE = COORD_X
+!             CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentField,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
+!               & NODE_NUMBER,1_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+!           END IF
+!         END IF
+!         !(Fix) point 3
+!         IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
+!           IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
+!             VALUE = COORD_Y
+!             CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsSolid,DependentField,CMISSFieldUVariableType,CMISSNoGlobalDerivative, &
+!               & NODE_NUMBER,2_CMISSIntg,CMISSBoundaryConditionFixed,VALUE,Err)
+!           END IF
+!         END IF
+! 
+! 
+!       END IF
+!     END DO
+!   END IF
+
+  !Finish the creation of the equations set boundary conditions for Darcy
+  !CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsDarcy,Err)
+  !Finish the creation of the equations set boundary conditions for the solid
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsSolid,Err)
+  !
+  !Start the creation of the equations set boundary conditions for deformation-dependent material properties
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsMatProperties,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsMatProperties,BoundaryConditionsMatProperties,Err)
+  !(No boundary conditions requrired for deformation-dependent material properties)
+  !Finish the creation of the equations set boundary conditions for deformation-dependent material properties
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsMatProperties,Err)
+
 
   !
   !================================================================================================================================

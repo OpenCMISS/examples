@@ -499,97 +499,6 @@ PROGRAM QUADRATICELLIPSOIDCOSTAREADINEXAMPLE
     & 3,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,Err)
   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,-14.0_CMISSDP,Err)
 
-  !Prescribe boundary conditions (absolute nodal parameters)
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-
-  !Grab the list of nodes on inner, outer and top surfaces
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshEllipsoidTopSurfaceType,TopSurfaceNodes,TopNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshEllipsoidInnerSurfaceType,InnerSurfaceNodes,InnerNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshEllipsoidOuterSurfaceType,OuterSurfaceNodes,OuterNormalXi,Err)
-
-  ! ASSIGN BOUNDARY CONDITIONS
-  !Fix base of the ellipsoid in z direction
-  DO NN=1,SIZE(TopSurfaceNodes,1)
-    NODE=TopSurfaceNodes(NN)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,3,ZCoord,Err)
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NODE,3, &
-        & CMISSBoundaryConditionFixed,ZCoord,Err)
-    ENDIF
-  ENDDO
-
-  !Apply inner surface pressure
-  !NOTE: Surface pressure goes into pressure_values_set_type of the DELUDELN type
-  DO NN=1,SIZE(InnerSurfaceNodes,1)
-    NODE=InnerSurfaceNodes(NN)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,NODE,ABS(InnerNormalXi), &
-        & CMISSBoundaryConditionPressure,INNER_PRESSURE,Err)
-    ENDIF
-  ENDDO
-
-  !Apply outer surface pressure
-  DO NN=1,SIZE(OuterSurfaceNodes,1)
-    NODE=OuterSurfaceNodes(NN)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldDelUDelNVariableType,1,1,NODE,ABS(OuterNormalXi), &
-        & CMISSBoundaryConditionPressure,OUTER_PRESSURE,Err)
-    ENDIF
-  ENDDO
-
-  !Fix apex in x and y direction
-!!$  DO NN=1, NUMBER_GLOBAL_Z_ELEMENTS*2+1
-!!$     NODE=NN+((NN-1)*(NUMBER_GLOBAL_X_ELEMENTS*2)*(NUMBER_GLOBAL_Z_ELEMENTS*2+1))
-!!$     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-!!$     IF(NodeDomain==ComputationalNodeNumber) THEN
-!!$        CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,1,XCoord,Err)
-!!$        CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,2,YCoord,Err)
-!!$        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NODE,1, &
-!!$             & CMISSBoundaryConditionFixed,XCoord,Err)
-!!$        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NODE,2, &
-!!$             & CMISSBoundaryConditionFixed,YCoord,Err)
-!!$     ENDIF
-!!$  ENDDO
-
-  !Fix more nodes at the base to stop free body motion
-  X_FIXED=.FALSE.
-  Y_FIXED=.FALSE.
-  DO NN=1,SIZE(TopSurfaceNodes,1)
-    NODE=TopSurfaceNodes(NN)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,1,XCoord,Err)
-      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,2,YCoord,Err)
-      IF(ABS(XCoord)<1.0E-6_CMISSDP) THEN
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NODE,1, &
-          & CMISSBoundaryConditionFixed,XCoord,Err)
-        WRITE(*,*) "FIXING NODE",NODE,"IN X DIRECTION"
-        X_FIXED=.TRUE.
-      ENDIF
-      IF(ABS(YCoord)<1.0E-6_CMISSDP) THEN
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,CMISSFieldUVariableType,1,1,NODE,2, &
-          & CMISSBoundaryConditionFixed,YCoord,Err)
-        WRITE(*,*) "FIXING NODE",NODE,"IN Y DIRECTION"
-        Y_FIXED=.TRUE.
-      ENDIF
-    ENDIF
-  ENDDO
-  CALL MPI_REDUCE(X_FIXED,X_OKAY,1,MPI_LOGICAL,MPI_LOR,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_REDUCE(Y_FIXED,Y_OKAY,1,MPI_LOGICAL,MPI_LOR,0,MPI_COMM_WORLD,MPI_IERROR)
-  IF(ComputationalNodeNumber==0) THEN
-    IF(.NOT.(X_OKAY.AND.Y_OKAY)) THEN
-      WRITE(*,*) "Free body motion could not be prevented!"
-      CALL CMISSFinalise(Err)
-      STOP
-    ENDIF
-  ENDIF
-
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
-
   !Define the problem
   CALL CMISSProblemTypeInitialise(Problem,Err)
   CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
@@ -622,6 +531,99 @@ PROGRAM QUADRATICELLIPSOIDCOSTAREADINEXAMPLE
   CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !Prescribe boundary conditions (absolute nodal parameters)
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+
+  !Grab the list of nodes on inner, outer and top surfaces
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshEllipsoidTopSurfaceType,TopSurfaceNodes,TopNormalXi,Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshEllipsoidInnerSurfaceType,InnerSurfaceNodes,InnerNormalXi,Err)
+  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshEllipsoidOuterSurfaceType,OuterSurfaceNodes,OuterNormalXi,Err)
+
+  ! ASSIGN BOUNDARY CONDITIONS
+  !Fix base of the ellipsoid in z direction
+  DO NN=1,SIZE(TopSurfaceNodes,1)
+    NODE=TopSurfaceNodes(NN)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,3,ZCoord,Err)
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NODE,3, &
+        & CMISSBoundaryConditionFixed,ZCoord,Err)
+    ENDIF
+  ENDDO
+
+  !Apply inner surface pressure
+  !NOTE: Surface pressure goes into pressure_values_set_type of the DELUDELN type
+  DO NN=1,SIZE(InnerSurfaceNodes,1)
+    NODE=InnerSurfaceNodes(NN)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldDelUDelNVariableType,1,1,NODE, &
+        & ABS(InnerNormalXi), &
+        & CMISSBoundaryConditionPressure,INNER_PRESSURE,Err)
+    ENDIF
+  ENDDO
+
+  !Apply outer surface pressure
+  DO NN=1,SIZE(OuterSurfaceNodes,1)
+    NODE=OuterSurfaceNodes(NN)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldDelUDelNVariableType,1,1,NODE, &
+        & ABS(OuterNormalXi), &
+        & CMISSBoundaryConditionPressure,OUTER_PRESSURE,Err)
+    ENDIF
+  ENDDO
+
+  !Fix apex in x and y direction
+!!$  DO NN=1, NUMBER_GLOBAL_Z_ELEMENTS*2+1
+!!$     NODE=NN+((NN-1)*(NUMBER_GLOBAL_X_ELEMENTS*2)*(NUMBER_GLOBAL_Z_ELEMENTS*2+1))
+!!$     CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+!!$     IF(NodeDomain==ComputationalNodeNumber) THEN
+!!$        CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,1,XCoord,Err)
+!!$        CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,2,YCoord,Err)
+!!$        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NODE,1, &
+!!$             & CMISSBoundaryConditionFixed,XCoord,Err)
+!!$        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NODE,2, &
+!!$             & CMISSBoundaryConditionFixed,YCoord,Err)
+!!$     ENDIF
+!!$  ENDDO
+
+  !Fix more nodes at the base to stop free body motion
+  X_FIXED=.FALSE.
+  Y_FIXED=.FALSE.
+  DO NN=1,SIZE(TopSurfaceNodes,1)
+    NODE=TopSurfaceNodes(NN)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,1,XCoord,Err)
+      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NODE,2,YCoord,Err)
+      IF(ABS(XCoord)<1.0E-6_CMISSDP) THEN
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NODE,1, &
+          & CMISSBoundaryConditionFixed,XCoord,Err)
+        WRITE(*,*) "FIXING NODE",NODE,"IN X DIRECTION"
+        X_FIXED=.TRUE.
+      ENDIF
+      IF(ABS(YCoord)<1.0E-6_CMISSDP) THEN
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NODE,2, &
+          & CMISSBoundaryConditionFixed,YCoord,Err)
+        WRITE(*,*) "FIXING NODE",NODE,"IN Y DIRECTION"
+        Y_FIXED=.TRUE.
+      ENDIF
+    ENDIF
+  ENDDO
+  CALL MPI_REDUCE(X_FIXED,X_OKAY,1,MPI_LOGICAL,MPI_LOR,0,MPI_COMM_WORLD,MPI_IERROR)
+  CALL MPI_REDUCE(Y_FIXED,Y_OKAY,1,MPI_LOGICAL,MPI_LOR,0,MPI_COMM_WORLD,MPI_IERROR)
+  IF(ComputationalNodeNumber==0) THEN
+    IF(.NOT.(X_OKAY.AND.Y_OKAY)) THEN
+      WRITE(*,*) "Free body motion could not be prevented!"
+      CALL CMISSFinalise(Err)
+      STOP
+    ENDIF
+  ENDIF
+
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve problem
   CALL CMISSProblemSolve(Problem,Err)
