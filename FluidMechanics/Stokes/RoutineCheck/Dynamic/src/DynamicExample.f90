@@ -627,48 +627,6 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberStokes,Region,GeometricF
   !Finish the equations set equations
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetStokes,Err)
 
-  !
-  !================================================================================================================================
-  !
-
-  !BOUNDARY CONDITIONS
-
-  !Start the creation of the equations set boundary conditions for Stokes
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsStokes,Err)
-  CALL CMISSEquationsSetBoundaryConditionsCreateStart(EquationsSetStokes,BoundaryConditionsStokes,Err)
-  !Set fixed wall nodes
-  IF(FIXED_WALL_NODES_STOKES_FLAG) THEN
-    DO NODE_COUNTER=1,NUMBER_OF_FIXED_WALL_NODES_STOKES
-      NODE_NUMBER=FIXED_WALL_NODES_STOKES(NODE_COUNTER)
-      CONDITION=CMISSBoundaryConditionFixedWall
-      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
-      IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
-        DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-          VALUE=0.0_CMISSDP
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsStokes,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
-            & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
-        ENDDO
-      ENDIF
-    ENDDO
-  ENDIF
-  !Set velocity boundary conditions
-  IF(INLET_WALL_NODES_STOKES_FLAG) THEN
-    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_STOKES
-      NODE_NUMBER=INLET_WALL_NODES_STOKES(NODE_COUNTER)
-      CONDITION=CMISSBoundaryConditionInletWall
-      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
-      IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
-        DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-          VALUE=BOUNDARY_CONDITIONS_STOKES(COMPONENT_NUMBER)
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsStokes,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, & 
-            & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
-        ENDDO
-      ENDIF
-    ENDDO
-  ENDIF
-  !Finish the creation of the equations set boundary conditions
-  CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSetStokes,Err)
-
 
   !
   !================================================================================================================================
@@ -753,6 +711,50 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberStokes,Region,GeometricF
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsStokes,EquationsSetStokes,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !
+  !================================================================================================================================
+  !
+
+  !BOUNDARY CONDITIONS
+
+  !Start the creation of the equations set boundary conditions for Stokes
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsStokes,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsStokes,BoundaryConditionsStokes,Err)
+  !Set fixed wall nodes
+  IF(FIXED_WALL_NODES_STOKES_FLAG) THEN
+    DO NODE_COUNTER=1,NUMBER_OF_FIXED_WALL_NODES_STOKES
+      NODE_NUMBER=FIXED_WALL_NODES_STOKES(NODE_COUNTER)
+      CONDITION=CMISSBoundaryConditionFixedWall
+      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
+      IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
+        DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+          VALUE=0.0_CMISSDP
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsStokes,DependentFieldStokes,CMISSFieldUVariableType,1, &
+            & CMISSNoGlobalDerivative, &
+            & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
+        ENDDO
+      ENDIF
+    ENDDO
+  ENDIF
+  !Set velocity boundary conditions
+  IF(INLET_WALL_NODES_STOKES_FLAG) THEN
+    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_STOKES
+      NODE_NUMBER=INLET_WALL_NODES_STOKES(NODE_COUNTER)
+      CONDITION=CMISSBoundaryConditionInletWall
+      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
+      IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
+        DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+          VALUE=BOUNDARY_CONDITIONS_STOKES(COMPONENT_NUMBER)
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsStokes,DependentFieldStokes,CMISSFieldUVariableType,1, &
+            & CMISSNoGlobalDerivative, &
+            & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
+        ENDDO
+      ENDIF
+    ENDDO
+  ENDIF
+  !Finish the creation of the equations set boundary conditions
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsStokes,Err)
 
   !
   !================================================================================================================================

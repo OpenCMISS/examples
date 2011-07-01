@@ -205,6 +205,7 @@ PROGRAM DARCYANALYTICEXAMPLE
   TYPE(CMISSSolverType) :: LinearSolverDarcy
   !Solver equations
   TYPE(CMISSSolverEquationsType) :: SolverEquationsDarcy
+  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
 
 #ifdef WIN32
   !Quickwin type
@@ -682,15 +683,6 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDarcy,Region,GeometricFi
   !================================================================================================================================
   !
 
-  !BOUNDARY CONDITIONS
-
-  !Set up the boundary conditions as per the analytic solution
-  CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSetDarcy,Err)
-
-  !
-  !================================================================================================================================
-  !
-
   !PROBLEMS
 
   !Start the creation of a problem.
@@ -755,6 +747,18 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDarcy,Region,GeometricFi
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsDarcy,EquationsSetDarcy,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+  !
+  !================================================================================================================================
+  !
+
+  !BOUNDARY CONDITIONS
+
+  !Set up the boundary conditions as per the analytic solution
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsDarcy,BoundaryConditions,Err)
+  CALL CMISSProblemSolverEquationsBoundaryConditionsAnalytic(SolverEquationsDarcy,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsDarcy,Err)
 
   !
   !================================================================================================================================

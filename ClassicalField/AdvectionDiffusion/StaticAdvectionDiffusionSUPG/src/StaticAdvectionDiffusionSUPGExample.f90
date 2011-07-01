@@ -330,7 +330,6 @@ PROGRAM STATICADVECTIONDIFFUSIONSUPGEXAMPLE
 !     & CMISSBoundaryConditionFixed,1.0_CMISSDP,Err)
 !   !Finish the creation of the equations set boundary conditions
 !   CALL CMISSEquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
-CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
 
 !   EXPORT_FIELD=.TRUE.
 !   IF(EXPORT_FIELD) THEN
@@ -402,6 +401,10 @@ CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+CALL CMISSProblemSolverEquationsBoundaryConditionsAnalytic(SolverEquations,Err)
+CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve the problem
   CALL CMISSProblemSolve(Problem,Err)

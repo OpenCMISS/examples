@@ -252,6 +252,7 @@ CONTAINS
     TYPE(CMISSRegionType) :: Region
     TYPE(CMISSSolverType) :: Solver
     TYPE(CMISSSolverEquationsType) :: SolverEquations
+    TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
 
     IF((NumberGlobalYElements == 0) .AND. (NumberGlobalZElements == 0)) THEN
       NumberOfXi = 1
@@ -415,9 +416,6 @@ CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,GeometricField,CM
                                               !CMISSEquationsMatrixOutput !<All below and equation matrices output.
                                               !CMISSEquationsElementMatrixOutput !<All below and Element matrices output.
     CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
-
-    !Prescribe boundary conditions
-    CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
     
     !Define the problem
     CALL CMISSProblemTypeInitialise(Problem,Err)
@@ -469,6 +467,12 @@ CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,GeometricField,CM
                                                             !CMISSSolverEquationsFullMatrices !<Use fully populated Solver matrices.
     CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
     CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+
+    !Prescribe boundary conditions
+    CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+    CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+    CALL CMISSProblemSolverEquationsBoundaryConditionsAnalytic(SolverEquations,Err)
+    CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
 
     !=SOLVE Problem==================================================================================================================
     !Solve the Problem
