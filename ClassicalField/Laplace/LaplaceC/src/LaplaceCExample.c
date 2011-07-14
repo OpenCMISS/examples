@@ -69,6 +69,23 @@
 
 #define MAX_COORDINATES 3
 
+#define CHECK_ERROR(S) \
+  if(Err != CMISSNoError) { \
+    if(Err == CMISSErrorConvertingPointer) { \
+      fprintf(stderr,"Error: %s: Error converting pointer.\n",(S)); \
+    } \
+    else if(Err == CMISSPointerIsNULL) { \
+      fprintf(stderr,"Error: %s: Pointer is null.\n",(S)); \
+    } \
+    else if(Err == CMISSPointerNotNULL) { \
+      fprintf(stderr,"Error: %s: Pointer is not null.\n",(S)); \
+    } \
+    else if(Err == CMISSCouldNotAllocatePointer) { \
+      fprintf(stderr,"Error: %s: Could not allocate pointer.\n",(S)); \
+    } \
+    exit(Err); \
+  }
+
 int main()
 {
   CMISSBasisType Basis=(CMISSBasisType)NULL;
@@ -100,204 +117,207 @@ int main()
 
   ControlLoopIdentifier[1]=CMISSControlLoopNode;
 
-  if(CMISSInitialise(&WorldCoordinateSystem,&WorldRegion) == CMISSNoError)
+  Err = CMISSCoordinateSystemTypeInitialise(&WorldCoordinateSystem);
+  CHECK_ERROR("Initialising world coordinate system");
+  Err = CMISSRegionTypeInitialise(&WorldRegion);
+  CHECK_ERROR("Initialising world region");
+  Err = CMISSInitialise(WorldCoordinateSystem,WorldRegion);
+  CHECK_ERROR("Initialising CMISS");
+  Err = CMISSErrorHandlingModeSet(CMISSTrapError);
+
+  Err = CMISSComputationalNumberOfNodesGet(&NumberOfComputationalNodes);
+  Err = CMISSComputationalNodeNumberGet(&ComputationalNodeNumber);
+
+  /* Start the creation of a new RC coordinate system */
+  Err = CMISSCoordinateSystemTypeInitialise(&CoordinateSystem);
+  Err = CMISSCoordinateSystemCreateStart(COORDINATE_SYSTEM_USER_NUMBER,CoordinateSystem);
+  if(NUMBER_GLOBAL_Z_ELEMENTS==0)
     {
-      Err = CMISSErrorHandlingModeSet(CMISSTrapError);
-
-      Err = CMISSComputationalNumberOfNodesGet(&NumberOfComputationalNodes);
-      Err = CMISSComputationalNodeNumberGet(&ComputationalNodeNumber);
-
-      /* Start the creation of a new RC coordinate system */
-      Err = CMISSCoordinateSystemTypeInitialise(&CoordinateSystem);
-      Err = CMISSCoordinateSystemCreateStart(COORDINATE_SYSTEM_USER_NUMBER,CoordinateSystem);
-      if(NUMBER_GLOBAL_Z_ELEMENTS==0)
-        {
-          /* Set the coordinate system to be 2D */
-          Err = CMISSCoordinateSystemDimensionSet(CoordinateSystem,2);
-        }
-      else
-        {
-          /* Set the coordinate system to be 3D */
-          Err = CMISSCoordinateSystemDimensionSet(CoordinateSystem,3);
-        }
-      /* Finish the creation of the coordinate system */
-      Err = CMISSCoordinateSystemCreateFinish(CoordinateSystem);
-
-      /* Start the creation of the region */
-      Err = CMISSRegionTypeInitialise(&Region);
-      Err = CMISSRegionCreateStart(REGION_USER_NUMBER,WorldRegion,Region);
-      /* Set the regions coordinate system to the 2D RC coordinate system that we have created */
-      Err = CMISSRegionCoordinateSystemSet(Region,CoordinateSystem);
-      /* Finish the creation of the region */
-      Err = CMISSRegionCreateFinish(Region);
-
-      /* Start the creation of a basis (default is trilinear lagrange) */
-      Err = CMISSBasisTypeInitialise(&Basis);
-      Err = CMISSBasisCreateStart(BASIS_USER_NUMBER,Basis);
-      if(NUMBER_GLOBAL_Z_ELEMENTS==0)
-        {
-          /* Set the basis to be a bilinear Lagrange basis */
-          Err = CMISSBasisNumberOfXiSet(Basis,2);
-        }
-      else
-        {
-          /* Set the basis to be a trilinear Lagrange basis */
-          Err = CMISSBasisNumberOfXiSet(Basis,3);
-        }
-      /* Finish the creation of the basis */
-      Err = CMISSBasisCreateFinish(Basis);
-
-      /* Start the creation of a generated mesh in the region */
-      Err = CMISSGeneratedMeshTypeInitialise(&GeneratedMesh);
-      Err = CMISSGeneratedMeshCreateStart(GENERATED_MESH_USER_NUMBER,Region,GeneratedMesh);
-      /* Set up a regular x*y*z mesh */
-      Err = CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType);
-      /* Set the default basis */
-      Bases[1] = Basis;
-      Err = CMISSGeneratedMeshBasisSet(GeneratedMesh,1,Bases);
-      /* Define the mesh on the region */
-      MeshExtent[0]=WIDTH;
-      MeshExtent[1]=HEIGHT;
-      NumberXiElements[0]=NUMBER_GLOBAL_X_ELEMENTS;
-      NumberXiElements[1]=NUMBER_GLOBAL_Y_ELEMENTS;
-      if(NUMBER_GLOBAL_Z_ELEMENTS!=0)
-        {
-          MeshExtent[2]=LENGTH;
-          NumberXiElements[2]=NUMBER_GLOBAL_Z_ELEMENTS;
-        }
-      Err = CMISSGeneratedMeshExtentSet(GeneratedMesh,MAX_COORDINATES,MeshExtent);
-      Err = CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,MAX_COORDINATES,NumberXiElements);
-      /* Finish the creation of a generated mesh in the region */
-      Err = CMISSMeshTypeInitialise(&Mesh);
-      Err = CMISSGeneratedMeshCreateFinish(GeneratedMesh,MESH_USER_NUMBER,Mesh);
-
-      /* Create a decomposition */
-      Err = CMISSDecompositionTypeInitialise(&Decomposition);
-      Err = CMISSDecompositionCreateStart(DECOMPOSITION_USER_NUMBER,Mesh,Decomposition);
-      /* Set the decomposition to be a general decomposition with the specified number of domains */
-      Err = CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType);
-      Err = CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfComputationalNodes);
-      /* Finish the decomposition */
-      Err = CMISSDecompositionCreateFinish(Decomposition);
-
-      /* Start to create a default (geometric) field on the region */
-      Err = CMISSFieldTypeInitialise(&GeometricField);
-      Err = CMISSFieldCreateStart(GEOMETRIC_FIELD_USER_NUMBER,Region,GeometricField);
-      /* Set the decomposition to use */
-      Err = CMISSFieldMeshDecompositionSet(GeometricField,Decomposition);
-      /* Set the domain to be used by the field components. */
-      Err = CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,1);
-      Err = CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,1);
-      if(NUMBER_GLOBAL_Z_ELEMENTS!=0)
-        {
-          Err = CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,1);
-        }
-      /* Finish creating the field */
-      Err = CMISSFieldCreateFinish(GeometricField);
-
-      /* Update the geometric field parameters */
-      Err = CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh);
-
-      /* Create the equations_set */
-      Err = CMISSEquationsSetTypeInitialise(&EquationsSet);
-      Err = CMISSEquationsSetCreateStart(EQUATIONS_SET_USER_NUMBER,Region,GeometricField,CMISSEquationsSetClassicalFieldClass,CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,EQUATIONS_SET_FIELD_USER_NUMBER,EquationsSetField,EquationsSet);
-      /* Set the equations set to be a standard Laplace problem */
-      //Err = CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass,CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype);
-      /* Finish creating the equations set */
-      Err = CMISSEquationsSetCreateFinish(EquationsSet);
-
-      /* Create the equations set dependent field variables */
-      Err = CMISSFieldTypeInitialise(&DependentField);
-      Err = CMISSEquationsSetDependentCreateStart(EquationsSet,DEPENDENT_FIELD_USER_NUMBER,DependentField);
-      /* Finish the equations set dependent field variables */
-      Err = CMISSEquationsSetDependentCreateFinish(EquationsSet);
-
-      /* Create the equations set equations */
-      Err = CMISSEquationsTypeInitialise(&Equations);
-      Err = CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations);
-      /* Set the equations matrices sparsity type */
-      Err = CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices);
-      /* Set the equations set output */
-      /* Err = CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput); */
-      Err = CMISSEquationsOutputTypeSet(Equations,CMISSEquationsTimingOutput);
-      /* Err = CMISSEquationsOutputTypeSet(Equations,CMISSEquationsMatrixOutput); */
-      /* Err = CMISSEquationsOutputTypeSet(Equations,CMISSEquationsElementMatrixOutput); */
-      /* Finish the equations set equations */
-      Err = CMISSEquationsSetEquationsCreateFinish(EquationsSet);
-
-      /* Start the creation of a problem. */
-      Err = CMISSProblemTypeInitialise(&Problem);
-      Err = CMISSProblemCreateStart(PROBLEM_USER_NUMBER,Problem);
-      /* Set the problem to be a standard Laplace problem */
-      Err = CMISSProblemSpecificationSet(Problem,CMISSProblemClassicalFieldClass,CMISSProblemLaplaceEquationType,CMISSProblemStandardLaplaceSubtype);
-      /* Finish the creation of a problem. */
-      Err = CMISSProblemCreateFinish(Problem);
-
-      /* Start the creation of the problem control loop */
-      Err = CMISSProblemControlLoopCreateStart(Problem);
-      /* Finish creating the problem control loop */
-      Err = CMISSProblemControlLoopCreateFinish(Problem);
-
-      /* Start the creation of the problem solvers */
-      Err = CMISSSolverTypeInitialise(&Solver);
-      Err = CMISSProblemSolversCreateStart(Problem);
-      Err = CMISSProblemSolverGet(Problem,1,ControlLoopIdentifier,1,Solver);
-      /* Err = CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput); */
-      /* Err = CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput); */
-      /* Err = CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput); */
-      /* Err = CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput); */
-      Err = CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput);
-      Err = CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearDirectSolveType);
-      Err = CMISSSolverLibraryTypeSet(Solver,CMISSSolverMUMPSLibrary);
-      /* Finish the creation of the problem solver */
-      Err = CMISSProblemSolversCreateFinish(Problem);
-
-      /* Start the creation of the problem solver equations */
-      Err = CMISSSolverTypeInitialise(&Solver);
-      Err = CMISSSolverEquationsTypeInitialise(&SolverEquations);
-      Err = CMISSProblemSolverEquationsCreateStart(Problem);
-      /* Get the solve equations */
-      Err = CMISSProblemSolverGet(Problem,1,ControlLoopIdentifier,1,Solver);
-      Err = CMISSSolverSolverEquationsGet(Solver,SolverEquations);
-      /* Set the solver equations sparsity */
-      Err = CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices);
-      /* Err = CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices);  */
-      /* Add in the equations set */
-      Err = CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,&EquationsSetIndex);
-      /* Finish the creation of the problem solver equations */
-      Err = CMISSProblemSolverEquationsCreateFinish(Problem);
-
-      /* Start the creation of the equations set boundary conditions */
-      Err = CMISSBoundaryConditionsTypeInitialise(&BoundaryConditions);
-      Err = CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions);
-      /* Set the first node to 0.0 and the last node to 1.0 */
-      FirstNodeNumber=1;
-      if(NUMBER_GLOBAL_Z_ELEMENTS==0)
-        {
-          LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1);
-        }
-      else
-        {
-          LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1);
-        }
-      Err = CMISSDecompositionNodeDomainGet(Decomposition,FirstNodeNumber,1,&FirstNodeDomain);
-      Err = CMISSDecompositionNodeDomainGet(Decomposition,LastNodeNumber,1,&LastNodeDomain);
-      if(FirstNodeDomain==ComputationalNodeNumber)
-        {
-          Err = CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,FirstNodeNumber,1,CMISSBoundaryConditionFixed,0.0);
-        }
-      if(LastNodeDomain==ComputationalNodeNumber)
-        {
-          Err = CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,LastNodeNumber,1,CMISSBoundaryConditionFixed,1.0);
-        }
-      /* Finish the creation of the equations set boundary conditions */
-      Err = CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations);
-
-      /* Solve the problem */
-      Err = CMISSProblemSolve(Problem);
-
-      Err = CMISSFinalise();
+      /* Set the coordinate system to be 2D */
+      Err = CMISSCoordinateSystemDimensionSet(CoordinateSystem,2);
     }
+  else
+    {
+      /* Set the coordinate system to be 3D */
+      Err = CMISSCoordinateSystemDimensionSet(CoordinateSystem,3);
+    }
+  /* Finish the creation of the coordinate system */
+  Err = CMISSCoordinateSystemCreateFinish(CoordinateSystem);
+
+  /* Start the creation of the region */
+  Err = CMISSRegionTypeInitialise(&Region);
+  Err = CMISSRegionCreateStart(REGION_USER_NUMBER,WorldRegion,Region);
+  /* Set the regions coordinate system to the 2D RC coordinate system that we have created */
+  Err = CMISSRegionCoordinateSystemSet(Region,CoordinateSystem);
+  /* Finish the creation of the region */
+  Err = CMISSRegionCreateFinish(Region);
+
+  /* Start the creation of a basis (default is trilinear lagrange) */
+  Err = CMISSBasisTypeInitialise(&Basis);
+  Err = CMISSBasisCreateStart(BASIS_USER_NUMBER,Basis);
+  if(NUMBER_GLOBAL_Z_ELEMENTS==0)
+    {
+      /* Set the basis to be a bilinear Lagrange basis */
+      Err = CMISSBasisNumberOfXiSet(Basis,2);
+    }
+  else
+    {
+      /* Set the basis to be a trilinear Lagrange basis */
+      Err = CMISSBasisNumberOfXiSet(Basis,3);
+    }
+  /* Finish the creation of the basis */
+  Err = CMISSBasisCreateFinish(Basis);
+
+  /* Start the creation of a generated mesh in the region */
+  Err = CMISSGeneratedMeshTypeInitialise(&GeneratedMesh);
+  Err = CMISSGeneratedMeshCreateStart(GENERATED_MESH_USER_NUMBER,Region,GeneratedMesh);
+  /* Set up a regular x*y*z mesh */
+  Err = CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType);
+  /* Set the default basis */
+  Bases[1] = Basis;
+  Err = CMISSGeneratedMeshBasisSet(GeneratedMesh,1,Bases);
+  /* Define the mesh on the region */
+  MeshExtent[0]=WIDTH;
+  MeshExtent[1]=HEIGHT;
+  NumberXiElements[0]=NUMBER_GLOBAL_X_ELEMENTS;
+  NumberXiElements[1]=NUMBER_GLOBAL_Y_ELEMENTS;
+  if(NUMBER_GLOBAL_Z_ELEMENTS!=0)
+    {
+      MeshExtent[2]=LENGTH;
+      NumberXiElements[2]=NUMBER_GLOBAL_Z_ELEMENTS;
+    }
+  Err = CMISSGeneratedMeshExtentSet(GeneratedMesh,MAX_COORDINATES,MeshExtent);
+  Err = CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,MAX_COORDINATES,NumberXiElements);
+  /* Finish the creation of a generated mesh in the region */
+  Err = CMISSMeshTypeInitialise(&Mesh);
+  Err = CMISSGeneratedMeshCreateFinish(GeneratedMesh,MESH_USER_NUMBER,Mesh);
+
+  /* Create a decomposition */
+  Err = CMISSDecompositionTypeInitialise(&Decomposition);
+  Err = CMISSDecompositionCreateStart(DECOMPOSITION_USER_NUMBER,Mesh,Decomposition);
+  /* Set the decomposition to be a general decomposition with the specified number of domains */
+  Err = CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType);
+  Err = CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfComputationalNodes);
+  /* Finish the decomposition */
+  Err = CMISSDecompositionCreateFinish(Decomposition);
+
+  /* Start to create a default (geometric) field on the region */
+  Err = CMISSFieldTypeInitialise(&GeometricField);
+  Err = CMISSFieldCreateStart(GEOMETRIC_FIELD_USER_NUMBER,Region,GeometricField);
+  /* Set the decomposition to use */
+  Err = CMISSFieldMeshDecompositionSet(GeometricField,Decomposition);
+  /* Set the domain to be used by the field components. */
+  Err = CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,1);
+  Err = CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,1);
+  if(NUMBER_GLOBAL_Z_ELEMENTS!=0)
+    {
+      Err = CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,1);
+    }
+  /* Finish creating the field */
+  Err = CMISSFieldCreateFinish(GeometricField);
+
+  /* Update the geometric field parameters */
+  Err = CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh);
+
+  /* Create the equations_set */
+  Err = CMISSEquationsSetTypeInitialise(&EquationsSet);
+  Err = CMISSEquationsSetCreateStart(EQUATIONS_SET_USER_NUMBER,Region,GeometricField,CMISSEquationsSetClassicalFieldClass,CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,EQUATIONS_SET_FIELD_USER_NUMBER,EquationsSetField,EquationsSet);
+  /* Set the equations set to be a standard Laplace problem */
+  //Err = CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass,CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype);
+  /* Finish creating the equations set */
+  Err = CMISSEquationsSetCreateFinish(EquationsSet);
+
+  /* Create the equations set dependent field variables */
+  Err = CMISSFieldTypeInitialise(&DependentField);
+  Err = CMISSEquationsSetDependentCreateStart(EquationsSet,DEPENDENT_FIELD_USER_NUMBER,DependentField);
+  /* Finish the equations set dependent field variables */
+  Err = CMISSEquationsSetDependentCreateFinish(EquationsSet);
+
+  /* Create the equations set equations */
+  Err = CMISSEquationsTypeInitialise(&Equations);
+  Err = CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations);
+  /* Set the equations matrices sparsity type */
+  Err = CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices);
+  /* Set the equations set output */
+  /* Err = CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput); */
+  Err = CMISSEquationsOutputTypeSet(Equations,CMISSEquationsTimingOutput);
+  /* Err = CMISSEquationsOutputTypeSet(Equations,CMISSEquationsMatrixOutput); */
+  /* Err = CMISSEquationsOutputTypeSet(Equations,CMISSEquationsElementMatrixOutput); */
+  /* Finish the equations set equations */
+  Err = CMISSEquationsSetEquationsCreateFinish(EquationsSet);
+
+  /* Start the creation of a problem. */
+  Err = CMISSProblemTypeInitialise(&Problem);
+  Err = CMISSProblemCreateStart(PROBLEM_USER_NUMBER,Problem);
+  /* Set the problem to be a standard Laplace problem */
+  Err = CMISSProblemSpecificationSet(Problem,CMISSProblemClassicalFieldClass,CMISSProblemLaplaceEquationType,CMISSProblemStandardLaplaceSubtype);
+  /* Finish the creation of a problem. */
+  Err = CMISSProblemCreateFinish(Problem);
+
+  /* Start the creation of the problem control loop */
+  Err = CMISSProblemControlLoopCreateStart(Problem);
+  /* Finish creating the problem control loop */
+  Err = CMISSProblemControlLoopCreateFinish(Problem);
+
+  /* Start the creation of the problem solvers */
+  Err = CMISSSolverTypeInitialise(&Solver);
+  Err = CMISSProblemSolversCreateStart(Problem);
+  Err = CMISSProblemSolverGet(Problem,1,ControlLoopIdentifier,1,Solver);
+  /* Err = CMISSSolverOutputTypeSet(Solver,CMISSSolverNoOutput); */
+  /* Err = CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput); */
+  /* Err = CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput); */
+  /* Err = CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput); */
+  Err = CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput);
+  Err = CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearDirectSolveType);
+  Err = CMISSSolverLibraryTypeSet(Solver,CMISSSolverMUMPSLibrary);
+  /* Finish the creation of the problem solver */
+  Err = CMISSProblemSolversCreateFinish(Problem);
+
+  /* Start the creation of the problem solver equations */
+  Err = CMISSSolverTypeInitialise(&Solver);
+  Err = CMISSSolverEquationsTypeInitialise(&SolverEquations);
+  Err = CMISSProblemSolverEquationsCreateStart(Problem);
+  /* Get the solve equations */
+  Err = CMISSProblemSolverGet(Problem,1,ControlLoopIdentifier,1,Solver);
+  Err = CMISSSolverSolverEquationsGet(Solver,SolverEquations);
+  /* Set the solver equations sparsity */
+  Err = CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices);
+  /* Err = CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices);  */
+  /* Add in the equations set */
+  Err = CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,&EquationsSetIndex);
+  /* Finish the creation of the problem solver equations */
+  Err = CMISSProblemSolverEquationsCreateFinish(Problem);
+
+  /* Start the creation of the equations set boundary conditions */
+  Err = CMISSBoundaryConditionsTypeInitialise(&BoundaryConditions);
+  Err = CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions);
+  /* Set the first node to 0.0 and the last node to 1.0 */
+  FirstNodeNumber=1;
+  if(NUMBER_GLOBAL_Z_ELEMENTS==0)
+    {
+      LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1);
+    }
+  else
+    {
+      LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1);
+    }
+  Err = CMISSDecompositionNodeDomainGet(Decomposition,FirstNodeNumber,1,&FirstNodeDomain);
+  Err = CMISSDecompositionNodeDomainGet(Decomposition,LastNodeNumber,1,&LastNodeDomain);
+  if(FirstNodeDomain==ComputationalNodeNumber)
+    {
+      Err = CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,FirstNodeNumber,1,CMISSBoundaryConditionFixed,0.0);
+    }
+  if(LastNodeDomain==ComputationalNodeNumber)
+    {
+      Err = CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,LastNodeNumber,1,CMISSBoundaryConditionFixed,1.0);
+    }
+  /* Finish the creation of the equations set boundary conditions */
+  Err = CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations);
+
+  /* Solve the problem */
+  Err = CMISSProblemSolve(Problem);
+
+  Err = CMISSFinalise();
 
   return Err;
 }
