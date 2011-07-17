@@ -88,8 +88,7 @@
 
 int main()
 {
-  CMISSBasisType Basis=(CMISSBasisType)NULL;
-  CMISSBasisType Bases[1];
+  CMISSBasisType Bases[1] = {(CMISSBasisType)NULL};
   CMISSBoundaryConditionsType BoundaryConditions=(CMISSBoundaryConditionsType)NULL;
   CMISSCoordinateSystemType CoordinateSystem=(CMISSCoordinateSystemType)NULL,WorldCoordinateSystem=(CMISSCoordinateSystemType)NULL;
   CMISSDecompositionType Decomposition=(CMISSDecompositionType)NULL;
@@ -115,7 +114,7 @@ int main()
 
   int Err;
 
-  ControlLoopIdentifier[1]=CMISSControlLoopNode;
+  ControlLoopIdentifier[0]=CMISSControlLoopNode;
 
   Err = CMISSCoordinateSystemTypeInitialise(&WorldCoordinateSystem);
   CHECK_ERROR("Initialising world coordinate system");
@@ -153,20 +152,20 @@ int main()
   Err = CMISSRegionCreateFinish(Region);
 
   /* Start the creation of a basis (default is trilinear lagrange) */
-  Err = CMISSBasisTypeInitialise(&Basis);
-  Err = CMISSBasisCreateStart(BASIS_USER_NUMBER,Basis);
+  Err = CMISSBasisTypeInitialise(&Bases[0]);
+  Err = CMISSBasisCreateStart(BASIS_USER_NUMBER,Bases[0]);
   if(NUMBER_GLOBAL_Z_ELEMENTS==0)
     {
       /* Set the basis to be a bilinear Lagrange basis */
-      Err = CMISSBasisNumberOfXiSet(Basis,2);
+      Err = CMISSBasisNumberOfXiSet(Bases[0],2);
     }
   else
     {
       /* Set the basis to be a trilinear Lagrange basis */
-      Err = CMISSBasisNumberOfXiSet(Basis,3);
+      Err = CMISSBasisNumberOfXiSet(Bases[0],3);
     }
   /* Finish the creation of the basis */
-  Err = CMISSBasisCreateFinish(Basis);
+  Err = CMISSBasisCreateFinish(Bases[0]);
 
   /* Start the creation of a generated mesh in the region */
   Err = CMISSGeneratedMeshTypeInitialise(&GeneratedMesh);
@@ -174,8 +173,8 @@ int main()
   /* Set up a regular x*y*z mesh */
   Err = CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType);
   /* Set the default basis */
-  Bases[1] = Basis;
   Err = CMISSGeneratedMeshBasisSet(GeneratedMesh,1,Bases);
+  CHECK_ERROR("Setting mesh basis");
   /* Define the mesh on the region */
   MeshExtent[0]=WIDTH;
   MeshExtent[1]=HEIGHT;
@@ -190,6 +189,7 @@ int main()
   Err = CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,MAX_COORDINATES,NumberXiElements);
   /* Finish the creation of a generated mesh in the region */
   Err = CMISSMeshTypeInitialise(&Mesh);
+  /* Finish the creation of a generated mesh in the region */
   Err = CMISSGeneratedMeshCreateFinish(GeneratedMesh,MESH_USER_NUMBER,Mesh);
 
   /* Create a decomposition */
@@ -221,7 +221,9 @@ int main()
 
   /* Create the equations_set */
   Err = CMISSEquationsSetTypeInitialise(&EquationsSet);
+  Err = CMISSFieldTypeInitialise(&EquationsSetField);
   Err = CMISSEquationsSetCreateStart(EQUATIONS_SET_USER_NUMBER,Region,GeometricField,CMISSEquationsSetClassicalFieldClass,CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype,EQUATIONS_SET_FIELD_USER_NUMBER,EquationsSetField,EquationsSet);
+  CHECK_ERROR("Creating equations set");
   /* Set the equations set to be a standard Laplace problem */
   //Err = CMISSEquationsSetSpecificationSet(EquationsSet,CMISSEquationsSetClassicalFieldClass,CMISSEquationsSetLaplaceEquationType,CMISSEquationsSetStandardLaplaceSubtype);
   /* Finish creating the equations set */
@@ -274,6 +276,7 @@ int main()
   Err = CMISSProblemSolversCreateFinish(Problem);
 
   /* Start the creation of the problem solver equations */
+  Solver=(CMISSSolverType)NULL;
   Err = CMISSSolverTypeInitialise(&Solver);
   Err = CMISSSolverEquationsTypeInitialise(&SolverEquations);
   Err = CMISSProblemSolverEquationsCreateStart(Problem);
