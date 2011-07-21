@@ -88,7 +88,7 @@
 
 int main()
 {
-  CMISSBasisType Bases[1] = {(CMISSBasisType)NULL};
+  CMISSBasisType Basis = (CMISSBasisType)NULL;
   CMISSBoundaryConditionsType BoundaryConditions=(CMISSBoundaryConditionsType)NULL;
   CMISSCoordinateSystemType CoordinateSystem=(CMISSCoordinateSystemType)NULL,WorldCoordinateSystem=(CMISSCoordinateSystemType)NULL;
   CMISSDecompositionType Decomposition=(CMISSDecompositionType)NULL;
@@ -152,20 +152,20 @@ int main()
   Err = CMISSRegionCreateFinish(Region);
 
   /* Start the creation of a basis (default is trilinear lagrange) */
-  Err = CMISSBasisTypeInitialise(&Bases[0]);
-  Err = CMISSBasisCreateStart(BASIS_USER_NUMBER,Bases[0]);
+  Err = CMISSBasisTypeInitialise(&Basis);
+  Err = CMISSBasisCreateStart(BASIS_USER_NUMBER,Basis);
   if(NUMBER_GLOBAL_Z_ELEMENTS==0)
     {
       /* Set the basis to be a bilinear Lagrange basis */
-      Err = CMISSBasisNumberOfXiSet(Bases[0],2);
+      Err = CMISSBasisNumberOfXiSet(Basis,2);
     }
   else
     {
       /* Set the basis to be a trilinear Lagrange basis */
-      Err = CMISSBasisNumberOfXiSet(Bases[0],3);
+      Err = CMISSBasisNumberOfXiSet(Basis,3);
     }
   /* Finish the creation of the basis */
-  Err = CMISSBasisCreateFinish(Bases[0]);
+  Err = CMISSBasisCreateFinish(Basis);
 
   /* Start the creation of a generated mesh in the region */
   Err = CMISSGeneratedMeshTypeInitialise(&GeneratedMesh);
@@ -173,7 +173,7 @@ int main()
   /* Set up a regular x*y*z mesh */
   Err = CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType);
   /* Set the default basis */
-  Err = CMISSGeneratedMeshBasisSet(GeneratedMesh,1,Bases);
+  Err = CMISSGeneratedMeshBasisSet(GeneratedMesh,1,&Basis);
   CHECK_ERROR("Setting mesh basis");
   /* Define the mesh on the region */
   MeshExtent[0]=WIDTH;
