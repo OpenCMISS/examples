@@ -173,7 +173,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
 !  REAL(CMISSDP) :: X,Y,DISTANCE,gK1_VALUE,gNa_VALUE
   
   REAL(CMISSDP), PARAMETER :: STIM_VALUE = 30000.0_CMISSDP !100.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: STIM_STOP = 0.02_CMISSDP !0.1_CMISSDP
+  REAL(CMISSDP), PARAMETER :: STIM_STOP = 0.002_CMISSDP !0.02_CMISSDP !0.1_CMISSDP
   REAL(CMISSDP), PARAMETER :: TIME_STOP = 2.0_CMISSDP !0.2_CMISSDP
   REAL(CMISSDP), PARAMETER :: ODE_TIME_STEP = 0.00001_CMISSDP !0.00001_CMISSDP
   REAL(CMISSDP), PARAMETER :: PDE_TIME_STEP = 0.0005_CMISSDP !0.001_CMISSDP
@@ -649,11 +649,11 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
   CALL CMISSCellMLCreateCellMLToFieldMap(CellML,shortenModelIndex,"wal_environment/vS",CMISSFieldValuesSetType, &
     & DependentFieldM,CMISSFieldUVariableType,1,CMISSFieldValuesSetType,Err)
 ! TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO 
-  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,shortenModelIndex,"razumova/A_1",CMISSFieldValuesSetType, &
+  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,shortenModelIndex,"wal_environment/stress",CMISSFieldValuesSetType, &
     & IndependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType,Err)
 ! TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO 
   CALL CMISSCellMLFieldMapsCreateFinish(CellML,Err)
-
+  
   !--------------------------------------------------------------------------------------------------------------------------------
   !Initialise dependent field for monodomain
   !todo - get V_m initialial value.
