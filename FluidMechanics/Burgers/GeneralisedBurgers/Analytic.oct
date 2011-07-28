@@ -1,184 +1,250 @@
-a=1.0
-b=1.0
-c=1.0
-D=1.0
-E=1.0
-L=3
-theta=0.5
-deltat=0.01
+global a = 1.0;
+global b = 1.0;
+global c = 1.0;
+global D = 1.0;
+global E = 1.0;
 
-t=0.0
+global L = 3;
 
-x=[0.0;0.5;1.0;1.5;2.0;2.5;3.0]
+global ne = 100;
 
-alpha=[0;0;0;0;0;0;0]
+global np = ne+1;
 
-analyticu=(D+a*x)/(E+c*t)
+global theta = 0.5;
 
-K=[[-2,2,0,0,0,0,0];
-   [2,-4,2,0,0,0,0];
-   [0,2,-4,2,0,0,0];
-   [0,0,2,-4,2,0,0];
-   [0,0,0,2,-4,2,0];
-   [0,0,0,0,2,-4,2];
-   [0,0,0,0,0,2,-2]]
+global deltat = 0.0001;
+global startt = 0.0;
+global stopt = 0.01
 
-C=[[1/6,1/12,0,0,0,0,0];
-   [1/12,1/3,1/12,0,0,0,0];
-   [0,1/12,1/3,1/12,0,0,0];
-   [0,0,1/12,1/3,1/12,0,0];
-   [0,0,0,1/12,1/3,1/12,0];
-   [0,0,0,0,1/12,1/3,1/12];
-   [0,0,0,0,0,1/12,1/6]]
+global x = zeros(np,1);
+global alpha = zeros(np,1);
 
-A=C+theta*deltat*K
+global K = zeros(np,np);
+global C = zeros(np,np);
 
-u=analyticu
+K1 = ne/L;
+K2 = -2*ne/L;
+C1 = L/(6*ne);
+C2 = (2*L)/(3*ne);
 
-g=[c/6.0*(u(2)*u(2)+u(1)*u(2)-2*u(1)*u(1));
-      c/6.0*(2*u(3)*u(3)+u(1)*u(2)-u(2)*u(3)-2*u(1)*u(1));
-      c/6.0*(2*u(4)*u(4)+u(2)*u(3)-u(3)*u(4)-2*u(2)*u(2));
-      c/6.0*(2*u(5)*u(5)+u(3)*u(4)-u(4)*u(5)-2*u(3)*u(3));
-      c/6.0*(2*u(6)*u(6)+u(4)*u(5)-u(5)*u(6)-2*u(4)*u(4));
-      c/6.0*(2*u(7)*u(7)+u(5)*u(6)-u(6)*u(7)-2*u(5)*u(5));
-      c/6.0*(2*u(7)*u(7)-u(6)*u(7)-u(6)*u(6))]
+x(1) = 0.0;
+alpha(1) = 0.0;
 
-t=t+deltat
+K(1,1) = K2/2;
+K(1,2) = K1;
 
-analyticu=(D+a*x)/(E+c*t)
+C(1,1) = C2/2;
+C(1,2) = C1;
 
-u(1)=analyticu(1)
-u(7)=analyticu(7)
+for i = 2:np-1
 
-prevu=u
+  x(i) = (i-1)*L/ne;
+  alpha(i) = 0.0;
 
-prevg=g
+  K(i,i-1) = K1;
+  K(i,i) = K2;
+  K(i,i+1) = K1;
 
-meanpredictedu=u
+  C(i,i-1) = C1;
+  C(i,i) = C2;
+  C(i,i+1) = C1;
+    
+endfor
 
-predictedu=u
+x(np) = L;
+alpha(np) = 0.0;
 
-g=[c/6.0*(u(2)*u(2)+u(1)*u(2)-2*u(1)*u(1));
-   c/6.0*(2*u(3)*u(3)+u(1)*u(2)-u(2)*u(3)-2*u(1)*u(1));
-   c/6.0*(2*u(4)*u(4)+u(2)*u(3)-u(3)*u(4)-2*u(2)*u(2));
-   c/6.0*(2*u(5)*u(5)+u(3)*u(4)-u(4)*u(5)-2*u(3)*u(3));
-   c/6.0*(2*u(6)*u(6)+u(4)*u(5)-u(5)*u(6)-2*u(4)*u(4));
-   c/6.0*(2*u(7)*u(7)+u(5)*u(6)-u(6)*u(7)-2*u(5)*u(5));
-   c/6.0*(2*u(7)*u(7)-u(6)*u(7)-u(6)*u(6))]
+K(np,np-1) = K1;
+K(np,np) = K2/2;
 
-normg=sqrt(g(1)*g(1)+g(2)*g(2)+g(3)*g(3)+g(4)*g(4)+g(5)*g(5)+g(6)*g(6)+g(7)*g(7))
+C(np,np-1) = C1;
+C(np,np) = C2/2;
 
-delgdelu=[[c/6.0*(u(2)-4*u(1)),c/6.0*(2*u(2)+u(1)),0,0,0,0,0];
-          [c/6.0*(-u(2)-2*u(1)),c/6.0*(u(3)-u(1)),c/6.0*(2*u(3)+u(2)),0,0,0,0];
-          [0,c/6.0*(-u(3)-2*u(2)),c/6.0*(u(4)-u(2)),c/6.0*(2*u(4)+u(3)),0,0,0];
-          [0,0,c/6.0*(-u(4)-2*u(3)),c/6.0*(u(5)-u(3)),c/6.0*(2*u(5)+u(4)),0,0];
-          [0,0,0,c/6.0*(-u(5)-2*u(4)),c/6.0*(u(6)-u(4)),c/6.0*(2*u(6)+u(5)),0];
-          [0,0,0,0,c/6.0*(-u(6)-2*u(5)),c/6.0*(u(7)-u(5)),c/6.0*(2*u(7)+u(6))];
-          [0,0,0,0,0,c/6.0*(-u(7)-2*u(6)),c/6.0*(4*u(7)-u(6))]]
+global t = startt;
 
-J=delgdelu+A
+global analyticu = (D+a*x)/(E+c*t);
 
-b=K*meanpredictedu
+x
 
-residual=A*alpha+theta*g
+alpha
 
-rhs=-(1-theta)*prevg-b
+K
 
-reducedJ=J(2:6,2:6)
+C
 
-reducedresidual=residual(2:6)
+function y = g ( myu )
 
-reducedrhs=rhs(2:6)
+   global c;
+   global np;
 
-reducedalpha=alpha(2:6)
+   y = zeros(np,1);
+  
+   y(1)=c/6.0*(myu(2)*myu(2)+myu(1)*myu(2)-2*myu(1)*myu(1));
 
-freducedresidualnorm=sqrt(reducedresidual(1)*reducedresidual(1)+reducedresidual(2)*reducedresidual(2)+reducedresidual(3)*reducedresidual(3)+reducedresidual(4)*reducedresidual(4)+reducedresidual(5)*reducedresidual(5))
+   for i = 2:np-1
 
-freducedalphanorm=sqrt(reducedalpha(1)*reducedalpha(1)+reducedalpha(2)*reducedalpha(2)+reducedalpha(3)*reducedalpha(3)+reducedalpha(4)*reducedalpha(4)+reducedalpha(5)*reducedalpha(5))
+     y(i)= c/6.0*(2*myu(i+1)*myu(i+1)+myu(i-1)*myu(i)-myu(i)*myu(i+1)-2*myu(i-1)*myu(i-1));
 
-deltaalpha=reducedJ\-reducedresidual
+   endfor
+   
+   y(np) = c/6.0*(2*myu(np)*myu(np)-myu(np-1)*myu(np)-myu(np-1)*myu(np-1));
 
-steplength=1.0
+endfunction 
 
-alpha(2:6)=alpha(2:6)+steplength*deltaalpha
+function J = delgdelu ( myu )
 
-u=u+deltat*alpha
+   global c;
+   global np;
 
-error(1)=100.0*(u(1)-analyticu(1))/analyticu(1)
-error(2)=100.0*(u(2)-analyticu(2))/analyticu(2)
-error(3)=100.0*(u(3)-analyticu(3))/analyticu(3)
-error(4)=100.0*(u(4)-analyticu(4))/analyticu(4)
-error(5)=100.0*(u(5)-analyticu(5))/analyticu(5)
-error(6)=100.0*(u(6)-analyticu(6))/analyticu(6)
-error(7)=100.0*(u(7)-analyticu(7))/analyticu(7)
+   J = zeros(np,np);
+   
+   J(1,1) = c/6.0*(myu(2)-4*myu(1));
+   J(1,2) = c/6.0*(2*myu(2)+myu(1));
 
-t=t+deltat
+   for i = 2:np-1
 
-analyticu=(D+a*x)/(E+c*t)
+     J(i,i-1) = c/6.0*(-myu(i)-2*myu(i-1));
+     J(i,i) = c/6.0*(myu(i+1)-myu(i-1));
+     J(i,i+1) = c/6.0*(2*myu(i+1)+myu(i));
 
-u(1)=analyticu(1)
-u(7)=analyticu(7)
+   endfor
 
-prevu=u
+   J(np,np-1) = c/6.0*(-myu(np)-2*myu(np-1));
+   J(np,np) = c/6.0*(4*myu(np)-myu(np-1));
 
-prevg=g
+endfunction
 
-meanpredictedu=u
+function y = newg ( myalpha )
+  
+   global predictedu;
+   global deltat;
 
-predictedu=u
+   newu = predictedu + deltat*myalpha;
 
-g=[c/6.0*(u(2)*u(2)+u(1)*u(2)-2*u(1)*u(1));
-   c/6.0*(2*u(3)*u(3)+u(1)*u(2)-u(2)*u(3)-2*u(1)*u(1));
-   c/6.0*(2*u(4)*u(4)+u(2)*u(3)-u(3)*u(4)-2*u(2)*u(2));
-   c/6.0*(2*u(5)*u(5)+u(3)*u(4)-u(4)*u(5)-2*u(3)*u(3));
-   c/6.0*(2*u(6)*u(6)+u(4)*u(5)-u(5)*u(6)-2*u(4)*u(4));
-   c/6.0*(2*u(7)*u(7)+u(5)*u(6)-u(6)*u(7)-2*u(5)*u(5));
-   c/6.0*(2*u(7)*u(7)-u(6)*u(7)-u(6)*u(6))]
+   y = g( newu );
 
-normg=sqrt(g(1)*g(1)+g(2)*g(2)+g(3)*g(3)+g(4)*g(4)+g(5)*g(5)+g(6)*g(6)+g(7)*g(7))
+endfunction 
 
-delgdelu=[[c/6.0*(u(2)-4*u(1)),c/6.0*(2*u(2)+u(1)),0,0,0,0,0];
-          [c/6.0*(-u(2)-2*u(1)),c/6.0*(u(3)-u(1)),c/6.0*(2*u(3)+u(2)),0,0,0,0];
-          [0,c/6.0*(-u(3)-2*u(2)),c/6.0*(u(4)-u(2)),c/6.0*(2*u(4)+u(3)),0,0,0];
-          [0,0,c/6.0*(-u(4)-2*u(3)),c/6.0*(u(5)-u(3)),c/6.0*(2*u(5)+u(4)),0,0];
-          [0,0,0,c/6.0*(-u(5)-2*u(4)),c/6.0*(u(6)-u(4)),c/6.0*(2*u(6)+u(5)),0];
-          [0,0,0,0,c/6.0*(-u(6)-2*u(5)),c/6.0*(u(7)-u(5)),c/6.0*(2*u(7)+u(6))];
-          [0,0,0,0,0,c/6.0*(-u(7)-2*u(6)),c/6.0*(4*u(7)-u(6))]]
+function r = residual ( myalpha )
 
-J=delgdelu+A
+   global A;
+   global prevg;
+   global b;
+   global theta;
 
-b=K*meanpredictedu
+   r = A*myalpha + theta*newg(myalpha) + (1-theta)*prevg + b;
+	 
+endfunction
 
-residual=A*alpha+theta*g
+function jacnewg = delnewgdelu ( alpha )
 
-rhs=-(1-theta)*prevg-b
+   global predictedu;
+   global deltat;
 
-reducedJ=J(2:6,2:6)
+   newu = predictedu + deltat*alpha;
 
-reducedresidual=residual(2:6)
+   jacnewg = delgdelu ( newu );
 
-reducedrhs=rhs(2:6)
+endfunction
 
-reducedalpha=alpha(2:6)
+function J = Jacobian ( myalpha )
 
-freducedresidualnorm=sqrt(reducedresidual(1)*reducedresidual(1)+reducedresidual(2)*reducedresidual(2)+reducedresidual(3)*reducedresidual(3)+reducedresidual(4)*reducedresidual(4)+reducedresidual(5)*reducedresidual(5))
+   global A;
+   global theta;
 
-freducedalphanorm=sqrt(reducedalpha(1)*reducedalpha(1)+reducedalpha(2)*reducedalpha(2)+reducedalpha(3)*reducedalpha(3)+reducedalpha(4)*reducedalpha(4)+reducedalpha(5)*reducedalpha(5))
+   J = A + theta*delnewgdelu ( myalpha );
 
-deltaalpha=reducedJ\-reducedresidual
+endfunction
 
-steplength=1.0
+function [reducedr,reducedJacobian] = reducedfunction ( reducedalpha )
 
-alpha(2:6)=alpha(2:6)+steplength*deltaalpha
+   global alpha;
+   global np;
 
-u=u+deltat*alpha
+   myalpha = zeros(np,1); 
+  
+   myalpha(1) = alpha(1);
+   myalpha(2:np-1) = reducedalpha(1:np-2);
+   myalpha(np) = alpha(np);
 
+   r = residual ( myalpha );
 
-error(1)=100.0*(u(1)-analyticu(1))/analyticu(1)
-error(2)=100.0*(u(2)-analyticu(2))/analyticu(2)
-error(3)=100.0*(u(3)-analyticu(3))/analyticu(3)
-error(4)=100.0*(u(4)-analyticu(4))/analyticu(4)
-error(5)=100.0*(u(5)-analyticu(5))/analyticu(5)
-error(6)=100.0*(u(6)-analyticu(6))/analyticu(6)
-error(7)=100.0*(u(7)-analyticu(7))/analyticu(7)
+   reducedr = r(2:np-1);
 
+   if(nargout > 1)
+
+      J = Jacobian ( myalpha );
+
+      reducedJ = J(2:np-1,2:np-1);
+
+   endif
+
+endfunction
+
+global A = C + theta*deltat*K;
+
+cond(A)
+
+quit
+
+u = analyticu
+
+currentg = g(u)
+
+global prevu;
+global prevg;
+global meanpredictedu;
+global predictedu;
+global b;
+
+while t < stopt
+
+t = t + deltat
+
+analyticu = (D+a*x)/(E+c*t)
+
+prevu = u;
+prevg = currentg;
+
+alpha(1) = (analyticu(1)-u(1))/deltat;
+alpha(np) = (analyticu(np)-u(np))/deltat;
+
+meanpredictedu = u;
+
+predictedu = u;
+
+b = K*meanpredictedu;
+
+startalpha = zeros(np-2,1);
+
+[reducedalpha, fval, info] = fsolve( @reducedfunction, startalpha );
+
+alpha(2:np-1) = reducedalpha;
+
+u = predictedu + deltat*alpha
+
+error = zeros(np,1);
+
+for i = 1:np
+
+  error(i) = 100.0*(u(i)-analyticu(i))/analyticu(i);
+
+endfor
+
+error
+
+currentg = g( u );
+
+analyticg = g( analyticu );
+
+psi = A*alpha + theta*currentg + (1-theta)*prevg + b;
+
+v = (u - prevu)/deltat;
+
+analyticv = -c*(D+a*x)/((E+c*t)*(E+c*t));
+
+resid = C*v + K*u + currentg
+
+analyticresid =  C*analyticv + K*analyticu + analyticg;
+
+endwhile
