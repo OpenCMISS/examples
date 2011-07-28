@@ -1,79 +1,130 @@
-a=1.0
-b=pi/2
-c=0
-L=3
-k=1
-theta=0.5
-deltat=0.01
+global a = 1.0;
+global b = pi/2;
+global c = 0;
+global k = 1;
 
-t=0.0
+global L = 3;
 
-X=[0.0;0.5;1.0;1.5;2.0;2.5;3.0]
+global ne = 10;
 
-alpha=[0;0;0;0;0;0;0]
+global np = ne+1;
 
-analyticu=a*exp(4*pi*pi*k*t/(L*L))*cos(2*pi*X/L+b)+c
+global theta = 1.0;
 
-analyticv=4*pi*pi*k*a/(L*L)*exp(4*pi*pi*k*t/(L*L))*cos(2*pi*X/L+b)
+global deltat = 0.01;
+global startt = 0.0;
+global stopt = 0.1;
 
-K=[[-2,2,0,0,0,0,0];
-   [2,-4,2,0,0,0,0];
-   [0,2,-4,2,0,0,0];
-   [0,0,2,-4,2,0,0];
-   [0,0,0,2,-4,2,0];
-   [0,0,0,0,2,-4,2];
-   [0,0,0,0,0,2,-2]]
+global x = zeros(np,1);
+global alpha = zeros(np,1);
 
-C=[[1/6,1/12,0,0,0,0,0];
-   [1/12,1/3,1/12,0,0,0,0];
-   [0,1/12,1/3,1/12,0,0,0];
-   [0,0,1/12,1/3,1/12,0,0];
-   [0,0,0,1/12,1/3,1/12,0];
-   [0,0,0,0,1/12,1/3,1/12];
-   [0,0,0,0,0,1/12,1/6]]
+global K = zeros(np,np);
+global C = zeros(np,np);
 
-res=C*analyticv+K*analyticu
+K1 = ne/L;
+K2 = -2*ne/L;
+C1 = L/(6*ne);
+C2 = (2*L)/(3*ne);
 
-A=C+theta*deltat*K
+x(1) = 0.0;
+alpha(1) = 0.0;
 
+K(1,1) = K2/2;
+K(1,2) = K1;
 
-S=A(2:6,2:6)
+C(1,1) = C2/2;
+C(1,2) = C1;
 
-inv(S)
+for i = 2:np-1
 
-u0=analyticu
+  x(i) = (i-1)*L/ne;
 
-meanpredu0=u0
+  K(i,i-1) = K1;
+  K(i,i) = K2;
+  K(i,i+1) = K1;
 
-b=-K*meanpredu0
+  C(i,i-1) = C1;
+  C(i,i) = C2;
+  C(i,i+1) = C1;
+    
+endfor
 
-r=b(2:6)
+x(np) = L;
 
-salpha=S\r
+K(np,np-1) = K1;
+K(np,np) = K2/2;
 
-alpha(2:6)=salpha
+C(np,np-1) = C1;
+C(np,np) = C2/2;
 
-t=t+deltat
+x
 
-analyticu=a*exp(4*pi*pi*k*t/(L*L))*cos(2*pi*X/L+b)+c
+K
 
-analyticv=4*pi*pi*k*a/(L*L)*exp(4*pi*pi*k*t/(L*L))*cos(2*pi*X/L+b)
+C
 
-u1=u0+deltat*alpha
+global t = startt;
 
-meanpredu1=u1
+global analyticu = a*exp(4*pi*pi*k*t/(L*L))*cos(2*pi*x/L+b)+c;
 
-b=-K*meanpredu1
+global A = C + theta*deltat*K;
 
-r=b(2:6)
+global u = analyticu;
 
-salpha=S\r
+global prevu;
+global meanpredictedu;
+global predictedu;
+global b;
 
-alpha(2:6)=salpha
+while t < stopt
 
-t=t+deltat
+t = t + deltat
 
-analytic=a*exp(4*pi*pi*k*t/(L*L))*cos(2*pi*X/L+b)+c
+analyticu = a*exp(4*pi*pi*k*t/(L*L))*cos(2*pi*x/L+b)+c
 
-u2=u1+deltat*alpha
+prevu = u;
 
+meanpredictedu = u;
+
+predictedu = u;
+
+alpha(1) = (analyticu(1)-predictedu(1))/deltat;
+alpha(np) = (analyticu(np)-predictedu(np))/deltat;
+
+b = -K*meanpredictedu;
+
+r1 = A(:,1)*alpha(1);
+
+r2 = A(:,np)*alpha(np);
+
+rhs = b - r1 - r2;
+
+reducedA = A(2:np-1,2:np-1);
+
+reducedrhs = rhs(2:np-1);
+
+reducedalpha = reducedA\reducedrhs;
+
+alpha(2:np-1) = reducedalpha(1:np-2);
+
+u = predictedu + deltat*alpha
+
+error = zeros(np,1);
+
+for i = 1:np
+
+  error(i) = 100.0*(u(i)-analyticu(i))/analyticu(i);
+
+endfor
+
+error
+
+v = (u - prevu)/deltat;
+
+analyticv = 4*pi*pi*k*a/(L*L)*exp(4*pi*pi*k*t/(L*L))*cos(2*pi*x/L+b);
+
+resid = C*v + K*u 
+
+analyticresid = C*analyticv + K*analyticu
+
+endwhile
