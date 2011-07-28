@@ -250,7 +250,13 @@ tomo
 
 <units name="newton_per_m2">
   <unit units="newton"/>
-  <unit exponent="-3" units="metre"/>
+  <unit exponent="-2" units="metre"/>
+</units>
+
+<units name="newton_millisecond_per_m2">
+  <unit units="newton"/>
+  <unit prefix="milli" units="second"/>
+  <unit exponent="-2" units="metre"/>
 </units>
 
 <units name="micrometre_per_millisecond">
@@ -384,7 +390,7 @@ tomo  end
   <variable name="I_Na_t" private_interface="in" units="microA_per_cm2"/>
   <variable name="I_NaK_t" private_interface="in" units="microA_per_cm2"/>
   
-  <variable name="I_HH" initial_value="0.0" private_interface="out" units="microA_per_cm2"/>
+  <variable initial_value="0.0" name="I_HH" private_interface="out" units="microA_per_cm2"/>
   <variable name="time" private_interface="out" public_interface="in" units="millisecond"/>
   
   
@@ -6833,11 +6839,12 @@ Stern and Rios Component
 <!--
   <variable initial_value="0.000001" name="eta" units="newton_per_m3"/>
   -->
-  <variable initial_value="140" name="eta" units="newton_per_m3"/>
+  <variable initial_value="1.0" name="eta" units="newton_per_m3"/>
 <!--  
   <variable name="stress" units="newton_per_m2"/>
   -->
-  <variable intial_value="0.0115" public_interface="out" name="stress" units="newton_per_m2"/>
+  <variable name="stress" public_interface="out" units="newton_per_m2"/>
+  <variable initial_value="0.0" name="dummy" units="newton_millisecond_per_m2"/>
   
   <variable name="V_o" units="micrometre3"/>
   <variable name="V_1" units="micrometre3"/>
@@ -9598,18 +9605,13 @@ tomo
 <apply id="dx_2_Eqn"><eq/><apply><diff/><bvar><ci>time</ci></bvar><ci>x_2</ci></apply><apply><plus/><apply><times/><apply><minus/><apply><divide/><apply><times/><ci>h_o</ci><ci>A_1</ci></apply><ci>A_2</ci></apply></apply><apply><minus/><ci>x_2</ci><apply><plus/><ci>x_1</ci><ci>x_0</ci></apply></apply></apply><apply><divide/><ci>velo</ci><cn>2</cn></apply></apply></apply>
 </math>
 
-<!--
-tomo
--->
-
 <math xmlns="http://www.w3.org/1998/Math/MathML"><apply id="stress_Eqn"><eq/><ci>stress</ci><apply><times/><ci>eta</ci><apply><plus/><apply><times/><apply><divide/><ci>A_1</ci><ci>T_tot_0</ci></apply><ci>x_1</ci></apply><apply><times/><apply><divide/><ci>A_2</ci><ci>T_tot_0</ci></apply><ci>x_2</ci></apply></apply></apply></apply></math>
+
+<math xmlns="http://www.w3.org/1998/Math/MathML"><apply id="dummy_Eqn"><eq/><apply><diff/><bvar><ci>time</ci></bvar><ci>dummy</ci></apply><ci>stress</ci></apply></math></component>
 
 <!--
 tomo end
 -->        
-
-</component>
-
 
 <group>
   

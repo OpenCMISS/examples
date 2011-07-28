@@ -63,10 +63,12 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
 
 
   !Test program parameters
+  REAL(CMISSDP), PARAMETER :: tol= 0.0000001_CMISSDP
+  LOGICAL :: independent_field_auto_create = .FALSE.
 
-  REAL(CMISSDP), PARAMETER :: LENGTH= 2.5_CMISSDP !1.0_CMISSDP ! X-direction
-  REAL(CMISSDP), PARAMETER :: WIDTH=  2.5_CMISSDP !1.0_CMISSDP ! Y-direction
-  REAL(CMISSDP), PARAMETER :: HEIGHT=0.25_CMISSDP !1.0_CMISSDP ! Z-direction
+  REAL(CMISSDP), PARAMETER :: LENGTH= 0.5_CMISSDP!2.5_CMISSDP !1.0_CMISSDP ! X-direction
+  REAL(CMISSDP), PARAMETER :: WIDTH=  0.5_CMISSDP!2.5_CMISSDP !1.0_CMISSDP ! Y-direction
+  REAL(CMISSDP), PARAMETER :: HEIGHT= 0.5_CMISSDP!0.25_CMISSDP !1.0_CMISSDP ! Z-direction
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: NumberOfSpatialCoordinates=3
@@ -87,37 +89,38 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
 
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
 
-  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumberFE=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumberM=2
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfComponents=NumberOfSpatialCoordinates
 
-  INTEGER(CMISSIntg), PARAMETER :: FieldFibreUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreUserNumber=3
   INTEGER(CMISSIntg), PARAMETER :: FieldFibreNumberOfVariables=1
   INTEGER(CMISSIntg), PARAMETER :: FieldFibreNumberOfComponents=3
 
-  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumberM=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumberM=4
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfVariablesM=1
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfComponentsM=NumberOfSpatialCoordinates+2
 
-  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumberFE=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumberFE=5
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfVariablesFE=2
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfComponentsFE1=2
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfComponentsFE2=1
 
-  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumberM=5
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumberM=6
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfVariablesM=2
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponentsM=1
 
-  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumberFE=6
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumberFE=7
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfVariablesFE=2
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponentsFE=NumberOfSpatialCoordinates+1
 
-  INTEGER(CMISSIntg), PARAMETER :: FieldIndependentUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: FieldIndependentUserNumber=8
   INTEGER(CMISSIntg), PARAMETER :: FieldIndependentNumberOfVariables=1
   INTEGER(CMISSIntg), PARAMETER :: FieldIndependentNumberOfComponents=1
 
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberM=8
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberFE=9
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberM=9
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberFE=10
 
   INTEGER(CMISSIntg), PARAMETER :: CellMLUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: CellMLModelsFieldUserNumber=11
@@ -173,11 +176,11 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
 !  REAL(CMISSDP) :: X,Y,DISTANCE,gK1_VALUE,gNa_VALUE
   
   REAL(CMISSDP), PARAMETER :: STIM_VALUE = 30000.0_CMISSDP !100.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: STIM_STOP = 0.002_CMISSDP !0.02_CMISSDP !0.1_CMISSDP
-  REAL(CMISSDP), PARAMETER :: TIME_STOP = 2.0_CMISSDP !0.2_CMISSDP
+  REAL(CMISSDP), PARAMETER :: STIM_STOP = 0.05_CMISSDP !0.02_CMISSDP !0.1_CMISSDP
+  REAL(CMISSDP), PARAMETER :: TIME_STOP = 5.0_CMISSDP !0.2_CMISSDP
   REAL(CMISSDP), PARAMETER :: ODE_TIME_STEP = 0.00001_CMISSDP !0.00001_CMISSDP
   REAL(CMISSDP), PARAMETER :: PDE_TIME_STEP = 0.0005_CMISSDP !0.001_CMISSDP
-  REAL(CMISSDP), PARAMETER :: ELASTICITY_TIME_STEP = 0.001_CMISSDP !0.001_CMISSDP
+  REAL(CMISSDP), PARAMETER :: ELASTICITY_TIME_STEP = 0.005_CMISSDP !0.001_CMISSDP
 !  REAL(CMISSDP), PARAMETER :: ELASTICITY_TIME_STEP = 0.01_CMISSDP !0.001_CMISSDP
   REAL(CMISSDP), PARAMETER :: CONDUCTIVITY = 3.828_CMISSDP !3.828_CMISSDP!0.1_CMISSDP
   REAL(CMISSDP), PARAMETER :: Am = 500_CMISSDP !193.6_CMISSDP
@@ -200,7 +203,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
   TYPE(CMISSEquationsType) :: EquationsM,EquationsFE
   TYPE(CMISSEquationsSetType) :: EquationsSetM,EquationsSetFE
   TYPE(CMISSFieldType) :: EquationsSetFieldM,EquationsSetFieldFE
-  TYPE(CMISSFieldType) :: GeometricField
+  TYPE(CMISSFieldType) :: GeometricFieldM,GeometricFieldFE
   TYPE(CMISSFieldType) :: DependentFieldM,DependentFieldFE
   TYPE(CMISSFieldType) :: IndependentField
   TYPE(CMISSFieldType) :: MaterialFieldM,MaterialFieldFE
@@ -257,9 +260,9 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
     NumberGlobalYElements=20
     NumberGlobalZElements=0
   ELSE IF(NumberOfSpatialCoordinates==3) THEN
-    NumberGlobalXElements=10
-    NumberGlobalYElements=10
-    NumberGlobalZElements=1
+    NumberGlobalXElements=2
+    NumberGlobalYElements=2
+    NumberGlobalZElements=2
 !    NumberGlobalYElements=NUMBER_OF_ELEMENTS
 !    NumberGlobalZElements=NUMBER_OF_ELEMENTS
   ELSE
@@ -383,46 +386,144 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
   CALL CMISSDecompositionCalculateFacesSet(Decomposition,.TRUE.,Err)
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
 
+
+  !================================================================================================================================
+  !  F I N I T E   E L A S T C I T Y
+  !================================================================================================================================
+  
   !--------------------------------------------------------------------------------------------------------------------------------
-  !Create a field to put the geometry (default is geometry) - quadratic interpolation
-  CALL CMISSFieldTypeInitialise(GeometricField,Err)
-  CALL CMISSFieldCreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
-  CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
-  CALL CMISSFieldTypeSet(GeometricField,CMISSFieldGeometricType,Err)  
-  CALL CMISSFieldNumberOfVariablesSet(GeometricField,FieldGeometryNumberOfVariables,Err)
-  CALL CMISSFieldNumberOfComponentsSet(GeometricField,CMISSFieldUVariableType,FieldGeometryNumberOfComponents,Err)  
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err)
+  !Create a geometric field for finite elasticity - quadratic interpolation
+  CALL CMISSFieldTypeInitialise(GeometricFieldFE,Err)
+  CALL CMISSFieldCreateStart(FieldGeometryUserNumberFE,Region,GeometricFieldFE,Err)
+  CALL CMISSFieldTypeSet(GeometricFieldFE,CMISSFieldGeometricType,Err)
+  CALL CMISSFieldMeshDecompositionSet(GeometricFieldFE,Decomposition,Err)
+  CALL CMISSFieldTypeSet(GeometricFieldFE,CMISSFieldGeometricType,Err)  
+  CALL CMISSFieldNumberOfVariablesSet(GeometricFieldFE,FieldGeometryNumberOfVariables,Err)
+  CALL CMISSFieldNumberOfComponentsSet(GeometricFieldFE,CMISSFieldUVariableType,FieldGeometryNumberOfComponents,Err)  
+  CALL CMISSFieldComponentMeshComponentSet(GeometricFieldFE,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err)
   IF(NumberGlobalYElements/=0) THEN
-    CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,QuadraticMeshComponentNumber,Err)
+    CALL CMISSFieldComponentMeshComponentSet(GeometricFieldFE,CMISSFieldUVariableType,2,QuadraticMeshComponentNumber,Err)
     IF(NumberGlobalZElements/=0) THEN
-      CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,QuadraticMeshComponentNumber,Err)
+      CALL CMISSFieldComponentMeshComponentSet(GeometricFieldFE,CMISSFieldUVariableType,3,QuadraticMeshComponentNumber,Err)
     ENDIF
   ENDIF
-  CALL CMISSFieldVariableLabelSet(GeometricField,CMISSFieldUVariableType,"Geometry",Err)
-  CALL CMISSFieldCreateFinish(GeometricField,Err)
-
+  CALL CMISSFieldVariableLabelSet(GeometricFieldFE,CMISSFieldUVariableType,"Geometry",Err)
+  CALL CMISSFieldCreateFinish(GeometricFieldFE,Err)
   !Update the geometric field parameters
-  CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
-        
+  CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricFieldFE,GeneratedMesh,Err)
+
   !--------------------------------------------------------------------------------------------------------------------------------
-  !Create a fibre field and attach it to the geometric field - linear interpolation
+  !Create a fibre field and attach it to the geometric field - quadratic interpolation
   CALL CMISSFieldTypeInitialise(FibreField,Err)
   CALL CMISSFieldCreateStart(FieldFibreUserNumber,Region,FibreField,Err)
   CALL CMISSFieldTypeSet(FibreField,CMISSFieldFibreType,Err)
   CALL CMISSFieldMeshDecompositionSet(FibreField,Decomposition,Err)        
-  CALL CMISSFieldGeometricFieldSet(FibreField,GeometricField,Err)
+  CALL CMISSFieldGeometricFieldSet(FibreField,GeometricFieldFE,Err)
   CALL CMISSFieldNumberOfVariablesSet(FibreField,FieldFibreNumberOfVariables,Err)
   CALL CMISSFieldNumberOfComponentsSet(FibreField,CMISSFieldUVariableType,FieldFibreNumberOfComponents,Err)  
 !LinearMeshComponentNumber QuadraticMeshComponentNumber
-  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,1,LinearMeshComponentNumber,Err) 
+  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err) 
   IF(NumberGlobalYElements/=0) THEN
-    CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,2,LinearMeshComponentNumber,Err)
+    CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,2,QuadraticMeshComponentNumber,Err)
     IF(NumberGlobalZElements/=0) THEN
-      CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,3,LinearMeshComponentNumber,Err)
+      CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,3,QuadraticMeshComponentNumber,Err)
     ENDIF
   ENDIF
   CALL CMISSFieldVariableLabelSet(FibreField,CMISSFieldUVariableType,"Fibre",Err)
   CALL CMISSFieldCreateFinish(FibreField,Err)
+
+  !--------------------------------------------------------------------------------------------------------------------------------
+  !Create a material field for Finite Elasticity and attach it to the geometric field - constant interpolation
+  CALL CMISSFieldTypeInitialise(MaterialFieldFE,Err)
+  CALL CMISSFieldCreateStart(FieldMaterialUserNumberFE,Region,MaterialFieldFE,Err)
+  CALL CMISSFieldTypeSet(MaterialFieldFE,CMISSFieldMaterialType,Err)
+  CALL CMISSFieldMeshDecompositionSet(MaterialFieldFE,Decomposition,Err)
+  CALL CMISSFieldGeometricFieldSet(MaterialFieldFE,GeometricFieldFE,Err)
+  CALL CMISSFieldNumberOfVariablesSet(MaterialFieldFE,FieldMaterialNumberOfVariablesFE,Err)
+  CALL CMISSFieldVariableTypesSet(MaterialFieldFE,[CMISSFieldUVariableType,CMISSFieldVVariableType],Err)
+  CALL CMISSFieldNumberOfComponentsSet(MaterialFieldFE,CMISSFieldUVariableType,FieldMaterialNumberOfComponentsFE1,Err)
+  CALL CMISSFieldNumberOfComponentsSet(MaterialFieldFE,CMISSFieldVVariableType,FieldMaterialNumberOfComponentsFE2,Err)
+! default is CMISSFieldNodeBasedInterpolation
+  CALL CMISSFieldComponentMeshComponentSet(MaterialFieldFE,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(MaterialFieldFE,CMISSFieldUVariableType,2,QuadraticMeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(MaterialFieldFE,CMISSFieldVVariableType,1,QuadraticMeshComponentNumber,Err)
+  CALL CMISSFieldVariableLabelSet(MaterialFieldFE,CMISSFieldUVariableType,"MaterialFE",Err)
+  CALL CMISSFieldVariableLabelSet(MaterialFieldFE,CMISSFieldVVariableType,"Gravity",Err)
+  CALL CMISSFieldCreateFinish(MaterialFieldFE,Err)
+  !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively.
+  CALL CMISSFieldComponentValuesInitialise(MaterialFieldFE,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialFieldFE,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,6.0_CMISSDP,Err)
+!  CALL CMISSFieldComponentValuesInitialise(MaterialFieldFE,CMISSFieldVVariableType,CMISSFieldValuesSetType,1,0.0_CMISSDP,Err)
+
+  !Create the dependent field for FE with 2 variables and * components 
+  !  3-d: 3 displacement (quad interpol), 1 pressure (lin interpol) --> * = 4
+  !  2-d: 2 displacement (quad interpol), 1 pressure (lin interpol) --> * = 3
+  !  1-d: 1 displacement (quad interpol), 1 pressure (lin interpol) --> * = 2
+  CALL CMISSFieldTypeInitialise(DependentFieldFE,Err)
+  CALL CMISSFieldCreateStart(FieldDependentUserNumberFE,Region,DependentFieldFE,Err)
+  CALL CMISSFieldTypeSet(DependentFieldFE,CMISSFieldGeneralType,Err)
+  CALL CMISSFieldMeshDecompositionSet(DependentFieldFE,Decomposition,Err)
+  CALL CMISSFieldGeometricFieldSet(DependentFieldFE,GeometricFieldFE,Err)
+  CALL CMISSFieldDependentTypeSet(DependentFieldFE,CMISSFieldDependentType,Err)
+  CALL CMISSFieldNumberOfVariablesSet(DependentFieldFE,FieldDependentNumberOfVariablesFE,Err)
+  CALL CMISSFieldNumberOfComponentsSet(DependentFieldFE,CMISSFieldUVariableType,FieldDependentNumberOfComponentsFE,Err)
+  CALL CMISSFieldNumberOfComponentsSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,FieldDependentNumberOfComponentsFE,Err)
+  IF(NumberGlobalZElements==0) THEN
+    IF(NumberGlobalYElements==0) THEN
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldUVariableType,2,LinearMeshComponentNumber,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,1,QuadraticMeshComponentNumber,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,2,LinearMeshComponentNumber,Err)
+    ELSE
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldUVariableType,2,QuadraticMeshComponentNumber,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldUVariableType,3,LinearMeshComponentNumber,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,1,QuadraticMeshComponentNumber,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,2,QuadraticMeshComponentNumber,Err)
+      CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,3,LinearMeshComponentNumber,Err)
+    ENDIF
+  ELSE
+    CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err)
+    CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldUVariableType,2,QuadraticMeshComponentNumber,Err)
+    CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldUVariableType,3,QuadraticMeshComponentNumber,Err)
+    CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldUVariableType,4,LinearMeshComponentNumber,Err)
+    CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,1,QuadraticMeshComponentNumber,Err)
+    CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,2,QuadraticMeshComponentNumber,Err)
+    CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,3,QuadraticMeshComponentNumber,Err)
+    CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,4,LinearMeshComponentNumber,Err)
+  ENDIF
+!  CALL CMISSFieldScalingTypeSet(DependentFieldFE,CMISSFieldUnitScaling,Err)
+  CALL CMISSFieldVariableLabelSet(DependentFieldFE,CMISSFieldUVariableType,"Displacement",Err)
+  CALL CMISSFieldVariableLabelSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,"Reaction_Force",Err)
+  CALL CMISSFieldCreateFinish(DependentFieldFE,Err)
+
+
+
+  !================================================================================================================================
+  !  M O N O D O M A I N
+  !================================================================================================================================
+  
+  !--------------------------------------------------------------------------------------------------------------------------------
+  !Create a geometric field for monodomain - quadratic interpolation
+  CALL CMISSFieldTypeInitialise(GeometricFieldM,Err)
+  CALL CMISSFieldCreateStart(FieldGeometryUserNumberM,Region,GeometricFieldM,Err)
+  CALL CMISSFieldTypeSet(GeometricFieldM,CMISSFieldGeometricType,Err)
+  CALL CMISSFieldMeshDecompositionSet(GeometricFieldM,Decomposition,Err)
+  CALL CMISSFieldTypeSet(GeometricFieldM,CMISSFieldGeometricType,Err)  
+  CALL CMISSFieldNumberOfVariablesSet(GeometricFieldM,FieldGeometryNumberOfVariables,Err)
+  CALL CMISSFieldNumberOfComponentsSet(GeometricFieldM,CMISSFieldUVariableType,FieldGeometryNumberOfComponents,Err)  
+  CALL CMISSFieldComponentMeshComponentSet(GeometricFieldM,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err)
+  IF(NumberGlobalYElements/=0) THEN
+    CALL CMISSFieldComponentMeshComponentSet(GeometricFieldM,CMISSFieldUVariableType,2,QuadraticMeshComponentNumber,Err)
+    IF(NumberGlobalZElements/=0) THEN
+      CALL CMISSFieldComponentMeshComponentSet(GeometricFieldM,CMISSFieldUVariableType,3,QuadraticMeshComponentNumber,Err)
+    ENDIF
+  ENDIF
+  CALL CMISSFieldVariableLabelSet(GeometricFieldM,CMISSFieldUVariableType,"GeometryMonodomain",Err)
+  CALL CMISSFieldCreateFinish(GeometricFieldM,Err)
+  !Update the geometric field parameters
+  CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricFieldM,GeneratedMesh,Err)
+        
 
   !--------------------------------------------------------------------------------------------------------------------------------
   !Create a materials field for monodomain and attach it to the geometric field - constant interpolation
@@ -430,7 +531,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
   CALL CMISSFieldCreateStart(FieldMaterialUserNumberM,Region,MaterialFieldM,Err)
   CALL CMISSFieldTypeSet(MaterialFieldM,CMISSFieldMaterialType,Err)
   CALL CMISSFieldMeshDecompositionSet(MaterialFieldM,Decomposition,Err)
-  CALL CMISSFieldGeometricFieldSet(MaterialFieldM,GeometricField,Err)
+  CALL CMISSFieldGeometricFieldSet(MaterialFieldM,GeometricFieldM,Err)
   CALL CMISSFieldNumberOfVariablesSet(MaterialFieldM,FieldMaterialNumberOfVariablesM,Err)
   CALL CMISSFieldNumberOfComponentsSet(MaterialFieldM,CMISSFieldUVariableType,FieldMaterialNumberOfComponentsM,Err)
 ! default is CMISSFieldNodeBasedInterpolation
@@ -463,36 +564,13 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
     ENDIF
   ENDIF
 
-  !Create a material field for Finite Elasticity and attach it to the geometric field - constant interpolation
-  CALL CMISSFieldTypeInitialise(MaterialFieldFE,Err)
-  CALL CMISSFieldCreateStart(FieldMaterialUserNumberFE,Region,MaterialFieldFE,Err)
-  CALL CMISSFieldTypeSet(MaterialFieldFE,CMISSFieldMaterialType,Err)
-  CALL CMISSFieldMeshDecompositionSet(MaterialFieldFE,Decomposition,Err)
-  CALL CMISSFieldGeometricFieldSet(MaterialFieldFE,GeometricField,Err)
-  CALL CMISSFieldNumberOfVariablesSet(MaterialFieldFE,FieldMaterialNumberOfVariablesFE,Err)
-  CALL CMISSFieldVariableTypesSet(MaterialFieldFE,[CMISSFieldUVariableType,CMISSFieldVVariableType],Err)
-  CALL CMISSFieldNumberOfComponentsSet(MaterialFieldFE,CMISSFieldUVariableType,FieldMaterialNumberOfComponentsFE1,Err)
-  CALL CMISSFieldNumberOfComponentsSet(MaterialFieldFE,CMISSFieldVVariableType,FieldMaterialNumberOfComponentsFE2,Err)
-! default is CMISSFieldNodeBasedInterpolation
-  CALL CMISSFieldComponentInterpolationSet(MaterialFieldFE,CMISSFieldUVariableType,1,CMISSFieldConstantInterpolation,Err)
-  CALL CMISSFieldComponentInterpolationSet(MaterialFieldFE,CMISSFieldUVariableType,2,CMISSFieldConstantInterpolation,Err)
-  CALL CMISSFieldComponentInterpolationSet(MaterialFieldFE,CMISSFieldVVariableType,1,CMISSFieldConstantInterpolation,Err)
-!  CALL CMISSFieldComponentInterpolationSet(MaterialFieldFE,CMISSFieldVVariableType,2,CMISSFieldConstantInterpolation,Err)
-!  CALL CMISSFieldComponentInterpolationSet(MaterialFieldFE,CMISSFieldVVariableType,3,CMISSFieldConstantInterpolation,Err)
-  CALL CMISSFieldVariableLabelSet(MaterialFieldFE,CMISSFieldUVariableType,"MaterialFE",Err)
-  CALL CMISSFieldCreateFinish(MaterialFieldFE,Err)
-  !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively.
-  CALL CMISSFieldComponentValuesInitialise(MaterialFieldFE,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialFieldFE,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,6.0_CMISSDP,Err)
-!  CALL CMISSFieldComponentValuesInitialise(MaterialFieldFE,CMISSFieldVVariableType,CMISSFieldValuesSetType,1,0.0_CMISSDP,Err)
-
   !--------------------------------------------------------------------------------------------------------------------------------
   !Create the dependent field for monodomain with 2 variables and 1 components 
   CALL CMISSFieldTypeInitialise(DependentFieldM,Err)
   CALL CMISSFieldCreateStart(FieldDependentUserNumberM,Region,DependentFieldM,Err)
   CALL CMISSFieldTypeSet(DependentFieldM,CMISSFieldGeneralType,Err)
   CALL CMISSFieldMeshDecompositionSet(DependentFieldM,Decomposition,Err)
-  CALL CMISSFieldGeometricFieldSet(DependentFieldM,GeometricField,Err)
+  CALL CMISSFieldGeometricFieldSet(DependentFieldM,GeometricFieldM,Err)
   CALL CMISSFieldDependentTypeSet(DependentFieldM,CMISSFieldDependentType,Err)
   CALL CMISSFieldNumberOfVariablesSet(DependentFieldM,FieldDependentNumberOfVariablesM,Err)
   CALL CMISSFieldNumberOfComponentsSet(DependentFieldM,CMISSFieldUVariableType,FieldDependentNumberOfComponentsM,Err)
@@ -502,76 +580,39 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
   CALL CMISSFieldDimensionSet(DependentFieldM,CMISSFieldUVariableType,CMISSFieldScalarDimensionType,Err)
   CALL CMISSFieldDimensionSet(DependentFieldM,CMISSFieldDelUDelNVariableType,CMISSFieldScalarDimensionType,Err)
 !  CALL CMISSFieldScalingTypeSet(DependentFieldM,CMISSFieldUnitScaling,Err)
-  CALL CMISSFieldVariableLabelSet(DependentFieldM,CMISSFieldUVariableType,"DependentM",Err)
+  CALL CMISSFieldVariableLabelSet(DependentFieldM,CMISSFieldUVariableType,"Vm",Err)
+  CALL CMISSFieldVariableLabelSet(DependentFieldM,CMISSFieldDelUDelNVariableType,"dVm/dt",Err)
   CALL CMISSFieldCreateFinish(DependentFieldM,Err)
 
-  !Create the dependent field for FE with 2 variables and * components 
-  !  3-d: 3 displacement (quad interpol), 1 pressure (lin interpol) --> * = 4
-  !  2-d: 2 displacement (quad interpol), 1 pressure (lin interpol) --> * = 3
-  !  1-d: 1 displacement (quad interpol), 1 pressure (lin interpol) --> * = 2
-  CALL CMISSFieldTypeInitialise(DependentFieldFE,Err)
-  CALL CMISSFieldCreateStart(FieldDependentUserNumberFE,Region,DependentFieldFE,Err)
-  CALL CMISSFieldTypeSet(DependentFieldFE,CMISSFieldGeneralType,Err)
-  CALL CMISSFieldMeshDecompositionSet(DependentFieldFE,Decomposition,Err)
-  CALL CMISSFieldGeometricFieldSet(DependentFieldFE,GeometricField,Err)
-  CALL CMISSFieldDependentTypeSet(DependentFieldFE,CMISSFieldDependentType,Err)
-  CALL CMISSFieldNumberOfVariablesSet(DependentFieldFE,FieldDependentNumberOfVariablesFE,Err)
-  CALL CMISSFieldNumberOfComponentsSet(DependentFieldFE,CMISSFieldUVariableType,FieldDependentNumberOfComponentsFE,Err)
-  CALL CMISSFieldNumberOfComponentsSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,FieldDependentNumberOfComponentsFE,Err)
-  IF(NumberGlobalZElements==0) THEN
-    IF(NumberGlobalYElements==0) THEN
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldUVariableType,2,LinearMeshComponentNumber,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,1,QuadraticMeshComponentNumber,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,2,LinearMeshComponentNumber,Err)
-    ELSE
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldUVariableType,2,QuadraticMeshComponentNumber,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldUVariableType,3,LinearMeshComponentNumber,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,1,QuadraticMeshComponentNumber,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,2,QuadraticMeshComponentNumber,Err)
-      CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,3,LinearMeshComponentNumber,Err)
-    ENDIF
-  ELSE
-    CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldUVariableType,2,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldUVariableType,3,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldUVariableType,4,LinearMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,1,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,2,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,3,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentFieldFE,CMISSFieldDelUDelNVariableType,4,LinearMeshComponentNumber,Err)
-  ENDIF
-!  CALL CMISSFieldScalingTypeSet(DependentFieldFE,CMISSFieldUnitScaling,Err)
-  CALL CMISSFieldVariableLabelSet(DependentFieldFE,CMISSFieldUVariableType,"DependentFE",Err)
-  CALL CMISSFieldCreateFinish(DependentFieldFE,Err)
 
-  CALL CMISSFieldTypeInitialise(IndependentField,Err)
-  CALL CMISSFieldCreateStart(FieldIndependentUserNumber,Region,IndependentField,Err)
-  CALL CMISSFieldTypeSet(IndependentField,CMISSFieldGeneralType,Err)
-  CALL CMISSFieldMeshDecompositionSet(IndependentField,Decomposition,Err)
-  CALL CMISSFieldGeometricFieldSet(IndependentField,GeometricField,Err)
-  CALL CMISSFieldDependentTypeSet(IndependentField,CMISSFieldIndependentType,Err)
-  CALL CMISSFieldNumberOfVariablesSet(IndependentField,FieldIndependentNumberOfVariables,Err)
-  CALL CMISSFieldDimensionSet(IndependentField,CMISSFieldUVariableType,CMISSFieldScalarDimensionType,Err)
-  CALL CMISSFieldNumberOfComponentsSet(IndependentField,CMISSFieldUVariableType,FieldIndependentNumberOfComponents,Err)
-  CALL CMISSFieldComponentInterpolationSet(IndependentField,CMISSFieldUVariableType,1,CMISSFieldNodeBasedInterpolation,Err)
-  CALL CMISSFieldComponentMeshComponentSet(IndependentField,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err)
-!  CALL CMISSFieldScalingTypeSet(IndependentField,CMISSFieldUnitScaling,Err)
-  CALL CMISSFieldVariableLabelSet(IndependentField,CMISSFieldUVariableType,"Independent (acive stress)",Err)
-  CALL CMISSFieldCreateFinish(IndependentField,Err)
+  !================================================================================================================================
+  !  INDEPENDENT FIELD
 
   !--------------------------------------------------------------------------------------------------------------------------------
-  !Create the equations_set for monodomain
-  CALL CMISSFieldTypeInitialise(EquationsSetFieldM,Err)
-  CALL CMISSEquationsSetTypeInitialise(EquationsSetM,Err)
-  !Set the equations set to be a Monodomain equations set
-  !GeometricField   <--->   FibreField ! TODO later
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberM,Region,GeometricField,CMISSEquationsSetBioelectricsClass, &
-    & CMISSEquationsSetMonodomainEquationType,CMISSEquationsSetNoSubtype,EquationsSetFieldUserNumberM,EquationsSetFieldM, &
-    & EquationsSetM,Err)
-  CALL CMISSEquationsSetCreateFinish(EquationsSetM,Err)
+  !Create the independent field for the active stress determined in the cell model of the monodomain equation and used in finite elasticity
+!  independent_field_auto_create = .TRUE.
+  CALL CMISSFieldTypeInitialise(IndependentField,Err)
+  IF(.NOT. independent_field_auto_create) THEN
+    CALL CMISSFieldCreateStart(FieldIndependentUserNumber,Region,IndependentField,Err)
+    CALL CMISSFieldTypeSet(IndependentField,CMISSFieldGeneralType,Err)
+    CALL CMISSFieldMeshDecompositionSet(IndependentField,Decomposition,Err)
+    CALL CMISSFieldGeometricFieldSet(IndependentField,GeometricFieldM,Err)
+    CALL CMISSFieldDependentTypeSet(IndependentField,CMISSFieldIndependentType,Err)
+    CALL CMISSFieldNumberOfVariablesSet(IndependentField,FieldIndependentNumberOfVariables,Err)
+    CALL CMISSFieldDimensionSet(IndependentField,CMISSFieldUVariableType,CMISSFieldScalarDimensionType,Err)
+    CALL CMISSFieldNumberOfComponentsSet(IndependentField,CMISSFieldUVariableType,FieldIndependentNumberOfComponents,Err)
+    CALL CMISSFieldComponentInterpolationSet(IndependentField,CMISSFieldUVariableType,1,CMISSFieldNodeBasedInterpolation,Err)
+    CALL CMISSFieldComponentMeshComponentSet(IndependentField,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err)
+  !  CALL CMISSFieldScalingTypeSet(IndependentField,CMISSFieldUnitScaling,Err)
+    CALL CMISSFieldVariableLabelSet(IndependentField,CMISSFieldUVariableType,"Acive_Stress",Err)
+    CALL CMISSFieldCreateFinish(IndependentField,Err)
+  ENDIF
 
+
+  !================================================================================================================================
+  !  EQUATIONS SET
+
+  !--------------------------------------------------------------------------------------------------------------------------------
   !Create the equations_set for Finite Elasticity
   CALL CMISSFieldTypeInitialise(EquationsSetFieldFE,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSetFE,Err)
@@ -580,28 +621,39 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
     & EquationsSetFieldFE,EquationsSetFE,Err)
   CALL CMISSEquationsSetCreateFinish(EquationsSetFE,Err)
 
-  !--------------------------------------------------------------------------------------------------------------------------------
-  !Create the equations set dependent field variables for monodomain
-  CALL CMISSEquationsSetDependentCreateStart(EquationsSetM,FieldDependentUserNumberM,DependentFieldM,Err)
-  CALL CMISSEquationsSetDependentCreateFinish(EquationsSetM,Err)
-
   !Create the equations set dependent field variables for Finite Elasticity
   CALL CMISSEquationsSetDependentCreateStart(EquationsSetFE,FieldDependentUserNumberFE,DependentFieldFE,Err)
   CALL CMISSEquationsSetDependentCreateFinish(EquationsSetFE,Err)
 
-  !--------------------------------------------------------------------------------------------------------------------------------
   !Create the equations set independent field variable for the active stress component for Finite Elasticity
   CALL CMISSEquationsSetIndependentCreateStart(EquationsSetFE,FieldIndependentUserNumber,IndependentField,Err)
   CALL CMISSEquationsSetIndependentCreateFinish(EquationsSetFE,Err)
+
+  !Create the equations set materials field variables for Finite Elasticity
+  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetFE,FieldMaterialUserNumberFE,MaterialFieldFE,Err)  
+  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetFE,Err)
+
+  !--------------------------------------------------------------------------------------------------------------------------------
+  !Create the equations_set for monodomain
+  CALL CMISSFieldTypeInitialise(EquationsSetFieldM,Err)
+  CALL CMISSEquationsSetTypeInitialise(EquationsSetM,Err)
+  !Set the equations set to be a Monodomain equations set
+  !GeometricField   <--->   FibreField ! TODO later
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberM,Region,GeometricFieldM,CMISSEquationsSetBioelectricsClass, &
+    & CMISSEquationsSetMonodomainEquationType,CMISSEquationsSetNoSubtype,EquationsSetFieldUserNumberM,EquationsSetFieldM, &
+    & EquationsSetM,Err)
+  CALL CMISSEquationsSetCreateFinish(EquationsSetM,Err)
+
+  !--------------------------------------------------------------------------------------------------------------------------------
+  !Create the equations set dependent field variables for monodomain
+  CALL CMISSEquationsSetDependentCreateStart(EquationsSetM,FieldDependentUserNumberM,DependentFieldM,Err)
+  CALL CMISSEquationsSetDependentCreateFinish(EquationsSetM,Err)
 
   !--------------------------------------------------------------------------------------------------------------------------------
   !Create the equations set materials field variables for monodomain
   CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetM,FieldMaterialUserNumberM,MaterialFieldM,Err)
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetM,Err)
 
-  !Create the equations set materials field variables for Finite Elasticity
-  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetFE,FieldMaterialUserNumberFE,MaterialFieldFE,Err)  
-  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetFE,Err)
 
   !--------------------------------------------------------------------------------------------------------------------------------
   !Create the equations set equations for monodomain
@@ -633,8 +685,9 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
   CALL CMISSCellMLVariableSetAsKnown(CellML,shortenModelIndex,"wal_environment/I_HH",Err)
   !   - to get from the CellML side
 !  CALL CMISSCellMLVariableSetAsWanted(CellML,shortenModelIndex,"wal_environment/I_T",Err)
-  CALL CMISSCellMLVariableSetAsWanted(CellML,shortenModelIndex,"wal_environment/I_ionic_s",Err)
+!  CALL CMISSCellMLVariableSetAsWanted(CellML,shortenModelIndex,"wal_environment/I_ionic_s",Err)
 !  CALL CMISSCellMLVariableSetAsWanted(CellML,shortenModelIndex,"wal_environment/I_ionic_t",Err)
+  CALL CMISSCellMLVariableSetAsWanted(CellML,shortenModelIndex,"razumova/stress",Err)
   !   - and override constant parameters without needing to set up fields
   !> \todo Need to allow parameter values to be overridden for the case when user has non-spatially varying parameter value.
   !Finish the CellML environment
@@ -648,10 +701,8 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
     & shortenModelIndex,"wal_environment/vS",CMISSFieldValuesSetType,Err)
   CALL CMISSCellMLCreateCellMLToFieldMap(CellML,shortenModelIndex,"wal_environment/vS",CMISSFieldValuesSetType, &
     & DependentFieldM,CMISSFieldUVariableType,1,CMISSFieldValuesSetType,Err)
-! TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO 
-  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,shortenModelIndex,"wal_environment/stress",CMISSFieldValuesSetType, &
+  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,shortenModelIndex,"razumova/stress",CMISSFieldValuesSetType, &
     & IndependentField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType,Err)
-! TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO 
   CALL CMISSCellMLFieldMapsCreateFinish(CellML,Err)
   
   !--------------------------------------------------------------------------------------------------------------------------------
@@ -660,11 +711,11 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
   CALL CMISSFieldComponentValuesInitialise(DependentFieldM,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,-79.974_CMISSDP,Err)
   
   !Initialise dependent field for Finite Elasticity from undeformed geometry and set hydrostatic pressure
-  CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+  CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricFieldFE,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
     & 1,DependentFieldFE,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,Err)
-  CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+  CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricFieldFE,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
     & 2,DependentFieldFE,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,Err)
-  CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+  CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricFieldFE,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
     & 3,DependentFieldFE,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,Err)
   CALL CMISSFieldComponentValuesInitialise(DependentFieldFE,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,-8.0_CMISSDP,Err)
 
@@ -703,7 +754,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
     NodeNumber=LeftSurfaceNodes(node_idx)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NodeNumber,2,YVALUE, &
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldM,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NodeNumber,2,YVALUE, &
         & Err)
         IF(YVALUE .LE. WIDTH/2.0_CMISSDP) CALL CMISSFieldParameterSetUpdateNode(CellMLParametersField,CMISSFieldUVariableType, &
           & CMISSFieldValuesSetType,1,1,NodeNumber,stimcomponent,STIM_VALUE,Err)
@@ -736,14 +787,13 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
   CALL CMISSProblemControlLoopGet(Problem,[ControlLoopMonodomainNumber,CMISSControlLoopNode],ControlLoopM,Err)
   CALL CMISSControlLoopLabelSet(ControlLoopM,'MONODOMAIN_TIME_LOOP',Err)
   CALL CMISSControlLoopTimesSet(ControlLoopM,0.0_CMISSDP,ELASTICITY_TIME_STEP,PDE_TIME_STEP,Err)
-!  CALL CMISSControlLoopTimesSet(ControlLoopM,0.0_CMISSDP,STIM_STOP,PDE_TIME_STEP,Err)
   CALL CMISSControlLoopTimeOutputSet(ControlLoopM,1,Err)
 !  CALL CMISSControlLoopOutputTypeSet(ControlLoopM,CMISSControlLoopTimingOutput,Err)
 
   !set the finite elasticity loop (simple type)
   CALL CMISSControlLoopTypeInitialise(ControlLoopFE,Err)
   CALL CMISSProblemControlLoopGet(Problem,[ControlLoopElasticityNumber,CMISSControlLoopNode],ControlLoopFE,Err)
-  CALL CMISSControlLoopLabelSet(ControlLoopFE,'ELASTICITY_SIMPLE_LOOP',Err)
+  CALL CMISSControlLoopLabelSet(ControlLoopFE,'ELASTICITY_LOOP',Err)
 
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
 
@@ -877,7 +927,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsFE,DependentFieldFE,CMISSFieldUVariableType,1,1,NodeNumber,1, &
-        & CMISSBoundaryConditionFixed,1.0_CMISSDP*LENGTH,Err)
+        & CMISSBoundaryConditionFixed,1.1_CMISSDP*LENGTH,Err)
     ENDIF
   ENDDO
   !Set y=0 nodes to no y displacement
@@ -910,7 +960,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
     NodeNumber=LeftSurfaceNodes(node_idx)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NodeNumber,2,YVALUE, &
+      CALL CMISSFieldParameterSetGetNode(GeometricFieldM,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NodeNumber,2,YVALUE, &
         & Err)
         IF(YVALUE .LE. WIDTH/2.0) CALL CMISSFieldParameterSetUpdateNode(CellMLParametersField,CMISSFieldUVariableType, &
           & CMISSFieldValuesSetType,1,1,NodeNumber,stimcomponent,0.0_CMISSDP,Err)
@@ -919,13 +969,13 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
 
   !--------------------------------------------------------------------------------------------------------------------------------
   !Set the time loop from STIM_STOP to TIME_STOP
-  CALL CMISSControlLoopTimesSet(ControlLoopMain,STIM_STOP,TIME_STOP,PDE_TIME_STEP,Err)
+  CALL CMISSControlLoopTimesSet(ControlLoopMain,STIM_STOP,TIME_STOP,ELASTICITY_TIME_STEP,Err)
   
   !--------------------------------------------------------------------------------------------------------------------------------
   !Solve the problem for the rest of the time
-!  CALL CMISSProblemSolve(Problem,Err)
+  CALL CMISSProblemSolve(Problem,Err)
 ! TODO TODO TODO TODO TODO TODO TODO 
-  
+
   !--------------------------------------------------------------------------------------------------------------------------------
   EXPORT_FIELD=.TRUE.
   IF(EXPORT_FIELD) THEN
