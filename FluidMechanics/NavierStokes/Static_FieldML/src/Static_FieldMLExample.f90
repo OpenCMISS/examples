@@ -283,9 +283,6 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
  
   CALL CMISSFieldmlInput_InitialiseFromFile( fieldmlInfo, inputFilename, err )
 
-  CALL CMISSFieldmlInput_SetDofVariables( fieldmlInfo, "test_mesh.nodal_dofs", "test_mesh.element_dofs", &
-    & "test_mesh.constant_dofs", err )
-  
   !COORDINATE SYSTEM
 
   !Start the creation of a new RC coordinate system
@@ -367,9 +364,11 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition, err )
   
-  CALL CMISSFieldmlInput_FieldCreate( fieldmlInfo, Region, Mesh, Decomposition, GeometricFieldUserNumber, GeometricField, &
+  CALL CMISSFieldmlInput_FieldCreate( fieldmlInfo, Region, Decomposition, GeometricFieldUserNumber, GeometricField, &
     & "test_mesh.coordinates", err )
-  !CALL CMISSFieldCreateFinish( RegionUserNumber, GeometricFieldUserNumber, err )
+  CALL CMISSFieldCreateFinish( RegionUserNumber, GeometricFieldUserNumber, err )
+
+  CALL CMISSFieldmlInput_FieldNodalParametersUpdate( fieldmlInfo, Mesh, GeometricField, "test_mesh.node.coordinates", err )
 
   !
   !================================================================================================================================
