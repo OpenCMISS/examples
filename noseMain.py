@@ -2,8 +2,8 @@ import os, subprocess,sys,commands
 from time import strftime
 from datetime import date
 import socket
-sys.path.append(os.environ['OPENCMISS_ROOT']+"/cm/examples")
-examplesDir = os.environ['OPENCMISS_ROOT']+"/cm/examples"
+sys.path.append(os.environ['OPENCMISSEXAMPLES_ROOT'])
+examplesDir = os.environ['OPENCMISSEXAMPLES_ROOT']
 logsDir = os.environ['OPENCMISS_ROOT']+"/build/logs"
 hostname = socket.gethostname()
 compiler = os.environ['COMPILER']
@@ -85,7 +85,7 @@ def test_build_library():
   
 def test_example():
   global compiler
-  rootdir = os.getcwd()
+  rootdir = examplesDir
   for root, subFolders, files in os.walk(rootdir) :
     if root.find(".svn")==-1 :
       for f in files :
@@ -98,7 +98,7 @@ def test_example():
           properties = dict()
           load_prop(propFile,properties)
           if '42TestingPointsPATH' in properties :
-            testingPointsPath = os.environ['OPENCMISS_ROOT']+"/cm/examples/"+properties['42TestingPointsPATH']
+            testingPointsPath = examplesDir+"/"+properties['42TestingPointsPATH']
           else:
             testingPointsPath = ""
           testpoints = properties['TestingPoint']
