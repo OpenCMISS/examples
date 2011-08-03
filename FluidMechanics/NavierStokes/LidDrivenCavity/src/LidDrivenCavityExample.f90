@@ -732,7 +732,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
   IF(LID_NODES_NAVIER_STOKES_FLAG) THEN
      DO NODE_COUNTER=1,NUMBER_OF_LID_NODES_NAVIER_STOKES
       NODE_NUMBER=LID_NODES_NAVIER_STOKES(NODE_COUNTER)
-      CONDITION=CMISSBoundaryConditionInletWall
+      CONDITION=CMISSBoundaryConditionFixed
       CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
       IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
         DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
