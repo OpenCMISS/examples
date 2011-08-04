@@ -98,6 +98,10 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesMu=1
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesRho=2
 
+!  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumberNavierStokesMu=1
+!  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesRho=2
+!  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesRho=3
+
   !Program types
 
   TYPE(EXPORT_CONTAINER):: CM
@@ -560,10 +564,14 @@ PROGRAM STATICPOISEUILLEEXAMPLE
     & MaterialsFieldNavierStokes,Err)
   !Finish the equations set materials field variables
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetNavierStokes,Err)
+!  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!    & MaterialsFieldUserNumberNavierStokesMu,MU_PARAM_NAVIER_STOKES,Err)
+!  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!    & MaterialsFieldUserNumberNavierStokesRho,RHO_PARAM_NAVIER_STOKES,Err)
   CALL CMISSFieldComponentValuesInitialise(MaterialsFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & MaterialsFieldUserNumberNavierStokesMu,MU_PARAM_NAVIER_STOKES,Err)
+    & 1,VISCOSITY,Err)
   CALL CMISSFieldComponentValuesInitialise(MaterialsFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & MaterialsFieldUserNumberNavierStokesRho,RHO_PARAM_NAVIER_STOKES,Err)
+    & 2,DENSITY,Err)
 
   !-----------------------------------------------------------------------------------------------------------
   ! ANALYTIC FIELD
@@ -572,8 +580,17 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   CALL CMISSFieldTypeInitialise(AnalyticFieldNavierStokes,Err)
   CALL CMISSEquationsSetAnalyticCreateStart(EquationsSetNavierStokes,CMISSEquationsSetNavierStokesTwoDimPoiseuille, &
     & AnalyticFieldUserNumber,AnalyticFieldNavierStokes,Err)
-  !Finish the equations set analytic field variables
+  !Finish the equations 
   CALL CMISSEquationsSetAnalyticCreateFinish(EquationsSetNavierStokes,Err)
+  !Set analytic field variables
+  CALL CMISSFieldComponentValuesInitialise(AnalyticFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+    & 1,LENGTH,Err)
+  CALL CMISSFieldComponentValuesInitialise(AnalyticFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+    & 2,HEIGHT,Err)
+  CALL CMISSFieldComponentValuesInitialise(AnalyticFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+    & 3,INLET_VELOCITY,Err)
+  CALL CMISSFieldComponentValuesInitialise(AnalyticFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+    & 4,OUTLET_PRESSURE,Err)
 
 
   !-----------------------------------------------------------------------------------------------------------  
