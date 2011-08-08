@@ -67,7 +67,7 @@ PROGRAM STATICPOISEUILLEEXAMPLE
 
 !==============================================================
 
-  REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: HEIGHT=0.5_CMISSDP
   REAL(CMISSDP), PARAMETER :: LENGTH=10.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: INLET_VELOCITY=1.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: OUTLET_PRESSURE=0.0_CMISSDP
@@ -263,8 +263,17 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   INLET_NODES_NAVIER_STOKES_FLAG=.TRUE.
   OUTLET_NODES_NAVIER_STOKES_FLAG=.TRUE.
   IF(FIXED_WALL_NODES_NAVIER_STOKES_FLAG) THEN
-    NUMBER_OF_FIXED_WALL_NODES_NAVIER_STOKES=202
+    NUMBER_OF_FIXED_WALL_NODES_NAVIER_STOKES=202 !102
     ALLOCATE(FIXED_WALL_NODES_NAVIER_STOKES(NUMBER_OF_FIXED_WALL_NODES_NAVIER_STOKES))
+
+!     FIXED_WALL_NODES_NAVIER_STOKES=(/1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16, &
+!     & 17,18,19,20,21,22,23,24,25,26,27,28,31,32,33,34, &
+!     & 35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50, &
+!     & 51,52,53,54,105,106,107,108,109,110,111,112,113,114,115,116, &
+!     & 117,118,119,120,121,122,123,124,125,126,127,128,129,133,134,135, &
+!     & 136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151, &
+!     & 152,153,154,155,156,157/)
+
     FIXED_WALL_NODES_NAVIER_STOKES=(/1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16, &
     & 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32, &
     & 33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48, &
@@ -278,19 +287,23 @@ PROGRAM STATICPOISEUILLEEXAMPLE
     & 370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385, &
     & 386,387,388,389,390,391,392,393,394,395,396,397,398,399,400,401, &
     & 402,403,404,405,406,407,408,409,410,411/)
+
+
   ENDIF
   IF(INLET_NODES_NAVIER_STOKES_FLAG) THEN
     NUMBER_OF_INLET_NODES_NAVIER_STOKES=9
     ALLOCATE(INLET_NODES_NAVIER_STOKES(NUMBER_OF_INLET_NODES_NAVIER_STOKES))
+!    INLET_NODES_NAVIER_STOKES=(/29,30,130,131,132/)
     INLET_NODES_NAVIER_STOKES=(/54,55,56,57,357,358,359,360,361/)
+
     !Set boundary conditions
     BOUNDARY_CONDITIONS_NAVIER_STOKES(1)=INLET_VELOCITY
     BOUNDARY_CONDITIONS_NAVIER_STOKES(2)=0.0_CMISSDP
   ENDIF
   IF(OUTLET_NODES_NAVIER_STOKES_FLAG) THEN
-    NUMBER_OF_OUTLET_NODES_NAVIER_STOKES=6
+    NUMBER_OF_OUTLET_NODES_NAVIER_STOKES=4
     ALLOCATE(OUTLET_NODES_NAVIER_STOKES(NUMBER_OF_OUTLET_NODES_NAVIER_STOKES))
-    OUTLET_NODES_NAVIER_STOKES=(/1,4,107,108,109,110/)
+    OUTLET_NODES_NAVIER_STOKES=(/1,4,55,56/)
   ENDIF
   !Set material parameters
   MU_PARAM_NAVIER_STOKES=VISCOSITY
@@ -580,7 +593,7 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   CALL CMISSFieldTypeInitialise(AnalyticFieldNavierStokes,Err)
   CALL CMISSEquationsSetAnalyticCreateStart(EquationsSetNavierStokes,CMISSEquationsSetNavierStokesTwoDimPoiseuille, &
     & AnalyticFieldUserNumber,AnalyticFieldNavierStokes,Err)
-  !Finish the equations 
+  !Finish the equations set analytic field variables
   CALL CMISSEquationsSetAnalyticCreateFinish(EquationsSetNavierStokes,Err)
   !Set analytic field variables
   CALL CMISSFieldComponentValuesInitialise(AnalyticFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
@@ -754,18 +767,18 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   !-----------------------------------------------------------------------------------------------------------
 
   !Output Analytic analysis
-  Call CMISSAnalyticAnalysisOutput(DependentFieldNavierStokes,"Navier_Stokes_Analytic_Poiseuille_2D",Err)
+  CALL CMISSAnalyticAnalysisOutput(DependentFieldNavierStokes,"Navier_Stokes_Analytic_Poiseuille_2D",Err)
 
-  EXPORT_FIELD_IO=.TRUE.
-  IF(EXPORT_FIELD_IO) THEN
-    WRITE(*,'(A)') "Exporting fields..."
-    CALL CMISSFieldsTypeInitialise(Fields,Err)
-    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"StaticNavierStokes","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"StaticNavierStokes","FORTRAN",Err)
-    CALL CMISSFieldsTypeFinalise(Fields,Err)
-    WRITE(*,'(A)') "Field exported!"
-  ENDIF
+!   EXPORT_FIELD_IO=.TRUE.
+!   IF(EXPORT_FIELD_IO) THEN
+!     WRITE(*,'(A)') "Exporting fields..."
+!     CALL CMISSFieldsTypeInitialise(Fields,Err)
+!     CALL CMISSFieldsTypeCreate(Region,Fields,Err)
+!     CALL CMISSFieldIONodesExport(Fields,"AnalyticNavierStokes","FORTRAN",Err)
+!     CALL CMISSFieldIOElementsExport(Fields,"AnalyticNavierStokes","FORTRAN",Err)
+!     CALL CMISSFieldsTypeFinalise(Fields,Err)
+!     WRITE(*,'(A)') "Field exported!"
+!  ENDIF
   
   !Finialise CMISS
   CALL CMISSFinalise(Err)
@@ -775,4 +788,4 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   STOP
 
 
-END PROGRAM STATICPOISEUILLEEXAMPLE
+ END PROGRAM STATICPOISEUILLEEXAMPLE
