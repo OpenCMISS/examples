@@ -7,7 +7,8 @@ examplesDir = os.environ['OPENCMISSEXAMPLES_ROOT']
 logsDir = os.environ['OPENCMISS_ROOT']+"/build/logs"
 hostname = socket.gethostname()
 compiler = os.environ['COMPILER']
-configfile = os.environ['CONFIGURE']
+size = os.environ['SIZE']
+parentdir = os.environ['DIR']
 
 def load_prop(propFile, properties) :
   properties['TestingPoint']=[]
@@ -84,12 +85,14 @@ def test_build_library():
   assert err==0
   
 def test_example():
-  global compiler
-  rootdir = examplesDir
+  global compiler,examplesDir,parentdir
+  if (not examplesDir.endswith("/")) :
+     rootdir = examplesDir + "/"
+  rootdir = rootdir+parentdir
   for root, subFolders, files in os.walk(rootdir) :
     if root.find(".svn")==-1 :
       for f in files :
-        if f==configfile :
+        if (size=='small' and f=='nightlytest.prop') or (size=='large' and (f=='nightlytest.prop' or f=='weeklytest.prop')) :
           os.chdir(root)
           yield check_build, 'build',root,compiler
           system = os.uname()[0].lower()
