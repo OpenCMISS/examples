@@ -154,9 +154,6 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
 
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
-  INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumberM=1
-  INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumberFE=2
-
   INTEGER(CMISSIntg), PARAMETER :: SolverDAEIndex=1
   INTEGER(CMISSIntg), PARAMETER :: SolverParabolicIndex=2
   INTEGER(CMISSIntg), PARAMETER :: SolverFEIndex=1
@@ -616,7 +613,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
   !Create the equations_set for Finite Elasticity
   CALL CMISSFieldTypeInitialise(EquationsSetFieldFE,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSetFE,Err)
-  CALL CMISSEquationsSetCreateStart(EquationSetUserNumberFE,Region,FibreField,CMISSEquationsSetElasticityClass, &
+  CALL CMISSEquationsSetCreateStart(EquationSetsUserNumberFE,Region,FibreField,CMISSEquationsSetElasticityClass, &
     & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetStandardMonodomainElasticitySubtype,EquationsSetFieldUserNumberFE, &
     & EquationsSetFieldFE,EquationsSetFE,Err)
   CALL CMISSEquationsSetCreateFinish(EquationsSetFE,Err)
