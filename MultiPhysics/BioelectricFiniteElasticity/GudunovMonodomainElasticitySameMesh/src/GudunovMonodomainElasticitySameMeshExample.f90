@@ -149,8 +149,8 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=13
   INTEGER(CMISSIntg), PARAMETER :: CellMLParametersFieldUserNumber=14
 
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberM=1
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberFE=2
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetsUserNumberM=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetsUserNumberFE=2
 
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
@@ -613,7 +613,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
   !Create the equations_set for Finite Elasticity
   CALL CMISSFieldTypeInitialise(EquationsSetFieldFE,Err)
   CALL CMISSEquationsSetTypeInitialise(EquationsSetFE,Err)
-  CALL CMISSEquationsSetCreateStart(EquationSetsUserNumberFE,Region,FibreField,CMISSEquationsSetElasticityClass, &
+  CALL CMISSEquationsSetCreateStart(EquationsSetsUserNumberFE,Region,FibreField,CMISSEquationsSetElasticityClass, &
     & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetStandardMonodomainElasticitySubtype,EquationsSetFieldUserNumberFE, &
     & EquationsSetFieldFE,EquationsSetFE,Err)
   CALL CMISSEquationsSetCreateFinish(EquationsSetFE,Err)
@@ -636,7 +636,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
   CALL CMISSEquationsSetTypeInitialise(EquationsSetM,Err)
   !Set the equations set to be a Monodomain equations set
   !> \todo solve the monodomain problem on the fibre field rather than on the geometric field: GeometricField <--> FibreField
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberM,Region,GeometricFieldM,CMISSEquationsSetBioelectricsClass, &
+  CALL CMISSEquationsSetCreateStart(EquationsSetsUserNumberM,Region,GeometricFieldM,CMISSEquationsSetBioelectricsClass, &
     & CMISSEquationsSetMonodomainEquationType,CMISSEquationsSetNoSubtype,EquationsSetFieldUserNumberM,EquationsSetFieldM, &
     & EquationsSetM,Err)
   CALL CMISSEquationsSetCreateFinish(EquationsSetM,Err)
