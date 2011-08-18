@@ -2,12 +2,13 @@ import os, subprocess,sys,commands
 from time import strftime
 from datetime import date
 import socket
-sys.path.append(os.environ['OPENCMISS_ROOT']+"/cm/examples")
-examplesDir = os.environ['OPENCMISS_ROOT']+"/cm/examples"
+sys.path.append(os.environ['OPENCMISSEXAMPLES_ROOT'])
+examplesDir = os.environ['OPENCMISSEXAMPLES_ROOT']
 logsDir = os.environ['OPENCMISS_ROOT']+"/build/logs"
 hostname = socket.gethostname()
 compiler = os.environ['COMPILER']
-configfile = os.environ['CONFIGURE']
+size = os.environ['SIZE']
+parentdir = os.environ['DIR']
 
 def load_prop(propFile, properties) :
   properties['TestingPoint']=[]
@@ -84,12 +85,14 @@ def test_build_library():
   assert err==0
   
 def test_example():
-  global compiler
-  rootdir = os.getcwd()
+  global compiler,examplesDir,parentdir
+  if (not examplesDir.endswith("/")) :
+     rootdir = examplesDir + "/"
+  rootdir = rootdir+parentdir
   for root, subFolders, files in os.walk(rootdir) :
     if root.find(".svn")==-1 :
       for f in files :
-        if f==configfile :
+        if (size=='small' and f=='nightlytest.prop') or (size=='large' and (f=='nightlytest.prop' or f=='weeklytest.prop')) :
           os.chdir(root)
           yield check_build, 'build',root,compiler
           system = os.uname()[0].lower()
@@ -98,7 +101,7 @@ def test_example():
           properties = dict()
           load_prop(propFile,properties)
           if '42TestingPointsPATH' in properties :
-            testingPointsPath = os.environ['OPENCMISS_ROOT']+"/cm/examples/"+properties['42TestingPointsPATH']
+            testingPointsPath = examplesDir+"/"+properties['42TestingPointsPATH']
           else:
             testingPointsPath = ""
           testpoints = properties['TestingPoint']
