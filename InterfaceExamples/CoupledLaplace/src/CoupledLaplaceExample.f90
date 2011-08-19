@@ -155,7 +155,7 @@ PROGRAM COUPLEDLAPLACE
   !If attempt fails set with system estimated values
   IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
 #endif
-
+!INTEGER(CMISSIntg) :: Mesh1Index,Mesh2Index
   NUMBER_OF_ARGUMENTS = COMMAND_ARGUMENT_COUNT()
   IF(NUMBER_OF_ARGUMENTS == 4) THEN
     CALL GET_COMMAND_ARGUMENT(1,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
@@ -468,36 +468,38 @@ PROGRAM COUPLEDLAPLACE
           & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
           & NUMBER_GLOBAL_Y_ELEMENTS,4,1,XI3,Err)
         !Map the interface element to the elements in mesh 2
-        CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,y_element_idx,Mesh2Index, &
-          & 1+(y_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS,Err)
+        CALL CMISSInterfaceMeshConnectivityElementNumberSet(InterfaceMeshConnectivity,y_element_idx+ &
+          & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,1+(y_element_idx-1)* &
+          & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
+          & NUMBER_GLOBAL_Y_ELEMENTS,Err)
         DO mesh_local_y_node = 1,NUMBER_OF_NODE_XI-1
           DO mesh_local_z_node = 1,NUMBER_OF_NODE_XI-1
             XI3 = [ 0.0_CMISSDP,  &
               & REAL(mesh_local_y_node-1,CMISSDP)/REAL(NUMBER_OF_NODE_XI-1,CMISSDP), &
               & REAL(mesh_local_z_node-1,CMISSDP)/REAL(NUMBER_OF_NODE_XI-1,CMISSDP) ]
             CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
-              & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,y_element_idx* &
+              & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,1+(y_element_idx-1)* &
               & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
               & NUMBER_GLOBAL_Y_ELEMENTS,1,1,XI3,Err)
             XI3 = [ 0.0_CMISSDP,  &
               & REAL(mesh_local_y_node,CMISSDP)/REAL(NUMBER_OF_NODE_XI-1,CMISSDP), &
               & REAL(mesh_local_z_node-1,CMISSDP)/REAL(NUMBER_OF_NODE_XI-1,CMISSDP) ]
             CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
-              & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,y_element_idx* &
+              & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,1+(y_element_idx-1)* &
               & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
               & NUMBER_GLOBAL_Y_ELEMENTS,2,1,XI3,Err)
             XI3 = [ 0.0_CMISSDP,  &
               & REAL(mesh_local_y_node-1,CMISSDP)/REAL(NUMBER_OF_NODE_XI-1,CMISSDP), &
               & REAL(mesh_local_z_node,CMISSDP)/REAL(NUMBER_OF_NODE_XI-1,CMISSDP) ]
             CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
-              & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,y_element_idx* &
+              & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,1+(y_element_idx-1)* &
               & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
               & NUMBER_GLOBAL_Y_ELEMENTS,3,1,XI3,Err)
             XI3 = [ 0.0_CMISSDP,  &
               & REAL(mesh_local_y_node,CMISSDP)/REAL(NUMBER_OF_NODE_XI-1,CMISSDP), &
               & REAL(mesh_local_z_node,CMISSDP)/REAL(NUMBER_OF_NODE_XI-1,CMISSDP) ]
             CALL CMISSInterfaceMeshConnectivityElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
-              & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,y_element_idx* &
+              & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,1+(y_element_idx-1)* &
               & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
               & NUMBER_GLOBAL_Y_ELEMENTS,4,1,XI3,Err)
           ENDDO !mesh_local_z_node
