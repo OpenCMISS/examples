@@ -6839,7 +6839,7 @@ Stern and Rios Component
 <!--
   <variable initial_value="0.000001" name="eta" units="newton_per_m3"/>
   -->
-  <variable initial_value="1.0" name="eta" units="newton_per_m3"/>
+  <variable initial_value="20000.0" name="eta" units="newton_per_m3"/>
 <!--  
   <variable name="stress" units="newton_per_m2"/>
   -->
