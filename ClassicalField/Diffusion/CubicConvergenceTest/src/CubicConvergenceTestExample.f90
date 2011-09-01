@@ -142,6 +142,8 @@ PROGRAM DIFFUSIONEXAMPLE
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+
   !Get the computational nodes information
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
