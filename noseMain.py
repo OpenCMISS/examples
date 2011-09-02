@@ -55,16 +55,15 @@ def add_history(historyPath,err) :
   history.close()
 
 def getVersion(compiler) :
-  operating_system = commands.getoutput('uname') 
+  operating_system = commands.getoutput('uname')
   if operating_system == 'Linux':
     if compiler == 'gnu':
       version_info = commands.getoutput('gfortran -v')
-      if version_info.find('gcc version 4.5.') != -1:
-        return '_4.5'
-      elif version_info.find('gcc version 4.4.') != -1 :
-        return '_4.4'
+      version_location = version_info.find('gcc version ')
+      if version_location != -1:
+        return '_' + version_info[version_location+12:version_location+15]
   return ''
-  
+
 
 def test_build_library():
   global logsDir, compiler

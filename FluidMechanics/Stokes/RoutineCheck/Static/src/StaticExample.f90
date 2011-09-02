@@ -230,6 +230,8 @@ PROGRAM STOKESSTATICEXAMPLE
 
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+
   !
   !================================================================================================================================
   !
