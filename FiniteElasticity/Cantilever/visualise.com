@@ -1,6 +1,14 @@
-# read in description
-gfx read node Cantilever.part0.exnode
-gfx read element Cantilever.part0.exelem
+# read in solution, which may be split into multiple files
+@exnodes=<./Cantilever.part*.exnode>;
+@exelems=<./Cantilever.part*.exelem>;
+foreach $filename (@exnodes) {
+    print "Reading $filename\n";
+    gfx read node "$filename";
+}
+foreach $filename (@exelems) {
+    print "Reading $filename\n";
+    gfx read elem "$filename";
+}
 
 # define deformed geometry and pressure
 gfx define field "deformed_geom" component Dependent.1 Dependent.2 Dependent.3
@@ -23,10 +31,11 @@ gfx modify g_element "Region 1" node_points coordinate deformed_geom glyph spher
 # display undeformed lines
 gfx modify g_element "Region 1" lines select_on material green selected_material default_selected
 
-gfx create axes length 20 material default
-gfx draw axes
+gfx modify g_element "/" point  glyph axes general size "75*60*60" centre 0,0,0 font default select_on material default selected_material default_selected;
 
 gfx modify spectrum pressure autorange
+gfx create colour_bar spectrum pressure material default
+gfx modify g_element "/" point NORMALISED_WINDOW_FIT_LEFT glyph colour_bar general size "0.5*0.5*0.2" centre -0.4,0.4,0.0 select_on material default selected_material default;
 
 gfx edit scene
 gfx modify window 1 set antialias 2
