@@ -368,7 +368,7 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
     & "test_mesh.coordinates", err )
   CALL CMISSFieldCreateFinish( RegionUserNumber, GeometricFieldUserNumber, err )
 
-  CALL CMISSFieldmlInput_FieldNodalParametersUpdate( fieldmlInfo, Mesh, GeometricField, "test_mesh.node.coordinates", err )
+  CALL CMISSFieldmlInput_FieldNodalParametersUpdate( fieldmlInfo, GeometricField, "test_mesh.node.coordinates", err )
 
   !
   !================================================================================================================================
@@ -598,10 +598,10 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
   !
 
   !OUTPUT
-    CALL CMISSFieldmlOutput_InitialiseInfo( Region, Mesh, 3, outputDirectory, basename, outputInfo, err )
+    CALL CMISSFieldmlOutput_InitialiseInfo( Mesh, outputDirectory, basename, outputInfo, err )
 
     CALL CMISSFieldmlUtil_Import( outputInfo, "coordinates.rc.3d"//NUL, typeHandle, err )
-    CALL CMISSFieldmlOutput_AddField( outputInfo, baseName//".geometric", region, mesh, GeometricField, &
+    CALL CMISSFieldmlOutput_AddField( outputInfo, baseName//".geometric", GeometricField, &
       & CMISSFieldUVariableType, err )
 
     CALL CMISSFieldmlOutput_AddFieldComponents( outputInfo, typeHandle, baseName//".velocity", Mesh,DependentFieldNavierStokes, &

@@ -426,21 +426,21 @@ CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
     !CALL CMISSFieldIOElementsExport(Fields,"StaticAdvectionDiffusion","FORTRAN",Err)
     !CALL CMISSFieldsTypeFinalise(Fields,Err)
     
-    CALL CMISSFieldmlOutput_InitialiseInfo( Region, Mesh, dimensions, outputDirectory, basename, fieldmlInfo, err )
+    CALL CMISSFieldmlOutput_InitialiseInfo( Mesh, outputDirectory, basename, fieldmlInfo, err )
 
-    CALL CMISSFieldmlOutput_AddField( fieldmlInfo, baseName//".geometric", region, mesh, GeometricField, &
+    CALL CMISSFieldmlOutput_AddField( fieldmlInfo, baseName//".geometric", GeometricField, &
       & CMISSFieldUVariableType, err )
 
-    CALL CMISSFieldmlOutput_AddField( fieldmlInfo, baseName//".dependent", region, mesh, DependentField, &
+    CALL CMISSFieldmlOutput_AddField( fieldmlInfo, baseName//".dependent", DependentField, &
       & CMISSFieldUVariableType, err )
 
-    CALL CMISSFieldmlOutput_AddField( fieldmlInfo, baseName//".independent", region, mesh, IndependentField, &
+    CALL CMISSFieldmlOutput_AddField( fieldmlInfo, baseName//".independent", IndependentField, &
       & CMISSFieldUVariableType, err )
 
-    CALL CMISSFieldmlOutput_AddField( fieldmlInfo, baseName//".source", region, mesh, SourceField, &
+    CALL CMISSFieldmlOutput_AddField( fieldmlInfo, baseName//".source", SourceField, &
       & CMISSFieldUVariableType, err )
 
-    CALL CMISSFieldmlOutput_AddField( fieldmlInfo, baseName//".materials", region, mesh, MaterialsField, &
+    CALL CMISSFieldmlOutput_AddField( fieldmlInfo, baseName//".materials", MaterialsField, &
       & CMISSFieldUVariableType, err )
 
     !CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".analytic", region, mesh, AnalyticField, &
