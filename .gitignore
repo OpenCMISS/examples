@@ -9,3 +9,9 @@ bin/
 # Editor files
 *.swp
 *~
+
+# Files created when running tests
+*.pyc
+nose_run_*
+nose_build_*
+nose_check_*
