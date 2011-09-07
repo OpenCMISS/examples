@@ -88,8 +88,7 @@ PROGRAM COUPLEDCANTILEVER
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: FieldFibreUserNumber=2
-  INTEGER(CMISSIntg), PARAMETER :: FieldFluidMaterialUserNumber=3
-  INTEGER(CMISSIntg), PARAMETER :: FieldSolidMaterialUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: FieldSourceUserNumber=6
   INTEGER(CMISSIntg), PARAMETER :: SolidEquationsSetFieldUserNumber=7
@@ -117,7 +116,7 @@ PROGRAM COUPLEDCANTILEVER
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: SolidEquations,FluidEquations
   TYPE(CMISSEquationsSetType) :: SolidEquationsSet,FluidEquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,FibreField,SolidMaterialField,FluidMaterialField,DependentField, &
+  TYPE(CMISSFieldType) :: GeometricField,FibreField,MaterialField,DependentField, &
       & SourceField,SolidEquationsSetField,FluidEquationsSetField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh
@@ -285,35 +284,34 @@ PROGRAM COUPLEDCANTILEVER
   CALL CMISSEquationsSetDependentCreateFinish(FluidEquationsSet,Err)
 
   !Create the material field
-  CALL CMISSFieldTypeInitialise(SolidMaterialField,Err)
-  CALL CMISSEquationsSetMaterialsCreateStart(SolidEquationsSet,FieldSolidMaterialUserNumber,SolidMaterialField,Err)
-  CALL CMISSFieldVariableLabelSet(SolidMaterialField,CMISSFieldUVariableType,"SolidMaterial",Err)
-  CALL CMISSFieldVariableLabelSet(SolidMaterialField,CMISSFieldVVariableType,"Density",Err)
+  CALL CMISSFieldTypeInitialise(MaterialField,Err)
+  CALL CMISSEquationsSetMaterialsCreateStart(SolidEquationsSet,FieldMaterialUserNumber,MaterialField,Err)
+  CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldUVariableType,"SolidMaterial",Err)
+  CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldVVariableType,"Density",Err)
+  CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldU1VariableType,"FluidMaterial",Err)
   CALL CMISSEquationsSetMaterialsCreateFinish(SolidEquationsSet,Err)
 
-  CALL CMISSFieldTypeInitialise(FluidMaterialField,Err)
-  CALL CMISSEquationsSetMaterialsCreateStart(FluidEquationsSet,FieldFluidMaterialUserNumber,FluidMaterialField,Err)
-  CALL CMISSFieldVariableLabelSet(FluidMaterialField,CMISSFieldUVariableType,"FluidMaterial",Err)
+  CALL CMISSEquationsSetMaterialsCreateStart(FluidEquationsSet,FieldMaterialUserNumber,MaterialField,Err)
   CALL CMISSEquationsSetMaterialsCreateFinish(FluidEquationsSet,Err)
 
   !Set material constants
   !Solid constitutive law
-  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,C1,Err)
-  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,C2,Err)
-  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,K,Err)
-  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,p_0,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,C1,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,C2,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,K,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,p_0,Err)
   !Solid density
-  CALL CMISSFieldComponentValuesInitialise(SolidMaterialField,CMISSFieldVVariableType,CMISSFieldValuesSetType,1,Density,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldVVariableType,CMISSFieldValuesSetType,1,Density,Err)
 
   !Permeability tensor
-  CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,1,permeability,Err)
-  CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,2,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,3,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,4,permeability,Err)
-  CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,5,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,6,permeability,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,1,permeability,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,2,0.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,3,0.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,4,permeability,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,5,0.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,6,permeability,Err)
   !Fluid Density
-  CALL CMISSFieldComponentValuesInitialise(FluidMaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,7,1000.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,7,1000.0_CMISSDP,Err)
 
   !Create the source field with the gravity vector
   CALL CMISSFieldTypeInitialise(SourceField,Err)

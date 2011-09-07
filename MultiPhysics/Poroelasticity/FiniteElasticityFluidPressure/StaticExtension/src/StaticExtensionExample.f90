@@ -340,8 +340,12 @@ PROGRAM POROELASTICITYEXAMPLE
   CALL CMISSFieldTypeInitialise(MaterialField,Err)
   CALL CMISSEquationsSetMaterialsCreateStart(FluidEquationsSet,FieldMaterialUserNumber,MaterialField,Err)
   CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldUVariableType,"SolidMaterial",Err)
+  CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldVVariableType,"SolidDensity",Err)
   CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldU1VariableType,"FluidMaterial",Err)
   CALL CMISSEquationsSetMaterialsCreateFinish(FluidEquationsSet,Err)
+
+  CALL CMISSEquationsSetMaterialsCreateStart(SolidEquationsSet,FieldMaterialUserNumber,MaterialField,Err)
+  CALL CMISSEquationsSetMaterialsCreateFinish(SolidEquationsSet,Err)
 
   !Set material constants
   !Solid constitutive law
@@ -351,6 +355,7 @@ PROGRAM POROELASTICITYEXAMPLE
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,M,Err)
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,5,b,Err)
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,6,p_0,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldVVariableType,CMISSFieldValuesSetType,1,0.0_CMISSDP,Err)
 
   !Permeability tensor
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,1,permeability,Err)
