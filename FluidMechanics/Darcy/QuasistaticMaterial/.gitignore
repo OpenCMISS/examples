@@ -1,0 +1,5 @@
+DarcyQuasistaticMaterial.part0.exelem
+DarcyQuasistaticMaterial.part0.exnode
+
+output/*.exelem
+output/*.exnode

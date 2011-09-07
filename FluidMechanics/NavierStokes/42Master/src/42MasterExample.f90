@@ -517,6 +517,8 @@ PROGRAM NAVIERSTOKESMASTEREXAMPLE
 
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+
   !
   !================================================================================================================================
   !

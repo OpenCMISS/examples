@@ -277,6 +277,8 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
 
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion, err )
 
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+
   !
   !================================================================================================================================
   !

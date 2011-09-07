@@ -1,7 +1,9 @@
-# -*- makefile -*-
+#
+#-*- makefile -*-
 #
 # For use with GNU make.
 #
+# $Id: Makefile -1   $
 #
 #----------------------------------------------------------------------------------------------------------------------------------
 # Makefile for compiling OpenCMISS examples
@@ -25,7 +27,7 @@
 # License for the specific language governing rights and limitations
 # under the License.
 #
-# The Original Code is OpenCMISS
+# The Original Code is openCMISS
 #
 # The Initial Developer of the Original Code is University of Auckland,
 # Auckland, New Zealand and University of Oxford, Oxford, United
@@ -54,17 +56,17 @@ MAKEFLAGS = --no-builtin-rules --warn-undefined-variables
 #----------------------------------------------------------------------------------------------------------------------------------
 
 ifndef OPENCMISS_ROOT
-  OPENCMISS_ROOT := ../..
-  GLOBAL_ROOT := $(CURDIR)/../..
+  OPENCMISS_ROOT := ../../..
+  GLOBAL_ROOT := $(CURDIR)/../../..
 else
   GLOBAL_ROOT := ${OPENCMISS_ROOT}/cm
 endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_PATH=ClassicalField/Laplace/
+EXAMPLE_PATH = MultiPhysics/BioelectricFiniteElasticity/
 
-EXAMPLE_NAME = LaplaceC
+EXAMPLE_NAME = GudunovMonodomainElasticitySameMesh
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 
