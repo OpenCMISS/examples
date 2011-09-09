@@ -366,7 +366,7 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition, err )
   
-  CALL CMISSFieldmlInput_FieldCreate( fieldmlInfo, Region, Decomposition, GeometricFieldUserNumber, GeometricField, &
+  CALL CMISSFieldmlInput_FieldCreateStart( fieldmlInfo, Region, Decomposition, GeometricFieldUserNumber, GeometricField, &
     & "test_mesh.coordinates", err )
   CALL CMISSFieldCreateFinish( RegionUserNumber, GeometricFieldUserNumber, err )
 
@@ -606,11 +606,11 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
     CALL CMISSFieldmlOutput_AddField( outputInfo, baseName//".geometric", GeometricField, &
       & CMISSFieldUVariableType, err )
 
-    CALL CMISSFieldmlOutput_AddFieldComponents( outputInfo, typeHandle, baseName//".velocity", Mesh,DependentFieldNavierStokes, &
+    CALL CMISSFieldmlOutput_AddFieldComponents( outputInfo, typeHandle, baseName//".velocity", DependentFieldNavierStokes, &
       & (/1,2,3/), CMISSFieldUVariableType, err )
     
     CALL CMISSFieldmlUtil_Import( outputInfo, "real.1d"//NUL, typeHandle, err )
-    CALL CMISSFieldmlOutput_AddFieldComponents( outputInfo, typeHandle, baseName//".pressure", Mesh,DependentFieldNavierStokes,&
+    CALL CMISSFieldmlOutput_AddFieldComponents( outputInfo, typeHandle, baseName//".pressure", DependentFieldNavierStokes,&
       & (/4/), CMISSFieldUVariableType, err )
     
     CALL CMISSFieldmlOutput_Write( outputInfo, outputFilename, err )
