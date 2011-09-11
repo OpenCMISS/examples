@@ -78,7 +78,7 @@ PROGRAM DataProjection1DRectangularCartesian
   INTEGER(CMISSIntg) :: FieldNumberOfVariables=1
   INTEGER(CMISSIntg) :: FieldNumberOfComponents=3 
 
-  INTEGER(CMISSIntg) :: np,el,der_idx,node_idx,comp_idx
+  INTEGER(CMISSIntg) :: np,el,ver_idx,der_idx,node_idx,comp_idx
     
   REAL(CMISSDP), DIMENSION(5,3) :: DataPointValues !(number_of_data_points,dimension)
   REAL(CMISSDP), DIMENSION(5) :: DataPointProjectionDistance !(number_of_data_points)
@@ -246,8 +246,8 @@ PROGRAM DataProjection1DRectangularCartesian
   DO der_idx=1,SIZE(FieldValues,1)
     DO node_idx=1,SIZE(FieldValues,2)
       DO comp_idx=1,SIZE(FieldValues,3)
-        CALL CMISSFieldParameterSetUpdateNode(RegionUserNumber,FieldUserNumber,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
-          & der_idx,node_idx,comp_idx,FieldValues(der_idx,node_idx,comp_idx),Err)
+        CALL CMISSFieldParameterSetUpdateNode(RegionUserNumber,FieldUserNumber,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+          & ver_idx,der_idx,node_idx,comp_idx,FieldValues(der_idx,node_idx,comp_idx),Err)
       ENDDO
     ENDDO
   ENDDO
