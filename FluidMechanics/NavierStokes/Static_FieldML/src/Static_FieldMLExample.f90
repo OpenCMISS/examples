@@ -58,7 +58,6 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   USE OPENCMISS
   USE MPI
   USE FIELDML_API
-  USE FIELDML_TYPES
 
 #ifdef WIN32
   USE IFQWINCMISS
@@ -187,7 +186,7 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   TYPE(CMISSSolverEquationsType) :: SolverEquationsNavierStokes
   
   !FieldML parsing variables
-  TYPE(FieldmlInfoType) :: fieldmlInfo, outputInfo
+  TYPE(CMISSFieldmlType) :: fieldmlInfo, outputInfo
   
   INTEGER(CMISSIntg) :: meshComponentCount
   
@@ -376,7 +375,7 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   !================================================================================================================================
   !
 
-  CALL CMISSFieldmlUtil_FinaliseInfo( fieldmlInfo, err )
+  CALL CMISSFieldmlUtil_FieldmlFinalise( fieldmlInfo, err )
 
   !
   !================================================================================================================================
@@ -615,7 +614,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
     
     CALL CMISSFieldmlOutput_Write( outputInfo, outputFilename, err )
     
-    CALL CMISSFieldmlUtil_FinaliseInfo( outputInfo, err )
+    CALL CMISSFieldmlUtil_FieldmlFinalise( outputInfo, err )
 
   EXPORT_FIELD_IO=.TRUE.
   IF(EXPORT_FIELD_IO) THEN

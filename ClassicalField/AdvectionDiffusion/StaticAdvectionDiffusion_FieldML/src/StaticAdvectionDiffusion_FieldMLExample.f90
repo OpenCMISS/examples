@@ -49,7 +49,6 @@
 PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
 
   USE OPENCMISS
-  USE FIELDML_TYPES
   USE FIELDML_API
   USE MPI
 
@@ -140,7 +139,7 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputFilename = "StaticAdvectionDiffusion.xml"
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_advection_diffusion"
 
-  TYPE(FieldmlInfoType) :: fieldmlInfo
+  TYPE(CMISSFieldmlType) :: fieldmlInfo
 
   
 #ifdef WIN32
@@ -427,7 +426,8 @@ CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
     !CALL CMISSFieldIONodesExport(Fields,"StaticAdvectionDiffusion","FORTRAN",Err)
     !CALL CMISSFieldIOElementsExport(Fields,"StaticAdvectionDiffusion","FORTRAN",Err)
     !CALL CMISSFieldsTypeFinalise(Fields,Err)
-    
+   
+    CALL CMISSFieldmlUtil_FieldmlInitialise( fieldmlInfo, err ) 
     CALL CMISSFieldmlOutput_InitialiseInfo( Mesh, outputDirectory, basename, fieldmlInfo, err )
 
     CALL CMISSFieldmlOutput_AddField( fieldmlInfo, baseName//".geometric", GeometricField, &
@@ -450,7 +450,7 @@ CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
     
     CALL CMISSFieldmlOutput_Write( fieldmlInfo, outputFilename, err )
     
-    CALL CMISSFieldmlUtil_FinaliseInfo( fieldmlInfo, err )
+    CALL CMISSFieldmlUtil_FieldmlFinalise( fieldmlInfo, err )
 
   ENDIF
 
