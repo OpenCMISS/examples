@@ -63,7 +63,7 @@
      4.  #Values=1
       Value indices:     1
       Scale factor indices:    4
- 4) Material, field,  rectangular cartesian, #Components=2
+ 4) Materials, field,  rectangular cartesian, #Components=2
    1.   l.Lagrange*l.Lagrange, no modify, grid based.
      #xi1=1, #xi2=1
    2.   l.Lagrange*l.Lagrange, no modify, grid based.
