@@ -306,6 +306,7 @@ PROGRAM TRICUBICAXIALEXTENSIONEXAMPLE
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,1,LinearMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,2,LinearMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,3,LinearMeshComponentNumber,Err)
+  CALL CMISSFieldScalingTypeSet(FibreField,CMISSFieldUnitScaling,Err)
   CALL CMISSFieldCreateFinish(FibreField,Err)
 
   !Create the equations_set
