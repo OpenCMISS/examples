@@ -325,7 +325,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
 
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  !CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
 
   !
   !================================================================================================================================
@@ -396,8 +396,8 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   EQUATIONS_DARCY_OUTPUT=CMISSEquationsNoOutput
   EQUATIONS_MAT_PROPERTIES_OUTPUT=CMISSEquationsNoOutput
   !Set time parameter
-  LINEAR_SOLVER_DARCY_START_TIME=0.0_CMISSDP
-  LINEAR_SOLVER_DARCY_STOP_TIME=0.250_CMISSDP 
+  LINEAR_SOLVER_DARCY_START_TIME=0.125_CMISSDP
+  LINEAR_SOLVER_DARCY_STOP_TIME=0.250_CMISSDP
   LINEAR_SOLVER_DARCY_TIME_INCREMENT=0.125_CMISSDP
   !Set result output parameter
   LINEAR_SOLVER_DARCY_OUTPUT_FREQUENCY=1
