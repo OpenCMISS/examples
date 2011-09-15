@@ -55,10 +55,6 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
 
   IMPLICIT NONE
 
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(CMISSFieldType) :: EquationsSetField
-
-
   !Test program parameters
 
   REAL(CMISSDP), PARAMETER :: ORIGIN(3)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)
@@ -94,6 +90,8 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfComponents=3
 
   INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=4
+
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
   REAL(CMISSDP), PARAMETER ::   ZERO = 0.0_CMISSDP
@@ -107,27 +105,30 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
   INTEGER(CMISSIntg) :: MPI_IERROR
   INTEGER(CMISSIntg) :: EquationsSetIndex  
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: node_idx,component_idx
+  REAL(CMISSDP) :: Value1,Value2
   LOGICAL :: EXPORT_FIELD
 
   !CMISS variables
 
   TYPE(CMISSRegionType) :: WorldRegion
   TYPE(CMISSCoordinateSystemType) :: WorldCoordinateSystem
-    TYPE(CMISSBasisType) :: Basis(2)
-    TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
-    TYPE(CMISSCoordinateSystemType) :: CoordinateSystem
-    TYPE(CMISSDecompositionType) :: Decomposition
-    TYPE(CMISSEquationsType) :: Equations
-    TYPE(CMISSEquationsSetType) :: EquationsSet
-    TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialField
-    TYPE(CMISSFieldsType) :: Fields
-    TYPE(CMISSMeshType) :: Mesh
-    TYPE(CMISSNodesType) :: Nodes
-    TYPE(CMISSProblemType) :: Problem
-    TYPE(CMISSRegionType) :: Region
-    TYPE(CMISSSolverType) :: Solver
-    TYPE(CMISSSolverEquationsType) :: SolverEquations
-    TYPE(CMISSMeshElementsType) :: Elements(2)
+  TYPE(CMISSBasisType) :: Basis(2)
+  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
+  TYPE(CMISSCoordinateSystemType) :: CoordinateSystem
+  TYPE(CMISSDecompositionType) :: Decomposition
+  TYPE(CMISSEquationsType) :: Equations
+  TYPE(CMISSEquationsSetType) :: EquationsSet
+  TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialField
+  TYPE(CMISSFieldsType) :: Fields
+  TYPE(CMISSMeshType) :: Mesh
+  TYPE(CMISSNodesType) :: Nodes
+  TYPE(CMISSProblemType) :: Problem
+  TYPE(CMISSRegionType) :: Region
+  TYPE(CMISSFieldType) :: EquationsSetField
+  TYPE(CMISSSolverType) :: Solver
+  TYPE(CMISSSolverEquationsType) :: SolverEquations
+  TYPE(CMISSMeshElementsType) :: Elements(2)
 
 #ifdef WIN32
   !Quickwin type
@@ -245,6 +246,7 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
   CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
   CALL CMISSFieldTypeSet(GeometricField,CMISSFieldGeometricType,Err)  
   CALL CMISSFieldNumberOfVariablesSet(GeometricField,FieldGeometryNumberOfVariables,Err)
+  CALL CMISSFieldVariableLabelSet(GeometricField,CMISSFieldUVariableType,"Geometry",Err)
   CALL CMISSFieldNumberOfComponentsSet(GeometricField,CMISSFieldUVariableType,FieldGeometryNumberOfComponents,Err)  
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,1,Err)
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,2,Err)
@@ -270,6 +272,7 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
   CALL CMISSFieldGeometricFieldSet(DependentField,GeometricField,Err) 
   CALL CMISSFieldDependentTypeSet(DependentField,CMISSFieldDependentType,Err) 
   CALL CMISSFieldNumberOfVariablesSet(DependentField,FieldDependentNumberOfVariables,Err)
+  CALL CMISSFieldVariableLabelSet(DependentField,CMISSFieldUVariableType,"Dependent",Err)
   CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldUVariableType,FieldDependentNumberOfComponents,Err)
   CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelUDelNVariableType,FieldDependentNumberOfComponents,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,1,1,Err)
@@ -285,20 +288,22 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
   CALL CMISSFieldMeshDecompositionSet(MaterialField,Decomposition,Err)
   CALL CMISSFieldGeometricFieldSet(MaterialField,GeometricField,Err)
   CALL CMISSFieldNumberOfVariablesSet(MaterialField,FieldMaterialNumberOfVariables,Err)
+  CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldUVariableType,"Material",Err)
   CALL CMISSFieldNumberOfComponentsSet(MaterialField,CMISSFieldUVariableType,FieldMaterialNumberOfComponents,Err)  
   CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,1,1,Err)
   CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,2,2,Err)
   CALL CMISSFieldCreateFinish(MaterialField,Err)
 
   !Set isotropic elasticity material parameters - Young's Modulus & Poisson's Ratio, thickness
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,30E6_CMISSDP,Err) !E
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,0.25_CMISSDP,Err) !v
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,0.036_CMISSDP,Err) !thickness
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,0.036_CMISSDP,Err) !thickness
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,30E6_CMISSDP,Err) !E
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,0.25_CMISSDP,Err) !v
+
 
   !Create a Elasticity Class, Linear Elasticity type, no subtype, EquationsSet
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
-CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,GeometricField,CMISSEquationsSetElasticityClass, &
+  CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+  CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,GeometricField,CMISSEquationsSetElasticityClass, &
     & CMISSEquationsSetLinearElasticityType,CMISSEquationsSetPlaneStressSubtype,EquationsSetFieldUserNumber,EquationsSetField, &
     & EquationsSet,Err)
   
@@ -346,17 +351,6 @@ CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,GeometricField,CM
                                       !CMISSSolverSolverOutput !<Solver specific output from the solver routines plus below.
                                       !CMISSSolverSolverMatrixOutput !<Solver matrices output from the solver routines plus below.
   CALL CMISSSolverLibraryTypeSet(SOLVER,CMISSSolverPETScLibrary,Err)
-                                        !CMISSSolverCMISSLibrary     !<CMISS (internal) solver library.
-                                        !CMISSSolverPETScLibrary     !<PETSc solver library.
-                                        !CMISSSolverMUMPSLibrary     !<MUMPS solver library.
-                                        !CMISSSolverSuperLULibrary   !<SuperLU solver library.
-                                        !CMISSSolverSpoolesLULibrary !<SPOOLES solver library.
-                                        !CMISSSolverUMFPACKLibrary   !<UMFPACK solver library.
-                                        !CMISSSolverLUSOLLibrary     !<LUSOL solver library.
-                                        !CMISSSolverESSLLibrary      !<ESSL solver library.
-                                        !CMISSSolverLAPACKLibrary    !<LAPACK solver library.
-                                        !CMISSSolverTAOLibrary       !<TAO solver library.
-                                        !CMISSSolverHypreLibrary     !<Hypre solver library.
   CALL CMISSSolverLinearTypeSet(SOLVER,CMISSSolverLinearDirectSolveType,Err)
                                       !CMISSSolverLinearDirectSolveType    !<Direct linear solver type.
                                       !CMISSSolverLinearIterativeSolveType !<Iterative linear solver type.
@@ -404,8 +398,19 @@ CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,GeometricField,CM
   !Solve the Problem
   CALL CMISSProblemSolve(Problem,Err)
 
+  !Add dependent field to geometric field
+  DO node_idx=1,TotalNumberOfNodes
+    DO component_idx=1,FieldGeometryNumberOfComponents
+      CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,node_idx, &
+        & component_idx,Value1,Err)
+      CALL CMISSFieldParameterSetGetNode(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,node_idx, &
+        & component_idx,Value2,Err)
+      CALL CMISSFieldParameterSetAddNode(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,node_idx, &
+        & component_idx,Value1+Value2,Err)
+    ENDDO
+  ENDDO
+
   !=OUTPUT SOLUTION================================================================================================================
-  !!TODO:: Output reaction forces in ipnode files
   EXPORT_FIELD=.TRUE.
   IF(EXPORT_FIELD) THEN
     CALL CMISSFieldsTypeInitialise(Fields,Err)
