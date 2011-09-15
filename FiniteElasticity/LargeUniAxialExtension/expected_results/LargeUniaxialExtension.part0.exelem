@@ -329,7 +329,7 @@
      #xi1=1, #xi2=1, #xi3=1
    2.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, grid based.
      #xi1=1, #xi2=1, #xi3=1
- 6) Density, field,  unknown field variable type, #Components=1
+ 6) Density, field,  real, #Components=1
    1.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, grid based.
      #xi1=1, #xi2=1, #xi3=1
  Element:            1 0 0
