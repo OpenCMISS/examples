@@ -88,8 +88,6 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
 
   INTEGER(CMISSIntg), PARAMETER :: MeshComponentNumber=1
 
-  CHARACTER(C_CHAR), PARAMETER :: NUL=C_NULL_CHAR
-
   !Program types
   
   !Program variables

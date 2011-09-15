@@ -98,8 +98,6 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
 
   INTEGER(CMISSIntg), PARAMETER :: gaussQuadrature(3) = (/3,3,3/)
 
-  CHARACTER(KIND=C_CHAR), PARAMETER :: NUL = C_NULL_CHAR
-
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: inputFilename = "../../TOOLS/NavierStokesMeshes/HEX-M2-V2-P1_FE.xml"
 
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputDirectory = "output"
@@ -287,6 +285,7 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   !COORDINATE SYSTEM
 
   !Start the creation of a new RC coordinate system
+  CALL CMISSCoordinateSystemTypeInitialise( CoordinateSystem, err )
   CALL CMISSFieldmlInput_CoordinateSystemCreateStart( fieldmlInfo, "test_mesh.coordinates", CoordinateSystem, &
     & CoordinateSystemUserNumber, err )
   CALL CMISSCoordinateSystemCreateFinish( CoordinateSystem, err )
@@ -601,14 +600,14 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
   !OUTPUT
     CALL CMISSFieldmlOutput_InitialiseInfo( Mesh, outputDirectory, basename, outputInfo, err )
 
-    CALL CMISSFieldmlUtil_Import( outputInfo, "coordinates.rc.3d"//NUL, typeHandle, err )
+    CALL CMISSFieldmlUtil_Import( outputInfo, "coordinates.rc.3d", typeHandle, err )
     CALL CMISSFieldmlOutput_AddField( outputInfo, baseName//".geometric", GeometricField, &
       & CMISSFieldUVariableType, err )
 
     CALL CMISSFieldmlOutput_AddFieldComponents( outputInfo, typeHandle, baseName//".velocity", DependentFieldNavierStokes, &
       & (/1,2,3/), CMISSFieldUVariableType, err )
     
-    CALL CMISSFieldmlUtil_Import( outputInfo, "real.1d"//NUL, typeHandle, err )
+    CALL CMISSFieldmlUtil_Import( outputInfo, "real.1d", typeHandle, err )
     CALL CMISSFieldmlOutput_AddFieldComponents( outputInfo, typeHandle, baseName//".pressure", DependentFieldNavierStokes,&
       & (/4/), CMISSFieldUVariableType, err )
     
