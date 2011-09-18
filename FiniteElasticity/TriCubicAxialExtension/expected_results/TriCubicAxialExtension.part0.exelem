@@ -5,7 +5,7 @@
  l.Lagrange*l.Lagrange*l.Lagrange, #Scale factors=8
  #Nodes=           8
  #Fields=6
- 1) Coordinate, coordinate, rectangular cartesian, #Components=3
+ 1) Geometry, coordinate, rectangular cartesian, #Components=3
    x.   c.Hermite*c.Hermite*c.Hermite, no modify, standard node based.
      #Nodes= 8
      1.  #Values=8
@@ -84,7 +84,7 @@
      8.  #Values=8
       Value indices:     1   2   3   4   5   6   7   8
       Scale factor indices:   57  58  59  60  61  62  63  64
- 2) Coordinate, anatomical, fibre, #Components=3
+ 2) Fibre, anatomical, fibre, #Components=3
    1.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
      #Nodes= 8
      1.  #Values=1
@@ -163,7 +163,7 @@
      8.  #Values=1
       Value indices:     1
       Scale factor indices:   72
- 3) Coordinate, field,  rectangular cartesian, #Components=4
+ 3) Dependent, field,  rectangular cartesian, #Components=4
    1.   c.Hermite*c.Hermite*c.Hermite, no modify, standard node based.
      #Nodes= 8
      1.  #Values=8
