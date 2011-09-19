@@ -425,30 +425,30 @@ CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
     !CALL CMISSFieldIOElementsExport(Fields,"StaticAdvectionDiffusion","FORTRAN",Err)
     !CALL CMISSFieldsTypeFinalise(Fields,Err)
    
-    CALL CMISSFieldmlUtil_FieldmlInitialise( fieldmlInfo, err ) 
-    CALL CMISSFieldmlOutput_InitialiseInfo( Mesh, outputDirectory, basename, fieldmlInfo, err )
+    CALL CMISSFieldmlTypeInitialise( fieldmlInfo, err ) 
+    CALL CMISSFieldmlOutputCreate( Mesh, outputDirectory, basename, fieldmlInfo, err )
 
-    CALL CMISSFieldmlOutput_AddField( fieldmlInfo, baseName//".geometric", GeometricField, &
+    CALL CMISSFieldmlOutputAddField( fieldmlInfo, baseName//".geometric", GeometricField, &
       & CMISSFieldUVariableType, err )
 
-    CALL CMISSFieldmlOutput_AddField( fieldmlInfo, baseName//".dependent", DependentField, &
+    CALL CMISSFieldmlOutputAddField( fieldmlInfo, baseName//".dependent", DependentField, &
       & CMISSFieldUVariableType, err )
 
-    CALL CMISSFieldmlOutput_AddField( fieldmlInfo, baseName//".independent", IndependentField, &
+    CALL CMISSFieldmlOutputAddField( fieldmlInfo, baseName//".independent", IndependentField, &
       & CMISSFieldUVariableType, err )
 
-    CALL CMISSFieldmlOutput_AddField( fieldmlInfo, baseName//".source", SourceField, &
+    CALL CMISSFieldmlOutputAddField( fieldmlInfo, baseName//".source", SourceField, &
       & CMISSFieldUVariableType, err )
 
-    CALL CMISSFieldmlOutput_AddField( fieldmlInfo, baseName//".materials", MaterialsField, &
+    CALL CMISSFieldmlOutputAddField( fieldmlInfo, baseName//".materials", MaterialsField, &
       & CMISSFieldUVariableType, err )
 
-    !CALL FieldmlOutput_AddField( fieldmlInfo, baseName//".analytic", region, mesh, AnalyticField, &
+    !CALL FieldmlOutputAddField( fieldmlInfo, baseName//".analytic", region, mesh, AnalyticField, &
     !  & CMISSFieldUVariableType, err )
     
-    CALL CMISSFieldmlOutput_Write( fieldmlInfo, outputFilename, err )
+    CALL CMISSFieldmlOutputWrite( fieldmlInfo, outputFilename, err )
     
-    CALL CMISSFieldmlUtil_FieldmlFinalise( fieldmlInfo, err )
+    CALL CMISSFieldmlTypeFinalise( fieldmlInfo, err )
 
   ENDIF
 

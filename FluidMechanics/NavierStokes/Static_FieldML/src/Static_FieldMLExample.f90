@@ -279,14 +279,15 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   !
   !================================================================================================================================
   !
- 
-  CALL CMISSFieldmlInput_InitialiseFromFile( fieldmlInfo, inputFilename, err )
+
+  CALL CMISSFieldmlTypeInitialise( fieldmlInfo, err ) 
+  CALL CMISSFieldmlInputCreateFromFile( fieldmlInfo, inputFilename, err )
 
   !COORDINATE SYSTEM
 
   !Start the creation of a new RC coordinate system
   CALL CMISSCoordinateSystemTypeInitialise( CoordinateSystem, err )
-  CALL CMISSFieldmlInput_CoordinateSystemCreateStart( fieldmlInfo, "test_mesh.coordinates", CoordinateSystem, &
+  CALL CMISSFieldmlInputCoordinateSystemCreateStart( fieldmlInfo, "test_mesh.coordinates", CoordinateSystem, &
     & CoordinateSystemUserNumber, err )
   CALL CMISSCoordinateSystemCreateFinish( CoordinateSystem, err )
   CALL CMISSCoordinateSystemDimensionGet( CoordinateSystem, coordinateCount, err )
@@ -310,7 +311,7 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   !
 
   !NODES
-  CALL CMISSFieldmlInput_NodesCreateStart( fieldmlInfo, "test_mesh.nodes.argument", Region, nodes, err )
+  CALL CMISSFieldmlInputNodesCreateStart( fieldmlInfo, "test_mesh.nodes.argument", Region, nodes, err )
   CALL CMISSNodesCreateFinish( Nodes, err )
 
   !
@@ -318,11 +319,11 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   !
 
   !BASES
-  CALL CMISSFieldmlInput_BasisCreateStart( fieldmlInfo, "test_mesh.trilinear_lagrange", basisNumberTrilinear, err )
+  CALL CMISSFieldmlInputBasisCreateStart( fieldmlInfo, "test_mesh.trilinear_lagrange", basisNumberTrilinear, err )
   CALL CMISSBasisQuadratureNumberOfGaussXiSet( basisNumberTrilinear, gaussQuadrature, err )
   CALL CMISSBasisCreateFinish( basisNumberTrilinear, err )
 
-  CALL CMISSFieldmlInput_BasisCreateStart( fieldmlInfo, "test_mesh.triquadratic_lagrange", basisNumberTriquadratic, err )
+  CALL CMISSFieldmlInputBasisCreateStart( fieldmlInfo, "test_mesh.triquadratic_lagrange", basisNumberTriquadratic, err )
   CALL CMISSBasisQuadratureNumberOfGaussXiSet( basisNumberTriquadratic, gaussQuadrature, err )
   CALL CMISSBasisCreateFinish( basisNumberTriquadratic, err )
   
@@ -334,12 +335,12 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   
   meshComponentCount = 2
 
-  CALL CMISSFieldmlInput_MeshCreateStart( fieldmlInfo, "test_mesh.mesh.argument", Mesh, MeshUserNumber, Region, err )
+  CALL CMISSFieldmlInputMeshCreateStart( fieldmlInfo, "test_mesh.mesh.argument", Mesh, MeshUserNumber, Region, err )
   CALL CMISSMeshNumberOfComponentsSet( Mesh, meshComponentCount, err )
   
-  CALL CMISSFieldmlInput_CreateMeshComponent( fieldmlInfo, RegionUserNumber, MeshUserNumber, 1, &
+  CALL CMISSFieldmlInputCreateMeshComponent( fieldmlInfo, RegionUserNumber, MeshUserNumber, 1, &
     & "test_mesh.template.triquadratic", err )
-  CALL CMISSFieldmlInput_CreateMeshComponent( fieldmlInfo, RegionUserNumber, MeshUserNumber, 2, &
+  CALL CMISSFieldmlInputCreateMeshComponent( fieldmlInfo, RegionUserNumber, MeshUserNumber, 2, &
     & "test_mesh.template.trilinear", err )
   
   MESH_COMPONENT_NUMBER_SPACE = 1
@@ -364,17 +365,17 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition, err )
   
-  CALL CMISSFieldmlInput_FieldCreateStart( fieldmlInfo, Region, Decomposition, GeometricFieldUserNumber, GeometricField, &
+  CALL CMISSFieldmlInputFieldCreateStart( fieldmlInfo, Region, Decomposition, GeometricFieldUserNumber, GeometricField, &
     & "test_mesh.coordinates", err )
   CALL CMISSFieldCreateFinish( RegionUserNumber, GeometricFieldUserNumber, err )
 
-  CALL CMISSFieldmlInput_FieldNodalParametersUpdate( fieldmlInfo, GeometricField, "test_mesh.node.coordinates", err )
+  CALL CMISSFieldmlInputFieldNodalParametersUpdate( fieldmlInfo, GeometricField, "test_mesh.node.coordinates", err )
 
   !
   !================================================================================================================================
   !
 
-  CALL CMISSFieldmlUtil_FieldmlFinalise( fieldmlInfo, err )
+  CALL CMISSFieldmlTypeFinalise( fieldmlInfo, err )
 
   !
   !================================================================================================================================
@@ -598,22 +599,23 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
   !
 
   !OUTPUT
-    CALL CMISSFieldmlOutput_InitialiseInfo( Mesh, outputDirectory, basename, outputInfo, err )
+    CALL CMISSFieldmlTypeInitialise( outputInfo, err )
+    CALL CMISSFieldmlOutputCreate( Mesh, outputDirectory, basename, outputInfo, err )
 
-    CALL CMISSFieldmlUtil_Import( outputInfo, "coordinates.rc.3d", typeHandle, err )
-    CALL CMISSFieldmlOutput_AddField( outputInfo, baseName//".geometric", GeometricField, &
+    CALL CMISSFieldmlUtilImport( outputInfo, "coordinates.rc.3d", typeHandle, err )
+    CALL CMISSFieldmlOutputAddField( outputInfo, baseName//".geometric", GeometricField, &
       & CMISSFieldUVariableType, err )
 
-    CALL CMISSFieldmlOutput_AddFieldComponents( outputInfo, typeHandle, baseName//".velocity", DependentFieldNavierStokes, &
+    CALL CMISSFieldmlOutputAddFieldComponents( outputInfo, typeHandle, baseName//".velocity", DependentFieldNavierStokes, &
       & (/1,2,3/), CMISSFieldUVariableType, err )
     
-    CALL CMISSFieldmlUtil_Import( outputInfo, "real.1d", typeHandle, err )
-    CALL CMISSFieldmlOutput_AddFieldComponents( outputInfo, typeHandle, baseName//".pressure", DependentFieldNavierStokes,&
+    CALL CMISSFieldmlUtilImport( outputInfo, "real.1d", typeHandle, err )
+    CALL CMISSFieldmlOutputAddFieldComponents( outputInfo, typeHandle, baseName//".pressure", DependentFieldNavierStokes,&
       & (/4/), CMISSFieldUVariableType, err )
     
-    CALL CMISSFieldmlOutput_Write( outputInfo, outputFilename, err )
+    CALL CMISSFieldmlOutputWrite( outputInfo, outputFilename, err )
     
-    CALL CMISSFieldmlUtil_FieldmlFinalise( outputInfo, err )
+    CALL CMISSFieldmlTypeFinalise( outputInfo, err )
 
   EXPORT_FIELD_IO=.TRUE.
   IF(EXPORT_FIELD_IO) THEN
