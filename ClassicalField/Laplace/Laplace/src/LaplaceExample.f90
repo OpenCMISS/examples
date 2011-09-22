@@ -347,6 +347,7 @@ PROGRAM LAPLACEEXAMPLE
   CALL CMISSSolverLinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMISSDP,Err)
   !CALL CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearDirectSolveType,Err)
   !CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverMUMPSLibrary,Err)
+  !CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverLAPACKLibrary,Err)
   !CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverSuperLULibrary,Err)
   !CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverPaStiXLibrary,Err)
   !Finish the creation of the problem solver

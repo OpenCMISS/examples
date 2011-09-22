@@ -64,7 +64,7 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
 
   !Test program parameters
   
-  REAL(CMISSDP), PARAMETER :: LENGTH=5.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
   INTEGER(CMISSIntg), PARAMETER :: NUMBER_GLOBAL_X_ELEMENTS=6
   REAL(CMISSDP), PARAMETER :: START_TIME=0.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: STOP_TIME=0.1_CMISSDP
@@ -269,7 +269,7 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   !-----------------------------------------------------------------------------------------------------------
   !Create the equations set analytic field variables
   CALL CMISSFieldTypeInitialise(AnalyticField,Err)
-  CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSEquationsSetGeneralisedBurgersOneDim1, &
+  CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSEquationsSetGeneralisedBurgersOneDim2, &
     & AnalyticFieldUserNumber,AnalyticField,Err)
   !Finish the equations set analytic field variables
   CALL CMISSEquationsSetAnalyticCreateFinish(EquationsSet,Err)
