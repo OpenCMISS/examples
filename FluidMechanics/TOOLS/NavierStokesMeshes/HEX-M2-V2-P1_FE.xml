@@ -49,41 +49,64 @@
 
   <ArgumentEvaluator name="test_mesh.nodal_dofs" valueType="real.type" />
 
-  <TextFileResource name="test_mesh.node.coordinates.resource" xlink:href="HEX-M2-V2-P1_FE.C">
-    <TextDataSource name="test_mesh.node.coordinates.data" firstLine="2" count="125" length="3" head="0" tail="0" />
-  </TextFileResource>
+  <DataResource name="test_mesh.node.coordinates.resource">
+    <DataResourceDescription>
+      <DataResourceHref xlink:href="HEX-M2-V2-P1_FE.C" format="PLAIN_TEXT"/>
+    </DataResourceDescription>
+    <ArrayDataSource name="test_mesh.node.coordinates.data" location="2" rank="2">
+      <RawArraySize>
+        125 3
+      </RawArraySize>
+    </ArrayDataSource>
+  </DataResource>
 
-  <TextInlineResource name="test_mesh.triquadratic.ordering.resource">
-    <TextString>
-      1 9 2 10 11 12 3 13 4 14 15 16 17 18 19 20 21 22 5 23 6 24 25 26 7 27 8
-    </TextString>
-    <TextDataSource name="test_mesh.triquadratic.ordering.data" length="1" count="27"/>
-  </TextInlineResource>
+  <DataResource name="test_mesh.triquadratic.ordering.resource">
+    <DataResourceDescription>
+      <DataResourceString>
+        1 9 2 10 11 12 3 13 4 14 15 16 17 18 19 20 21 22 5 23 6 24 25 26 7 27 8
+      </DataResourceString>
+    </DataResourceDescription>
+    <ArrayDataSource name="test_mesh.triquadratic.ordering.data" location="1" rank="1">
+      <RawArraySize>
+        27
+      </RawArraySize>
+    </ArrayDataSource>
+  </DataResource>
 
 
-  <TextFileResource name="test_mesh.nodes.resource" xlink:href="HEX-M2-V2-P1_FE.M">
-    <TextDataSource name="test_mesh.cube3x3x3.nodes.data" firstLine="2" count="8" length="27" head="0" tail="0" />
-    <TextDataSource name="test_mesh.cube2x2x2.nodes.data" firstLine="18" count="8" length="8" head="0" tail="0" />
-  </TextFileResource>
-
+  <DataResource name="test_mesh.nodes.resource">
+    <DataResourceDescription>
+      <DataResourceHref xlink:href="HEX-M2-V2-P1_FE.M" format="PLAIN_TEXT"/>
+    </DataResourceDescription>
+    <ArrayDataSource name="test_mesh.cube3x3x3.nodes.data" location="2" rank="2">
+      <RawArraySize>
+        8 27
+      </RawArraySize>
+    </ArrayDataSource>
+    <ArrayDataSource name="test_mesh.cube2x2x2.nodes.data" location="18" rank="2">
+      <RawArraySize>
+        8 8
+      </RawArraySize>
+    </ArrayDataSource>
+  </DataResource>
 
   <ParameterEvaluator name="test_mesh.cube3x3x3_nodes" valueType="test_mesh.nodes">
-   <SemidenseData data="test_mesh.cube3x3x3.nodes.data">
+   <DenseArrayData data="test_mesh.cube3x3x3.nodes.data">
     <DenseIndexes>
      <IndexEvaluator evaluator="triquadratic.node.argument" order="test_mesh.triquadratic.ordering.data"/>
      <IndexEvaluator evaluator="test_mesh.mesh.argument.element" />
     </DenseIndexes>
-   </SemidenseData>
+   </DenseArrayData>
   </ParameterEvaluator>
 
 
   <ParameterEvaluator name="test_mesh.cube2x2x2_nodes" valueType="test_mesh.nodes">
-   <SemidenseData data="test_mesh.cube2x2x2.nodes.data">
+   <DenseArrayData data="test_mesh.cube2x2x2.nodes.data">
     <DenseIndexes>
      <IndexEvaluator evaluator="trilinear.node.argument" />
      <IndexEvaluator evaluator="test_mesh.mesh.argument.element" />
     </DenseIndexes>
-   </SemidenseData>
+   </DenseArrayData>
   </ParameterEvaluator>
 
 
@@ -137,12 +160,12 @@
   </PiecewiseEvaluator>
 
   <ParameterEvaluator name="test_mesh.node.coordinates" valueType="real.type">
-   <SemidenseData data="test_mesh.node.coordinates.data">
+   <DenseArrayData data="test_mesh.node.coordinates.data">
     <DenseIndexes>
      <IndexEvaluator evaluator="rc3.component.argument" />
      <IndexEvaluator evaluator="test_mesh.nodes.argument" />
     </DenseIndexes>
-   </SemidenseData>
+   </DenseArrayData>
   </ParameterEvaluator>
   
   <AggregateEvaluator name="test_mesh.coordinates" valueType="rc3.type">

@@ -136,6 +136,7 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputDirectory = ""
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputFilename = "StaticAdvectionDiffusion.xml"
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_advection_diffusion"
+  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: dataFormat = "PLAIN_TEXT"
 
   TYPE(CMISSFieldmlType) :: fieldmlInfo
 
@@ -426,24 +427,24 @@ CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
     !CALL CMISSFieldsTypeFinalise(Fields,Err)
    
     CALL CMISSFieldmlTypeInitialise( fieldmlInfo, err ) 
-    CALL CMISSFieldmlOutputCreate( Mesh, outputDirectory, basename, fieldmlInfo, err )
+    CALL CMISSFieldmlOutputCreate( Mesh, outputDirectory, basename, dataFormat, fieldmlInfo, err )
 
-    CALL CMISSFieldmlOutputAddField( fieldmlInfo, baseName//".geometric", GeometricField, &
+    CALL CMISSFieldmlOutputAddField( fieldmlInfo, baseName//".geometric", dataFormat, GeometricField, &
       & CMISSFieldUVariableType, err )
 
-    CALL CMISSFieldmlOutputAddField( fieldmlInfo, baseName//".dependent", DependentField, &
+    CALL CMISSFieldmlOutputAddField( fieldmlInfo, baseName//".dependent", dataFormat, DependentField, &
       & CMISSFieldUVariableType, err )
 
-    CALL CMISSFieldmlOutputAddField( fieldmlInfo, baseName//".independent", IndependentField, &
+    CALL CMISSFieldmlOutputAddField( fieldmlInfo, baseName//".independent", dataFormat, IndependentField, &
       & CMISSFieldUVariableType, err )
 
-    CALL CMISSFieldmlOutputAddField( fieldmlInfo, baseName//".source", SourceField, &
+    CALL CMISSFieldmlOutputAddField( fieldmlInfo, baseName//".source", dataFormat, SourceField, &
       & CMISSFieldUVariableType, err )
 
-    CALL CMISSFieldmlOutputAddField( fieldmlInfo, baseName//".materials", MaterialsField, &
+    CALL CMISSFieldmlOutputAddField( fieldmlInfo, baseName//".materials", dataFormat, MaterialsField, &
       & CMISSFieldUVariableType, err )
 
-    !CALL FieldmlOutputAddField( fieldmlInfo, baseName//".analytic", region, mesh, AnalyticField, &
+    !CALL FieldmlOutputAddField( fieldmlInfo, baseName//".analytic", dataFormat, region, mesh, AnalyticField, &
     !  & CMISSFieldUVariableType, err )
     
     CALL CMISSFieldmlOutputWrite( fieldmlInfo, outputFilename, err )

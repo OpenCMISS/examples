@@ -103,7 +103,8 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputDirectory = "output"
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputFilename = outputDirectory//"/HEX-M2-V2-P1_FE_out.xml"
 
-CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
+  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
+  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: dataFormat = "PLAIN_TEXT"
   !Program types
 
   !Program variables
@@ -600,18 +601,19 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
 
   !OUTPUT
     CALL CMISSFieldmlTypeInitialise( outputInfo, err )
-    CALL CMISSFieldmlOutputCreate( Mesh, outputDirectory, basename, outputInfo, err )
+
+    CALL CMISSFieldmlOutputCreate( Mesh, outputDirectory, basename, dataFormat, outputInfo, err )
 
     CALL CMISSFieldmlUtilImport( outputInfo, "coordinates.rc.3d", typeHandle, err )
-    CALL CMISSFieldmlOutputAddField( outputInfo, baseName//".geometric", GeometricField, &
+    CALL CMISSFieldmlOutputAddField( outputInfo, baseName//".geometric", dataFormat, GeometricField, &
       & CMISSFieldUVariableType, err )
 
-    CALL CMISSFieldmlOutputAddFieldComponents( outputInfo, typeHandle, baseName//".velocity", DependentFieldNavierStokes, &
-      & (/1,2,3/), CMISSFieldUVariableType, err )
+    CALL CMISSFieldmlOutputAddFieldComponents( outputInfo, typeHandle, baseName//".velocity", dataFormat, &
+      & DependentFieldNavierStokes, (/1,2,3/), CMISSFieldUVariableType, err )
     
     CALL CMISSFieldmlUtilImport( outputInfo, "real.1d", typeHandle, err )
-    CALL CMISSFieldmlOutputAddFieldComponents( outputInfo, typeHandle, baseName//".pressure", DependentFieldNavierStokes,&
-      & (/4/), CMISSFieldUVariableType, err )
+    CALL CMISSFieldmlOutputAddFieldComponents( outputInfo, typeHandle, baseName//".pressure", dataFormat, &
+      & DependentFieldNavierStokes, (/4/), CMISSFieldUVariableType, err )
     
     CALL CMISSFieldmlOutputWrite( outputInfo, outputFilename, err )
     
