@@ -32,6 +32,7 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
 
 
 
+
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=3
@@ -51,7 +52,8 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesE=3
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesH0=4
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesA0=5
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesSigma=6
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesA1=6
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesA2=7
 
   !Program types
 
@@ -111,8 +113,8 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   INTEGER, ALLOCATABLE, DIMENSION(:):: INLET_WALL_NODES_NAVIER_STOKES
 
 
-  REAL(CMISSDP) :: INITIAL_FIELD_NAVIER_STOKES(2)
-  REAL(CMISSDP) :: BOUNDARY_CONDITIONS_NAVIER_STOKES(2)
+  REAL(CMISSDP) :: INITIAL_FIELD_NAVIER_STOKES(3)
+  REAL(CMISSDP) :: BOUNDARY_CONDITIONS_NAVIER_STOKES(3)
   REAL(CMISSDP) :: DIVERGENCE_TOLERANCE
   REAL(CMISSDP) :: RELATIVE_TOLERANCE
   REAL(CMISSDP) :: ABSOLUTE_TOLERANCE
@@ -123,7 +125,15 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   REAL(CMISSDP) :: E_PARAM_NAVIER_STOKES
   REAL(CMISSDP) :: H0_PARAM_NAVIER_STOKES
   REAL(CMISSDP) :: A0_PARAM_NAVIER_STOKES
-  REAL(CMISSDP) :: SIGMA_PARAM_NAVIER_STOKES
+  REAL(CMISSDP) :: A1_PARAM_NAVIER_STOKES
+  REAL(CMISSDP) :: A2_PARAM_NAVIER_STOKES
+  REAL(CMISSDP) :: U0
+  REAL(CMISSDP) :: U1
+  REAL(CMISSDP) :: U2
+  REAL(CMISSDP) :: U3
+  REAL(CMISSDP) :: A0
+  REAL(CMISSDP) :: A1
+  REAL(CMISSDP) :: A2
 
   REAL(CMISSDP) :: DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME
   REAL(CMISSDP) :: DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME
@@ -239,21 +249,38 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   BASIS_XI_INTERPOLATION_VELOCITY=2
   BASIS_XI_INTERPOLATION_AREA=2
 !  BASIS_XI_INTERPOLATION_PRESSURE=2
-  NUMBER_OF_NODES_SPACE=9
-  NUMBER_OF_NODES_VELOCITY=9
-  NUMBER_OF_NODES_AREA=9
+  NUMBER_OF_NODES_SPACE=7
+  NUMBER_OF_NODES_VELOCITY=7
+  NUMBER_OF_NODES_AREA=7
 !  NUMBER_OF_NODES_PRESSURE=3
-  TOTAL_NUMBER_OF_NODES=27
+  TOTAL_NUMBER_OF_NODES=21
   TOTAL_NUMBER_OF_ELEMENTS=3
   NUMBER_OF_ELEMENT_NODES_SPACE=3
   NUMBER_OF_ELEMENT_NODES_VELOCITY=3
   NUMBER_OF_ELEMENT_NODES_AREA=3
 !  NUMBER_OF_ELEMENT_NODES_PRESSURE=3
   !Set initial values
-  INITIAL_FIELD_NAVIER_STOKES(1)=.05_CMISSDP
-  INITIAL_FIELD_NAVIER_STOKES(2)=18.1_CMISSDP
+!  INITIAL_FIELD_NAVIER_STOKES(1)=1.0_CMISSDP
+!  INITIAL_FIELD_NAVIER_STOKES(2)=1.0_CMISSDP
 !  INITIAL_FIELD_NAVIER_STOKES(3)=1000.0_CMISSDP
   !Set boundary conditions
+
+  !Set material parameters
+  MU_PARAM_NAVIER_STOKES=0.0035_CMISSDP !Mu(Pa.s)
+  RHO_PARAM_NAVIER_STOKES=1050.0_CMISSDP !Rho(kg/m3)
+  E_PARAM_NAVIER_STOKES=0.8E+6_CMISSDP !Elasticity(Pa)
+  H0_PARAM_NAVIER_STOKES=0.5E-3_CMISSDP !Wall Thickness(m)
+  A0_PARAM_NAVIER_STOKES=10.0e-6_CMISSDP !Wall Area(m2)
+  A1_PARAM_NAVIER_STOKES=8.0e-6_CMISSDP
+  A2_PARAM_NAVIER_STOKES=8.0e-6_CMISSDP
+  U0=0.1_CMISSDP
+  U1=0.0_CMISSDP
+  U2=0.0_CMISSDP
+  U3=0.0_CMISSDP
+  A0=10.0e-6_CMISSDP
+  A1=8.0e-6_CMISSDP
+  A2=8.0e-6_CMISSDP
+
   OUTLET_WALL_NODES_NAVIER_STOKES_FLAG=.TRUE.
   INLET_WALL_NODES_NAVIER_STOKES_FLAG=.TRUE.
 
@@ -262,25 +289,18 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
     ALLOCATE(INLET_WALL_NODES_NAVIER_STOKES(NUMBER_OF_INLET_WALL_NODES_NAVIER_STOKES))
     INLET_WALL_NODES_NAVIER_STOKES=[1]
     !Set initial boundary conditions
-    BOUNDARY_CONDITIONS_NAVIER_STOKES(1)=.05_CMISSDP
-!    BOUNDARY_CONDITIONS_NAVIER_STOKES(3)=1000.0_CMISSDP
+    BOUNDARY_CONDITIONS_NAVIER_STOKES(1)=U0
   ENDIF
 
   IF(OUTLET_WALL_NODES_NAVIER_STOKES_FLAG) THEN
     NUMBER_OF_OUTLET_WALL_NODES_NAVIER_STOKES=2
     ALLOCATE(OUTLET_WALL_NODES_NAVIER_STOKES(NUMBER_OF_OUTLET_WALL_NODES_NAVIER_STOKES))
     OUTLET_WALL_NODES_NAVIER_STOKES=[5,7]
-   !Set initial boundary conditions
-    BOUNDARY_CONDITIONS_NAVIER_STOKES(2)=11.4_CMISSDP
+    !Set initial boundary conditions
+    BOUNDARY_CONDITIONS_NAVIER_STOKES(2)=A1
+    BOUNDARY_CONDITIONS_NAVIER_STOKES(3)=A2
   ENDIF
 
-  !Set material parameters
-  MU_PARAM_NAVIER_STOKES=0.0035_CMISSDP !g/(mm.s)=kg/(m.s)=Pa.s
-  RHO_PARAM_NAVIER_STOKES=1.050_CMISSDP !g/cm3
-  E_PARAM_NAVIER_STOKES=800_CMISSDP !KPa
-  H0_PARAM_NAVIER_STOKES=0.5_CMISSDP !mm
-  A0_PARAM_NAVIER_STOKES=18.1_CMISSDP !mm2
-  SIGMA_PARAM_NAVIER_STOKES=0.5_CMISSDP
   !Set interpolation parameters
   BASIS_XI_GAUSS_SPACE=3
   BASIS_XI_GAUSS_VELOCITY=3
@@ -295,8 +315,8 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   EQUATIONS_NAVIER_STOKES_OUTPUT=CMISSEquationsNoOutput
   !Set time parameter
   DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME=0.0_CMISSDP
-  DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME=200.0_CMISSDP
-  DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT=100.0_CMISSDP
+  DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME=0.333_CMISSDP
+  DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT=0.01389_CMISSDP
   DYNAMIC_SOLVER_NAVIER_STOKES_THETA=1.0_CMISSDP/2.0_CMISSDP
   !Set result output parameter
   DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY=1
@@ -407,8 +427,11 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
 !  ENDDO
 
   CALL CMISSMeshElementsNodesSet(MeshElementsSpace,1,[1,2,3],Err)
+!  CALL CMISSMeshElementsNodesSet(MeshElementsSpace,2,[3,4,5],Err)
   CALL CMISSMeshElementsNodesSet(MeshElementsSpace,2,[3,4,5],Err)
   CALL CMISSMeshElementsNodesSet(MeshElementsSpace,3,[3,6,7],Err)
+!  CALL CMISSMeshElementsNodesSet(MeshElementsSpace,5,[7,10,11],Err)
+!  CALL CMISSMeshElementsNodesSet(MeshElementsSpace,6,[9,12,13],Err)
   CALL CMISSMeshElementsLocalElementNodeVersionSet(MeshElementsSpace,1,1,CMISSNoGlobalDerivative,3,Err) 
   CALL CMISSMeshElementsLocalElementNodeVersionSet(MeshElementsSpace,2,5,CMISSNoGlobalDerivative,1,Err) 
   CALL CMISSMeshElementsLocalElementNodeVersionSet(MeshElementsSpace,3,6,CMISSNoGlobalDerivative,1,Err) 
@@ -465,38 +488,51 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   !Finish creating the field
   CALL CMISSFieldCreateFinish(GeometricField,Err)
   !Update the geometric field parameters
-!  DO NODE_NUMBER=1,NUMBER_OF_NODES_SPACE
-!    DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-!      VALUE=(1-1)*0.5
-!      CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-!        & 1,CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+
+!    DO NODE_NUMBER=1,NUMBER_OF_NODES_SPACE
+!      DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+!        VALUE=(NODE_NUMBER-1)*0.5
+!        CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!          & VERSION_NUMBER,CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+!      ENDDO
 !    ENDDO
-!  ENDDO
 
   CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
     & 1,CMISSNoGlobalDerivative,1,1,0.0_CMISSDP,Err)
   CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,CMISSNoGlobalDerivative,2,1,0.5_CMISSDP,Err)
+    & 1,CMISSNoGlobalDerivative,2,1,.5000_CMISSDP,Err)
   CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,CMISSNoGlobalDerivative,3,1,1.0_CMISSDP,Err)
+    & 1,CMISSNoGlobalDerivative,3,1,1.0000_CMISSDP,Err)
   CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 2,CMISSNoGlobalDerivative,3,1,1.0_CMISSDP,Err)
+    & 2,CMISSNoGlobalDerivative,3,1,1.5000_CMISSDP,Err)
   CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 3,CMISSNoGlobalDerivative,3,1,1.5_CMISSDP,Err)
+    & 3,CMISSNoGlobalDerivative,3,1,2.0000_CMISSDP,Err)
   CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 4,CMISSNoGlobalDerivative,3,1,1.5_CMISSDP,Err)
+    & 4,CMISSNoGlobalDerivative,3,1,2.0000_CMISSDP,Err)
   CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 5,CMISSNoGlobalDerivative,3,1,1.5_CMISSDP,Err)
+    & 5,CMISSNoGlobalDerivative,3,1,2.5000_CMISSDP,Err)
   CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 6,CMISSNoGlobalDerivative,3,1,1.5_CMISSDP,Err)
+    & 6,CMISSNoGlobalDerivative,3,1,2.5000_CMISSDP,Err)
   CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,CMISSNoGlobalDerivative,4,1,2.0_CMISSDP,Err)
+    & 1,CMISSNoGlobalDerivative,4,1,3.0000_CMISSDP,Err)
   CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,CMISSNoGlobalDerivative,5,1,2.5_CMISSDP,Err)
+    & 1,CMISSNoGlobalDerivative,5,1,3.5000_CMISSDP,Err)
   CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,CMISSNoGlobalDerivative,6,1,2.0_CMISSDP,Err)
+    & 1,CMISSNoGlobalDerivative,6,1,3.0000_CMISSDP,Err)
   CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,CMISSNoGlobalDerivative,7,1,2.5_CMISSDP,Err)
+    & 1,CMISSNoGlobalDerivative,7,1,3.5000_CMISSDP,Err)
+!  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!    & 1,CMISSNoGlobalDerivative,8,1,3.5_CMISSDP,Err)
+!  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!    & 1,CMISSNoGlobalDerivative,9,1,4.0_CMISSDP,Err)
+!  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!    & 1,CMISSNoGlobalDerivative,10,1,4.5_CMISSDP,Err)
+!  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!    & 1,CMISSNoGlobalDerivative,11,1,5.0_CMISSDP,Err)
+!  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!    & 1,CMISSNoGlobalDerivative,12,1,4.5_CMISSDP,Err)
+!  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!    & 1,CMISSNoGlobalDerivative,13,1,5.0_CMISSDP,Err)
   !VERSION_NUMBER,DERIVATIVE_NUMBER,USER_NODE_NUMBER,COMPONENT_NUMBER,VALUE
 
 
@@ -558,59 +594,86 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   CALL CMISSEquationsSetDependentCreateFinish(EquationsSetNavierStokes,Err)
 
   !Initialise dependent field
-  DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS+1
-    CALL CMISSFieldComponentValuesInitialise(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-      & COMPONENT_NUMBER,INITIAL_FIELD_NAVIER_STOKES(COMPONENT_NUMBER),Err)
-  ENDDO
+!  DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS+1
+!    CALL CMISSFieldComponentValuesInitialise(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!      & COMPONENT_NUMBER,INITIAL_FIELD_NAVIER_STOKES(COMPONENT_NUMBER),Err)
+!  ENDDO
+
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,CMISSNoGlobalDerivative,1,1,.05_CMISSDP,Err)
+    & 1,CMISSNoGlobalDerivative,1,1,U0,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,CMISSNoGlobalDerivative,2,1,.05_CMISSDP,Err)
+    & 1,CMISSNoGlobalDerivative,2,1,U0,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,CMISSNoGlobalDerivative,3,1,.05_CMISSDP,Err)
+    & 1,CMISSNoGlobalDerivative,3,1,U0,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 2,CMISSNoGlobalDerivative,3,1,.05_CMISSDP,Err)
+    & 2,CMISSNoGlobalDerivative,3,1,U0,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 3,CMISSNoGlobalDerivative,3,1,.04_CMISSDP,Err)
+    & 3,CMISSNoGlobalDerivative,3,1,U1,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 4,CMISSNoGlobalDerivative,3,1,.04_CMISSDP,Err)
+    & 4,CMISSNoGlobalDerivative,3,1,U1,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 5,CMISSNoGlobalDerivative,3,1,.04_CMISSDP,Err)
+    & 5,CMISSNoGlobalDerivative,3,1,U1,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 6,CMISSNoGlobalDerivative,3,1,.04_CMISSDP,Err)
+    & 6,CMISSNoGlobalDerivative,3,1,U1,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,CMISSNoGlobalDerivative,4,1,.04_CMISSDP,Err)
+    & 1,CMISSNoGlobalDerivative,4,1,U2,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,CMISSNoGlobalDerivative,5,1,.04_CMISSDP,Err)
+    & 1,CMISSNoGlobalDerivative,5,1,U2,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,CMISSNoGlobalDerivative,6,1,.04_CMISSDP,Err)
+    & 1,CMISSNoGlobalDerivative,6,1,U2,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,CMISSNoGlobalDerivative,7,1,.04_CMISSDP,Err)
+    & 1,CMISSNoGlobalDerivative,7,1,U2,Err)
+!  CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!    & 1,CMISSNoGlobalDerivative,8,1,0.8_CMISSDP,Err)
+!  CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!    & 1,CMISSNoGlobalDerivative,9,1,0.8_CMISSDP,Err)
+!  CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!    & 1,CMISSNoGlobalDerivative,10,1,0.8_CMISSDP,Err)
+!  CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!    & 1,CMISSNoGlobalDerivative,11,1,0.8_CMISSDP,Err)
+!  CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!    & 1,CMISSNoGlobalDerivative,12,1,0.8_CMISSDP,Err)
+!  CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!    & 1,CMISSNoGlobalDerivative,13,1,0.8_CMISSDP,Err)
+
+
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,CMISSNoGlobalDerivative,1,2,18.1_CMISSDP,Err)
+    & 1,CMISSNoGlobalDerivative,1,2,A0,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,CMISSNoGlobalDerivative,2,2,18.1_CMISSDP,Err)
+    & 1,CMISSNoGlobalDerivative,2,2,A0,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,CMISSNoGlobalDerivative,3,2,18.1_CMISSDP,Err)
+    & 1,CMISSNoGlobalDerivative,3,2,A0,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 2,CMISSNoGlobalDerivative,3,2,18.1_CMISSDP,Err)
+    & 2,CMISSNoGlobalDerivative,3,2,A0,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 3,CMISSNoGlobalDerivative,3,2,11.4_CMISSDP,Err)
+    & 3,CMISSNoGlobalDerivative,3,2,A1,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 4,CMISSNoGlobalDerivative,3,2,11.4_CMISSDP,Err)
+    & 4,CMISSNoGlobalDerivative,3,2,A2,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 5,CMISSNoGlobalDerivative,3,2,11.4_CMISSDP,Err)
+    & 5,CMISSNoGlobalDerivative,3,2,A1,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 6,CMISSNoGlobalDerivative,3,2,11.4_CMISSDP,Err)
+    & 6,CMISSNoGlobalDerivative,3,2,A2,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,CMISSNoGlobalDerivative,4,2,11.4_CMISSDP,Err)
+    & 1,CMISSNoGlobalDerivative,4,2,A1,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,CMISSNoGlobalDerivative,5,2,11.4_CMISSDP,Err)
+    & 1,CMISSNoGlobalDerivative,5,2,A1,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,CMISSNoGlobalDerivative,6,2,11.4_CMISSDP,Err)
+    & 1,CMISSNoGlobalDerivative,6,2,A2,Err)
   CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-    & 1,CMISSNoGlobalDerivative,7,2,11.4_CMISSDP,Err)
-  !VERSION_NUMBER,DERIVATIVE_NUMBER,USER_NODE_NUMBER,COMPONENT_NUMBER,VALUE
+    & 1,CMISSNoGlobalDerivative,7,2,A2,Err)
+!  CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!    & 1,CMISSNoGlobalDerivative,8,2,0.8_CMISSDP,Err)
+!  CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!    & 1,CMISSNoGlobalDerivative,9,2,0.8_CMISSDP,Err)
+!  CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!    & 1,CMISSNoGlobalDerivative,10,2,0.8_CMISSDP,Err)
+!  CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!    & 1,CMISSNoGlobalDerivative,11,2,0.8_CMISSDP,Err)
+!  CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!    & 1,CMISSNoGlobalDerivative,12,2,0.8_CMISSDP,Err)
+!  CALL CMISSFieldParameterSetUpdateNode(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+!    & 1,CMISSNoGlobalDerivative,13,2,0.8_CMISSDP,Err)
+ !VERSION_NUMBER,DERIVATIVE_NUMBER,USER_NODE_NUMBER,COMPONENT_NUMBER,VALUE
 
   CALL CMISSFieldParameterSetUpdateStart(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
   CALL CMISSFieldParameterSetUpdateFinish(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
@@ -637,7 +700,9 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   CALL CMISSFieldComponentValuesInitialise(MaterialsFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
     & MaterialsFieldUserNumberNavierStokesA0,A0_PARAM_NAVIER_STOKES,Err)
   CALL CMISSFieldComponentValuesInitialise(MaterialsFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-    & MaterialsFieldUserNumberNavierStokesSigma,SIGMA_PARAM_NAVIER_STOKES,Err)
+    & MaterialsFieldUserNumberNavierStokesA1,A1_PARAM_NAVIER_STOKES,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+    & MaterialsFieldUserNumberNavierStokesA2,A2_PARAM_NAVIER_STOKES,Err)
 
   !================================================================================================================================x
   !
@@ -709,9 +774,9 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   !Get the dynamic nonlinear solver
   CALL CMISSSolverDynamicNonlinearSolverGet(DynamicSolverNavierStokes,NonlinearSolverNavierStokes,Err)
   !Set the nonlinear Jacobian type
-!  CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
+  CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
  !Set the nonlinear Jacobian type
-  CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISSSolverNewtonJacobianFDCalculated,Err)
+!  CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISSSolverNewtonJacobianFDCalculated,Err)
    !Set the output type
   !CALL CMISSSolverOutputTypeSet(NonlinearSolverNavierStokes,NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE,Err)
   !Set the output type
@@ -780,8 +845,7 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
         DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
           VALUE=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER)
           CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,DependentFieldNavierStokes,CMISSFieldUVariableType,1, &
-            & CMISSNoGlobalDerivative, &
-          & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
+            & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
         ENDDO
       ENDIF
     ENDDO
@@ -792,30 +856,32 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
     DO NODE_COUNTER=1,NUMBER_OF_OUTLET_WALL_NODES_NAVIER_STOKES
       NODE_NUMBER=OUTLET_WALL_NODES_NAVIER_STOKES(NODE_COUNTER)
       CONDITION=CMISSBoundaryConditionFixed
-      DO COMPONENT_NUMBER=2,NUMBER_OF_DIMENSIONS+1
-        VALUE=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER)
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,DependentFieldNavierStokes,CMISSFieldUVariableType,1, &
-          & CMISSNoGlobalDerivative, &
-          & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
-      ENDDO
+      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
+      IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
+        DO COMPONENT_NUMBER=2,NUMBER_OF_DIMENSIONS+1
+          VALUE=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER)
+          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,DependentFieldNavierStokes,CMISSFieldUVariableType,1, &
+            & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
+        ENDDO
+      ENDIF
     ENDDO
   ENDIF
 
-  !Set pressure boundary conditions
-!  IF(INLET_WALL_NODES_NAVIER_STOKES_FLAG) THEN
-!    DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_NAVIER_STOKES
-!      NODE_NUMBER=INLET_WALL_NODES_NAVIER_STOKES(NODE_COUNTER)
-!      CONDITION=CMISSBoundaryConditionInletWall
+!  IF(OUTLET_WALL_NODES_NAVIER_STOKES_FLAG) THEN
+!    DO NODE_COUNTER=2,NUMBER_OF_OUTLET_WALL_NODES_NAVIER_STOKES
+!      NODE_NUMBER=OUTLET_WALL_NODES_NAVIER_STOKES(NODE_COUNTER)
+!      CONDITION=CMISSBoundaryConditionFixed
 !      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
 !      IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
-!        DO COMPONENT_NUMBER=3,NUMBER_OF_DIMENSIONS+2
-!          VALUE=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER)
-!          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,DependentFieldNavierStokes,CMISSFieldUVariableType,1,CMISSNoGlobalDerivative, &
-!          & NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
+!        DO COMPONENT_NUMBER=2,NUMBER_OF_DIMENSIONS+1
+!          VALUE=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER+1)
+!          CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsNavierStokes,DependentFieldNavierStokes,CMISSFieldUVariableType,1, &
+!            & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
 !        ENDDO
 !      ENDIF
 !    ENDDO
 !  ENDIF
+
   !Finish the creation of the equations set boundary conditions
   CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsNavierStokes,Err)
 
