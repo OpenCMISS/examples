@@ -367,10 +367,13 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   CALL CMISSDecompositionCreateFinish(Decomposition, err )
   
   CALL CMISSFieldmlInputFieldCreateStart( fieldmlInfo, Region, Decomposition, GeometricFieldUserNumber, GeometricField, &
-    & "test_mesh.coordinates", err )
+    & CMISSFieldUVariableType, "test_mesh.coordinates", err )
   CALL CMISSFieldCreateFinish( RegionUserNumber, GeometricFieldUserNumber, err )
 
-  CALL CMISSFieldmlInputFieldNodalParametersUpdate( fieldmlInfo, GeometricField, "test_mesh.node.coordinates", err )
+  CALL CMISSFieldmlInputFieldNodalParametersUpdate( fieldmlInfo, GeometricField, "test_mesh.node.coordinates", &
+    & CMISSFieldUVariableType, err )
+  CALL CMISSFieldParameterSetUpdateStart( GeometricField, CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
+  CALL CMISSFieldParameterSetUpdateFinish( GeometricField, CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
 
   !
   !================================================================================================================================
@@ -604,14 +607,14 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
 
     CALL CMISSFieldmlOutputCreate( Mesh, outputDirectory, basename, dataFormat, outputInfo, err )
 
-    CALL CMISSFieldmlUtilImport( outputInfo, "coordinates.rc.3d", typeHandle, err )
+    CALL CMISSFieldmlOutputAddImport( outputInfo, "coordinates.rc.3d", typeHandle, err )
     CALL CMISSFieldmlOutputAddField( outputInfo, baseName//".geometric", dataFormat, GeometricField, &
       & CMISSFieldUVariableType, err )
 
     CALL CMISSFieldmlOutputAddFieldComponents( outputInfo, typeHandle, baseName//".velocity", dataFormat, &
       & DependentFieldNavierStokes, (/1,2,3/), CMISSFieldUVariableType, err )
     
-    CALL CMISSFieldmlUtilImport( outputInfo, "real.1d", typeHandle, err )
+    CALL CMISSFieldmlOutputAddImport( outputInfo, "real.1d", typeHandle, err )
     CALL CMISSFieldmlOutputAddFieldComponents( outputInfo, typeHandle, baseName//".pressure", dataFormat, &
       & DependentFieldNavierStokes, (/4/), CMISSFieldUVariableType, err )
     
