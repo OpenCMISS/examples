@@ -35,18 +35,21 @@ numberOfComputationalNodes = CMISS.ComputationalNumberOfNodesGet()
 computationalNodeNumber = CMISS.ComputationalNodeNumberGet()
 
 # Creation a RC coordinate system
-coordinateSystem = CMISS.CoordinateSystem(coordinateSystemUserNumber)
+coordinateSystem = CMISS.CoordinateSystem()
+coordinateSystem.CreateStart(coordinateSystemUserNumber)
 coordinateSystem.dimension = 3
 coordinateSystem.CreateFinish()
 
 # Create a region
-region = CMISS.Region(regionUserNumber,CMISS.WorldRegion)
+region = CMISS.Region()
+region.CreateStart(regionUserNumber,CMISS.WorldRegion)
 region.label = "LaplaceRegion"
 region.coordinateSystem = coordinateSystem
 region.CreateFinish()
 
 # Create a tri-linear lagrange basis
-basis = CMISS.Basis(basisUserNumber)
+basis = CMISS.Basis()
+basis.CreateStart(basisUserNumber)
 basis.type = CMISS.BasisLagrangeHermiteTPType
 basis.numberOfXi = 3
 basis.interpolationXi = [CMISS.BasisLinearLagrangeInterpolation]*3
@@ -54,23 +57,26 @@ basis.quadratureNumberOfGaussXi = [2]*3
 basis.CreateFinish()
 
 # Create a generated mesh
-generatedMesh = CMISS.GeneratedMesh(generatedMeshUserNumber,region)
+generatedMesh = CMISS.GeneratedMesh()
+generatedMesh.CreateStart(generatedMeshUserNumber,region)
 generatedMesh.type = CMISS.GeneratedMeshRegularMeshType
 generatedMesh.basis = [basis]
 generatedMesh.extent = [width,height,length]
 generatedMesh.numberOfElements = [numberGlobalXElements,numberGlobalYElements,numberGlobalZElements]
 
-mesh = CMISS.Mesh() #Create null mesh type by not passing any arguments
+mesh = CMISS.Mesh()
 generatedMesh.CreateFinish(meshUserNumber,mesh)
 
 # Create a decomposition for the mesh
-decomposition = CMISS.Decomposition(decompositionUserNumber,mesh)
+decomposition = CMISS.Decomposition()
+decomposition.CreateStart(decompositionUserNumber,mesh)
 decomposition.type = CMISS.DecompositionCalculatedType
 decomposition.numberOfDomains = numberOfComputationalNodes
 decomposition.CreateFinish()
 
 # Create a field for the geometry
-geometricField = CMISS.Field(geometricFieldUserNumber,region)
+geometricField = CMISS.Field()
+geometricField.CreateStart(geometricFieldUserNumber,region)
 geometricField.meshDecomposition = decomposition
 geometricField.ComponentMeshComponentSet(CMISS.FieldUVariableType,1,1)
 geometricField.ComponentMeshComponentSet(CMISS.FieldUVariableType,2,1)
@@ -82,7 +88,8 @@ CMISS.GeneratedMeshGeometricParametersCalculate(geometricField,generatedMesh)
 
 # Create standard Laplace equations set
 equationsSetField = CMISS.Field()
-equationsSet = CMISS.EquationsSet(equationsSetUserNumber,region,geometricField,CMISS.EquationsSetClassicalFieldClass,
+equationsSet = CMISS.EquationsSet()
+equationsSet.CreateStart(equationsSetUserNumber,region,geometricField,CMISS.EquationsSetClassicalFieldClass,
     CMISS.EquationsSetLaplaceEquationType,CMISS.EquationsSetStandardLaplaceSubtype,equationsSetFieldUserNumber,
     equationsSetField)
 equationsSet.CreateFinish()
@@ -105,7 +112,8 @@ equations.OutputType = CMISS.EquationsNoOutput
 equationsSet.EquationsCreateFinish()
 
 # Create Laplace problem
-problem = CMISS.Problem(problemUserNumber)
+problem = CMISS.Problem()
+problem.CreateStart(problemUserNumber)
 problem.SpecificationSet(CMISS.ProblemClassicalFieldClass,CMISS.ProblemLaplaceEquationType,CMISS.ProblemStandardLaplaceSubtype)
 problem.CreateFinish()
 
@@ -156,6 +164,6 @@ fields = CMISS.Fields()
 CMISS.FieldsTypeCreateRegion(region,fields)
 CMISS.FieldIONodesExport(fields,"Laplace","FORTRAN")
 CMISS.FieldIOElementsExport(fields,"Laplace","FORTRAN")
-CMISS.FieldsTypeFinalise(fields)
+fields.Finalise()
 
 CMISS.Finalise()
