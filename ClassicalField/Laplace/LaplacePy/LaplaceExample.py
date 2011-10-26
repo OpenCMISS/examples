@@ -28,7 +28,7 @@ numberGlobalXElements = 5
 numberGlobalYElements = 5
 numberGlobalZElements = 5
 
-CMISS.DiagnosticsSetOn(CMISS.InDiagType,[1,2,3,4,5],"Diagnostics",["DOMAIN_MAPPINGS_LOCAL_FROM_GLOBAL_CALCULATE"])
+CMISS.DiagnosticsSetOn(CMISS.DiagnosticTypes.In,[1,2,3,4,5],"Diagnostics",["DOMAIN_MAPPINGS_LOCAL_FROM_GLOBAL_CALCULATE"])
 
 # Get the computational nodes information
 numberOfComputationalNodes = CMISS.ComputationalNumberOfNodesGet()
@@ -50,16 +50,16 @@ region.CreateFinish()
 # Create a tri-linear lagrange basis
 basis = CMISS.Basis()
 basis.CreateStart(basisUserNumber)
-basis.type = CMISS.BasisLagrangeHermiteTPType
+basis.type = CMISS.BasisTypes.LagrangeHermiteTP
 basis.numberOfXi = 3
-basis.interpolationXi = [CMISS.BasisLinearLagrangeInterpolation]*3
+basis.interpolationXi = [CMISS.BasisInterpolationSpecifications.LinearLagrange]*3
 basis.quadratureNumberOfGaussXi = [2]*3
 basis.CreateFinish()
 
 # Create a generated mesh
 generatedMesh = CMISS.GeneratedMesh()
 generatedMesh.CreateStart(generatedMeshUserNumber,region)
-generatedMesh.type = CMISS.GeneratedMeshRegularMeshType
+generatedMesh.type = CMISS.GeneratedMeshTypes.Regular
 generatedMesh.basis = [basis]
 generatedMesh.extent = [width,height,length]
 generatedMesh.numberOfElements = [numberGlobalXElements,numberGlobalYElements,numberGlobalZElements]
@@ -70,7 +70,7 @@ generatedMesh.CreateFinish(meshUserNumber,mesh)
 # Create a decomposition for the mesh
 decomposition = CMISS.Decomposition()
 decomposition.CreateStart(decompositionUserNumber,mesh)
-decomposition.type = CMISS.DecompositionCalculatedType
+decomposition.type = CMISS.DecompositionTypes.Calculated
 decomposition.numberOfDomains = numberOfComputationalNodes
 decomposition.CreateFinish()
 
@@ -78,9 +78,9 @@ decomposition.CreateFinish()
 geometricField = CMISS.Field()
 geometricField.CreateStart(geometricFieldUserNumber,region)
 geometricField.meshDecomposition = decomposition
-geometricField.ComponentMeshComponentSet(CMISS.FieldUVariableType,1,1)
-geometricField.ComponentMeshComponentSet(CMISS.FieldUVariableType,2,1)
-geometricField.ComponentMeshComponentSet(CMISS.FieldUVariableType,3,1)
+geometricField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,1)
+geometricField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,2,1)
+geometricField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,3,1)
 geometricField.CreateFinish()
 
 # Set geometry from the generated mesh
@@ -89,32 +89,36 @@ CMISS.GeneratedMeshGeometricParametersCalculate(geometricField,generatedMesh)
 # Create standard Laplace equations set
 equationsSetField = CMISS.Field()
 equationsSet = CMISS.EquationsSet()
-equationsSet.CreateStart(equationsSetUserNumber,region,geometricField,CMISS.EquationsSetClassicalFieldClass,
-    CMISS.EquationsSetLaplaceEquationType,CMISS.EquationsSetStandardLaplaceSubtype,equationsSetFieldUserNumber,
-    equationsSetField)
+equationsSet.CreateStart(equationsSetUserNumber,region,geometricField, \
+        CMISS.EquationsSetClasses.ClassicalField,
+        CMISS.EquationsSetTypes.LaplaceEquation, \
+        CMISS.EquationsSetSubtypes.StandardLaplace, \
+        equationsSetFieldUserNumber, equationsSetField)
 equationsSet.CreateFinish()
 
 # Create dependent field
 dependentField = CMISS.Field()
 equationsSet.DependentCreateStart(dependentFieldUserNumber,dependentField)
-dependentField.DOFOrderTypeSet(CMISS.FieldUVariableType,CMISS.FieldSeparatedComponentDOFOrder)
-dependentField.DOFOrderTypeSet(CMISS.FieldDelUDelNVariableType,CMISS.FieldSeparatedComponentDOFOrder)
+dependentField.DOFOrderTypeSet(CMISS.FieldVariableTypes.U,CMISS.FieldDOFOrderTypes.Separated)
+dependentField.DOFOrderTypeSet(CMISS.FieldVariableTypes.DelUDelN,CMISS.FieldDOFOrderTypes.Separated)
 equationsSet.DependentCreateFinish()
 
 # Initialise dependent field
-dependentField.ComponentValuesInitialiseDP(CMISS.FieldUVariableType,CMISS.FieldValuesSetType,1,0.5)
+dependentField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,0.5)
 
 # Create equations
 equations = CMISS.Equations()
 equationsSet.EquationsCreateStart(equations)
-equations.SparsityType = CMISS.EquationsSparseMatrices
-equations.OutputType = CMISS.EquationsNoOutput
+equations.SparsityType = CMISS.EquationsSparsityTypes.Sparse
+equations.OutputType = CMISS.EquationsOutputTypes.NONE
 equationsSet.EquationsCreateFinish()
 
 # Create Laplace problem
 problem = CMISS.Problem()
 problem.CreateStart(problemUserNumber)
-problem.SpecificationSet(CMISS.ProblemClassicalFieldClass,CMISS.ProblemLaplaceEquationType,CMISS.ProblemStandardLaplaceSubtype)
+problem.SpecificationSet(CMISS.ProblemClasses.ClassicalField, \
+        CMISS.ProblemTypes.LaplaceEquation, \
+        CMISS.ProblemSubTypes.StandardLaplace)
 problem.CreateFinish()
 
 # Create control loops
@@ -124,9 +128,9 @@ problem.ControlLoopCreateFinish()
 # Create problem solver
 solver = CMISS.Solver()
 problem.SolversCreateStart()
-problem.SolverGet([CMISS.ControlLoopNode],1,solver)
-solver.OutputType = CMISS.SolverSolverOutput
-solver.LinearType = CMISS.SolverLinearIterativeSolveType
+problem.SolverGet([CMISS.ControlLoopIdentifiers.Node],1,solver)
+solver.OutputType = CMISS.SolverOutputTypes.Solver
+solver.LinearType = CMISS.LinearSolverTypes.Iterative
 solver.LinearIterativeAbsoluteTolerance = 1.0E-12
 solver.LinearIterativeRelativeTolerance = 1.0E-12
 problem.SolversCreateFinish()
@@ -135,9 +139,9 @@ problem.SolversCreateFinish()
 solver = CMISS.Solver()
 solverEquations = CMISS.SolverEquations()
 problem.SolverEquationsCreateStart()
-problem.SolverGet([CMISS.ControlLoopNode],1,solver)
+problem.SolverGet([CMISS.ControlLoopIdentifiers.Node],1,solver)
 solver.SolverEquationsGet(solverEquations)
-solverEquations.SparsityType = CMISS.SolverEquationsSparseMatrices
+solverEquations.SparsityType = CMISS.SolverEquationsSparsityTypes.Sparse
 equationsSetIndex = solverEquations.EquationsSetAdd(equationsSet)
 problem.SolverEquationsCreateFinish()
 
@@ -151,9 +155,9 @@ lastNodeNumber = nodes.NumberOfNodes
 firstNodeDomain = decomposition.NodeDomainGet(firstNodeNumber,1)
 lastNodeDomain = decomposition.NodeDomainGet(lastNodeNumber,1)
 if firstNodeDomain == computationalNodeNumber:
-    boundaryConditions.SetNode(dependentField,CMISS.FieldUVariableType,1,1,firstNodeNumber,1,CMISS.BoundaryConditionFixed,0.0)
+    boundaryConditions.SetNode(dependentField,CMISS.FieldVariableTypes.U,1,1,firstNodeNumber,1,CMISS.BoundaryConditionsTypes.Fixed,0.0)
 if lastNodeDomain == computationalNodeNumber:
-    boundaryConditions.SetNode(dependentField,CMISS.FieldUVariableType,1,1,lastNodeNumber,1,CMISS.BoundaryConditionFixed,1.0)
+    boundaryConditions.SetNode(dependentField,CMISS.FieldVariableTypes.U,1,1,lastNodeNumber,1,CMISS.BoundaryConditionsTypes.Fixed,1.0)
 solverEquations.BoundaryConditionsCreateFinish()
 
 # Solve the problem
