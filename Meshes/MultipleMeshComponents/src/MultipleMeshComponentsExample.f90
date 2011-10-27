@@ -1,4 +1,4 @@
-!> \file
+                                                                                             !> \file
 !> \author Xiani Nancy Yan
 !> \brief This is an example program which sets up a generated mesh (1/2/3D) with multiple mesh components
 !>
@@ -102,6 +102,7 @@ PROGRAM MULTIPLEMESHCOMPONENTSEXAMPLE
   TYPE(CMISSMeshType) :: Mesh1
   TYPE(CMISSDecompositionType) :: Decomposition1
   TYPE(CMISSFieldType) :: GeometricField1
+  TYPE(CMISSFieldsType) :: Fields1
   
 #ifdef WIN32
   !Quickwin type
@@ -266,6 +267,14 @@ PROGRAM MULTIPLEMESHCOMPONENTSEXAMPLE
   
   !Update the geometric field parameters for the first field
   CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField1,GeneratedMesh1,Err)
+  
+  !Output solution  
+  CALL CMISSFieldsTypeInitialise(Fields1,Err)
+  CALL CMISSFieldsTypeCreate(Region1,Fields1,Err)
+  CALL CMISSFieldIONodesExport(Fields1,"MultipleMeshComponents","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields1,"MultipleMeshComponents","FORTRAN",Err)
+  CALL CMISSFieldsTypeFinalise(Fields1,Err)
+  
 
   WRITE(*,'(A)') "Program successfully completed."
 
