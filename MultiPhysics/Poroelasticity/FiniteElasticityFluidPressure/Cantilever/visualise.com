@@ -17,12 +17,12 @@ gfx define faces egroup "Region 1"
 gfx modify g_element "Region 1" surfaces coordinate deformed_geom select_on material tissue selected_material default_selected data fluid_pressure spectrum fluid render_shaded
 gfx modify g_element "Region 1" lines coordinate deformed_geom line_width 2 select_on material default selected_material default_selected
 
-gfx modify g_element "Region 1" node_points coordinate deformed_geom glyph sphere general size "0.05*0.05*0.05" centre 0,0,0 font default select_on material default selected_material default_selected
+gfx modify g_element "Region 1" node_points coordinate deformed_geom glyph sphere general size "0.0005*0.0005*0.0005" centre 0,0,0 font default select_on material default selected_material default_selected
 
 # display undeformed nodes
 gfx modify g_element "Region 1" lines select_on material green line_width 2 selected_material default_selected
 
-gfx modify g_element "/" point  glyph axes general size "12*12*12" centre 0,0,0 font default select_on material black selected_material default_selected;
+gfx modify g_element "/" point  glyph axes general size "0.08*0.08*0.08" centre 0,0,0 font default select_on material default selected_material default_selected;
 
 gfx modify spectrum fluid autorange
 

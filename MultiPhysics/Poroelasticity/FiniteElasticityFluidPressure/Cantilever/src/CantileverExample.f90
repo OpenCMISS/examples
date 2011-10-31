@@ -57,25 +57,33 @@ PROGRAM COUPLEDCANTILEVER
 
   !Test program parameters
 
-  REAL(CMISSDP), PARAMETER :: Height=1.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: Width=3.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: Length=1.0_CMISSDP
-  INTEGER(CMISSIntg), PARAMETER :: GeometricInterpolationType=CMISSBasisLinearLagrangeInterpolation
+  !Units system
+  !length: m
+  !force: N
+  !mass: kg
+
+  REAL(CMISSDP), PARAMETER :: Height=0.045_CMISSDP
+  REAL(CMISSDP), PARAMETER :: Width=0.065_CMISSDP
+  REAL(CMISSDP), PARAMETER :: Length=0.045_CMISSDP
+  INTEGER(CMISSIntg), PARAMETER :: GeometricInterpolationType=CMISSBasisQuadraticLagrangeInterpolation
   INTEGER(CMISSIntg), PARAMETER :: PressureInterpolationType=CMISSBasisLinearLagrangeInterpolation
-  INTEGER(CMISSIntg), PARAMETER :: NumberOfGaussXi=2
-  REAL(CMISSDP), PARAMETER :: Density=1.0E-2_CMISSDP !in g mm^-3
-  REAL(CMISSDP), PARAMETER :: Gravity(3)=[0.0_CMISSDP,0.0_CMISSDP,-9.8_CMISSDP] !in m s^-2
-  INTEGER(CMISSIntg) :: Increments=10
-  REAL(CMISSDP) :: FluidPressureBC=10.0_CMISSDP !kPa
-  REAL (CMISSDP) :: C1=10.0_CMISSDP
-  REAL (CMISSDP) :: C2=1.0E-1_CMISSDP
-  REAL (CMISSDP) :: K=100.0_CMISSDP
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfGaussXi=3
+  REAL(CMISSDP), PARAMETER :: Density=1.0E3_CMISSDP
+  REAL(CMISSDP), PARAMETER :: FluidDensity=1.0E3_CMISSDP
+  REAL(CMISSDP), PARAMETER :: Gravity(3)=[0.0_CMISSDP,0.0_CMISSDP,-9.81_CMISSDP]
+  INTEGER(CMISSIntg) :: Increments=5
+  REAL(CMISSDP) :: FluidPressureBC=30.0_CMISSDP
+  REAL (CMISSDP) :: K1=3.0E3_CMISSDP
+  REAL (CMISSDP) :: K2=50.0_CMISSDP
+  REAL (CMISSDP) :: K=3.20E4_CMISSDP
+  REAL (CMISSDP) :: M=3.18E4_CMISSDP
+  REAL (CMISSDP) :: b=1.0_CMISSDP
   REAL (CMISSDP) :: p_0=0.0_CMISSDP
   REAL (CMISSDP) :: permeability=1.0E-3_CMISSDP
 
-  INTEGER(CMISSIntg) :: NumberGlobalXElements=4
-  INTEGER(CMISSIntg) :: NumberGlobalYElements=1
-  INTEGER(CMISSIntg) :: NumberGlobalZElements=1
+  INTEGER(CMISSIntg) :: NumberGlobalXElements=3
+  INTEGER(CMISSIntg) :: NumberGlobalYElements=2
+  INTEGER(CMISSIntg) :: NumberGlobalZElements=2
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
@@ -239,6 +247,7 @@ PROGRAM COUPLEDCANTILEVER
   CALL CMISSFieldCreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
   CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
   CALL CMISSFieldVariableLabelSet(GeometricField,CMISSFieldUVariableType,"Geometry",Err)
+  CALL CMISSFieldNumberOfComponentsSet(GeometricField,CMISSFieldUVariableType,3,Err)
   CALL CMISSFieldScalingTypeSet(GeometricField,CMISSFieldArithmeticMeanScaling,Err)
   CALL CMISSFieldCreateFinish(GeometricField,Err)
 
@@ -258,7 +267,7 @@ PROGRAM COUPLEDCANTILEVER
   CALL CMISSEquationsSetTypeInitialise(SolidEquationsSet,Err)
   CALL CMISSFieldTypeInitialise(SolidEquationsSetField,Err)
   CALL CMISSEquationsSetCreateStart(SolidEquationsSetUserNumber,Region,FibreField,CMISSEquationsSetElasticityClass, &
-    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetElasticityFluidPressureQuadraticSubtype, &
+    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetElasticityFluidPressureStaticINRIASubtype, &
     & SolidEquationsSetFieldUserNumber,SolidEquationsSetField,SolidEquationsSet,Err)
   CALL CMISSEquationsSetCreateFinish(SolidEquationsSet,Err)
 
@@ -296,10 +305,12 @@ PROGRAM COUPLEDCANTILEVER
 
   !Set material constants
   !Solid constitutive law
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,C1,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,C2,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,K1,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,K2,Err)
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,K,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,p_0,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,M,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,5,b,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,6,p_0,Err)
   !Solid density
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldVVariableType,CMISSFieldValuesSetType,1,Density,Err)
 
@@ -311,7 +322,7 @@ PROGRAM COUPLEDCANTILEVER
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,5,0.0_CMISSDP,Err)
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,6,permeability,Err)
   !Fluid Density
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,7,1000.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,7,FluidDensity,Err)
 
   !Create the source field with the gravity vector
   CALL CMISSFieldTypeInitialise(SourceField,Err)
@@ -366,7 +377,7 @@ PROGRAM COUPLEDCANTILEVER
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
   CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
   CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianFDCalculated,Err)
-  CALL CMISSSolverNewtonAbsoluteToleranceSet(Solver,1.0E-7_CMISSDP,Err)
+  CALL CMISSSolverNewtonAbsoluteToleranceSet(Solver,1.0E-6_CMISSDP,Err)
   CALL CMISSSolverNewtonRelativeToleranceSet(Solver,1.0E-7_CMISSDP,Err)
   CALL CMISSSolverNewtonMaximumIterationsSet(Solver,200,Err)
   CALL CMISSSolverNewtonLinearSolverGet(Solver,LinearSolver,Err)
