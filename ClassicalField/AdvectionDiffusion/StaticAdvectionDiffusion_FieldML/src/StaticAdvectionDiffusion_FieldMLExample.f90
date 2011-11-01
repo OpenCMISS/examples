@@ -430,22 +430,22 @@ CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
     CALL CMISSFieldMLOutputCreate( Mesh, outputDirectory, basename, dataFormat, fieldmlInfo, err )
 
     CALL CMISSFieldMLOutputAddField( fieldmlInfo, baseName//".geometric", dataFormat, GeometricField, &
-      & CMISSFieldUVariableType, err )
+      & CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
 
     CALL CMISSFieldMLOutputAddField( fieldmlInfo, baseName//".dependent", dataFormat, DependentField, &
-      & CMISSFieldUVariableType, err )
+      & CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
 
     CALL CMISSFieldMLOutputAddField( fieldmlInfo, baseName//".independent", dataFormat, IndependentField, &
-      & CMISSFieldUVariableType, err )
+      & CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
 
     CALL CMISSFieldMLOutputAddField( fieldmlInfo, baseName//".source", dataFormat, SourceField, &
-      & CMISSFieldUVariableType, err )
+      & CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
 
     CALL CMISSFieldMLOutputAddField( fieldmlInfo, baseName//".materials", dataFormat, MaterialsField, &
-      & CMISSFieldUVariableType, err )
+      & CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
 
     !CALL FieldmlOutputAddField( fieldmlInfo, baseName//".analytic", dataFormat, region, mesh, AnalyticField, &
-    !  & CMISSFieldUVariableType, err )
+    !  & CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
     
     CALL CMISSFieldMLOutputWrite( fieldmlInfo, outputFilename, err )
     

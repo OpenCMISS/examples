@@ -20,6 +20,7 @@
     <ImportEvaluator localName="trilinear.interpolator" remoteName="interpolator.3d.unit.trilinearLagrange"/>
     <ImportEvaluator localName="chart.argument" remoteName="chart.3d.argument"/>
     <ImportEvaluator localName="rc3.component.argument" remoteName="coordinates.rc.3d.component.argument"/>
+    <ImportEvaluator localName="shape.unit.cube" remoteName="shape.unit.cube"/>
   </Import>
 
   <EnsembleType name="test_mesh.nodes">
@@ -41,7 +42,7 @@
     <Chart name="xi">
       <Components name="xi" count="3"/>
     </Chart>
-    <Shapes default="shape.cube" />
+    <Shapes evaluator="shape.unit.cube" />
   </MeshType>
 
   <ArgumentEvaluator name="test_mesh.mesh.argument" valueType="test_mesh.mesh" />
@@ -148,7 +149,7 @@
    <IndexEvaluators>
     <IndexEvaluator evaluator="test_mesh.mesh.argument.element" indexNumber="1" />
    </IndexEvaluators>
-   <ElementEvaluators default="test_mesh.trilinear_lagrange" />
+   <EvaluatorMap default="test_mesh.trilinear_lagrange" />
   </PiecewiseEvaluator>
 
 
@@ -156,7 +157,7 @@
    <IndexEvaluators>
     <IndexEvaluator evaluator="test_mesh.mesh.argument.element" indexNumber="1" />
    </IndexEvaluators>
-   <ElementEvaluators default="test_mesh.triquadratic_lagrange" />
+   <EvaluatorMap default="test_mesh.triquadratic_lagrange" />
   </PiecewiseEvaluator>
 
   <ParameterEvaluator name="test_mesh.node.coordinates" valueType="real.type">

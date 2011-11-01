@@ -371,7 +371,7 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   CALL CMISSFieldCreateFinish( RegionUserNumber, GeometricFieldUserNumber, err )
 
   CALL CMISSFieldMLInputFieldNodalParametersUpdate( fieldmlInfo, GeometricField, "test_mesh.node.coordinates", &
-    & CMISSFieldUVariableType, err )
+    & CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
   CALL CMISSFieldParameterSetUpdateStart( GeometricField, CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
   CALL CMISSFieldParameterSetUpdateFinish( GeometricField, CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
 
@@ -595,7 +595,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
 
   !Solve the problem
   WRITE(*,'(A)') "Solving problem..."
-!  CALL CMISSProblemSolve(Problem, err )
+  CALL CMISSProblemSolve(Problem, err )
   WRITE(*,'(A)') "Problem solved!"
 
   !
@@ -609,14 +609,14 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
 
     CALL CMISSFieldMLOutputAddImport( outputInfo, "coordinates.rc.3d", typeHandle, err )
     CALL CMISSFieldMLOutputAddField( outputInfo, baseName//".geometric", dataFormat, GeometricField, &
-      & CMISSFieldUVariableType, err )
+      & CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
 
     CALL CMISSFieldMLOutputAddFieldComponents( outputInfo, typeHandle, baseName//".velocity", dataFormat, &
-      & DependentFieldNavierStokes, (/1,2,3/), CMISSFieldUVariableType, err )
+      & DependentFieldNavierStokes, (/1,2,3/), CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
     
     CALL CMISSFieldMLOutputAddImport( outputInfo, "real.1d", typeHandle, err )
     CALL CMISSFieldMLOutputAddFieldComponents( outputInfo, typeHandle, baseName//".pressure", dataFormat, &
-      & DependentFieldNavierStokes, (/4/), CMISSFieldUVariableType, err )
+      & DependentFieldNavierStokes, (/4/), CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
     
     CALL CMISSFieldMLOutputWrite( outputInfo, outputFilename, err )
     
