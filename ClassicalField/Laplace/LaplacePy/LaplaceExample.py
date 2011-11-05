@@ -109,8 +109,8 @@ dependentField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.Fiel
 # Create equations
 equations = CMISS.Equations()
 equationsSet.EquationsCreateStart(equations)
-equations.SparsityType = CMISS.EquationsSparsityTypes.Sparse
-equations.OutputType = CMISS.EquationsOutputTypes.NONE
+equations.sparsityType = CMISS.EquationsSparsityTypes.Sparse
+equations.outputType = CMISS.EquationsOutputTypes.NONE
 equationsSet.EquationsCreateFinish()
 
 # Create Laplace problem
@@ -129,10 +129,10 @@ problem.ControlLoopCreateFinish()
 solver = CMISS.Solver()
 problem.SolversCreateStart()
 problem.SolverGet([CMISS.ControlLoopIdentifiers.Node],1,solver)
-solver.OutputType = CMISS.SolverOutputTypes.Solver
-solver.LinearType = CMISS.LinearSolverTypes.Iterative
-solver.LinearIterativeAbsoluteTolerance = 1.0E-12
-solver.LinearIterativeRelativeTolerance = 1.0E-12
+solver.outputType = CMISS.SolverOutputTypes.Solver
+solver.linearType = CMISS.LinearSolverTypes.Iterative
+solver.linearIterativeAbsoluteTolerance = 1.0E-12
+solver.linearIterativeRelativeTolerance = 1.0E-12
 problem.SolversCreateFinish()
 
 # Create solver equations and add equations set to solver equations
@@ -141,7 +141,7 @@ solverEquations = CMISS.SolverEquations()
 problem.SolverEquationsCreateStart()
 problem.SolverGet([CMISS.ControlLoopIdentifiers.Node],1,solver)
 solver.SolverEquationsGet(solverEquations)
-solverEquations.SparsityType = CMISS.SolverEquationsSparsityTypes.Sparse
+solverEquations.sparsityType = CMISS.SolverEquationsSparsityTypes.Sparse
 equationsSetIndex = solverEquations.EquationsSetAdd(equationsSet)
 problem.SolverEquationsCreateFinish()
 
@@ -151,7 +151,7 @@ solverEquations.BoundaryConditionsCreateStart(boundaryConditions)
 firstNodeNumber=1
 nodes = CMISS.Nodes()
 region.NodesGet(nodes)
-lastNodeNumber = nodes.NumberOfNodes
+lastNodeNumber = nodes.numberOfNodes
 firstNodeDomain = decomposition.NodeDomainGet(firstNodeNumber,1)
 lastNodeDomain = decomposition.NodeDomainGet(lastNodeNumber,1)
 if firstNodeDomain == computationalNodeNumber:
