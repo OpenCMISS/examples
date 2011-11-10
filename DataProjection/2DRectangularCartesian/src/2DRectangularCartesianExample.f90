@@ -78,7 +78,7 @@ PROGRAM DataProjection1DRectangularCartesian
   INTEGER(CMISSIntg) :: FieldNumberOfVariables=1
   INTEGER(CMISSIntg) :: FieldNumberOfComponents=3 
 
-  INTEGER(CMISSIntg) :: np,el,der_idx,node_idx,comp_idx
+  INTEGER(CMISSIntg) :: data_point_idx,elem_idx,ver_idx,der_idx,node_idx,comp_idx
     
   REAL(CMISSDP), DIMENSION(5,3) :: DataPointValues !(number_of_data_points,dimension)
   REAL(CMISSDP), DIMENSION(5) :: DataPointProjectionDistance !(number_of_data_points)
@@ -198,8 +198,8 @@ PROGRAM DataProjection1DRectangularCartesian
   !=========================================================================================================================
   !Create Data Points and set the values
   CALL CMISSDataPointsCreateStart(RegionUserNumber,SIZE(DataPointValues,1),Err)
-  DO np=1,NumberOfDataPoints
-    CALL CMISSDataPointsValuesSet(RegionUserNumber,np,DataPointValues(np,:),Err)     
+  DO data_point_idx=1,NumberOfDataPoints
+    CALL CMISSDataPointsValuesSet(RegionUserNumber,data_point_idx,DataPointValues(data_point_idx,:),Err)     
   ENDDO
   CALL CMISSDataPointsCreateFinish(RegionUserNumber,Err)  
   !=========================================================================================================================
@@ -219,8 +219,8 @@ PROGRAM DataProjection1DRectangularCartesian
   CALL CMISSNodesCreateFinish(RegionUserNumber,Err)  
   !define elements for the mesh
   CALL CMISSMeshElementsCreateStart(RegionUserNumber,MeshUserNumber,MeshComponentNumber,BasisUserNumber,Err)
-  Do el=1,MeshNumberOfElements
-    CALL CMISSMeshElementsNodesSet(RegionUserNumber,MeshUserNumber,MeshComponentNumber,el,ElementUserNodes(el,:),Err)
+  Do elem_idx=1,MeshNumberOfElements
+    CALL CMISSMeshElementsNodesSet(RegionUserNumber,MeshUserNumber,MeshComponentNumber,elem_idx,ElementUserNodes(elem_idx,:),Err)
   ENDDO
   CALL CMISSMeshElementsCreateFinish(RegionUserNumber,MeshUserNumber,MeshComponentNumber,Err)
   CALL CMISSMeshCreateFinish(RegionUserNumber,MeshUserNumber,Err)
@@ -246,8 +246,8 @@ PROGRAM DataProjection1DRectangularCartesian
   DO der_idx=1,SIZE(FieldValues,1)
     DO node_idx=1,SIZE(FieldValues,2)
       DO comp_idx=1,SIZE(FieldValues,3)
-        CALL CMISSFieldParameterSetUpdateNode(RegionUserNumber,FieldUserNumber,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
-          & der_idx,node_idx,comp_idx,FieldValues(der_idx,node_idx,comp_idx),Err)
+        CALL CMISSFieldParameterSetUpdateNode(RegionUserNumber,FieldUserNumber,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+          & ver_idx,der_idx,node_idx,comp_idx,FieldValues(der_idx,node_idx,comp_idx),Err)
       ENDDO
     ENDDO
   ENDDO
@@ -264,11 +264,12 @@ PROGRAM DataProjection1DRectangularCartesian
   
   !=========================================================================================================================
   !Retrieve projection results
-  DO np=1,NumberOfDataPoints
-    CALL CMISSDataPointsProjectionDistanceGet(RegionUserNumber,np,DataPointProjectionDistance(np),Err)
-    CALL CMISSDataPointsProjectionElementNumberGet(RegionUserNumber,np,DataPointProjectionElementNumber(np),Err)
-    CALL CMISSDataPointsProjectionExitTagGet(RegionUserNumber,np,DataPointProjectionExitTag(np),Err)
-    CALL CMISSDataPointsProjectionXiGet(RegionUserNumber,np,DataPointProjectionXi(np,:),Err)
+  DO data_point_idx=1,NumberOfDataPoints
+    CALL CMISSDataPointsProjectionDistanceGet(RegionUserNumber,data_point_idx,DataPointProjectionDistance(data_point_idx),Err)
+    CALL CMISSDataPointsProjectionElementNumberGet(RegionUserNumber,data_point_idx,DataPointProjectionElementNumber( &
+      & data_point_idx),Err)
+    CALL CMISSDataPointsProjectionExitTagGet(RegionUserNumber,data_point_idx,DataPointProjectionExitTag(data_point_idx),Err)
+    CALL CMISSDataPointsProjectionXiGet(RegionUserNumber,data_point_idx,DataPointProjectionXi(data_point_idx,:),Err)
   ENDDO
   
   !=========================================================================================================================
