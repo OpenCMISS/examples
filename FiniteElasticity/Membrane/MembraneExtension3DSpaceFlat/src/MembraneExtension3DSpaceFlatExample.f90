@@ -24,7 +24,7 @@
 !> of Oxford are Copyright (C) 2007 by the University of Auckland and
 !> the University of Oxford. All Rights Reserved.
 !>
-!> Contributor(s): Alice Hung, modified by Jessica Jor on 5th September 2011
+!> Contributor(s): Jessica Jor on 6th September 2011
 !>
 !> Alternatively, the contents of this file may be used under the terms of
 !> either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -47,7 +47,7 @@
 !<
 
 !> Main program
-PROGRAM MEMBRANEEXTENSION2DSPACE
+PROGRAM MEMBRANEEXTENSION3DSPACE
 
   USE OPENCMISS
   USE MPI
@@ -69,7 +69,7 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
   REAL(CMISSDP), PARAMETER :: LENGTH=1.0_CMISSDP
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: NumberOfSpatialCoordinates=2
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfSpatialCoordinates=3
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
@@ -77,19 +77,19 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
 
   INTEGER(CMISSIntg), PARAMETER :: NumberOfXiCoordinates=2
   INTEGER(CMISSIntg), PARAMETER :: TotalNumberOfNodes=4
-  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshDimensions=2
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshDimensions=3
   INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshComponents=1
   INTEGER(CMISSIntg), PARAMETER :: TotalNumberOfElements=1
   INTEGER(CMISSIntg), PARAMETER :: MeshComponentNumber=1
 
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
-  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfComponents=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
 
   INTEGER(CMISSIntg), PARAMETER :: FieldFibreUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: FieldFibreNumberOfVariables=1
   ! Should only need 1 component (i.e. 1 angle), the second component is redundant but is required for consistency
-  INTEGER(CMISSIntg), PARAMETER :: FieldFibreNumberOfComponents=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreNumberOfComponents=3
 
   !Component 1, 2 are Mooney-Rivlin constants.  Component 3 is membrane thickness.
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
@@ -98,7 +98,7 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
 
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=4
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfVariables=2
-  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponents=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponents=3
 
   INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
@@ -226,7 +226,7 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
   CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
 
-  !Create a field to put the geometry (defualt is geometry)
+  !Create a field to put the geometry (default is geometry)
   CALL CMISSFieldTypeInitialise(GeometricField,Err)
   CALL CMISSFieldCreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
   CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
@@ -235,20 +235,26 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
   CALL CMISSFieldNumberOfComponentsSet(GeometricField,CMISSFieldUVariableType,FieldGeometryNumberOfComponents,Err)
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,MeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,MeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,MeshComponentNumber,Err)
+
   CALL CMISSFieldCreateFinish(GeometricField,Err)
 
   !node 1
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,1,1,0.4_CMISSDP,Err)
+  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,1,1,0.0_CMISSDP,Err)
   CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,1,2,0.0_CMISSDP,Err)
+  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,1,3,0.0_CMISSDP,Err)
   !node 2
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,2,1,2.1_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,2,2,0.8_CMISSDP,Err)
+  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,2,1,1.0_CMISSDP,Err)
+  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,2,2,0.0_CMISSDP,Err)
+  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,2,3,0.0_CMISSDP,Err)
   !node 3
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,3,1,0.5_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,3,2,1.3_CMISSDP,Err)
+  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,3,1,0.0_CMISSDP,Err)
+  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,3,2,1.0_CMISSDP,Err)
+  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,3,3,0.0_CMISSDP,Err)
   !node 4
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,4,1,2.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,4,2,1.8_CMISSDP,Err)
+  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,4,1,1.0_CMISSDP,Err)
+  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,4,2,1.0_CMISSDP,Err)
+  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,4,3,0.0_CMISSDP,Err)
 
   !Create a fibre field and attach it to the geometric field
   CALL CMISSFieldTypeInitialise(FibreField,Err)
@@ -260,6 +266,7 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
   CALL CMISSFieldNumberOfComponentsSet(FibreField,CMISSFieldUVariableType,FieldFibreNumberOfComponents,Err)
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,1,MeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,2,MeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,3,MeshComponentNumber,Err)
   CALL CMISSFieldVariableLabelSet(FibreField,CMISSFieldUVariableType,"Fibre",Err)
   CALL CMISSFieldCreateFinish(FibreField,Err)
 
@@ -273,15 +280,13 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
   CALL CMISSFieldNumberOfComponentsSet(MaterialField,CMISSFieldUVariableType,FieldMaterialNumberOfComponents,Err)
   CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,1,MeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,2,MeshComponentNumber,Err)
-  !Set membrane thickness (only specifiy this for 3D space)
-  !JJOR 6 Sept 2011
   CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,3,MeshComponentNumber,Err)
   CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldUVariableType,"Material",Err)
   CALL CMISSFieldCreateFinish(MaterialField,Err)
 
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 3.0 respectively.
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,3.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1.0_CMISSDP,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,0.1_CMISSDP,Err)
   !Set membrane thickness (only specifiy this for 3D space)
   !JJOR 6 Sept 2011
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,0.1_CMISSDP,Err)
@@ -298,13 +303,16 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
   CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelUDelNVariableType,FieldDependentNumberOfComponents,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,1,MeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,2,MeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,3,MeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,1,MeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,2,MeshComponentNumber,Err)
+  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,3,MeshComponentNumber,Err)
   CALL CMISSFieldVariableLabelSet(DependentField,CMISSFieldUVariableType,"Dependent",Err)
   CALL CMISSFieldCreateFinish(DependentField,Err)
 
   !Create the equations_set
   CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+  CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
   CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSEquationsSetElasticityClass, &
     & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetMembraneSubtype,EquationsSetFieldUserNumber,EquationsSetField, &
     & EquationsSet,Err)
@@ -322,13 +330,15 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
   CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
   CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
   CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
-  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
+  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)   
 
   !Initialise dependent field from undeformed geometry and displacement bcs
   CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
     & 1,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,Err)
   CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
     & 2,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,Err)
+  CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+    & 2,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,Err)
 
   !Define the problem
   CALL CMISSProblemTypeInitialise(Problem,Err)
@@ -365,23 +375,36 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
 
   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,1,1, &
     & CMISSBoundaryConditionFixed, &
-    & 0.4_CMISSDP,Err)
+    & 0.0_CMISSDP,Err)
   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,2,1, &
     & CMISSBoundaryConditionFixed, &
-    & 2.3_CMISSDP,Err)
+    & 1.15_CMISSDP,Err)
   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,3,1, &
     & CMISSBoundaryConditionFixed, &
-    & 0.5_CMISSDP,Err)
+    & 0.0_CMISSDP,Err)
   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,4,1, &
     & CMISSBoundaryConditionFixed, &
-    & 2.1_CMISSDP,Err)
+    & 1.15_CMISSDP,Err)
 
   CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,1,2, &
     & CMISSBoundaryConditionFixed, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,3,2, &
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,2,2, &
     & CMISSBoundaryConditionFixed, &
-    & 1.3_CMISSDP,Err)
+    & 0.0_CMISSDP,Err)
+
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,1,3, &
+    & CMISSBoundaryConditionFixed, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,2,3, &
+    & CMISSBoundaryConditionFixed, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,3,3, &
+    & CMISSBoundaryConditionFixed, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,4,3, &
+    & CMISSBoundaryConditionFixed, &
+    & 0.0_CMISSDP,Err)
 
   CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
 
@@ -391,8 +414,8 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
   !Output solution
   CALL CMISSFieldsTypeInitialise(Fields,Err)
   CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-  CALL CMISSFieldIONodesExport(Fields,"expected_results/MembraneExtension2DSpace","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields,"expected_results/MembraneExtension2DSpace","FORTRAN",Err)
+  CALL CMISSFieldIONodesExport(Fields,"expected_results/MembraneExtension3DSpaceFlat","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields,"expected_results/MembraneExtension3DSpaceFlat","FORTRAN",Err)
   CALL CMISSFieldsTypeFinalise(Fields,Err)
 
   CALL CMISSFinalise(Err)
@@ -401,5 +424,5 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
 
   STOP
 
-END PROGRAM MEMBRANEEXTENSION2DSPACE
+END PROGRAM MEMBRANEEXTENSION3DSPACE
 
