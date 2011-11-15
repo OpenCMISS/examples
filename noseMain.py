@@ -6,9 +6,21 @@ sys.path.append(os.environ['OPENCMISSEXAMPLES_ROOT'])
 examplesDir = os.environ['OPENCMISSEXAMPLES_ROOT']
 logsDir = os.environ['OPENCMISS_ROOT']+"/build/logs"
 hostname = socket.gethostname()
-compiler = os.environ['COMPILER']
-size = os.environ['SIZE']
-parentdir = os.environ['DIR']
+compiler = 'gnu' if (not 'COMPILER' in os.environ) else os.environ['COMPILER']
+size = 'small' if (not 'SIZE' in os.environ) else os.environ['SIZE']
+parentdir = '.' if (not 'DIR' in os.environ) else os.environ['DIR']
+
+def getVersion(compiler) :
+  operating_system = commands.getoutput('uname')
+  if operating_system == 'Linux':
+    if compiler == 'gnu':
+      version_info = commands.getoutput('gfortran -v')
+      version_location = version_info.find('gcc version ')
+      if version_location != -1:
+        return '_' + version_info[version_location+12:version_location+15]
+  return ''
+  
+compiler_version = compiler + getVersion(compiler) if (not 'OPENCMISS_COMPILER_PATH' in os.environ) else os.environ['OPENCMISS_COMPILER_PATH']
 
 def load_prop(propFile, properties) :
   properties['TestingPoint']=[]
@@ -54,18 +66,14 @@ def add_history(historyPath,err) :
     history.write(strftime("%Y-%m-%d %H:%M:%S")+'\tfail\t'+hostname+'\n')
   history.close()
 
-def getVersion(compiler) :
-  operating_system = commands.getoutput('uname')
-  if operating_system == 'Linux':
-    if compiler == 'gnu':
-      version_info = commands.getoutput('gfortran -v')
-      version_location = version_info.find('gcc version ')
-      if version_location != -1:
-        return '_' + version_info[version_location+12:version_location+15]
-  return ''
 
+
+############ Beginning of tests #######################
 
 def test_build_library():
+  yield check_build_library,compiler_version
+   
+def check_build_library(compiler_version):
   global logsDir, compiler
   rootDir=os.environ['OPENCMISS_ROOT']+"/cm"
   os.chdir(rootDir)
@@ -75,16 +83,16 @@ def test_build_library():
     newDir = newDir + '/' + folder
     if not os.path.isdir(newDir):
       os.mkdir(newDir)
-  logPath = logDir+"/nose_library_build_" + compiler + str(date.today())
+  logPath = logDir+"/nose_library_build_" + compiler_version + str(date.today())
   open_log(logPath)
   command = "make USEFIELDML=true COMPILER=" + compiler + " >> "  + logPath + " 2>&1"
   err = os.system(command)
   close_log(logPath)
-  add_history(logDir+"/nose_library_build_history_" + compiler,err)
+  add_history(logDir+"/nose_library_build_history_" + compiler_version,err)
   assert err==0
   
 def test_example():
-  global compiler,examplesDir,parentdir
+  global compiler_version,examplesDir,parentdir
   if (not examplesDir.endswith("/")) :
      rootdir = examplesDir + "/"
   rootdir = rootdir+parentdir
@@ -93,7 +101,7 @@ def test_example():
       for f in files :
         if (size=='small' and f=='nightlytest.prop') or (size=='large' and (f=='nightlytest.prop' or f=='weeklytest.prop')) :
           os.chdir(root)
-          yield check_build, 'build',root,compiler
+          yield check_build, 'build',root,compiler_version
           system = os.uname()[0].lower()
           arch = os.uname()[4]
           propFile= file(f, "r")
@@ -111,31 +119,31 @@ def test_example():
               testingPointPath = testpoint[0]
             os.chdir(testingPointsPath + testingPointPath)
             if len(testpoint)<=2 :            
-              yield check_run, 'run', os.getcwd(), system, arch, compiler, root, testpoint[1], testingPointPath, False
+              yield check_run, 'run', os.getcwd(), system, arch, compiler_version, root, testpoint[1], testingPointPath, False
             else :
-              yield check_run, 'run', os.getcwd(), system, arch, compiler, root, testpoint[1], testingPointPath
+              yield check_run, 'run', os.getcwd(), system, arch, compiler_version, root, testpoint[1], testingPointPath
               if len(testpoint)<=4 :
-                yield check_output,'check',os.getcwd(), testpoint[2], testpoint[3]
+                yield check_output,'check',os.getcwd(), compiler_version, testpoint[2], testpoint[3]
               else :
-                yield check_output,'check',os.getcwd(), testpoint[2], testpoint[3], testpoint[4]
+                yield check_output,'check',os.getcwd(), compiler_version, testpoint[2], testpoint[3], testpoint[4]
   
-def check_build(status,root,compiler):
-  global examplesDir, logsDir
+def check_build(status,root,compiler_version):
+  global examplesDir, logsDir, compiler
   logDir = os.getcwd().replace(examplesDir,logsDir)
   newDir = ''
   for folder in logDir.split('/') :
     newDir = newDir + '/' + folder
     if not os.path.isdir(newDir):
       os.mkdir(newDir)
-  logPath = logDir+"/nose_build_" + compiler + str(date.today())
+  logPath = logDir+"/nose_build_" + compiler_version + str(date.today())
   open_log(logPath)
   command = "make USEFIELDML=true COMPILER=" + compiler + " >> "  + logPath + " 2>&1"
   err = os.system(command)
   close_log(logPath)
-  add_history(logDir+"/nose_build_history_" + compiler,err)
+  add_history(logDir+"/nose_build_history_" + compiler_version,err)
   assert err==0
 
-def check_run(status,cwd, system,arch,compiler,masterPath,testArgs,testPath,noCheck=None):
+def check_run(status,cwd,system,arch,compiler_version,masterPath,testArgs,testPath,noCheck=None):
   global examplesDir, logsDir
   logDir = os.getcwd().replace(examplesDir,logsDir)
   newDir = ''
@@ -143,17 +151,16 @@ def check_run(status,cwd, system,arch,compiler,masterPath,testArgs,testPath,noCh
     newDir = newDir + '/' + folder
     if not os.path.isdir(newDir):
       os.mkdir(newDir)
-  logPath = logDir+"/nose_run_" + compiler + str(date.today())
+  logPath = logDir+"/nose_run_" + compiler_version + str(date.today())
   open_log(logPath)
   exampleName = masterPath.rpartition("/")[2]
-  compiler_version = getVersion(compiler)
-  command = masterPath+"/bin/"+arch+"-"+system+"/mpich2/"+compiler+compiler_version+"/"+exampleName+"Example-debug "+testArgs + " >> "  + logPath + " 2>&1"
+  command = masterPath+"/bin/"+arch+"-"+system+"/mpich2/"+compiler_version+"/"+exampleName+"Example-debug "+testArgs + " >> "  + logPath + " 2>&1"
   err = os.system(command)
   close_log(logPath)
-  add_history(logDir+"/nose_run_history_" + compiler,err)
+  add_history(logDir+"/nose_run_history_" + compiler_version,err)
   assert err==0
 
-def check_output(status, cwd, ndiffDir, outputDir,tolerance=None):
+def check_output(status, cwd, compiler_version, ndiffDir, outputDir,tolerance=None):
   global examplesDir, logsDir
   logDir = os.getcwd().replace(examplesDir,logsDir)
   newDir = ''
@@ -161,7 +168,7 @@ def check_output(status, cwd, ndiffDir, outputDir,tolerance=None):
     newDir = newDir + '/' + folder
     if not os.path.isdir(newDir):
       os.mkdir(newDir)
-  logPath = logDir+"/nose_check_" + compiler + str(date.today())
+  logPath = logDir+"/nose_check_" + compiler_version + str(date.today())
   open_log(logPath)
   ndiff = os.environ['OPENCMISS_ROOT']+"/cm/utils/ndiff"
   errall =0
@@ -179,7 +186,7 @@ def check_output(status, cwd, ndiffDir, outputDir,tolerance=None):
     f1.write("The output values are identical with the expected ones. However, the outputs may be generated from previous build. You need also check if the latest test run passes.")
     f1.close()
   close_log(logPath)
-  add_history(logDir+"/nose_check_history_" + compiler,errall)
+  add_history(logDir+"/nose_check_history_" + compiler_version,errall)
   assert errall==0 
  
 if __name__ == '__main__':
