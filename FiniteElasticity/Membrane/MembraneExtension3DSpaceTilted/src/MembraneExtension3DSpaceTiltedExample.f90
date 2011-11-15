@@ -414,8 +414,8 @@ PROGRAM MEMBRANEEXTENSION3DSPACE
   !Output solution
   CALL CMISSFieldsTypeInitialise(Fields,Err)
   CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-  CALL CMISSFieldIONodesExport(Fields,"expected_results/MembraneExtension3DSpaceTilted","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields,"expected_results/MembraneExtension3DSpaceTilted","FORTRAN",Err)
+  CALL CMISSFieldIONodesExport(Fields,"MembraneExtension3DSpaceTilted","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields,"MembraneExtension3DSpaceTilted","FORTRAN",Err)
   CALL CMISSFieldsTypeFinalise(Fields,Err)
 
   CALL CMISSFinalise(Err)

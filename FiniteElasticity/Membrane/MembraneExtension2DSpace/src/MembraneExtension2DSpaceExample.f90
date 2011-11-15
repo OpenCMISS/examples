@@ -391,8 +391,8 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
   !Output solution
   CALL CMISSFieldsTypeInitialise(Fields,Err)
   CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-  CALL CMISSFieldIONodesExport(Fields,"expected_results/MembraneExtension2DSpace","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields,"expected_results/MembraneExtension2DSpace","FORTRAN",Err)
+  CALL CMISSFieldIONodesExport(Fields,"MembraneExtension2DSpace","FORTRAN",Err)
+  CALL CMISSFieldIOElementsExport(Fields,"MembraneExtension2DSpace","FORTRAN",Err)
   CALL CMISSFieldsTypeFinalise(Fields,Err)
 
   CALL CMISSFinalise(Err)
