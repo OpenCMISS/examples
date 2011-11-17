@@ -1,6 +1,3 @@
-system("sed -i 's%unknown field variable type%rectangular cartesian%' Cantilever.part0.exnode");
-system("sed -i 's%unknown field variable type%rectangular cartesian%' Cantilever.part0.exelem");
-
 # read in description
 gfx read node Cantilever.part0.exnode
 gfx read element Cantilever.part0.exelem

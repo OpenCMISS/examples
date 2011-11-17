@@ -59,7 +59,7 @@ PROGRAM DataProjection1DRectangularCartesian
   INTEGER(CMISSIntg),PARAMETER :: MeshUserNumber=1
   INTEGER(CMISSIntg),PARAMETER :: RegionUserNumber=1
 
-  REAL(CMISSDP), PARAMETER :: CoordinateSystemOrigin(3)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP]  
+  REAL(CMISSDP), PARAMETER :: CoordinateSystemOrigin(3)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)
   !Program types
 
   !Program variables   
@@ -70,7 +70,7 @@ PROGRAM DataProjection1DRectangularCartesian
   INTEGER(CMISSIntg) :: NumberOfDomains=2
   INTEGER(CMISSIntg) :: NumberOfNodes
   INTEGER(CMISSIntg) :: NumberOfXi=1
-  INTEGER(CMISSIntg) :: BasisInterpolation(1)=(/CMISSBasisCubicHermiteInterpolation]
+  INTEGER(CMISSIntg) :: BasisInterpolation(1)=(/CMISSBasisCubicHermiteInterpolation/)
   INTEGER(CMISSIntg) :: WorldCoordinateSystemUserNumber
   INTEGER(CMISSIntg) :: WorldRegionUserNumber
   
@@ -78,7 +78,7 @@ PROGRAM DataProjection1DRectangularCartesian
   INTEGER(CMISSIntg) :: FieldNumberOfComponents=3
   
 
-  INTEGER(CMISSIntg) :: np,el,xi,der_idx,node_idx,comp_idx
+  INTEGER(CMISSIntg) :: np,el,xi,ver_idx,der_idx,node_idx,comp_idx
     
   REAL(CMISSDP), DIMENSION(5,3) :: DataPointValues !(number_of_data_points,dimension)
   INTEGER(CMISSIntg), DIMENSION(5,2) :: ElementUserNodes  
@@ -227,11 +227,12 @@ PROGRAM DataProjection1DRectangularCartesian
   ENDDO !xi    
   CALL CMISSFieldCreateFinish(RegionUserNumber,FieldUserNumber,Err)
   !node 1
+  ver_idx=1 ! version number
   DO der_idx=1,SIZE(FieldValues,1)
     DO node_idx=1,SIZE(FieldValues,2)
       DO comp_idx=1,SIZE(FieldValues,3)
-        CALL CMISSFieldParameterSetUpdateNode(RegionUserNumber,FieldUserNumber,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
-          & der_idx,node_idx,comp_idx,FieldValues(der_idx,node_idx,comp_idx),Err)
+        CALL CMISSFieldParameterSetUpdateNode(RegionUserNumber,FieldUserNumber,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+          & ver_idx,der_idx,node_idx,comp_idx,FieldValues(der_idx,node_idx,comp_idx),Err)
       ENDDO
     ENDDO
   ENDDO

@@ -290,6 +290,7 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,QuadraticMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,QuadraticMeshComponentNumber,Err)
   CALL CMISSFieldVariableLabelSet(GeometricField,CMISSFieldUVariableType,"Geometry",Err)
+  CALL CMISSFieldScalingTypeSet(GeometricField,CMISSFieldUnitScaling,Err)
   CALL CMISSFieldCreateFinish(GeometricField,Err)
 
   !Update the geometric field parameters
@@ -307,6 +308,7 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,2,LinearMeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,3,LinearMeshComponentNumber,Err)
   CALL CMISSFieldVariableLabelSet(FibreField,CMISSFieldUVariableType,"Fibre",Err)
+  CALL CMISSFieldScalingTypeSet(FibreField,CMISSFieldUnitScaling,Err)
   CALL CMISSFieldCreateFinish(FibreField,Err)
 
   !Create a material field and attach it to the geometric field  
@@ -320,6 +322,7 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   CALL CMISSFieldComponentInterpolationSet(MaterialField,CMISSFieldUVariableType,1,CMISSFieldConstantInterpolation,Err)
   CALL CMISSFieldComponentInterpolationSet(MaterialField,CMISSFieldUVariableType,2,CMISSFieldConstantInterpolation,Err)
   CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldUVariableType,"Material",Err)
+  CALL CMISSFieldScalingTypeSet(MaterialField,CMISSFieldUnitScaling,Err)
   CALL CMISSFieldCreateFinish(MaterialField,Err)
 
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively.
