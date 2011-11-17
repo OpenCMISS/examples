@@ -1,15 +1,15 @@
 
-#for ($t=0; $t<=300; $t+=10){
-#  $num =  sprintf("%04d", $t);
-#  $node = "TIME_STEP_".$num.".exnode";
-#  gfx read node $node time $t;
-#}
+for ($t=0; $t<=70; $t+=10){
+  $num =  sprintf("%04d", $t);
+  $node = "TIME_STEP_".$num.".exnode";
+  gfx read node $node time $t;
+}
 
-#gfx read elem TIME_STEP_0000.exelem
-#gfx read node TIME_STEP_0300.exnode
-#gfx read elem TIME_STEP_0300.exelem
-gfx read node STATICSOLUTION.exnode
-gfx read elem STATICSOLUTION.exelem
+gfx read elem TIME_STEP_0000.exelem
+#gfx read node TIME_STEP_0010.exnode
+#gfx read elem TIME_STEP_0010.exelem
+#gfx read node STATICSOLUTION.exnode
+#gfx read elem STATICSOLUTION.exelem
 gfx def faces egroup OpenCMISS;
 
 gfx create window 1;
