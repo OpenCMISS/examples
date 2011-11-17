@@ -1,14 +1,14 @@
  Group name: Region 1           
  #Fields=4
- 1) Coordinate, coordinate, rectangular cartesian, #Components=3
+ 1) Geometry, coordinate, rectangular cartesian, #Components=3
    x.  Value index= 1, #Derivatives= 7(d/ds1,d/ds2,d2/ds1ds2,d/ds3,d2/ds1ds3,d2/ds2ds3,d3/ds1ds2ds3)
    y.  Value index= 9, #Derivatives= 7(d/ds1,d/ds2,d2/ds1ds2,d/ds3,d2/ds1ds3,d2/ds2ds3,d3/ds1ds2ds3)
    z.  Value index= 17, #Derivatives= 7(d/ds1,d/ds2,d2/ds1ds2,d/ds3,d2/ds1ds3,d2/ds2ds3,d3/ds1ds2ds3)
- 2) Coordinate, anatomical, fibre, #Components=3
+ 2) Fibre, anatomical, fibre, #Components=3
    1.  Value index= 25, #Derivatives= 0
    2.  Value index= 26, #Derivatives= 0
    3.  Value index= 27, #Derivatives= 0
- 3) Coordinate, field,  rectangular cartesian, #Components=4
+ 3) Dependent, field,  rectangular cartesian, #Components=4
    1.  Value index= 28, #Derivatives= 7(d/ds1,d/ds2,d2/ds1ds2,d/ds3,d2/ds1ds3,d2/ds2ds3,d3/ds1ds2ds3)
    2.  Value index= 36, #Derivatives= 7(d/ds1,d/ds2,d2/ds1ds2,d/ds3,d2/ds1ds3,d2/ds2ds3,d3/ds1ds2ds3)
    3.  Value index= 44, #Derivatives= 7(d/ds1,d/ds2,d2/ds1ds2,d/ds3,d2/ds1ds3,d2/ds2ds3,d3/ds1ds2ds3)

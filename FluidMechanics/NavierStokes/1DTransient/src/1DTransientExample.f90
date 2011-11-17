@@ -212,7 +212,7 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
   CALL CMISSDiagnosticsSetOn(CMISSInDiagType,[1,2,3,4,5],"Diagnostics",["DOMAIN_MAPPINGS_LOCAL_FROM_GLOBAL_CALCULATE"],Err)
   CALL CMISSOutputSetOn("Testing",Err)
-  !CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
 
   !================================================================================================================================
   !
