@@ -91,8 +91,8 @@ PROGRAM COUPLEDCANTILEVER
   INTEGER(CMISSIntg), PARAMETER :: PressureBasisUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: GeometricMeshComponent=1
-  INTEGER(CMISSIntg), PARAMETER :: PressureMeshComponent=2
+  INTEGER(CMISSIntg), PARAMETER :: GeometricMeshComponent=2
+  INTEGER(CMISSIntg), PARAMETER :: PressureMeshComponent=1
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: FieldFibreUserNumber=2
@@ -221,7 +221,7 @@ PROGRAM COUPLEDCANTILEVER
   !Set up a regular x*y*z mesh
   CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
   !Set the default basis
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,[GeometricBasis,PressureBasis],Err)
+  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,[PressureBasis,GeometricBasis],Err)
   !Define the mesh on the region
   IF(NumberGlobalXElements==0) THEN
     CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,[Width,Height],Err)
@@ -240,6 +240,7 @@ PROGRAM COUPLEDCANTILEVER
   CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
   CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
+  CALL CMISSDecompositionMeshComponentSet(Decomposition,GeometricMeshComponent,Err)
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
 
   !Create a field to put the geometry (defualt is geometry)
@@ -249,6 +250,9 @@ PROGRAM COUPLEDCANTILEVER
   CALL CMISSFieldVariableLabelSet(GeometricField,CMISSFieldUVariableType,"Geometry",Err)
   CALL CMISSFieldNumberOfComponentsSet(GeometricField,CMISSFieldUVariableType,3,Err)
   CALL CMISSFieldScalingTypeSet(GeometricField,CMISSFieldArithmeticMeanScaling,Err)
+  DO component_idx=1,3
+    CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,component_idx,GeometricMeshComponent,Err)
+  ENDDO
   CALL CMISSFieldCreateFinish(GeometricField,Err)
 
   !Update the geometric field parameters
@@ -261,6 +265,9 @@ PROGRAM COUPLEDCANTILEVER
   CALL CMISSFieldMeshDecompositionSet(FibreField,Decomposition,Err)
   CALL CMISSFieldGeometricFieldSet(FibreField,GeometricField,Err)
   CALL CMISSFieldVariableLabelSet(FibreField,CMISSFieldUVariableType,"Fibre",Err)
+  DO component_idx=1,3
+    CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,component_idx,GeometricMeshComponent,Err)
+  ENDDO
   CALL CMISSFieldCreateFinish(FibreField,Err)
 
   !Create the equations sets
@@ -298,6 +305,15 @@ PROGRAM COUPLEDCANTILEVER
   CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldUVariableType,"SolidMaterial",Err)
   CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldVVariableType,"Density",Err)
   CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldU1VariableType,"FluidMaterial",Err)
+  DO component_idx=1,6
+    CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,component_idx,GeometricMeshComponent,Err)
+  ENDDO
+  DO component_idx=1,1
+    CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldVVariableType,component_idx,GeometricMeshComponent,Err)
+  ENDDO
+  DO component_idx=1,8
+    CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldU1VariableType,component_idx,GeometricMeshComponent,Err)
+  ENDDO
   CALL CMISSEquationsSetMaterialsCreateFinish(SolidEquationsSet,Err)
 
   CALL CMISSEquationsSetMaterialsCreateStart(FluidEquationsSet,FieldMaterialUserNumber,MaterialField,Err)
@@ -327,6 +343,9 @@ PROGRAM COUPLEDCANTILEVER
   !Create the source field with the gravity vector
   CALL CMISSFieldTypeInitialise(SourceField,Err)
   CALL CMISSEquationsSetSourceCreateStart(SolidEquationsSet,FieldSourceUserNumber,SourceField,Err)
+  DO component_idx=1,3
+    CALL CMISSFieldComponentMeshComponentSet(SourceField,CMISSFieldUVariableType,component_idx,GeometricMeshComponent,Err)
+  ENDDO
   CALL CMISSEquationsSetSourceCreateFinish(SolidEquationsSet,Err)
   DO component_idx=1,3
     CALL CMISSFieldComponentValuesInitialise(SourceField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
@@ -407,7 +426,7 @@ PROGRAM COUPLEDCANTILEVER
   !Fix x=0 nodes
   DO node_idx=1,SIZE(LeftSurfaceNodes,1)
     NodeNumber=LeftSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       DO component_idx=1,3
         CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NodeNumber, &
@@ -419,7 +438,7 @@ PROGRAM COUPLEDCANTILEVER
   ENDDO
   DO node_idx=1,SIZE(PressureLeftSurfaceNodes,1)
     NodeNumber=PressureLeftSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
+    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,PressureMeshComponent,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldVVariableType,1,1,NodeNumber,1, &
         & CMISSBoundaryConditionFixedIncremented,FluidPressureBC,Err)
