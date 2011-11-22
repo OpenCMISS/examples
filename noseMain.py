@@ -2,15 +2,24 @@ import os, subprocess,sys,commands
 from time import strftime
 from datetime import date
 import socket
-sys.path.append(os.environ['OPENCMISSEXAMPLES_ROOT'])
-examplesDir = os.environ['OPENCMISSEXAMPLES_ROOT']
-logsDir = os.environ['OPENCMISS_ROOT']+"/build/logs"
-hostname = socket.gethostname()
-compiler = 'gnu' if (not 'COMPILER' in os.environ) else os.environ['COMPILER']
-size = 'small' if (not 'SIZE' in os.environ) else os.environ['SIZE']
-parentdir = '.' if (not 'DIR' in os.environ) else os.environ['DIR']
+import json
 
-def getVersion(compiler) :
+
+### Utility Methods and Global Variables ###
+
+sys.path.append(os.environ['OPENCMISSEXAMPLES_ROOT'])
+hostname = socket.gethostname()
+
+def append_path(prefix, suffix) :
+  if (not prefix.endswith("/")) :
+    prefix = prefix + "/"
+  return prefix + suffix
+
+examplesDir = os.environ['OPENCMISSEXAMPLES_ROOT'] if (not 'DIR' in os.environ) else append_path(os.environ['OPENCMISSEXAMPLES_ROOT'],os.environ['DIR'])
+logsDir = append_path(os.environ['OPENCMISS_ROOT'],"build/logs") 
+
+compiler = 'gnu' if (not 'COMPILER' in os.environ) else os.environ['COMPILER']
+def get_version(compiler) :
   operating_system = commands.getoutput('uname')
   if operating_system == 'Linux':
     if compiler == 'gnu':
@@ -19,29 +28,8 @@ def getVersion(compiler) :
       if version_location != -1:
         return '_' + version_info[version_location+12:version_location+15]
   return ''
-  
-compiler_version = compiler + getVersion(compiler) if (not 'OPENCMISS_COMPILER_PATH' in os.environ) else os.environ['OPENCMISS_COMPILER_PATH']
 
-def load_prop(propFile, properties) :
-  properties['TestingPoint']=[]
-  for propLine in propFile:
-    propDef= propLine.strip()
-    if len(propDef) == 0:
-        continue
-    if propDef[0] in ( '!', '#' ):
-        continue
-    punctuation= [ propDef.find(c) for c in '= ' ] + [ len(propDef) ]
-    found= min( [ pos for pos in punctuation if pos != -1 ] )
-    name= propDef[:found].rstrip()
-    value= propDef[found:].lstrip("= ").rstrip()
-    if value.find(',')==-1 :
-      properties[name]= value
-    else :
-      if (name.startswith('TestingPoint.')) :
-        properties['TestingPoint'].append(value.split(','))
-      else :
-        properties[name]=value.split(',')
-  propFile.close()
+compiler_version = compiler + get_version(compiler) if (not 'OPENCMISS_COMPILER_PATH' in os.environ) else os.environ['OPENCMISS_COMPILER_PATH']
 
 def open_log(logPath) :
   f1 = open(logPath,"w")
@@ -66,8 +54,33 @@ def add_history(historyPath,err) :
     history.write(strftime("%Y-%m-%d %H:%M:%S")+'\tfail\t'+hostname+'\n')
   history.close()
 
+class Struct:
+    def __init__(self, dct):
+      self.__dict__.update(dct)
+        
+          
+
+def object_encode(dct) :
+  return Struct(dct)
 
 
+
+
+def load_log_dir(examplePath) :
+  global logsDir
+  logDir = examplePath.replace(os.environ['OPENCMISSEXAMPLES_ROOT'],logsDir)
+  newDir = ''
+  for folder in logDir.split('/') :
+    newDir = newDir + '/' + folder
+    if not os.path.isdir(newDir):
+      os.mkdir(newDir)
+  return logDir
+  
+
+
+size = 'small' if (not 'SIZE' in os.environ) else os.environ['SIZE']
+
+  
 ############ Beginning of tests #######################
 
 def test_build_library():
@@ -92,92 +105,60 @@ def check_build_library(compiler_version):
   assert err==0
   
 def test_example():
-  global compiler_version,examplesDir,parentdir
-  if (not examplesDir.endswith("/")) :
-     rootdir = examplesDir + "/"
-  rootdir = rootdir+parentdir
-  for root, subFolders, files in os.walk(rootdir) :
-    if root.find(".svn")==-1 :
+  global compiler_version,examplesDir,logsDir
+  for examplePath, subFolders, files in os.walk(examplesDir) :
+    if examplePath.find(".svn")==-1 :
       for f in files :
-        if (size=='small' and f=='nightlytest.prop') or (size=='large' and (f=='nightlytest.prop' or f=='weeklytest.prop')) :
-          os.chdir(root)
-          yield check_build, 'build',root,compiler_version
-          system = os.uname()[0].lower()
-          arch = os.uname()[4]
-          propFile= file(f, "r")
-          properties = dict()
-          load_prop(propFile,properties)
-          if '42TestingPointsPATH' in properties :
-            testingPointsPath = examplesDir+"/"+properties['42TestingPointsPATH']
-          else:
-            testingPointsPath = ""
-          testpoints = properties['TestingPoint']
-          for testpoint in testpoints :
-            if (testpoint[0].find("${")!=-1) :
-              testingPointPath = properties[testpoint[0][2:testpoint[0].find("}")]]+testpoint[0][testpoint[0].find("}")+1:]
-            else:
-              testingPointPath = testpoint[0]
-            os.chdir(testingPointsPath + testingPointPath)
-            if len(testpoint)<=2 :            
-              yield check_run, 'run', os.getcwd(), system, arch, compiler_version, root, testpoint[1], testingPointPath, False
-            else :
-              yield check_run, 'run', os.getcwd(), system, arch, compiler_version, root, testpoint[1], testingPointPath
-              if len(testpoint)<=4 :
-                yield check_output,'check',os.getcwd(), compiler_version, testpoint[2], testpoint[3]
-              else :
-                yield check_output,'check',os.getcwd(), compiler_version, testpoint[2], testpoint[3], testpoint[4]
+        if (size=='small' and f=='nightlytest.json') or (size=='large' and (f=='nightlytest.json' or f=='weeklytest.json')) :
+          json_data=open(examplePath + "/" + f).read()
+          example = json.loads(json_data,object_hook=object_encode).example
+          example.path = examplePath
+          example.system = os.uname()[0].lower()
+          example.arch = os.uname()[4]
+          example.compilerVersion = compiler_version
+          example.logPath = example.path.replace(examplesDir,logsDir)
+          yield check_build, 'build',example
+          for test in example.test : 
+            if (not hasattr(test,"path")) :
+              test.path = example.path        
+            yield check_run, 'run', example, test
+            if (hasattr(test, 'expectedPath')):
+              yield check_output,'check', example, test
   
-def check_build(status,root,compiler_version):
-  global examplesDir, logsDir, compiler
-  logDir = os.getcwd().replace(examplesDir,logsDir)
-  newDir = ''
-  for folder in logDir.split('/') :
-    newDir = newDir + '/' + folder
-    if not os.path.isdir(newDir):
-      os.mkdir(newDir)
-  logPath = logDir+"/nose_build_" + compiler_version + str(date.today())
+def check_build(status,example):
+  global compiler
+  os.chdir(example.path)
+  logDir = load_log_dir(example.path)
+  logPath = append_path(logDir,"nose_build_" + example.compilerVersion + str(date.today()))
   open_log(logPath)
   command = "make USEFIELDML=true COMPILER=" + compiler + " >> "  + logPath + " 2>&1"
   err = os.system(command)
   close_log(logPath)
-  add_history(logDir+"/nose_build_history_" + compiler_version,err)
+  add_history(logDir+"/nose_build_history_" + example.compilerVersion,err)
   assert err==0
 
-def check_run(status,cwd,system,arch,compiler_version,masterPath,testArgs,testPath,noCheck=None):
-  global examplesDir, logsDir
-  logDir = os.getcwd().replace(examplesDir,logsDir)
-  newDir = ''
-  for folder in logDir.split('/') :
-    newDir = newDir + '/' + folder
-    if not os.path.isdir(newDir):
-      os.mkdir(newDir)
-  logPath = logDir+"/nose_run_" + compiler_version + str(date.today())
+def check_run(status,example,test):
+  logDir = load_log_dir(test.path)
+  os.chdir(test.path)
+  logPath = append_path(logDir,"nose_run_" + example.compilerVersion + str(date.today()))
   open_log(logPath)
-  exampleName = masterPath.rpartition("/")[2]
-  command = masterPath+"/bin/"+arch+"-"+system+"/mpich2/"+compiler_version+"/"+exampleName+"Example-debug "+testArgs + " >> "  + logPath + " 2>&1"
+  exampleName = example.path.rpartition("/")[2]
+  command = example.path+"/bin/"+example.arch+"-"+example.system+"/mpich2/"+example.compilerVersion+"/"+exampleName+"Example-debug "+test.args + " >> "  + logPath + " 2>&1"
   err = os.system(command)
   close_log(logPath)
-  add_history(logDir+"/nose_run_history_" + compiler_version,err)
+  add_history(logDir+"/nose_run_history_" + example.compilerVersion,err)
   assert err==0
 
-def check_output(status, cwd, compiler_version, ndiffDir, outputDir,tolerance=None):
-  global examplesDir, logsDir
-  logDir = os.getcwd().replace(examplesDir,logsDir)
-  newDir = ''
-  for folder in logDir.split('/') :
-    newDir = newDir + '/' + folder
-    if not os.path.isdir(newDir):
-      os.mkdir(newDir)
-  logPath = logDir+"/nose_check_" + compiler_version + str(date.today())
+def check_output(status,example,test):
+  logDir = load_log_dir(test.path)
+  os.chdir(test.path)
+  logPath = append_path(logDir,"nose_check_" + example.compilerVersion + str(date.today()))
   open_log(logPath)
   ndiff = os.environ['OPENCMISS_ROOT']+"/cm/utils/ndiff"
   errall =0
-  for outputFile in os.listdir(ndiffDir) :
+  for outputFile in os.listdir(test.expectedPath) :
     if outputFile!='.svn' :
-      if tolerance != None :
-        command = ndiff+" --tolerance=" + tolerance +" "+ndiffDir+"/"+outputFile+" "+outputDir+"/"+outputFile + ' >> '  + logPath + " 2>&1"
-      else :
-        command = ndiff+" "+ndiffDir+"/"+outputFile+" "+outputDir+"/"+outputFile + ' >> '  + logPath + " 2>&1" 
+      command = ndiff+" --tolerance=" + test.tolerance +" "+test.expectedPath+"/"+outputFile+" "+test.outputPath+"/"+outputFile + ' >> '  + logPath + " 2>&1"
       err = os.system(command)
       if err!=0 :
         errall = -1
@@ -186,7 +167,7 @@ def check_output(status, cwd, compiler_version, ndiffDir, outputDir,tolerance=No
     f1.write("The output values are identical with the expected ones. However, the outputs may be generated from previous build. You need also check if the latest test run passes.")
     f1.close()
   close_log(logPath)
-  add_history(logDir+"/nose_check_history_" + compiler_version,errall)
+  add_history(logDir+"/nose_check_history_" + example.compilerVersion,errall)
   assert errall==0 
  
 if __name__ == '__main__':
