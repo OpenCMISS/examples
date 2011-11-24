@@ -89,8 +89,8 @@ PROGRAM POROELASTICITYEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: PressureBasisUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: GeometricMeshComponent=1
-  INTEGER(CMISSIntg), PARAMETER :: PressureMeshComponent=2
+  INTEGER(CMISSIntg), PARAMETER :: GeometricMeshComponent=2
+  INTEGER(CMISSIntg), PARAMETER :: PressureMeshComponent=1
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
@@ -265,7 +265,7 @@ PROGRAM POROELASTICITYEXAMPLE
   !Set up a regular x*y*z mesh
   CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
   !Set the bases
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,[GeometricBasis,PressureBasis],Err)
+  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,[PressureBasis,GeometricBasis],Err)
   !Define the mesh on the region
   IF(NumberGlobalXElements==0) THEN
     CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,[Width,Height],Err)
@@ -283,7 +283,7 @@ PROGRAM POROELASTICITYEXAMPLE
   CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
   CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionMeshComponentSet(Decomposition,1,Err)
+  CALL CMISSDecompositionMeshComponentSet(Decomposition,GeometricMeshComponent,Err)
   CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
   CALL CMISSDecompositionCalculateFacesSet(Decomposition,.TRUE.,Err)
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
@@ -292,6 +292,9 @@ PROGRAM POROELASTICITYEXAMPLE
   CALL CMISSFieldTypeInitialise(GeometricField,Err)
   CALL CMISSFieldCreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
   CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
+  DO component_idx=1,NumberOfDimensions
+    CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,component_idx,GeometricMeshComponent,Err)
+  END DO
   CALL CMISSFieldCreateFinish(GeometricField,Err)
 
   !Update the geometric field parameters
@@ -304,6 +307,9 @@ PROGRAM POROELASTICITYEXAMPLE
   CALL CMISSFieldMeshDecompositionSet(FibreField,Decomposition,Err)
   CALL CMISSFieldGeometricFieldSet(FibreField,GeometricField,Err)
   CALL CMISSFieldVariableLabelSet(FibreField,CMISSFieldUVariableType,"Fibre",Err)
+  DO component_idx=1,NumberOfDimensions
+    CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,component_idx,GeometricMeshComponent,Err)
+  END DO
   CALL CMISSFieldCreateFinish(FibreField,Err)
 
   !Create the equations sets
@@ -342,6 +348,9 @@ PROGRAM POROELASTICITYEXAMPLE
   CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldUVariableType,"SolidMaterial",Err)
   CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldVVariableType,"SolidDensity",Err)
   CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldU1VariableType,"FluidMaterial",Err)
+  DO component_idx=1,NumberOfDimensions
+    CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,component_idx,GeometricMeshComponent,Err)
+  END DO
   CALL CMISSEquationsSetMaterialsCreateFinish(FluidEquationsSet,Err)
 
   CALL CMISSEquationsSetMaterialsCreateStart(SolidEquationsSet,FieldMaterialUserNumber,MaterialField,Err)
