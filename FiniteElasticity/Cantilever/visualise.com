@@ -39,3 +39,4 @@ gfx modify g_element "/" point NORMALISED_WINDOW_FIT_LEFT glyph colour_bar gener
 
 gfx edit scene
 gfx modify window 1 set antialias 2
+gfx modify window 1 view parallel eye_point 20 -200 20 interest_point 20 20 20 up_vector 0 0 1 view_angle 40 near_clipping_plane 1.5 far_clipping_plane 700 relative_viewport ndc_placement -1 1 2 2 viewport_coordinates 0 0 1 1
