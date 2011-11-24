@@ -185,8 +185,7 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   TYPE(CMISSSolverEquationsType) :: SolverEquationsNavierStokes
   
   !FieldML parsing variables
-  TYPE(CMISSFieldMLInputType) :: fieldmlInfo
-  TYPE(CMISSFieldMLOutputType) :: outputInfo
+  TYPE(CMISSFieldMLIOType) :: fieldmlInfo, outputInfo
   
   INTEGER(CMISSIntg) :: meshComponentCount
   
@@ -282,7 +281,7 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !================================================================================================================================
   !
 
-  CALL CMISSFieldMLInputTypeInitialise( fieldmlInfo, err ) 
+  CALL CMISSFieldMLIOTypeInitialise( fieldmlInfo, err ) 
   CALL CMISSFieldMLInputCreateFromFile( fieldmlInfo, inputFilename, err )
 
   !COORDINATE SYSTEM
@@ -380,7 +379,7 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !================================================================================================================================
   !
 
-  CALL CMISSFieldMLInputTypeFinalise( fieldmlInfo, err )
+  CALL CMISSFieldMLIOTypeFinalise( fieldmlInfo, err )
 
   !
   !================================================================================================================================
@@ -604,7 +603,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
   !
 
   !OUTPUT
-    CALL CMISSFieldMLOutputTypeInitialise( outputInfo, err )
+    CALL CMISSFieldMLIOTypeInitialise( outputInfo, err )
 
     CALL CMISSFieldMLOutputCreate( Mesh, outputDirectory, basename, dataFormat, outputInfo, err )
 
@@ -621,7 +620,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
     
     CALL CMISSFieldMLOutputWrite( outputInfo, outputFilename, err )
     
-    CALL CMISSFieldMLOutputTypeFinalise( outputInfo, err )
+    CALL CMISSFieldMLIOTypeFinalise( outputInfo, err )
 
   EXPORT_FIELD_IO=.TRUE.
   IF(EXPORT_FIELD_IO) THEN

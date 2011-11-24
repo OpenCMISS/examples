@@ -138,7 +138,7 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_advection_diffusion"
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: dataFormat = "PLAIN_TEXT"
 
-  TYPE(CMISSFieldMLOutputType) :: fieldmlInfo
+  TYPE(CMISSFieldMLIOType) :: fieldmlInfo
 
   
 #ifdef WIN32
@@ -426,7 +426,7 @@ CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
     !CALL CMISSFieldIOElementsExport(Fields,"StaticAdvectionDiffusion","FORTRAN",Err)
     !CALL CMISSFieldsTypeFinalise(Fields,Err)
    
-    CALL CMISSFieldMLOutputTypeInitialise( fieldmlInfo, err ) 
+    CALL CMISSFieldMLIOTypeInitialise( fieldmlInfo, err ) 
     CALL CMISSFieldMLOutputCreate( Mesh, outputDirectory, basename, dataFormat, fieldmlInfo, err )
 
     CALL CMISSFieldMLOutputAddField( fieldmlInfo, baseName//".geometric", dataFormat, GeometricField, &
@@ -449,7 +449,7 @@ CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
     
     CALL CMISSFieldMLOutputWrite( fieldmlInfo, outputFilename, err )
     
-    CALL CMISSFieldMLOutputTypeFinalise( fieldmlInfo, err )
+    CALL CMISSFieldMLIOTypeFinalise( fieldmlInfo, err )
 
   ENDIF
 
