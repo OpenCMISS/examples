@@ -72,10 +72,6 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
 
   IMPLICIT NONE
 
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(CMISSFieldType) :: EquationsSetField
-
-
   !Test program parameters
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -83,11 +79,12 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=3
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=4
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
-  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberNavierStokes=6
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokes=7
-  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumberNavierStokes=8
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberNavierStokes=9
-  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberNavierStokes=7
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokes=8
+  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumberNavierStokes=9
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberNavierStokes=10
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=11
 
   INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: SolverNavierStokesUserNumber=1
@@ -97,7 +94,7 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: basisNumberTrilinear=1
   INTEGER(CMISSIntg), PARAMETER :: basisNumberTriquadratic=2
 
-  INTEGER(CMISSIntg), PARAMETER :: gaussQuadrature(3) = (/3,3,3/)
+  INTEGER(CMISSIntg), PARAMETER :: gaussQuadrature(3) = [3,3,3]
 
   CHARACTER(KIND=C_CHAR), PARAMETER :: NUL = C_NULL_CHAR
 
@@ -168,6 +165,7 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   TYPE(CMISSFieldsType) :: Fields
   !Field types
   TYPE(CMISSFieldType) :: GeometricField
+  TYPE(CMISSFieldType) :: EquationsSetField
   TYPE(CMISSFieldType) :: DependentFieldNavierStokes
   TYPE(CMISSFieldType) :: MaterialsFieldNavierStokes
   !Boundary conditions
@@ -232,15 +230,15 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   IF(FIXED_WALL_NODES_NAVIER_STOKES_FLAG) THEN
     NUMBER_OF_FIXED_WALL_NODES_NAVIER_STOKES=80
     ALLOCATE(FIXED_WALL_NODES_NAVIER_STOKES(NUMBER_OF_FIXED_WALL_NODES_NAVIER_STOKES))
-    FIXED_WALL_NODES_NAVIER_STOKES=(/1,2,3,4,5,7,9,10,11,12,13,14,17,20,24,28,29,30,31,32,33,34,35,37,39, & 
+    FIXED_WALL_NODES_NAVIER_STOKES=[1,2,3,4,5,7,9,10,11,12,13,14,17,20,24,28,29,30,31,32,33,34,35,37,39, & 
     & 41,44,46,47,48,50,51,52,53,54,57,60,64,65,66,67,68,70,72,74,76,77,78,79,80,83,86, & 
     & 89,90,91,92,93,94,95,97,99,101,102,103,104,105,106,107,108,111,114,115,116,117,118, & 
-    & 120,122,123,124,125/)
+    & 120,122,123,124,125]
   ENDIF
   IF(INLET_WALL_NODES_NAVIER_STOKES_FLAG) THEN
     NUMBER_OF_INLET_WALL_NODES_NAVIER_STOKES=9
     ALLOCATE(INLET_WALL_NODES_NAVIER_STOKES(NUMBER_OF_INLET_WALL_NODES_NAVIER_STOKES))
-    INLET_WALL_NODES_NAVIER_STOKES=(/6,15,16,23,36,42,81,82,96/)
+    INLET_WALL_NODES_NAVIER_STOKES=[6,15,16,23,36,42,81,82,96]
     !Set initial boundary conditions
     BOUNDARY_CONDITIONS_NAVIER_STOKES(1)=0.0_CMISSDP
     BOUNDARY_CONDITIONS_NAVIER_STOKES(2)=1.0_CMISSDP
@@ -387,8 +385,8 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
 
   !Create the equations set for static Navier-Stokes
   CALL CMISSEquationsSetTypeInitialise(EquationsSetNavierStokes, err )
-    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
-CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField, &
+  CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField, &
     & CMISSEquationsSetFluidMechanicsClass,CMISSEquationsSetNavierStokesEquationType,CMISSEquationsSetStaticNavierStokesSubtype, &
     & EquationsSetFieldUserNumber,EquationsSetField,EquationsSetNavierStokes,err)
   !Set the equations set to be a static Navier-Stokes problem
@@ -601,23 +599,23 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
   !
 
   !OUTPUT
-    CALL CMISSFieldmlOutput_InitialiseInfo( Region, Mesh, xiDimensions, outputDirectory, basename, outputInfo, err )
+  CALL CMISSFieldmlOutput_InitialiseInfo( Region, Mesh, xiDimensions, outputDirectory, basename, outputInfo, err )
 
-    CALL CMISSFieldmlUtil_Import( outputInfo, "coordinates.rc.3d"//NUL, typeHandle, err )
-    CALL CMISSFieldmlOutput_AddField( outputInfo, baseName//".geometric", region, mesh, GeometricField, &
-      & CMISSFieldUVariableType, err )
-
-    CALL CMISSFieldmlOutput_AddFieldComponents( outputInfo, typeHandle, baseName//".velocity", Mesh,DependentFieldNavierStokes, &
-      & (/1,2,3/), CMISSFieldUVariableType, err )
-    
-    CALL CMISSFieldmlUtil_Import( outputInfo, "real.1d"//NUL, typeHandle, err )
-    CALL CMISSFieldmlOutput_AddFieldComponents( outputInfo, typeHandle, baseName//".pressure", Mesh,DependentFieldNavierStokes,&
-      & (/4/), CMISSFieldUVariableType, err )
-    
-    CALL CMISSFieldmlOutput_Write( outputInfo, outputFilename, err )
-    
-    CALL CMISSFieldmlUtil_FinaliseInfo( outputInfo, err )
-
+  CALL CMISSFieldmlUtil_Import( outputInfo, "coordinates.rc.3d"//NUL, typeHandle, err )
+  CALL CMISSFieldmlOutput_AddField( outputInfo, baseName//".geometric", region, mesh, GeometricField, &
+    & CMISSFieldUVariableType, err )
+  
+  CALL CMISSFieldmlOutput_AddFieldComponents( outputInfo, typeHandle, baseName//".velocity", Mesh,DependentFieldNavierStokes, &
+    & [1,2,3], CMISSFieldUVariableType, err )
+  
+  CALL CMISSFieldmlUtil_Import( outputInfo, "real.1d"//NUL, typeHandle, err )
+  CALL CMISSFieldmlOutput_AddFieldComponents( outputInfo, typeHandle, baseName//".pressure", Mesh,DependentFieldNavierStokes,&
+    & [4], CMISSFieldUVariableType, err )
+  
+  CALL CMISSFieldmlOutput_Write( outputInfo, outputFilename, err )
+  
+  CALL CMISSFieldmlUtil_FinaliseInfo( outputInfo, err )
+  
   EXPORT_FIELD_IO=.TRUE.
   IF(EXPORT_FIELD_IO) THEN
     WRITE(*,'(A)') "Exporting fields..."

@@ -60,10 +60,6 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
 
   IMPLICIT NONE
 
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(CMISSFieldType) :: EquationsSetField
-
-
   !Test program parameters
 
   REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
@@ -78,14 +74,15 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=8
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=9
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=10
-  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=12
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopNode=0
-  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumber=12
-  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=13
-  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumber=15
 
   INTEGER(CMISSIntg), PARAMETER :: MeshComponentNumber=1
 
@@ -108,7 +105,7 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField,IndependentField,AnalyticField,SourceField
+  TYPE(CMISSFieldType) :: GeometricField,EquationsSetField,DependentField,MaterialsField,IndependentField,AnalyticField,SourceField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
   TYPE(CMISSMeshType) :: Mesh
@@ -176,58 +173,57 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
     dimensions = 3
   ENDIF
 
-    !Start the creation of a new RC coordinate system
-    CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
-    CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
-    CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,dimensions,Err)
-    !Finish the creation of the coordinate system
-    CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
-
-
-    !Start the creation of the region
-    CALL CMISSRegionTypeInitialise(Region,Err)
-    CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegion,Region,Err)
-    !Set the regions coordinate system to the 2D RC coordinate system that we have created
-    CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
-    !Finish the creation of the region
-    CALL CMISSRegionCreateFinish(Region,Err)
-
-    !Start the creation of a basis (default is trilinear lagrange)
-    CALL CMISSBasisTypeInitialise(Basis,Err)
-    CALL CMISSBasisCreateStart(BasisUserNumber,Basis,Err)
-    CALL CMISSBasisNumberOfXiSet(Basis,dimensions,Err)
-    !Finish the creation of the basis
-    CALL CMISSBasisCreateFinish(BASIS,Err)
-
-    !Start the creation of a generated mesh in the region
-    CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
-    CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
-    !Set up a regular x*y*z mesh
-    CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
-    !Set the default basis
-    CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,Basis,Err)   
-    !Define the mesh on the region
-    IF(dimensions == 2) THEN
-      CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/WIDTH,HEIGHT/),Err)
-      CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS/),Err)
-    ELSE
-      CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/WIDTH,HEIGHT,LENGTH/),Err)
-      CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
-        & NUMBER_GLOBAL_Z_ELEMENTS/),Err)
-    ENDIF    
-    !Finish the creation of a generated mesh in the region
-    CALL CMISSMeshTypeInitialise(Mesh,Err)
-    CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
-
-    !Create a decomposition
-    CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
-    CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
-    !Set the decomposition to be a general decomposition with the specified number of domains
-    CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
-    CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NUMBER_OF_DOMAINS,Err)
-    !Finish the decomposition
-    CALL CMISSDecompositionCreateFinish(Decomposition,Err)
-
+  !Start the creation of a new RC coordinate system
+  CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
+  CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,dimensions,Err)
+  !Finish the creation of the coordinate system
+  CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
+  
+  !Start the creation of the region
+  CALL CMISSRegionTypeInitialise(Region,Err)
+  CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  !Set the regions coordinate system to the 2D RC coordinate system that we have created
+  CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
+  !Finish the creation of the region
+  CALL CMISSRegionCreateFinish(Region,Err)
+  
+  !Start the creation of a basis (default is trilinear lagrange)
+  CALL CMISSBasisTypeInitialise(Basis,Err)
+  CALL CMISSBasisCreateStart(BasisUserNumber,Basis,Err)
+  CALL CMISSBasisNumberOfXiSet(Basis,dimensions,Err)
+  !Finish the creation of the basis
+  CALL CMISSBasisCreateFinish(BASIS,Err)
+  
+  !Start the creation of a generated mesh in the region
+  CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
+  CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
+  !Set up a regular x*y*z mesh
+  CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
+  !Set the default basis
+  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,Basis,Err)   
+  !Define the mesh on the region
+  IF(dimensions == 2) THEN
+    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/WIDTH,HEIGHT/),Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS/),Err)
+  ELSE
+    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/WIDTH,HEIGHT,LENGTH/),Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
+      & NUMBER_GLOBAL_Z_ELEMENTS/),Err)
+  ENDIF
+  !Finish the creation of a generated mesh in the region
+  CALL CMISSMeshTypeInitialise(Mesh,Err)
+  CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
+  
+  !Create a decomposition
+  CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
+  CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
+  !Set the decomposition to be a general decomposition with the specified number of domains
+  CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
+  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NUMBER_OF_DOMAINS,Err)
+  !Finish the decomposition
+  CALL CMISSDecompositionCreateFinish(Decomposition,Err)
+  
   !Start to create a default (geometric) field on the region
   CALL CMISSFieldTypeInitialise(GeometricField,Err)
   CALL CMISSFieldCreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
@@ -239,13 +235,9 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   ENDDO
   !Finish creating the field
   CALL CMISSFieldCreateFinish(GeometricField,Err)
-
-       
-    !Update the geometric field parameters
-    CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
-!  ENDIF
-
-  !IF(.NOT.ASSOCIATED(GEOMETRIC_FIELD)) GEOMETRIC_FIELD=>REGION%FIELDS%FIELDS(1)%PTR
+  
+  !Update the geometric field parameters
+  CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
   
   !Create the equations_set
   CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
@@ -361,7 +353,6 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   !Finish the creation of a problem.
   CALL CMISSProblemCreateFinish(Problem,Err)
 
-
   !Create the problem control
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
   !CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
@@ -371,7 +362,6 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   !CALL CMISSControlLoopTimesSet(ControlLoop,0.0_CMISSDP,1.0_CMISSDP,0.1_CMISSDP,Err)
   !Finish creating the problem control loop
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
-
 
   !Start the creation of the problem solvers
 !  
@@ -409,11 +399,11 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
-CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
-CALL CMISSProblemSolverEquationsBoundaryConditionsAnalytic(SolverEquations,Err)
-CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
-
+  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+  CALL CMISSProblemSolverEquationsBoundaryConditionsAnalytic(SolverEquations,Err)
+  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
+  
   !Solve the problem
   CALL CMISSProblemSolve(Problem,Err)
 
