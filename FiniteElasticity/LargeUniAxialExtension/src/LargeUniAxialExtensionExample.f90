@@ -58,10 +58,6 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
 
   IMPLICIT NONE
 
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(CMISSFieldType) :: EquationsSetField
-
-
   !Test program parameters
 
   REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
@@ -84,6 +80,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=4
   INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
   !Program types
@@ -108,7 +105,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,FibreField,MaterialField,DependentField
+  TYPE(CMISSFieldType) :: GeometricField,FibreField,MaterialField,DependentField,EquationsSetField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh
   TYPE(CMISSProblemType) :: Problem
@@ -142,7 +139,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
 
   !Set all diganostic levels on for testing
-  !CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,(/1,2,3,4,5/),"Diagnostics",(/"PROBLEM_RESIDUAL_EVALUATE"/),Err)
+  !CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,[1,2,3,4,5],"Diagnostics",["PROBLEM_RESIDUAL_EVALUATE"],Err)
 
   !Get the number of computational nodes and this computational node number
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -161,6 +158,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   !Create a region and assign the coordinate system to the region
   CALL CMISSRegionTypeInitialise(Region,Err)
   CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  CALL CMISSRegionLabelSet(Region,"Region",Err)
   CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
   CALL CMISSRegionCreateFinish(Region,Err)
 
@@ -228,12 +226,12 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   ENDIF
   !Define the mesh on the region
   IF(NumberGlobalXElements==0) THEN
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/WIDTH,HEIGHT/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NumberGlobalXElements,NumberGlobalYElements/),Err)
+    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,[WIDTH,HEIGHT],Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements,NumberGlobalYElements],Err)
   ELSE
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/WIDTH,HEIGHT,LENGTH/),Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NumberGlobalXElements,NumberGlobalYElements, &
-      & NumberGlobalZElements/),Err)
+    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,[WIDTH,HEIGHT,LENGTH],Err)
+    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements,NumberGlobalYElements, &
+      & NumberGlobalZElements],Err)
   ENDIF
   !Finish the creation of a generated mesh in the region
   CALL CMISSMeshTypeInitialise(Mesh,Err)
@@ -246,7 +244,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
   CALL CMISSDecompositionCreateFinish(Decomposition,Err)
 
-  !Create a field to put the geometry (defualt is geometry)
+  !Create a field to put the geometry
   CALL CMISSFieldTypeInitialise(GeometricField,Err)
   CALL CMISSFieldCreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
   CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
@@ -292,7 +290,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldUVariableType,"Material",Err)
   CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
 
-  !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively.
+  !Set Mooney-Rivlin constants c10 and c01 respectively.
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2.0_CMISSDP,Err)
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,6.0_CMISSDP,Err)
 
