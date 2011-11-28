@@ -164,10 +164,15 @@ solverEquations.BoundaryConditionsCreateFinish()
 problem.Solve()
 
 # Export results
-fields = CMISS.Fields()
-CMISS.FieldsTypeCreateRegion(region,fields)
-CMISS.FieldIONodesExport(fields,"Laplace","FORTRAN")
-CMISS.FieldIOElementsExport(fields,"Laplace","FORTRAN")
-fields.Finalise()
+baseName = "laplace"
+dataFormat = "PLAIN_TEXT"
+fml = CMISS.FieldMLIO()
+fml.OutputCreate(mesh, "", baseName, dataFormat)
+fml.OutputAddFieldNoType(baseName+".geometric", dataFormat, geometricField,
+    CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.FieldValues)
+fml.OutputAddFieldNoType(baseName+".phi", dataFormat, dependentField,
+    CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.FieldValues)
+fml.OutputWrite("LaplaceExample.xml")
+fml.Finalise()
 
 CMISS.Finalise()
