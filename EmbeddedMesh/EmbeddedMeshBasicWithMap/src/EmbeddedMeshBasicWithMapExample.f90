@@ -414,7 +414,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
    ENDDO
 
   !Start creating an embedded mesh
-  CALL CMISSEmbeddedMeshTypeInitialise(MeshEmbedding,Err)
+  CALL CMISSMeshEmbeddingTypeInitialise(MeshEmbedding,Err)
   
   CALL CMISSMeshEmbeddingCreate(MeshEmbedding, FirstMesh, SecondMesh, Err)
   
