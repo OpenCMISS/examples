@@ -68,11 +68,14 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   REAL(CMISSDP), PARAMETER :: WIDTH=1.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: LENGTH=1.0_CMISSDP
   INTEGER(CMISSIntg), PARAMETER :: InterpolationType=CMISSBasisLinearLagrangeInterpolation
+  INTEGER(CMISSIntg), PARAMETER :: PressureInterpolationType=CMISSBasisLinearLagrangeInterpolation
+  LOGICAL, PARAMETER :: UsePressureBasis=.FALSE.
   INTEGER(CMISSIntg), PARAMETER :: NumberOfGaussXi=2
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: PressureBasisUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
@@ -98,7 +101,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   INTEGER(CMISSIntg) :: BottomNormalXi,LeftNormalXi,RightNormalXi,BackNormalXi
 
   !CMISS variables
-  TYPE(CMISSBasisType) :: Basis
+  TYPE(CMISSBasisType) :: Basis, PressureBasis
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
   TYPE(CMISSCoordinateSystemType) :: CoordinateSystem, WorldCoordinateSystem
   TYPE(CMISSMeshType) :: Mesh
@@ -161,7 +164,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
   CALL CMISSRegionCreateFinish(Region,Err)
 
-  !Define basis function - tri-linear Lagrange
+  !Define geometric basis
   CALL CMISSBasisTypeInitialise(Basis,Err)
   CALL CMISSBasisCreateStart(BasisUserNumber,Basis,Err)
   SELECT CASE(InterpolationType)
@@ -185,13 +188,44 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   ENDIF
   CALL CMISSBasisCreateFinish(Basis,Err)
 
+  !Define pressure basis
+  IF(UsePressureBasis) THEN
+    CALL CMISSBasisTypeInitialise(PressureBasis,Err)
+    CALL CMISSBasisCreateStart(PressureBasisUserNumber,PressureBasis,Err)
+    SELECT CASE(PressureInterpolationType)
+    CASE(1,2,3,4)
+      CALL CMISSBasisTypeSet(PressureBasis,CMISSBasisLagrangeHermiteTPType,Err)
+    CASE(7,8,9)
+      CALL CMISSBasisTypeSet(PressureBasis,CMISSBasisSimplexType,Err)
+    END SELECT
+    IF(NumberGlobalZElements==0) THEN
+      CALL CMISSBasisNumberOfXiSet(PressureBasis,2,Err)
+      CALL CMISSBasisInterpolationXiSet(PressureBasis,[PressureInterpolationType,PressureInterpolationType],Err)
+      IF(NumberOfGaussXi>0) THEN
+        CALL CMISSBasisQuadratureNumberOfGaussXiSet(PressureBasis,[NumberOfGaussXi,NumberOfGaussXi],Err)
+      ENDIF
+    ELSE
+      CALL CMISSBasisNumberOfXiSet(PressureBasis,3,Err)
+      CALL CMISSBasisInterpolationXiSet(PressureBasis, &
+        & [PressureInterpolationType,PressureInterpolationType,PressureInterpolationType],Err)
+      IF(NumberOfGaussXi>0) THEN
+        CALL CMISSBasisQuadratureNumberOfGaussXiSet(PressureBasis,[NumberOfGaussXi,NumberOfGaussXi,NumberOfGaussXi],Err)
+      ENDIF
+    ENDIF
+    CALL CMISSBasisCreateFinish(PressureBasis,Err)
+  ENDIF
+
   !Start the creation of a generated mesh in the region
   CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
   CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
   !Set up a regular x*y*z mesh
   CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
   !Set the default basis
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,Basis,Err)
+  IF(UsePressureBasis) THEN
+    CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,[Basis,PressureBasis],Err)
+  ELSE
+    CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,[Basis],Err)
+  ENDIF
   !Define the mesh on the region
   IF(NumberGlobalXElements==0) THEN
     CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/WIDTH,HEIGHT/),Err)
@@ -217,6 +251,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSFieldCreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
   CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
   CALL CMISSFieldVariableLabelSet(GeometricField,CMISSFieldUVariableType,"Geometry",Err)
+  CALL CMISSFieldScalingTypeSet(GeometricField,CMISSFieldArithmeticMeanScaling,Err)
   CALL CMISSFieldCreateFinish(GeometricField,Err)
 
   !Update the geometric field parameters
@@ -242,6 +277,13 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSFieldTypeInitialise(DependentField,Err)
   CALL CMISSEquationsSetDependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)
   CALL CMISSFieldVariableLabelSet(DependentField,CMISSFieldUVariableType,"Dependent",Err)
+  IF(UsePressureBasis) THEN
+    !Set the pressure to be nodally based and use the second mesh component if required
+    CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldUVariableType,4,CMISSFieldNodeBasedInterpolation,Err)
+    CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldDelUDelNVariableType,4,CMISSFieldNodeBasedInterpolation,Err)
+    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,4,2,Err)
+    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,4,2,Err)
+  END IF
   CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
 
   !Create the material field
@@ -348,6 +390,34 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
         & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
     ENDIF
   ENDDO
+
+  IF(InterpolationType==CMISSBasisCubicHermiteInterpolation) THEN
+    !Fix x derivatives at x=0 and x=1 in xi2 and xi3
+    DO node_idx=1,SIZE(LeftSurfaceNodes,1)
+      NodeNumber=LeftSurfaceNodes(node_idx)
+      CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
+      IF(NodeDomain==ComputationalNodeNumber) THEN
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,CMISSGlobalDerivativeS2, &
+          & NodeNumber,1,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,CMISSGlobalDerivativeS3, &
+          & NodeNumber,1,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,CMISSGlobalDerivativeS2S3, &
+          & NodeNumber,1,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+      ENDIF
+    ENDDO
+    DO node_idx=1,SIZE(RightSurfaceNodes,1)
+      NodeNumber=RightSurfaceNodes(node_idx)
+      CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
+      IF(NodeDomain==ComputationalNodeNumber) THEN
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,CMISSGlobalDerivativeS2, &
+          & NodeNumber,1,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,CMISSGlobalDerivativeS3, &
+          & NodeNumber,1,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,CMISSGlobalDerivativeS2S3, &
+          & NodeNumber,1,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+      ENDIF
+    ENDDO
+  ENDIF
 
   CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
 
