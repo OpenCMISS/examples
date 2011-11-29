@@ -122,7 +122,7 @@ def test_example():
             yield check_run, 'run', example, test
             if (hasattr(test, 'expectedPath')):
               test.outputPath = "." if (not hasattr(test,"outputPath")) else test.outputPath
-              test.tolerance = "1e-7" if (not hasattr(test,"tolerance")) else test.tolerance
+              test.tolerance = 1e-7 if (not hasattr(test,"tolerance")) else test.tolerance
               yield check_output,'check', example, test
   
 def check_build(status,example):
@@ -158,7 +158,7 @@ def check_output(status,example,test):
   errall =0
   for outputFile in os.listdir(test.expectedPath) :
     if outputFile!='.svn' :
-      command = ndiff+" --tolerance=" + test.tolerance +" "+test.expectedPath+"/"+outputFile+" "+test.outputPath+"/"+outputFile + ' >> '  + logPath + " 2>&1"
+      command = ndiff+" --tolerance=" + str(test.tolerance) +" "+test.expectedPath+"/"+outputFile+" "+test.outputPath+"/"+outputFile + ' >> '  + logPath + " 2>&1"
       err = os.system(command)
       if err!=0 :
         errall = -1
