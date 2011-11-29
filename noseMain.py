@@ -15,7 +15,8 @@ def append_path(prefix, suffix) :
     prefix = prefix + "/"
   return prefix + suffix
 
-examplesDir = os.environ['OPENCMISSEXAMPLES_ROOT'] if (not 'DIR' in os.environ) else append_path(os.environ['OPENCMISSEXAMPLES_ROOT'],os.environ['DIR'])
+globalExamplesDir = os.environ['OPENCMISSEXAMPLES_ROOT'] 
+examplesDir = globalExamplesDir if (not 'DIR' in os.environ) else append_path(globalExamplesDir,os.environ['DIR'])
 logsDir = append_path(os.environ['OPENCMISS_ROOT'],"build/logs") 
 
 compiler = 'gnu' if (not 'COMPILER' in os.environ) else os.environ['COMPILER']
@@ -58,13 +59,8 @@ class Struct:
     def __init__(self, dct):
       self.__dict__.update(dct)
         
-          
-
 def object_encode(dct) :
   return Struct(dct)
-
-
-
 
 def load_log_dir(examplePath) :
   global logsDir
@@ -105,7 +101,7 @@ def check_build_library(compiler_version):
   assert err==0
   
 def test_example():
-  global compiler_version,examplesDir,logsDir
+  global compiler_version,globalExamplesDir,examplesDir,logsDir
   for examplePath, subFolders, files in os.walk(examplesDir) :
     if examplePath.find(".svn")==-1 :
       for f in files :
@@ -117,12 +113,16 @@ def test_example():
           example.arch = os.uname()[4]
           example.compilerVersion = compiler_version
           example.logPath = example.path.replace(examplesDir,logsDir)
+          example.globalTestDir = "" if (not hasattr(example,"globalTestDir")) else example.globalTestDir
           yield check_build, 'build',example
           for test in example.test : 
-            if (not hasattr(test,"path")) :
-              test.path = example.path        
+            test.path = example.path if (not hasattr(test,"path")) else append_path(append_path(globalExamplesDir,example.globalTestDir),test.path)
+            test.args = "" if (not hasattr(test,"args")) else test.args
+            test.processors = 1 if (not hasattr(test,"processors")) else test.processors
             yield check_run, 'run', example, test
             if (hasattr(test, 'expectedPath')):
+              test.outputPath = "." if (not hasattr(test,"outputPath")) else test.outputPath
+              test.tolerance = "1e-7" if (not hasattr(test,"tolerance")) else test.tolerance
               yield check_output,'check', example, test
   
 def check_build(status,example):
