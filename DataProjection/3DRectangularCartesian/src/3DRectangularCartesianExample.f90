@@ -54,6 +54,7 @@ PROGRAM DataProjection1DRectangularCartesian
   INTEGER(CMISSIntg),PARAMETER :: BasisUserNumber=1  
   INTEGER(CMISSIntg),PARAMETER :: CoordinateSystemDimension=3
   INTEGER(CMISSIntg),PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg),PARAMETER :: DataProjectionUserNumber=1
   INTEGER(CMISSIntg),PARAMETER :: DecompositionUserNumber=1
   INTEGER(CMISSIntg),PARAMETER :: FieldUserNumber=1  
   INTEGER(CMISSIntg),PARAMETER :: MeshUserNumber=1
@@ -62,12 +63,13 @@ PROGRAM DataProjection1DRectangularCartesian
   REAL(CMISSDP), PARAMETER :: CoordinateSystemOrigin(3)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)  
   !Program types
 
-  !Program variables   
+  !Program variables
   INTEGER(CMISSIntg) :: MeshComponentNumber=1
   INTEGER(CMISSIntg) :: NumberOfDataPoints 
   INTEGER(CMISSIntg) :: MeshDimensions=3
   INTEGER(CMISSIntg) :: MeshNumberOfElements
   INTEGER(CMISSIntg) :: MeshNumberOfComponents=1
+  INTEGER(CMISSIntg) :: NumberOfDataProjections=1
   INTEGER(CMISSIntg) :: NumberOfDomains=1 !NumberOfDomains=2 for parallel processing, need to set up MPI
   INTEGER(CMISSIntg) :: NumberOfNodes
   INTEGER(CMISSIntg) :: NumberOfXi=3
@@ -225,7 +227,7 @@ PROGRAM DataProjection1DRectangularCartesian
     
   !=========================================================================================================================
   !Create Data Points and set the values
-  CALL CMISSDataPointsCreateStart(RegionUserNumber,SIZE(DataPointValues,1),Err)
+  CALL CMISSDataPointsCreateStart(RegionUserNumber,SIZE(DataPointValues,1),NumberOfDataProjections,Err)
   DO data_point_idx=1,NumberOfDataPoints
     CALL CMISSDataPointsValuesSet(RegionUserNumber,data_point_idx,DataPointValues(data_point_idx,:),Err)     
   ENDDO
@@ -284,26 +286,30 @@ PROGRAM DataProjection1DRectangularCartesian
   
   !=========================================================================================================================
   !Create a data projection
-  CALL CMISSDataProjectionCreateStart(RegionUserNumber,FieldUserNumber,RegionUserNumber,Err)
-  CALL CMISSDataProjectionProjectionTypeSet(RegionUserNumber,CMISSDataProjectionAllElementsProjectionType,Err) !Set to element projection for data points embedding. The default is boundary/surface projection.
-  CALL CMISSDataProjectionCreateFinish(RegionUserNumber,Err)
+  CALL CMISSDataProjectionCreateStart(DataProjectionUserNumber,RegionUserNumber,FieldUserNumber,RegionUserNumber,Err)
+  CALL CMISSDataProjectionProjectionTypeSet(DataProjectionUserNumber,RegionUserNumber, &
+    & CMISSDataProjectionAllElementsProjectionType,Err) !Set to element projection for data points embedding. The default is boundary/surface projection.
+  CALL CMISSDataProjectionCreateFinish(DataProjectionUserNumber,RegionUserNumber,Err)
   
   !=========================================================================================================================
   !Start data projection
-  CALL CMISSDataProjectionEvaluate(RegionUserNumber,Err)
+  CALL CMISSDataProjectionEvaluate(RegionUserNumber,DataProjectionUserNumber,Err)
 
   !Retrieve projection results
   DO data_point_idx=1,NumberOfDataPoints
-    CALL CMISSDataPointsProjectionDistanceGet(RegionUserNumber,data_point_idx,DataPointProjectionDistance(data_point_idx),Err)
-    CALL CMISSDataPointsProjectionElementNumberGet(RegionUserNumber,data_point_idx,DataPointProjectionElementNumber( &
-      & data_point_idx),Err)
-    CALL CMISSDataPointsProjectionExitTagGet(RegionUserNumber,data_point_idx,DataPointProjectionExitTag(data_point_idx),Err)
-    CALL CMISSDataPointsProjectionXiGet(RegionUserNumber,data_point_idx,DataPointProjectionXi(data_point_idx,:),Err)
+    CALL CMISSDataPointsProjectionDistanceGet(RegionUserNumber,data_point_idx,DataProjectionUserNumber, &
+      & DataPointProjectionDistance(data_point_idx),Err)
+    CALL CMISSDataPointsProjectionElementNumberGet(RegionUserNumber,data_point_idx,DataProjectionUserNumber, &
+      & DataPointProjectionElementNumber(data_point_idx),Err)
+    CALL CMISSDataPointsProjectionExitTagGet(RegionUserNumber,data_point_idx,DataProjectionUserNumber, &
+      & DataPointProjectionExitTag(data_point_idx),Err)
+    CALL CMISSDataPointsProjectionXiGet(RegionUserNumber,data_point_idx,DataProjectionUserNumber, &
+      & DataPointProjectionXi(data_point_idx,:),Err)
   ENDDO  
   
   !=========================================================================================================================
   !Destroy used types
-  CALL CMISSDataProjectionDestroy(RegionUserNumber,Err)
+  CALL CMISSDataProjectionDestroy(DataProjectionUserNumber,RegionUserNumber,Err)
   CALL CMISSDataPointsDestroy(RegionUserNumber,Err)
     
   CALL CMISSRegionDestroy(RegionUserNumber,Err)
