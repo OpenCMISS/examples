@@ -58,7 +58,6 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   USE OPENCMISS
   USE MPI
   USE FIELDML_API
-  USE FIELDML_TYPES
 
 #ifdef WIN32
   USE IFQWINCMISS
@@ -96,14 +95,13 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
 
   INTEGER(CMISSIntg), PARAMETER :: gaussQuadrature(3) = [3,3,3]
 
-  CHARACTER(KIND=C_CHAR), PARAMETER :: NUL = C_NULL_CHAR
-
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: inputFilename = "../../TOOLS/NavierStokesMeshes/HEX-M2-V2-P1_FE.xml"
 
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputDirectory = "output"
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputFilename = outputDirectory//"/HEX-M2-V2-P1_FE_out.xml"
 
-CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
+  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
+  CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: dataFormat = "PLAIN_TEXT"
   !Program types
 
   !Program variables
@@ -185,12 +183,12 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   TYPE(CMISSSolverEquationsType) :: SolverEquationsNavierStokes
   
   !FieldML parsing variables
-  TYPE(FieldmlInfoType) :: fieldmlInfo, outputInfo
+  TYPE(CMISSFieldMLIOType) :: fieldmlInfo, outputInfo
   
-  INTEGER(CMISSIntg) :: spaceHandle, meshComponentCount
+  INTEGER(CMISSIntg) :: meshComponentCount
   
-  INTEGER(CMISSIntg) :: typeHandle, nodeCount, elementCount
-  INTEGER(CMISSIntg) :: coordinateType, coordinateCount, xiDimensions
+  INTEGER(CMISSIntg) :: typeHandle
+  INTEGER(CMISSIntg) :: coordinateCount
   
 #ifdef WIN32
   !Quickwin type
@@ -280,28 +278,18 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   !
   !================================================================================================================================
   !
- 
-  CALL CMISSFieldmlInput_InitialiseFromFile( fieldmlInfo, inputFilename, err )
 
-  CALL CMISSFieldmlInput_SetDofVariables( fieldmlInfo, "test_mesh.nodal_dofs", "test_mesh.element_dofs", &
-    & "test_mesh.constant_dofs", err )
-  
-  spaceHandle = Fieldml_GetObjectByName( fieldmlInfo%fmlHandle, "test_mesh.coordinates"//NUL )
+  CALL CMISSFieldMLIOTypeInitialise( fieldmlInfo, err ) 
+  CALL CMISSFieldMLInputCreateFromFile( fieldmlInfo, inputFilename, err )
 
-  CALL CMISSFieldmlInput_ReadMeshInfo( fieldmlInfo, "test_mesh.mesh", "test_mesh.nodes", err )
-  
-  CALL CMISSFieldmlInput_GetCoordinateSystemInfo( fieldmlInfo, spaceHandle, coordinateType, coordinateCount, err )
-  
   !COORDINATE SYSTEM
 
   !Start the creation of a new RC coordinate system
   CALL CMISSCoordinateSystemTypeInitialise( CoordinateSystem, err )
-  CALL CMISSCoordinateSystemCreateStart( CoordinateSystemUserNumber, CoordinateSystem, err )
-  !Set the coordinate system dimension and type
-  CALL CMISSCoordinateSystemDimensionSet( CoordinateSystem, coordinateCount, err )
-  CALL CMISSCoordinateSystemTypeSet( CoordinateSystem, coordinateType, err )
-  !Finish the creation of the coordinate system
+  CALL CMISSFieldMLInputCoordinateSystemCreateStart( fieldmlInfo, "test_mesh.coordinates", CoordinateSystem, &
+    & CoordinateSystemUserNumber, err )
   CALL CMISSCoordinateSystemCreateFinish( CoordinateSystem, err )
+  CALL CMISSCoordinateSystemDimensionGet( CoordinateSystem, coordinateCount, err )
 
   !
   !================================================================================================================================
@@ -321,11 +309,22 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   !================================================================================================================================
   !
 
+  !NODES
+  CALL CMISSFieldMLInputNodesCreateStart( fieldmlInfo, "test_mesh.nodes.argument", Region, nodes, err )
+  CALL CMISSNodesCreateFinish( Nodes, err )
+
+  !
+  !================================================================================================================================
+  !
+
   !BASES
-  CALL CMISSFieldmlInput_CreateBasis( fieldmlInfo, basisNumberTrilinear, "test_mesh.trilinear_lagrange", gaussQuadrature, err )
-  CALL CMISSFieldmlInput_CreateBasis( fieldmlInfo, basisNumberTriquadratic, "test_mesh.triquadratic_lagrange", gaussQuadrature, &
-    & err )
-  
+  CALL CMISSFieldMLInputBasisCreateStart( fieldmlInfo, "test_mesh.trilinear_lagrange", basisNumberTrilinear, err )
+  CALL CMISSBasisQuadratureNumberOfGaussXiSet( basisNumberTrilinear, gaussQuadrature, err )
+  CALL CMISSBasisCreateFinish( basisNumberTrilinear, err )
+
+  CALL CMISSFieldMLInputBasisCreateStart( fieldmlInfo, "test_mesh.triquadratic_lagrange", basisNumberTriquadratic, err )
+  CALL CMISSBasisQuadratureNumberOfGaussXiSet( basisNumberTriquadratic, gaussQuadrature, err )
+  CALL CMISSBasisCreateFinish( basisNumberTriquadratic, err )
   
   !
   !================================================================================================================================
@@ -334,22 +333,13 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   !MESH
   
   meshComponentCount = 2
-  
-  nodeCount = Fieldml_GetMemberCount( fieldmlInfo%fmlHandle, fieldmlInfo%nodesHandle )
-  CALL CMISSNodesTypeInitialise( Nodes, err )
-  CALL CMISSNodesCreateStart( Region, nodeCount, nodes, err )
-  CALL CMISSNodesCreateFinish( Nodes, err )
 
-  xiDimensions = Fieldml_GetTypeComponentCount( fieldmlInfo%fmlHandle, fieldmlInfo%xiHandle )
-  elementCount = Fieldml_GetMemberCount( fieldmlInfo%fmlHandle, fieldmlInfo%elementsHandle )
-  CALL CMISSMeshTypeInitialise( Mesh, err )
-  CALL CMISSMeshCreateStart( MeshUserNumber, Region, xiDimensions, Mesh, err )
-  CALL CMISSMeshNumberOfElementsSet( Mesh, elementCount, err )
+  CALL CMISSFieldMLInputMeshCreateStart( fieldmlInfo, "test_mesh.mesh.argument", Mesh, MeshUserNumber, Region, err )
   CALL CMISSMeshNumberOfComponentsSet( Mesh, meshComponentCount, err )
   
-  CALL CMISSFieldmlInput_CreateMeshComponent( fieldmlInfo, RegionUserNumber, MeshUserNumber, 1, &
+  CALL CMISSFieldMLInputCreateMeshComponent( fieldmlInfo, RegionUserNumber, MeshUserNumber, 1, &
     & "test_mesh.template.triquadratic", err )
-  CALL CMISSFieldmlInput_CreateMeshComponent( fieldmlInfo, RegionUserNumber, MeshUserNumber, 2, &
+  CALL CMISSFieldMLInputCreateMeshComponent( fieldmlInfo, RegionUserNumber, MeshUserNumber, 2, &
     & "test_mesh.template.trilinear", err )
   
   MESH_COMPONENT_NUMBER_SPACE = 1
@@ -374,8 +364,20 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   !Finish the decomposition
   CALL CMISSDecompositionCreateFinish(Decomposition, err )
   
-  CALL CMISSFieldmlInput_CreateField( fieldmlInfo, Region, Mesh, Decomposition, GeometricFieldUserNumber, GeometricField, &
-    & "test_mesh.coordinates", err )
+  CALL CMISSFieldMLInputFieldCreateStart( fieldmlInfo, Region, Decomposition, GeometricFieldUserNumber, GeometricField, &
+    & CMISSFieldUVariableType, "test_mesh.coordinates", err )
+  CALL CMISSFieldCreateFinish( RegionUserNumber, GeometricFieldUserNumber, err )
+
+  CALL CMISSFieldMLInputFieldNodalParametersUpdate( fieldmlInfo, GeometricField, "test_mesh.node.coordinates", &
+    & CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
+  CALL CMISSFieldParameterSetUpdateStart( GeometricField, CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
+  CALL CMISSFieldParameterSetUpdateFinish( GeometricField, CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
+
+  !
+  !================================================================================================================================
+  !
+
+  CALL CMISSFieldMLIOTypeFinalise( fieldmlInfo, err )
 
   !
   !================================================================================================================================
@@ -591,7 +593,7 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
 
   !Solve the problem
   WRITE(*,'(A)') "Solving problem..."
-!  CALL CMISSProblemSolve(Problem, err )
+  CALL CMISSProblemSolve(Problem, err )
   WRITE(*,'(A)') "Problem solved!"
 
   !
@@ -599,22 +601,24 @@ CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "static_navier_stokes"
   !
 
   !OUTPUT
-  CALL CMISSFieldmlOutput_InitialiseInfo( Region, Mesh, xiDimensions, outputDirectory, basename, outputInfo, err )
+  CALL CMISSFieldMLIOTypeInitialise( outputInfo, err )
 
-  CALL CMISSFieldmlUtil_Import( outputInfo, "coordinates.rc.3d"//NUL, typeHandle, err )
-  CALL CMISSFieldmlOutput_AddField( outputInfo, baseName//".geometric", region, mesh, GeometricField, &
-    & CMISSFieldUVariableType, err )
+  CALL CMISSFieldMLOutputCreate( Mesh, outputDirectory, basename, dataFormat, outputInfo, err )
   
-  CALL CMISSFieldmlOutput_AddFieldComponents( outputInfo, typeHandle, baseName//".velocity", Mesh,DependentFieldNavierStokes, &
-    & [1,2,3], CMISSFieldUVariableType, err )
+  CALL CMISSFieldMLOutputAddImport( outputInfo, "coordinates.rc.3d", typeHandle, err )
+  CALL CMISSFieldMLOutputAddField( outputInfo, baseName//".geometric", dataFormat, GeometricField, &
+    & CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
   
-  CALL CMISSFieldmlUtil_Import( outputInfo, "real.1d"//NUL, typeHandle, err )
-  CALL CMISSFieldmlOutput_AddFieldComponents( outputInfo, typeHandle, baseName//".pressure", Mesh,DependentFieldNavierStokes,&
-    & [4], CMISSFieldUVariableType, err )
+  CALL CMISSFieldMLOutputAddFieldComponents( outputInfo, typeHandle, baseName//".velocity", dataFormat, &
+    & DependentFieldNavierStokes, [1,2,3], CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
   
-  CALL CMISSFieldmlOutput_Write( outputInfo, outputFilename, err )
+  CALL CMISSFieldMLOutputAddImport( outputInfo, "real.1d", typeHandle, err )
+  CALL CMISSFieldMLOutputAddFieldComponents( outputInfo, typeHandle, baseName//".pressure", dataFormat, &
+    & DependentFieldNavierStokes, [4], CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
   
-  CALL CMISSFieldmlUtil_FinaliseInfo( outputInfo, err )
+  CALL CMISSFieldMLOutputWrite( outputInfo, outputFilename, err )
+  
+  CALL CMISSFieldMLIOTypeFinalise( outputInfo, err )
   
   EXPORT_FIELD_IO=.TRUE.
   IF(EXPORT_FIELD_IO) THEN
