@@ -60,14 +60,17 @@ PROGRAM CANTILEVEREXAMPLE
 
   !Test program parameters
 
-  REAL(CMISSDP), PARAMETER :: Height=40.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: Width=60.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: Length=40.0_CMISSDP
-  INTEGER(CMISSIntg), PARAMETER :: DisplacementInterpolationType=CMISSBasisCubicHermiteInterpolation
-  INTEGER(CMISSIntg), PARAMETER :: PressureInterpolationType=CMISSBasisLinearLagrangeInterpolation
-  INTEGER(CMISSIntg), PARAMETER :: NumberOfGaussXi=4
+  REAL(CMISSDP), PARAMETER :: Height=40.0_CMISSDP
+  INTEGER(CMISSIntg) :: DisplacementInterpolationType
+  INTEGER(CMISSIntg) :: PressureInterpolationType
+  INTEGER(CMISSIntg) :: PressureMeshComponent
+  INTEGER(CMISSIntg) :: NumberOfGaussXi
+  INTEGER(CMISSIntg) :: ScalingType
   REAL(CMISSDP), PARAMETER :: Density=9.0E-4_CMISSDP !in g mm^-3
   REAL(CMISSDP), PARAMETER :: Gravity(3)=[0.0_CMISSDP,0.0_CMISSDP,-9.8_CMISSDP] !in m s^-2
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfLoadIncrements=2
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
@@ -93,7 +96,8 @@ PROGRAM CANTILEVEREXAMPLE
   INTEGER(CMISSIntg) :: NodeNumber,NodeDomain,node_idx,component_idx,deriv_idx
   INTEGER(CMISSIntg),ALLOCATABLE :: LeftSurfaceNodes(:)
   INTEGER(CMISSIntg) :: LeftNormalXi
-  REAL(CMISSDP) :: Value
+  INTEGER(CMISSIntg) :: NumberOfArguments,ArgumentLength,ArgStatus
+  CHARACTER(LEN=255) :: CommandArgument
 
   !CMISS variables
   TYPE(CMISSBasisType) :: DisplacementBasis,PressureBasis
@@ -112,16 +116,13 @@ PROGRAM CANTILEVEREXAMPLE
   TYPE(CMISSSolverEquationsType) :: SolverEquations
   TYPE(CMISSControlLoopType) :: ControlLoop
 
-#ifdef WIN32
-  !Quickwin type
-  LOGICAL :: QUICKWIN_STATUS=.FALSE.
-  TYPE(WINDOWCONFIG) :: QUICKWIN_WINDOW_CONFIG
-#endif
-
   !Generic CMISS variables
   INTEGER(CMISSIntg) :: Err
 
 #ifdef WIN32
+  !Quickwin type
+  LOGICAL :: QUICKWIN_STATUS=.FALSE.
+  TYPE(WINDOWCONFIG) :: QUICKWIN_WINDOW_CONFIG
   !Initialise QuickWin
   QUICKWIN_WINDOW_CONFIG%TITLE="General Output" !Window title
   QUICKWIN_WINDOW_CONFIG%NUMTEXTROWS=-1 !Max possible number of rows
@@ -134,16 +135,77 @@ PROGRAM CANTILEVEREXAMPLE
 
   !Intialise cmiss
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
-
   CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+  CALL CMISSOutputSetOn("Cantilever",Err)
+
+  !Read in arguments and overwrite default values
+  !Usage: CantileverExample [Displacement Interpolation Type] [X elements] [Y elements] [Z elements] [Scaling Type]
+  !Defaults:
+  DisplacementInterpolationType=CMISSBasisLinearLagrangeInterpolation
+  NumberGlobalXElements=3
+  NumberGlobalYElements=2
+  NumberGlobalZElements=2
+  ScalingType=CMISSFieldArithmeticMeanScaling
+
+  NumberOfArguments = COMMAND_ARGUMENT_COUNT()
+  IF(NumberOfArguments >= 1) THEN
+    CALL GET_COMMAND_ARGUMENT(1,CommandArgument,ArgumentLength,ArgStatus)
+    IF(ArgStatus>0) CALL HANDLE_ERROR("Error for command argument 1.")
+    READ(CommandArgument(1:ArgumentLength),*) DisplacementInterpolationType
+  ENDIF
+  IF(NumberOfArguments >= 2) THEN
+    CALL GET_COMMAND_ARGUMENT(2,CommandArgument,ArgumentLength,ArgStatus)
+    IF(ArgStatus>0) CALL HANDLE_ERROR("Error for command argument 2.")
+    READ(CommandArgument(1:ArgumentLength),*) NumberGlobalXElements
+    IF(NumberGlobalXElements<1) CALL HANDLE_ERROR("Invalid number of X elements.")
+  ENDIF
+  IF(NumberOfArguments >= 3) THEN
+    CALL GET_COMMAND_ARGUMENT(3,CommandArgument,ArgumentLength,ArgStatus)
+    IF(ArgStatus>0) CALL HANDLE_ERROR("Error for command argument 3.")
+    READ(CommandArgument(1:ArgumentLength),*) NumberGlobalYElements
+    IF(NumberGlobalYElements<1) CALL HANDLE_ERROR("Invalid number of Y elements.")
+  ENDIF
+  IF(NumberOfArguments >= 4) THEN
+    CALL GET_COMMAND_ARGUMENT(4,CommandArgument,ArgumentLength,ArgStatus)
+    IF(ArgStatus>0) CALL HANDLE_ERROR("Error for command argument 4.")
+    READ(CommandArgument(1:ArgumentLength),*) NumberGlobalZElements
+    IF(NumberGlobalZElements<1) CALL HANDLE_ERROR("Invalid number of Z elements.")
+  ENDIF
+  IF(DisplacementInterpolationType==CMISSBasisCubicHermiteInterpolation) THEN
+    IF(NumberOfArguments >= 5) THEN
+      CALL GET_COMMAND_ARGUMENT(5,CommandArgument,ArgumentLength,ArgStatus)
+      IF(ArgStatus>0) CALL HANDLE_ERROR("Error for command argument 5.")
+      READ(CommandArgument(1:ArgumentLength),*) ScalingType
+      IF(ScalingType<0.OR.ScalingType>5) CALL HANDLE_ERROR("Invalid scaling type.")
+    ENDIF
+  ELSE
+    ScalingType=CMISSFieldNoScaling
+  ENDIF
+  SELECT CASE(DisplacementInterpolationType)
+  CASE(CMISSBasisLinearLagrangeInterpolation)
+    NumberOfGaussXi=2
+    PressureMeshComponent=1
+  CASE(CMISSBasisQuadraticLagrangeInterpolation)
+    NumberOfGaussXi=3
+    PressureMeshComponent=2
+    PressureInterpolationType=CMISSBasisLinearLagrangeInterpolation
+  CASE(CMISSBasisCubicLagrangeInterpolation,CMISSBasisCubicHermiteInterpolation)
+    NumberOfGaussXi=4
+    PressureMeshComponent=2
+    !Should generally use quadratic interpolation but use linear to match CMISS example 5e
+    PressureInterpolationType=CMISSBasisLinearLagrangeInterpolation
+  CASE DEFAULT
+    NumberOfGaussXi=0
+    PressureMeshComponent=1
+  END SELECT
+  WRITE(*,'("Interpolation: ", i3)') DisplacementInterpolationType
+  WRITE(*,'("Elements: ", 3 i3)') NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
+  WRITE(*,'("Scaling type: ", i3)') ScalingType
 
   !Get the number of computational nodes and this computational node number
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
-  NumberGlobalXElements=2
-  NumberGlobalYElements=1
-  NumberGlobalZElements=1
   NumberOfDomains=NumberOfComputationalNodes
 
   !Create a 3D rectangular cartesian coordinate system
@@ -174,22 +236,24 @@ PROGRAM CANTILEVEREXAMPLE
   ENDIF
   CALL CMISSBasisCreateFinish(DisplacementBasis,Err)
 
-  !Basis for pressure
-  CALL CMISSBasisTypeInitialise(PressureBasis,Err)
-  CALL CMISSBasisCreateStart(PressureBasisUserNumber,PressureBasis,Err)
-  SELECT CASE(PressureInterpolationType)
-  CASE(1,2,3,4)
-    CALL CMISSBasisTypeSet(PressureBasis,CMISSBasisLagrangeHermiteTPType,Err)
-  CASE(7,8,9)
-    CALL CMISSBasisTypeSet(PressureBasis,CMISSBasisSimplexType,Err)
-  END SELECT
-  CALL CMISSBasisNumberOfXiSet(PressureBasis,3,Err)
-  CALL CMISSBasisInterpolationXiSet(PressureBasis,[PressureInterpolationType,PressureInterpolationType, &
-      & PressureInterpolationType],Err)
-  IF(NumberOfGaussXi>0) THEN
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(PressureBasis,[NumberOfGaussXi,NumberOfGaussXi,NumberOfGaussXi],Err)
+  IF(PressureMeshComponent/=1) THEN
+    !Basis for pressure
+    CALL CMISSBasisTypeInitialise(PressureBasis,Err)
+    CALL CMISSBasisCreateStart(PressureBasisUserNumber,PressureBasis,Err)
+    SELECT CASE(PressureInterpolationType)
+    CASE(1,2,3,4)
+      CALL CMISSBasisTypeSet(PressureBasis,CMISSBasisLagrangeHermiteTPType,Err)
+    CASE(7,8,9)
+      CALL CMISSBasisTypeSet(PressureBasis,CMISSBasisSimplexType,Err)
+    END SELECT
+    CALL CMISSBasisNumberOfXiSet(PressureBasis,3,Err)
+    CALL CMISSBasisInterpolationXiSet(PressureBasis,[PressureInterpolationType,PressureInterpolationType, &
+        & PressureInterpolationType],Err)
+    IF(NumberOfGaussXi>0) THEN
+      CALL CMISSBasisQuadratureNumberOfGaussXiSet(PressureBasis,[NumberOfGaussXi,NumberOfGaussXi,NumberOfGaussXi],Err)
+    ENDIF
+    CALL CMISSBasisCreateFinish(PressureBasis,Err)
   ENDIF
-  CALL CMISSBasisCreateFinish(PressureBasis,Err)
 
   !Start the creation of a generated mesh in the region
   CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
@@ -197,7 +261,11 @@ PROGRAM CANTILEVEREXAMPLE
   !Set up a regular x*y*z mesh
   CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
   !Set the default basis
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,[DisplacementBasis,PressureBasis],Err)
+  IF(PressureMeshComponent==1) THEN
+    CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,[DisplacementBasis],Err)
+  ELSE
+    CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,[DisplacementBasis,PressureBasis],Err)
+  ENDIF
   !Define the mesh on the region
   IF(NumberGlobalXElements==0) THEN
     CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,[Width,Height],Err)
@@ -223,7 +291,7 @@ PROGRAM CANTILEVEREXAMPLE
   CALL CMISSFieldCreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
   CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
   CALL CMISSFieldVariableLabelSet(GeometricField,CMISSFieldUVariableType,"Geometry",Err)
-  CALL CMISSFieldScalingTypeSet(GeometricField,CMISSFieldArithmeticMeanScaling,Err)
+  CALL CMISSFieldScalingTypeSet(GeometricField,ScalingType,Err)
   CALL CMISSFieldCreateFinish(GeometricField,Err)
 
   !Update the geometric field parameters
@@ -236,6 +304,7 @@ PROGRAM CANTILEVEREXAMPLE
   CALL CMISSFieldMeshDecompositionSet(FibreField,Decomposition,Err)
   CALL CMISSFieldGeometricFieldSet(FibreField,GeometricField,Err)
   CALL CMISSFieldVariableLabelSet(FibreField,CMISSFieldUVariableType,"Fibre",Err)
+  CALL CMISSFieldScalingTypeSet(FibreField,ScalingType,Err)
   CALL CMISSFieldCreateFinish(FibreField,Err)
 
   !Create the equations_set
@@ -253,11 +322,17 @@ PROGRAM CANTILEVEREXAMPLE
     CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,component_idx,1,Err)
     CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,component_idx,1,Err)
   ENDDO
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,4,2,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,4,2,Err)
-  CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldUVariableType,4,CMISSFieldNodeBasedInterpolation,Err)
-  CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldDelUDelNVariableType,4,CMISSFieldNodeBasedInterpolation,Err)
-  CALL CMISSFieldScalingTypeSet(DependentField,CMISSFieldArithmeticMeanScaling,Err)
+  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,4,PressureMeshComponent,Err)
+  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,4,PressureMeshComponent,Err)
+  IF(PressureMeshComponent==1) THEN
+    CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldUVariableType,4,CMISSFieldElementBasedInterpolation,Err)
+    CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldDelUDelNVariableType,4, &
+      & CMISSFieldElementBasedInterpolation,Err)
+  ELSE
+    CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldUVariableType,4,CMISSFieldNodeBasedInterpolation,Err)
+    CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldDelUDelNVariableType,4,CMISSFieldNodeBasedInterpolation,Err)
+  ENDIF
+  CALL CMISSFieldScalingTypeSet(DependentField,ScalingType,Err)
   CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
 
   !Create the material field
@@ -275,6 +350,7 @@ PROGRAM CANTILEVEREXAMPLE
   !Create the source field with the gravity vector
   CALL CMISSFieldTypeInitialise(SourceField,Err)
   CALL CMISSEquationsSetSourceCreateStart(EquationsSet,FieldSourceUserNumber,SourceField,Err)
+  CALL CMISSFieldScalingTypeSet(SourceField,ScalingType,Err)
   CALL CMISSEquationsSetSourceCreateFinish(EquationsSet,Err)
   DO component_idx=1,3
     CALL CMISSFieldComponentValuesInitialise(SourceField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
@@ -284,7 +360,7 @@ PROGRAM CANTILEVEREXAMPLE
   !Create the equations set equations
   CALL CMISSEquationsTypeInitialise(Equations,Err)
   CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
-  CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsFullMatrices,Err)
+  CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
   CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
   CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
 
@@ -296,6 +372,8 @@ PROGRAM CANTILEVEREXAMPLE
   CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
     & 3,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,Err)
   CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,-14.0_CMISSDP,Err)
+  CALL CMISSFieldParameterSetUpdateStart(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
+  CALL CMISSFieldParameterSetUpdateFinish(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
 
   !Define the problem
   CALL CMISSProblemTypeInitialise(Problem,Err)
@@ -308,7 +386,7 @@ PROGRAM CANTILEVEREXAMPLE
   CALL CMISSProblemControlLoopCreateStart(Problem,Err)
   CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
   CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
-  CALL CMISSControlLoopMaximumIterationsSet(ControlLoop,2,Err)
+  CALL CMISSControlLoopMaximumIterationsSet(ControlLoop,NumberOfLoadIncrements,Err)
   CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
 
   !Create the problem solvers
@@ -317,9 +395,9 @@ PROGRAM CANTILEVEREXAMPLE
   CALL CMISSProblemSolversCreateStart(Problem,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
   CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
-  CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianFDCalculated,Err)
+  CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
   CALL CMISSSolverNewtonLinearSolverGet(Solver,LinearSolver,Err)
-  CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearIterativeSolveType,Err)
+  CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearDirectSolveType,Err)
   CALL CMISSProblemSolversCreateFinish(Problem,Err)
 
   !Create the problem solver equations
@@ -328,7 +406,7 @@ PROGRAM CANTILEVEREXAMPLE
   CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
   CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
   CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
-  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices,Err)
+  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
   CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
 
@@ -338,24 +416,20 @@ PROGRAM CANTILEVEREXAMPLE
 
   CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularLeftSurface,LeftSurfaceNodes,LeftNormalXi,Err)
 
-  !Fix x=0 nodes
+  !Fix x=0 nodes in x, y and z
   DO node_idx=1,SIZE(LeftSurfaceNodes,1)
     NodeNumber=LeftSurfaceNodes(node_idx)
     CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       DO component_idx=1,3
-        CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NodeNumber, &
-          & component_idx,Value,Err)
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber, &
-          & component_idx, &
-          & CMISSBoundaryConditionFixed,Value,Err)
-        DO deriv_idx=3,8
-          CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,deriv_idx, &
-              & NodeNumber,component_idx,Value,Err)
-          CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,deriv_idx,NodeNumber, &
-            & component_idx, &
-            & CMISSBoundaryConditionFixed,Value,Err)
-        ENDDO
+        CALL CMISSBoundaryConditionsAddNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber, &
+          & component_idx,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+        IF(DisplacementInterpolationType==CMISSBasisCubicHermiteInterpolation) THEN
+          DO deriv_idx=3,8
+            CALL CMISSBoundaryConditionsAddNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,deriv_idx,NodeNumber, &
+              & component_idx,CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+          ENDDO
+        ENDIF
       ENDDO
     ENDIF
   ENDDO
@@ -377,6 +451,15 @@ PROGRAM CANTILEVEREXAMPLE
   WRITE(*,'(A)') "Program successfully completed."
 
   STOP
+
+CONTAINS
+
+  SUBROUTINE HANDLE_ERROR(ERROR_STRING)
+    CHARACTER(LEN=*), INTENT(IN) :: ERROR_STRING
+
+    WRITE(*,'(">>ERROR: ",A)') ERROR_STRING(1:LEN_TRIM(ERROR_STRING))
+    STOP
+  END SUBROUTINE HANDLE_ERROR
 
 END PROGRAM CANTILEVEREXAMPLE
 
