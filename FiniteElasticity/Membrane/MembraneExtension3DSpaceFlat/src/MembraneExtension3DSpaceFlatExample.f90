@@ -1,6 +1,6 @@
 !> \file
 !> \author Chris Bradley
-!> \brief This is an example program to solve a finite elasticity equation using openCMISS calls.
+!> \brief This is an example program to solve a finite elasticity membrane equation using openCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -24,7 +24,7 @@
 !> of Oxford are Copyright (C) 2007 by the University of Auckland and
 !> the University of Oxford. All Rights Reserved.
 !>
-!> Contributor(s): Jessica Jor on 6th September 2011
+!> Contributor(s): Jessica Jor
 !>
 !> Alternatively, the contents of this file may be used under the terms of
 !> either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -39,8 +39,8 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example FiniteElasticity/UniAxialExtension/src/UniAxialExtensionExample.f90
-!! Example program to solve a finite elasticity equation using openCMISS calls.
+!> \example FiniteElasticity/Membrane/MembraneExtension3DSpaceFlat/src/MembraneExtension3DSpaceFlatExample.f90
+!! Example program to solve a finite elasticity membrane equation using openCMISS calls.
 !! \par Latest Builds:
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/UniAxialExtension/build-intel'>Linux Intel Build</a>
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/UniAxialExtension/build-gnu'>Linux GNU Build</a>
@@ -288,7 +288,6 @@ PROGRAM MEMBRANEEXTENSION3DSPACE
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1.0_CMISSDP,Err)
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,0.1_CMISSDP,Err)
   !Set membrane thickness (only specifiy this for 3D space)
-  !JJOR 6 Sept 2011
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,0.1_CMISSDP,Err)
 
   !Create a dependent field
