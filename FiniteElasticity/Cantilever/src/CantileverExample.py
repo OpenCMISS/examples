@@ -39,11 +39,11 @@
 #> the terms of any one of the MPL, the GPL or the LGPL.
 #>
 
-#> \example FiniteElasticity/LargeUniAxialExtension/src/LargeUniAxialExtensionExample.py
+#> \example FiniteElasticity/Cantilever/src/CantileverExample.py
 ## Example script to solve a finite elasticity equation using openCMISS calls in python.
 ## \par Latest Builds:
-## \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/LargeUniAxialExtension/build-intel'>Linux Intel Build</a>
-## \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/LargeUniAxialExtension/build-gnu'>Linux GNU Build</a>
+## \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/Cantilever/build-intel'>Linux Intel Build</a>
+## \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/Cantilever/build-gnu'>Linux GNU Build</a>
 #<
 
 #> Main script
@@ -56,11 +56,14 @@ sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','pytho
 from opencmiss import CMISS
 
 # Set problem parameters
-height = 1.0
-width = 1.0
-length = 1.0
 
-UsePressureBasis = True
+width = 60.0
+length = 40.0
+height = 40.0
+density=9.0E-4 #in g mm^-3
+gravity=[0.0,0.0,-9.81] #in m s^-2
+
+UsePressureBasis = False
 NumberOfGaussXi = 2
 
 coordinateSystemUserNumber = 1
@@ -74,8 +77,9 @@ geometricFieldUserNumber = 1
 fibreFieldUserNumber = 2
 materialFieldUserNumber = 3
 dependentFieldUserNumber = 4
+sourceFieldUserNumber = 5
+equationsSetFieldUserNumber = 6
 equationsSetUserNumber = 1
-equationsSetFieldUserNumber = 5
 problemUserNumber = 1
 
 CMISS.ErrorHandlingModeSet(CMISS.ErrorHandlingModes.TrapError)
@@ -106,7 +110,7 @@ coordinateSystem.CreateFinish()
 # Create a region and assign the coordinate system to the region
 region = CMISS.Region()
 region.CreateStart(regionUserNumber,CMISS.WorldRegion)
-region.LabelSet("Region")
+#region.LabelSet("Region")
 region.coordinateSystem = coordinateSystem
 region.CreateFinish()
 
@@ -149,7 +153,7 @@ if(numberGlobalZElements==0):
     generatedMesh.extent = [width,height]
     generatedMesh.numberOfElements = [numberGlobalXElements,numberGlobalYElements]
 else:
-    generatedMesh.extent = [width,height,length]
+    generatedMesh.extent = [width,length,height]
     generatedMesh.numberOfElements = [numberGlobalXElements,numberGlobalYElements,numberGlobalZElements]
 # Finish the creation of a generated mesh in the region
 mesh = CMISS.Mesh()
@@ -216,6 +220,7 @@ if InterpolationType == 4:
     dependentField.fieldScalingType = CMISS.FieldScalingTypes.ArithmeticMean
 equationsSet.DependentCreateFinish()
 
+
 # Initialise dependent field from undeformed geometry and displacement bcs and set hydrostatic pressure
 CMISS.Field.ParametersToFieldParametersComponentCopy( \
     geometricField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1, \
@@ -227,19 +232,40 @@ CMISS.Field.ParametersToFieldParametersComponentCopy( \
     geometricField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,3, \
     dependentField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,3)
 CMISS.Field.ComponentValuesInitialiseDP( \
-    dependentField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,4,-14.0)
+    dependentField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,4,-8.0)
 
 # Create the material field
 materialField = CMISS.Field()
 equationsSet.MaterialsCreateStart(materialFieldUserNumber,materialField)
 materialField.VariableLabelSet(CMISS.FieldVariableTypes.U,"Material")
+materialField.VariableLabelSet(CMISS.FieldVariableTypes.V,"Density")
 equationsSet.MaterialsCreateFinish()
 
 # Set Mooney-Rivlin constants c10 and c01 respectively.
-CMISS.Field.ComponentValuesInitialiseDP( \
-    materialField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,2.0)
-CMISS.Field.ComponentValuesInitialiseDP( \
-    materialField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,2,6.0)
+materialField.ComponentValuesInitialiseDP( \
+    CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,2.0)
+materialField.ComponentValuesInitialiseDP( \
+    CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,2,-14.0)
+materialField.ComponentValuesInitialiseDP( \
+    CMISS.FieldVariableTypes.V,CMISS.FieldParameterSetTypes.FieldValues,1,density)
+
+#Create the source field with the gravity vector
+sourceField = CMISS.Field()
+equationsSet.SourceCreateStart(sourceFieldUserNumber,sourceField)
+sourceField.fieldScalingType = CMISS.FieldScalingTypes.ArithmeticMean
+if InterpolationType == 4:
+    sourceField.fieldScalingType = CMISS.FieldScalingTypes.ArithmeticMean
+else:
+    sourceField.fieldScalingType = CMISS.FieldScalingTypes.Unit
+equationsSet.SourceCreateFinish()
+
+#Set the gravity vector component values
+sourceField.ComponentValuesInitialiseDP( \
+    CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,gravity[0])
+sourceField.ComponentValuesInitialiseDP( \
+    CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,2,gravity[1])
+sourceField.ComponentValuesInitialiseDP( \
+    CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,3,gravity[2])
 
 # Create equations
 equations = CMISS.Equations()
@@ -288,30 +314,23 @@ problem.SolverEquationsCreateFinish()
 # Prescribe boundary conditions (absolute nodal parameters)
 boundaryConditions = CMISS.BoundaryConditions()
 solverEquations.BoundaryConditionsCreateStart(boundaryConditions)
-
-#Set x=0 nodes to no x displacment in x. Set x=width nodes to 10% x displacement
+# Set x=0 nodes to no x displacment
 boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,1,1,CMISS.BoundaryConditionsTypes.Fixed,0.0)
 boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,3,1,CMISS.BoundaryConditionsTypes.Fixed,0.0)
 boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,5,1,CMISS.BoundaryConditionsTypes.Fixed,0.0)
 boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,7,1,CMISS.BoundaryConditionsTypes.Fixed,0.0)
 
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,2,1,CMISS.BoundaryConditionsTypes.Fixed,0.1*width)
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,4,1,CMISS.BoundaryConditionsTypes.Fixed,0.1*width)
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,6,1,CMISS.BoundaryConditionsTypes.Fixed,0.1*width)
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,8,1,CMISS.BoundaryConditionsTypes.Fixed,0.1*width)
-
 # Set y=0 nodes to no y displacement
 boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,1,2,CMISS.BoundaryConditionsTypes.Fixed,0.0)
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,2,2,CMISS.BoundaryConditionsTypes.Fixed,0.0)
+boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,3,2,CMISS.BoundaryConditionsTypes.Fixed,0.0)
 boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,5,2,CMISS.BoundaryConditionsTypes.Fixed,0.0)
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,6,2,CMISS.BoundaryConditionsTypes.Fixed,0.0)
+boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,7,2,CMISS.BoundaryConditionsTypes.Fixed,0.0)
 
 # Set z=0 nodes to no y displacement
 boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,1,3,CMISS.BoundaryConditionsTypes.Fixed,0.0)
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,2,3,CMISS.BoundaryConditionsTypes.Fixed,0.0)
 boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,3,3,CMISS.BoundaryConditionsTypes.Fixed,0.0)
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,4,3,CMISS.BoundaryConditionsTypes.Fixed,0.0)
-
+boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,5,3,CMISS.BoundaryConditionsTypes.Fixed,0.0)
+boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,7,3,CMISS.BoundaryConditionsTypes.Fixed,0.0)
 solverEquations.BoundaryConditionsCreateFinish()
 
 # Solve the problem
@@ -320,8 +339,8 @@ problem.Solve()
 # Export results
 fields = CMISS.Fields()
 CMISS.FieldsTypeCreateRegion(region,fields)
-CMISS.FieldIONodesExport(fields,"../LargeUniaxialExtension","FORTRAN")
-CMISS.FieldIOElementsExport(fields,"../LargeUniaxialExtension","FORTRAN")
+CMISS.FieldIONodesExport(fields,"../Cantilever","FORTRAN")
+CMISS.FieldIOElementsExport(fields,"../Cantilever","FORTRAN")
 fields.Finalise()
 
 

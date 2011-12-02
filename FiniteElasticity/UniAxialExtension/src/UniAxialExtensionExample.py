@@ -39,11 +39,11 @@
 #> the terms of any one of the MPL, the GPL or the LGPL.
 #>
 
-#> \example FiniteElasticity/LargeUniAxialExtension/src/LargeUniAxialExtensionExample.py
+#> \example FiniteElasticity/UniAxialExtension/src/UniAxialExtensionExample.py
 ## Example script to solve a finite elasticity equation using openCMISS calls in python.
 ## \par Latest Builds:
-## \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/LargeUniAxialExtension/build-intel'>Linux Intel Build</a>
-## \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/LargeUniAxialExtension/build-gnu'>Linux GNU Build</a>
+## \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/UniAxialExtension/build-intel'>Linux Intel Build</a>
+## \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/UniAxialExtension/build-gnu'>Linux GNU Build</a>
 #<
 
 #> Main script
@@ -60,7 +60,7 @@ height = 1.0
 width = 1.0
 length = 1.0
 
-UsePressureBasis = True
+UsePressureBasis = False
 NumberOfGaussXi = 2
 
 coordinateSystemUserNumber = 1
@@ -81,13 +81,18 @@ problemUserNumber = 1
 CMISS.ErrorHandlingModeSet(CMISS.ErrorHandlingModes.TrapError)
 
 # Set all diganostic levels on for testing
-#CMISS.DiagnosticsSetOn(CMISS.DiagnosticTypes.All,[1,2,3,4,5],"Diagnostics",["DOMAIN_MAPPINGS_LOCAL_FROM_GLOBAL_CALCULATE"])
+CMISS.DiagnosticsSetOn(CMISS.DiagnosticTypes.All,[1,2,3,4,5],"Diagnostics",["DOMAIN_MAPPINGS_LOCAL_FROM_GLOBAL_CALCULATE"])
 
-numberOfLoadIncrements = 2
 numberGlobalXElements = 1
 numberGlobalYElements = 1
 numberGlobalZElements = 1
+totalNumberOfNodes=8
+totalNumberOfElements=1
 InterpolationType = 1
+if(UsePressureBasis):
+  numberOfMeshComponents = 2
+else:
+  numberOfMeshComponents = 1
 if(numberGlobalZElements==0):
     numberOfXi = 2
 else:
@@ -137,23 +142,24 @@ if(UsePressureBasis):
         pressureBasis.quadratureNumberOfGaussXi = [NumberOfGaussXi]*numberOfXi
     pressureBasis.CreateFinish()
 
-# Start the creation of a generated mesh in the region
-generatedMesh = CMISS.GeneratedMesh()
-generatedMesh.CreateStart(generatedMeshUserNumber,region)
-generatedMesh.type = CMISS.GeneratedMeshTypes.Regular
-if(UsePressureBasis):
-    generatedMesh.basis = [basis,pressureBasis]
-else:
-    generatedMesh.basis = [basis]
-if(numberGlobalZElements==0):
-    generatedMesh.extent = [width,height]
-    generatedMesh.numberOfElements = [numberGlobalXElements,numberGlobalYElements]
-else:
-    generatedMesh.extent = [width,height,length]
-    generatedMesh.numberOfElements = [numberGlobalXElements,numberGlobalYElements,numberGlobalZElements]
-# Finish the creation of a generated mesh in the region
+# Start the creation of a manually generated mesh in the region
 mesh = CMISS.Mesh()
-generatedMesh.CreateFinish(meshUserNumber,mesh)
+mesh.CreateStart(meshUserNumber,region,numberOfXi)
+mesh.NumberOfComponentsSet(numberOfMeshComponents)
+mesh.NumberOfElementsSet(totalNumberOfElements)
+
+#Define nodes for the mesh
+nodes = CMISS.Nodes()
+nodes.CreateStart(region,totalNumberOfNodes)
+nodes.CreateFinish()
+
+elements = CMISS.MeshElements()
+meshComponentNumber=1
+elements.CreateStart(mesh,meshComponentNumber,basis)
+elements.NodesSet(1,[1,2,3,4,5,6,7,8])
+elements.CreateFinish()
+
+mesh.CreateFinish() 
 
 # Create a decomposition for the mesh
 decomposition = CMISS.Decomposition()
@@ -175,8 +181,41 @@ if InterpolationType == 4:
     geometricField.fieldScalingType = CMISS.FieldScalingTypes.ArithmeticMean
 geometricField.CreateFinish()
 
-# Update the geometric field parameters from generated mesh
-CMISS.GeneratedMeshGeometricParametersCalculate(geometricField,generatedMesh)
+# Update the geometric field parameters manually
+geometricField.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues)
+# node 1
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,1,1,0.0)
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,1,2,0.0)
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,1,3,0.0)
+# node 2
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,2,1,height)
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,2,2,0.0)
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,2,3,0.0)
+# node 3
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,3,1,0.0)
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,3,2,width)
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,3,3,0.0)
+# node 4
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,4,1,height)
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,4,2,width)
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,4,3,0.0)
+# node 5
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,5,1,0.0)
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,5,2,0.0)
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,5,3,length)
+# node 6
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,6,1,height)
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,6,2,0.0)
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,6,3,length)
+# node 7
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,7,1,0.0)
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,7,2,width)
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,7,3,length)
+# node 8
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,8,1,height)
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,8,2,width)
+geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1,1,8,3,length)
+geometricField.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues)
 
 # Create a fibre field and attach it to the geometric field
 fibreField = CMISS.Field()
@@ -216,6 +255,7 @@ if InterpolationType == 4:
     dependentField.fieldScalingType = CMISS.FieldScalingTypes.ArithmeticMean
 equationsSet.DependentCreateFinish()
 
+
 # Initialise dependent field from undeformed geometry and displacement bcs and set hydrostatic pressure
 CMISS.Field.ParametersToFieldParametersComponentCopy( \
     geometricField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,1, \
@@ -227,7 +267,7 @@ CMISS.Field.ParametersToFieldParametersComponentCopy( \
     geometricField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,3, \
     dependentField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,3)
 CMISS.Field.ComponentValuesInitialiseDP( \
-    dependentField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,4,-14.0)
+    dependentField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.FieldValues,4,-8.0)
 
 # Create the material field
 materialField = CMISS.Field()
@@ -256,11 +296,8 @@ problem.SpecificationSet(CMISS.ProblemClasses.Elasticity, \
         CMISS.ProblemSubTypes.NONE)
 problem.CreateFinish()
 
-# Create the problem control loop
+# Create control loops
 problem.ControlLoopCreateStart()
-controlLoop = CMISS.ControlLoop()
-problem.ControlLoopGet([CMISS.ControlLoopIdentifiers.Node],controlLoop)
-controlLoop.MaximumIterationsSet(numberOfLoadIncrements)
 problem.ControlLoopCreateFinish()
 
 # Create problem solver
@@ -269,7 +306,7 @@ linearSolver = CMISS.Solver()
 problem.SolversCreateStart()
 problem.SolverGet([CMISS.ControlLoopIdentifiers.Node],1,nonLinearSolver)
 nonLinearSolver.outputType = CMISS.SolverOutputTypes.Progress
-nonLinearSolver.NewtonJacobianCalculationTypeSet(CMISS.JacobianCalculationTypes.AnalyticCalculated)
+nonLinearSolver.NewtonJacobianCalculationTypeSet(CMISS.JacobianCalculationTypes.FDCalculated)
 nonLinearSolver.NewtonLinearSolverGet(linearSolver)
 linearSolver.linearType = CMISS.LinearSolverTypes.Direct
 #linearSolver.libraryType = CMISS.SolverLibraries.LAPACK
@@ -312,6 +349,39 @@ boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,2,3,CMI
 boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,3,3,CMISS.BoundaryConditionsTypes.Fixed,0.0)
 boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,4,3,CMISS.BoundaryConditionsTypes.Fixed,0.0)
 
+# Below commented out until CMISSGeneratedMeshSurfaceGet becomes available through the OpenCMISS python api.
+#CMISS.GeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularBottomSurface,BottomSurfaceNodes,BottomNormalXi)
+#CMISS.GeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularLeftSurface,LeftSurfaceNodes,LeftNormalXi)
+#CMISS.GeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularRightSurface,RightSurfaceNodes,RightNormalXi)
+#CMISS.GeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularFrontSurface,FrontSurfaceNodes,BackNormalXi)
+#if(InterpolationType==CMISSBasisCubicHermiteInterpolation):
+##Fix x derivatives at x=0 and x=1 in xi2 and xi3
+#  DO node_idx=1,SIZE(LeftSurfaceNodes,1)
+#    NodeNumber=LeftSurfaceNodes(node_idx)
+#  CMISS.DecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain)
+#    if(NodeDomain==ComputationalNodeNumber):
+#    CMISS.BoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,CMISSGlobalDerivativeS2, &
+#        & NodeNumber,1,CMISSBoundaryConditionFixed,0.0_CMISSDP)
+#    CMISS.BoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,CMISSGlobalDerivativeS3, &
+#        & NodeNumber,1,CMISSBoundaryConditionFixed,0.0_CMISSDP)
+#    CMISS.BoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,CMISSGlobalDerivativeS2S3, &
+#        & NodeNumber,1,CMISSBoundaryConditionFixed,0.0_CMISSDP)
+#    ENDif
+#  ENDDO
+#  DO node_idx=1,SIZE(RightSurfaceNodes,1)
+#    NodeNumber=RightSurfaceNodes(node_idx)
+#  CMISS.DecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain)
+#    if(NodeDomain==ComputationalNodeNumber):
+#    CMISS.BoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,CMISSGlobalDerivativeS2, &
+#        & NodeNumber,1,CMISSBoundaryConditionFixed,0.0_CMISSDP)
+#    CMISS.BoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,CMISSGlobalDerivativeS3, &
+#        & NodeNumber,1,CMISSBoundaryConditionFixed,0.0_CMISSDP)
+#    CMISS.BoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,CMISSGlobalDerivativeS2S3, &
+#        & NodeNumber,1,CMISSBoundaryConditionFixed,0.0_CMISSDP)
+#    ENDif
+#  ENDDO
+#ENDif
+
 solverEquations.BoundaryConditionsCreateFinish()
 
 # Solve the problem
@@ -320,8 +390,8 @@ problem.Solve()
 # Export results
 fields = CMISS.Fields()
 CMISS.FieldsTypeCreateRegion(region,fields)
-CMISS.FieldIONodesExport(fields,"../LargeUniaxialExtension","FORTRAN")
-CMISS.FieldIOElementsExport(fields,"../LargeUniaxialExtension","FORTRAN")
+CMISS.FieldIONodesExport(fields,"../UniAxialExtension","FORTRAN")
+CMISS.FieldIOElementsExport(fields,"../UniAxialExtension","FORTRAN")
 fields.Finalise()
 
 
