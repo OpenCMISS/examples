@@ -3,7 +3,6 @@
 # For use with GNU make.
 #
 #
-#
 #----------------------------------------------------------------------------------------------------------------------------------
 # Makefile for compiling openCMISS examples
 #
@@ -55,7 +54,7 @@ MAKEFLAGS = --no-builtin-rules --warn-undefined-variables
 #----------------------------------------------------------------------------------------------------------------------------------
 
 ifndef OPENCMISS_ROOT
-  OPENCMISS_ROOT := ../..
+  OPENCMISS_ROOT := ../../..
   GLOBAL_ROOT := $(CURDIR)/../..
 else
   GLOBAL_ROOT := ${OPENCMISS_ROOT}/cm
@@ -63,7 +62,11 @@ endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_NAME = define-geometry-and-export
+EXAMPLE_PATH = FiniteElasticity/Membrane/
 
-include $(GLOBAL_ROOT)/NewExampleMakefile
+EXAMPLE_NAME = MembraneExtension3DSpaceFlat
+
+include $(GLOBAL_ROOT)/ExampleMakefile
+
+
 

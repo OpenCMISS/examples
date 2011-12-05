@@ -218,14 +218,14 @@ PROGRAM LAPLACEEXAMPLE
     NUMBER_OF_GAUSS_XI=0 !Don't set number of Gauss points for tri/tet
   END SELECT
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    !Set the basis to be a bilinear Lagrange basis
+    !Set the basis to be a bi-interpolation basis
     CALL CMISSBasisNumberOfXiSet(Basis,2,Err)
     CALL CMISSBasisInterpolationXiSet(Basis,[INTERPOLATION_TYPE,INTERPOLATION_TYPE],Err)
     IF(NUMBER_OF_GAUSS_XI>0) THEN
       CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,[NUMBER_OF_GAUSS_XI,NUMBER_OF_GAUSS_XI],Err)
     ENDIF
   ELSE
-    !Set the basis to be a trilinear Lagrange basis
+    !Set the basis to be a tri-interpolation basis
     CALL CMISSBasisNumberOfXiSet(Basis,3,Err)
     CALL CMISSBasisInterpolationXiSet(Basis,[INTERPOLATION_TYPE,INTERPOLATION_TYPE,INTERPOLATION_TYPE],Err)
     IF(NUMBER_OF_GAUSS_XI>0) THEN
@@ -347,6 +347,7 @@ PROGRAM LAPLACEEXAMPLE
   CALL CMISSSolverLinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMISSDP,Err)
   !CALL CMISSSolverLinearTypeSet(Solver,CMISSSolverLinearDirectSolveType,Err)
   !CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverMUMPSLibrary,Err)
+  !CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverLAPACKLibrary,Err)
   !CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverSuperLULibrary,Err)
   !CALL CMISSSolverLibraryTypeSet(Solver,CMISSSolverPaStiXLibrary,Err)
   !Finish the creation of the problem solver

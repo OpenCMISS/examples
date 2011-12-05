@@ -64,7 +64,9 @@ endif
 
 EXAMPLE_PATH = FiniteElasticity/Membrane/
 
-EXAMPLE_NAME = MembraneExtension3DSpace
+EXAMPLE_NAME = MembraneExtension3DSpaceTilted
 
 include $(GLOBAL_ROOT)/ExampleMakefile
+
+
 
