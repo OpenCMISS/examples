@@ -71,15 +71,13 @@ PROGRAM COUPLEDCANTILEVER
   REAL(CMISSDP), PARAMETER :: Density=1.0E3_CMISSDP
   REAL(CMISSDP), PARAMETER :: FluidDensity=1.0E3_CMISSDP
   REAL(CMISSDP), PARAMETER :: Gravity(3)=[0.0_CMISSDP,0.0_CMISSDP,-9.81_CMISSDP]
-  INTEGER(CMISSIntg) :: Increments=5
-  REAL(CMISSDP) :: FluidPressureBC=30.0_CMISSDP
-  REAL (CMISSDP) :: K1=3.0E3_CMISSDP
-  REAL (CMISSDP) :: K2=50.0_CMISSDP
-  REAL (CMISSDP) :: K=3.20E4_CMISSDP
-  REAL (CMISSDP) :: M=3.18E4_CMISSDP
-  REAL (CMISSDP) :: b=1.0_CMISSDP
-  REAL (CMISSDP) :: p_0=0.0_CMISSDP
+  INTEGER(CMISSIntg) :: Increments=4
+  REAL(CMISSDP) :: FluidPressureBC=500.0_CMISSDP
+  REAL (CMISSDP) :: C0=2.5E3_CMISSDP
+  REAL (CMISSDP) :: C1=2.0_CMISSDP
+  REAL (CMISSDP) :: C2=0.1_CMISSDP
   REAL (CMISSDP) :: permeability=1.0E-3_CMISSDP
+  REAL (CMISSDP) :: porosity=0.2_CMISSDP
 
   INTEGER(CMISSIntg) :: NumberGlobalXElements=3
   INTEGER(CMISSIntg) :: NumberGlobalYElements=2
@@ -274,14 +272,14 @@ PROGRAM COUPLEDCANTILEVER
   CALL CMISSEquationsSetTypeInitialise(SolidEquationsSet,Err)
   CALL CMISSFieldTypeInitialise(SolidEquationsSetField,Err)
   CALL CMISSEquationsSetCreateStart(SolidEquationsSetUserNumber,Region,FibreField,CMISSEquationsSetElasticityClass, &
-    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetElasticityFluidPressureStaticINRIASubtype, &
+    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetElasticityFluidPressureHolmesMowSubtype, &
     & SolidEquationsSetFieldUserNumber,SolidEquationsSetField,SolidEquationsSet,Err)
   CALL CMISSEquationsSetCreateFinish(SolidEquationsSet,Err)
 
   CALL CMISSEquationsSetTypeInitialise(FluidEquationsSet,Err)
   CALL CMISSFieldTypeInitialise(FluidEquationsSetField,Err)
   CALL CMISSEquationsSetCreateStart(FluidEquationsSetUserNumber,Region,FibreField,CMISSEquationsSetFluidMechanicsClass, &
-    & CMISSEquationsSetDarcyPressureEquationType,CMISSEquationsSetElasticityFluidPressureQuadraticSubtype, &
+    & CMISSEquationsSetDarcyPressureEquationType,CMISSEquationsSetElasticityFluidPressureHolmesMowSubtype, &
     & FluidEquationsSetFieldUserNumber,FluidEquationsSetField,FluidEquationsSet,Err)
   CALL CMISSEquationsSetCreateFinish(FluidEquationsSet,Err)
 
@@ -305,7 +303,7 @@ PROGRAM COUPLEDCANTILEVER
   CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldUVariableType,"SolidMaterial",Err)
   CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldVVariableType,"Density",Err)
   CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldU1VariableType,"FluidMaterial",Err)
-  DO component_idx=1,6
+  DO component_idx=1,4
     CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,component_idx,GeometricMeshComponent,Err)
   ENDDO
   DO component_idx=1,1
@@ -321,12 +319,11 @@ PROGRAM COUPLEDCANTILEVER
 
   !Set material constants
   !Solid constitutive law
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,K1,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,K2,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,K,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,M,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,5,b,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,6,p_0,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,C0,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,C1,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,C2,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4, &
+    & (1.0_CMISSDP-porosity),Err)
   !Solid density
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldVVariableType,CMISSFieldValuesSetType,1,Density,Err)
 
@@ -339,6 +336,7 @@ PROGRAM COUPLEDCANTILEVER
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,6,permeability,Err)
   !Fluid Density
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,7,FluidDensity,Err)
+  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,8,porosity,Err)
 
   !Create the source field with the gravity vector
   CALL CMISSFieldTypeInitialise(SourceField,Err)
