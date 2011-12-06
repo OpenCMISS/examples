@@ -66,7 +66,7 @@ class Test:
     self.path = example.path if ("path" not in dct) else append_path(append_path(globalExamplesDir,example.globalTestDir),dct["path"])
 
   def __repr__(self):
-    return ("processors: %d, args: %s" %(self.processors,self.args))
+    return "processors: %d, args: %s" %(self.processors,self.args)
 
 class Example:
   
@@ -126,7 +126,7 @@ def check_build_library(compiler_version):
       os.mkdir(newDir)
   logPath = logDir+"/nose_library_build_" + compiler_version + str(date.today())
   open_log(logPath)
-  command = "make USEFIELDML=true COMPILER=" + compiler + " >> "  + logPath + " 2>&1"
+  command = "make USEFIELDML=true COMPILER=%s >> %s 2>&1" %(compiler,logPath)
   err = os.system(command)
   close_log(logPath)
   add_history(logDir+"/nose_library_build_history_" + compiler_version,err)
@@ -137,7 +137,7 @@ def test_example():
   for examplePath, subFolders, files in os.walk(examplesDir) :
     if examplePath.find(".svn")==-1 :
       for f in files :
-        if (size=='small' and f=='nightlytest.json') or (size=='large' and (f=='nightlytest.json' or f=='weeklytest.json')) :
+        if (size=='small' and f=='nightlytest.json') or (size=='large' and f in ('nightlytest.json','weeklytest.json')) :
           os.chdir(examplePath)
           json_data=open(f).read()
           example = object_encode(json.loads(json_data))
@@ -152,7 +152,7 @@ def check_build(status,example):
   logDir = load_log_dir(example.path)
   logPath = append_path(logDir,"nose_build_" + example.compilerVersion + str(date.today()))
   open_log(logPath)
-  command = "make USEFIELDML=true COMPILER=" + compiler + " >> "  + logPath + " 2>&1"
+  command = "make USEFIELDML=true COMPILER=%s >> %s 2>&1" %(compiler,logPath)
   err = os.system(command)
   close_log(logPath)
   add_history(logDir+"/nose_build_history_" + example.compilerVersion,err)
@@ -164,7 +164,7 @@ def check_run(status,example,test):
   logPath = append_path(logDir,"nose_run_" + example.compilerVersion + str(date.today()))
   open_log(logPath)
   exampleName = example.path.rpartition("/")[2]
-  command = example.path+"/bin/"+example.arch+"-"+example.system+"/mpich2/"+example.compilerVersion+"/"+exampleName+"Example-debug "+test.args + " >> "  + logPath + " 2>&1"
+  command = "%s/bin/%s-%s/mpich2%s/%sExample-debug %s >> %s 2>&1" %(example.path,example.arch,example.system,example.compilerVersion,exampleName,test.args,logPath)
   err = os.system(command)
   close_log(logPath)
   add_history(logDir+"/nose_run_history_" + example.compilerVersion,err)
@@ -179,7 +179,7 @@ def check_output(status,example,test):
   errall =0
   for outputFile in os.listdir(test.expectedPath) :
     if outputFile!='.svn' :
-      command = ndiff+" --tolerance=" + str(test.tolerance) +" "+test.expectedPath+"/"+outputFile+" "+test.outputPath+"/"+outputFile + ' >> '  + logPath + " 2>&1"
+      command = "%s --tolerance=%f %s/%s %s/%s >> %s 2>&1" %(ndiff,test.tolerance,test.expectedPath,outputFile,test.outputPath,outputFile,logPath)
       err = os.system(command)
       if err!=0 :
         errall = -1
