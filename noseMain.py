@@ -164,7 +164,7 @@ def check_run(status,example,test):
   logPath = append_path(logDir,"nose_run_" + example.compilerVersion + str(date.today()))
   open_log(logPath)
   exampleName = example.path.rpartition("/")[2]
-  command = "%s/bin/%s-%s/mpich2%s/%sExample-debug %s >> %s 2>&1" %(example.path,example.arch,example.system,example.compilerVersion,exampleName,test.args,logPath)
+  command = "%s/bin/%s-%s/mpich2/%s/%sExample-debug %s >> %s 2>&1" %(example.path,example.arch,example.system,example.compilerVersion,exampleName,test.args,logPath)
   err = os.system(command)
   close_log(logPath)
   add_history(logDir+"/nose_run_history_" + example.compilerVersion,err)
