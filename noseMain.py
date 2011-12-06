@@ -55,12 +55,44 @@ def add_history(historyPath,err) :
     history.write(strftime("%Y-%m-%d %H:%M:%S")+'\tfail\t'+hostname+'\n')
   history.close()
 
-class Struct:
-    def __init__(self, dct):
-      self.__dict__.update(dct)
+class Test:
+  def __init__(self, dct, example,globalExamplesDir):
+    self.args = "" 
+    self.processors = 1 
+    if ("expectedPath" in dct):
+      self.outputPath = "." 
+      self.tolerance = 1e-7 
+    self.__dict__.update(dct)
+    self.path = example.path if ("path" not in dct) else append_path(append_path(globalExamplesDir,example.globalTestDir),dct["path"])
+
+  def __repr__(self):
+    return ("processors: %d, args: %s" %(self.processors,self.args))
+
+class Example:
+  
+  def __init__(self,dct,compiler_version,globalExamplesDir,examplesDir,logsDir):
+    self.path = os.getcwd()
+    self.system = os.uname()[0].lower()
+    self.arch = os.uname()[4]
+    self.compilerVersion = compiler_version
+    self.logPath = self.path.replace(examplesDir,logsDir)
+    self.globalTestDir = "" if ("globalTestDir" not in dct) else dct["globalTestDir"]
+    test_dct = dct["test"]
+    self.tests = []
+    for test_entry in test_dct :
+      self.addTest(Test(test_entry,self,globalExamplesDir))
+
+  def addTest(self, test):
+    self.tests.append(test)
+
+  def __repr__(self):
+    return self.path
+
         
 def object_encode(dct) :
-  return Struct(dct)
+  global compiler_version,globalExamplesDir,examplesDir,logsDir
+  example = Example(dct["example"],compiler_version,globalExamplesDir,examplesDir,logsDir)
+  return example
 
 def load_log_dir(examplePath) :
   global logsDir
@@ -101,33 +133,22 @@ def check_build_library(compiler_version):
   assert err==0
   
 def test_example():
-  global compiler_version,globalExamplesDir,examplesDir,logsDir
+  global examplesDir
   for examplePath, subFolders, files in os.walk(examplesDir) :
     if examplePath.find(".svn")==-1 :
       for f in files :
         if (size=='small' and f=='nightlytest.json') or (size=='large' and (f=='nightlytest.json' or f=='weeklytest.json')) :
-          json_data=open(examplePath + "/" + f).read()
-          example = json.loads(json_data,object_hook=object_encode).example
-          example.path = examplePath
-          example.system = os.uname()[0].lower()
-          example.arch = os.uname()[4]
-          example.compilerVersion = compiler_version
-          example.logPath = example.path.replace(examplesDir,logsDir)
-          example.globalTestDir = "" if (not hasattr(example,"globalTestDir")) else example.globalTestDir
+          os.chdir(examplePath)
+          json_data=open(f).read()
+          example = object_encode(json.loads(json_data))
           yield check_build, 'build',example
-          for test in example.test : 
-            test.path = example.path if (not hasattr(test,"path")) else append_path(append_path(globalExamplesDir,example.globalTestDir),test.path)
-            test.args = "" if (not hasattr(test,"args")) else test.args
-            test.processors = 1 if (not hasattr(test,"processors")) else test.processors
+          for test in example.tests : 
             yield check_run, 'run', example, test
             if (hasattr(test, 'expectedPath')):
-              test.outputPath = "." if (not hasattr(test,"outputPath")) else test.outputPath
-              test.tolerance = 1e-7 if (not hasattr(test,"tolerance")) else test.tolerance
               yield check_output,'check', example, test
   
 def check_build(status,example):
   global compiler
-  os.chdir(example.path)
   logDir = load_log_dir(example.path)
   logPath = append_path(logDir,"nose_build_" + example.compilerVersion + str(date.today()))
   open_log(logPath)
