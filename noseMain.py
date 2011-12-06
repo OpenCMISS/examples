@@ -112,9 +112,9 @@ size = 'small' if (not 'SIZE' in os.environ) else os.environ['SIZE']
 ############ Beginning of tests #######################
 
 def test_build_library():
-  yield check_build_library,compiler_version
+  yield check_build_library,compiler_version,os.uname()[4],os.uname()[0].lower()
    
-def check_build_library(compiler_version):
+def check_build_library(compiler_version,arch,system):
   global logsDir, compiler
   rootDir=os.environ['OPENCMISS_ROOT']+"/cm"
   os.chdir(rootDir)
