@@ -96,7 +96,7 @@ def object_encode(dct) :
 
 def load_log_dir(examplePath) :
   global logsDir
-  logDir = examplePath.replace(os.environ['OPENCMISSEXAMPLES_ROOT'],logsDir)
+  logDir = examplePath.replace(os.environ['OPENCMISS_ROOT'],logsDir)
   newDir = ''
   for folder in logDir.split('/') :
     newDir = newDir + '/' + folder
