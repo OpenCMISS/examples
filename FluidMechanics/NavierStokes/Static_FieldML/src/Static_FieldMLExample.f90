@@ -368,7 +368,7 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
     & CMISSFieldUVariableType, "test_mesh.coordinates", err )
   CALL CMISSFieldCreateFinish( RegionUserNumber, GeometricFieldUserNumber, err )
 
-  CALL CMISSFieldMLInputFieldNodalParametersUpdate( fieldmlInfo, GeometricField, "test_mesh.node.coordinates", &
+  CALL CMISSFieldMLInputFieldParametersUpdate( fieldmlInfo, GeometricField, "test_mesh.node.coordinates", &
     & CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
   CALL CMISSFieldParameterSetUpdateStart( GeometricField, CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
   CALL CMISSFieldParameterSetUpdateFinish( GeometricField, CMISSFieldUVariableType, CMISSFieldValuesSetType, err )
