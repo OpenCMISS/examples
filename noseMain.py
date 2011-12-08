@@ -179,7 +179,7 @@ def check_output(status,example,test):
   errall =0
   for outputFile in os.listdir(test.expectedPath) :
     if outputFile!='.svn' :
-      command = "%s --tolerance=%f %s/%s %s/%s >> %s 2>&1" %(ndiff,test.tolerance,test.expectedPath,outputFile,test.outputPath,outputFile,logPath)
+      command = "%s --tolerance=%e %s/%s %s/%s >> %s 2>&1" %(ndiff,test.tolerance,test.expectedPath,outputFile,test.outputPath,outputFile,logPath)
       err = os.system(command)
       if err!=0 :
         errall = -1
