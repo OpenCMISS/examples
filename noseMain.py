@@ -134,6 +134,7 @@ def check_build_library(compiler_version,arch,system):
   
 def test_example():
   global examplesDir
+  os.system("mpd &")
   for examplePath, subFolders, files in os.walk(examplesDir) :
     if examplePath.find(".svn")==-1 :
       for f in files :
@@ -146,6 +147,7 @@ def test_example():
             yield check_run, 'run', example, test
             if (hasattr(test, 'expectedPath')):
               yield check_output,'check', example, test
+  os.system("mpdallexit")
   
 def check_build(status,example):
   global compiler
@@ -164,8 +166,12 @@ def check_run(status,example,test):
   logPath = append_path(logDir,"nose_run_%s_%s_%d" %(example.compilerVersion,str(date.today()),test.id))
   open_log(logPath)
   exampleName = example.path.rpartition("/")[2]
-  command = "%s/bin/%s-%s/mpich2/%s/%sExample-debug %s >> %s 2>&1" %(example.path,example.arch,example.system,example.compilerVersion,exampleName,test.args,logPath)
+  if test.processors == 1 :
+    command = "%s/bin/%s-%s/mpich2/%s/%sExample-debug %s >> %s 2>&1" %(example.path,example.arch,example.system,example.compilerVersion,exampleName,test.args,logPath)
+  else :
+    command = "mpiexec -n %d %s/bin/%s-%s/mpich2/%s/%sExample-debug %s >> %s 2>&1" %(test.processors,example.path,example.arch,example.system,example.compilerVersion,exampleName,test.args,logPath)
   err = os.system(command)
+    
   close_log(logPath)
   add_history("%s/nose_run_history_%s_%d" %(logDir,example.compilerVersion,test.id),err)
   assert err==0
