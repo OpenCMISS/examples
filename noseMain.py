@@ -150,7 +150,7 @@ def test_example():
 def check_build(status,example):
   global compiler
   logDir = load_log_dir(example.path)
-  logPath = append_path(logDir,"nose_build_" + example.compilerVersion + str(date.today()))
+  logPath = append_path(logDir,"nose_build_%s_%s" %(example.compilerVersion,str(date.today())))
   open_log(logPath)
   command = "make USEFIELDML=true COMPILER=%s >> %s 2>&1" %(compiler,logPath)
   err = os.system(command)
@@ -161,19 +161,19 @@ def check_build(status,example):
 def check_run(status,example,test):
   logDir = load_log_dir(test.path)
   os.chdir(test.path)
-  logPath = append_path(logDir,"nose_run_" + example.compilerVersion + str(date.today()))
+  logPath = append_path(logDir,"nose_run_%s_%s_%d" %(example.compilerVersion,str(date.today()),test.id))
   open_log(logPath)
   exampleName = example.path.rpartition("/")[2]
   command = "%s/bin/%s-%s/mpich2/%s/%sExample-debug %s >> %s 2>&1" %(example.path,example.arch,example.system,example.compilerVersion,exampleName,test.args,logPath)
   err = os.system(command)
   close_log(logPath)
-  add_history(logDir+"/nose_run_history_" + example.compilerVersion,err)
+  add_history("%s/nose_run_history_%s_%d" %(logDir,example.compilerVersion,test.id),err)
   assert err==0
 
 def check_output(status,example,test):
   logDir = load_log_dir(test.path)
   os.chdir(test.path)
-  logPath = append_path(logDir,"nose_check_" + example.compilerVersion + str(date.today()))
+  logPath = append_path(logDir,"nose_check_%s_%s_%d" %(example.compilerVersion, str(date.today()), test.id))
   open_log(logPath)
   ndiff = os.environ['OPENCMISS_ROOT']+"/cm/utils/ndiff"
   errall =0
@@ -188,7 +188,7 @@ def check_output(status,example,test):
     f1.write("The output values are identical with the expected ones. However, the outputs may be generated from previous build. You need also check if the latest test run passes.")
     f1.close()
   close_log(logPath)
-  add_history(logDir+"/nose_check_history_" + example.compilerVersion,errall)
+  add_history("%s/nose_check_history_%s_%d" %(logDir, example.compilerVersion, test.id) ,errall)
   assert errall==0 
  
 if __name__ == '__main__':
