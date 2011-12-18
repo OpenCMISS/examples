@@ -8,7 +8,7 @@ MonodomainTP06 0.5 0.1 10
 
 # ---- these take a while, uncomment to run
 
-# 64,000 elements laplace. make sure to comment out CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverMatrixOutput,Err) or it will crash
+# 64,000 elements laplace. make sure to comment out CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_MATRIX_OUTPUT,Err) or it will crash
 ParallelLaplace 40 40 40 1
 
 # 52,500 elements monodomain for 10ms with 0.1ms time steps
