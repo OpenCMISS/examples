@@ -278,7 +278,7 @@ PROGRAM MULTIPLEMESHCOMPONENTSEXAMPLE
   CALL CMISSField_ComponentValuesInitialise(SecondField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,0.0_CMISSDP,Err)
 
   !Update the geometric field parameters for the first field
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
 
   !Output solution
   CALL CMISSFields_Initialise(Fields,Err)

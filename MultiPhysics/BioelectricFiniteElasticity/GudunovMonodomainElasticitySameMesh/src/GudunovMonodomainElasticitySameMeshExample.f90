@@ -415,7 +415,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
   CALL CMISSField_VariableLabelSet(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,"Geometry",Err)
   CALL CMISSField_CreateFinish(GeometricFieldFE,Err)
   !Update the geometric field parameters
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricFieldFE,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricFieldFE,Err)
 
   !--------------------------------------------------------------------------------------------------------------------------------
   !Create a fibre field and attach it to the geometric field - quadratic interpolation
@@ -537,7 +537,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
   CALL CMISSField_VariableLabelSet(GeometricFieldM,CMISS_FIELD_U_VARIABLE_TYPE,"GeometryM",Err)
   CALL CMISSField_CreateFinish(GeometricFieldM,Err)
   !Update the geometric field parameters
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricFieldM,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricFieldM,Err)
         
 
   !--------------------------------------------------------------------------------------------------------------------------------
@@ -742,22 +742,22 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
   !--------------------------------------------------------------------------------------------------------------------------------
   !Create the CellML models field
   CALL CMISSField_Initialise(CellMLModelsField,Err)
-  CALL CMISSCellML_ModelsFieldCreateStart(CellMLModelsFieldUserNumber,CellML,CellMLModelsField,Err)
+  CALL CMISSCellML_ModelsFieldCreateStart(CellML,CellMLModelsFieldUserNumber,CellMLModelsField,Err)
   CALL CMISSCellML_ModelsFieldCreateFinish(CellML,Err)
 
   !Create the CellML state field
   CALL CMISSField_Initialise(CellMLStateField,Err)
-  CALL CMISSCellML_StateFieldCreateStart(CellMLStateFieldUserNumber,CellML,CellMLStateField,Err)
+  CALL CMISSCellML_StateFieldCreateStart(CellML,CellMLStateFieldUserNumber,CellMLStateField,Err)
   CALL CMISSCellML_StateFieldCreateFinish(CellML,Err)
 
   !Create the CellML intermediate field
   CALL CMISSField_Initialise(CellMLIntermediateField,Err)
-  CALL CMISSCellML_IntermediateFieldCreateStart(CellMLIntermediateFieldUserNumber,CellML,CellMLIntermediateField,Err)
+  CALL CMISSCellML_IntermediateFieldCreateStart(CellML,CellMLIntermediateFieldUserNumber,CellMLIntermediateField,Err)
   CALL CMISSCellML_IntermediateFieldCreateFinish(CellML,Err)
   
   !Create the CellML parameters field
   CALL CMISSField_Initialise(CellMLParametersField,Err)
-  CALL CMISSCellML_ParametersFieldCreateStart(CellMLParametersFieldUserNumber,CellML,CellMLParametersField,Err)
+  CALL CMISSCellML_ParametersFieldCreateStart(CellML,CellMLParametersFieldUserNumber,CellMLParametersField,Err)
   CALL CMISSCellML_ParametersFieldCreateFinish(CellML,Err)
   
   !--------------------------------------------------------------------------------------------------------------------------------

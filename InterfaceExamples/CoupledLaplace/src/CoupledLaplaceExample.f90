@@ -570,9 +570,9 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSField_CreateFinish(GeometricField2,Err)
 
   !Update the geometric field parameters for the first field
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricField1,GeneratedMesh1,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh1,GeometricField1,Err)
   !Update the geometric field parameters for the second field
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricField2,GeneratedMesh2,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh2,GeometricField2,Err)
 
   !Create the equations set for the first region
   PRINT *, ' == >> CREATING EQUATION SET(1) << == '
@@ -653,7 +653,7 @@ PROGRAM COUPLEDLAPLACE
   CALL CMISSField_CreateFinish(InterfaceGeometricField,Err)
 
   !Update the geometric field parameters for the interface field
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(InterfaceGeometricField,InterfaceGeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(InterfaceGeneratedMesh,InterfaceGeometricField,Err)
 
   !Create an interface condition between the two meshes
   PRINT *, ' == >> CREATING INTERFACE CONDITIONS << == '

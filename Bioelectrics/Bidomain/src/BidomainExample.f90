@@ -245,7 +245,7 @@ PROGRAM BIDOMAINEXAMPLE
   CALL CMISSField_CreateFinish(GeometricField,Err)
 
   !Update the geometric field parameters
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
         
   !Create the first (parabolic) equations set for the bidomain equations
   CALL CMISSEquationsSet_Initialise(ParabolicEquationsSet,Err)
@@ -361,7 +361,7 @@ PROGRAM BIDOMAINEXAMPLE
 
   !Start the creation of the CellML models field
   CALL CMISSField_Initialise(CellMLModelsField,Err)
-  CALL CMISSCellML_ModelsFieldCreateStart(CellMLModelsFieldUserNumber,CellML,CellMLModelsField,Err)
+  CALL CMISSCellML_ModelsFieldCreateStart(CellML,CellMLModelsFieldUserNumber,CellMLModelsField,Err)
   !Finish the creation of the CellML models field
   CALL CMISSCellML_ModelsFieldCreateFinish(CellML,Err)
   !Set up the models field
@@ -376,19 +376,19 @@ PROGRAM BIDOMAINEXAMPLE
 
   !Start the creation of the CellML state field
   CALL CMISSField_Initialise(CellMLStateField,Err)
-  CALL CMISSCellML_StateFieldCreateStart(CellMLStateFieldUserNumber,CellML,CellMLStateField,Err)
+  CALL CMISSCellML_StateFieldCreateStart(CellML,CellMLStateFieldUserNumber,CellMLStateField,Err)
   !Finish the creation of the CellML state field
   CALL CMISSCellML_StateFieldCreateFinish(CellML,Err)
 
   !Start the creation of the CellML intermediate field
   CALL CMISSField_Initialise(CellMLIntermediateField,Err)
-  CALL CMISSCellML_IntermediateFieldCreateStart(CellMLIntermediateFieldUserNumber,CellML,CellMLIntermediateField,Err)
+  CALL CMISSCellML_IntermediateFieldCreateStart(CellML,CellMLIntermediateFieldUserNumber,CellMLIntermediateField,Err)
   !Finish the creation of the CellML intermediate field
   CALL CMISSCellML_IntermediateFieldCreateFinish(CellML,Err)
   
   !Start the creation of CellML parameters field
   CALL CMISSField_Initialise(CellMLParametersField,Err)
-  CALL CMISSCellML_ParametersFieldCreateStart(CellMLParametersFieldUserNumber,CellML,CellMLParametersField,Err)
+  CALL CMISSCellML_ParametersFieldCreateStart(CellML,CellMLParametersFieldUserNumber,CellMLParametersField,Err)
   !Finish the creation of CellML parameters
   CALL CMISSCellML_ParametersFieldCreateFinish(CellML,Err)
   

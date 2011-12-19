@@ -234,7 +234,7 @@ PROGRAM DIFFUSIONCONSTANTSOURCEEXAMPLE
 
        
     !Update the geometric field parameters
-    CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
+    CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
 !  ENDIF
 
   !IF(.NOT.ASSOCIATED(GEOMETRIC_FIELD)) GEOMETRIC_FIELD=>REGION%FIELDS%FIELDS(1)%PTR

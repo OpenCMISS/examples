@@ -310,7 +310,7 @@ PROGRAM MOONEYRIVLININCELLMLEXAMPLE
   CALL CMISSField_CreateFinish(GeometricField,Err)
 
   !Update the geometric field parameters
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
 
   !Create a fibre field and attach it to the geometric field - linear interpolation
   CALL CMISSField_Initialise(FibreField,Err)
@@ -514,23 +514,23 @@ PROGRAM MOONEYRIVLININCELLMLEXAMPLE
 
   !Create the CellML models field
   CALL CMISSField_Initialise(CellMLModelsField,Err)
-  CALL CMISSCellML_ModelsFieldCreateStart(CellMLModelsFieldUserNumber,CellML,CellMLModelsField,Err)
+  CALL CMISSCellML_ModelsFieldCreateStart(CellML,CellMLModelsFieldUserNumber,CellMLModelsField,Err)
   CALL CMISSCellML_ModelsFieldCreateFinish(CellML,Err)
 
 ! no state field is required for a simple constitutive equation evaluation
   !Create the CellML state field
 !  CALL CMISSField_Initialise(CellMLStateField,Err)
-!  CALL CMISSCellML_StateFieldCreateStart(CellMLStateFieldUserNumber,CellML,CellMLStateField,Err)
+!  CALL CMISSCellML_StateFieldCreateStart(CellML,CellMLStateFieldUserNumber,CellMLStateField,Err)
 !  CALL CMISSCellML_StateFieldCreateFinish(CellML,Err)
 
   !Create the CellML parameters field --- will be the strain field
   CALL CMISSField_Initialise(CellMLParametersField,Err)
-  CALL CMISSCellML_ParametersFieldCreateStart(CellMLParametersFieldUserNumber,CellML,CellMLParametersField,Err)
+  CALL CMISSCellML_ParametersFieldCreateStart(CellML,CellMLParametersFieldUserNumber,CellMLParametersField,Err)
   CALL CMISSCellML_ParametersFieldCreateFinish(CellML,Err)
 
   !Create the CellML intermediate field --- will be the stress field
   CALL CMISSField_Initialise(CellMLIntermediateField,Err)
-  CALL CMISSCellML_IntermediateFieldCreateStart(CellMLIntermediateFieldUserNumber,CellML,CellMLIntermediateField,Err)
+  CALL CMISSCellML_IntermediateFieldCreateStart(CellML,CellMLIntermediateFieldUserNumber,CellMLIntermediateField,Err)
   CALL CMISSCellML_IntermediateFieldCreateFinish(CellML,Err)
 
   !Create the equations set equations

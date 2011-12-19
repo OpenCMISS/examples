@@ -465,7 +465,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
   CALL CMISSField_CreateFinish(GeometricFieldSolid,Err)
 
   !Update the geometric field parameters
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricFieldSolid,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricFieldSolid,Err)
 
   !
   !================================================================================================================================
@@ -488,7 +488,7 @@ PROGRAM QUADRATICELLIPSOIDDRIVENDARCYEXAMPLE
   CALL CMISSField_CreateFinish(GeometricFieldDarcy,Err)
 
   !Update the geometric field parameters
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricFieldDarcy,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricFieldDarcy,Err)
 
   !
   !================================================================================================================================

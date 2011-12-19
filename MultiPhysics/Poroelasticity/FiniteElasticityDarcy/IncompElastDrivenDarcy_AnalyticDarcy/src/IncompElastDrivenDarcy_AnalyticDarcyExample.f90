@@ -546,7 +546,7 @@ PROGRAM INCOMPELASTDRIVENDARCYANALYTICDARCYEXAMPLE
   CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,3,DisplacementMeshComponentNumber,Err)
   CALL CMISSField_CreateFinish(GeometricField,Err)
   !Set the mesh component to be used by the field components.
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
 
 !   !Update the geometric field parameters
 !   DO NODE_NUMBER=1,NUMBER_OF_NODES_GEOMETRY

@@ -615,7 +615,7 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,2,SolidGeometryMeshComponentNumber,Err)
   CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,3,SolidGeometryMeshComponentNumber,Err)
   CALL CMISSField_CreateFinish(GeometricField,Err)
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
 
   !--------------------------------------------------------------------------------------------------------------------------------
   ! Solid
@@ -637,7 +637,7 @@ PROGRAM FINITEELASTICITYMULTICOMPDARCYEXAMPLE
   CALL CMISSField_ComponentMeshComponentSet(GeometricFieldSolid,CMISS_FIELD_U_VARIABLE_TYPE,3,SolidMeshComponenetNumber,Err)
   CALL CMISSField_CreateFinish(GeometricFieldSolid,Err)
   !Set the mesh component to be used by the field components.
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricFieldSolid,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricFieldSolid,Err)
 !   !Set the scaling to use
 !   CALL CMISSField_ScalingTypeSet(GeometricFieldSolid,CMISS_FIELD_NO_SCALING,Err)
 

@@ -217,7 +217,7 @@ int main()
   Err = CMISSField_CreateFinish(GeometricField);
 
   /* Update the geometric field parameters */
-  Err = CMISSGeneratedMesh_GeometricParametersCalculate(GeometricField,GeneratedMesh);
+  Err = CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField);
 
   /* Create the equations_set */
   Err = CMISSEquationsSet_Initialise(&EquationsSet);

@@ -229,7 +229,7 @@ PROGRAM DefineGeometryAndExportExample
   CALL CMISSField_CreateFinish(GeometricField,Err)
 
   !Update the geometric field parameters
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
 
 
   CALL CMISSFields_Initialise(Fields,Err)

@@ -198,7 +198,7 @@ PROGRAM NUMBERLAPLACEEXAMPLE
   CALL CMISSField_CreateFinish(RegionUserNumber,GeometricFieldUserNumber,Err)
        
   !Update the geometric field parameters
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(RegionUserNumber,GeometricFieldUserNumber,GeneratedMeshUserNumber,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(RegionUserNumber,GeneratedMeshUserNumber,GeometricFieldUserNumber,Err)
   
   !Create the equations_set
   CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumber,RegionUserNumber,GeometricFieldUserNumber,&

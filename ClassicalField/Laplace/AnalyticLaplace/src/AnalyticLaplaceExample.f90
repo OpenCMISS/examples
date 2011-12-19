@@ -480,7 +480,7 @@ CONTAINS
     CALL CMISSField_CreateFinish(GEOMETRIC_FIELD,Err)
 
     !Update the geometric field parameters
-    CALL CMISSGeneratedMesh_GeometricParametersCalculate(GEOMETRIC_FIELD,GENERATED_MESH,Err)
+    CALL CMISSGeneratedMesh_GeometricParametersCalculate(GENERATED_MESH,GEOMETRIC_FIELD,Err)
 
     !Create the equations_set
     CALL CMISSEquationsSet_Initialise(EQUATIONS_SET,Err)

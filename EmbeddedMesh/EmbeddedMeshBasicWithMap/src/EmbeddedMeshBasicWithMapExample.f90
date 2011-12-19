@@ -264,7 +264,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   CALL CMISSField_CreateFinish(GeometricField1,Err)
 
   !Update the geometric field parameters
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricField1,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField1,Err)
 
   !Create the dependent field with 1 variables and 1 component
   CALL CMISSField_Initialise(DependentField1,Err)
@@ -386,7 +386,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   CALL CMISSField_CreateFinish(GeometricField2,Err)
   
   !Update the geometric field parameters
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricField2,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField2,Err)
 
  !Create the dependent field with 1 variables and 1 component
   CALL CMISSField_Initialise(DependentField2,Err)

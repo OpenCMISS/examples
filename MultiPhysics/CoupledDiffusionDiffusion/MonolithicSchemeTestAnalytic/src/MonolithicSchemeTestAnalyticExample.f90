@@ -719,7 +719,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   CALL CMISSField_CreateFinish(GeometricField,Err)
 
   !Update the geometric field parameters
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
   !Update the geometric field parameters
 !   DO NODE_NUMBER=1,NUMBER_OF_NODES_GEOMETRY
 !     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS

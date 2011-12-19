@@ -481,7 +481,7 @@ call READ_MESH('input/example-mesh-3els',MeshUserNumber,Region, Mesh,Bases,Nodes
   CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,3,SolidGeometryMeshComponentNumber,Err)
   CALL CMISSField_CreateFinish(GeometricField,Err)
 CALL READ_NODES('input/example-nodes-3els',GeometricField)
-!   CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
+!   CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
 
   !--------------------------------------------------------------------------------------------------------------------------------
   ! Solid
@@ -504,7 +504,7 @@ CALL READ_NODES('input/example-nodes-3els',GeometricField)
   CALL CMISSField_CreateFinish(GeometricFieldSolid,Err)
   !Set the mesh component to be used by the field components.
 CALL READ_NODES('input/example-nodes-3els',GeometricFieldSolid)
-!  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricFieldSolid,GeneratedMesh,Err)
+!  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricFieldSolid,Err)
 
   !Create a fibre field and attach it to the geometric field
   CALL CMISSField_Initialise(FibreFieldSolid,Err)

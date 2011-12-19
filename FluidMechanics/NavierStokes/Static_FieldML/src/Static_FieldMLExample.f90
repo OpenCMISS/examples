@@ -280,7 +280,7 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !
 
   CALL CMISSFieldMLIO_Initialise( fieldmlInfo, err ) 
-  CALL CMISSFieldML_InputCreateFromFile( fieldmlInfo, inputFilename, err )
+  CALL CMISSFieldML_InputCreateFromFile( inputFilename, fieldmlInfo, err )
 
   !COORDINATE SYSTEM
 

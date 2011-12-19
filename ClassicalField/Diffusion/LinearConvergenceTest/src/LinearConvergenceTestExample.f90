@@ -237,7 +237,7 @@ PROGRAM DIFFUSIONEXAMPLE
   
   
   !Update the geometric field parameters
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
   
   !Create the equations_set
   CALL CMISSField_Initialise(EquationsSetField,Err)

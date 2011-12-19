@@ -348,7 +348,7 @@ CONTAINS
     CALL CMISSField_CreateFinish(GeometricField,Err)
 
     !Update the geometric field parameters
-    CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
+    CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
 
     !Create a dependent field with two variables and three components
     CALL CMISSField_Initialise(DependentField,Err)

@@ -298,7 +298,7 @@ PROGRAM POROELASTICITYEXAMPLE
   CALL CMISSField_CreateFinish(GeometricField,Err)
 
   !Update the geometric field parameters
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
 
   !Create a fibre field and attach it to the geometric field
   CALL CMISSField_Initialise(FibreField,Err)

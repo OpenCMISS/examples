@@ -183,7 +183,7 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
   CALL CMISSField_CreateFinish(GeometricField,Err)
        
   !Update the geometric field parameters
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
   
   !Create the equations_set
   CALL CMISSEquationsSet_Initialise(EquationsSet,Err)

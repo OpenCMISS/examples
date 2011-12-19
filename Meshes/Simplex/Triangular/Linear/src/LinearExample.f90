@@ -195,7 +195,7 @@ PROGRAM LINEARTRIANGLESIMPLEXEXAMPLE
   CALL CMISSField_CreateFinish(GeometricField,Err)
 
   !Update the geometric field parameters
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
   
   !Export the fields
   CALL CMISSFields_Initialise(Fields,Err)
