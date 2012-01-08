@@ -1,6 +1,6 @@
 !> \file
 !> \author Chris Bradley
-!> \brief This is an example program to solve a finite elasticity equation using openCMISS calls.
+!> \brief This is an example program to solve a finite elasticity membrane equation using openCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -24,7 +24,7 @@
 !> of Oxford are Copyright (C) 2007 by the University of Auckland and
 !> the University of Oxford. All Rights Reserved.
 !>
-!> Contributor(s): Alice Hung
+!> Contributor(s): Alice Hung, Jessica Jor
 !>
 !> Alternatively, the contents of this file may be used under the terms of
 !> either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -39,8 +39,8 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example FiniteElasticity/UniAxialExtension/src/UniAxialExtensionExample.f90
-!! Example program to solve a finite elasticity equation using openCMISS calls.
+!> \example FiniteElasticity/Membrane/MembraneExtension2DSpace/src/MembraneExtension2DSpaceExample.f90
+!! Example program to solve a finite elasticity membrane equation using openCMISS calls.
 !! \par Latest Builds:
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/UniAxialExtension/build-intel'>Linux Intel Build</a>
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/UniAxialExtension/build-gnu'>Linux GNU Build</a>
@@ -260,6 +260,7 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
   CALL CMISSFieldNumberOfComponentsSet(FibreField,CMISSFieldUVariableType,FieldFibreNumberOfComponents,Err)
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,1,MeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,2,MeshComponentNumber,Err)
+  CALL CMISSFieldVariableLabelSet(FibreField,CMISSFieldUVariableType,"Fibre",Err)
   CALL CMISSFieldCreateFinish(FibreField,Err)
 
   !Create a material field and attach it to the geometric field
@@ -272,13 +273,16 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
   CALL CMISSFieldNumberOfComponentsSet(MaterialField,CMISSFieldUVariableType,FieldMaterialNumberOfComponents,Err)
   CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,1,MeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,2,MeshComponentNumber,Err)
+
+  !Set membrane thickness (only specifiy this for 3D space)
   CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,3,MeshComponentNumber,Err)
+  CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldUVariableType,"Material",Err)
   CALL CMISSFieldCreateFinish(MaterialField,Err)
 
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 3.0 respectively.
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2.0_CMISSDP,Err)
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,3.0_CMISSDP,Err)
-  !Set membrane thickness
+  !Set membrane thickness (only specifiy this for 3D space)
   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,0.1_CMISSDP,Err)
 
   !Create a dependent field
@@ -295,11 +299,12 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
   CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,2,MeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,1,MeshComponentNumber,Err)
   CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,2,MeshComponentNumber,Err)
+  CALL CMISSFieldVariableLabelSet(DependentField,CMISSFieldUVariableType,"Dependent",Err)
   CALL CMISSFieldCreateFinish(DependentField,Err)
 
   !Create the equations_set
-    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
-CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSEquationsSetElasticityClass, &
+  CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
+  CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSEquationsSetElasticityClass, &
     & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetMembraneSubtype,EquationsSetFieldUserNumber,EquationsSetField, &
     & EquationsSet,Err)
   
