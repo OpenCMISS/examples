@@ -345,7 +345,7 @@ CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumber,Region,GeometricField,
   !CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_SOLVER_OUTPUT,Err)
 !   CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_MATRIX_OUTPUT,Err)
   !Set the Jacobian type
-  !CALL CMISSSolver_NewtonJacobianCalculationTypeSet(Solver,CMISS_SOLVER_NEWTON_JACOBIAN_ANALTYIC_CALCULATED,Err)
+  !CALL CMISSSolver_NewtonJacobianCalculationTypeSet(Solver,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
   !CALL CMISSSolver_NewtonJacobianCalculationTypeSet(Solver,CMISS_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)
   !Get the associated linear solver
   !CALL CMISSSolver_NewtonLinearSolverGet(Solver,LinearSolver,Err)

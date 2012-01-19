@@ -263,7 +263,7 @@ PROGRAM DIFFUSIONQUADRATICSOURCEEXAMPLE
   CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
   CALL CMISSSolver_DynamicNonlinearSolverGet(Solver,NonlinearSolver,Err)
   !Set the nonlinear Jacobian type
-  !CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolver,CMISS_SOLVER_NEWTON_JACOBIAN_ANALTYIC_CALCULATED,Err)
+  !CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolver,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
   CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolver,CMISS_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)
   !Finish the creation of the problem solver
   CALL CMISSProblem_SolversCreateFinish(Problem,Err)

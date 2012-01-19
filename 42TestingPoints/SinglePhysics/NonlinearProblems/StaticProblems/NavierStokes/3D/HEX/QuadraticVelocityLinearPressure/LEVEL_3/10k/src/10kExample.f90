@@ -709,7 +709,7 @@ CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumberNavierStokes,Region,Geo
   !Get the nonlinear static solver
   CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,SolverNavierStokesUserNumber,NonlinearSolverNavierStokes,Err)
   !Set the nonlinear Jacobian type
-  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISS_SOLVER_NEWTON_JACOBIAN_ANALTYIC_CALCULATED, &
+  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED, &
     & Err)
 !   CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISS_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)
 !   CALL CMISSSolver_NewtonLineSearchTypeSet(NonlinearSolverNavierStokes,CMISS_SOLVER_NEWTON_LINESEARCH_NONE,Err)

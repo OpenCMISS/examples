@@ -375,7 +375,7 @@ PROGRAM STATICBURGERSEXAMPLE
   !Get the nonlinear solver
   CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,SolverUserNumber,NonlinearSolver,Err)
   !Set the nonlinear Jacobian type
-  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolver,CMISS_SOLVER_NEWTON_JACOBIAN_ANALTYIC_CALCULATED,Err)
+  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolver,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
   !Set the output type (No/Progress/Timing/Solver)
   CALL CMISSSolver_OutputTypeSet(NonlinearSolver,CMISS_SOLVER_MATRIX_OUTPUT,Err)
   !Set the solver settings
