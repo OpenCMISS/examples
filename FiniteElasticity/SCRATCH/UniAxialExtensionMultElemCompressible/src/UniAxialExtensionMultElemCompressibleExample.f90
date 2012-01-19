@@ -704,7 +704,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !Get the nonlinear static solver
   CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,NonlinearSolverSolidUserNumber,NonlinearSolverSolid,Err)
   !Set the nonlinear Jacobian type
-  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolverSolid,CMISS_SOLVER_NEWTON_JACOBIAN_ANALTYIC_CALCULATED,Err)
+  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolverSolid,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
   CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolverSolid,CMISS_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)
   !Set the output type
   CALL CMISSSolver_OutputTypeSet(NonlinearSolverSolid,NONLINEAR_SOLVER_SOLID_OUTPUT_TYPE,Err)
