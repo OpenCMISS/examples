@@ -331,7 +331,7 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   CALL CMISSSolver_DynamicNonlinearSolverGet(DynamicSolver,NonlinearSolver,Err)
   !Set the nonlinear Jacobian type
   !CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolver,CMISS_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)
-  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolver,CMISS_SOLVER_NEWTON_JACOBIAN_ANALTYIC_CALCULATED,Err)
+  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolver,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
   !Set the line search
   CALL CMISSSolver_NewtonLineSearchTypeSet(NonlinearSolver,CMISS_SOLVER_NEWTON_LINESEARCH_NONE,Err)
   !Set the output type

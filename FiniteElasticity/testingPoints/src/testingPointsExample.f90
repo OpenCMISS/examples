@@ -476,7 +476,7 @@ PROGRAM TESTINGPOINTSEXAMPLE
   CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,Solver,Err)
   CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
   !CALL CMISSSolver_NewtonJacobianCalculationTypeSet(Solver,CMISS_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)  !Slower
-  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(Solver,CMISS_SOLVER_NEWTON_JACOBIAN_ANALTYIC_CALCULATED,Err)
+  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(Solver,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
   CALL CMISSSolver_NewtonLinearSolverGet(Solver,LinearSolver,Err)
   CALL CMISSSolver_NewtonLineSearchTypeSet(Solver,CMISS_SOLVER_NEWTON_LINESEARCH_QUADRATIC,Err) !Helps convergence with cubics...
   CALL CMISSSolver_LinearTypeSet(LinearSolver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)

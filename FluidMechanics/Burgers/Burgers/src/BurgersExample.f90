@@ -410,7 +410,7 @@ PROGRAM BURGERSEXAMPLE
   !Get the dynamic nonlinear solver
   CALL CMISSSolver_DynamicNonlinearSolverGet(DynamicSolver,NonlinearSolver,Err)
   !Set the nonlinear Jacobian type
-  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolver,CMISS_SOLVER_NEWTON_JACOBIAN_ANALTYIC_CALCULATED,Err)
+  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolver,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
   !Set the output type
   CALL CMISSSolver_OutputTypeSet(NonlinearSolver,NONLINEAR_SOLVER_OUTPUT_TYPE,Err)
   !Set the solver settings

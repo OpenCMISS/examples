@@ -497,7 +497,7 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !Get the nonlinear static solver
   CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,SolverNavierStokesUserNumber,NonlinearSolverNavierStokes, err )
   !Set the nonlinear Jacobian type
-  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISS_SOLVER_NEWTON_JACOBIAN_ANALTYIC_CALCULATED, &
+  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED, &
     &  err )
   !Set the output type
   CALL CMISSSolver_OutputTypeSet(NonlinearSolverNavierStokes,NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE, err )
