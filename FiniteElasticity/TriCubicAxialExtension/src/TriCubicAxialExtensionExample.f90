@@ -127,10 +127,10 @@ PROGRAM TRICUBICAXIALEXTENSIONEXAMPLE
   !Intialise cmiss
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+  CALL CMISSErrorHandlingModeSet(CMISS_ERRORS_TRAP_ERROR,Err)
 
   !Set all diganostic levels on for testing
-  !CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,[1,2,3,4,5],"Diagnostics",["PROBLEM_RESIDUAL_EVALUATE"],Err)
+  !CALL CMISSDiagnosticsSetOn(CMISS_FROM_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["PROBLEM_RESIDUAL_EVALUATE"],Err)
 
   !Get the number of computational nodes and this computational node number
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -148,834 +148,884 @@ PROGRAM TRICUBICAXIALEXTENSIONEXAMPLE
   CALL MPI_BCAST(NumberOfDomains,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
 
   !Create a 3D rectangular cartesian coordinate system
-  CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Create a region and assign the coordinate system to the region
-  CALL CMISSRegionTypeInitialise(Region,Err)
-  CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegion,Region,Err)
-  CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
-  CALL CMISSRegionCreateFinish(Region,Err)
+  CALL CMISSRegion_Initialise(Region,Err)
+  CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  CALL CMISSRegion_CoordinateSystemSet(Region,CoordinateSystem,Err)
+  CALL CMISSRegion_CreateFinish(Region,Err)
 
   !Define basis functions - tri-linear Lagrange and tri-cubic Lagrange
-  CALL CMISSBasisTypeInitialise(LinearBasis,Err)
-  CALL CMISSBasisCreateStart(LinearBasisUserNumber,LinearBasis,Err)
-  CALL CMISSBasisQuadratureNumberOfGaussXiSet(LinearBasis, &
-    & [CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme],Err)
-  CALL CMISSBasisCreateFinish(LinearBasis,Err)
+  CALL CMISSBasis_Initialise(LinearBasis,Err)
+  CALL CMISSBasis_CreateStart(LinearBasisUserNumber,LinearBasis,Err)
+  CALL CMISSBasis_QuadratureNumberOfGaussXiSet(LinearBasis, &
+    & [CMISS_BASIS_MID_QUADRATURE_SCHEME,CMISS_BASIS_MID_QUADRATURE_SCHEME,CMISS_BASIS_MID_QUADRATURE_SCHEME],Err)
+  CALL CMISSBasis_CreateFinish(LinearBasis,Err)
 
-  CALL CMISSBasisTypeInitialise(CubicBasis,Err)
-  CALL CMISSBasisCreateStart(CubicBasisUserNumber,CubicBasis,Err)
-  CALL CMISSBasisInterpolationXiSet(CubicBasis,[CMISSBasisCubicHermiteInterpolation, &
-    & CMISSBasisCubicHermiteInterpolation,CMISSBasisCubicHermiteInterpolation],Err)
-  CALL CMISSBasisQuadratureNumberOfGaussXiSet(CubicBasis, &
-    & [CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme],Err)
-  CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(CubicBasis,.TRUE.,Err)
-  CALL CMISSBasisCreateFinish(CubicBasis,Err)
+  CALL CMISSBasis_Initialise(CubicBasis,Err)
+  CALL CMISSBasis_CreateStart(CubicBasisUserNumber,CubicBasis,Err)
+  CALL CMISSBasis_InterpolationXiSet(CubicBasis,[CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION, &
+    & CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION,CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION],Err)
+  CALL CMISSBasis_QuadratureNumberOfGaussXiSet(CubicBasis, &
+    & [CMISS_BASIS_MID_QUADRATURE_SCHEME,CMISS_BASIS_MID_QUADRATURE_SCHEME,CMISS_BASIS_MID_QUADRATURE_SCHEME],Err)
+  CALL CMISSBasis_QuadratureLocalFaceGaussEvaluateSet(CubicBasis,.TRUE.,Err)
+  CALL CMISSBasis_CreateFinish(CubicBasis,Err)
 
   !Create a mesh with two components, cubic hermite for geometry and linear lagrange
   !for hydrostatic pressure, fibre angles and material properties
   TotalNumberElements=1
   NumberOfMeshDimensions=3
-  CALL CMISSMeshTypeInitialise(Mesh,Err)
-  CALL CMISSMeshCreateStart(MeshUserNumber,Region,NumberOfMeshDimensions,Mesh,Err)
-  CALL CMISSMeshNumberOfComponentsSet(Mesh,2,Err)
-  CALL CMISSMeshNumberOfElementsSet(Mesh,TotalNumberElements,Err)
+  CALL CMISSMesh_Initialise(Mesh,Err)
+  CALL CMISSMesh_CreateStart(MeshUserNumber,Region,NumberOfMeshDimensions,Mesh,Err)
+  CALL CMISSMesh_NumberOfComponentsSet(Mesh,2,Err)
+  CALL CMISSMesh_NumberOfElementsSet(Mesh,TotalNumberElements,Err)
   !define nodes for the mesh
   TotalNumberNodes=8
-  CALL CMISSNodesTypeInitialise(Nodes,Err)
-  CALL CMISSNodesCreateStart(Region,TotalNumberNodes,Nodes,Err)
-  CALL CMISSNodesCreateFinish(Nodes,Err)
+  CALL CMISSNodes_Initialise(Nodes,Err)
+  CALL CMISSNodes_CreateStart(Region,TotalNumberNodes,Nodes,Err)
+  CALL CMISSNodes_CreateFinish(Nodes,Err)
   !cubic Hermite component
-  CALL CMISSMeshElementsTypeInitialise(CubicElements,Err)
-  CALL CMISSMeshElementsCreateStart(Mesh,CubicMeshComponentNumber,CubicBasis,CubicElements,Err)
-  CALL CMISSMeshElementsNodesSet(CubicElements,1,[1,2,3,4,5,6,7,8],Err)
-  CALL CMISSMeshElementsCreateFinish(CubicElements,Err)
+  CALL CMISSMeshElements_Initialise(CubicElements,Err)
+  CALL CMISSMeshElements_CreateStart(Mesh,CubicMeshComponentNumber,CubicBasis,CubicElements,Err)
+  CALL CMISSMeshElements_NodesSet(CubicElements,1,[1,2,3,4,5,6,7,8],Err)
+  CALL CMISSMeshElements_CreateFinish(CubicElements,Err)
   !linear Lagrange component
-  CALL CMISSMeshElementsTypeInitialise(LinearElements,Err)
-  CALL CMISSMeshElementsCreateStart(Mesh,LinearMeshComponentNumber,LinearBasis,LinearElements,Err)
-  CALL CMISSMeshElementsNodesSet(LinearElements,1,[1,2,3,4,5,6,7,8],Err)
-  CALL CMISSMeshElementsCreateFinish(LinearElements,Err)
+  CALL CMISSMeshElements_Initialise(LinearElements,Err)
+  CALL CMISSMeshElements_CreateStart(Mesh,LinearMeshComponentNumber,LinearBasis,LinearElements,Err)
+  CALL CMISSMeshElements_NodesSet(LinearElements,1,[1,2,3,4,5,6,7,8],Err)
+  CALL CMISSMeshElements_CreateFinish(LinearElements,Err)
   !finish mesh creation
-  CALL CMISSMeshCreateFinish(Mesh,Err)
+  CALL CMISSMesh_CreateFinish(Mesh,Err)
 
   !Create a decomposition
-  CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
-  CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
-  CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
-  CALL CMISSDecompositionCreateFinish(Decomposition,Err)
+  CALL CMISSDecomposition_Initialise(Decomposition,Err)
+  CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
+  CALL CMISSDecomposition_TypeSet(Decomposition,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
+  CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
 
   !Create a field to put the geometry (defualt is geometry)
-  CALL CMISSFieldTypeInitialise(GeometricField,Err)
-  CALL CMISSFieldCreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
-  CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
-  CALL CMISSFieldVariableLabelSet(GeometricField,CMISSFieldUVariableType,"Geometry",Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,CubicMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,CubicMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,CubicMeshComponentNumber,Err)
-  CALL CMISSFieldScalingTypeSet(GeometricField,CMISSFieldUnitScaling,Err)
-  CALL CMISSFieldCreateFinish(GeometricField,Err)
+  CALL CMISSField_Initialise(GeometricField,Err)
+  CALL CMISSField_CreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
+  CALL CMISSField_MeshDecompositionSet(GeometricField,Decomposition,Err)
+  CALL CMISSField_VariableLabelSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,"Geometry",Err)
+  CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,1,CubicMeshComponentNumber,Err)
+  CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,2,CubicMeshComponentNumber,Err)
+  CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,3,CubicMeshComponentNumber,Err)
+  CALL CMISSField_ScalingTypeSet(GeometricField,CMISS_FIELD_UNIT_SCALING,Err)
+  CALL CMISSField_CreateFinish(GeometricField,Err)
 
   !Set node parameters
   !node 1
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,1,1,0.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2,1,1,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,1,1, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,2,1,1, &
+    & 1.0_CMISSDP,Err)
 
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,1,2,0.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,3,1,2,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,1,2, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,3,1,2, &
+    & 1.0_CMISSDP,Err)
 
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,1,3,0.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,5,1,3,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,1,3, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,5,1,3, &
+    & 1.0_CMISSDP,Err)
 
   !node 2
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,2,1,1.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2,2,1,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,2,1, &
+    & 1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,2,2,1, &
+    & 1.0_CMISSDP,Err)
 
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,2,2,0.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,3,2,2,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,2,2, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,3,2,2, &
+    & 1.0_CMISSDP,Err)
 
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,2,3,0.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,5,2,3,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,2,3, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,5,2,3, &
+    & 1.0_CMISSDP,Err)
 
   !node 3
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,3,1,0.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2,3,1,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,3,1, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,2,3,1, &
+    & 1.0_CMISSDP,Err)
 
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,3,2,1.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,3,3,2,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,3,2, &
+    & 1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,3,3,2, &
+    & 1.0_CMISSDP,Err)
 
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,3,3,0.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,5,3,3,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,3,3, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,5,3,3, &
+    & 1.0_CMISSDP,Err)
 
   !node 4
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,4,1,1.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2,4,1,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,4,1, &
+    & 1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,2,4,1, &
+    & 1.0_CMISSDP,Err)
 
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,4,2,1.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,3,4,2,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,4,2, &
+    & 1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,3,4,2, &
+    & 1.0_CMISSDP,Err)
 
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,4,3,0.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,5,4,3,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,4,3, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,5,4,3, &
+    & 1.0_CMISSDP,Err)
 
   !node 5
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,5,1,0.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2,5,1,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,5,1, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,2,5,1, &
+    & 1.0_CMISSDP,Err)
 
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,5,2,0.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,3,5,2,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,5,2, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,3,5,2, &
+    & 1.0_CMISSDP,Err)
 
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,5,3,1.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,5,5,3,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,5,3, &
+    & 1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,5,5,3, &
+    & 1.0_CMISSDP,Err)
 
   !node 6
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,6,1,1.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2,6,1,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,6,1, &
+    & 1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,2,6,1, &
+    & 1.0_CMISSDP,Err)
 
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,6,2,0.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,3,6,2,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,6,2, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,3,6,2, &
+    & 1.0_CMISSDP,Err)
 
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,6,3,1.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,5,6,3,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,6,3, &
+    & 1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,5,6,3, &
+    & 1.0_CMISSDP,Err)
 
   !node 7
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,7,1,0.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2,7,1,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,7,1, &
+    & 0.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,2,7,1, &
+    & 1.0_CMISSDP,Err)
 
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,7,2,1.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,3,7,2,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,7,2, &
+    & 1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,3,7,2, &
+    & 1.0_CMISSDP,Err)
 
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,7,3,1.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,5,7,3,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,7,3, &
+    & 1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,5,7,3, &
+    & 1.0_CMISSDP,Err)
 
   !node 8
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,8,1,1.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2,8,1,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,8,1, &
+    & 1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,2,8,1, &
+    & 1.0_CMISSDP,Err)
 
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,8,2,1.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,3,8,2,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,8,2, &
+    & 1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,3,8,2, &
+    & 1.0_CMISSDP,Err)
 
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,8,3,1.0_CMISSDP,Err)
-  CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,5,8,3,1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,8,3, &
+    & 1.0_CMISSDP,Err)
+  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,5,8,3, &
+    & 1.0_CMISSDP,Err)
 
   !Create a fibre field and attach it to the geometric field
-  CALL CMISSFieldTypeInitialise(FibreField,Err)
-  CALL CMISSFieldCreateStart(FieldFibreUserNumber,Region,FibreField,Err)
-  CALL CMISSFieldTypeSet(FibreField,CMISSFieldFibreType,Err)
-  CALL CMISSFieldMeshDecompositionSet(FibreField,Decomposition,Err)
-  CALL CMISSFieldGeometricFieldSet(FibreField,GeometricField,Err)
-  CALL CMISSFieldVariableLabelSet(FibreField,CMISSFieldUVariableType,"Fibre",Err)
-  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,1,LinearMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,2,LinearMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,3,LinearMeshComponentNumber,Err)
-  CALL CMISSFieldScalingTypeSet(FibreField,CMISSFieldUnitScaling,Err)
-  CALL CMISSFieldCreateFinish(FibreField,Err)
+  CALL CMISSField_Initialise(FibreField,Err)
+  CALL CMISSField_CreateStart(FieldFibreUserNumber,Region,FibreField,Err)
+  CALL CMISSField_TypeSet(FibreField,CMISS_FIELD_FIBRE_TYPE,Err)
+  CALL CMISSField_MeshDecompositionSet(FibreField,Decomposition,Err)
+  CALL CMISSField_GeometricFieldSet(FibreField,GeometricField,Err)
+  CALL CMISSField_VariableLabelSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,"Fibre",Err)
+  CALL CMISSField_ComponentMeshComponentSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,1,LinearMeshComponentNumber,Err)
+  CALL CMISSField_ComponentMeshComponentSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,2,LinearMeshComponentNumber,Err)
+  CALL CMISSField_ComponentMeshComponentSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,3,LinearMeshComponentNumber,Err)
+  CALL CMISSField_ScalingTypeSet(FibreField,CMISS_FIELD_UNIT_SCALING,Err)
+  CALL CMISSField_CreateFinish(FibreField,Err)
 
   !Create the equations_set
-  CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
-  CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSEquationsSetElasticityClass, &
-    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetMooneyRivlinSubtype,EquationsSetFieldUserNumber,EquationsSetField,&
+  CALL CMISSField_Initialise(EquationsSetField,Err)
+  CALL CMISSEquationsSet_Initialise(EquationsSet,Err)
+  CALL CMISSEquationsSet_CreateStart(EquationSetUserNumber,Region,FibreField,CMISS_EQUATIONS_SET_ELASTICITY_CLASS, &
+    & CMISS_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMISS_EQUATIONS_SET_MOONEY_RIVLIN_SUBTYPE,EquationsSetFieldUserNumber, &
+      & EquationsSetField,&
     & EquationsSet,Err)
-  CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
+  CALL CMISSEquationsSet_CreateFinish(EquationsSet,Err)
 
   !Create the dependent field with 2 variables and 4 components (3 displacement, 1 pressure)
-  CALL CMISSFieldTypeInitialise(DependentField,Err)
-  CALL CMISSFieldCreateStart(FieldDependentUserNumber,Region,DependentField,Err)
-  CALL CMISSFieldTypeSet(DependentField,CMISSFieldGeneralType,Err)
-  CALL CMISSFieldMeshDecompositionSet(DependentField,Decomposition,Err)
-  CALL CMISSFieldGeometricFieldSet(DependentField,GeometricField,Err)
-  CALL CMISSFieldDependentTypeSet(DependentField,CMISSFieldDependentType,Err)
-  CALL CMISSFieldNumberOfVariablesSet(DependentField,2,Err)
-  CALL CMISSFieldVariableLabelSet(DependentField,CMISSFieldUVariableType,"Dependent",Err)
-  CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldUVariableType,4,Err)
-  CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelUDelNVariableType,4,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,1,CubicMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,2,CubicMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,3,CubicMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,4,LinearMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,1,CubicMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,2,CubicMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,3,CubicMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,4,LinearMeshComponentNumber,Err)
-  CALL CMISSFieldScalingTypeSet(DependentField,CMISSFieldUnitScaling,Err)
-  CALL CMISSFieldCreateFinish(DependentField,Err)
+  CALL CMISSField_Initialise(DependentField,Err)
+  CALL CMISSField_CreateStart(FieldDependentUserNumber,Region,DependentField,Err)
+  CALL CMISSField_TypeSet(DependentField,CMISS_FIELD_GENERAL_TYPE,Err)
+  CALL CMISSField_MeshDecompositionSet(DependentField,Decomposition,Err)
+  CALL CMISSField_GeometricFieldSet(DependentField,GeometricField,Err)
+  CALL CMISSField_DependentTypeSet(DependentField,CMISS_FIELD_DEPENDENT_TYPE,Err)
+  CALL CMISSField_NumberOfVariablesSet(DependentField,2,Err)
+  CALL CMISSField_VariableLabelSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,"Dependent",Err)
+  CALL CMISSField_NumberOfComponentsSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,4,Err)
+  CALL CMISSField_NumberOfComponentsSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,4,Err)
+  CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,CubicMeshComponentNumber,Err)
+  CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,2,CubicMeshComponentNumber,Err)
+  CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,3,CubicMeshComponentNumber,Err)
+  CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,4,LinearMeshComponentNumber,Err)
+  CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,1,CubicMeshComponentNumber,Err)
+  CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,2,CubicMeshComponentNumber,Err)
+  CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,3,CubicMeshComponentNumber,Err)
+  CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,4,LinearMeshComponentNumber,Err)
+  CALL CMISSField_ScalingTypeSet(DependentField,CMISS_FIELD_UNIT_SCALING,Err)
+  CALL CMISSField_CreateFinish(DependentField,Err)
 
-  CALL CMISSEquationsSetDependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)
-  CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
+  CALL CMISSEquationsSet_DependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)
+  CALL CMISSEquationsSet_DependentCreateFinish(EquationsSet,Err)
 
   !Create the material field
-  CALL CMISSFieldTypeInitialise(MaterialField,Err)
-  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,FieldMaterialUserNumber,MaterialField,Err)
-  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
+  CALL CMISSField_Initialise(MaterialField,Err)
+  CALL CMISSEquationsSet_MaterialsCreateStart(EquationsSet,FieldMaterialUserNumber,MaterialField,Err)
+  CALL CMISSEquationsSet_MaterialsCreateFinish(EquationsSet,Err)
 
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 4.0 respectively.
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,4.0_CMISSDP,Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,2.0_CMISSDP,Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,4.0_CMISSDP,Err)
 
   !Create the equations set equations
-  CALL CMISSEquationsTypeInitialise(Equations,Err)
-  CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
-  CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
-  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
-  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
+  CALL CMISSEquations_Initialise(Equations,Err)
+  CALL CMISSEquationsSet_EquationsCreateStart(EquationsSet,Equations,Err)
+  CALL CMISSEquations_SparsityTypeSet(Equations,CMISS_EQUATIONS_SPARSE_MATRICES,Err)
+  CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_NO_OUTPUT,Err)
+  CALL CMISSEquationsSet_EquationsCreateFinish(EquationsSet,Err)
 
   !Initialise dependent field from undeformed geometry and displacement bcs and set hydrostatic pressure
-  CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-    & 1,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,Err)
-  CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-    & 2,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,Err)
-  CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-    & 3,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,Err)
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,-8.0_CMISSDP,Err)
+  CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+    & 1,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,Err)
+  CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+    & 2,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,Err)
+  CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+    & 3,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3,Err)
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4,-8.0_CMISSDP, &
+    & Err)
 
   !Define the problem
-  CALL CMISSProblemTypeInitialise(Problem,Err)
-  CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
-  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemElasticityClass,CMISSProblemFiniteElasticityType, &
-    & CMISSProblemNoSubtype,Err)
-  CALL CMISSProblemCreateFinish(Problem,Err)
+  CALL CMISSProblem_Initialise(Problem,Err)
+  CALL CMISSProblem_CreateStart(ProblemUserNumber,Problem,Err)
+  CALL CMISSProblem_SpecificationSet(Problem,CMISS_PROBLEM_ELASTICITY_CLASS,CMISS_PROBLEM_FINITE_ELASTICITY_TYPE, &
+    & CMISS_PROBLEM_NO_SUBTYPE,Err)
+  CALL CMISSProblem_CreateFinish(Problem,Err)
 
   !Create the problem control loop
-  CALL CMISSProblemControlLoopCreateStart(Problem,Err)
-  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
-  CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
-  CALL CMISSControlLoopMaximumIterationsSet(ControlLoop,2,Err)
-  CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
+  CALL CMISSProblem_ControlLoopCreateStart(Problem,Err)
+  CALL CMISSControlLoop_Initialise(ControlLoop,Err)
+  CALL CMISSProblem_ControlLoopGet(Problem,CMISS_CONTROL_LOOP_NODE,ControlLoop,Err)
+  CALL CMISSControlLoop_MaximumIterationsSet(ControlLoop,2,Err)
+  CALL CMISSProblem_ControlLoopCreateFinish(Problem,Err)
 
   !Create the problem solvers
-  CALL CMISSSolverTypeInitialise(Solver,Err)
-  CALL CMISSSolverTypeInitialise(LinearSolver,Err)
-  CALL CMISSProblemSolversCreateStart(Problem,Err)
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
-  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
-  CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianFDCalculated,Err)
-  CALL CMISSSolverNewtonRelativeToleranceSet(Solver,1.0E-10_CMISSDP,Err)
-  CALL CMISSSolverNewtonLinearSolverGet(Solver,LinearSolver,Err)
-  CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearDirectSolveType,Err)
-  CALL CMISSProblemSolversCreateFinish(Problem,Err)
+  CALL CMISSSolver_Initialise(Solver,Err)
+  CALL CMISSSolver_Initialise(LinearSolver,Err)
+  CALL CMISSProblem_SolversCreateStart(Problem,Err)
+  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,Solver,Err)
+  CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
+  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(Solver,CMISS_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)
+  CALL CMISSSolver_NewtonRelativeToleranceSet(Solver,1.0E-10_CMISSDP,Err)
+  CALL CMISSSolver_NewtonLinearSolverGet(Solver,LinearSolver,Err)
+  CALL CMISSSolver_LinearTypeSet(LinearSolver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
+  CALL CMISSProblem_SolversCreateFinish(Problem,Err)
 
   !Create the problem solver equations
-  CALL CMISSSolverTypeInitialise(Solver,Err)
-  CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
-  CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
-  CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
-  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
-  CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+  CALL CMISSSolver_Initialise(Solver,Err)
+  CALL CMISSSolverEquations_Initialise(SolverEquations,Err)
+  CALL CMISSProblem_SolverEquationsCreateStart(Problem,Err)
+  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,Solver,Err)
+  CALL CMISSSolver_SolverEquationsGet(Solver,SolverEquations,Err)
+  CALL CMISSSolverEquations_EquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
+  CALL CMISSProblem_SolverEquationsCreateFinish(Problem,Err)
 
   !Prescribe boundary conditions (absolute nodal parameters)
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+  CALL CMISSBoundaryConditions_Initialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquations_BoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
 
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,1,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,1,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,1,1,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,1,1,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,1,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,1,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,1,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,1,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,1,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,1,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,1,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,1,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,1,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,1,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,1,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,1,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,1,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,1,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,1,2,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,1,2,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,1,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,1,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,1,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,1,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,1,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,1,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,1,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,1,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,1,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,1,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,1,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,1,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,1,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,1,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,1,3,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,1,3,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,1,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,1,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,1,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,1,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,1,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,1,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,1,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,1,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,1,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,1,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,1,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,1,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
 
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,2,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,2,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.1_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,2,1,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,2,1,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,2,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,2,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,2,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,2,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,2,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,2,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,2,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,2,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,2,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,2,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,2,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,2,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,2,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,2,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,2,2,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,2,2,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,2,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,2,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,2,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,2,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,2,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,2,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,2,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,2,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,2,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,2,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,2,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,2,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,2,3,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,2,3,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 0.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,2,3,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,2,3,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,2,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,2,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,2,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,2,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,2,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,2,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,2,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,2,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,2,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,2,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,2,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,2,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
 
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,3,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,3,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,3,1,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,3,1,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,3,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,3,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,3,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,3,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,3,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,3,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,3,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,3,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,3,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,3,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,3,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,3,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,3,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,3,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,3,2,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,3,2,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,3,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,3,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,3,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,3,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,3,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,3,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,3,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,3,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,3,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,3,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,3,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,3,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,3,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,3,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,3,3,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,3,3,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,3,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,3,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,3,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,3,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,3,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,3,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,3,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,3,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,3,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,3,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,3,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,3,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
 
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,4,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,4,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.1_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,4,1,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,4,1,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,4,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,4,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,4,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,4,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,4,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,4,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,4,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,4,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,4,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,4,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,4,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,4,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,4,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,4,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,4,2,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,4,2,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,4,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,4,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,4,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,4,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,4,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,4,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,4,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,4,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,4,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,4,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,4,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,4,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,4,3,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,4,3,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 0.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,4,3,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,4,3,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,4,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,4,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,4,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,4,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,4,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,4,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,4,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,4,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,4,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,4,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,4,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,4,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
 
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,5,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,5,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,5,1,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,5,1,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,5,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,5,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,5,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,5,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,5,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,5,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,5,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,5,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,5,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,5,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,5,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,5,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,5,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,5,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,5,2,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,5,2,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,5,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,5,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,5,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,5,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,5,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,5,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,5,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,5,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,5,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,5,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,5,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,5,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,5,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,5,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,5,3,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,5,3,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   ! & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,5,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,5,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,5,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,5,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,5,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,5,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,5,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,5,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,5,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,5,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,5,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,5,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
 
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,6,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,6,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.1_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,6,1,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,6,1,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,6,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,6,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,6,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,6,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,6,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,6,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,6,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,6,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,6,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,6,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,6,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,6,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,6,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,6,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,6,2,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,6,2,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,6,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,6,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,6,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,6,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,6,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,6,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,6,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,6,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,6,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,6,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,6,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,6,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,6,3,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,6,3,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 1.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,6,3,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,6,3,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,6,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,6,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,6,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,6,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,6,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,6,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,6,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,6,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,6,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,6,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,6,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,6,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
 
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,7,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,7,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,7,1,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,7,1,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,7,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,7,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,7,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,7,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,7,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,7,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,7,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,7,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,7,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,7,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,7,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,7,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,7,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,7,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,7,2,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,7,2,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,7,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,7,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,7,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,7,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,7,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,7,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,7,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,7,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,7,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,7,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,7,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,7,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,7,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,7,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,7,3,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,7,3,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,7,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,7,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,7,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,7,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,7,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,7,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,7,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,7,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,7,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,7,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,7,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,7,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
 
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,8,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,8,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.1_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,8,1,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,8,1,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  &1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,8,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,8,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,8,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,8,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,8,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,8,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,8,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,8,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,8,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,8,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,8,1, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,8,1, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,8,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,8,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,8,2,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,8,2,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,8,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,8,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,8,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,8,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,8,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,8,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,8,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,8,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,8,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,8,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,8,2, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,8,2, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,8,3,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,8,3,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 1.0_CMISSDP,Err)
-  !CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,2,8,3,CMISSBoundaryConditionFixedIncremented, &
+  !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,8,3,CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
   !  & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,3,8,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,3,8,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,4,8,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4,8,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,5,8,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,5,8,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 1.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,6,8,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,6,8,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,7,8,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,7,8,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
-  CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,8,8,3, &
-    & CMISSBoundaryConditionFixedIncremented, &
+  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,8,8,3, &
+    & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED, &
     & 0.0_CMISSDP,Err)
 
-  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
+  CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve problem
-  CALL CMISSProblemSolve(Problem,Err)
+  CALL CMISSProblem_Solve(Problem,Err)
 
   !Output solution
-  CALL CMISSFieldsTypeInitialise(Fields,Err)
-  CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-  CALL CMISSFieldIONodesExport(Fields,"TriCubicAxialExtension","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields,"TriCubicAxialExtension","FORTRAN",Err)
-  CALL CMISSFieldsTypeFinalise(Fields,Err)
+  CALL CMISSFields_Initialise(Fields,Err)
+  CALL CMISSFields_Create(Region,Fields,Err)
+  CALL CMISSFields_NodesExport(Fields,"TriCubicAxialExtension","FORTRAN",Err)
+  CALL CMISSFields_ElementsExport(Fields,"TriCubicAxialExtension","FORTRAN",Err)
+  CALL CMISSFields_Finalise(Fields,Err)
 
   CALL CMISSFinalise(Err)
 
