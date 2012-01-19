@@ -62,8 +62,8 @@ PROGRAM MULTIPLEMESHCOMPONENTSEXAMPLE
   !----------------------------------------------------------------------------------------
   !Change "NumberOfXiCoordinates" to switch between 1/2/3D meshes
   INTEGER(CMISSIntg), PARAMETER :: NumberOfXiCoordinates=2
-  INTEGER(CMISSIntg), PARAMETER :: FirstBasisInterpolation=CMISSBasisQuadraticLagrangeInterpolation
-  INTEGER(CMISSIntg), PARAMETER :: SecondBasisInterpolation=CMISSBasisCubicLagrangeInterpolation
+  INTEGER(CMISSIntg), PARAMETER :: FirstBasisInterpolation=CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION
+  INTEGER(CMISSIntg), PARAMETER :: SecondBasisInterpolation=CMISS_BASIS_CUBIC_LAGRANGE_INTERPOLATION
   INTEGER(CMISSIntg), PARAMETER :: NumberGlobalXElements=2
   INTEGER(CMISSIntg), PARAMETER :: NumberGlobalYElements=2
   INTEGER(CMISSIntg), PARAMETER :: NumberGlobalZElements=2
@@ -132,7 +132,7 @@ PROGRAM MULTIPLEMESHCOMPONENTSEXAMPLE
   !Intialise cmiss
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+  CALL CMISSErrorHandlingModeSet(CMISS_ERRORS_TRAP_ERROR,Err)
 
   WRITE(*,'(A)') "Program starting."
 
@@ -144,148 +144,148 @@ PROGRAM MULTIPLEMESHCOMPONENTSEXAMPLE
 
   !Start the creation of a new RC coordinate system for the first region
   PRINT *, ' == >> CREATING COORDINATE SYSTEM << == '
-  CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemTypeSet(CoordinateSystem,CMISSCoordinateRectangularCartesianType,Err)
-  CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,NumberOfSpatialCoordinates,Err)
-  CALL CMISSCoordinateSystemOriginSet(CoordinateSystem,[0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP],Err)
-  CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_TypeSet(CoordinateSystem,CMISS_COORDINATE_RECTANGULAR_CARTESIAN_TYPE,Err)
+  CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystem,NumberOfSpatialCoordinates,Err)
+  CALL CMISSCoordinateSystem_OriginSet(CoordinateSystem,[0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP],Err)
+  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Start the creation of the first region
   PRINT *, ' == >> CREATING REGION << == '
-  CALL CMISSRegionTypeInitialise(Region,Err)
-  CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegion,Region,Err)
-  CALL CMISSRegionLabelSet(Region,"Region",Err)
-  CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
-  CALL CMISSRegionCreateFinish(Region,Err)
+  CALL CMISSRegion_Initialise(Region,Err)
+  CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  CALL CMISSRegion_LabelSet(Region,"Region",Err)
+  CALL CMISSRegion_CoordinateSystemSet(Region,CoordinateSystem,Err)
+  CALL CMISSRegion_CreateFinish(Region,Err)
 
   !Start the creation of the first Basis type
   PRINT *, ' == >> CREATING BASIS(1) << == '
-  CALL CMISSBasisTypeInitialise(BasisTypes(1),Err)
-  CALL CMISSBasisCreateStart(Basis1UserNumber,BasisTypes(1),Err)
-  CALL CMISSBasisTypeSet(BasisTypes(1),CMISSBasisLagrangeHermiteTPType,Err)
-  CALL CMISSBasisNumberOfXiSet(BasisTypes(1),NumberOfXiCoordinates,Err)
+  CALL CMISSBasis_Initialise(BasisTypes(1),Err)
+  CALL CMISSBasis_CreateStart(Basis1UserNumber,BasisTypes(1),Err)
+  CALL CMISSBasis_TypeSet(BasisTypes(1),CMISS_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
+  CALL CMISSBasis_NumberOfXiSet(BasisTypes(1),NumberOfXiCoordinates,Err)
   SELECT CASE(NumberOfXiCoordinates)
   CASE(1)
-    CALL CMISSBasisInterpolationXiSet(BasisTypes(1),[FirstBasisInterpolation],Err)
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisTypes(1),[CMISSBasisMidQuadratureScheme],Err)
+    CALL CMISSBasis_InterpolationXiSet(BasisTypes(1),[FirstBasisInterpolation],Err)
+    CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisTypes(1),[CMISS_BASIS_MID_QUADRATURE_SCHEME],Err)
   CASE(2)
-    CALL CMISSBasisInterpolationXiSet(BasisTypes(1),[FirstBasisInterpolation, &
+    CALL CMISSBasis_InterpolationXiSet(BasisTypes(1),[FirstBasisInterpolation, &
       & FirstBasisInterpolation],Err)
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisTypes(1), &
-      & [CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme],Err)
+    CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisTypes(1), &
+      & [CMISS_BASIS_MID_QUADRATURE_SCHEME,CMISS_BASIS_MID_QUADRATURE_SCHEME],Err)
   CASE(3)
-     CALL CMISSBasisInterpolationXiSet(BasisTypes(1),[FirstBasisInterpolation, &
+     CALL CMISSBasis_InterpolationXiSet(BasisTypes(1),[FirstBasisInterpolation, &
     & FirstBasisInterpolation,FirstBasisInterpolation],Err)
-  CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisTypes(1), &
-    & [CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme, &
-    & CMISSBasisMidQuadratureScheme],Err)
+  CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisTypes(1), &
+    & [CMISS_BASIS_MID_QUADRATURE_SCHEME,CMISS_BASIS_MID_QUADRATURE_SCHEME, &
+    & CMISS_BASIS_MID_QUADRATURE_SCHEME],Err)
   END SELECT
-  CALL CMISSBasisCreateFinish(BasisTypes(1),Err)
+  CALL CMISSBasis_CreateFinish(BasisTypes(1),Err)
 
   !Start the creation of the second Basis type
   PRINT *, ' == >> CREATING BASIS(2) << == '
-  CALL CMISSBasisTypeInitialise(BasisTypes(2),Err)
-  CALL CMISSBasisCreateStart(Basis2UserNumber,BasisTypes(2),Err)
-  CALL CMISSBasisTypeSet(BasisTypes(2),CMISSBasisLagrangeHermiteTPType,Err)
-  CALL CMISSBasisNumberOfXiSet(BasisTypes(2),NumberOfXiCoordinates,Err)
+  CALL CMISSBasis_Initialise(BasisTypes(2),Err)
+  CALL CMISSBasis_CreateStart(Basis2UserNumber,BasisTypes(2),Err)
+  CALL CMISSBasis_TypeSet(BasisTypes(2),CMISS_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
+  CALL CMISSBasis_NumberOfXiSet(BasisTypes(2),NumberOfXiCoordinates,Err)
   SELECT CASE(NumberOfXiCoordinates)
   CASE(1)
-    CALL CMISSBasisInterpolationXiSet(BasisTypes(2),[SecondBasisInterpolation],Err)
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisTypes(2),[CMISSBasisMidQuadratureScheme],Err)
+    CALL CMISSBasis_InterpolationXiSet(BasisTypes(2),[SecondBasisInterpolation],Err)
+    CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisTypes(2),[CMISS_BASIS_MID_QUADRATURE_SCHEME],Err)
   CASE(2)
-    CALL CMISSBasisInterpolationXiSet(BasisTypes(2),[SecondBasisInterpolation, &
+    CALL CMISSBasis_InterpolationXiSet(BasisTypes(2),[SecondBasisInterpolation, &
       & SecondBasisInterpolation],Err)
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisTypes(2), &
-      & [CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme],Err)
+    CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisTypes(2), &
+      & [CMISS_BASIS_MID_QUADRATURE_SCHEME,CMISS_BASIS_MID_QUADRATURE_SCHEME],Err)
   CASE(3)
-    CALL CMISSBasisInterpolationXiSet(BasisTypes(2),[SecondBasisInterpolation, &
+    CALL CMISSBasis_InterpolationXiSet(BasisTypes(2),[SecondBasisInterpolation, &
     & SecondBasisInterpolation,SecondBasisInterpolation],Err)
-  CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisTypes(2), &
-    & [CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme, &
-    & CMISSBasisMidQuadratureScheme],Err)
+  CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisTypes(2), &
+    & [CMISS_BASIS_MID_QUADRATURE_SCHEME,CMISS_BASIS_MID_QUADRATURE_SCHEME, &
+    & CMISS_BASIS_MID_QUADRATURE_SCHEME],Err)
   END SELECT
-  CALL CMISSBasisCreateFinish(BasisTypes(2),Err)
+  CALL CMISSBasis_CreateFinish(BasisTypes(2),Err)
 
   !Start the creation of a generated mesh in the first region
   PRINT *, ' == >> CREATING GENERATED MESH << == '
-  CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
-  CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_Initialise(GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_CreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
   !Set up a regular x*y mesh
-  CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
+  CALL CMISSGeneratedMesh_TypeSet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_MESH_TYPE,Err)
   !Set the default basis
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,BasisTypes,Err)
-  CALL CMISSGeneratedMeshOriginSet(GeneratedMesh,[0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP],Err)
+  CALL CMISSGeneratedMesh_BasisSet(GeneratedMesh,BasisTypes,Err)
+  CALL CMISSGeneratedMesh_OriginSet(GeneratedMesh,[0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP],Err)
   SELECT CASE(NumberOfXiCoordinates)
   CASE(1)
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,[LENGTH,0.0_CMISSDP,0.0_CMISSDP],Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements],Err)
+    CALL CMISSGeneratedMesh_ExtentSet(GeneratedMesh,[LENGTH,0.0_CMISSDP,0.0_CMISSDP],Err)
+    CALL CMISSGeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements],Err)
   CASE(2)
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,[LENGTH,WIDTH,0.0_CMISSDP],Err)
-  CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements, &
+    CALL CMISSGeneratedMesh_ExtentSet(GeneratedMesh,[LENGTH,WIDTH,0.0_CMISSDP],Err)
+  CALL CMISSGeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements, &
     & NumberGlobalYElements],Err)
   CASE(3)
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,[LENGTH,WIDTH,HEIGHT],Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements, &
+    CALL CMISSGeneratedMesh_ExtentSet(GeneratedMesh,[LENGTH,WIDTH,HEIGHT],Err)
+    CALL CMISSGeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements, &
       & NumberGlobalYElements,NumberGlobalZElements],Err)
   END SELECT
   !Finish the creation of a generated mesh in the first region
-  CALL CMISSMeshTypeInitialise(Mesh,Err)
-  CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
+  CALL CMISSMesh_Initialise(Mesh,Err)
+  CALL CMISSGeneratedMesh_CreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
 
   !Create a decomposition for mesh
   PRINT *, ' == >> CREATING MESH DECOMPOSITION << == '
-  CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
-  CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
+  CALL CMISSDecomposition_Initialise(Decomposition,Err)
+  CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
-  CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
+  CALL CMISSDecomposition_TypeSet(Decomposition,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
   !Finish the decomposition
-  CALL CMISSDecompositionCreateFinish(Decomposition,Err)
+  CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
 
   !Start to create a default (geometric) field on the first region
   PRINT *, ' == >> CREATING MESH GEOMETRIC FIELD << == '
-  CALL CMISSFieldTypeInitialise(GeometricField,Err)
-  CALL CMISSFieldCreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
+  CALL CMISSField_Initialise(GeometricField,Err)
+  CALL CMISSField_CreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
   !Set the decomposition to use
-  CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
-  CALL CMISSFieldTypeSet(GeometricField,CMISSFieldGeometricType,Err)
-  CALL CMISSFieldNumberOfVariablesSet(GeometricField,FieldGeometryNumberOfVariables,Err)
-  CALL CMISSFieldNumberOfComponentsSet(GeometricField,CMISSFieldUVariableType,FieldGeometryNumberOfComponents,Err)
-  CALL CMISSFieldVariableLabelSet(GeometricField,CMISSFieldUVariableType,"Geometry",Err)
+  CALL CMISSField_MeshDecompositionSet(GeometricField,Decomposition,Err)
+  CALL CMISSField_TypeSet(GeometricField,CMISS_FIELD_GEOMETRIC_TYPE,Err)
+  CALL CMISSField_NumberOfVariablesSet(GeometricField,FieldGeometryNumberOfVariables,Err)
+  CALL CMISSField_NumberOfComponentsSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,FieldGeometryNumberOfComponents,Err)
+  CALL CMISSField_VariableLabelSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,"Geometry",Err)
   !Set the mesh component to be used by the field components.
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,2,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,2,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,2,Err)
+  CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,Err)
+  CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,2,2,Err)
+  CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,3,2,Err)
   !Finish creating the first field
-  CALL CMISSFieldCreateFinish(GeometricField,Err)
+  CALL CMISSField_CreateFinish(GeometricField,Err)
 
   !Create a second extra field to use the other mesh component
   PRINT *, ' == >> CREATING SECOND FIELD << == '
-  CALL CMISSFieldTypeInitialise(SecondField,Err)
-  CALL CMISSFieldCreateStart(SecondFieldUserNumber,Region,SecondField,Err)
+  CALL CMISSField_Initialise(SecondField,Err)
+  CALL CMISSField_CreateStart(SecondFieldUserNumber,Region,SecondField,Err)
   !Set the decomposition to use
-  CALL CMISSFieldMeshDecompositionSet(SecondField,Decomposition,Err)
-  CALL CMISSFieldTypeSet(SecondField,CMISSFieldGeneralType,Err)
-  CALL CMISSFieldGeometricFieldSet(SecondField,GeometricField,Err)
-  CALL CMISSFieldNumberOfVariablesSet(SecondField,1,Err)
-  CALL CMISSFieldNumberOfComponentsSet(SecondField,CMISSFieldUVariableType,1,Err)
-  CALL CMISSFieldVariableLabelSet(SecondField,CMISSFieldUVariableType,"Extra Field",Err)
+  CALL CMISSField_MeshDecompositionSet(SecondField,Decomposition,Err)
+  CALL CMISSField_TypeSet(SecondField,CMISS_FIELD_GENERAL_TYPE,Err)
+  CALL CMISSField_GeometricFieldSet(SecondField,GeometricField,Err)
+  CALL CMISSField_NumberOfVariablesSet(SecondField,1,Err)
+  CALL CMISSField_NumberOfComponentsSet(SecondField,CMISS_FIELD_U_VARIABLE_TYPE,1,Err)
+  CALL CMISSField_VariableLabelSet(SecondField,CMISS_FIELD_U_VARIABLE_TYPE,"Extra Field",Err)
   !Set the mesh component to be used by the field component.
-  CALL CMISSFieldComponentMeshComponentSet(SecondField,CMISSFieldUVariableType,1,1,Err)
+  CALL CMISSField_ComponentMeshComponentSet(SecondField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,Err)
   !Finish creating the field
-  CALL CMISSFieldCreateFinish(SecondField,Err)
-  CALL CMISSFieldComponentValuesInitialise(SecondField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,0.0_CMISSDP,Err)
+  CALL CMISSField_CreateFinish(SecondField,Err)
+  CALL CMISSField_ComponentValuesInitialise(SecondField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,0.0_CMISSDP,Err)
 
   !Update the geometric field parameters for the first field
-  CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
 
   !Output solution
-  CALL CMISSFieldsTypeInitialise(Fields,Err)
-  CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-  CALL CMISSFieldIONodesExport(Fields,"MultipleMeshComponents","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields,"MultipleMeshComponents","FORTRAN",Err)
-  CALL CMISSFieldsTypeFinalise(Fields,Err)
+  CALL CMISSFields_Initialise(Fields,Err)
+  CALL CMISSFields_Create(Region,Fields,Err)
+  CALL CMISSFields_NodesExport(Fields,"MultipleMeshComponents","FORTRAN",Err)
+  CALL CMISSFields_ElementsExport(Fields,"MultipleMeshComponents","FORTRAN",Err)
+  CALL CMISSFields_Finalise(Fields,Err)
 
   WRITE(*,'(A)') "Program successfully completed."
 
