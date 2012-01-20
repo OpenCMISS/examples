@@ -3,5 +3,7 @@
     {
      "id": 1,
      "args": "-",
-     "expectedPath": "expected_results/1proc"}]
+     "tolerance": 1.0e-6,
+     "expectedPath": "expected_results/1proc",
+     "outputPath": "outputs"}]
 }}
