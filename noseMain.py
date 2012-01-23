@@ -77,6 +77,8 @@ class Example:
     self.compilerVersion = compiler_version
     self.logPath = self.path.replace(examplesDir,logsDir)
     self.globalTestDir = "" if ("globalTestDir" not in dct) else dct["globalTestDir"]
+    self.language = None if  ("language" not in dct) else dct["language"]
+    self.script = None if ("script" not in dct) else dct["script"]
     test_dct = dct["test"]
     self.tests = []
     for test_entry in test_dct :
@@ -113,8 +115,11 @@ size = 'small' if (not 'SIZE' in os.environ) else os.environ['SIZE']
 
 def test_build_library():
   yield check_build_library,compiler_version,os.uname()[4],os.uname()[0].lower()
+
+def test_build_library_python():
+  yield check_build_library,compiler_version,os.uname()[4],os.uname()[0].lower(),"python"
    
-def check_build_library(compiler_version,arch,system):
+def check_build_library(compiler_version,arch,system,language=None):
   global logsDir, compiler
   rootDir=os.environ['OPENCMISS_ROOT']+"/cm"
   os.chdir(rootDir)
@@ -124,16 +129,23 @@ def check_build_library(compiler_version,arch,system):
     newDir = newDir + '/' + folder
     if not os.path.isdir(newDir):
       os.mkdir(newDir)
-  logPath = logDir+"/nose_library_build_" + compiler_version + str(date.today())
+  if language!=None :
+    logPath = "%s/nose_library_build_%s_%s_%s" %(logDir, language, compiler_version, str(date.today()))
+    command = "make USEFIELDML=true COMPILER=%s %s >> %s 2>&1" %(compiler,language,logPath)
+    historyPath = "%s/nose_library_build_%s_history_%s" %(logDir, language, compiler_version)
+  else :
+    logPath = "%s/nose_library_build_%s_%s" %(logDir, compiler_version, str(date.today()))
+    command = "make USEFIELDML=true COMPILER=%s >> %s 2>&1" %(compiler,logPath)
+    historyPath = "%s/nose_library_build_history_%s" %(logDir, compiler_version)
   open_log(logPath)
-  command = "make USEFIELDML=true COMPILER=%s >> %s 2>&1" %(compiler,logPath)
   err = os.system(command)
   close_log(logPath)
-  add_history(logDir+"/nose_library_build_history_" + compiler_version,err)
+  add_history(historyPath,err)
   assert err==0
   
 def test_example():
   global examplesDir
+  os.system("mpd &")
   for examplePath, subFolders, files in os.walk(examplesDir) :
     if examplePath.find(".svn")==-1 :
       for f in files :
@@ -141,39 +153,48 @@ def test_example():
           os.chdir(examplePath)
           json_data=open(f).read()
           example = object_encode(json.loads(json_data))
-          yield check_build, 'build',example
+          yield check_build, 'build', example
           for test in example.tests : 
             yield check_run, 'run', example, test
             if (hasattr(test, 'expectedPath')):
               yield check_output,'check', example, test
+  os.system("mpdallexit")
   
 def check_build(status,example):
   global compiler
-  logDir = load_log_dir(example.path)
-  logPath = append_path(logDir,"nose_build_" + example.compilerVersion + str(date.today()))
-  open_log(logPath)
-  command = "make USEFIELDML=true COMPILER=%s >> %s 2>&1" %(compiler,logPath)
-  err = os.system(command)
-  close_log(logPath)
-  add_history(logDir+"/nose_build_history_" + example.compilerVersion,err)
-  assert err==0
+  if example.language == None :
+    logDir = load_log_dir(example.path)
+    logPath = append_path(logDir,"nose_build_%s_%s" %(example.compilerVersion,str(date.today())))
+    open_log(logPath)
+    command = "make USEFIELDML=true COMPILER=%s >> %s 2>&1" %(compiler,logPath)
+    err = os.system(command)
+    close_log(logPath)
+    add_history(logDir+"/nose_build_history_" + example.compilerVersion,err)
+    assert err==0
 
 def check_run(status,example,test):
   logDir = load_log_dir(test.path)
   os.chdir(test.path)
-  logPath = append_path(logDir,"nose_run_" + example.compilerVersion + str(date.today()))
+  logPath = append_path(logDir,"nose_run_%s_%s_%d" %(example.compilerVersion,str(date.today()),test.id))
   open_log(logPath)
   exampleName = example.path.rpartition("/")[2]
-  command = "%s/bin/%s-%s/mpich2/%s/%sExample-debug %s >> %s 2>&1" %(example.path,example.arch,example.system,example.compilerVersion,exampleName,test.args,logPath)
-  err = os.system(command)
+  if example.language == "python" :
+    command = "python %s %s" %(example.script, test.args)
+  else :
+    command = "%s/bin/%s-%s/mpich2/%s/%sExample-debug %s" %(example.path,example.arch,example.system,example.compilerVersion,exampleName,test.args)
+  if test.processors == 1 :
+    command = "%s >> %s 2>&1" %(command,logPath)
+  else :
+    command = "mpiexec -n %d %s >> %s 2>&1" %(test.processors,command,logPath)
+  err = os.system(command)   
   close_log(logPath)
-  add_history(logDir+"/nose_run_history_" + example.compilerVersion,err)
+  add_history("%s/nose_run_history_%s_%d" %(logDir,example.compilerVersion,test.id),err)
   assert err==0
 
 def check_output(status,example,test):
   logDir = load_log_dir(test.path)
   os.chdir(test.path)
-  logPath = append_path(logDir,"nose_check_" + example.compilerVersion + str(date.today()))
+  logPath = append_path(logDir,"nose_check_%s_%s_%d" %(example.compilerVersion, str(date.today()), test.id))
   open_log(logPath)
   ndiff = os.environ['OPENCMISS_ROOT']+"/cm/utils/ndiff"
   errall =0
@@ -188,7 +209,7 @@ def check_output(status,example,test):
     f1.write("The output values are identical with the expected ones. However, the outputs may be generated from previous build. You need also check if the latest test run passes.")
     f1.close()
   close_log(logPath)
-  add_history(logDir+"/nose_check_history_" + example.compilerVersion,errall)
+  add_history("%s/nose_check_history_%s_%d" %(logDir, example.compilerVersion, test.id) ,errall)
   assert errall==0 
  
 if __name__ == '__main__':

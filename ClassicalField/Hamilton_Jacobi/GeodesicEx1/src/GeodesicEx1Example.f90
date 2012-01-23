@@ -118,10 +118,10 @@ PROGRAM GeodesicEx1
 
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
-  CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,3,Err)
-  CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystem,3,Err)
+  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
 ! INPUT_FILE_FORMAT :   "TABC"   -> tabc format
 !			"TETGEN" -> tetgen format

@@ -71,7 +71,7 @@ PROGRAM DataProjection1DRectangularCartesian
   INTEGER(CMISSIntg) :: NumberOfDomains=1 !NumberOfDomains=2 for parallel processing, need to set up MPI
   INTEGER(CMISSIntg) :: NumberOfNodes
   INTEGER(CMISSIntg) :: NumberOfXi=2
-  INTEGER(CMISSIntg) :: BasisInterpolation(2)=(/CMISSBasisCubicHermiteInterpolation,CMISSBasisCubicHermiteInterpolation/)
+  INTEGER(CMISSIntg) :: BasisInterpolation(2)=(/CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION,CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION/)
   INTEGER(CMISSIntg) :: WorldCoordinateSystemUserNumber
   INTEGER(CMISSIntg) :: WorldRegionUserNumber
   
@@ -183,70 +183,71 @@ PROGRAM DataProjection1DRectangularCartesian
 
   !=========================================================================================================================
   !Create RC coordinate system
-  CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,Err)
-  CALL CMISSCoordinateSystemTypeSet(CoordinateSystemUserNumber,CMISSCoordinateRectangularCartesianType,Err)
-  CALL CMISSCoordinateSystemDimensionSet(CoordinateSystemUserNumber,CoordinateSystemDimension,Err)
-  CALL CMISSCoordinateSystemOriginSet(CoordinateSystemUserNumber,CoordinateSystemOrigin,Err)
-  CALL CMISSCoordinateSystemCreateFinish(CoordinateSystemUserNumber,Err) 
+  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,Err)
+  CALL CMISSCoordinateSystem_TypeSet(CoordinateSystemUserNumber,CMISS_COORDINATE_RECTANGULAR_CARTESIAN_TYPE,Err)
+  CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystemUserNumber,CoordinateSystemDimension,Err)
+  CALL CMISSCoordinateSystem_OriginSet(CoordinateSystemUserNumber,CoordinateSystemOrigin,Err)
+  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystemUserNumber,Err) 
 
   !=========================================================================================================================
   !Create Region and set CS to newly created 3D RC CS
-  CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegionUserNumber,Err)
-  CALL CMISSRegionCoordinateSystemSet(RegionUserNumber,CoordinateSystemUserNumber,Err)
-  CALL CMISSRegionCreateFinish(RegionUserNumber,Err)
+  CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegionUserNumber,Err)
+  CALL CMISSRegion_CoordinateSystemSet(RegionUserNumber,CoordinateSystemUserNumber,Err)
+  CALL CMISSRegion_CreateFinish(RegionUserNumber,Err)
     
   !=========================================================================================================================
   !Create Data Points and set the values
-  CALL CMISSDataPointsCreateStart(RegionUserNumber,SIZE(DataPointValues,1),Err)
+  CALL CMISSDataPoints_CreateStart(RegionUserNumber,SIZE(DataPointValues,1),Err)
   DO data_point_idx=1,NumberOfDataPoints
-    CALL CMISSDataPointsValuesSet(RegionUserNumber,data_point_idx,DataPointValues(data_point_idx,:),Err)     
+    CALL CMISSDataPoints_ValuesSet(RegionUserNumber,data_point_idx,DataPointValues(data_point_idx,:),Err)     
   ENDDO
-  CALL CMISSDataPointsCreateFinish(RegionUserNumber,Err)  
+  CALL CMISSDataPoints_CreateFinish(RegionUserNumber,Err)  
   !=========================================================================================================================
   !Define basis function - 1D cubic hermite
-  CALL CMISSBasisCreateStart(BasisUserNumber,Err)
-  CALL CMISSBasisTypeSet(BasisUserNumber,CMISSBasisLagrangeHermiteTPType,Err)
-  CALL CMISSBasisNumberOfXiSet(BasisUserNumber,NumberOfXi,Err)
-  CALL CMISSBasisInterpolationXiSet(BasisUserNumber,BasisInterpolation,Err)
-  CALL CMISSBasisCreateFinish(BasisUserNumber,Err)  
+  CALL CMISSBasis_CreateStart(BasisUserNumber,Err)
+  CALL CMISSBasis_TypeSet(BasisUserNumber,CMISS_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
+  CALL CMISSBasis_NumberOfXiSet(BasisUserNumber,NumberOfXi,Err)
+  CALL CMISSBasis_InterpolationXiSet(BasisUserNumber,BasisInterpolation,Err)
+  CALL CMISSBasis_CreateFinish(BasisUserNumber,Err)  
   !=========================================================================================================================
   !Create a mesh
-  CALL CMISSMeshCreateStart(MeshUserNumber,RegionUserNumber,MeshDimensions,Err)
-  CALL CMISSMeshNumberOfComponentsSet(RegionUserNumber,MeshUserNumber,MeshNumberOfComponents,Err)
-  CALL CMISSMeshNumberOfElementsSet(RegionUserNumber,MeshUserNumber,MeshNumberOfElements,Err)
+  CALL CMISSMesh_CreateStart(MeshUserNumber,RegionUserNumber,MeshDimensions,Err)
+  CALL CMISSMesh_NumberOfComponentsSet(RegionUserNumber,MeshUserNumber,MeshNumberOfComponents,Err)
+  CALL CMISSMesh_NumberOfElementsSet(RegionUserNumber,MeshUserNumber,MeshNumberOfElements,Err)
   !define nodes for the mesh
-  CALL CMISSNodesCreateStart(RegionUserNumber,NumberOfNodes,Err)
-  CALL CMISSNodesCreateFinish(RegionUserNumber,Err)  
+  CALL CMISSNodes_CreateStart(RegionUserNumber,NumberOfNodes,Err)
+  CALL CMISSNodes_CreateFinish(RegionUserNumber,Err)  
   !define elements for the mesh
-  CALL CMISSMeshElementsCreateStart(RegionUserNumber,MeshUserNumber,MeshComponentNumber,BasisUserNumber,Err)
+  CALL CMISSMeshElements_CreateStart(RegionUserNumber,MeshUserNumber,MeshComponentNumber,BasisUserNumber,Err)
   Do elem_idx=1,MeshNumberOfElements
-    CALL CMISSMeshElementsNodesSet(RegionUserNumber,MeshUserNumber,MeshComponentNumber,elem_idx,ElementUserNodes(elem_idx,:),Err)
+    CALL CMISSMeshElements_NodesSet(RegionUserNumber,MeshUserNumber,MeshComponentNumber,elem_idx,ElementUserNodes(elem_idx,:),Err)
   ENDDO
-  CALL CMISSMeshElementsCreateFinish(RegionUserNumber,MeshUserNumber,MeshComponentNumber,Err)
-  CALL CMISSMeshCreateFinish(RegionUserNumber,MeshUserNumber,Err)
+  CALL CMISSMeshElements_CreateFinish(RegionUserNumber,MeshUserNumber,MeshComponentNumber,Err)
+  CALL CMISSMesh_CreateFinish(RegionUserNumber,MeshUserNumber,Err)
   !=========================================================================================================================
   !Create a mesh decomposition 
-  CALL CMISSDecompositionCreateStart(DecompositionUserNumber,RegionUserNumber,MeshUserNumber,Err)
-  CALL CMISSDecompositionTypeSet(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,NumberOfDomains,Err)
-  CALL CMISSDecompositionCreateFinish(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,Err)
+  CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,RegionUserNumber,MeshUserNumber,Err)
+  CALL CMISSDecomposition_TypeSet(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL CMISSDecomposition_NumberOfDomainsSet(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,NumberOfDomains,Err)
+  CALL CMISSDecomposition_CreateFinish(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,Err)
   
   !=========================================================================================================================
   !Create a field to put the geometry
-  CALL CMISSFieldCreateStart(FieldUserNumber,RegionUserNumber,Err)
-  CALL CMISSFieldMeshDecompositionSet(RegionUserNumber,FieldUserNumber,MeshUserNumber,DecompositionUserNumber,Err)
-  CALL CMISSFieldTypeSet(RegionUserNumber,FieldUserNumber,CMISSFieldGeometricType,Err)
-  CALL CMISSFieldNumberOfVariablesSet(RegionUserNumber,FieldUserNumber,FieldNumberOfVariables,Err)
-  CALL CMISSFieldNumberOfComponentsSet(RegionUserNumber,FieldUserNumber,CMISSFieldUVariableType,FieldNumberOfComponents,Err)
+  CALL CMISSField_CreateStart(FieldUserNumber,RegionUserNumber,Err)
+  CALL CMISSField_MeshDecompositionSet(RegionUserNumber,FieldUserNumber,MeshUserNumber,DecompositionUserNumber,Err)
+  CALL CMISSField_TypeSet(RegionUserNumber,FieldUserNumber,CMISS_FIELD_GEOMETRIC_TYPE,Err)
+  CALL CMISSField_NumberOfVariablesSet(RegionUserNumber,FieldUserNumber,FieldNumberOfVariables,Err)
+  CALL CMISSField_NumberOfComponentsSet(RegionUserNumber,FieldUserNumber,CMISS_FIELD_U_VARIABLE_TYPE,FieldNumberOfComponents,Err)
   !DO xi=1,NumberOfXi
-  CALL CMISSFieldComponentMeshComponentSet(RegionUserNumber,FieldUserNumber,CMISSFieldUVariableType,1,1,Err)
+  CALL CMISSField_ComponentMeshComponentSet(RegionUserNumber,FieldUserNumber,CMISS_FIELD_U_VARIABLE_TYPE,1,1,Err)
   !ENDDO !xi    
-  CALL CMISSFieldCreateFinish(RegionUserNumber,FieldUserNumber,Err)
+  CALL CMISSField_CreateFinish(RegionUserNumber,FieldUserNumber,Err)
   !node 1
   DO der_idx=1,SIZE(FieldValues,1)
     DO node_idx=1,SIZE(FieldValues,2)
       DO comp_idx=1,SIZE(FieldValues,3)
-        CALL CMISSFieldParameterSetUpdateNode(RegionUserNumber,FieldUserNumber,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+        CALL CMISSField_ParameterSetUpdateNode(RegionUserNumber,FieldUserNumber,CMISS_FIELD_U_VARIABLE_TYPE, &
+          & CMISS_FIELD_VALUES_SET_TYPE, &
           & ver_idx,der_idx,node_idx,comp_idx,FieldValues(der_idx,node_idx,comp_idx),Err)
       ENDDO
     ENDDO
@@ -255,30 +256,30 @@ PROGRAM DataProjection1DRectangularCartesian
   !=========================================================================================================================
   !Create a data projection
   
-  CALL CMISSDataProjectionCreateStart(RegionUserNumber,FieldUserNumber,RegionUserNumber,Err)
-  CALL CMISSDataProjectionCreateFinish(RegionUserNumber,Err)
+  CALL CMISSDataProjection_CreateStart(RegionUserNumber,FieldUserNumber,RegionUserNumber,Err)
+  CALL CMISSDataProjection_CreateFinish(RegionUserNumber,Err)
   
   !=========================================================================================================================
   !Start data projection
-  CALL CMISSDataProjectionEvaluate(RegionUserNumber,Err)
+  CALL CMISSDataProjection_Evaluate(RegionUserNumber,Err)
   
   !=========================================================================================================================
   !Retrieve projection results
   DO data_point_idx=1,NumberOfDataPoints
-    CALL CMISSDataPointsProjectionDistanceGet(RegionUserNumber,data_point_idx,DataPointProjectionDistance(data_point_idx),Err)
-    CALL CMISSDataPointsProjectionElementNumberGet(RegionUserNumber,data_point_idx,DataPointProjectionElementNumber( &
+    CALL CMISSDataPoints_ProjectionDistanceGet(RegionUserNumber,data_point_idx,DataPointProjectionDistance(data_point_idx),Err)
+    CALL CMISSDataPoints_ProjectionElementNumberGet(RegionUserNumber,data_point_idx,DataPointProjectionElementNumber( &
       & data_point_idx),Err)
-    CALL CMISSDataPointsProjectionExitTagGet(RegionUserNumber,data_point_idx,DataPointProjectionExitTag(data_point_idx),Err)
-    CALL CMISSDataPointsProjectionXiGet(RegionUserNumber,data_point_idx,DataPointProjectionXi(data_point_idx,:),Err)
+    CALL CMISSDataPoints_ProjectionExitTagGet(RegionUserNumber,data_point_idx,DataPointProjectionExitTag(data_point_idx),Err)
+    CALL CMISSDataPoints_ProjectionXiGet(RegionUserNumber,data_point_idx,DataPointProjectionXi(data_point_idx,:),Err)
   ENDDO
   
   !=========================================================================================================================
   !Destroy used types
-  CALL CMISSDataProjectionDestroy(RegionUserNumber,Err)
-  CALL CMISSDataPointsDestroy(RegionUserNumber,Err)
+  CALL CMISSDataProjection_Destroy(RegionUserNumber,Err)
+  CALL CMISSDataPoints_Destroy(RegionUserNumber,Err)
     
-  CALL CMISSRegionDestroy(RegionUserNumber,Err)
-  CALL CMISSCoordinateSystemDestroy(CoordinateSystemUserNumber,Err)  
+  CALL CMISSRegion_Destroy(RegionUserNumber,Err)
+  CALL CMISSCoordinateSystem_Destroy(CoordinateSystemUserNumber,Err)  
   
   !=========================================================================================================================
   !Finishing program

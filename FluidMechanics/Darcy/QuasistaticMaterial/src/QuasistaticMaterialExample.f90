@@ -261,7 +261,7 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
 
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+  CALL CMISSErrorHandlingModeSet(CMISS_ERRORS_TRAP_ERROR,Err)
 
   !Get the computational nodes information
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -318,11 +318,11 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   BASIS_XI_GAUSS_PRESSURE=3 !4
   !Set output parameter
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
-  LINEAR_SOLVER_MAT_PROPERTIES_OUTPUT_TYPE=CMISSSolverNoOutput
-  LINEAR_SOLVER_DARCY_OUTPUT_TYPE=CMISSSolverProgressOutput
+  LINEAR_SOLVER_MAT_PROPERTIES_OUTPUT_TYPE=CMISS_SOLVER_NO_OUTPUT
+  LINEAR_SOLVER_DARCY_OUTPUT_TYPE=CMISS_SOLVER_PROGRESS_OUTPUT
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
-  EQUATIONS_DARCY_OUTPUT=CMISSEquationsNoOutput
-  EQUATIONS_MAT_PROPERTIES_OUTPUT=CMISSEquationsNoOutput
+  EQUATIONS_DARCY_OUTPUT=CMISS_EQUATIONS_NO_OUTPUT
+  EQUATIONS_MAT_PROPERTIES_OUTPUT=CMISS_EQUATIONS_NO_OUTPUT
   !Set time parameter
   LINEAR_SOLVER_DARCY_START_TIME=0.0_CMISSDP
   LINEAR_SOLVER_DARCY_STOP_TIME=1.0_CMISSDP 
@@ -359,10 +359,10 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   DIAG_ROUTINE_LIST(5)="DARCY_EQUATION_PRE_SOLVE_MAT_PROPERTIES"
   DIAG_ROUTINE_LIST(6)="FITTING_FINITE_ELEMENT_CALCULATE"
 
-  !CMISSAllDiagType/CMISSInDiagType/CMISSFromDiagType
-!   CALL CMISSDiagnosticsSetOn(CMISSInDiagType,DIAG_LEVEL_LIST,"DarcyDiagnostics",DIAG_ROUTINE_LIST,Err)
+  !CMISS_ALL_DIAG_TYPE/CMISS_IN_DIAG_TYPE/CMISS_FROM_DIAG_TYPE
+!   CALL CMISSDiagnosticsSetOn(CMISS_IN_DIAG_TYPE,DIAG_LEVEL_LIST,"DarcyDiagnostics",DIAG_ROUTINE_LIST,Err)
 
-  !CMISSAllTimingType/CMISSInTimingType/CMISSFromTimingType
+  !CMISS_ALL_TIMING_TYPE/CMISS_IN_TIMING_TYPE/CMISS_FROM_TIMING_TYPE
   !TIMING_ROUTINE_LIST(1)="PROBLEM_FINITE_ELEMENT_CALCULATE"
   !CALL TIMING_SET_ON(IN_TIMING_TYPE,.TRUE.,"",TIMING_ROUTINE_LIST,ERR,ERROR,*999)
 
@@ -373,12 +373,12 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   !COORDINATE SYSTEM
 
   !Start the creation of a new RC coordinate system
-  CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   !Set the coordinate system dimension
-  CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,NUMBER_OF_DIMENSIONS,Err)
+  CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystem,NUMBER_OF_DIMENSIONS,Err)
   !Finish the creation of the coordinate system
-  CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !
   !================================================================================================================================
@@ -387,12 +387,12 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   !REGION
 
   !Start the creation of a new region
-  CALL CMISSRegionTypeInitialise(Region,Err)
-  CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  CALL CMISSRegion_Initialise(Region,Err)
+  CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
   !Set the regions coordinate system as defined above
-  CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
+  CALL CMISSRegion_CoordinateSystemSet(Region,CoordinateSystem,Err)
   !Finish the creation of the region
-  CALL CMISSRegionCreateFinish(Region,Err)
+  CALL CMISSRegion_CreateFinish(Region,Err)
 
   !
   !================================================================================================================================
@@ -402,24 +402,24 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
 
   !Start the creation of new bases
   MESH_NUMBER_OF_COMPONENTS=1
-  CALL CMISSBasisTypeInitialise(BasisGeometry,Err)
-  CALL CMISSBasisCreateStart(BASIS_NUMBER_GEOMETRY,BasisGeometry,Err)
+  CALL CMISSBasis_Initialise(BasisGeometry,Err)
+  CALL CMISSBasis_CreateStart(BASIS_NUMBER_GEOMETRY,BasisGeometry,Err)
   !Set the basis type (Lagrange/Simplex)
-  CALL CMISSBasisTypeSet(BasisGeometry,BASIS_TYPE,Err)
+  CALL CMISSBasis_TypeSet(BasisGeometry,BASIS_TYPE,Err)
   !Set the basis xi number
-  CALL CMISSBasisNumberOfXiSet(BasisGeometry,NUMBER_OF_DIMENSIONS,Err)
+  CALL CMISSBasis_NumberOfXiSet(BasisGeometry,NUMBER_OF_DIMENSIONS,Err)
   !Set the basis xi interpolation and number of Gauss points
   IF(NUMBER_OF_DIMENSIONS==2) THEN
-    CALL CMISSBasisInterpolationXiSet(BasisGeometry,(/BASIS_XI_INTERPOLATION_GEOMETRY,BASIS_XI_INTERPOLATION_GEOMETRY/),Err)
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisGeometry,(/BASIS_XI_GAUSS_GEOMETRY,BASIS_XI_GAUSS_GEOMETRY/),Err)
+    CALL CMISSBasis_InterpolationXiSet(BasisGeometry,(/BASIS_XI_INTERPOLATION_GEOMETRY,BASIS_XI_INTERPOLATION_GEOMETRY/),Err)
+    CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisGeometry,(/BASIS_XI_GAUSS_GEOMETRY,BASIS_XI_GAUSS_GEOMETRY/),Err)
   ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-    CALL CMISSBasisInterpolationXiSet(BasisGeometry,(/BASIS_XI_INTERPOLATION_GEOMETRY,BASIS_XI_INTERPOLATION_GEOMETRY, & 
+    CALL CMISSBasis_InterpolationXiSet(BasisGeometry,(/BASIS_XI_INTERPOLATION_GEOMETRY,BASIS_XI_INTERPOLATION_GEOMETRY, & 
       & BASIS_XI_INTERPOLATION_GEOMETRY/),Err)                         
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisGeometry,(/BASIS_XI_GAUSS_GEOMETRY,BASIS_XI_GAUSS_GEOMETRY, &
+    CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisGeometry,(/BASIS_XI_GAUSS_GEOMETRY,BASIS_XI_GAUSS_GEOMETRY, &
       & BASIS_XI_GAUSS_GEOMETRY/),Err)
   ENDIF
   !Finish the creation of the basis
-  CALL CMISSBasisCreateFinish(BasisGeometry,Err)
+  CALL CMISSBasis_CreateFinish(BasisGeometry,Err)
   !
   !Start the creation of another basis
   IF(BASIS_XI_INTERPOLATION_VELOCITY==BASIS_XI_INTERPOLATION_GEOMETRY) THEN
@@ -427,25 +427,25 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   ELSE
     MESH_NUMBER_OF_COMPONENTS=MESH_NUMBER_OF_COMPONENTS+1
     !Initialise a new velocity basis
-    CALL CMISSBasisTypeInitialise(BasisVelocity,Err)
+    CALL CMISSBasis_Initialise(BasisVelocity,Err)
     !Start the creation of a basis
-    CALL CMISSBasisCreateStart(BASIS_NUMBER_VELOCITY,BasisVelocity,Err)
+    CALL CMISSBasis_CreateStart(BASIS_NUMBER_VELOCITY,BasisVelocity,Err)
     !Set the basis type (Lagrange/Simplex)
-    CALL CMISSBasisTypeSet(BasisVelocity,BASIS_TYPE,Err)
+    CALL CMISSBasis_TypeSet(BasisVelocity,BASIS_TYPE,Err)
     !Set the basis xi number
-    CALL CMISSBasisNumberOfXiSet(BasisVelocity,NUMBER_OF_DIMENSIONS,Err)
+    CALL CMISSBasis_NumberOfXiSet(BasisVelocity,NUMBER_OF_DIMENSIONS,Err)
     !Set the basis xi interpolation and number of Gauss points
     IF(NUMBER_OF_DIMENSIONS==2) THEN
-      CALL CMISSBasisInterpolationXiSet(BasisVelocity,(/BASIS_XI_INTERPOLATION_VELOCITY,BASIS_XI_INTERPOLATION_VELOCITY/),Err)
-      CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisVelocity,(/BASIS_XI_GAUSS_VELOCITY,BASIS_XI_GAUSS_VELOCITY/),Err)
+      CALL CMISSBasis_InterpolationXiSet(BasisVelocity,(/BASIS_XI_INTERPOLATION_VELOCITY,BASIS_XI_INTERPOLATION_VELOCITY/),Err)
+      CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisVelocity,(/BASIS_XI_GAUSS_VELOCITY,BASIS_XI_GAUSS_VELOCITY/),Err)
     ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-      CALL CMISSBasisInterpolationXiSet(BasisVelocity,(/BASIS_XI_INTERPOLATION_VELOCITY,BASIS_XI_INTERPOLATION_VELOCITY, & 
+      CALL CMISSBasis_InterpolationXiSet(BasisVelocity,(/BASIS_XI_INTERPOLATION_VELOCITY,BASIS_XI_INTERPOLATION_VELOCITY, & 
         & BASIS_XI_INTERPOLATION_VELOCITY/),Err)                         
-      CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisVelocity,(/BASIS_XI_GAUSS_VELOCITY,BASIS_XI_GAUSS_VELOCITY, & 
+      CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisVelocity,(/BASIS_XI_GAUSS_VELOCITY,BASIS_XI_GAUSS_VELOCITY, & 
         & BASIS_XI_GAUSS_VELOCITY/),Err)
     ENDIF
     !Finish the creation of the basis
-    CALL CMISSBasisCreateFinish(BasisVelocity,Err)
+    CALL CMISSBasis_CreateFinish(BasisVelocity,Err)
   ENDIF
   !
   !Start the creation of another basis
@@ -456,25 +456,25 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   ELSE
     MESH_NUMBER_OF_COMPONENTS=MESH_NUMBER_OF_COMPONENTS+1
     !Initialise a new pressure basis
-    CALL CMISSBasisTypeInitialise(BasisPressure,Err)
+    CALL CMISSBasis_Initialise(BasisPressure,Err)
     !Start the creation of a basis
-    CALL CMISSBasisCreateStart(BASIS_NUMBER_PRESSURE,BasisPressure,Err)
+    CALL CMISSBasis_CreateStart(BASIS_NUMBER_PRESSURE,BasisPressure,Err)
     !Set the basis type (Lagrange/Simplex)
-    CALL CMISSBasisTypeSet(BasisPressure,BASIS_TYPE,Err)
+    CALL CMISSBasis_TypeSet(BasisPressure,BASIS_TYPE,Err)
     !Set the basis xi number
-    CALL CMISSBasisNumberOfXiSet(BasisPressure,NUMBER_OF_DIMENSIONS,Err)
+    CALL CMISSBasis_NumberOfXiSet(BasisPressure,NUMBER_OF_DIMENSIONS,Err)
     !Set the basis xi interpolation and number of Gauss points
     IF(NUMBER_OF_DIMENSIONS==2) THEN
-      CALL CMISSBasisInterpolationXiSet(BasisPressure,(/BASIS_XI_INTERPOLATION_PRESSURE,BASIS_XI_INTERPOLATION_PRESSURE/),Err)
-      CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisPressure,(/BASIS_XI_GAUSS_PRESSURE,BASIS_XI_GAUSS_PRESSURE/),Err)
+      CALL CMISSBasis_InterpolationXiSet(BasisPressure,(/BASIS_XI_INTERPOLATION_PRESSURE,BASIS_XI_INTERPOLATION_PRESSURE/),Err)
+      CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisPressure,(/BASIS_XI_GAUSS_PRESSURE,BASIS_XI_GAUSS_PRESSURE/),Err)
     ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-      CALL CMISSBasisInterpolationXiSet(BasisPressure,(/BASIS_XI_INTERPOLATION_PRESSURE,BASIS_XI_INTERPOLATION_PRESSURE, & 
+      CALL CMISSBasis_InterpolationXiSet(BasisPressure,(/BASIS_XI_INTERPOLATION_PRESSURE,BASIS_XI_INTERPOLATION_PRESSURE, & 
         & BASIS_XI_INTERPOLATION_PRESSURE/),Err)                         
-      CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisPressure,(/BASIS_XI_GAUSS_PRESSURE,BASIS_XI_GAUSS_PRESSURE, & 
+      CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisPressure,(/BASIS_XI_GAUSS_PRESSURE,BASIS_XI_GAUSS_PRESSURE, & 
         & BASIS_XI_GAUSS_PRESSURE/),Err)
     ENDIF
     !Finish the creation of the basis
-    CALL CMISSBasisCreateFinish(BasisPressure,Err)
+    CALL CMISSBasis_CreateFinish(BasisPressure,Err)
   ENDIF
 
   !
@@ -484,39 +484,39 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   !MESH
 
   !Start the creation of mesh nodes
-  CALL CMISSNodesTypeInitialise(Nodes,Err)
-  CALL CMISSNodesCreateStart(Region,TOTAL_NUMBER_OF_NODES,Nodes,Err)
-  CALL CMISSNodesCreateFinish(Nodes,Err)
+  CALL CMISSNodes_Initialise(Nodes,Err)
+  CALL CMISSNodes_CreateStart(Region,TOTAL_NUMBER_OF_NODES,Nodes,Err)
+  CALL CMISSNodes_CreateFinish(Nodes,Err)
   !Start the creation of the mesh
-  CALL CMISSMeshTypeInitialise(Mesh,Err)
-  CALL CMISSMeshCreateStart(MeshUserNumber,Region,NUMBER_OF_DIMENSIONS,Mesh,Err)
+  CALL CMISSMesh_Initialise(Mesh,Err)
+  CALL CMISSMesh_CreateStart(MeshUserNumber,Region,NUMBER_OF_DIMENSIONS,Mesh,Err)
   !Set number of mesh elements
-  CALL CMISSMeshNumberOfElementsSet(Mesh,TOTAL_NUMBER_OF_ELEMENTS,Err)
+  CALL CMISSMesh_NumberOfElementsSet(Mesh,TOTAL_NUMBER_OF_ELEMENTS,Err)
   !Set number of mesh components
-  CALL CMISSMeshNumberOfComponentsSet(Mesh,MESH_NUMBER_OF_COMPONENTS,Err)
+  CALL CMISSMesh_NumberOfComponentsSet(Mesh,MESH_NUMBER_OF_COMPONENTS,Err)
   !Specify spatial mesh component
-  CALL CMISSMeshElementsTypeInitialise(MeshElementsGeometry,Err)
-  CALL CMISSMeshElementsTypeInitialise(MeshElementsVelocity,Err)
-  CALL CMISSMeshElementsTypeInitialise(MeshElementsPressure,Err)
+  CALL CMISSMeshElements_Initialise(MeshElementsGeometry,Err)
+  CALL CMISSMeshElements_Initialise(MeshElementsVelocity,Err)
+  CALL CMISSMeshElements_Initialise(MeshElementsPressure,Err)
   MESH_COMPONENT_NUMBER_GEOMETRY=1
   MESH_COMPONENT_NUMBER_VELOCITY=1
   MESH_COMPONENT_NUMBER_PRESSURE=1
-  CALL CMISSMeshElementsCreateStart(Mesh,MESH_COMPONENT_NUMBER_GEOMETRY,BasisGeometry,MeshElementsGeometry,Err)
+  CALL CMISSMeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_GEOMETRY,BasisGeometry,MeshElementsGeometry,Err)
   DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
-    CALL CMISSMeshElementsNodesSet(MeshElementsGeometry,ELEMENT_NUMBER,CM%M(ELEMENT_NUMBER,1:NUMBER_OF_ELEMENT_NODES_GEOMETRY),Err)
+    CALL CMISSMeshElements_NodesSet(MeshElementsGeometry,ELEMENT_NUMBER,CM%M(ELEMENT_NUMBER,1:NUMBER_OF_ELEMENT_NODES_GEOMETRY),Err)
   ENDDO
-  CALL CMISSMeshElementsCreateFinish(MeshElementsGeometry,Err)
+  CALL CMISSMeshElements_CreateFinish(MeshElementsGeometry,Err)
   !Specify velocity mesh component
   IF(BASIS_XI_INTERPOLATION_VELOCITY==BASIS_XI_INTERPOLATION_GEOMETRY) THEN
     MeshElementsVelocity=MeshElementsGeometry
   ELSE
     MESH_COMPONENT_NUMBER_VELOCITY=MESH_COMPONENT_NUMBER_GEOMETRY+1
-    CALL CMISSMeshElementsCreateStart(Mesh,MESH_COMPONENT_NUMBER_VELOCITY,BasisVelocity,MeshElementsVelocity,Err)
+    CALL CMISSMeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_VELOCITY,BasisVelocity,MeshElementsVelocity,Err)
     DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
-      CALL CMISSMeshElementsNodesSet(MeshElementsVelocity,ELEMENT_NUMBER,CM%V(ELEMENT_NUMBER, & 
+      CALL CMISSMeshElements_NodesSet(MeshElementsVelocity,ELEMENT_NUMBER,CM%V(ELEMENT_NUMBER, & 
         & 1:NUMBER_OF_ELEMENT_NODES_VELOCITY),Err)
     ENDDO
-    CALL CMISSMeshElementsCreateFinish(MeshElementsVelocity,Err)
+    CALL CMISSMeshElements_CreateFinish(MeshElementsVelocity,Err)
   ENDIF
   !Specify pressure mesh component
   IF(BASIS_XI_INTERPOLATION_PRESSURE==BASIS_XI_INTERPOLATION_GEOMETRY) THEN
@@ -527,15 +527,15 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
     MESH_COMPONENT_NUMBER_PRESSURE=MESH_COMPONENT_NUMBER_VELOCITY
   ELSE
     MESH_COMPONENT_NUMBER_PRESSURE=MESH_COMPONENT_NUMBER_VELOCITY+1
-    CALL CMISSMeshElementsCreateStart(Mesh,MESH_COMPONENT_NUMBER_PRESSURE,BasisPressure,MeshElementsPressure,Err)
+    CALL CMISSMeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_PRESSURE,BasisPressure,MeshElementsPressure,Err)
     DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
-      CALL CMISSMeshElementsNodesSet(MeshElementsPressure,ELEMENT_NUMBER,CM%P(ELEMENT_NUMBER, & 
+      CALL CMISSMeshElements_NodesSet(MeshElementsPressure,ELEMENT_NUMBER,CM%P(ELEMENT_NUMBER, & 
         & 1:NUMBER_OF_ELEMENT_NODES_PRESSURE),Err)
     ENDDO
-    CALL CMISSMeshElementsCreateFinish(MeshElementsPressure,Err)
+    CALL CMISSMeshElements_CreateFinish(MeshElementsPressure,Err)
   ENDIF
   !Finish the creation of the mesh
-  CALL CMISSMeshCreateFinish(Mesh,Err)
+  CALL CMISSMesh_CreateFinish(Mesh,Err)
 
   !
   !================================================================================================================================
@@ -544,42 +544,42 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   !GEOMETRIC FIELD
 
   !Create a decomposition
-  CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
-  CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
+  CALL CMISSDecomposition_Initialise(Decomposition,Err)
+  CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
-  CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
+  CALL CMISSDecomposition_TypeSet(Decomposition,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
   !Finish the decomposition
-  CALL CMISSDecompositionCreateFinish(Decomposition,Err)
+  CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
 
   !Start to create a default (geometric) field on the region
-  CALL CMISSFieldTypeInitialise(GeometricField,Err)
-  CALL CMISSFieldCreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
+  CALL CMISSField_Initialise(GeometricField,Err)
+  CALL CMISSField_CreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
   !Set the field type
-  CALL CMISSFieldTypeSet(GeometricField,CMISSFieldGeometricType,Err)
+  CALL CMISSField_TypeSet(GeometricField,CMISS_FIELD_GEOMETRIC_TYPE,Err)
   !Set the decomposition to use
-  CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
+  CALL CMISSField_MeshDecompositionSet(GeometricField,Decomposition,Err)
   !Set the scaling to use
-  CALL CMISSFieldScalingTypeSet(GeometricField,CMISSFieldNoScaling,Err)
+  CALL CMISSField_ScalingTypeSet(GeometricField,CMISS_FIELD_NO_SCALING,Err)
   !Set the mesh component to be used by the field components.
 
   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-    CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
+    CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_GEOMETRY,Err)
   ENDDO
 
   !Finish creating the field
-  CALL CMISSFieldCreateFinish(GeometricField,Err)
+  CALL CMISSField_CreateFinish(GeometricField,Err)
   !Update the geometric field parameters
   DO NODE_NUMBER=1,NUMBER_OF_NODES_GEOMETRY
     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
       VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)
-      CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, & 
-        & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+      CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, & 
+        & CMISS_NO_GLOBAL_DERIV,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
   ENDDO
-  CALL CMISSFieldParameterSetUpdateStart(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
-  CALL CMISSFieldParameterSetUpdateFinish(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
+  CALL CMISSField_ParameterSetUpdateStart(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
+  CALL CMISSField_ParameterSetUpdateFinish(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
 
   !
   !================================================================================================================================
@@ -588,28 +588,28 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   !EQUATIONS SETS
 
   !Create the equations set for ALE Darcy
-  CALL CMISSFieldTypeInitialise(EquationsSetFieldDarcy,Err)
-  CALL CMISSEquationsSetTypeInitialise(EquationsSetDarcy,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberDarcy,Region,GeometricField,CMISSEquationsSetFluidMechanicsClass, &
-    & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetALEDarcySubtype,EquationsSetFieldUserNumberDarcy,&
+  CALL CMISSField_Initialise(EquationsSetFieldDarcy,Err)
+  CALL CMISSEquationsSet_Initialise(EquationsSetDarcy,Err)
+  CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumberDarcy,Region,GeometricField,CMISS_EQUATIONS_SET_FLUID_MECHANICS_CLASS, &
+    & CMISS_EQUATIONS_SET_DARCY_EQUATION_TYPE,CMISS_EQUATIONS_SET_ALE_DARCY_SUBTYPE,EquationsSetFieldUserNumberDarcy,&
     & EquationsSetFieldDarcy,EquationsSetDarcy,Err)
   !Set the equations set to be a ALE Darcy problem
-!   CALL CMISSEquationsSetSpecificationSet(EquationsSetDarcy,CMISSEquationsSetFluidMechanicsClass, &
-!     & CMISSEquationsSetDarcyEquationType,CMISSEquationsSetALEDarcySubtype,Err)
+!   CALL CMISSEquationsSet_SpecificationSet(EquationsSetDarcy,CMISS_EQUATIONS_SET_FLUID_MECHANICS_CLASS, &
+!     & CMISS_EQUATIONS_SET_DARCY_EQUATION_TYPE,CMISS_EQUATIONS_SET_ALE_DARCY_SUBTYPE,Err)
   !Finish creating the equations set
-  CALL CMISSEquationsSetCreateFinish(EquationsSetDarcy,Err)
+  CALL CMISSEquationsSet_CreateFinish(EquationsSetDarcy,Err)
 
   !Create the equations set for deformation-dependent material properties
-  CALL CMISSFieldTypeInitialise(EquationsSetFieldMatProperties,Err)
-  CALL CMISSEquationsSetTypeInitialise(EquationsSetMatProperties,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberMatProperties,Region,GeometricField,CMISSEquationsSetFittingClass,&
-    & CMISSEquationsSetDataFittingEquationType,CMISSEquationsSetMatPropertiesDataFittingSubtype,&
+  CALL CMISSField_Initialise(EquationsSetFieldMatProperties,Err)
+  CALL CMISSEquationsSet_Initialise(EquationsSetMatProperties,Err)
+  CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumberMatProperties,Region,GeometricField,CMISS_EQUATIONS_SET_FITTING_CLASS,&
+    & CMISS_EQUATIONS_SET_DATA_FITTING_EQUATION_TYPE,CMISS_EQUATIONS_SET_MAT_PROPERTIES_DATA_FITTING_SUBTYPE,&
     & EquationsSetFieldUserNumberMatProperties,EquationsSetFieldMatProperties,EquationsSetMatProperties,Err)
   !Set the equations set to be a deformation-dependent material properties problem
-!   CALL CMISSEquationsSetSpecificationSet(EquationsSetMatProperties,CMISSEquationsSetFittingClass, &
-!     & CMISSEquationsSetDataFittingEquationType,CMISSEquationsSetMatPropertiesDataFittingSubtype,Err)
+!   CALL CMISSEquationsSet_SpecificationSet(EquationsSetMatProperties,CMISS_EQUATIONS_SET_FITTING_CLASS, &
+!     & CMISS_EQUATIONS_SET_DATA_FITTING_EQUATION_TYPE,CMISS_EQUATIONS_SET_MAT_PROPERTIES_DATA_FITTING_SUBTYPE,Err)
   !Finish creating the equations set
-  CALL CMISSEquationsSetCreateFinish(EquationsSetMatProperties,Err)
+  CALL CMISSEquationsSet_CreateFinish(EquationsSetMatProperties,Err)
 
   !
   !================================================================================================================================
@@ -618,48 +618,48 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   !DEPENDENT FIELDS
 
   !Create the equations set dependent field variables for ALE Darcy
-  CALL CMISSFieldTypeInitialise(DependentFieldDarcy,Err)
-  CALL CMISSEquationsSetDependentCreateStart(EquationsSetDarcy,DependentFieldUserNumberDarcy, & 
+  CALL CMISSField_Initialise(DependentFieldDarcy,Err)
+  CALL CMISSEquationsSet_DependentCreateStart(EquationsSetDarcy,DependentFieldUserNumberDarcy, & 
     & DependentFieldDarcy,Err)
   !Set the mesh component to be used by the field components.
   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-    CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
+    CALL CMISSField_ComponentMeshComponentSet(DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_VELOCITY,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
+    CALL CMISSField_ComponentMeshComponentSet(DependentFieldDarcy,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_VELOCITY,Err)
   ENDDO
   COMPONENT_NUMBER=NUMBER_OF_DIMENSIONS+1
-    CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
+    CALL CMISSField_ComponentMeshComponentSet(DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_PRESSURE,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentFieldDarcy,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
+    CALL CMISSField_ComponentMeshComponentSet(DependentFieldDarcy,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_PRESSURE,Err)
   !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetDependentCreateFinish(EquationsSetDarcy,Err)
+  CALL CMISSEquationsSet_DependentCreateFinish(EquationsSetDarcy,Err)
 
   !Initialise dependent field (velocity components)
   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-    CALL CMISSFieldComponentValuesInitialise(DependentFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+    CALL CMISSField_ComponentValuesInitialise(DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
       & COMPONENT_NUMBER,INITIAL_FIELD_DARCY(COMPONENT_NUMBER),Err)
   ENDDO
 
   !Create the equations set dependent field variables for deformation-dependent material properties
-  CALL CMISSFieldTypeInitialise(DependentFieldMatProperties,Err)
-  CALL CMISSEquationsSetDependentCreateStart(EquationsSetMatProperties,DependentFieldUserNumberMatProperties, & 
+  CALL CMISSField_Initialise(DependentFieldMatProperties,Err)
+  CALL CMISSEquationsSet_DependentCreateStart(EquationsSetMatProperties,DependentFieldUserNumberMatProperties, & 
     & DependentFieldMatProperties,Err)
   !Set the mesh component to be used by the field components.
   NUMBER_OF_COMPONENTS_DEPENDENT_FIELD_MAT_PROPERTIES = 2
   DO COMPONENT_NUMBER=1,NUMBER_OF_COMPONENTS_DEPENDENT_FIELD_MAT_PROPERTIES
-    CALL CMISSFieldComponentMeshComponentSet(DependentFieldMatProperties,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
+    CALL CMISSField_ComponentMeshComponentSet(DependentFieldMatProperties,CMISS_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_GEOMETRY,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentFieldMatProperties,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
+    CALL CMISSField_ComponentMeshComponentSet(DependentFieldMatProperties,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_GEOMETRY,Err)
   ENDDO
   !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetDependentCreateFinish(EquationsSetMatProperties,Err)
+  CALL CMISSEquationsSet_DependentCreateFinish(EquationsSetMatProperties,Err)
 
   !Initialise dependent field
   DO COMPONENT_NUMBER=1,NUMBER_OF_COMPONENTS_DEPENDENT_FIELD_MAT_PROPERTIES
-    CALL CMISSFieldComponentValuesInitialise(DependentFieldMatProperties,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+    CALL CMISSField_ComponentValuesInitialise(DependentFieldMatProperties,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
       & COMPONENT_NUMBER,INITIAL_FIELD_MAT_PROPERTIES(COMPONENT_NUMBER),Err)
   ENDDO
 
@@ -670,24 +670,24 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   !MATERIALS FIELDS
 
   !Create the equations set materials field variables for ALE Darcy
-  CALL CMISSFieldTypeInitialise(MaterialsFieldDarcy,Err)
-  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetDarcy,MaterialsFieldUserNumberDarcy, & 
+  CALL CMISSField_Initialise(MaterialsFieldDarcy,Err)
+  CALL CMISSEquationsSet_MaterialsCreateStart(EquationsSetDarcy,MaterialsFieldUserNumberDarcy, & 
     & MaterialsFieldDarcy,Err)
   !Finish the equations set materials field variables
-  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetDarcy,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+  CALL CMISSEquationsSet_MaterialsCreateFinish(EquationsSetDarcy,Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialsFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
     & MaterialsFieldUserNumberDarcyPorosity,POROSITY_PARAM_DARCY,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldDarcy,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+  CALL CMISSField_ComponentValuesInitialise(MaterialsFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
     & MaterialsFieldUserNumberDarcyPermOverVis,PERM_OVER_VIS_PARAM_DARCY,Err)
   !Create the equations set materials field variables for deformation-dependent material properties
-  CALL CMISSFieldTypeInitialise(MaterialsFieldMatProperties,Err)
-  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetMatProperties,MaterialsFieldUserNumberMatProperties, & 
+  CALL CMISSField_Initialise(MaterialsFieldMatProperties,Err)
+  CALL CMISSEquationsSet_MaterialsCreateStart(EquationsSetMatProperties,MaterialsFieldUserNumberMatProperties, & 
     & MaterialsFieldMatProperties,Err)
   !Finish the equations set materials field variables
-  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetMatProperties,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldMatProperties,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+  CALL CMISSEquationsSet_MaterialsCreateFinish(EquationsSetMatProperties,Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialsFieldMatProperties,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
     & MaterialsFieldUserNumberMatPropertiesPorosity,POROSITY_PARAM_MAT_PROPERTIES,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldMatProperties,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+  CALL CMISSField_ComponentValuesInitialise(MaterialsFieldMatProperties,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
     & MaterialsFieldUserNumberMatPropertiesPermOverVis,PERM_OVER_VIS_PARAM_MAT_PROPERTIES,Err)
 
   !
@@ -697,27 +697,27 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
 !   !INDEPENDENT FIELDS
 ! 
 !   !Create the equations set independent field variables for ALE Darcy
-!   CALL CMISSFieldTypeInitialise(IndependentFieldDarcy,Err)
-!   CALL CMISSEquationsSetIndependentCreateStart(EquationsSetDarcy,IndependentFieldUserNumberDarcy, & 
+!   CALL CMISSField_Initialise(IndependentFieldDarcy,Err)
+!   CALL CMISSEquationsSet_IndependentCreateStart(EquationsSetDarcy,IndependentFieldUserNumberDarcy, & 
 !     & IndependentFieldDarcy,Err)
 !   !Set the mesh component to be used by the field components.
 !   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS+1
-!     CALL CMISSFieldComponentMeshComponentSet(IndependentFieldDarcy,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
+!     CALL CMISSField_ComponentMeshComponentSet(IndependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
 !       & MESH_COMPONENT_NUMBER_GEOMETRY,Err)
 !   ENDDO
 !   !Finish the equations set independent field variables
-!   CALL CMISSEquationsSetIndependentCreateFinish(EquationsSetDarcy,Err)
+!   CALL CMISSEquationsSet_IndependentCreateFinish(EquationsSetDarcy,Err)
 !   !Create the equations set independent field variables for deformation-dependent material properties
-!   CALL CMISSFieldTypeInitialise(IndependentFieldMatProperties,Err)
-!   CALL CMISSEquationsSetIndependentCreateStart(EquationsSetMatProperties,IndependentFieldUserNumberMatProperties, & 
+!   CALL CMISSField_Initialise(IndependentFieldMatProperties,Err)
+!   CALL CMISSEquationsSet_IndependentCreateStart(EquationsSetMatProperties,IndependentFieldUserNumberMatProperties, & 
 !     & IndependentFieldMatProperties,Err)
 !   !Set the mesh component to be used by the field components.
 !   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-!     CALL CMISSFieldComponentMeshComponentSet(IndependentFieldMatProperties,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
+!     CALL CMISSField_ComponentMeshComponentSet(IndependentFieldMatProperties,CMISS_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
 !       & MESH_COMPONENT_NUMBER_GEOMETRY,Err)
 !   ENDDO
 !   !Finish the equations set independent field variables
-!   CALL CMISSEquationsSetIndependentCreateFinish(EquationsSetMatProperties,Err)
+!   CALL CMISSEquationsSet_IndependentCreateFinish(EquationsSetMatProperties,Err)
 
   !
   !================================================================================================================================
@@ -726,26 +726,26 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   !EQUATIONS
 
   !Create the equations set equations
-  CALL CMISSEquationsTypeInitialise(EquationsDarcy,Err)
-  CALL CMISSEquationsSetEquationsCreateStart(EquationsSetDarcy,EquationsDarcy,Err)
+  CALL CMISSEquations_Initialise(EquationsDarcy,Err)
+  CALL CMISSEquationsSet_EquationsCreateStart(EquationsSetDarcy,EquationsDarcy,Err)
   !Set the equations matrices sparsity type
-  CALL CMISSEquationsSparsityTypeSet(EquationsDarcy,CMISSEquationsSparseMatrices,Err)
+  CALL CMISSEquations_SparsityTypeSet(EquationsDarcy,CMISS_EQUATIONS_SPARSE_MATRICES,Err)
 !   !Set the equations lumping type
-!   CALL CMISSEquationsLumpingTypeSet(EquationsDarcy,CMISSEquationsUnlumpedMatrices,Err)
+!   CALL CMISSEquations_LumpingTypeSet(EquationsDarcy,CMISS_EQUATIONS_UNLUMPED_MATRICES,Err)
   !Set the equations set output
-  CALL CMISSEquationsOutputTypeSet(EquationsDarcy,EQUATIONS_DARCY_OUTPUT,Err)
+  CALL CMISSEquations_OutputTypeSet(EquationsDarcy,EQUATIONS_DARCY_OUTPUT,Err)
   !Finish the equations set equations
-  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetDarcy,Err)
+  CALL CMISSEquationsSet_EquationsCreateFinish(EquationsSetDarcy,Err)
 
   !Create the equations set equations
-  CALL CMISSEquationsTypeInitialise(EquationsMatProperties,Err)
-  CALL CMISSEquationsSetEquationsCreateStart(EquationsSetMatProperties,EquationsMatProperties,Err)
+  CALL CMISSEquations_Initialise(EquationsMatProperties,Err)
+  CALL CMISSEquationsSet_EquationsCreateStart(EquationsSetMatProperties,EquationsMatProperties,Err)
   !Set the equations matrices sparsity type
-  CALL CMISSEquationsSparsityTypeSet(EquationsMatProperties,CMISSEquationsSparseMatrices,Err)
+  CALL CMISSEquations_SparsityTypeSet(EquationsMatProperties,CMISS_EQUATIONS_SPARSE_MATRICES,Err)
   !Set the equations set output
-  CALL CMISSEquationsOutputTypeSet(EquationsMatProperties,EQUATIONS_MAT_PROPERTIES_OUTPUT,Err)
+  CALL CMISSEquations_OutputTypeSet(EquationsMatProperties,EQUATIONS_MAT_PROPERTIES_OUTPUT,Err)
   !Finish the equations set equations
-  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetMatProperties,Err)
+  CALL CMISSEquationsSet_EquationsCreateFinish(EquationsSetMatProperties,Err)
 
   !
   !================================================================================================================================
@@ -754,25 +754,25 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   !PROBLEMS
 
   !Start the creation of a problem.
-  CALL CMISSProblemTypeInitialise(Problem,Err)
-  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
-  CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
+  CALL CMISSProblem_Initialise(Problem,Err)
+  CALL CMISSControlLoop_Initialise(ControlLoop,Err)
+  CALL CMISSProblem_CreateStart(ProblemUserNumber,Problem,Err)
   !Set the problem to be a ALE Darcy problem
-  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemFluidMechanicsClass,CMISSProblemDarcyEquationType, &
-    & CMISSProblemALEDarcySubtype,Err)
+  CALL CMISSProblem_SpecificationSet(Problem,CMISS_PROBLEM_FLUID_MECHANICS_CLASS,CMISS_PROBLEM_DARCY_EQUATION_TYPE, &
+    & CMISS_PROBLEM_ALE_DARCY_SUBTYPE,Err)
   !Finish the creation of a problem.
-  CALL CMISSProblemCreateFinish(Problem,Err)
+  CALL CMISSProblem_CreateFinish(Problem,Err)
   !Start the creation of the problem control loop
-  CALL CMISSProblemControlLoopCreateStart(Problem,Err)
+  CALL CMISSProblem_ControlLoopCreateStart(Problem,Err)
   !Get the control loop
-  CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
+  CALL CMISSProblem_ControlLoopGet(Problem,CMISS_CONTROL_LOOP_NODE,ControlLoop,Err)
   !Set the times
-  CALL CMISSControlLoopTimesSet(ControlLoop,LINEAR_SOLVER_DARCY_START_TIME,LINEAR_SOLVER_DARCY_STOP_TIME, & 
+  CALL CMISSControlLoop_TimesSet(ControlLoop,LINEAR_SOLVER_DARCY_START_TIME,LINEAR_SOLVER_DARCY_STOP_TIME, & 
     & LINEAR_SOLVER_DARCY_TIME_INCREMENT,Err)
   !Set the output timing
-  CALL CMISSControlLoopTimeOutputSet(ControlLoop,LINEAR_SOLVER_DARCY_OUTPUT_FREQUENCY,Err)
+  CALL CMISSControlLoop_TimeOutputSet(ControlLoop,LINEAR_SOLVER_DARCY_OUTPUT_FREQUENCY,Err)
   !Finish creating the problem control loop
-  CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
+  CALL CMISSProblem_ControlLoopCreateFinish(Problem,Err)
 
   !
   !================================================================================================================================
@@ -781,44 +781,44 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   !SOLVERS
 
   !Start the creation of the problem solvers
-  CALL CMISSSolverTypeInitialise(LinearSolverMatProperties,Err)
-  CALL CMISSSolverTypeInitialise(LinearSolverDarcy,Err)
-  CALL CMISSProblemSolversCreateStart(Problem,Err)
+  CALL CMISSSolver_Initialise(LinearSolverMatProperties,Err)
+  CALL CMISSSolver_Initialise(LinearSolverDarcy,Err)
+  CALL CMISSProblem_SolversCreateStart(Problem,Err)
   !Get the deformation-dependent material properties solver
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverMatPropertiesUserNumber,LinearSolverMatProperties,Err)
+  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,SolverMatPropertiesUserNumber,LinearSolverMatProperties,Err)
   !Set the output type
-  CALL CMISSSolverOutputTypeSet(LinearSolverMatProperties,LINEAR_SOLVER_MAT_PROPERTIES_OUTPUT_TYPE,Err)
-!   CALL CMISSSolverOutputTypeSet(LinearSolverMatProperties,4,Err)
+  CALL CMISSSolver_OutputTypeSet(LinearSolverMatProperties,LINEAR_SOLVER_MAT_PROPERTIES_OUTPUT_TYPE,Err)
+!   CALL CMISSSolver_OutputTypeSet(LinearSolverMatProperties,4,Err)
   !Set the solver settings
   IF(LINEAR_SOLVER_MAT_PROPERTIES_DIRECT_FLAG) THEN
-    CALL CMISSSolverLinearTypeSet(LinearSolverMatProperties,CMISSSolverLinearDirectSolveType,Err)
-    CALL CMISSSolverLibraryTypeSet(LinearSolverMatProperties,CMISSSolverMUMPSLibrary,Err)
+    CALL CMISSSolver_LinearTypeSet(LinearSolverMatProperties,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
+    CALL CMISSSolver_LibraryTypeSet(LinearSolverMatProperties,CMISS_SOLVER_MUMPS_LIBRARY,Err)
   ELSE
-    CALL CMISSSolverLinearTypeSet(LinearSolverMatProperties,CMISSSolverLinearIterativeSolveType,Err)
-    CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolverMatProperties,MAXIMUM_ITERATIONS,Err)
-    CALL CMISSSolverLinearIterativeDivergenceToleranceSet(LinearSolverMatProperties,DIVERGENCE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeRelativeToleranceSet(LinearSolverMatProperties,RELATIVE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeAbsoluteToleranceSet(LinearSolverMatProperties,ABSOLUTE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeGMRESRestartSet(LinearSolverMatProperties,RESTART_VALUE,Err)
+    CALL CMISSSolver_LinearTypeSet(LinearSolverMatProperties,CMISS_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
+    CALL CMISSSolver_LinearIterativeMaximumIterationsSet(LinearSolverMatProperties,MAXIMUM_ITERATIONS,Err)
+    CALL CMISSSolver_LinearIterativeDivergenceToleranceSet(LinearSolverMatProperties,DIVERGENCE_TOLERANCE,Err)
+    CALL CMISSSolver_LinearIterativeRelativeToleranceSet(LinearSolverMatProperties,RELATIVE_TOLERANCE,Err)
+    CALL CMISSSolver_LinearIterativeAbsoluteToleranceSet(LinearSolverMatProperties,ABSOLUTE_TOLERANCE,Err)
+    CALL CMISSSolver_LinearIterativeGMRESRestartSet(LinearSolverMatProperties,RESTART_VALUE,Err)
   ENDIF
   !Get the Darcy solver
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverDarcyUserNumber,LinearSolverDarcy,Err)
+  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,SolverDarcyUserNumber,LinearSolverDarcy,Err)
   !Set the output type
-  CALL CMISSSolverOutputTypeSet(LinearSolverDarcy,LINEAR_SOLVER_DARCY_OUTPUT_TYPE,Err)
+  CALL CMISSSolver_OutputTypeSet(LinearSolverDarcy,LINEAR_SOLVER_DARCY_OUTPUT_TYPE,Err)
   !Set the solver settings
   IF(LINEAR_SOLVER_DARCY_DIRECT_FLAG) THEN
-    CALL CMISSSolverLinearTypeSet(LinearSolverDarcy,CMISSSolverLinearDirectSolveType,Err)
-    CALL CMISSSolverLibraryTypeSet(LinearSolverDarcy,CMISSSolverMUMPSLibrary,Err)
+    CALL CMISSSolver_LinearTypeSet(LinearSolverDarcy,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
+    CALL CMISSSolver_LibraryTypeSet(LinearSolverDarcy,CMISS_SOLVER_MUMPS_LIBRARY,Err)
   ELSE
-    CALL CMISSSolverLinearTypeSet(LinearSolverDarcy,CMISSSolverLinearIterativeSolveType,Err)
-    CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolverDarcy,MAXIMUM_ITERATIONS,Err)
-    CALL CMISSSolverLinearIterativeDivergenceToleranceSet(LinearSolverDarcy,DIVERGENCE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeRelativeToleranceSet(LinearSolverDarcy,RELATIVE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeAbsoluteToleranceSet(LinearSolverDarcy,ABSOLUTE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeGMRESRestartSet(LinearSolverDarcy,RESTART_VALUE,Err)
+    CALL CMISSSolver_LinearTypeSet(LinearSolverDarcy,CMISS_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
+    CALL CMISSSolver_LinearIterativeMaximumIterationsSet(LinearSolverDarcy,MAXIMUM_ITERATIONS,Err)
+    CALL CMISSSolver_LinearIterativeDivergenceToleranceSet(LinearSolverDarcy,DIVERGENCE_TOLERANCE,Err)
+    CALL CMISSSolver_LinearIterativeRelativeToleranceSet(LinearSolverDarcy,RELATIVE_TOLERANCE,Err)
+    CALL CMISSSolver_LinearIterativeAbsoluteToleranceSet(LinearSolverDarcy,ABSOLUTE_TOLERANCE,Err)
+    CALL CMISSSolver_LinearIterativeGMRESRestartSet(LinearSolverDarcy,RESTART_VALUE,Err)
   ENDIF
   !Finish the creation of the problem solver
-  CALL CMISSProblemSolversCreateFinish(Problem,Err)
+  CALL CMISSProblem_SolversCreateFinish(Problem,Err)
 
   !
   !================================================================================================================================
@@ -827,29 +827,29 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   !SOLVER EQUATIONS
 
   !Start the creation of the problem solver equations
-  CALL CMISSSolverTypeInitialise(LinearSolverMatProperties,Err)
-  CALL CMISSSolverTypeInitialise(LinearSolverDarcy,Err)
-  CALL CMISSSolverEquationsTypeInitialise(SolverEquationsMatProperties,Err)
-  CALL CMISSSolverEquationsTypeInitialise(SolverEquationsDarcy,Err)
+  CALL CMISSSolver_Initialise(LinearSolverMatProperties,Err)
+  CALL CMISSSolver_Initialise(LinearSolverDarcy,Err)
+  CALL CMISSSolverEquations_Initialise(SolverEquationsMatProperties,Err)
+  CALL CMISSSolverEquations_Initialise(SolverEquationsDarcy,Err)
 
-  CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
+  CALL CMISSProblem_SolverEquationsCreateStart(Problem,Err)
   !Get the deformation-dependent material properties solver equations
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverMatPropertiesUserNumber,LinearSolverMatProperties,Err)
-  CALL CMISSSolverSolverEquationsGet(LinearSolverMatProperties,SolverEquationsMatProperties,Err)
+  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,SolverMatPropertiesUserNumber,LinearSolverMatProperties,Err)
+  CALL CMISSSolver_SolverEquationsGet(LinearSolverMatProperties,SolverEquationsMatProperties,Err)
   !Set the solver equations sparsity
-  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsMatProperties,CMISSSolverEquationsSparseMatrices,Err)
+  CALL CMISSSolverEquations_SparsityTypeSet(SolverEquationsMatProperties,CMISS_SOLVER_SPARSE_MATRICES,Err)
   !Add in the equations set
-  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsMatProperties,EquationsSetMatProperties,EquationsSetIndex,Err)
+  CALL CMISSSolverEquations_EquationsSetAdd(SolverEquationsMatProperties,EquationsSetMatProperties,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   !Get the Darcy solver equations
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverDarcyUserNumber,LinearSolverDarcy,Err)
-  CALL CMISSSolverSolverEquationsGet(LinearSolverDarcy,SolverEquationsDarcy,Err)
+  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,SolverDarcyUserNumber,LinearSolverDarcy,Err)
+  CALL CMISSSolver_SolverEquationsGet(LinearSolverDarcy,SolverEquationsDarcy,Err)
   !Set the solver equations sparsity
-  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsDarcy,CMISSSolverEquationsSparseMatrices,Err)
+  CALL CMISSSolverEquations_SparsityTypeSet(SolverEquationsDarcy,CMISS_SOLVER_SPARSE_MATRICES,Err)
   !Add in the equations set
-  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsDarcy,EquationsSetDarcy,EquationsSetIndex,Err)
+  CALL CMISSSolverEquations_EquationsSetAdd(SolverEquationsDarcy,EquationsSetDarcy,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
-  CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+  CALL CMISSProblem_SolverEquationsCreateFinish(Problem,Err)
 
   !
   !================================================================================================================================
@@ -857,44 +857,44 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
 
   !BOUNDARY CONDITIONS
   !Start the creation of the equations set boundary conditions for Darcy
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsDarcy,Err)
-  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsDarcy,BoundaryConditionsDarcy,Err)
+  CALL CMISSBoundaryConditions_Initialise(BoundaryConditionsDarcy,Err)
+  CALL CMISSSolverEquations_BoundaryConditionsCreateStart(SolverEquationsDarcy,BoundaryConditionsDarcy,Err)
 
   !--- BCs on normal velocity only
-  CONDITION = CMISSBoundaryConditionMovedWall
+  CONDITION = CMISS_BOUNDARY_CONDITION_MOVED_WALL
 
   IF( CM%D==2_CMISSIntg ) THEN
     DO NODE_NUMBER=1_CMISSIntg,NUMBER_OF_NODES_GEOMETRY
       COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
       COORD_Y = CM%N(NODE_NUMBER,2_CMISSIntg)
-      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,MESH_COMPONENT_NUMBER_VELOCITY,NodeDomain,Err)
+      CALL CMISSDecomposition_NodeDomainGet(Decomposition,NODE_NUMBER,MESH_COMPONENT_NUMBER_VELOCITY,NodeDomain,Err)
 
       IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !x-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISSFieldUVariableType, &
-          & CMISSNoGlobalDerivative,1,NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE, &
+          & CMISS_NO_GLOBAL_DERIV,1,NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !x-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISSFieldUVariableType, &
-          & CMISSNoGlobalDerivative,1,NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE, &
+          & CMISS_NO_GLOBAL_DERIV,1,NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !y-velocity
         VALUE = 2.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISSFieldUVariableType, &
-          & CMISSNoGlobalDerivative,1,NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE, &
+          & CMISS_NO_GLOBAL_DERIV,1,NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !y-velocity
         VALUE = 2.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISSFieldUVariableType, &
-          & CMISSNoGlobalDerivative,1,NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE, &
+          & CMISS_NO_GLOBAL_DERIV,1,NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
       END IF
     END DO
   ELSE IF( CM%D==3_CMISSIntg ) THEN
@@ -902,61 +902,61 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
       COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
       COORD_Y = CM%N(NODE_NUMBER,2_CMISSIntg)
       COORD_Z = CM%N(NODE_NUMBER,3_CMISSIntg)
-      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,MESH_COMPONENT_NUMBER_VELOCITY,NodeDomain,Err)
+      CALL CMISSDecomposition_NodeDomainGet(Decomposition,NODE_NUMBER,MESH_COMPONENT_NUMBER_VELOCITY,NodeDomain,Err)
 
       IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !x-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISSFieldUVariableType, &
-          & CMISSNoGlobalDerivative,1,NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE, &
+          & CMISS_NO_GLOBAL_DERIV,1,NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !x-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISSFieldUVariableType, &
-          & CMISSNoGlobalDerivative,1,NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE, &
+          & CMISS_NO_GLOBAL_DERIV,1,NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !y-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISSFieldUVariableType, &
-          & CMISSNoGlobalDerivative,1,NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE, &
+          & CMISS_NO_GLOBAL_DERIV,1,NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !y-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISSFieldUVariableType, &
-          & CMISSNoGlobalDerivative,1,NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE, &
+          & CMISS_NO_GLOBAL_DERIV,1,NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !z-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISSFieldUVariableType, &
-          & CMISSNoGlobalDerivative,1,NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE, &
+          & CMISS_NO_GLOBAL_DERIV,1,NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !z-velocity
         VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISSFieldUVariableType, &
-          & CMISSNoGlobalDerivative,1,NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE, &
+          & CMISS_NO_GLOBAL_DERIV,1,NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
       END IF
     END DO
   END IF
 
   !Finish the creation of the equations set boundary conditions for Darcy
-  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsDarcy,Err)
+  CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquationsDarcy,Err)
   !
   !Start the creation of the equations set boundary conditions for deformation-dependent material properties
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsMatProperties,Err)
-  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsMatProperties,BoundaryConditionsMatProperties,Err)
+  CALL CMISSBoundaryConditions_Initialise(BoundaryConditionsMatProperties,Err)
+  CALL CMISSSolverEquations_BoundaryConditionsCreateStart(SolverEquationsMatProperties,BoundaryConditionsMatProperties,Err)
   !(No boundary conditions requrired for deformation-dependent material properties)
   !Finish the creation of the equations set boundary conditions for deformation-dependent material properties
-  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsMatProperties,Err)
+  CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquationsMatProperties,Err)
 
   !
   !================================================================================================================================
@@ -969,7 +969,7 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
 
   !Solve the problem
   WRITE(*,'(A)') "Solving problem..."
-  CALL CMISSProblemSolve(Problem,Err)
+  CALL CMISSProblem_Solve(Problem,Err)
   WRITE(*,'(A)') "Problem solved!"
 
   !
@@ -981,11 +981,11 @@ PROGRAM DARCYQUASISTATICMATERIALEXAMPLE
   EXPORT_FIELD_IO=.TRUE.
   IF(EXPORT_FIELD_IO) THEN
     WRITE(*,'(A)') "Exporting fields..."
-    CALL CMISSFieldsTypeInitialise(Fields,Err)
-    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"DarcyQuasistaticMaterial","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"DarcyQuasistaticMaterial","FORTRAN",Err)
-    CALL CMISSFieldsTypeFinalise(Fields,Err)
+    CALL CMISSFields_Initialise(Fields,Err)
+    CALL CMISSFields_Create(Region,Fields,Err)
+    CALL CMISSFields_NodesExport(Fields,"DarcyQuasistaticMaterial","FORTRAN",Err)
+    CALL CMISSFields_ElementsExport(Fields,"DarcyQuasistaticMaterial","FORTRAN",Err)
+    CALL CMISSFields_Finalise(Fields,Err)
     WRITE(*,'(A)') "Field exported!"
   ENDIF
 
