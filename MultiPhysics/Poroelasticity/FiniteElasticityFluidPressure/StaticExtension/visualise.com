@@ -22,10 +22,10 @@ gfx modify g_element "Region 1" node_points coordinate deformed_geom glyph spher
 # display undeformed nodes
 gfx modify g_element "Region 1" lines select_on material green line_width 2 selected_material default_selected
 
-gfx create axes length 12.0 material default
-gfx draw axes
+gfx modify g_element "/" point  glyph axes general size "12*12*12" centre 0,0,0 font default select_on material black selected_material default_selected;
 
 gfx modify spectrum fluid autorange
 
+gfx modify window 1 background colour 1 1 1
 gfx edit scene
 gfx modify window 1 set antialias 8

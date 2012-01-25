@@ -63,18 +63,18 @@ int main()
   if(CMISSInitialise(&WorldCoordinateSystem,&WorldRegion) == CMISSNoError)
     {
 
-      Err = CMISSRegionLabelGet(WorldRegion,STRING_SIZE,Label);
+      Err = CMISSRegion_LabelGet(WorldRegion,STRING_SIZE,Label);
       printf("The world region label is '%s'.\n",Label);
 
-      Err = CMISSRegionTypeInitialise(&Region);
-      Err = CMISSRegionCreateStart(REGION_USER_NUMBER,WorldRegion,Region);
-      Err = CMISSRegionLabelSet(Region,8,"Testing");
-      Err = CMISSRegionCreateFinish(Region);
+      Err = CMISSRegion_Initialise(&Region);
+      Err = CMISSRegion_CreateStart(REGION_USER_NUMBER,WorldRegion,Region);
+      Err = CMISSRegion_LabelSet(Region,8,"Testing");
+      Err = CMISSRegion_CreateFinish(Region);
 
-      Err = CMISSRegionLabelGet(Region,STRING_SIZE,Label);	       
+      Err = CMISSRegion_LabelGet(Region,STRING_SIZE,Label);	       
       printf("The region label is '%s'.\n",Label);
 
-      Err = CMISSRegionTypeFinalise(&Region);
+      Err = CMISSRegion_Finalise(&Region);
 
       Err = CMISSFinalise();
     }

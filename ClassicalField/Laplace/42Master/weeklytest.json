@@ -1,0 +1,88 @@
+{"example": {
+  "globalTestDir": "42TestingPoints",
+  "test": [   
+    {
+     "id": 1,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Laplace/1D/linear/LEVEL_1",
+     "args": "-1D -linearbasis -nx 10",
+     "expectedPath": "expected_results"},
+    {
+     "id": 2,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Laplace/1D/quadratic/LEVEL_1",
+     "args": "-1D -quadraticbasis -nx 10",
+     "expectedPath": "expected_results"},
+     {
+     "id": 3,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Laplace/1D/cubic/LEVEL_1",
+     "args": "-1D -cubicbasis -nx 10",
+     "expectedPath": "expected_results"},
+     {
+     "id": 4,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Laplace/1D/hermite/LEVEL_1",
+     "args": "-1D -1D -hermite -nx 10",
+     "expectedPath": "expected_results"},
+     {
+     "id": 5,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/QUAD/linear/LEVEL_1",
+     "args": "-2D -quad -linearbasis -nx 10 -ny 10",
+     "expectedPath": "expected_results"},
+     {
+     "id": 6,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/QUAD/quadratic/LEVEL_1",
+     "args": "-2D -quad -quadraticbasis -nx 10 -ny 10",
+     "expectedPath": "expected_results"},
+     {
+     "id": 7,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/QUAD/cubic/LEVEL_1",
+     "args": "-2D -quad -cubicbasis -nx 10 -ny 10",
+     "expectedPath": "expected_results"},
+     {
+     "id": 8,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/TRI/linear/LEVEL_1",
+     "args": "-2D -tri -linearbasis -nx 10 -ny 10",
+     "expectedPath": "expected_results"},
+     {
+     "id": 9,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/TRI/quadratic/LEVEL_1",
+     "args": "-2D -tri -quadraticbasis -nx 10 -ny 10",
+     "expectedPath": "expected_results"},
+     {
+     "id": 10,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/TRI/cubic/LEVEL_1",
+     "args": "-2D -tri -cubicbasis -nx 10 -ny 10"},
+     {
+     "id": 11,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/HERMITE/LEVEL_1",
+     "args": "-2D -hermite -nx 10 -ny 10",
+     "expectedPath": "expected_results"},
+     {
+     "id": 12,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Laplace/3D/HEX/linear/LEVEL_1",
+     "args": "-3D -hex -linearbasis -nx 10 -ny 10 -nz 10",
+     "expectedPath": "expected_results"},
+     {
+     "id": 13,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Laplace/3D/HEX/quadratic/LEVEL_1",
+     "args": "-3D -hex -quadraticbasis -nx 10 -ny 10 -nz 10",
+     "expectedPath": "expected_results"},
+     {
+     "id": 14,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Laplace/3D/HEX/cubic/LEVEL_1",
+     "args": "-3D -hex -cubicbasis -nx 10 -ny 10 -nz 10",
+     "expectedPath": "expected_results"},
+     {
+     "id": 15,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Laplace/3D/TET/linear/LEVEL_1",
+     "args": "-3D -tet -linearbasis -nx 4 -ny 4 -nz 4",
+     "expectedPath": "expected_results"},
+     {
+     "id": 16,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Laplace/3D/TET/quadratic/LEVEL_1",
+     "args": "-3D -tet -quadraticbasis -nx 4 -ny 4 -nz 4",
+     "expectedPath": "expected_results"},
+     {
+     "id": 17,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Laplace/3D/HERMITE/LEVEL_1",
+     "args": "-3D -hermite -nx 8 -ny 8 -nz 8",
+     "expectedPath": "expected_results"}]
+}}

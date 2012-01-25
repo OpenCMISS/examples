@@ -1,0 +1,29 @@
+{"example": {
+  "globalTestDir": "42TestingPoints",
+  "test": [   
+    {
+     "id": 1,
+     "path": "SinglePhysics/NonlinearProblems/StaticProblems/NonlinearPoisson/2D/QUAD/linear/LEVEL_1",
+     "args": "5 5 0 1",
+     "expectedPath": "expected_results"},
+    {
+     "id": 2,
+     "path": "SinglePhysics/NonlinearProblems/StaticProblems/NonlinearPoisson/2D/QUAD/quadratic/LEVEL_1",
+     "args": "5 5 0 2",
+     "expectedPath": "expected_results"},
+     {
+     "id": 3,
+     "path": "SinglePhysics/NonlinearProblems/StaticProblems/NonlinearPoisson/2D/QUAD/cubic/LEVEL_1",
+     "args": "5 5 0 3",
+     "expectedPath": "expected_results"},
+     {
+     "id": 4,
+     "path": "SinglePhysics/NonlinearProblems/StaticProblems/NonlinearPoisson/2D/TRI/linear/LEVEL_1",
+     "args": "5 5 0 7",
+     "expectedPath": "expected_results"},
+     {
+     "id": 5,
+     "path": "SinglePhysics/NonlinearProblems/StaticProblems/NonlinearPoisson/2D/TRI/quadratic/LEVEL_1",
+     "args": "5 5 0 8",
+     "expectedPath": "expected_results"}]
+}}
