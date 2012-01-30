@@ -1,4 +1,0 @@
-42TestingPointsPATH=42TestingPoints/
-TestingPATH.0=SinglePhysics/LinearProblems/StaticProblems/Laplace
-TestingPoint.0=${TestingPATH.0}/2D/QUAD/linear/LEVEL_2,1,expected_results,.,1e-7
-TestingPoint.1=${TestingPATH.0}/2D/TRI/linear/LEVEL_2,7,expected_results,.,1e-7

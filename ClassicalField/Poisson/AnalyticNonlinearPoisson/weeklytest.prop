@@ -1,7 +1,0 @@
-42TestingPointsPATH=42TestingPoints/
-TestingPATH.0=SinglePhysics/NonlinearProblems/StaticProblems/NonlinearPoisson
-TestingPoint.0=${TestingPATH.0}/2D/QUAD/linear/LEVEL_1,5 5 0 1,expected_results,.
-TestingPoint.1=${TestingPATH.0}/2D/QUAD/quadratic/LEVEL_1,5 5 0 2,expected_results,.
-TestingPoint.2=${TestingPATH.0}/2D/QUAD/cubic/LEVEL_1,5 5 0 3,expected_results,.
-TestingPoint.3=${TestingPATH.0}/2D/TRI/linear/LEVEL_1,5 5 0 7,expected_results,.
-TestingPoint.4=${TestingPATH.0}/2D/TRI/quadratic/LEVEL_1,5 5 0 8,expected_results,.
