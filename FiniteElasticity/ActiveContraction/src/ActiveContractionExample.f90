@@ -127,10 +127,10 @@ PROGRAM ActiveContractionExample
   !Intialise cmiss
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+  CALL CMISSErrorHandlingModeSet(CMISS_ERRORS_TRAP_ERROR,Err)
 
   !Set all diganostic levels on for testing
-  !CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,(/1,2,3,4,5/),"Diagnostics",(/"PROBLEM_RESIDUAL_EVALUATE"/),Err)
+  !CALL CMISSDiagnosticsSetOn(CMISS_FROM_DIAG_TYPE,(/1,2,3,4,5/),"Diagnostics",(/"PROBLEM_RESIDUAL_EVALUATE"/),Err)
 
   !Get the number of computational nodes and this computational node number
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -150,105 +150,107 @@ PROGRAM ActiveContractionExample
 
 
   !Create a 3D rectangular cartesian coordinate system
-  CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Create a region and assign the coordinate system to the region
-  CALL CMISSRegionTypeInitialise(Region,Err)
-  CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegion,Region,Err)
-  CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
-  CALL CMISSRegionCreateFinish(Region,Err)
+  CALL CMISSRegion_Initialise(Region,Err)
+  CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  CALL CMISSRegion_CoordinateSystemSet(Region,CoordinateSystem,Err)
+  CALL CMISSRegion_CreateFinish(Region,Err)
 
   !Define basis functions - tri-linear Lagrange and tri-Quadratic Lagrange
-  CALL CMISSBasisTypeInitialise(LinearBasis,Err)
-  CALL CMISSBasisCreateStart(LinearBasisUserNumber,LinearBasis,Err)
-  CALL CMISSBasisCreateFinish(LinearBasis,Err)
+  CALL CMISSBasis_Initialise(LinearBasis,Err)
+  CALL CMISSBasis_CreateStart(LinearBasisUserNumber,LinearBasis,Err)
+  CALL CMISSBasis_CreateFinish(LinearBasis,Err)
 
-  CALL CMISSBasisTypeInitialise(QuadraticBasis,Err)
-  CALL CMISSBasisCreateStart(QuadraticBasisUserNumber,QuadraticBasis,Err)
-  CALL CMISSBasisInterpolationXiSet(QuadraticBasis,(/CMISSBasisQuadraticLagrangeInterpolation, &
-    & CMISSBasisQuadraticLagrangeInterpolation,CMISSBasisQuadraticLagrangeInterpolation/),Err)
-  CALL CMISSBasisQuadratureNumberOfGaussXiSet(QuadraticBasis, &
-    & (/CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme,CMISSBasisMidQuadratureScheme/),Err)
-  CALL CMISSBasisCreateFinish(QuadraticBasis,Err)
+  CALL CMISSBasis_Initialise(QuadraticBasis,Err)
+  CALL CMISSBasis_CreateStart(QuadraticBasisUserNumber,QuadraticBasis,Err)
+  CALL CMISSBasis_InterpolationXiSet(QuadraticBasis,(/CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION, &
+    & CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION,CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION/),Err)
+  CALL CMISSBasis_QuadratureNumberOfGaussXiSet(QuadraticBasis, &
+    & (/CMISS_BASIS_MID_QUADRATURE_SCHEME,CMISS_BASIS_MID_QUADRATURE_SCHEME,CMISS_BASIS_MID_QUADRATURE_SCHEME/),Err)
+  CALL CMISSBasis_CreateFinish(QuadraticBasis,Err)
 
   !Create a mesh with two components, Quadratic for geometry and fibers and linear lagrange
   !for hydrostatic pressure and material properties
-  CALL CMISSMeshTypeInitialise(Mesh,Err)
-  CALL CMISSMeshCreateStart(MeshUserNumber,Region,3,Mesh,Err) ! dim = 3
-  CALL CMISSMeshNumberOfComponentsSet(Mesh,NumberOfMeshComponents,Err)
-  CALL CMISSMeshNumberOfElementsSet(Mesh,size(Elements,2),Err) ! num elts
+  CALL CMISSMesh_Initialise(Mesh,Err)
+  CALL CMISSMesh_CreateStart(MeshUserNumber,Region,3,Mesh,Err) ! dim = 3
+  CALL CMISSMesh_NumberOfComponentsSet(Mesh,NumberOfMeshComponents,Err)
+  CALL CMISSMesh_NumberOfElementsSet(Mesh,size(Elements,2),Err) ! num elts
   
   !define nodes for the mesh
-  CALL CMISSNodesTypeInitialise(CMNodes,Err)
-  CALL CMISSNodesCreateStart(Region,size(Nodes,2),CMNodes,Err) ! num nodes
-  CALL CMISSNodesCreateFinish(CMNodes,Err)
+  CALL CMISSNodes_Initialise(CMNodes,Err)
+  CALL CMISSNodes_CreateStart(Region,size(Nodes,2),CMNodes,Err) ! num nodes
+  CALL CMISSNodes_CreateFinish(CMNodes,Err)
   !Quadratic component : from file
-  CALL CMISSMeshElementsTypeInitialise(QuadraticElements,Err)
-  CALL CMISSMeshElementsCreateStart(Mesh,QuadraticMeshComponentNumber,QuadraticBasis,QuadraticElements,Err)
+  CALL CMISSMeshElements_Initialise(QuadraticElements,Err)
+  CALL CMISSMeshElements_CreateStart(Mesh,QuadraticMeshComponentNumber,QuadraticBasis,QuadraticElements,Err)
   DO E=1,size(Elements,2)
-    CALL CMISSMeshElementsNodesSet(QuadraticElements,E, Elements(ROTATE_ELEM,E),Err)
+    CALL CMISSMeshElements_NodesSet(QuadraticElements,E, Elements(ROTATE_ELEM,E),Err)
   ENDDO
-  CALL CMISSMeshElementsCreateFinish(QuadraticElements,Err)
+  CALL CMISSMeshElements_CreateFinish(QuadraticElements,Err)
   !linear Lagrange component: numbers do not need to be continuous from 1? -> use quadratic nodeno on corners
-  CALL CMISSMeshElementsTypeInitialise(LinearElements,Err)
-  CALL CMISSMeshElementsCreateStart(Mesh,LinearMeshComponentNumber,LinearBasis,LinearElements,Err)
+  CALL CMISSMeshElements_Initialise(LinearElements,Err)
+  CALL CMISSMeshElements_CreateStart(Mesh,LinearMeshComponentNumber,LinearBasis,LinearElements,Err)
   DO E=1,size(Elements,2)
-    CALL CMISSMeshElementsNodesSet(LinearElements,E, Elements( (/1,3,7,9,19,21,25,27/),E),Err)
+    CALL CMISSMeshElements_NodesSet(LinearElements,E, Elements( (/1,3,7,9,19,21,25,27/),E),Err)
   ENDDO
-  CALL CMISSMeshElementsCreateFinish(LinearElements,Err)
+  CALL CMISSMeshElements_CreateFinish(LinearElements,Err)
 
   !finish mesh creation
-  CALL CMISSMeshCreateFinish(Mesh,Err)
+  CALL CMISSMesh_CreateFinish(Mesh,Err)
 
 
 
   !Create a decomposition
-  CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
-  CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
-  CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
-  CALL CMISSDecompositionCreateFinish(Decomposition,Err)
+  CALL CMISSDecomposition_Initialise(Decomposition,Err)
+  CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
+  CALL CMISSDecomposition_TypeSet(Decomposition,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
+  CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
 
   !Create a field to put the geometry (default is geometry)
-  CALL CMISSFieldTypeInitialise(GeometricField,Err)
-  CALL CMISSFieldCreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
-  CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
-  CALL CMISSFieldTypeSet(GeometricField,CMISSFieldGeometricType,Err)  
-  CALL CMISSFieldNumberOfVariablesSet(GeometricField,1,Err) ! 1 var
-  CALL CMISSFieldNumberOfComponentsSet(GeometricField,CMISSFieldUVariableType,3,Err)   ! 3 components of geom field
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,QuadraticMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,QuadraticMeshComponentNumber,Err)
-  CALL CMISSFieldCreateFinish(GeometricField,Err)
+  CALL CMISSField_Initialise(GeometricField,Err)
+  CALL CMISSField_CreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
+  CALL CMISSField_MeshDecompositionSet(GeometricField,Decomposition,Err)
+  CALL CMISSField_TypeSet(GeometricField,CMISS_FIELD_GEOMETRIC_TYPE,Err)  
+  CALL CMISSField_NumberOfVariablesSet(GeometricField,1,Err) ! 1 var
+  CALL CMISSField_NumberOfComponentsSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,3,Err)   ! 3 components of geom field
+  CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,1,QuadraticMeshComponentNumber,Err)
+  CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,2,QuadraticMeshComponentNumber,Err)
+  CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,3,QuadraticMeshComponentNumber,Err)
+  CALL CMISSField_CreateFinish(GeometricField,Err)
 
   !Set node positions
   DO N=1,size(Nodes,2)
   DO D=1,3
-    CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,D,Nodes(D,N),Err)
+    CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,N,D,Nodes(D, &
+      & N),Err)
   ENDDO
   ENDDO
 
 
   !Create a fibre field and attach it to the geometric field  
-  CALL CMISSFieldTypeInitialise(FibreField,Err)
-  CALL CMISSFieldCreateStart(FieldFibreUserNumber,Region,FibreField,Err)
-  CALL CMISSFieldTypeSet(FibreField,CMISSFieldFibreType,Err)
-  CALL CMISSFieldMeshDecompositionSet(FibreField,Decomposition,Err)        
-  CALL CMISSFieldGeometricFieldSet(FibreField,GeometricField,Err)
-  CALL CMISSFieldNumberOfComponentsSet(FibreField,CMISSFieldUVariableType,3,Err)   ! 1 var, 3 components -> angles!
+  CALL CMISSField_Initialise(FibreField,Err)
+  CALL CMISSField_CreateStart(FieldFibreUserNumber,Region,FibreField,Err)
+  CALL CMISSField_TypeSet(FibreField,CMISS_FIELD_FIBRE_TYPE,Err)
+  CALL CMISSField_MeshDecompositionSet(FibreField,Decomposition,Err)        
+  CALL CMISSField_GeometricFieldSet(FibreField,GeometricField,Err)
+  CALL CMISSField_NumberOfComponentsSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,3,Err)   ! 1 var, 3 components -> angles!
   DO D=1,3
-    CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,D,QuadraticMeshComponentNumber,Err) ! quadratic interp
-    CALL CMISSFieldComponentInterpolationSet(FibreField,CMISSFieldUVariableType,D,CMISSFieldNodeBasedInterpolation,Err) ! node based
+    CALL CMISSField_ComponentMeshComponentSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,D,QuadraticMeshComponentNumber,Err) ! quadratic interp
+    CALL CMISSField_ComponentInterpolationSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,D,CMISS_FIELD_NODE_BASED_INTERPOLATION,Err) ! node based
   ENDDO
-  CALL CMISSFieldCreateFinish(FibreField,Err)
+  CALL CMISSField_CreateFinish(FibreField,Err)
 
   !Set fiber directions
   DO N=1,size(Nodes,2)
   DO D=1,3
     Fibers(D,N) = 0 ! input file gives unit vectors and opencmiss expects angles. TODO: fix.
-    CALL CMISSFieldParameterSetUpdateNode(FibreField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,N,D,Fibers(D,N),Err)
+    CALL CMISSField_ParameterSetUpdateNode(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,N,D,Fibers(D,N), &
+      & Err)
   ENDDO
   ENDDO
 
@@ -257,32 +259,32 @@ PROGRAM ActiveContractionExample
  ! create the gauss point based field, for testing
   IF(TEST_GAUSS_POINT_FIELD) THEN
   WRITE(*,*) '---------<TESTING GAUSS POINT FIELD>---------'
-  CALL CMISSFieldTypeInitialise(GPfield,Err)
-  CALL CMISSFieldCreateStart(FieldGPUserNumber,Region,GPfield,Err)
-  CALL CMISSFieldTypeSet(GPfield,CMISSFieldGeneralType,Err) ! ?
-  CALL CMISSFieldMeshDecompositionSet(GPfield,Decomposition,Err)        
-  CALL CMISSFieldGeometricFieldSet(GPfield,GeometricField,Err)
+  CALL CMISSField_Initialise(GPfield,Err)
+  CALL CMISSField_CreateStart(FieldGPUserNumber,Region,GPfield,Err)
+  CALL CMISSField_TypeSet(GPfield,CMISS_FIELD_GENERAL_TYPE,Err) ! ?
+  CALL CMISSField_MeshDecompositionSet(GPfield,Decomposition,Err)        
+  CALL CMISSField_GeometricFieldSet(GPfield,GeometricField,Err)
 
-  CALL CMISSFieldNumberOfComponentsSet(GPfield,CMISSFieldUVariableType,2,Err)
+  CALL CMISSField_NumberOfComponentsSet(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,2,Err)
 
   ! FOR COMPONENTS
-  CALL CMISSFieldComponentInterpolationSet(GPfield,CMISSFieldUVariableType,1,CMISSFieldGaussPointBasedInterpolation,Err) ! GP based
-  CALL CMISSFieldComponentInterpolationSet(GPfield,CMISSFieldUVariableType,2,CMISSFieldGaussPointBasedInterpolation,Err) ! GP based
+  CALL CMISSField_ComponentInterpolationSet(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err) ! GP based
+  CALL CMISSField_ComponentInterpolationSet(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,2,CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err) ! GP based
 
-  CALL CMISSFieldCreateFinish(GPfield,Err)
+  CALL CMISSField_CreateFinish(GPfield,Err)
 
-  CALL CMISSFieldComponentValuesInitialise(GPfield,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,3.14_CMISSDP,Err) ! init!
-  CALL CMISSFieldComponentValuesInitialise(GPfield,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,2.17_CMISSDP,Err) ! init!
-  CALL CMISSFieldComponentValuesInitialise(GPfield,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,4.14_CMISSDP,Err) ! set to const
+  CALL CMISSField_ComponentValuesInitialise(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,3.14_CMISSDP,Err) ! init!
+  CALL CMISSField_ComponentValuesInitialise(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,2.17_CMISSDP,Err) ! init!
+  CALL CMISSField_ComponentValuesInitialise(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,4.14_CMISSDP,Err) ! set to const
 
   ! test gauss point field
   D=0;
   DO E=1,size(Elements,2)
   DO I=1,8
-    CALL CMISSFieldParameterSetGetGaussPoint(GPfield,CMISSFieldUVariableType,CMISSFieldValuesSetType,E,I,1,TMP,Err)
-    CALL CMISSFieldParameterSetUpdateGaussPoint(GPfield,CMISSFieldUVariableType,CMISSFieldValuesSetType,E,I,1,TMP+D,Err)
-    CALL CMISSFieldParameterSetGetGaussPoint(GPfield,CMISSFieldUVariableType,CMISSFieldValuesSetType,E,I,2,TMP,Err)
-    CALL CMISSFieldParameterSetUpdateGaussPoint(GPfield,CMISSFieldUVariableType,CMISSFieldValuesSetType,E,I,2,TMP+D,Err)
+    CALL CMISSField_ParameterSetGetGaussPoint(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,E,I,1,TMP,Err)
+    CALL CMISSField_ParameterSetUpdateGaussPoint(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,E,I,1,TMP+D,Err)
+    CALL CMISSField_ParameterSetGetGaussPoint(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,E,I,2,TMP,Err)
+    CALL CMISSField_ParameterSetUpdateGaussPoint(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,E,I,2,TMP+D,Err)
     D=D+1
   ENDDO
   ENDDO
@@ -290,9 +292,9 @@ PROGRAM ActiveContractionExample
   D=0;
   DO E=1,size(Elements,2)
   DO I=1,8
-    CALL CMISSFieldParameterSetGetGaussPoint(GPfield,CMISSFieldUVariableType,CMISSFieldValuesSetType,E,I,1,TMP,Err)
+    CALL CMISSField_ParameterSetGetGaussPoint(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,E,I,1,TMP,Err)
     WRITE(*,*) 'COMPONENT 1 ELEMENT ',E,', GP ', I, ' = ',TMP, ' Should = ', 3.14 + 1 + D
-    CALL CMISSFieldParameterSetGetGaussPoint(GPfield,CMISSFieldUVariableType,CMISSFieldValuesSetType,E,I,2,TMP,Err)
+    CALL CMISSField_ParameterSetGetGaussPoint(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,E,I,2,TMP,Err)
     WRITE(*,*) 'COMPONENT 2 ELEMENT ',E,', GP ', I, ' = ',TMP, ' Should = ', 2.17 + D
     D=D+1;
   ENDDO
@@ -301,119 +303,121 @@ PROGRAM ActiveContractionExample
   ENDIF  ! TEST GP FIELD
 
   !Create the equations_set
-    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
-CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSEquationsSetElasticityClass, &
-    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetActiveContractionSubtype,EquationsSetFieldUserNumber, &
+    CALL CMISSField_Initialise(EquationsSetField,Err)
+CALL CMISSEquationsSet_CreateStart(EquationSetUserNumber,Region,FibreField,CMISS_EQUATIONS_SET_ELASTICITY_CLASS, &
+    & CMISS_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMISS_EQUATIONS_SET_ACTIVECONTRACTION_SUBTYPE,EquationsSetFieldUserNumber, &
     & EquationsSetField,EquationsSet,Err)
    ! CHANGED
-  CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
+  CALL CMISSEquationsSet_CreateFinish(EquationsSet,Err)
 
   !Create the dependent field
-  CALL CMISSFieldTypeInitialise(DependentField,Err)
-  CALL CMISSEquationsSetDependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err) 
-  CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
+  CALL CMISSField_Initialise(DependentField,Err)
+  CALL CMISSEquationsSet_DependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err) 
+  CALL CMISSEquationsSet_DependentCreateFinish(EquationsSet,Err)
 
   !Create the material field
-  CALL CMISSFieldTypeInitialise(MaterialField,Err)
-  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,FieldMaterialUserNumber,MaterialField,Err)  
-  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
+  CALL CMISSField_Initialise(MaterialField,Err)
+  CALL CMISSEquationsSet_MaterialsCreateStart(EquationsSet,FieldMaterialUserNumber,MaterialField,Err)  
+  CALL CMISSEquationsSet_MaterialsCreateFinish(EquationsSet,Err)
 
   !Set Costa material parameters
   DO I=1,7
-   CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,I,COSTA_PARAMS(I),Err)
+   CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,I, &
+     & COSTA_PARAMS(I),Err)
   END DO
 
-!  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldVVariableType,CMISSFieldValuesSetType,1,2.0_CMISSDP,Err) ! activate at time 2. TODO: inhomogeneous
+!  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,2.0_CMISSDP,Err) ! activate at time 2. TODO: inhomogeneous
   ! inhomogeneous activation times from file
   DO E=1,size(Elements,2)
   DO I=1,27
-    CALL CMISSFieldParameterSetUpdateGaussPoint(MaterialField,CMISSFieldVVariableType,CMISSFieldValuesSetType, &
+    CALL CMISSField_ParameterSetUpdateGaussPoint(MaterialField,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
     & E, I, 1, ActivationTimes(E,ROTATE_ELEM(I)), Err) ! rotating an element with 27 nodes can be done in the same way as the Gauss points
   ENDDO
   ENDDO
 
   ! create independent field
-  CALL CMISSFieldTypeInitialise(IndependentField,Err)
-  CALL CMISSEquationsSetIndependentCreateStart(EquationsSet,IndependentFieldUserNumber,IndependentField,Err)
-  CALL CMISSEquationsSetIndependentCreateFinish(EquationsSet,Err)
+  CALL CMISSField_Initialise(IndependentField,Err)
+  CALL CMISSEquationsSet_IndependentCreateStart(EquationsSet,IndependentFieldUserNumber,IndependentField,Err)
+  CALL CMISSEquationsSet_IndependentCreateFinish(EquationsSet,Err)
 
 
   !Create the equations set equations
-  CALL CMISSEquationsTypeInitialise(Equations,Err)
-  CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
-  CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
-  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
-  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)   
+  CALL CMISSEquations_Initialise(Equations,Err)
+  CALL CMISSEquationsSet_EquationsCreateStart(EquationsSet,Equations,Err)
+  CALL CMISSEquations_SparsityTypeSet(Equations,CMISS_EQUATIONS_SPARSE_MATRICES,Err)
+  CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_NO_OUTPUT,Err)
+  CALL CMISSEquationsSet_EquationsCreateFinish(EquationsSet,Err)   
 
   !Initialise dependent field from undeformed geometry and displacement bcs and set hydrostatic pressure
-  CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-    & 1,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,Err)
-  CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-    & 2,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,Err)
-  CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-    & 3,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,Err)
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,-0.0_CMISSDP,Err) ! -8?
+  CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+    & 1,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,Err)
+  CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+    & 2,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,Err)
+  CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+    & 3,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3,Err)
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4,-0.0_CMISSDP, &
+    & Err) ! -8?
 
   !Define the problem
-  CALL CMISSProblemTypeInitialise(Problem,Err)
-  CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
-  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemElasticityClass,CMISSProblemFiniteElasticityType, &
-    & CMISSProblemQuasistaticFiniteElasticitySubtype,Err) ! CHANGED TO CMISSProblemQuasistaticFiniteElasticitySubtype
-  CALL CMISSProblemCreateFinish(Problem,Err)
+  CALL CMISSProblem_Initialise(Problem,Err)
+  CALL CMISSProblem_CreateStart(ProblemUserNumber,Problem,Err)
+  CALL CMISSProblem_SpecificationSet(Problem,CMISS_PROBLEM_ELASTICITY_CLASS,CMISS_PROBLEM_FINITE_ELASTICITY_TYPE, &
+    & CMISS_PROBLEM_QUASISTATIC_FINITE_ELASTICITY_SUBTYPE,Err) ! CHANGED TO CMISS_PROBLEM_QUASISTATIC_FINITE_ELASTICITY_SUBTYPE
+  CALL CMISSProblem_CreateFinish(Problem,Err)
 
   !Create the problem control loop
-  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
-  CALL CMISSProblemControlLoopCreateStart(Problem,Err)
-   CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
+  CALL CMISSControlLoop_Initialise(ControlLoop,Err)
+  CALL CMISSProblem_ControlLoopCreateStart(Problem,Err)
+   CALL CMISSProblem_ControlLoopGet(Problem,CMISS_CONTROL_LOOP_NODE,ControlLoop,Err)
 
-   CALL CMISSControlLoopTimesSet(ControlLoop, START_TIME - DT, END_TIME, DT, Err) ! set begin/end timings  . START AT -DT TO SOLVE FOR 0 AS WELL
-   CALL CMISSControlLoopTimeOutputSet(ControlLoop,1,Err)    !Set the output timing
-  CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
+   CALL CMISSControlLoop_TimesSet(ControlLoop, START_TIME - DT, END_TIME, DT, Err) ! set begin/end timings  . START AT -DT TO SOLVE FOR 0 AS WELL
+   CALL CMISSControlLoop_TimeOutputSet(ControlLoop,1,Err)    !Set the output timing
+  CALL CMISSProblem_ControlLoopCreateFinish(Problem,Err)
 
   !Create the problem solvers
-  CALL CMISSSolverTypeInitialise(Solver,Err)
-  CALL CMISSSolverTypeInitialise(LinearSolver,Err)
-  CALL CMISSProblemSolversCreateStart(Problem,Err)
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
-  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
-  CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianAnalyticCalculated,Err) ! faster than CMISSSolverNewtonJacobianFDCalculated ?
-  CALL CMISSSolverNewtonLinearSolverGet(Solver,LinearSolver,Err)
-  CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearDirectSolveType,Err)
-  CALL CMISSProblemSolversCreateFinish(Problem,Err)
+  CALL CMISSSolver_Initialise(Solver,Err)
+  CALL CMISSSolver_Initialise(LinearSolver,Err)
+  CALL CMISSProblem_SolversCreateStart(Problem,Err)
+  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,Solver,Err)
+  CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
+  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(Solver,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err) ! faster than CMISS_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED ?
+  CALL CMISSSolver_NewtonLinearSolverGet(Solver,LinearSolver,Err)
+  CALL CMISSSolver_LinearTypeSet(LinearSolver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
+  CALL CMISSProblem_SolversCreateFinish(Problem,Err)
 
   !Create the problem solver equations
-  CALL CMISSSolverTypeInitialise(Solver,Err)
-  CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
-  CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)   
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
-  CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
-  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
-  CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+  CALL CMISSSolver_Initialise(Solver,Err)
+  CALL CMISSSolverEquations_Initialise(SolverEquations,Err)
+  CALL CMISSProblem_SolverEquationsCreateStart(Problem,Err)   
+  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,Solver,Err)
+  CALL CMISSSolver_SolverEquationsGet(Solver,SolverEquations,Err)
+  CALL CMISSSolverEquations_EquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
+  CALL CMISSProblem_SolverEquationsCreateFinish(Problem,Err)
 
   !Prescribe boundary conditions (absolute nodal parameters)
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+  CALL CMISSBoundaryConditions_Initialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquations_BoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
 
 
   DO I=1,size(DirichletConditions,2)
     N = INT(DirichletConditions(1,I))
     D = INT(DirichletConditions(2,I))
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,N,D,&
-         & CMISSBoundaryConditionFixed, Nodes(D,N) + DirichletConditions(3,I),Err)  ! current + offset
+    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,N,D,&
+         & CMISS_BOUNDARY_CONDITION_FIXED, Nodes(D,N) + DirichletConditions(3,I),Err)  ! current + offset
   ENDDO
 
 
-  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
+  CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve problem
-  CALL CMISSProblemSolve(Problem,Err)
+  CALL CMISSProblem_Solve(Problem,Err)
 
   !Output solution  
-  CALL CMISSFieldsTypeInitialise(Fields,Err)
-  CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-  CALL CMISSFieldIONodesExport(Fields,"ActiveContraction","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields,"ActiveContraction","FORTRAN",Err)
-  CALL CMISSFieldsTypeFinalise(Fields,Err)
+  CALL CMISSFields_Initialise(Fields,Err)
+  CALL CMISSFields_Create(Region,Fields,Err)
+  CALL CMISSFields_NodesExport(Fields,"ActiveContraction","FORTRAN",Err)
+  CALL CMISSFields_ElementsExport(Fields,"ActiveContraction","FORTRAN",Err)
+  CALL CMISSFields_Finalise(Fields,Err)
 
   CALL CMISSFinalise(Err)
 

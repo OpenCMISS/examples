@@ -1,0 +1,6 @@
+{"example": {
+  "test": [   
+    {"id": 1,
+     "expectedPath": "expected_files",
+     "tolerance": 1e-6}]
+}}

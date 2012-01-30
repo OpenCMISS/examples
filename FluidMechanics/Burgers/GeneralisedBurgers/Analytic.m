@@ -14,16 +14,16 @@ global t;
 
 a = 1.0;
 b = -1.0;
-c = 0.1;
+c = 1.0;
 D = 1.0;
 E = 1.0;
 L = 3.0;
-ne = 20;
+ne = 6;
 np = ne+1;
-theta = 0.6666;
-deltat = 0.0001;
+theta = 0.5;
+deltat = 0.005;
 startt = 0.0;
-stopt = 0.1;
+stopt = 1.0;
 
 t = startt;
 
@@ -32,8 +32,8 @@ global x = zeros(np,1);
 global K = zeros(np,np);
 global C = zeros(np,np);
 
-K1 = -b*ne/L;
-K2 = 2*b*ne/L;
+K1 = b*ne/L;
+K2 = -2*b*ne/L;
 C1 = a*L/(6*ne);
 C2 = (2*a*L)/(3*ne);
 
@@ -179,7 +179,7 @@ function r = residual ( myalpha )
    global beta;
    global theta;
 
-   r = A*myalpha + theta*newg(myalpha) + (1-theta)*prevg + beta;
+   r = A*myalpha + theta*newg( myalpha ) + (1-theta)*prevg + beta;
 	 
 endfunction
 
@@ -198,8 +198,9 @@ function J = Jacobian ( myalpha )
 
    global A;
    global theta;
+   global deltat;
 
-   J = A + theta*delnewgdelu ( myalpha );
+   J = A + theta*deltat*delnewgdelu ( myalpha );
 
 endfunction
 
@@ -260,29 +261,29 @@ while t < stopt
 
   t = t + deltat
 
-  [ analyticu, analyticv ] = analytic( t );
+  [ analyticu, analyticv ] = analytic( t )
 
-  prevu = u;
+  prevu = u
 
-  prevg = currentg;
+  prevg = currentg
 
-  meanpredictedu = u;
+  meanpredictedu = u
 
-  predictedu = u;
+  predictedu = u
 
-  alpha = ( analyticu - predictedu )/deltat;
+  alpha = ( analyticu - predictedu )/deltat
 
   beta = K*meanpredictedu;
 
-  #startalpha = zeros(np-2,1);
+  startalpha = zeros(np-2,1);
   
-  startalpha = analyticv(2:np-1);
+  #startalpha = analyticv(2:np-1);
 
   [ reducedalpha, fval, info ] = fsolve( @reducedfunction, startalpha );
 
-  alpha(2:np-1) = reducedalpha;
+  alpha(2:np-1) = reducedalpha
 
-  u = predictedu + deltat*alpha;
+  u = predictedu + deltat*alpha
 
   v = (u - prevu)/deltat;
 
@@ -300,7 +301,7 @@ while t < stopt
 
   analyticresid =  C*analyticv + K*analyticu + analyticg;
 
-  [ uerr, unormerr ] = error( u, analyticu );
+  [ uerr, unormerr ] = error( u, analyticu )
 
   unormerr
   

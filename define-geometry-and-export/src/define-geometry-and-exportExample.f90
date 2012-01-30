@@ -50,228 +50,199 @@
 !> Main program
 PROGRAM DefineGeometryAndExportExample
   
-  ! Include the modules we need for this example
-  USE BASE_ROUTINES
-  USE BASIS_ROUTINES
-  USE CMISS
-  USE CMISS_MPI
-  USE COMP_ENVIRONMENT
-  USE CONSTANTS
-  USE COORDINATE_ROUTINES
-  USE DISTRIBUTED_MATRIX_VECTOR
-  USE DOMAIN_MAPPINGS
-  USE FIELD_ROUTINES
-  USE FIELD_IO_ROUTINES
-  USE GENERATED_MESH_ROUTINES
-  USE INPUT_OUTPUT
-  USE ISO_VARYING_STRING
-  USE KINDS
-  USE LISTS
-  USE MESH_ROUTINES
+   USE OPENCMISS
   USE MPI
-  USE REGION_ROUTINES
-  USE TIMER
-  USE TYPES
+
+
+#ifdef WIN32
+  USE IFQWIN
+#endif
 
   IMPLICIT NONE
 
   !Test program parameters
 
-  REAL(DP), PARAMETER :: HEIGHT=1.0_DP
-  REAL(DP), PARAMETER :: WIDTH=2.0_DP
-  REAL(DP), PARAMETER :: LENGTH=3.0_DP
+  REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: WIDTH=2.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
+
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=10
+
+  !Program types
 
   !Program variables
-  
-  INTEGER(INTG) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
-  INTEGER(INTG) :: NUMBER_OF_DOMAINS
-  
-  INTEGER(INTG) :: NUMBER_COMPUTATIONAL_NODES
-  INTEGER(INTG) :: MY_COMPUTATIONAL_NODE_NUMBER
-  INTEGER(INTG) :: MPI_IERROR
 
-  TYPE(BASIS_TYPE), POINTER :: BASIS
-  TYPE(COORDINATE_SYSTEM_TYPE), POINTER :: COORDINATE_SYSTEM
-  TYPE(GENERATED_MESH_TYPE), POINTER :: GENERATED_MESH
-  TYPE(MESH_TYPE), POINTER :: MESH
-  TYPE(DECOMPOSITION_TYPE), POINTER :: DECOMPOSITION
-  TYPE(FIELD_TYPE), POINTER :: GEOMETRIC_FIELD
-  TYPE(REGION_TYPE), POINTER :: REGION,WORLD_REGION
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
+  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
+
+  INTEGER(CMISSIntg) :: MPI_IERROR
 
   LOGICAL :: EXPORT_FIELD
-  TYPE(VARYING_STRING) :: FILE,METHOD
 
-  REAL(SP) :: START_USER_TIME(1),STOP_USER_TIME(1),START_SYSTEM_TIME(1),STOP_SYSTEM_TIME(1)
+  !CMISS variables
+
+  TYPE(CMISSBasisType) :: Basis
+  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
+  TYPE(CMISSCoordinateSystemType) :: CoordinateSystem,WorldCoordinateSystem
+  TYPE(CMISSDecompositionType) :: Decomposition
+  TYPE(CMISSEquationsType) :: Equations
+  TYPE(CMISSEquationsSetType) :: EquationsSet
+  TYPE(CMISSFieldType) :: GeometricField,DependentField
+  TYPE(CMISSFieldsType) :: Fields
+  TYPE(CMISSGeneratedMeshType) :: GeneratedMesh
+  TYPE(CMISSMeshType) :: Mesh
+  TYPE(CMISSProblemType) :: Problem
+  TYPE(CMISSRegionType) :: Region,WorldRegion
+  TYPE(CMISSSolverType) :: Solver
+  TYPE(CMISSSolverEquationsType) :: SolverEquations
+
+#ifdef WIN32
+  !Quickwin type
+  LOGICAL :: QUICKWIN_STATUS=.FALSE.
+  TYPE(WINDOWCONFIG) :: QUICKWIN_WINDOW_CONFIG
+#endif
 
   !Generic CMISS variables
   
-  INTEGER(INTG) :: ERR
-  TYPE(VARYING_STRING) :: ERROR
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
+  INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain
+  INTEGER(CMISSIntg) :: Err
   
-  INTEGER(INTG) :: DIAG_LEVEL_LIST(5)
-  CHARACTER(LEN=MAXSTRLEN) :: DIAG_ROUTINE_LIST(1)
+#ifdef WIN32
+  !Initialise QuickWin
+  QUICKWIN_WINDOW_CONFIG%TITLE="General Output" !Window title
+  QUICKWIN_WINDOW_CONFIG%NUMTEXTROWS=-1 !Max possible number of rows
+  QUICKWIN_WINDOW_CONFIG%MODE=QWIN$SCROLLDOWN
+  !Set the window parameters
+  QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
+  !If attempt fails set with system estimated values
+  IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
+#endif
 
-  !Intialise cmiss
-  NULLIFY(WORLD_REGION)
-  CALL CMISS_INITIALISE(WORLD_REGION,ERR,ERROR,*999)
-  
-  !Set all diganostic levels on for testing
-  DIAG_LEVEL_LIST(1)=1
-  DIAG_LEVEL_LIST(2)=2
-  DIAG_LEVEL_LIST(3)=3
-  DIAG_LEVEL_LIST(4)=4
-  DIAG_LEVEL_LIST(5)=5
-  !CALL DIAGNOSTICS_SET_ON(ALL_DIAG_TYPE,DIAG_LEVEL_LIST,"",DIAG_ROUTINE_LIST,ERR,ERROR,*999)
-  
-  !Calculate the start times
-  CALL CPU_TIMER(USER_CPU,START_USER_TIME,ERR,ERROR,*999)
-  CALL CPU_TIMER(SYSTEM_CPU,START_SYSTEM_TIME,ERR,ERROR,*999)
+  !Intialise OpenCMISS
+  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  !Get the number of computational nodes
-  NUMBER_COMPUTATIONAL_NODES=COMPUTATIONAL_NODES_NUMBER_GET(ERR,ERROR)
-  IF(ERR/=0) GOTO 999
-  !Get my computational node number
-  MY_COMPUTATIONAL_NODE_NUMBER=COMPUTATIONAL_NODE_NUMBER_GET(ERR,ERROR)
-  IF(ERR/=0) GOTO 999
+  CALL CMISSDiagnosticsSetOn(CMISS_FROM_DIAG_TYPE,(/1,2,3,4,5/),"Diagnostics",(/"FIELD_MAPPINGS_CALCULATE", &
+    & "SOLVER_MAPPING_CALCULATE"/),Err)
+
+  !Get the computational nodes information
+  CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
+  CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
   
-  NUMBER_GLOBAL_X_ELEMENTS=2
-  NUMBER_GLOBAL_Y_ELEMENTS=2
+  NUMBER_GLOBAL_X_ELEMENTS=100
+  NUMBER_GLOBAL_Y_ELEMENTS=100
   NUMBER_GLOBAL_Z_ELEMENTS=0
-  NUMBER_OF_DOMAINS=2
-  
-  !Read in the number of elements in the X & Y directions, and the number of partitions on the master node (number 0)
-  IF(MY_COMPUTATIONAL_NODE_NUMBER==0) THEN
-    WRITE(*,'("Enter the number of elements in the X direction (2):")')
-    READ(*,*) NUMBER_GLOBAL_X_ELEMENTS
-    WRITE(*,'("Enter the number of elements in the Y direction (2):")')
-    READ(*,*) NUMBER_GLOBAL_Y_ELEMENTS
-    WRITE(*,'("Enter the number of elements in the Z direction (0):")')
-    READ(*,*) NUMBER_GLOBAL_Z_ELEMENTS
-    WRITE(*,'("Enter the number of domains (2):")')
-    READ(*,*) NUMBER_OF_DOMAINS
-  ENDIF
+  NUMBER_OF_DOMAINS=NumberOfComputationalNodes
+
   !Broadcast the number of elements in the X & Y directions and the number of partitions to the other computational nodes
   CALL MPI_BCAST(NUMBER_GLOBAL_X_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_ERROR_CHECK("MPI_BCAST",MPI_IERROR,ERR,ERROR,*999)
   CALL MPI_BCAST(NUMBER_GLOBAL_Y_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_ERROR_CHECK("MPI_BCAST",MPI_IERROR,ERR,ERROR,*999)
   CALL MPI_BCAST(NUMBER_GLOBAL_Z_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_ERROR_CHECK("MPI_BCAST",MPI_IERROR,ERR,ERROR,*999)
   CALL MPI_BCAST(NUMBER_OF_DOMAINS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_ERROR_CHECK("MPI_BCAST",MPI_IERROR,ERR,ERROR,*999)
-  CALL WRITE_STRING(GENERAL_OUTPUT_TYPE,"COMPUTATIONAL ENVIRONMENT:",ERR,ERROR,*999)
-  CALL WRITE_STRING_VALUE(GENERAL_OUTPUT_TYPE,"  Total number of computaional nodes = ",NUMBER_COMPUTATIONAL_NODES, &
-    & ERR,ERROR,*999)
-  CALL WRITE_STRING_VALUE(GENERAL_OUTPUT_TYPE,"  My computational node number = ",MY_COMPUTATIONAL_NODE_NUMBER,ERR,ERROR,*999)
 
   !Start the creation of a new RC coordinate system
-  NULLIFY(COORDINATE_SYSTEM)
-  CALL COORDINATE_SYSTEM_CREATE_START(1,COORDINATE_SYSTEM,ERR,ERROR,*999)
+  CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
     !Set the coordinate system to be 2D
-    CALL COORDINATE_SYSTEM_DIMENSION_SET(COORDINATE_SYSTEM,2,ERR,ERROR,*999)
+    CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystem,2,Err)
   ELSE
     !Set the coordinate system to be 3D
-    CALL COORDINATE_SYSTEM_DIMENSION_SET(COORDINATE_SYSTEM,3,ERR,ERROR,*999)
+    CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystem,3,Err)
   ENDIF
   !Finish the creation of the coordinate system
-  CALL COORDINATE_SYSTEM_CREATE_FINISH(COORDINATE_SYSTEM,ERR,ERROR,*999)
+  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Start the creation of the region
-  NULLIFY(REGION)
-  CALL REGION_CREATE_START(1,WORLD_REGION,REGION,ERR,ERROR,*999)
-  !Set the regions coordinate system to the RC coordinate system that we have created
-  CALL REGION_COORDINATE_SYSTEM_SET(REGION,COORDINATE_SYSTEM,ERR,ERROR,*999)
+  CALL CMISSRegion_Initialise(Region,Err)
+  CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  !Set the regions coordinate system to the 2D RC coordinate system that we have created
+  CALL CMISSRegion_CoordinateSystemSet(Region,CoordinateSystem,Err)
   !Finish the creation of the region
-  CALL REGION_CREATE_FINISH(REGION,ERR,ERROR,*999)
+  CALL CMISSRegion_CreateFinish(Region,Err)
 
   !Start the creation of a basis (default is trilinear lagrange)
-  NULLIFY(BASIS)
-  CALL BASIS_CREATE_START(1,BASIS,ERR,ERROR,*999)  
+  CALL CMISSBasis_Initialise(Basis,Err)
+  CALL CMISSBasis_CreateStart(BasisUserNumber,Basis,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-     !Set the basis to be a bilinear Lagrange basis
-     CALL BASIS_NUMBER_OF_XI_SET(BASIS,2,ERR,ERROR,*999)
+    !Set the basis to be a bilinear Lagrange basis
+    CALL CMISSBasis_NumberOfXiSet(Basis,2,Err)
   ELSE
-     !Set the basis to be a trilinear Lagrange basis
-     CALL BASIS_NUMBER_OF_XI_SET(BASIS,3,ERR,ERROR,*999)
+    !Set the basis to be a trilinear Lagrange basis
+    CALL CMISSBasis_NumberOfXiSet(Basis,3,Err)
   ENDIF
   !Finish the creation of the basis
-  CALL BASIS_CREATE_FINISH(BASIS,ERR,ERROR,*999)
+  CALL CMISSBasis_CreateFinish(BASIS,Err)
 
   !Start the creation of a generated mesh in the region
-  NULLIFY(GENERATED_MESH)
-  CALL GENERATED_MESH_CREATE_START(1,REGION,GENERATED_MESH,ERR,ERROR,*999)
-  !Set up a regular mesh
-  CALL GENERATED_MESH_TYPE_SET(GENERATED_MESH,1, &
-       & ERR,ERROR,*999)
-  CALL GENERATED_MESH_BASIS_SET(GENERATED_MESH,BASIS,ERR,ERROR,*999)
-
+  CALL CMISSGeneratedMesh_Initialise(GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_CreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
+  !Set up a regular x*y*z mesh
+  CALL CMISSGeneratedMesh_TypeSet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_MESH_TYPE,Err)
+  !Set the default basis
+  CALL CMISSGeneratedMesh_BasisSet(GeneratedMesh,Basis,Err)
   !Define the mesh on the region
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-     CALL GENERATED_MESH_EXTENT_SET(GENERATED_MESH,(/WIDTH,HEIGHT/),ERR,ERROR,*999)
-     CALL GENERATED_MESH_NUMBER_OF_ELEMENTS_SET(GENERATED_MESH,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS/), &
-          & ERR,ERROR,*999)
+    CALL CMISSGeneratedMesh_ExtentSet(GeneratedMesh,(/WIDTH,HEIGHT/),Err)
+    CALL CMISSGeneratedMesh_NumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS/),Err)
   ELSE
-     CALL GENERATED_MESH_EXTENT_SET(GENERATED_MESH,(/WIDTH,HEIGHT,LENGTH/),ERR,ERROR,*999)
-     CALL GENERATED_MESH_NUMBER_OF_ELEMENTS_SET(GENERATED_MESH,(/NUMBER_GLOBAL_X_ELEMENTS, &
-          & NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS/), ERR,ERROR,*999)
+    CALL CMISSGeneratedMesh_ExtentSet(GeneratedMesh,(/WIDTH,HEIGHT,LENGTH/),Err)
+    CALL CMISSGeneratedMesh_NumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
+      & NUMBER_GLOBAL_Z_ELEMENTS/),Err)
   ENDIF
-
   !Finish the creation of a generated mesh in the region
-  CALL GENERATED_MESH_CREATE_FINISH(GENERATED_MESH,1,MESH,ERR,ERROR,*999) 
+  CALL CMISSMesh_Initialise(Mesh,Err)
+  CALL CMISSGeneratedMesh_CreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
 
   !Create a decomposition
-  NULLIFY(DECOMPOSITION)
-  CALL DECOMPOSITION_CREATE_START(1,MESH,DECOMPOSITION,ERR,ERROR,*999)
+  CALL CMISSDecomposition_Initialise(Decomposition,Err)
+  CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
-  CALL DECOMPOSITION_TYPE_SET(DECOMPOSITION,DECOMPOSITION_CALCULATED_TYPE,ERR,ERROR,*999)
-  CALL DECOMPOSITION_NUMBER_OF_DOMAINS_SET(DECOMPOSITION,NUMBER_OF_DOMAINS,ERR,ERROR,*999)
-  CALL DECOMPOSITION_CREATE_FINISH(DECOMPOSITION,ERR,ERROR,*999)
+  CALL CMISSDecomposition_TypeSet(Decomposition,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NUMBER_OF_DOMAINS,Err)
+  !Finish the decomposition
+  CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
 
   !Start to create a default (geometric) field on the region
-  NULLIFY(GEOMETRIC_FIELD)
-  CALL FIELD_CREATE_START(1,REGION,GEOMETRIC_FIELD,ERR,ERROR,*999)
+  CALL CMISSField_Initialise(GeometricField,Err)
+  CALL CMISSField_CreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
   !Set the decomposition to use
-  CALL FIELD_MESH_DECOMPOSITION_SET(GEOMETRIC_FIELD,DECOMPOSITION,ERR,ERROR,*999)
-  !Set the domain to be used by the field components
-  !NB these are needed now as the default mesh component number is 1
-  CALL FIELD_COMPONENT_MESH_COMPONENT_SET(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,1,1,ERR,ERROR,*999)
-  CALL FIELD_COMPONENT_MESH_COMPONENT_SET(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,2,1,ERR,ERROR,*999)
+  CALL CMISSField_MeshDecompositionSet(GeometricField,Decomposition,Err)
+  !Set the domain to be used by the field components.
+  CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,Err)
+  CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,2,1,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
-     CALL FIELD_COMPONENT_MESH_COMPONENT_SET(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,3,1,ERR,ERROR,*999)
+    CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,3,1,Err)
   ENDIF
   !Finish creating the field
-  CALL FIELD_CREATE_FINISH(GEOMETRIC_FIELD,ERR,ERROR,*999)
+  CALL CMISSField_CreateFinish(GeometricField,Err)
 
   !Update the geometric field parameters
-  CALL GENERATED_MESH_GEOMETRIC_PARAMETERS_CALCULATE(GEOMETRIC_FIELD,GENERATED_MESH,ERR,ERROR,*999)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
 
-  IF(.NOT.ASSOCIATED(GEOMETRIC_FIELD)) GEOMETRIC_FIELD=>REGION%FIELDS%FIELDS(1)%PTR
-  
-  FILE="DefineGeometryAndExport"
-  METHOD="FORTRAN"
-  
-  EXPORT_FIELD=.TRUE.
-  IF(EXPORT_FIELD) THEN
-    CALL FIELD_IO_NODES_EXPORT(REGION%FIELDS, FILE, METHOD, ERR,ERROR,*999)  
-    CALL FIELD_IO_ELEMENTS_EXPORT(REGION%FIELDS, FILE, METHOD, ERR,ERROR,*999)
-  ENDIF
-  
-  !Output timing summary
-  !Calculate the stop times and write out the elapsed user and system times
-  CALL CPU_TIMER(USER_CPU,STOP_USER_TIME,ERR,ERROR,*999)
-  CALL CPU_TIMER(SYSTEM_CPU,STOP_SYSTEM_TIME,ERR,ERROR,*999)
 
-  CALL WRITE_STRING_TWO_VALUE(GENERAL_OUTPUT_TYPE,"User time = ",STOP_USER_TIME(1)-START_USER_TIME(1),", System time = ", &
-    & STOP_SYSTEM_TIME(1)-START_SYSTEM_TIME(1),ERR,ERROR,*999)
+  CALL CMISSFields_Initialise(Fields,Err)
+  CALL CMISSFields_Create(Region,Fields,Err)
+  CALL CMISSFields_NodesExport(Fields,"DefineGeometryAndExport","FORTRAN",Err)
+  CALL CMISSFields_ElementsExport(Fields,"DefineGeometryAndExport","FORTRAN",Err)
+  CALL CMISSFields_Finalise(Fields,Err)
   
-  ! Finalise cmiss
-  CALL CMISS_FINALISE(ERR,ERROR,*999)
+  !Finialise CMISS
+  CALL CMISSFinalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
-  
-  STOP
-999 CALL CMISS_WRITE_ERROR(ERR,ERROR)
+
   STOP
 
 END PROGRAM DefineGeometryAndExportExample
