@@ -65,21 +65,19 @@ PROGRAM COUPLEDCANTILEVER
   REAL(CMISSDP), PARAMETER :: Height=0.045_CMISSDP
   REAL(CMISSDP), PARAMETER :: Width=0.065_CMISSDP
   REAL(CMISSDP), PARAMETER :: Length=0.045_CMISSDP
-  INTEGER(CMISSIntg), PARAMETER :: GeometricInterpolationType=CMISSBasisQuadraticLagrangeInterpolation
-  INTEGER(CMISSIntg), PARAMETER :: PressureInterpolationType=CMISSBasisLinearLagrangeInterpolation
+  INTEGER(CMISSIntg), PARAMETER :: GeometricInterpolationType=CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION
+  INTEGER(CMISSIntg), PARAMETER :: PressureInterpolationType=CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION
   INTEGER(CMISSIntg), PARAMETER :: NumberOfGaussXi=3
   REAL(CMISSDP), PARAMETER :: Density=1.0E3_CMISSDP
   REAL(CMISSDP), PARAMETER :: FluidDensity=1.0E3_CMISSDP
   REAL(CMISSDP), PARAMETER :: Gravity(3)=[0.0_CMISSDP,0.0_CMISSDP,-9.81_CMISSDP]
-  INTEGER(CMISSIntg) :: Increments=5
-  REAL(CMISSDP) :: FluidPressureBC=30.0_CMISSDP
-  REAL (CMISSDP) :: K1=3.0E3_CMISSDP
-  REAL (CMISSDP) :: K2=50.0_CMISSDP
-  REAL (CMISSDP) :: K=3.20E4_CMISSDP
-  REAL (CMISSDP) :: M=3.18E4_CMISSDP
-  REAL (CMISSDP) :: b=1.0_CMISSDP
-  REAL (CMISSDP) :: p_0=0.0_CMISSDP
+  INTEGER(CMISSIntg) :: Increments=4
+  REAL(CMISSDP) :: FluidPressureBC=500.0_CMISSDP
+  REAL (CMISSDP) :: C0=2.5E3_CMISSDP
+  REAL (CMISSDP) :: C1=2.0_CMISSDP
+  REAL (CMISSDP) :: C2=0.1_CMISSDP
   REAL (CMISSDP) :: permeability=1.0E-3_CMISSDP
+  REAL (CMISSDP) :: porosity=0.2_CMISSDP
 
   INTEGER(CMISSIntg) :: NumberGlobalXElements=3
   INTEGER(CMISSIntg) :: NumberGlobalYElements=2
@@ -162,7 +160,7 @@ PROGRAM COUPLEDCANTILEVER
     READ(CommandArgument(1:ArgumentLength),*) FluidPressureBC
   ENDIF
 
-  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+  CALL CMISSErrorHandlingModeSet(CMISS_ERRORS_TRAP_ERROR,Err)
 
   !Get the number of computational nodes and this computational node number
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -171,291 +169,301 @@ PROGRAM COUPLEDCANTILEVER
   NumberOfDomains=NumberOfComputationalNodes
 
   !Create a 3D rectangular cartesian coordinate system
-  CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Create a region and assign the coordinate system to the region
-  CALL CMISSRegionTypeInitialise(Region,Err)
-  CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegion,Region,Err)
-  CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
-  CALL CMISSRegionCreateFinish(Region,Err)
+  CALL CMISSRegion_Initialise(Region,Err)
+  CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  CALL CMISSRegion_CoordinateSystemSet(Region,CoordinateSystem,Err)
+  CALL CMISSRegion_CreateFinish(Region,Err)
 
   !Define basis function for displacement
-  CALL CMISSBasisTypeInitialise(GeometricBasis,Err)
-  CALL CMISSBasisCreateStart(GeometricBasisUserNumber,GeometricBasis,Err)
+  CALL CMISSBasis_Initialise(GeometricBasis,Err)
+  CALL CMISSBasis_CreateStart(GeometricBasisUserNumber,GeometricBasis,Err)
   SELECT CASE(GeometricInterpolationType)
   CASE(1,2,3,4)
-    CALL CMISSBasisTypeSet(GeometricBasis,CMISSBasisLagrangeHermiteTPType,Err)
+    CALL CMISSBasis_TypeSet(GeometricBasis,CMISS_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
   CASE(7,8,9)
-    CALL CMISSBasisTypeSet(GeometricBasis,CMISSBasisSimplexType,Err)
+    CALL CMISSBasis_TypeSet(GeometricBasis,CMISS_BASIS_SIMPLEX_TYPE,Err)
   END SELECT
-  CALL CMISSBasisNumberOfXiSet(GeometricBasis,3,Err)
-  CALL CMISSBasisInterpolationXiSet(GeometricBasis,[GeometricInterpolationType,GeometricInterpolationType, &
+  CALL CMISSBasis_NumberOfXiSet(GeometricBasis,3,Err)
+  CALL CMISSBasis_InterpolationXiSet(GeometricBasis,[GeometricInterpolationType,GeometricInterpolationType, &
       & GeometricInterpolationType],Err)
   IF(NumberOfGaussXi>0) THEN
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(GeometricBasis,[NumberOfGaussXi,NumberOfGaussXi,NumberOfGaussXi],Err)
+    CALL CMISSBasis_QuadratureNumberOfGaussXiSet(GeometricBasis,[NumberOfGaussXi,NumberOfGaussXi,NumberOfGaussXi],Err)
   ENDIF
-  CALL CMISSBasisCreateFinish(GeometricBasis,Err)
+  CALL CMISSBasis_CreateFinish(GeometricBasis,Err)
 
   !Basis for pressure
-  CALL CMISSBasisTypeInitialise(PressureBasis,Err)
-  CALL CMISSBasisCreateStart(PressureBasisUserNumber,PressureBasis,Err)
+  CALL CMISSBasis_Initialise(PressureBasis,Err)
+  CALL CMISSBasis_CreateStart(PressureBasisUserNumber,PressureBasis,Err)
   SELECT CASE(PressureInterpolationType)
   CASE(1,2,3,4)
-    CALL CMISSBasisTypeSet(PressureBasis,CMISSBasisLagrangeHermiteTPType,Err)
+    CALL CMISSBasis_TypeSet(PressureBasis,CMISS_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
   CASE(7,8,9)
-    CALL CMISSBasisTypeSet(PressureBasis,CMISSBasisSimplexType,Err)
+    CALL CMISSBasis_TypeSet(PressureBasis,CMISS_BASIS_SIMPLEX_TYPE,Err)
   END SELECT
-  CALL CMISSBasisNumberOfXiSet(PressureBasis,3,Err)
-  CALL CMISSBasisInterpolationXiSet(PressureBasis,[PressureInterpolationType,PressureInterpolationType, &
+  CALL CMISSBasis_NumberOfXiSet(PressureBasis,3,Err)
+  CALL CMISSBasis_InterpolationXiSet(PressureBasis,[PressureInterpolationType,PressureInterpolationType, &
       & PressureInterpolationType],Err)
   IF(NumberOfGaussXi>0) THEN
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(PressureBasis,[NumberOfGaussXi,NumberOfGaussXi,NumberOfGaussXi],Err)
+    CALL CMISSBasis_QuadratureNumberOfGaussXiSet(PressureBasis,[NumberOfGaussXi,NumberOfGaussXi,NumberOfGaussXi],Err)
   ENDIF
-  CALL CMISSBasisCreateFinish(PressureBasis,Err)
+  CALL CMISSBasis_CreateFinish(PressureBasis,Err)
 
   !Start the creation of a generated mesh in the region
-  CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
-  CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_Initialise(GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_CreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
   !Set up a regular x*y*z mesh
-  CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
+  CALL CMISSGeneratedMesh_TypeSet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_MESH_TYPE,Err)
   !Set the default basis
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,[PressureBasis,GeometricBasis],Err)
+  CALL CMISSGeneratedMesh_BasisSet(GeneratedMesh,[PressureBasis,GeometricBasis],Err)
   !Define the mesh on the region
   IF(NumberGlobalXElements==0) THEN
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,[Width,Height],Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements,NumberGlobalYElements],Err)
+    CALL CMISSGeneratedMesh_ExtentSet(GeneratedMesh,[Width,Height],Err)
+    CALL CMISSGeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements,NumberGlobalYElements],Err)
   ELSE
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,[Width,Length,Height],Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements,NumberGlobalYElements, &
+    CALL CMISSGeneratedMesh_ExtentSet(GeneratedMesh,[Width,Length,Height],Err)
+    CALL CMISSGeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements,NumberGlobalYElements, &
       & NumberGlobalZElements],Err)
   ENDIF
   !Finish the creation of a generated mesh in the region
-  CALL CMISSMeshTypeInitialise(Mesh,Err)
-  CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
+  CALL CMISSMesh_Initialise(Mesh,Err)
+  CALL CMISSGeneratedMesh_CreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
 
   !Create a decomposition
-  CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
-  CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
-  CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
-  CALL CMISSDecompositionMeshComponentSet(Decomposition,GeometricMeshComponent,Err)
-  CALL CMISSDecompositionCreateFinish(Decomposition,Err)
+  CALL CMISSDecomposition_Initialise(Decomposition,Err)
+  CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
+  CALL CMISSDecomposition_TypeSet(Decomposition,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
+  CALL CMISSDecomposition_MeshComponentSet(Decomposition,GeometricMeshComponent,Err)
+  CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
 
   !Create a field to put the geometry (defualt is geometry)
-  CALL CMISSFieldTypeInitialise(GeometricField,Err)
-  CALL CMISSFieldCreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
-  CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
-  CALL CMISSFieldVariableLabelSet(GeometricField,CMISSFieldUVariableType,"Geometry",Err)
-  CALL CMISSFieldNumberOfComponentsSet(GeometricField,CMISSFieldUVariableType,3,Err)
-  CALL CMISSFieldScalingTypeSet(GeometricField,CMISSFieldArithmeticMeanScaling,Err)
+  CALL CMISSField_Initialise(GeometricField,Err)
+  CALL CMISSField_CreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
+  CALL CMISSField_MeshDecompositionSet(GeometricField,Decomposition,Err)
+  CALL CMISSField_VariableLabelSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,"Geometry",Err)
+  CALL CMISSField_NumberOfComponentsSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,3,Err)
+  CALL CMISSField_ScalingTypeSet(GeometricField,CMISS_FIELD_ARITHMETIC_MEAN_SCALING,Err)
   DO component_idx=1,3
-    CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,component_idx,GeometricMeshComponent,Err)
+    CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,component_idx,GeometricMeshComponent,Err)
   ENDDO
-  CALL CMISSFieldCreateFinish(GeometricField,Err)
+  CALL CMISSField_CreateFinish(GeometricField,Err)
 
   !Update the geometric field parameters
-  CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
 
   !Create a fibre field and attach it to the geometric field
-  CALL CMISSFieldTypeInitialise(FibreField,Err)
-  CALL CMISSFieldCreateStart(FieldFibreUserNumber,Region,FibreField,Err)
-  CALL CMISSFieldTypeSet(FibreField,CMISSFieldFibreType,Err)
-  CALL CMISSFieldMeshDecompositionSet(FibreField,Decomposition,Err)
-  CALL CMISSFieldGeometricFieldSet(FibreField,GeometricField,Err)
-  CALL CMISSFieldVariableLabelSet(FibreField,CMISSFieldUVariableType,"Fibre",Err)
+  CALL CMISSField_Initialise(FibreField,Err)
+  CALL CMISSField_CreateStart(FieldFibreUserNumber,Region,FibreField,Err)
+  CALL CMISSField_TypeSet(FibreField,CMISS_FIELD_FIBRE_TYPE,Err)
+  CALL CMISSField_MeshDecompositionSet(FibreField,Decomposition,Err)
+  CALL CMISSField_GeometricFieldSet(FibreField,GeometricField,Err)
+  CALL CMISSField_VariableLabelSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,"Fibre",Err)
   DO component_idx=1,3
-    CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,component_idx,GeometricMeshComponent,Err)
+    CALL CMISSField_ComponentMeshComponentSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,component_idx,GeometricMeshComponent,Err)
   ENDDO
-  CALL CMISSFieldCreateFinish(FibreField,Err)
+  CALL CMISSField_CreateFinish(FibreField,Err)
 
   !Create the equations sets
-  CALL CMISSEquationsSetTypeInitialise(SolidEquationsSet,Err)
-  CALL CMISSFieldTypeInitialise(SolidEquationsSetField,Err)
-  CALL CMISSEquationsSetCreateStart(SolidEquationsSetUserNumber,Region,FibreField,CMISSEquationsSetElasticityClass, &
-    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetElasticityFluidPressureStaticINRIASubtype, &
+  CALL CMISSEquationsSet_Initialise(SolidEquationsSet,Err)
+  CALL CMISSField_Initialise(SolidEquationsSetField,Err)
+  CALL CMISSEquationsSet_CreateStart(SolidEquationsSetUserNumber,Region,FibreField,CMISS_EQUATIONS_SET_ELASTICITY_CLASS, &
+    & CMISS_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMISS_EQUATIONS_SET_ELASTICITY_FLUID_PRES_HOLMES_MOW_SUBTYPE, &
     & SolidEquationsSetFieldUserNumber,SolidEquationsSetField,SolidEquationsSet,Err)
-  CALL CMISSEquationsSetCreateFinish(SolidEquationsSet,Err)
+  CALL CMISSEquationsSet_CreateFinish(SolidEquationsSet,Err)
 
-  CALL CMISSEquationsSetTypeInitialise(FluidEquationsSet,Err)
-  CALL CMISSFieldTypeInitialise(FluidEquationsSetField,Err)
-  CALL CMISSEquationsSetCreateStart(FluidEquationsSetUserNumber,Region,FibreField,CMISSEquationsSetFluidMechanicsClass, &
-    & CMISSEquationsSetDarcyPressureEquationType,CMISSEquationsSetElasticityFluidPressureQuadraticSubtype, &
+  CALL CMISSEquationsSet_Initialise(FluidEquationsSet,Err)
+  CALL CMISSField_Initialise(FluidEquationsSetField,Err)
+  CALL CMISSEquationsSet_CreateStart(FluidEquationsSetUserNumber,Region,FibreField,CMISS_EQUATIONS_SET_FLUID_MECHANICS_CLASS, &
+    & CMISS_EQUATIONS_SET_DARCY_PRESSURE_EQUATION_TYPE,CMISS_EQUATIONS_SET_ELASTICITY_FLUID_PRES_HOLMES_MOW_SUBTYPE, &
     & FluidEquationsSetFieldUserNumber,FluidEquationsSetField,FluidEquationsSet,Err)
-  CALL CMISSEquationsSetCreateFinish(FluidEquationsSet,Err)
+  CALL CMISSEquationsSet_CreateFinish(FluidEquationsSet,Err)
 
   !Create the dependent field
-  CALL CMISSFieldTypeInitialise(DependentField,Err)
-  CALL CMISSEquationsSetDependentCreateStart(SolidEquationsSet,FieldDependentUserNumber,DependentField,Err)
-  CALL CMISSFieldVariableLabelSet(DependentField,CMISSFieldUVariableType,"Dependent",Err)
+  CALL CMISSField_Initialise(DependentField,Err)
+  CALL CMISSEquationsSet_DependentCreateStart(SolidEquationsSet,FieldDependentUserNumber,DependentField,Err)
+  CALL CMISSField_VariableLabelSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,"Dependent",Err)
   DO component_idx=1,3
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,component_idx,GeometricMeshComponent,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,component_idx,GeometricMeshComponent,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,component_idx,GeometricMeshComponent,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,component_idx, &
+      & GeometricMeshComponent,Err)
   ENDDO
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldVVariableType,1,PressureMeshComponent,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelVDelNVariableType,1,PressureMeshComponent,Err)
-  CALL CMISSEquationsSetDependentCreateFinish(SolidEquationsSet,Err)
-  CALL CMISSEquationsSetDependentCreateStart(FluidEquationsSet,FieldDependentUserNumber,DependentField,Err)
-  CALL CMISSEquationsSetDependentCreateFinish(FluidEquationsSet,Err)
+  CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_V_VARIABLE_TYPE,1,PressureMeshComponent,Err)
+  CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_DELVDELN_VARIABLE_TYPE,1,PressureMeshComponent,Err)
+  CALL CMISSEquationsSet_DependentCreateFinish(SolidEquationsSet,Err)
+  CALL CMISSEquationsSet_DependentCreateStart(FluidEquationsSet,FieldDependentUserNumber,DependentField,Err)
+  CALL CMISSEquationsSet_DependentCreateFinish(FluidEquationsSet,Err)
 
   !Create the material field
-  CALL CMISSFieldTypeInitialise(MaterialField,Err)
-  CALL CMISSEquationsSetMaterialsCreateStart(SolidEquationsSet,FieldMaterialUserNumber,MaterialField,Err)
-  CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldUVariableType,"SolidMaterial",Err)
-  CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldVVariableType,"Density",Err)
-  CALL CMISSFieldVariableLabelSet(MaterialField,CMISSFieldU1VariableType,"FluidMaterial",Err)
-  DO component_idx=1,6
-    CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldUVariableType,component_idx,GeometricMeshComponent,Err)
+  CALL CMISSField_Initialise(MaterialField,Err)
+  CALL CMISSEquationsSet_MaterialsCreateStart(SolidEquationsSet,FieldMaterialUserNumber,MaterialField,Err)
+  CALL CMISSField_VariableLabelSet(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,"SolidMaterial",Err)
+  CALL CMISSField_VariableLabelSet(MaterialField,CMISS_FIELD_V_VARIABLE_TYPE,"Density",Err)
+  CALL CMISSField_VariableLabelSet(MaterialField,CMISS_FIELD_U1_VARIABLE_TYPE,"FluidMaterial",Err)
+  DO component_idx=1,4
+    CALL CMISSField_ComponentMeshComponentSet(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,component_idx,GeometricMeshComponent,Err)
   ENDDO
   DO component_idx=1,1
-    CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldVVariableType,component_idx,GeometricMeshComponent,Err)
+    CALL CMISSField_ComponentMeshComponentSet(MaterialField,CMISS_FIELD_V_VARIABLE_TYPE,component_idx,GeometricMeshComponent,Err)
   ENDDO
   DO component_idx=1,8
-    CALL CMISSFieldComponentMeshComponentSet(MaterialField,CMISSFieldU1VariableType,component_idx,GeometricMeshComponent,Err)
+    CALL CMISSField_ComponentMeshComponentSet(MaterialField,CMISS_FIELD_U1_VARIABLE_TYPE,component_idx,GeometricMeshComponent,Err)
   ENDDO
-  CALL CMISSEquationsSetMaterialsCreateFinish(SolidEquationsSet,Err)
+  CALL CMISSEquationsSet_MaterialsCreateFinish(SolidEquationsSet,Err)
 
-  CALL CMISSEquationsSetMaterialsCreateStart(FluidEquationsSet,FieldMaterialUserNumber,MaterialField,Err)
-  CALL CMISSEquationsSetMaterialsCreateFinish(FluidEquationsSet,Err)
+  CALL CMISSEquationsSet_MaterialsCreateStart(FluidEquationsSet,FieldMaterialUserNumber,MaterialField,Err)
+  CALL CMISSEquationsSet_MaterialsCreateFinish(FluidEquationsSet,Err)
 
   !Set material constants
   !Solid constitutive law
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,K1,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,K2,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,K,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,M,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,5,b,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,6,p_0,Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,C0,Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,C1,Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3,C2,Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4, &
+    & (1.0_CMISSDP-porosity),Err)
   !Solid density
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldVVariableType,CMISSFieldValuesSetType,1,Density,Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,Density,Err)
 
   !Permeability tensor
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,1,permeability,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,2,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,3,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,4,permeability,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,5,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,6,permeability,Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,permeability, &
+    & Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,0.0_CMISSDP, &
+    & Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3,0.0_CMISSDP, &
+    & Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4,permeability, &
+    & Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,5,0.0_CMISSDP, &
+    & Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,6,permeability, &
+    & Err)
   !Fluid Density
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,7,FluidDensity,Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,7,FluidDensity, &
+    & Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,8,porosity,Err)
 
   !Create the source field with the gravity vector
-  CALL CMISSFieldTypeInitialise(SourceField,Err)
-  CALL CMISSEquationsSetSourceCreateStart(SolidEquationsSet,FieldSourceUserNumber,SourceField,Err)
+  CALL CMISSField_Initialise(SourceField,Err)
+  CALL CMISSEquationsSet_SourceCreateStart(SolidEquationsSet,FieldSourceUserNumber,SourceField,Err)
   DO component_idx=1,3
-    CALL CMISSFieldComponentMeshComponentSet(SourceField,CMISSFieldUVariableType,component_idx,GeometricMeshComponent,Err)
+    CALL CMISSField_ComponentMeshComponentSet(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,component_idx,GeometricMeshComponent,Err)
   ENDDO
-  CALL CMISSEquationsSetSourceCreateFinish(SolidEquationsSet,Err)
+  CALL CMISSEquationsSet_SourceCreateFinish(SolidEquationsSet,Err)
   DO component_idx=1,3
-    CALL CMISSFieldComponentValuesInitialise(SourceField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+    CALL CMISSField_ComponentValuesInitialise(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
         & component_idx,Gravity(component_idx),Err)
   ENDDO
 
   !Create the equations set equations
-  CALL CMISSEquationsTypeInitialise(FluidEquations,Err)
-  CALL CMISSEquationsSetEquationsCreateStart(FluidEquationsSet,FluidEquations,Err)
-  CALL CMISSEquationsSparsityTypeSet(FluidEquations,CMISSEquationsSparseMatrices,Err)
-  CALL CMISSEquationsOutputTypeSet(FluidEquations,CMISSEquationsNoOutput,Err)
-  CALL CMISSEquationsSetEquationsCreateFinish(FluidEquationsSet,Err)
+  CALL CMISSEquations_Initialise(FluidEquations,Err)
+  CALL CMISSEquationsSet_EquationsCreateStart(FluidEquationsSet,FluidEquations,Err)
+  CALL CMISSEquations_SparsityTypeSet(FluidEquations,CMISS_EQUATIONS_SPARSE_MATRICES,Err)
+  CALL CMISSEquations_OutputTypeSet(FluidEquations,CMISS_EQUATIONS_NO_OUTPUT,Err)
+  CALL CMISSEquationsSet_EquationsCreateFinish(FluidEquationsSet,Err)
 
-  CALL CMISSEquationsTypeInitialise(SolidEquations,Err)
-  CALL CMISSEquationsSetEquationsCreateStart(SolidEquationsSet,SolidEquations,Err)
-  CALL CMISSEquationsSparsityTypeSet(SolidEquations,CMISSEquationsSparseMatrices,Err)
-  CALL CMISSEquationsOutputTypeSet(SolidEquations,CMISSEquationsNoOutput,Err)
-  CALL CMISSEquationsSetEquationsCreateFinish(SolidEquationsSet,Err)
+  CALL CMISSEquations_Initialise(SolidEquations,Err)
+  CALL CMISSEquationsSet_EquationsCreateStart(SolidEquationsSet,SolidEquations,Err)
+  CALL CMISSEquations_SparsityTypeSet(SolidEquations,CMISS_EQUATIONS_SPARSE_MATRICES,Err)
+  CALL CMISSEquations_OutputTypeSet(SolidEquations,CMISS_EQUATIONS_NO_OUTPUT,Err)
+  CALL CMISSEquationsSet_EquationsCreateFinish(SolidEquationsSet,Err)
 
   !Initialise dependent field from undeformed geometry and displacement bcs and set hydrostatic pressure
-  CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-    & 1,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,Err)
-  CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-    & 2,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,Err)
-  CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-    & 3,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,Err)
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldVVariableType,CMISSFieldValuesSetType,1,FluidPressureBC,Err)
+  CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+    & 1,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,Err)
+  CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+    & 2,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,Err)
+  CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+    & 3,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3,Err)
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
+    & FluidPressureBC,Err)
 
   !Define the problem
-  CALL CMISSProblemTypeInitialise(Problem,Err)
-  CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
-  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemMultiPhysicsClass,CMISSProblemFiniteElasticityFluidPressureType, &
-    & CMISSProblemStandardElasticityFluidPressureSubtype,Err)
-  CALL CMISSProblemCreateFinish(Problem,Err)
+  CALL CMISSProblem_Initialise(Problem,Err)
+  CALL CMISSProblem_CreateStart(ProblemUserNumber,Problem,Err)
+  CALL CMISSProblem_SpecificationSet(Problem,CMISS_PROBLEM_MULTI_PHYSICS_CLASS, &
+    & CMISS_PROBLEM_FINITE_ELASTICITY_FLUID_PRESSURE_TYPE, &
+    & CMISS_PROBLEM_STANDARD_ELASTICITY_FLUID_PRESSURE_SUBTYPE,Err)
+  CALL CMISSProblem_CreateFinish(Problem,Err)
 
   !Create the problem control loop
-  CALL CMISSProblemControlLoopCreateStart(Problem,Err)
-  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
-  CALL CMISSProblemControlLoopGet(Problem,[CMISSControlLoopNode],ControlLoop,Err)
-  CALL CMISSControlLoopMaximumIterationsSet(ControlLoop,Increments,Err)
-  CALL CMISSControlLoopOutputTypeSet(ControlLoop,CMISSControlLoopProgressOutput,Err)
-  CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
+  CALL CMISSProblem_ControlLoopCreateStart(Problem,Err)
+  CALL CMISSControlLoop_Initialise(ControlLoop,Err)
+  CALL CMISSProblem_ControlLoopGet(Problem,[CMISS_CONTROL_LOOP_NODE],ControlLoop,Err)
+  CALL CMISSControlLoop_MaximumIterationsSet(ControlLoop,Increments,Err)
+  CALL CMISSControlLoop_OutputTypeSet(ControlLoop,CMISS_CONTROL_LOOP_PROGRESS_OUTPUT,Err)
+  CALL CMISSProblem_ControlLoopCreateFinish(Problem,Err)
 
   !Create the problem solvers
-  CALL CMISSSolverTypeInitialise(Solver,Err)
-  CALL CMISSSolverTypeInitialise(LinearSolver,Err)
-  CALL CMISSProblemSolversCreateStart(Problem,Err)
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
-  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
-  CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianFDCalculated,Err)
-  CALL CMISSSolverNewtonAbsoluteToleranceSet(Solver,1.0E-6_CMISSDP,Err)
-  CALL CMISSSolverNewtonRelativeToleranceSet(Solver,1.0E-7_CMISSDP,Err)
-  CALL CMISSSolverNewtonMaximumIterationsSet(Solver,200,Err)
-  CALL CMISSSolverNewtonLinearSolverGet(Solver,LinearSolver,Err)
-  CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearDirectSolveType,Err)
-  CALL CMISSProblemSolversCreateFinish(Problem,Err)
+  CALL CMISSSolver_Initialise(Solver,Err)
+  CALL CMISSSolver_Initialise(LinearSolver,Err)
+  CALL CMISSProblem_SolversCreateStart(Problem,Err)
+  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,Solver,Err)
+  CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
+  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(Solver,CMISS_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)
+  CALL CMISSSolver_NewtonAbsoluteToleranceSet(Solver,1.0E-6_CMISSDP,Err)
+  CALL CMISSSolver_NewtonRelativeToleranceSet(Solver,1.0E-7_CMISSDP,Err)
+  CALL CMISSSolver_NewtonMaximumIterationsSet(Solver,200,Err)
+  CALL CMISSSolver_NewtonLinearSolverGet(Solver,LinearSolver,Err)
+  CALL CMISSSolver_LinearTypeSet(LinearSolver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
+  CALL CMISSProblem_SolversCreateFinish(Problem,Err)
 
   !Create the problem solver equations
-  CALL CMISSSolverTypeInitialise(Solver,Err)
-  CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
-  CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
-  CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
-  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
-  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,SolidEquationsSet,EquationsSetIndex,Err)
-  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,FluidEquationsSet,EquationsSetIndex,Err)
-  CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+  CALL CMISSSolver_Initialise(Solver,Err)
+  CALL CMISSSolverEquations_Initialise(SolverEquations,Err)
+  CALL CMISSProblem_SolverEquationsCreateStart(Problem,Err)
+  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,Solver,Err)
+  CALL CMISSSolver_SolverEquationsGet(Solver,SolverEquations,Err)
+  CALL CMISSSolverEquations_SparsityTypeSet(SolverEquations,CMISS_SOLVER_SPARSE_MATRICES,Err)
+  CALL CMISSSolverEquations_EquationsSetAdd(SolverEquations,SolidEquationsSet,EquationsSetIndex,Err)
+  CALL CMISSSolverEquations_EquationsSetAdd(SolverEquations,FluidEquationsSet,EquationsSetIndex,Err)
+  CALL CMISSProblem_SolverEquationsCreateFinish(Problem,Err)
 
   !Prescribe boundary conditions (absolute nodal parameters)
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+  CALL CMISSBoundaryConditions_Initialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquations_BoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
 
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,GeometricMeshComponent,CMISSGeneratedMeshRegularLeftSurface, &
+  CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,GeometricMeshComponent,CMISS_GENERATED_MESH_REGULAR_LEFT_SURFACE, &
       & LeftSurfaceNodes,LeftNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,PressureMeshComponent,CMISSGeneratedMeshRegularLeftSurface, &
+  CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,PressureMeshComponent,CMISS_GENERATED_MESH_REGULAR_LEFT_SURFACE, &
       & PressureLeftSurfaceNodes,LeftNormalXi,Err)
 
   !Fix x=0 nodes
   DO node_idx=1,SIZE(LeftSurfaceNodes,1)
     NodeNumber=LeftSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
+    CALL CMISSDecomposition_NodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       DO component_idx=1,3
-        CALL CMISSFieldParameterSetGetNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,NodeNumber, &
+        CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber, &
           & component_idx,Value,Err)
-        CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber, &
-          & component_idx,CMISSBoundaryConditionFixed,Value,Err)
+        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber, &
+          & component_idx,CMISS_BOUNDARY_CONDITION_FIXED,Value,Err)
       ENDDO
     ENDIF
   ENDDO
   DO node_idx=1,SIZE(PressureLeftSurfaceNodes,1)
     NodeNumber=PressureLeftSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,PressureMeshComponent,NodeDomain,Err)
+    CALL CMISSDecomposition_NodeDomainGet(Decomposition,NodeNumber,PressureMeshComponent,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldVVariableType,1,1,NodeNumber,1, &
-        & CMISSBoundaryConditionFixedIncremented,FluidPressureBC,Err)
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_V_VARIABLE_TYPE,1,1,NodeNumber,1, &
+        & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED,FluidPressureBC,Err)
     ENDIF
   ENDDO
 
-  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
+  CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve problem
-  CALL CMISSProblemSolve(Problem,Err)
+  CALL CMISSProblem_Solve(Problem,Err)
 
   !Output solution
-  CALL CMISSFieldsTypeInitialise(Fields,Err)
-  CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-  CALL CMISSFieldIONodesExport(Fields,"CoupledCantilever","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields,"CoupledCantilever","FORTRAN",Err)
-  CALL CMISSFieldsTypeFinalise(Fields,Err)
+  CALL CMISSFields_Initialise(Fields,Err)
+  CALL CMISSFields_Create(Region,Fields,Err)
+  CALL CMISSFields_NodesExport(Fields,"CoupledCantilever","FORTRAN",Err)
+  CALL CMISSFields_ElementsExport(Fields,"CoupledCantilever","FORTRAN",Err)
+  CALL CMISSFields_Finalise(Fields,Err)
 
   CALL CMISSFinalise(Err)
 

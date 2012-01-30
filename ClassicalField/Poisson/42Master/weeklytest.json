@@ -1,0 +1,88 @@
+{"example": {
+  "globalTestDir": "42TestingPoints",
+  "test": [   
+    {
+     "id": 1,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Poisson/1D/linear/LEVEL_1",
+     "args": "10 0 0 1",
+     "expectedPath": "expected_results"},
+    {
+     "id": 2,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Poisson/1D/quadratic/LEVEL_1",
+     "args": "10 0 0 2",
+     "expectedPath": "expected_results"},
+     {
+     "id": 3,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Poisson/1D/cubic/LEVEL_1",
+     "args": "10 0 0 3",
+     "expectedPath": "expected_results"},
+     {
+     "id": 4,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Poisson/1D/hermite/LEVEL_1",
+     "args": "10 0 0 4",
+     "expectedPath": "expected_results"},
+     {
+     "id": 5,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Poisson/2D/QUAD/linear/LEVEL_1",
+     "args": "5 5 0 1",
+     "expectedPath": "expected_results"},
+     {
+     "id": 6,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Poisson/2D/QUAD/quadratic/LEVEL_1",
+     "args": "5 5 0 2",
+     "expectedPath": "expected_results"},
+     {
+     "id": 7,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Poisson/2D/QUAD/cubic/LEVEL_1",
+     "args": "5 5 0 3",
+     "expectedPath": "expected_results"},
+     {
+     "id": 8,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Poisson/2D/TRI/linear/LEVEL_1",
+     "args": "5 5 0 7",
+     "expectedPath": "expected_results"},
+     {
+     "id": 9,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Poisson/2D/TRI/quadratic/LEVEL_1",
+     "args": "5 5 0 8",
+     "expectedPath": "expected_results"},
+     {
+     "id": 10,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Poisson/2D/TRI/cubic/LEVEL_1",
+     "args": "5 5 0 9"},
+     {
+     "id": 11,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Poisson/2D/HERMITE/LEVEL_1",
+     "args": "3 3 0 4",
+     "expectedPath": "expected_results"},
+     {
+     "id": 12,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Poisson/3D/HEX/linear/LEVEL_1",
+     "args": "4 4 4 1",
+     "expectedPath": "expected_results"},
+     {
+     "id": 13,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Poisson/3D/HEX/quadratic/LEVEL_1",
+     "args": "4 4 4 2",
+     "expectedPath": "expected_results"},
+     {
+     "id": 14,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Poisson/3D/HEX/cubic/LEVEL_1",
+     "args": "4 4 4 3",
+     "expectedPath": "expected_results"},
+     {
+     "id": 15,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Poisson/3D/TET/linear/LEVEL_1",
+     "args": "4 4 4 7",
+     "expectedPath": "expected_results"},
+     {
+     "id": 16,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Poisson/3D/TET/quadratic/LEVEL_1",
+     "args": "4 4 4 8",
+     "expectedPath": "expected_results"},
+     {
+     "id": 17,
+     "path": "SinglePhysics/LinearProblems/StaticProblems/Poisson/3D/HERMITE/LEVEL_1",
+     "args": "2 2 2 4",
+     "expectedPath": "expected_results"}]
+}}

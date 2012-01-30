@@ -188,11 +188,11 @@ PROGRAM BURGERSEXAMPLE
 
   !Set output parameters
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
-  DYNAMIC_SOLVER_OUTPUT_TYPE=CMISSSolverNoOutput
-  NONLINEAR_SOLVER_OUTPUT_TYPE=CMISSSolverNoOutput
-  LINEAR_SOLVER_OUTPUT_TYPE=CMISSSolverNoOutput
+  DYNAMIC_SOLVER_OUTPUT_TYPE=CMISS_SOLVER_NO_OUTPUT
+  NONLINEAR_SOLVER_OUTPUT_TYPE=CMISS_SOLVER_NO_OUTPUT
+  LINEAR_SOLVER_OUTPUT_TYPE=CMISS_SOLVER_NO_OUTPUT
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
-  EQUATIONS_OUTPUT=CMISSEquationsNoOutput
+  EQUATIONS_OUTPUT=CMISS_EQUATIONS_NO_OUTPUT
 
   !Set time parameter
   DYNAMIC_SOLVER_START_TIME=0.0_CMISSDP
@@ -218,148 +218,148 @@ PROGRAM BURGERSEXAMPLE
   !COORDINATE SYSTEM
   !-----------------------------------------------------------------------------------------------------------
   !Start the creation of a new RC coordinate system
-  CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   !Set the coordinate system to be 1D
-  CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,1,Err)
+  CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystem,1,Err)
   !Finish the creation of the coordinate system
-  CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err) 
+  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err) 
 
   !-----------------------------------------------------------------------------------------------------------
   !REGION
   !-----------------------------------------------------------------------------------------------------------
   !Start the creation of the region
-  CALL CMISSRegionTypeInitialise(Region,Err)
-  CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegion,Region,Err)
-  CALL CMISSRegionLabelSet(Region,"BurgersRegion",Err)
+  CALL CMISSRegion_Initialise(Region,Err)
+  CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  CALL CMISSRegion_LabelSet(Region,"BurgersRegion",Err)
   !Set the regions coordinate system to the 1D RC coordinate system that we have created
-  CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
+  CALL CMISSRegion_CoordinateSystemSet(Region,CoordinateSystem,Err)
   !Finish the creation of the region
-  CALL CMISSRegionCreateFinish(Region,Err)
+  CALL CMISSRegion_CreateFinish(Region,Err)
   
   !-----------------------------------------------------------------------------------------------------------
   !BASIS
   !-----------------------------------------------------------------------------------------------------------
   !Start the creation of a basis
-  CALL CMISSBasisTypeInitialise(Basis,Err)
-  CALL CMISSBasisCreateStart(BasisUserNumber,Basis,Err)
-  CALL CMISSBasisTypeSet(Basis,CMISSBasisLagrangeHermiteTPType,Err)
-  CALL CMISSBasisNumberOfXiSet(Basis,1,Err)
+  CALL CMISSBasis_Initialise(Basis,Err)
+  CALL CMISSBasis_CreateStart(BasisUserNumber,Basis,Err)
+  CALL CMISSBasis_TypeSet(Basis,CMISS_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
+  CALL CMISSBasis_NumberOfXiSet(Basis,1,Err)
   !Set the basis xi interpolation and number of Gauss points
-  CALL CMISSBasisInterpolationXiSet(Basis,(/CMISSBasisLinearLagrangeInterpolation/),Err)
-  CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis,(/2/),Err)
+  CALL CMISSBasis_InterpolationXiSet(Basis,(/CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION/),Err)
+  CALL CMISSBasis_QuadratureNumberOfGaussXiSet(Basis,(/2/),Err)
   !Finish the creation of the basis
-  CALL CMISSBasisCreateFinish(Basis,Err)
+  CALL CMISSBasis_CreateFinish(Basis,Err)
 
   !-----------------------------------------------------------------------------------------------------------
   !MESH
   !-----------------------------------------------------------------------------------------------------------
   !Start the creation of a generated mesh in the region
-  CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
-  CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_Initialise(GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_CreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
   !Set up a regular x mesh
-  CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
+  CALL CMISSGeneratedMesh_TypeSet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_MESH_TYPE,Err)
   !Set the default basis
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,Basis,Err)   
+  CALL CMISSGeneratedMesh_BasisSet(GeneratedMesh,Basis,Err)   
   !Define the mesh on the region
-  CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,(/LENGTH/),Err)
-  CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS/),Err)
+  CALL CMISSGeneratedMesh_ExtentSet(GeneratedMesh,(/LENGTH/),Err)
+  CALL CMISSGeneratedMesh_NumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS/),Err)
   !Finish the creation of a generated mesh in the region
-  CALL CMISSMeshTypeInitialise(Mesh,Err)
-  CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
+  CALL CMISSMesh_Initialise(Mesh,Err)
+  CALL CMISSGeneratedMesh_CreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
 
   !-----------------------------------------------------------------------------------------------------------  
   !GEOMETRIC FIELD
   !-----------------------------------------------------------------------------------------------------------
 
   !Create a decomposition
-  CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
-  CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
+  CALL CMISSDecomposition_Initialise(Decomposition,Err)
+  CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
-  CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NUMBER_OF_DOMAINS,Err)
+  CALL CMISSDecomposition_TypeSet(Decomposition,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NUMBER_OF_DOMAINS,Err)
   !Finish the decomposition
-  CALL CMISSDecompositionCreateFinish(Decomposition,Err)
+  CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
   
   !Start to create a default (geometric) field on the region
-  CALL CMISSFieldTypeInitialise(GeometricField,Err)
-  CALL CMISSFieldCreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
+  CALL CMISSField_Initialise(GeometricField,Err)
+  CALL CMISSField_CreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
   !Set the decomposition to use
-  CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
+  CALL CMISSField_MeshDecompositionSet(GeometricField,Decomposition,Err)
   !Set the scaling to use
-  CALL CMISSFieldScalingTypeSet(GeometricField,CMISSFieldNoScaling,Err)
+  CALL CMISSField_ScalingTypeSet(GeometricField,CMISS_FIELD_NO_SCALING,Err)
   !Set the domain to be used by the field components.
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,1,Err)
+  CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,Err)
   !Finish creating the field
-  CALL CMISSFieldCreateFinish(GeometricField,Err)  
+  CALL CMISSField_CreateFinish(GeometricField,Err)  
   !Update the geometric field parameters
-  CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
 
   !-----------------------------------------------------------------------------------------------------------  
   !EQUATIONS SETS
   !-----------------------------------------------------------------------------------------------------------
   
   !Create the equations_set for a dynamic nonlinear burgers equation
-  CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
-  CALL CMISSEquationsSetCreateStart(EquationsSetUserNumber,Region,GeometricField,CMISSEquationsSetFluidMechanicsClass, &
-    & CMISSEquationsSetBurgersEquationType,CMISSEquationsSetBurgersSubtype,EquationsSetFieldUserNumber, &
+  CALL CMISSEquationsSet_Initialise(EquationsSet,Err)
+  CALL CMISSField_Initialise(EquationsSetField,Err)
+  CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumber,Region,GeometricField,CMISS_EQUATIONS_SET_FLUID_MECHANICS_CLASS, &
+    & CMISS_EQUATIONS_SET_BURGERS_EQUATION_TYPE,CMISS_EQUATIONS_SET_BURGERS_SUBTYPE,EquationsSetFieldUserNumber, &
     & EquationsSetField,EquationsSet,Err)
   !Finish creating the equations set
-  CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
+  CALL CMISSEquationsSet_CreateFinish(EquationsSet,Err)
 
   !-----------------------------------------------------------------------------------------------------------
   ! DEPENDENT FIELD
   !-----------------------------------------------------------------------------------------------------------
   !Create the equations set dependent field variables
-  CALL CMISSFieldTypeInitialise(DependentField,Err)
-  CALL CMISSEquationsSetDependentCreateStart(EquationsSet,DependentFieldUserNumber,DependentField,Err)
+  CALL CMISSField_Initialise(DependentField,Err)
+  CALL CMISSEquationsSet_DependentCreateStart(EquationsSet,DependentFieldUserNumber,DependentField,Err)
   !Set the mesh component to be used by the field components.
   COMPONENT_NUMBER = 1
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
+  CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
     & COMPONENT_NUMBER,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
+  CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,COMPONENT_NUMBER, & 
     & COMPONENT_NUMBER,Err)
   !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
+  CALL CMISSEquationsSet_DependentCreateFinish(EquationsSet,Err)
   !Initialise dependent field
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
     & COMPONENT_NUMBER,0.0_CMISSDP,Err)
 
   !-----------------------------------------------------------------------------------------------------------
   ! MATERIALS FIELD
   !-----------------------------------------------------------------------------------------------------------
   !Create the equations set material field variables
-  CALL CMISSFieldTypeInitialise(MaterialsField,Err)
-  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,MaterialsFieldUserNumber,MaterialsField,Err)
+  CALL CMISSField_Initialise(MaterialsField,Err)
+  CALL CMISSEquationsSet_MaterialsCreateStart(EquationsSet,MaterialsFieldUserNumber,MaterialsField,Err)
   !Finish the equations set material field variables
-  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
+  CALL CMISSEquationsSet_MaterialsCreateFinish(EquationsSet,Err)
   !Initialise materials field
-  CALL CMISSFieldComponentValuesInitialise(MaterialsField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+  CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
     & 1,NU_PARAM,Err)
 
   !-----------------------------------------------------------------------------------------------------------
   ! ANALYTIC FIELD
   !-----------------------------------------------------------------------------------------------------------
   !Create the equations set analytic field variables
-  !CALL CMISSFieldTypeInitialise(AnalyticField,Err)
-  !CALL CMISSEquationsSetAnalyticCreateStart(EquationsSet,CMISSEquationsSetBurgersOneDim1,AnalyticFieldUserNumber, & 
+  !CALL CMISSField_Initialise(AnalyticField,Err)
+  !CALL CMISSEquationsSet_AnalyticCreateStart(EquationsSet,CMISS_EQUATIONS_SET_BURGERS_EQUATION_ONE_DIM_1,AnalyticFieldUserNumber, & 
   ! & AnalyticField,Err)
   !Finish the equations set analytic field variables
-  !CALL CMISSEquationsSetAnalyticCreateFinish(EquationsSet,Err)
+  !CALL CMISSEquationsSet_AnalyticCreateFinish(EquationsSet,Err)
 
   !-----------------------------------------------------------------------------------------------------------  
   ! EQUATIONS
   !-----------------------------------------------------------------------------------------------------------
   !Create the equations set equations
-  CALL CMISSEquationsTypeInitialise(Equations,Err)
-  CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
+  CALL CMISSEquations_Initialise(Equations,Err)
+  CALL CMISSEquationsSet_EquationsCreateStart(EquationsSet,Equations,Err)
   !Set the equations matrices sparsity type (Sparse/Full)
-  CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsFullMatrices,Err)
+  CALL CMISSEquations_SparsityTypeSet(Equations,CMISS_EQUATIONS_FULL_MATRICES,Err)
   !Set the equations set output (NoOutput/TimingOutput/MatrixOutput/SolverMatrix/ElementMatrixOutput)
-  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
+  CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_NO_OUTPUT,Err)
   !Finish the equations set equations
-  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)
+  CALL CMISSEquationsSet_EquationsCreateFinish(EquationsSet,Err)
 
   !Create the equations set boundary conditions
   !CALL CMISSEquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
@@ -368,122 +368,122 @@ PROGRAM BURGERSEXAMPLE
   !PROBLEM
   !-----------------------------------------------------------------------------------------------------------
   !Create the problem
-  CALL CMISSProblemTypeInitialise(Problem,Err)
-  CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
+  CALL CMISSProblem_Initialise(Problem,Err)
+  CALL CMISSProblem_CreateStart(ProblemUserNumber,Problem,Err)
   !Set the problem to be a static Burgers problem
-  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemFluidMechanicsClass,CMISSProblemBurgersEquationType, &
-    & CMISSProblemDynamicBurgersSubtype,Err)
+  CALL CMISSProblem_SpecificationSet(Problem,CMISS_PROBLEM_FLUID_MECHANICS_CLASS,CMISS_PROBLEM_BURGERS_EQUATION_TYPE, &
+    & CMISS_PROBLEM_DYNAMIC_BURGERS_SUBTYPE,Err)
   !Finish the creation of a problem.
-  CALL CMISSProblemCreateFinish(Problem,Err)
+  CALL CMISSProblem_CreateFinish(Problem,Err)
 
   !Create the problem control
-  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
-  CALL CMISSProblemControlLoopCreateStart(Problem,Err)
+  CALL CMISSControlLoop_Initialise(ControlLoop,Err)
+  CALL CMISSProblem_ControlLoopCreateStart(Problem,Err)
   !Get the control loop
-  CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
+  CALL CMISSProblem_ControlLoopGet(Problem,CMISS_CONTROL_LOOP_NODE,ControlLoop,Err)
 
   !Set the times
-  CALL CMISSControlLoopTimesSet(ControlLoop,DYNAMIC_SOLVER_START_TIME,DYNAMIC_SOLVER_STOP_TIME, & 
+  CALL CMISSControlLoop_TimesSet(ControlLoop,DYNAMIC_SOLVER_START_TIME,DYNAMIC_SOLVER_STOP_TIME, & 
     & DYNAMIC_SOLVER_TIME_INCREMENT,Err)
   !Set the output timing
-  CALL CMISSControlLoopTimeOutputSet(ControlLoop,DYNAMIC_SOLVER_OUTPUT_FREQUENCY,Err)
+  CALL CMISSControlLoop_TimeOutputSet(ControlLoop,DYNAMIC_SOLVER_OUTPUT_FREQUENCY,Err)
 
   !Finish creating the problem control loop
-  CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
+  CALL CMISSProblem_ControlLoopCreateFinish(Problem,Err)
 
   !-----------------------------------------------------------------------------------------------------------
   !SOLVER
   !-----------------------------------------------------------------------------------------------------------
   !Start the creation of the problem solvers
-  CALL CMISSSolverTypeInitialise(DynamicSolver,Err)
-  CALL CMISSSolverTypeInitialise(NonlinearSolver,Err)
-  CALL CMISSSolverTypeInitialise(LinearSolver,Err)
-  CALL CMISSProblemSolversCreateStart(Problem,Err)
+  CALL CMISSSolver_Initialise(DynamicSolver,Err)
+  CALL CMISSSolver_Initialise(NonlinearSolver,Err)
+  CALL CMISSSolver_Initialise(LinearSolver,Err)
+  CALL CMISSProblem_SolversCreateStart(Problem,Err)
 
   !Get the dymamic solver
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverUserNumber,DynamicSolver,Err)
+  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,SolverUserNumber,DynamicSolver,Err)
   !Set the output type
-  CALL CMISSSolverOutputTypeSet(DynamicSolver,DYNAMIC_SOLVER_OUTPUT_TYPE,Err)
+  CALL CMISSSolver_OutputTypeSet(DynamicSolver,DYNAMIC_SOLVER_OUTPUT_TYPE,Err)
   !Set theta
-  CALL CMISSSolverDynamicThetaSet(DynamicSolver,DYNAMIC_SOLVER_THETA,Err)
+  CALL CMISSSolver_DynamicThetaSet(DynamicSolver,DYNAMIC_SOLVER_THETA,Err)
 
   !Get the dynamic nonlinear solver
-  CALL CMISSSolverDynamicNonlinearSolverGet(DynamicSolver,NonlinearSolver,Err)
+  CALL CMISSSolver_DynamicNonlinearSolverGet(DynamicSolver,NonlinearSolver,Err)
   !Set the nonlinear Jacobian type
-  CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolver,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
+  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolver,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
   !Set the output type
-  CALL CMISSSolverOutputTypeSet(NonlinearSolver,NONLINEAR_SOLVER_OUTPUT_TYPE,Err)
+  CALL CMISSSolver_OutputTypeSet(NonlinearSolver,NONLINEAR_SOLVER_OUTPUT_TYPE,Err)
   !Set the solver settings
-  CALL CMISSSolverNewtonAbsoluteToleranceSet(NonlinearSolver,ABSOLUTE_TOLERANCE,Err)
-  CALL CMISSSolverNewtonRelativeToleranceSet(NonlinearSolver,RELATIVE_TOLERANCE,Err)
+  CALL CMISSSolver_NewtonAbsoluteToleranceSet(NonlinearSolver,ABSOLUTE_TOLERANCE,Err)
+  CALL CMISSSolver_NewtonRelativeToleranceSet(NonlinearSolver,RELATIVE_TOLERANCE,Err)
   !Get the dynamic nonlinear linear solver
-  CALL CMISSSolverNewtonLinearSolverGet(NonlinearSolver,LinearSolver,Err)
+  CALL CMISSSolver_NewtonLinearSolverGet(NonlinearSolver,LinearSolver,Err)
   !Set the output type
-  CALL CMISSSolverOutputTypeSet(LinearSolver,LINEAR_SOLVER_OUTPUT_TYPE,Err)
+  CALL CMISSSolver_OutputTypeSet(LinearSolver,LINEAR_SOLVER_OUTPUT_TYPE,Err)
   !Set the solver settings
 
   IF(LINEAR_SOLVER_DIRECT_FLAG) THEN
-    CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearDirectSolveType,Err)
-    CALL CMISSSolverLibraryTypeSet(LinearSolver,CMISSSolverMUMPSLibrary,Err)
+    CALL CMISSSolver_LinearTypeSet(LinearSolver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
+    CALL CMISSSolver_LibraryTypeSet(LinearSolver,CMISS_SOLVER_MUMPS_LIBRARY,Err)
   ELSE
-    CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearIterativeSolveType,Err)
-    CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolver,MAXIMUM_ITERATIONS,Err)
-    CALL CMISSSolverLinearIterativeDivergenceToleranceSet(LinearSolver,DIVERGENCE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeRelativeToleranceSet(LinearSolver,RELATIVE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeAbsoluteToleranceSet(LinearSolver,ABSOLUTE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeGMRESRestartSet(LinearSolver,RESTART_VALUE,Err)
+    CALL CMISSSolver_LinearTypeSet(LinearSolver,CMISS_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
+    CALL CMISSSolver_LinearIterativeMaximumIterationsSet(LinearSolver,MAXIMUM_ITERATIONS,Err)
+    CALL CMISSSolver_LinearIterativeDivergenceToleranceSet(LinearSolver,DIVERGENCE_TOLERANCE,Err)
+    CALL CMISSSolver_LinearIterativeRelativeToleranceSet(LinearSolver,RELATIVE_TOLERANCE,Err)
+    CALL CMISSSolver_LinearIterativeAbsoluteToleranceSet(LinearSolver,ABSOLUTE_TOLERANCE,Err)
+    CALL CMISSSolver_LinearIterativeGMRESRestartSet(LinearSolver,RESTART_VALUE,Err)
   ENDIF
   !Finish the creation of the problem solver
-  CALL CMISSProblemSolversCreateFinish(Problem,Err)
+  CALL CMISSProblem_SolversCreateFinish(Problem,Err)
 
 
   !-----------------------------------------------------------------------------------------------------------
   !SOLVER EQUATIONS
   !-----------------------------------------------------------------------------------------------------------
   !Create the problem solver equations
-  CALL CMISSSolverTypeInitialise(LinearSolver,Err)
-  CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
-  CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
+  CALL CMISSSolver_Initialise(LinearSolver,Err)
+  CALL CMISSSolverEquations_Initialise(SolverEquations,Err)
+  CALL CMISSProblem_SolverEquationsCreateStart(Problem,Err)
   !Get the dynamic solver equations
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,DynamicSolver,Err)
-  CALL CMISSSolverSolverEquationsGet(DynamicSolver,SolverEquations,Err)
+  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,DynamicSolver,Err)
+  CALL CMISSSolver_SolverEquationsGet(DynamicSolver,SolverEquations,Err)
   !Set the solver equations sparsity (Sparse/Full)
-  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsFullMatrices,Err)  
+  CALL CMISSSolverEquations_SparsityTypeSet(SolverEquations,CMISS_SOLVER_FULL_MATRICES,Err)  
   !Add in the equations set
-  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
+  CALL CMISSSolverEquations_EquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
-  CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+  CALL CMISSProblem_SolverEquationsCreateFinish(Problem,Err)
 
   !-----------------------------------------------------------------------------------------------------------
   !BOUNDARY CONDITIONS
   !-----------------------------------------------------------------------------------------------------------
   !Set up the boundary conditions
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+  CALL CMISSBoundaryConditions_Initialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquations_BoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
   !Set the fixed boundary conditions at the first node and last nodes
   FirstNodeNumber=1
   COMPONENT_NUMBER=1
-  CALL CMISSNodesTypeInitialise(Nodes,Err)
-  CALL CMISSRegionNodesGet(Region,Nodes,Err)
-  CALL CMISSNodesNumberOfNodesGet(Nodes,LastNodeNumber,Err)
-  CALL CMISSDecompositionNodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
-  CALL CMISSDecompositionNodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
+  CALL CMISSNodes_Initialise(Nodes,Err)
+  CALL CMISSRegion_NodesGet(Region,Nodes,Err)
+  CALL CMISSNodes_NumberOfNodesGet(Nodes,LastNodeNumber,Err)
+  CALL CMISSDecomposition_NodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
+  CALL CMISSDecomposition_NodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
   IF(FirstNodeDomain==ComputationalNodeNumber) THEN
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1, &
-      & CMISSNoGlobalDerivative,FirstNodeNumber,COMPONENT_NUMBER,CMISSBoundaryConditionFixed, &
+    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1, &
+      & CMISS_NO_GLOBAL_DERIV,FirstNodeNumber,COMPONENT_NUMBER,CMISS_BOUNDARY_CONDITION_FIXED, &
       & 1.0_CMISSDP,Err)
   ENDIF
   IF(LastNodeDomain==ComputationalNodeNumber) THEN
-    CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1, &
-      & CMISSNoGlobalDerivative,LastNodeNumber,COMPONENT_NUMBER,CMISSBoundaryConditionFixed, &
+    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1, &
+      & CMISS_NO_GLOBAL_DERIV,LastNodeNumber,COMPONENT_NUMBER,CMISS_BOUNDARY_CONDITION_FIXED, &
       & 0.0_CMISSDP,Err)
   ENDIF
-  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
+  CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
   !-----------------------------------------------------------------------------------------------------------
   !SOLVE
   !-----------------------------------------------------------------------------------------------------------
   !Solve the problem
-  CALL CMISSProblemSolve(Problem,Err)
+  CALL CMISSProblem_Solve(Problem,Err)
 
   !-----------------------------------------------------------------------------------------------------------
   !OUTPUT
@@ -494,11 +494,11 @@ PROGRAM BURGERSEXAMPLE
   !export fields
   EXPORT_FIELD=.TRUE.
   IF(EXPORT_FIELD) THEN
-    CALL CMISSFieldsTypeInitialise(Fields,Err)
-    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"Burgers_1D","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"Burgers_1D","FORTRAN",Err)
-    CALL CMISSFieldsTypeFinalise(Fields,Err)
+    CALL CMISSFields_Initialise(Fields,Err)
+    CALL CMISSFields_Create(Region,Fields,Err)
+    CALL CMISSFields_NodesExport(Fields,"Burgers_1D","FORTRAN",Err)
+    CALL CMISSFields_ElementsExport(Fields,"Burgers_1D","FORTRAN",Err)
+    CALL CMISSFields_Finalise(Fields,Err)
   ENDIF
   
   !Output timing summary

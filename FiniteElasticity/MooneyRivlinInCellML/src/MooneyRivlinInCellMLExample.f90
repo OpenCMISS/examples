@@ -215,12 +215,12 @@ PROGRAM MOONEYRIVLININCELLMLEXAMPLE
   !Intialise cmiss
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  CALL CMISSErrorHandlingModeSet(CMISSTrapError,Err)
+  CALL CMISSErrorHandlingModeSet(CMISS_ERRORS_TRAP_ERROR,Err)
 
   WRITE(*,'(A)') "Program starting."
 
   !Set all diganostic levels on for testing
-!  CALL CMISSDiagnosticsSetOn(CMISSFromDiagType,[1,2,3,4,5],"Diagnostics",["PROBLEM_FINITE_ELEMENT_CALCULATE"],Err)
+!  CALL CMISSDiagnosticsSetOn(CMISS_FROM_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["PROBLEM_FINITE_ELEMENT_CALCULATE"],Err)
 
   !Get the number of computational nodes and this computational node number
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -237,418 +237,449 @@ PROGRAM MOONEYRIVLININCELLMLEXAMPLE
   CALL MPI_BCAST(NumberOfDomains,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
 
   !Create a CS - default is 3D rectangular cartesian CS with 0,0,0 as origin
-  CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemTypeSet(CoordinateSystem,CMISSCoordinateRectangularCartesianType,Err)
-  CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,NumberOfSpatialCoordinates,Err)
-  CALL CMISSCoordinateSystemOriginSet(CoordinateSystem,[0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP],Err)
-  CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_TypeSet(CoordinateSystem,CMISS_COORDINATE_RECTANGULAR_CARTESIAN_TYPE,Err)
+  CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystem,NumberOfSpatialCoordinates,Err)
+  CALL CMISSCoordinateSystem_OriginSet(CoordinateSystem,[0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP],Err)
+  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Create a region and assign the CS to the region
-  CALL CMISSRegionTypeInitialise(Region,Err)
-  CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegion,Region,Err)
-  CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
-  CALL CMISSRegionCreateFinish(Region,Err)
+  CALL CMISSRegion_Initialise(Region,Err)
+  CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  CALL CMISSRegion_CoordinateSystemSet(Region,CoordinateSystem,Err)
+  CALL CMISSRegion_CreateFinish(Region,Err)
 
   !Define basis functions - tri-Quadratic Lagrange and tri-Linear Lagrange
-  CALL CMISSBasisTypeInitialise(QuadraticBasis,Err)
-  CALL CMISSBasisCreateStart(QuadraticBasisUserNumber,QuadraticBasis,Err)
-  CALL CMISSBasisTypeSet(QuadraticBasis,CMISSBasisLagrangeHermiteTPType,Err)
-  CALL CMISSBasisNumberOfXiSet(QuadraticBasis,NumberOfXiCoordinates,Err)
-  CALL CMISSBasisInterpolationXiSet(QuadraticBasis,[CMISSBasisQuadraticLagrangeInterpolation, &
-    & CMISSBasisQuadraticLagrangeInterpolation,CMISSBasisQuadraticLagrangeInterpolation],Err)
-  CALL CMISSBasisQuadratureNumberOfGaussXiSet(QuadraticBasis, &
+  CALL CMISSBasis_Initialise(QuadraticBasis,Err)
+  CALL CMISSBasis_CreateStart(QuadraticBasisUserNumber,QuadraticBasis,Err)
+  CALL CMISSBasis_TypeSet(QuadraticBasis,CMISS_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
+  CALL CMISSBasis_NumberOfXiSet(QuadraticBasis,NumberOfXiCoordinates,Err)
+  CALL CMISSBasis_InterpolationXiSet(QuadraticBasis,[CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION, &
+    & CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION,CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION],Err)
+  CALL CMISSBasis_QuadratureNumberOfGaussXiSet(QuadraticBasis, &
     & [NumberOfGaussPoints,NumberOfGaussPoints,NumberOfGaussPoints],Err)
-  CALL CMISSBasisCreateFinish(QuadraticBasis,Err)
+  CALL CMISSBasis_CreateFinish(QuadraticBasis,Err)
 
-  CALL CMISSBasisTypeInitialise(LinearBasis,Err)
-  CALL CMISSBasisCreateStart(LinearBasisUserNumber,LinearBasis,Err)
-  CALL CMISSBasisTypeSet(LinearBasis,CMISSBasisLagrangeHermiteTPType,Err)
-  CALL CMISSBasisNumberOfXiSet(LinearBasis,NumberOfXiCoordinates,Err)
-  CALL CMISSBasisInterpolationXiSet(LinearBasis,[CMISSBasisLinearLagrangeInterpolation, &
-    & CMISSBasisLinearLagrangeInterpolation,CMISSBasisLinearLagrangeInterpolation],Err)
-  CALL CMISSBasisQuadratureNumberOfGaussXiSet(LinearBasis, &
+  CALL CMISSBasis_Initialise(LinearBasis,Err)
+  CALL CMISSBasis_CreateStart(LinearBasisUserNumber,LinearBasis,Err)
+  CALL CMISSBasis_TypeSet(LinearBasis,CMISS_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
+  CALL CMISSBasis_NumberOfXiSet(LinearBasis,NumberOfXiCoordinates,Err)
+  CALL CMISSBasis_InterpolationXiSet(LinearBasis,[CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION, &
+    & CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION,CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION],Err)
+  CALL CMISSBasis_QuadratureNumberOfGaussXiSet(LinearBasis, &
     & [NumberOfGaussPoints,NumberOfGaussPoints,NumberOfGaussPoints],Err)
-  CALL CMISSBasisCreateFinish(LinearBasis,Err)
+  CALL CMISSBasis_CreateFinish(LinearBasis,Err)
 
   Basis(1)=QuadraticBasis
   Basis(2)=LinearBasis
 
   !Start the creation of a generated mesh in the region
-  CALL CMISSMeshTypeInitialise(Mesh,Err)
-  CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
-  CALL CMISSGeneratedMeshCreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
+  CALL CMISSMesh_Initialise(Mesh,Err)
+  CALL CMISSGeneratedMesh_Initialise(GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_CreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
   !Set up a regular x*y*z mesh
-  CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
+  CALL CMISSGeneratedMesh_TypeSet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_MESH_TYPE,Err)
   !Set the basis - Basis is now an array: [QuadraticBasis,LinearBasis]
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,Basis,Err)
+  CALL CMISSGeneratedMesh_BasisSet(GeneratedMesh,Basis,Err)
   !Define the mesh on the region
-  CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,[LENGTH,WIDTH,HEIGHT],Err)
-  CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements,NumberGlobalYElements, &
+  CALL CMISSGeneratedMesh_ExtentSet(GeneratedMesh,[LENGTH,WIDTH,HEIGHT],Err)
+  CALL CMISSGeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements,NumberGlobalYElements, &
       & NumberGlobalZElements],Err)
   !Finish the creation of the generated mesh in the region
-  CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
+  CALL CMISSGeneratedMesh_CreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
 
   !Create a decomposition
-  CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
-  CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
-  CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
-  CALL CMISSDecompositionCalculateFacesSet(Decomposition,.TRUE.,Err)
-  CALL CMISSDecompositionCreateFinish(Decomposition,Err)
+  CALL CMISSDecomposition_Initialise(Decomposition,Err)
+  CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
+  CALL CMISSDecomposition_TypeSet(Decomposition,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
+  CALL CMISSDecomposition_CalculateFacesSet(Decomposition,.TRUE.,Err)
+  CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
 
   !Create a field to put the geometry (default is geometry) - quadratic interpolation
-  CALL CMISSFieldTypeInitialise(GeometricField,Err)
-  CALL CMISSFieldCreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
-  CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
-  CALL CMISSFieldTypeSet(GeometricField,CMISSFieldGeometricType,Err)  
-  CALL CMISSFieldNumberOfVariablesSet(GeometricField,FieldGeometryNumberOfVariables,Err)
-  CALL CMISSFieldNumberOfComponentsSet(GeometricField,CMISSFieldUVariableType,FieldGeometryNumberOfComponents,Err)  
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,2,QuadraticMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,3,QuadraticMeshComponentNumber,Err)
-  CALL CMISSFieldCreateFinish(GeometricField,Err)
+  CALL CMISSField_Initialise(GeometricField,Err)
+  CALL CMISSField_CreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
+  CALL CMISSField_MeshDecompositionSet(GeometricField,Decomposition,Err)
+  CALL CMISSField_TypeSet(GeometricField,CMISS_FIELD_GEOMETRIC_TYPE,Err)  
+  CALL CMISSField_NumberOfVariablesSet(GeometricField,FieldGeometryNumberOfVariables,Err)
+  CALL CMISSField_NumberOfComponentsSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,FieldGeometryNumberOfComponents,Err)  
+  CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,1,QuadraticMeshComponentNumber,Err)
+  CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,2,QuadraticMeshComponentNumber,Err)
+  CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,3,QuadraticMeshComponentNumber,Err)
+  CALL CMISSField_CreateFinish(GeometricField,Err)
 
   !Update the geometric field parameters
-  CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
 
   !Create a fibre field and attach it to the geometric field - linear interpolation
-  CALL CMISSFieldTypeInitialise(FibreField,Err)
-  CALL CMISSFieldCreateStart(FieldFibreUserNumber,Region,FibreField,Err)
-  CALL CMISSFieldTypeSet(FibreField,CMISSFieldFibreType,Err)
-  CALL CMISSFieldMeshDecompositionSet(FibreField,Decomposition,Err)        
-  CALL CMISSFieldGeometricFieldSet(FibreField,GeometricField,Err)
-  CALL CMISSFieldNumberOfVariablesSet(FibreField,FieldFibreNumberOfVariables,Err)
-  CALL CMISSFieldNumberOfComponentsSet(FibreField,CMISSFieldUVariableType,FieldFibreNumberOfComponents,Err)  
+  CALL CMISSField_Initialise(FibreField,Err)
+  CALL CMISSField_CreateStart(FieldFibreUserNumber,Region,FibreField,Err)
+  CALL CMISSField_TypeSet(FibreField,CMISS_FIELD_FIBRE_TYPE,Err)
+  CALL CMISSField_MeshDecompositionSet(FibreField,Decomposition,Err)        
+  CALL CMISSField_GeometricFieldSet(FibreField,GeometricField,Err)
+  CALL CMISSField_NumberOfVariablesSet(FibreField,FieldFibreNumberOfVariables,Err)
+  CALL CMISSField_NumberOfComponentsSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,FieldFibreNumberOfComponents,Err)  
 !LinearMeshComponentNumber QuadraticMeshComponentNumber ???
-  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,1,LinearMeshComponentNumber,Err) 
-  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,2,LinearMeshComponentNumber,Err)
-  CALL CMISSFieldComponentMeshComponentSet(FibreField,CMISSFieldUVariableType,3,LinearMeshComponentNumber,Err)
-  CALL CMISSFieldCreateFinish(FibreField,Err)
+  CALL CMISSField_ComponentMeshComponentSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,1,LinearMeshComponentNumber,Err) 
+  CALL CMISSField_ComponentMeshComponentSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,2,LinearMeshComponentNumber,Err)
+  CALL CMISSField_ComponentMeshComponentSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,3,LinearMeshComponentNumber,Err)
+  CALL CMISSField_CreateFinish(FibreField,Err)
 
   !Create a material field and attach it to the geometric field - quadratic interpolation
-  CALL CMISSFieldTypeInitialise(MaterialField,Err)
-  CALL CMISSFieldCreateStart(FieldMaterialUserNumber,Region,MaterialField,Err)
-  CALL CMISSFieldTypeSet(MaterialField,CMISSFieldMaterialType,Err)
-  CALL CMISSFieldMeshDecompositionSet(MaterialField,Decomposition,Err)
-  CALL CMISSFieldGeometricFieldSet(MaterialField,GeometricField,Err)
-  CALL CMISSFieldNumberOfVariablesSet(MaterialField,FieldMaterialNumberOfVariables,Err)
-  CALL CMISSFieldNumberOfComponentsSet(MaterialField,CMISSFieldUVariableType,FieldMaterialNumberOfComponents,Err)
-  ! default is CMISSFieldNodeBasedInterpolation
-  CALL CMISSFieldComponentInterpolationSet(MaterialField,CMISSFieldUVariableType,1,CMISSFieldConstantInterpolation,Err)
-  CALL CMISSFieldComponentInterpolationSet(MaterialField,CMISSFieldUVariableType,2,CMISSFieldConstantInterpolation,Err)
+  CALL CMISSField_Initialise(MaterialField,Err)
+  CALL CMISSField_CreateStart(FieldMaterialUserNumber,Region,MaterialField,Err)
+  CALL CMISSField_TypeSet(MaterialField,CMISS_FIELD_MATERIAL_TYPE,Err)
+  CALL CMISSField_MeshDecompositionSet(MaterialField,Decomposition,Err)
+  CALL CMISSField_GeometricFieldSet(MaterialField,GeometricField,Err)
+  CALL CMISSField_NumberOfVariablesSet(MaterialField,FieldMaterialNumberOfVariables,Err)
+  CALL CMISSField_NumberOfComponentsSet(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,FieldMaterialNumberOfComponents,Err)
+  ! default is CMISS_FIELD_NODE_BASED_INTERPOLATION
+  CALL CMISSField_ComponentInterpolationSet(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
+  CALL CMISSField_ComponentInterpolationSet(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,2,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
 ! not implemented yet!!!
-!  CALL CMISSFieldComponentInterpolationSet(MaterialField,CMISSFieldUVariableType,1,CMISSFieldGaussPointBasedInterpolation,Err)
-!  CALL CMISSFieldComponentInterpolationSet(MaterialField,CMISSFieldUVariableType,2,CMISSFieldGaussPointBasedInterpolation,Err)
-  CALL CMISSFieldCreateFinish(MaterialField,Err)
+!  CALL CMISSField_ComponentInterpolationSet(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err)
+!  CALL CMISSField_ComponentInterpolationSet(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,2,CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err)
+  CALL CMISSField_CreateFinish(MaterialField,Err)
 
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively.
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,2.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,6.0_CMISSDP,Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,2.0_CMISSDP,Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,6.0_CMISSDP,Err)
 
   !Create the dependent field with 4 variables and the respective number of components
   !   1   U_Var_Type            4 components: 3 displacement (quad interpol) + 1 pressure (lin interpol))
   !   2   DELUDELN_Var_Type     4 components: 3 displacement (quad interpol) + 1 pressure (lin interpol))
   !   3   U1_Var_Type           6 components: 6 independent components of the strain tensor (quad interpol) [independent]
   !   4   U2_Var_Type           6 components: 6 independent components of the stress tensor (quad interpol) [dependent]
-  DependentVariableTypes = [CMISSFieldUVariableType,CMISSFieldDelUDelNVariableType, &
-    & CMISSFieldU1VariableType,CMISSFieldU2VariableType]
-  CALL CMISSFieldTypeInitialise(DependentField,Err)
+  DependentVariableTypes = [CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_DELUDELN_VARIABLE_TYPE, &
+    & CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_U2_VARIABLE_TYPE]
+  CALL CMISSField_Initialise(DependentField,Err)
   IF(DependentFieldAutoCreate/=1) THEN
-    CALL CMISSFieldCreateStart(FieldDependentUserNumber,Region,DependentField,Err)
-    CALL CMISSFieldTypeSet(DependentField,CMISSFieldGeneralType,Err)
-    CALL CMISSFieldMeshDecompositionSet(DependentField,Decomposition,Err)
-    CALL CMISSFieldGeometricFieldSet(DependentField,GeometricField,Err)
-    CALL CMISSFieldDependentTypeSet(DependentField,CMISSFieldDependentType,Err)
-    CALL CMISSFieldNumberOfVariablesSet(DependentField,FieldDependentNumberOfVariables,Err)
-    CALL CMISSFieldVariableTypesSet(DependentField,DependentVariableTypes,Err)
-    CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldUVariableType,FieldDependentNumberOfComponentsDisplPress,Err)
-    CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldDelUDelNVariableType, &
+    CALL CMISSField_CreateStart(FieldDependentUserNumber,Region,DependentField,Err)
+    CALL CMISSField_TypeSet(DependentField,CMISS_FIELD_GENERAL_TYPE,Err)
+    CALL CMISSField_MeshDecompositionSet(DependentField,Decomposition,Err)
+    CALL CMISSField_GeometricFieldSet(DependentField,GeometricField,Err)
+    CALL CMISSField_DependentTypeSet(DependentField,CMISS_FIELD_DEPENDENT_TYPE,Err)
+    CALL CMISSField_NumberOfVariablesSet(DependentField,FieldDependentNumberOfVariables,Err)
+    CALL CMISSField_VariableTypesSet(DependentField,DependentVariableTypes,Err)
+    CALL CMISSField_NumberOfComponentsSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,FieldDependentNumberOfComponentsDisplPress,Err)
+    CALL CMISSField_NumberOfComponentsSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE, &
       & FieldDependentNumberOfComponentsDisplPress,Err)
-    CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldU1VariableType,FieldDependentNumberOfComponentsStressStrain,Err)
-    CALL CMISSFieldNumberOfComponentsSet(DependentField,CMISSFieldU2VariableType,FieldDependentNumberOfComponentsStressStrain,Err)
+    CALL CMISSField_NumberOfComponentsSet(DependentField,CMISS_FIELD_U1_VARIABLE_TYPE, &
+      & FieldDependentNumberOfComponentsStressStrain, &
+      & Err)
+    CALL CMISSField_NumberOfComponentsSet(DependentField,CMISS_FIELD_U2_VARIABLE_TYPE, &
+      & FieldDependentNumberOfComponentsStressStrain, &
+      & Err)
 
     ! set interpolation for the components of the field variables. 
     !   Default is Node Based Interpolation - so there is nothing to be done for U_Variable_Type and DelUDelN_Variable_Type
-    CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldU1VariableType,1,CMISSFieldGaussPointBasedInterpolation,Err)
-    CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldU1VariableType,2,CMISSFieldGaussPointBasedInterpolation,Err)
-    CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldU1VariableType,3,CMISSFieldGaussPointBasedInterpolation,Err)
-    CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldU1VariableType,4,CMISSFieldGaussPointBasedInterpolation,Err)
-    CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldU1VariableType,5,CMISSFieldGaussPointBasedInterpolation,Err)
-    CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldU1VariableType,6,CMISSFieldGaussPointBasedInterpolation,Err)
+    CALL CMISSField_ComponentInterpolationSet(DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,1, &
+      & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,2, &
+      & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,3, &
+      & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,4, &
+      & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,5, &
+      & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,6, &
+      & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err)
 
-    CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldU2VariableType,1,CMISSFieldGaussPointBasedInterpolation,Err)
-    CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldU2VariableType,2,CMISSFieldGaussPointBasedInterpolation,Err)
-    CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldU2VariableType,3,CMISSFieldGaussPointBasedInterpolation,Err)
-    CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldU2VariableType,4,CMISSFieldGaussPointBasedInterpolation,Err)
-    CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldU2VariableType,5,CMISSFieldGaussPointBasedInterpolation,Err)
-    CALL CMISSFieldComponentInterpolationSet(DependentField,CMISSFieldU2VariableType,6,CMISSFieldGaussPointBasedInterpolation,Err)
+    CALL CMISSField_ComponentInterpolationSet(DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,1, &
+      & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,2, &
+      & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,3, &
+      & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,4, &
+      & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,5, &
+      & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,6, &
+      & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err)
 
     ! set the corresponding mesh component
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,1,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,2,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,3,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldUVariableType,4,LinearMeshComponentNumber,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,QuadraticMeshComponentNumber,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,2,QuadraticMeshComponentNumber,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,3,QuadraticMeshComponentNumber,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,4,LinearMeshComponentNumber,Err)
 
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,1,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,2,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,3,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldDelUDelNVariableType,4,LinearMeshComponentNumber,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,1,QuadraticMeshComponentNumber,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,2,QuadraticMeshComponentNumber,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,3,QuadraticMeshComponentNumber,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,4,LinearMeshComponentNumber,Err)
 
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldU1VariableType,1,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldU1VariableType,2,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldU1VariableType,3,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldU1VariableType,4,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldU1VariableType,5,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldU1VariableType,6,QuadraticMeshComponentNumber,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,1,QuadraticMeshComponentNumber,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,2,QuadraticMeshComponentNumber,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,3,QuadraticMeshComponentNumber,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,4,QuadraticMeshComponentNumber,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,5,QuadraticMeshComponentNumber,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,6,QuadraticMeshComponentNumber,Err)
 
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldU2VariableType,1,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldU2VariableType,2,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldU2VariableType,3,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldU2VariableType,4,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldU2VariableType,5,QuadraticMeshComponentNumber,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentField,CMISSFieldU2VariableType,6,QuadraticMeshComponentNumber,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,1,QuadraticMeshComponentNumber,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,2,QuadraticMeshComponentNumber,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,3,QuadraticMeshComponentNumber,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,4,QuadraticMeshComponentNumber,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,5,QuadraticMeshComponentNumber,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,6,QuadraticMeshComponentNumber,Err)
 
-!  CALL CMISSFieldScalingTypeSet(DependentField,CMISSFieldUnitScaling,Err)
-    CALL CMISSFieldCreateFinish(DependentField,Err)
+!  CALL CMISSField_ScalingTypeSet(DependentField,CMISS_FIELD_UNIT_SCALING,Err)
+    CALL CMISSField_CreateFinish(DependentField,Err)
   ENDIF !DependentFieldAutoCreate
 
   !Create the equations_set
-  CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
-  CALL CMISSEquationsSetTypeInitialise(EquationsSet,Err)
-  CALL CMISSEquationsSetCreateStart(EquationSetUserNumber,Region,FibreField,CMISSEquationsSetElasticityClass, &
-    & CMISSEquationsSetFiniteElasticityType,CMISSEquationsSetConstitutiveLawInCellMLEvaluateSubtype,EquationsSetFieldUserNumber, &
+  CALL CMISSField_Initialise(EquationsSetField,Err)
+  CALL CMISSEquationsSet_Initialise(EquationsSet,Err)
+  CALL CMISSEquationsSet_CreateStart(EquationSetUserNumber,Region,FibreField,CMISS_EQUATIONS_SET_ELASTICITY_CLASS, &
+    & CMISS_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMISS_EQUATIONS_SET_CONSTITUTIVE_LAW_IN_CELLML_EVALUATE_SUBTYPE, &
+      & EquationsSetFieldUserNumber, &
     & EquationsSetField,EquationsSet,Err)
-  CALL CMISSEquationsSetCreateFinish(EquationsSet,Err)
+  CALL CMISSEquationsSet_CreateFinish(EquationsSet,Err)
 
-  CALL CMISSEquationsSetDependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)
-  CALL CMISSEquationsSetDependentCreateFinish(EquationsSet,Err)
+  CALL CMISSEquationsSet_DependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)
+  CALL CMISSEquationsSet_DependentCreateFinish(EquationsSet,Err)
 
-  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSet,FieldMaterialUserNumber,MaterialField,Err)  
-  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSet,Err)
+  CALL CMISSEquationsSet_MaterialsCreateStart(EquationsSet,FieldMaterialUserNumber,MaterialField,Err)  
+  CALL CMISSEquationsSet_MaterialsCreateFinish(EquationsSet,Err)
 
   !Create the CellML environment
-  CALL CMISSCellMLTypeInitialise(CellML,Err)
-  CALL CMISSCellMLCreateStart(CellMLUserNumber,Region,CellML,Err)
+  CALL CMISSCellML_Initialise(CellML,Err)
+  CALL CMISSCellML_CreateStart(CellMLUserNumber,Region,CellML,Err)
   !Import a Mooney-Rivlin material law from a file
-  CALL CMISSCellMLModelImport(CellML,"mooney_rivlin.xml",MooneyRivlinModelIndex,Err)
-!  CALL CMISSCellMLModelImport(CellML,"n98.xml",MooneyRivlinModelIndex,Err)
+  CALL CMISSCellML_ModelImport(CellML,"mooney_rivlin.xml",MooneyRivlinModelIndex,Err)
+!  CALL CMISSCellML_ModelImport(CellML,"n98.xml",MooneyRivlinModelIndex,Err)
   ! Now we have imported the model we are able to specify which variables from the model we want:
   !   - to set from this side
-  CALL CMISSCellMLVariableSetAsKnown(CellML,MooneyRivlinModelIndex,"equations/E11",Err)
-  CALL CMISSCellMLVariableSetAsKnown(CellML,MooneyRivlinModelIndex,"equations/E12",Err)
-  CALL CMISSCellMLVariableSetAsKnown(CellML,MooneyRivlinModelIndex,"equations/E13",Err)
-  CALL CMISSCellMLVariableSetAsKnown(CellML,MooneyRivlinModelIndex,"equations/E22",Err)
-  CALL CMISSCellMLVariableSetAsKnown(CellML,MooneyRivlinModelIndex,"equations/E23",Err)
-  CALL CMISSCellMLVariableSetAsKnown(CellML,MooneyRivlinModelIndex,"equations/E33",Err)
+  CALL CMISSCellML_VariableSetAsKnown(CellML,MooneyRivlinModelIndex,"equations/E11",Err)
+  CALL CMISSCellML_VariableSetAsKnown(CellML,MooneyRivlinModelIndex,"equations/E12",Err)
+  CALL CMISSCellML_VariableSetAsKnown(CellML,MooneyRivlinModelIndex,"equations/E13",Err)
+  CALL CMISSCellML_VariableSetAsKnown(CellML,MooneyRivlinModelIndex,"equations/E22",Err)
+  CALL CMISSCellML_VariableSetAsKnown(CellML,MooneyRivlinModelIndex,"equations/E23",Err)
+  CALL CMISSCellML_VariableSetAsKnown(CellML,MooneyRivlinModelIndex,"equations/E33",Err)
 ! doesn't work yet, since gauss_point_based_interpolation is not implemented TODO
-!  CALL CMISSCellMLVariableSetAsKnown(CellML,MooneyRivlinModelIndex,"equations/c1",Err)
-!  CALL CMISSCellMLVariableSetAsKnown(CellML,MooneyRivlinModelIndex,"equations/c2",Err)
+!  CALL CMISSCellML_VariableSetAsKnown(CellML,MooneyRivlinModelIndex,"equations/c1",Err)
+!  CALL CMISSCellML_VariableSetAsKnown(CellML,MooneyRivlinModelIndex,"equations/c2",Err)
   !   - to get from the CellML side
-  CALL CMISSCellMLVariableSetAsWanted(CellML,MooneyRivlinModelIndex,"equations/Tdev11",Err)
-  CALL CMISSCellMLVariableSetAsWanted(CellML,MooneyRivlinModelIndex,"equations/Tdev12",Err)
-  CALL CMISSCellMLVariableSetAsWanted(CellML,MooneyRivlinModelIndex,"equations/Tdev13",Err)
-  CALL CMISSCellMLVariableSetAsWanted(CellML,MooneyRivlinModelIndex,"equations/Tdev22",Err)
-  CALL CMISSCellMLVariableSetAsWanted(CellML,MooneyRivlinModelIndex,"equations/Tdev23",Err)
-  CALL CMISSCellMLVariableSetAsWanted(CellML,MooneyRivlinModelIndex,"equations/Tdev33",Err)
+  CALL CMISSCellML_VariableSetAsWanted(CellML,MooneyRivlinModelIndex,"equations/Tdev11",Err)
+  CALL CMISSCellML_VariableSetAsWanted(CellML,MooneyRivlinModelIndex,"equations/Tdev12",Err)
+  CALL CMISSCellML_VariableSetAsWanted(CellML,MooneyRivlinModelIndex,"equations/Tdev13",Err)
+  CALL CMISSCellML_VariableSetAsWanted(CellML,MooneyRivlinModelIndex,"equations/Tdev22",Err)
+  CALL CMISSCellML_VariableSetAsWanted(CellML,MooneyRivlinModelIndex,"equations/Tdev23",Err)
+  CALL CMISSCellML_VariableSetAsWanted(CellML,MooneyRivlinModelIndex,"equations/Tdev33",Err)
   !Finish the CellML environment
-  CALL CMISSCellMLCreateFinish(CellML,Err)
+  CALL CMISSCellML_CreateFinish(CellML,Err)
 
   !Start the creation of CellML <--> OpenCMISS field maps
-  CALL CMISSCellMLFieldMapsCreateStart(CellML,Err)
+  CALL CMISSCellML_FieldMapsCreateStart(CellML,Err)
   !Now we can set up the field variable component <--> CellML model variable mappings.
   !Map the strain components
-  CALL CMISSCellMLCreateFieldToCellMLMap(CellML,DependentField,CMISSFieldU1VariableType,1,CMISSFieldValuesSetType, &
-    & MooneyRivlinModelIndex,"equations/E11",CMISSFieldValuesSetType,Err)
-  CALL CMISSCellMLCreateFieldToCellMLMap(CellML,DependentField,CMISSFieldU1VariableType,2,CMISSFieldValuesSetType, &
-    & MooneyRivlinModelIndex,"equations/E12",CMISSFieldValuesSetType,Err)
-  CALL CMISSCellMLCreateFieldToCellMLMap(CellML,DependentField,CMISSFieldU1VariableType,3,CMISSFieldValuesSetType, &
-    & MooneyRivlinModelIndex,"equations/E13",CMISSFieldValuesSetType,Err)
-  CALL CMISSCellMLCreateFieldToCellMLMap(CellML,DependentField,CMISSFieldU1VariableType,4,CMISSFieldValuesSetType, &
-    & MooneyRivlinModelIndex,"equations/E22",CMISSFieldValuesSetType,Err)
-  CALL CMISSCellMLCreateFieldToCellMLMap(CellML,DependentField,CMISSFieldU1VariableType,5,CMISSFieldValuesSetType, &
-    & MooneyRivlinModelIndex,"equations/E23",CMISSFieldValuesSetType,Err)
-  CALL CMISSCellMLCreateFieldToCellMLMap(CellML,DependentField,CMISSFieldU1VariableType,6,CMISSFieldValuesSetType, &
-    & MooneyRivlinModelIndex,"equations/E33",CMISSFieldValuesSetType,Err)
+  CALL CMISSCellML_CreateFieldToCellMLMap(CellML,DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,1,CMISS_FIELD_VALUES_SET_TYPE, &
+    & MooneyRivlinModelIndex,"equations/E11",CMISS_FIELD_VALUES_SET_TYPE,Err)
+  CALL CMISSCellML_CreateFieldToCellMLMap(CellML,DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,2,CMISS_FIELD_VALUES_SET_TYPE, &
+    & MooneyRivlinModelIndex,"equations/E12",CMISS_FIELD_VALUES_SET_TYPE,Err)
+  CALL CMISSCellML_CreateFieldToCellMLMap(CellML,DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,3,CMISS_FIELD_VALUES_SET_TYPE, &
+    & MooneyRivlinModelIndex,"equations/E13",CMISS_FIELD_VALUES_SET_TYPE,Err)
+  CALL CMISSCellML_CreateFieldToCellMLMap(CellML,DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,4,CMISS_FIELD_VALUES_SET_TYPE, &
+    & MooneyRivlinModelIndex,"equations/E22",CMISS_FIELD_VALUES_SET_TYPE,Err)
+  CALL CMISSCellML_CreateFieldToCellMLMap(CellML,DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,5,CMISS_FIELD_VALUES_SET_TYPE, &
+    & MooneyRivlinModelIndex,"equations/E23",CMISS_FIELD_VALUES_SET_TYPE,Err)
+  CALL CMISSCellML_CreateFieldToCellMLMap(CellML,DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,6,CMISS_FIELD_VALUES_SET_TYPE, &
+    & MooneyRivlinModelIndex,"equations/E33",CMISS_FIELD_VALUES_SET_TYPE,Err)
   !Map the material parameters
 ! doesn't work yet, since gauss_point_based_interpolation is not implemented TODO
-!  CALL CMISSCellMLCreateFieldToCellMLMap(CellML,MaterialField,CMISSFieldUVariableType,1,CMISSFieldValuesSetType, &
-!    & MooneyRivlinModelIndex,"equations/c1",CMISSFieldValuesSetType,Err)
-!  CALL CMISSCellMLCreateFieldToCellMLMap(CellML,MaterialField,CMISSFieldUVariableType,2,CMISSFieldValuesSetType, &
-!    & MooneyRivlinModelIndex,"equations/c2",CMISSFieldValuesSetType,Err)
+!  CALL CMISSCellML_CreateFieldToCellMLMap(CellML,MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_VALUES_SET_TYPE, &
+!    & MooneyRivlinModelIndex,"equations/c1",CMISS_FIELD_VALUES_SET_TYPE,Err)
+!  CALL CMISSCellML_CreateFieldToCellMLMap(CellML,MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,2,CMISS_FIELD_VALUES_SET_TYPE, &
+!    & MooneyRivlinModelIndex,"equations/c2",CMISS_FIELD_VALUES_SET_TYPE,Err)
   !Map the stress components
-  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,MooneyRivlinModelIndex,"equations/Tdev11",CMISSFieldValuesSetType, &
-    & DependentField,CMISSFieldU2VariableType,1,CMISSFieldValuesSetType,Err)
-  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,MooneyRivlinModelIndex,"equations/Tdev12",CMISSFieldValuesSetType, &
-    & DependentField,CMISSFieldU2VariableType,2,CMISSFieldValuesSetType,Err)
-  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,MooneyRivlinModelIndex,"equations/Tdev13",CMISSFieldValuesSetType, &
-    & DependentField,CMISSFieldU2VariableType,3,CMISSFieldValuesSetType,Err)
-  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,MooneyRivlinModelIndex,"equations/Tdev22",CMISSFieldValuesSetType, &
-    & DependentField,CMISSFieldU2VariableType,4,CMISSFieldValuesSetType,Err)
-  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,MooneyRivlinModelIndex,"equations/Tdev23",CMISSFieldValuesSetType, &
-    & DependentField,CMISSFieldU2VariableType,5,CMISSFieldValuesSetType,Err)
-  CALL CMISSCellMLCreateCellMLToFieldMap(CellML,MooneyRivlinModelIndex,"equations/Tdev33",CMISSFieldValuesSetType, &
-    & DependentField,CMISSFieldU2VariableType,6,CMISSFieldValuesSetType,Err)
+  CALL CMISSCellML_CreateCellMLToFieldMap(CellML,MooneyRivlinModelIndex,"equations/Tdev11",CMISS_FIELD_VALUES_SET_TYPE, &
+    & DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,1,CMISS_FIELD_VALUES_SET_TYPE,Err)
+  CALL CMISSCellML_CreateCellMLToFieldMap(CellML,MooneyRivlinModelIndex,"equations/Tdev12",CMISS_FIELD_VALUES_SET_TYPE, &
+    & DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,2,CMISS_FIELD_VALUES_SET_TYPE,Err)
+  CALL CMISSCellML_CreateCellMLToFieldMap(CellML,MooneyRivlinModelIndex,"equations/Tdev13",CMISS_FIELD_VALUES_SET_TYPE, &
+    & DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,3,CMISS_FIELD_VALUES_SET_TYPE,Err)
+  CALL CMISSCellML_CreateCellMLToFieldMap(CellML,MooneyRivlinModelIndex,"equations/Tdev22",CMISS_FIELD_VALUES_SET_TYPE, &
+    & DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,4,CMISS_FIELD_VALUES_SET_TYPE,Err)
+  CALL CMISSCellML_CreateCellMLToFieldMap(CellML,MooneyRivlinModelIndex,"equations/Tdev23",CMISS_FIELD_VALUES_SET_TYPE, &
+    & DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,5,CMISS_FIELD_VALUES_SET_TYPE,Err)
+  CALL CMISSCellML_CreateCellMLToFieldMap(CellML,MooneyRivlinModelIndex,"equations/Tdev33",CMISS_FIELD_VALUES_SET_TYPE, &
+    & DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,6,CMISS_FIELD_VALUES_SET_TYPE,Err)
   !Finish the creation of CellML <--> OpenCMISS field maps
-  CALL CMISSCellMLFieldMapsCreateFinish(CellML,Err)
+  CALL CMISSCellML_FieldMapsCreateFinish(CellML,Err)
 
 !Actually, don't need to create this at all - they're automatically created
-! CALL CMISSFieldParameterSetCreate(DependentField,CMISSFieldDelUDelNVariableType,CMISSFieldPressureValuesSetType,Err)
+! CALL CMISSField_ParameterSetCreate(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,CMISS_FIELD_PRESSURE_VALUES_SET_TYPE,Err)
 
   !Create the CellML models field
-  CALL CMISSFieldTypeInitialise(CellMLModelsField,Err)
-  CALL CMISSCellMLModelsFieldCreateStart(CellMLModelsFieldUserNumber,CellML,CellMLModelsField,Err)
-  CALL CMISSCellMLModelsFieldCreateFinish(CellML,Err)
+  CALL CMISSField_Initialise(CellMLModelsField,Err)
+  CALL CMISSCellML_ModelsFieldCreateStart(CellML,CellMLModelsFieldUserNumber,CellMLModelsField,Err)
+  CALL CMISSCellML_ModelsFieldCreateFinish(CellML,Err)
 
 ! no state field is required for a simple constitutive equation evaluation
   !Create the CellML state field
-!  CALL CMISSFieldTypeInitialise(CellMLStateField,Err)
-!  CALL CMISSCellMLStateFieldCreateStart(CellMLStateFieldUserNumber,CellML,CellMLStateField,Err)
-!  CALL CMISSCellMLStateFieldCreateFinish(CellML,Err)
+!  CALL CMISSField_Initialise(CellMLStateField,Err)
+!  CALL CMISSCellML_StateFieldCreateStart(CellML,CellMLStateFieldUserNumber,CellMLStateField,Err)
+!  CALL CMISSCellML_StateFieldCreateFinish(CellML,Err)
 
   !Create the CellML parameters field --- will be the strain field
-  CALL CMISSFieldTypeInitialise(CellMLParametersField,Err)
-  CALL CMISSCellMLParametersFieldCreateStart(CellMLParametersFieldUserNumber,CellML,CellMLParametersField,Err)
-  CALL CMISSCellMLParametersFieldCreateFinish(CellML,Err)
+  CALL CMISSField_Initialise(CellMLParametersField,Err)
+  CALL CMISSCellML_ParametersFieldCreateStart(CellML,CellMLParametersFieldUserNumber,CellMLParametersField,Err)
+  CALL CMISSCellML_ParametersFieldCreateFinish(CellML,Err)
 
   !Create the CellML intermediate field --- will be the stress field
-  CALL CMISSFieldTypeInitialise(CellMLIntermediateField,Err)
-  CALL CMISSCellMLIntermediateFieldCreateStart(CellMLIntermediateFieldUserNumber,CellML,CellMLIntermediateField,Err)
-  CALL CMISSCellMLIntermediateFieldCreateFinish(CellML,Err)
+  CALL CMISSField_Initialise(CellMLIntermediateField,Err)
+  CALL CMISSCellML_IntermediateFieldCreateStart(CellML,CellMLIntermediateFieldUserNumber,CellMLIntermediateField,Err)
+  CALL CMISSCellML_IntermediateFieldCreateFinish(CellML,Err)
 
   !Create the equations set equations
-  CALL CMISSEquationsTypeInitialise(Equations,Err)
-  CALL CMISSEquationsSetEquationsCreateStart(EquationsSet,Equations,Err)
-  CALL CMISSEquationsSparsityTypeSet(Equations,CMISSEquationsSparseMatrices,Err)
-  CALL CMISSEquationsOutputTypeSet(Equations,CMISSEquationsNoOutput,Err)
-  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSet,Err)   
+  CALL CMISSEquations_Initialise(Equations,Err)
+  CALL CMISSEquationsSet_EquationsCreateStart(EquationsSet,Equations,Err)
+  CALL CMISSEquations_SparsityTypeSet(Equations,CMISS_EQUATIONS_SPARSE_MATRICES,Err)
+  CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_NO_OUTPUT,Err)
+  CALL CMISSEquationsSet_EquationsCreateFinish(EquationsSet,Err)   
 
   !Initialise dependent field from undeformed geometry and set hydrostatic pressure
-  CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-    & 1,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,Err)
-  CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-    & 2,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,2,Err)
-  CALL CMISSFieldParametersToFieldParametersComponentCopy(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
-    & 3,DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,3,Err)
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldUVariableType,CMISSFieldValuesSetType,4,-8.0_CMISSDP,Err)
+  CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+    & 1,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,Err)
+  CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+    & 2,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,Err)
+  CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+    & 3,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3,Err)
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4,-8.0_CMISSDP, &
+    & Err)
 
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,1,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,2,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,3,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,4,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,5,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldU1VariableType,CMISSFieldValuesSetType,6,0.0_CMISSDP,Err)
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,0.0_CMISSDP, &
+    & Err)
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,0.0_CMISSDP, &
+    & Err)
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3,0.0_CMISSDP, &
+    & Err)
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4,0.0_CMISSDP, &
+    & Err)
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,5,0.0_CMISSDP, &
+    & Err)
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,6,0.0_CMISSDP, &
+    & Err)
 
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldU2VariableType,CMISSFieldValuesSetType,1,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldU2VariableType,CMISSFieldValuesSetType,2,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldU2VariableType,CMISSFieldValuesSetType,3,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldU2VariableType,CMISSFieldValuesSetType,4,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldU2VariableType,CMISSFieldValuesSetType,5,0.0_CMISSDP,Err)
-  CALL CMISSFieldComponentValuesInitialise(DependentField,CMISSFieldU2VariableType,CMISSFieldValuesSetType,6,0.0_CMISSDP,Err)
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,0.0_CMISSDP, &
+    & Err)
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,0.0_CMISSDP, &
+    & Err)
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3,0.0_CMISSDP, &
+    & Err)
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4,0.0_CMISSDP, &
+    & Err)
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,5,0.0_CMISSDP, &
+    & Err)
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U2_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,6,0.0_CMISSDP, &
+    & Err)
 
   !Define the problem
-  CALL CMISSProblemTypeInitialise(Problem,Err)
-  CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
-  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemElasticityClass,CMISSProblemFiniteElasticityType, &
-    & CMISSProblemFiniteElasticityCellMLSubtype,Err)
-   CALL CMISSProblemCreateFinish(Problem,Err)
+  CALL CMISSProblem_Initialise(Problem,Err)
+  CALL CMISSProblem_CreateStart(ProblemUserNumber,Problem,Err)
+  CALL CMISSProblem_SpecificationSet(Problem,CMISS_PROBLEM_ELASTICITY_CLASS,CMISS_PROBLEM_FINITE_ELASTICITY_TYPE, &
+    & CMISS_PROBLEM_FINITE_ELASTICITY_CELLML_SUBTYPE,Err)
+   CALL CMISSProblem_CreateFinish(Problem,Err)
 
   !Create the problem control loop
-  CALL CMISSProblemControlLoopCreateStart(Problem,Err)
-  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
-  CALL CMISSProblemControlLoopGet(Problem,CMISSControlLoopNode,ControlLoop,Err)
-  CALL CMISSControlLoopTypeSet(ControlLoop,CMISSProblemControlSimpleType,Err)
-  CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
+  CALL CMISSProblem_ControlLoopCreateStart(Problem,Err)
+  CALL CMISSControlLoop_Initialise(ControlLoop,Err)
+  CALL CMISSProblem_ControlLoopGet(Problem,CMISS_CONTROL_LOOP_NODE,ControlLoop,Err)
+  CALL CMISSControlLoop_TypeSet(ControlLoop,CMISS_PROBLEM_CONTROL_SIMPLE_TYPE,Err)
+  CALL CMISSProblem_ControlLoopCreateFinish(Problem,Err)
   
   !Create the problem solvers
-  CALL CMISSSolverTypeInitialise(Solver,Err)
-  CALL CMISSSolverTypeInitialise(LinearSolver,Err)
-  CALL CMISSProblemSolversCreateStart(Problem,Err)
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
-  CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverProgressOutput,Err)
-  CALL CMISSSolverNewtonJacobianCalculationTypeSet(Solver,CMISSSolverNewtonJacobianFDCalculated,Err)
-  CALL CMISSSolverNewtonLinearSolverGet(Solver,LinearSolver,Err)
-  CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearDirectSolveType,Err)
-  CALL CMISSProblemSolversCreateFinish(Problem,Err)
+  CALL CMISSSolver_Initialise(Solver,Err)
+  CALL CMISSSolver_Initialise(LinearSolver,Err)
+  CALL CMISSProblem_SolversCreateStart(Problem,Err)
+  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,Solver,Err)
+  CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
+  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(Solver,CMISS_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)
+  CALL CMISSSolver_NewtonLinearSolverGet(Solver,LinearSolver,Err)
+  CALL CMISSSolver_LinearTypeSet(LinearSolver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
+  CALL CMISSProblem_SolversCreateFinish(Problem,Err)
 
   !Create the problem solver CellML equations
-  CALL CMISSSolverTypeInitialise(CellMLSolver,Err)
-  CALL CMISSCellMLEquationsTypeInitialise(CellMLEquations,Err)
-  CALL CMISSProblemCellMLEquationsCreateStart(Problem,Err)
-  CALL CMISSSolverNewtonCellMLSolverGet(Solver,CellMLSolver,Err)
-  CALL CMISSSolverCellMLEquationsGet(CellMLSolver,CellMLEquations,Err)
-  CALL CMISSCellMLEquationsCellMLAdd(CellMLEquations,CellML,CellMLIndex,Err)
-  CALL CMISSProblemCellMLEquationsCreateFinish(Problem,Err)
+  CALL CMISSSolver_Initialise(CellMLSolver,Err)
+  CALL CMISSCellMLEquations_Initialise(CellMLEquations,Err)
+  CALL CMISSProblem_CellMLEquationsCreateStart(Problem,Err)
+  CALL CMISSSolver_NewtonCellMLSolverGet(Solver,CellMLSolver,Err)
+  CALL CMISSSolver_CellMLEquationsGet(CellMLSolver,CellMLEquations,Err)
+  CALL CMISSCellMLEquations_CellMLAdd(CellMLEquations,CellML,CellMLIndex,Err)
+  CALL CMISSProblem_CellMLEquationsCreateFinish(Problem,Err)
 
   !Create the problem solver equations
-  CALL CMISSSolverTypeInitialise(Solver,Err)
-  CALL CMISSSolverEquationsTypeInitialise(SolverEquations,Err)
-  CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)   
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,1,Solver,Err)
-  CALL CMISSSolverSolverEquationsGet(Solver,SolverEquations,Err)
-  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
-  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
-  CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+  CALL CMISSSolver_Initialise(Solver,Err)
+  CALL CMISSSolverEquations_Initialise(SolverEquations,Err)
+  CALL CMISSProblem_SolverEquationsCreateStart(Problem,Err)   
+  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,Solver,Err)
+  CALL CMISSSolver_SolverEquationsGet(Solver,SolverEquations,Err)
+  CALL CMISSSolverEquations_SparsityTypeSet(SolverEquations,CMISS_SOLVER_SPARSE_MATRICES,Err)
+  CALL CMISSSolverEquations_EquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
+  CALL CMISSProblem_SolverEquationsCreateFinish(Problem,Err)
 
   !Prescribe boundary conditions (absolute nodal parameters)
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditions,Err)
-  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+  CALL CMISSBoundaryConditions_Initialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquations_BoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
 
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularBottomSurface,BottomSurfaceNodes,BottomNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularLeftSurface,LeftSurfaceNodes,LeftNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularRightSurface,RightSurfaceNodes,RightNormalXi,Err)
-  CALL CMISSGeneratedMeshSurfaceGet(GeneratedMesh,CMISSGeneratedMeshRegularFrontSurface,FrontSurfaceNodes,FrontNormalXi,Err)
+  CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_BOTTOM_SURFACE,BottomSurfaceNodes,BottomNormalXi, &
+    & Err)
+  CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_LEFT_SURFACE,LeftSurfaceNodes,LeftNormalXi,Err)
+  CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_RIGHT_SURFACE,RightSurfaceNodes,RightNormalXi,Err)
+  CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_FRONT_SURFACE,FrontSurfaceNodes,FrontNormalXi,Err)
 
   !Set x=0 nodes to no x displacment in x
   DO node_idx=1,SIZE(LeftSurfaceNodes,1)
     NodeNumber=LeftSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
+    CALL CMISSDecomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber,1, &
-        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
+        & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
     ENDIF
   ENDDO
   !Set x=WIDTH nodes to 10% x displacement
   DO node_idx=1,SIZE(RightSurfaceNodes,1)
     NodeNumber=RightSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
+    CALL CMISSDecomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber,1, &
-        & CMISSBoundaryConditionFixed,1.1_CMISSDP*WIDTH,Err)
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
+        & CMISS_BOUNDARY_CONDITION_FIXED,1.1_CMISSDP*WIDTH,Err)
     ENDIF
   ENDDO
 
   !Set y=0 nodes to no y displacement
   DO node_idx=1,SIZE(FrontSurfaceNodes,1)
     NodeNumber=FrontSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
+    CALL CMISSDecomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber,2, &
-        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,2, &
+        & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
     ENDIF
   ENDDO
 
   !Set z=0 nodes to no z displacement
   DO node_idx=1,SIZE(BottomSurfaceNodes,1)
     NodeNumber=BottomSurfaceNodes(node_idx)
-    CALL CMISSDecompositionNodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
+    CALL CMISSDecomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditionsSetNode(BoundaryConditions,DependentField,CMISSFieldUVariableType,1,1,NodeNumber,3, &
-        & CMISSBoundaryConditionFixed,0.0_CMISSDP,Err)
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,3, &
+        & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
     ENDIF
   ENDDO
 
-  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquations,Err)
+  CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve problem
-  CALL CMISSProblemSolve(Problem,Err)
+  CALL CMISSProblem_Solve(Problem,Err)
 
   !Output solution  
-  CALL CMISSFieldsTypeInitialise(Fields,Err)
-  CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-  CALL CMISSFieldIONodesExport(Fields,"MooneyRivlinInCellML","FORTRAN",Err)
-  CALL CMISSFieldIOElementsExport(Fields,"MooneyRivlinInCellML","FORTRAN",Err)
-  CALL CMISSFieldsTypeFinalise(Fields,Err)
+  CALL CMISSFields_Initialise(Fields,Err)
+  CALL CMISSFields_Create(Region,Fields,Err)
+  CALL CMISSFields_NodesExport(Fields,"MooneyRivlinInCellML","FORTRAN",Err)
+  CALL CMISSFields_ElementsExport(Fields,"MooneyRivlinInCellML","FORTRAN",Err)
+  CALL CMISSFields_Finalise(Fields,Err)
 
   CALL CMISSFinalise(Err)
 

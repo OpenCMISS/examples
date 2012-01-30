@@ -31,7 +31,7 @@ MODULE IOSTUFF
     if (MyComputationalNode==0) then
       ! open file
       open(unit=fid, file=Filename, status='old', action='read', err=998)
-      CALL CMISSMeshTypeInitialise(Mesh,Err)
+      CALL CMISSMesh_Initialise(Mesh,Err)
 
       compn=0; basisn=0
       ! read header info
@@ -42,20 +42,20 @@ MODULE IOSTUFF
         ! proper keywords start with a #
         if (trim(adjustl(word))=="#number_of_mesh_dimensions") then
           read(fid,*,end=777,err=999) NumberOfMeshDimensions
-          CALL CMISSMeshCreateStart(MeshUserNumber,Region,NumberOfMeshDimensions,Mesh,Err)
+          CALL CMISSMesh_CreateStart(MeshUserNumber,Region,NumberOfMeshDimensions,Mesh,Err)
         elseif (trim(adjustl(word))=="#number_of_mesh_components") then
           read(fid,*,end=777,err=999) NumberOfMeshComponents
-          CALL CMISSMeshNumberOfComponentsSet(Mesh,NumberOfMeshComponents,Err)
+          CALL CMISSMesh_NumberOfComponentsSet(Mesh,NumberOfMeshComponents,Err)
           allocate(Elements(NumberOfMeshComponents))
         elseif (trim(adjustl(word))=="#number_of_nodes") then
           read(fid,*,end=777,err=999) NumberOfNodes
           !Define nodes for the mesh
-          CALL CMISSNodesTypeInitialise(Nodes,Err)
-          CALL CMISSNodesCreateStart(Region,NumberOfNodes,Nodes,Err)
-          CALL CMISSNodesCreateFinish(Nodes,Err)  
+          CALL CMISSNodes_Initialise(Nodes,Err)
+          CALL CMISSNodes_CreateStart(Region,NumberOfNodes,Nodes,Err)
+          CALL CMISSNodes_CreateFinish(Nodes,Err)  
         elseif (trim(adjustl(word))=="#number_of_elements") then
           read(fid,*,end=777,err=999) NumberOfElements
-          CALL CMISSMeshNumberOfElementsSet(Mesh,NumberOfElements,Err)  
+          CALL CMISSMesh_NumberOfElementsSet(Mesh,NumberOfElements,Err)  
         elseif (trim(adjustl(word))=="#number_of_bases") then
           read(fid,*,end=777,err=999) NumberOfBases
           allocate(Bases(NumberOfBases))
@@ -81,25 +81,25 @@ MODULE IOSTUFF
           read(fid,*,end=777,err=999) basis_order
           ! set up basis: hardcoded for lagrange basis type
           basisn=basisn+1
-          CALL CMISSBasisTypeInitialise(Bases(basisn),Err)
-          CALL CMISSBasisCreateStart(basisn,Bases(basisn),Err) 
-          CALL CMISSBasisTypeSet(Bases(basisn),CMISSBasisLagrangeHermiteTPType,Err)
-          CALL CMISSBasisNumberOfXiSet(Bases(basisn),NumberOfMeshDimensions,Err)
+          CALL CMISSBasis_Initialise(Bases(basisn),Err)
+          CALL CMISSBasis_CreateStart(basisn,Bases(basisn),Err) 
+          CALL CMISSBasis_TypeSet(Bases(basisn),CMISS_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
+          CALL CMISSBasis_NumberOfXiSet(Bases(basisn),NumberOfMeshDimensions,Err)
           select case (basis_order)
           case (1)
-            InterpolationType=CMISSBasisLinearLagrangeInterpolation
+            InterpolationType=CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION
             gaussn=3; lnn=8
           case (2)
-            InterpolationType=CMISSBasisQuadraticLagrangeInterpolation
+            InterpolationType=CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION
             gaussn=3; lnn=27
           case (3)
-            InterpolationType=CMISSBasisCubicLagrangeInterpolation
+            InterpolationType=CMISS_BASIS_CUBIC_LAGRANGE_INTERPOLATION
             gaussn=3; lnn=64
           end select
-          CALL CMISSBasisInterpolationXiSet(Bases(basisn),[InterpolationType,InterpolationType,InterpolationType],Err)
-          CALL CMISSBasisQuadratureNumberOfGaussXiSet(Bases(basisn),[gaussn,gaussn,gaussn],Err)  
-          CALL CMISSBasisQuadratureLocalFaceGaussEvaluateSet(Bases(basisn),.true.,Err)
-          CALL CMISSBasisCreateFinish(Bases(basisn),Err)
+          CALL CMISSBasis_InterpolationXiSet(Bases(basisn),[InterpolationType,InterpolationType,InterpolationType],Err)
+          CALL CMISSBasis_QuadratureNumberOfGaussXiSet(Bases(basisn),[gaussn,gaussn,gaussn],Err)  
+          CALL CMISSBasis_QuadratureLocalFaceGaussEvaluateSet(Bases(basisn),.true.,Err)
+          CALL CMISSBasis_CreateFinish(Bases(basisn),Err)
           ! element definition now
           do
             read(fid,FMT=MAXFMT,end=777,err=999) word
@@ -111,13 +111,13 @@ MODULE IOSTUFF
             endif
             exit
           enddo
-          CALL CMISSMeshElementsTypeInitialise(Elements(compn),Err)
-          CALL CMISSMeshElementsCreateStart(Mesh,compn,Bases(basisn),Elements(compn),Err)
+          CALL CMISSMeshElements_Initialise(Elements(compn),Err)
+          CALL CMISSMeshElements_CreateStart(Mesh,compn,Bases(basisn),Elements(compn),Err)
           do i=1,NumberOfElements
             read(fid,*,end=777,err=999) el(1:lnn)
-            CALL CMISSMeshElementsNodesSet(Elements(compn),i,el(1:lnn),Err)
+            CALL CMISSMeshElements_NodesSet(Elements(compn),i,el(1:lnn),Err)
           enddo
-          CALL CMISSMeshElementsCreateFinish(Elements(compn),Err)
+          CALL CMISSMeshElements_CreateFinish(Elements(compn),Err)
         elseif (trim(adjustl(word))=="#number_of_surfaces") then
           write(*,*) "READ_MESH: not implemented yet"
           close(fid)
@@ -126,7 +126,7 @@ MODULE IOSTUFF
       enddo
     endif
 
-776 CALL CMISSMeshCreateFinish(Mesh,Err)
+776 CALL CMISSMesh_CreateFinish(Mesh,Err)
     close(fid)
     return ! happy return
 777 write(*,*) "READ_MESH: unexpected end of file encountered"
@@ -174,7 +174,7 @@ MODULE IOSTUFF
           do i=1,NumberOfNodes
             read(fid,*,err=999) coord(1:NumberOfCoordinateDimensions)
             do j=1,NumberOfCoordinateDimensions
-            CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,1,i,j, &
+            CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,i,j, &
               & coord(j),Err)
             enddo
           enddo
@@ -226,13 +226,13 @@ MODULE IOSTUFF
       open(unit=fid,file=Filename,status='old',action='read',err=998)
 
       ! initial field setup
-!       CALL CMISSFieldTypeInitialise(Field,Err)
-!       CALL CMISSFieldCreateStart(FieldUserNumber,Region,Field,Err)
+!       CALL CMISSField_Initialise(Field,Err)
+!       CALL CMISSField_CreateStart(FieldUserNumber,Region,Field,Err)
 !       ! --- set material type here then do the below ---
-!       CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
-!       CALL CMISSFieldMeshDecompositionGet(GeometricField,Decomposition,Err)
-!       CALL CMISSFieldMeshDecompositionSet(Field,Decomposition,Err)
-!       CALL CMISSFieldGeometricFieldSet(Field,GeometricField,Err)
+!       CALL CMISSDecomposition_Initialise(Decomposition,Err)
+!       CALL CMISSField_MeshDecompositionGet(GeometricField,Decomposition,Err)
+!       CALL CMISSField_MeshDecompositionSet(Field,Decomposition,Err)
+!       CALL CMISSField_GeometricFieldSet(Field,GeometricField,Err)
      data_int = 0.0_CMISSIntg
      data_dp = 0.0_CMISSDP
      num_var=0_CMISSIntg
@@ -250,13 +250,13 @@ MODULE IOSTUFF
           read(fid,FMT=MAXFMT,end=777) field_type
           select case (trim(field_type))
           case ("material")
-            CALL CMISSFieldTypeInitialise(Field,Err)
-            CALL CMISSFieldCreateStart(FieldUserNumber,Region,Field,Err)
-            CALL CMISSFieldTypeSet(Field,CMISSFieldMaterialType,Err)
-            CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
-            CALL CMISSFieldMeshDecompositionGet(GeometricField,Decomposition,Err)
-            CALL CMISSFieldMeshDecompositionSet(Field,Decomposition,Err)
-            CALL CMISSFieldGeometricFieldSet(Field,GeometricField,Err)
+            CALL CMISSField_Initialise(Field,Err)
+            CALL CMISSField_CreateStart(FieldUserNumber,Region,Field,Err)
+            CALL CMISSField_TypeSet(Field,CMISS_FIELD_MATERIAL_TYPE,Err)
+            CALL CMISSDecomposition_Initialise(Decomposition,Err)
+            CALL CMISSField_MeshDecompositionGet(GeometricField,Decomposition,Err)
+            CALL CMISSField_MeshDecompositionSet(Field,Decomposition,Err)
+            CALL CMISSField_GeometricFieldSet(Field,GeometricField,Err)
           case default
             write(*,*) "READ_FIELD: field types other than material has not been implemented"
             close(fid)
@@ -264,7 +264,7 @@ MODULE IOSTUFF
           end select
         elseif (trim(adjustl(word))=="#number_of_variables") then
           read(fid,*,end=777) NumberOfVariables
-          CALL CMISSFieldNumberOfVariablesSet(Field,NumberOfVariables,Err)
+          CALL CMISSField_NumberOfVariablesSet(Field,NumberOfVariables,Err)
           write(*,*) NumberOfVariables
           ALLOCATE(VariableTypes(NumberOfVariables))
           ALLOCATE(DataTypes(NumberOfVariables))
@@ -281,13 +281,13 @@ MODULE IOSTUFF
             num_var=num_var+1
             select case (varn)
             case (1)
-              VariableTypes(num_var)=CMISSFieldUVariableType
+              VariableTypes(num_var)=CMISS_FIELD_U_VARIABLE_TYPE
             case (2)
-              VariableTypes(num_var)=CMISSFieldVVariableType
+              VariableTypes(num_var)=CMISS_FIELD_V_VARIABLE_TYPE
             case (3)
-              VariableTypes(num_var)=CMISSFieldU1VariableType
+              VariableTypes(num_var)=CMISS_FIELD_U1_VARIABLE_TYPE
             case (4)
-              VariableTypes(num_var)=CMISSFieldU2VariableType
+              VariableTypes(num_var)=CMISS_FIELD_U2_VARIABLE_TYPE
             case default
               write(*,*) "READ_FIELD: more than 4 variables, take care of it"
             end select
@@ -298,11 +298,11 @@ MODULE IOSTUFF
               read(fid,FMT=MAXFMT,end=777,err=999) interpolation_type
               select case (trim(adjustl(interpolation_type)))
               case ("constant")
-                InterpolationTypes(num_var)=CMISSFieldConstantInterpolation
+                InterpolationTypes(num_var)=CMISS_FIELD_CONSTANT_INTERPOLATION
               case ("elemental")
-                InterpolationTypes(num_var)=CMISSFieldElementBasedInterpolation
+                InterpolationTypes(num_var)=CMISS_FIELD_ELEMENT_BASED_INTERPOLATION
               case ("nodal")
-                InterpolationTypes(num_var)=CMISSFieldNodeBasedInterpolation
+                InterpolationTypes(num_var)=CMISS_FIELD_NODE_BASED_INTERPOLATION
               case default
                 write(*,*) "READ_FIELD: unsupported interpolation type encountered"
                 close(fid)
@@ -315,9 +315,9 @@ MODULE IOSTUFF
               read(fid,*,end=777,err=999) data_type
               select case (trim(data_type))
               case ("dp")
-                DataTypes(num_var)=CMISSFieldDPType
+                DataTypes(num_var)=CMISS_FIELD_DP_TYPE
               case ("intg")
-                DataTypes(num_var)=CMISSFieldIntgType
+                DataTypes(num_var)=CMISS_FIELD_INTG_TYPE
               case default
                 write(*,*) "READ_FIELD: unsupported data type encountered"
                 close(fid)
@@ -340,16 +340,16 @@ MODULE IOSTUFF
 ! !             if (len_trim(word)==0 .or. index(adjustl(word),"!")==1) cycle
 ! !             if (trim(adjustl(word))=="#number_of_components") then
 ! !               read(fid,*,end=777,err=999) NumberOfComponents
-! !               CALL CMISSFieldNumberOfComponentsSet(Field,VariableType,NumberOfComponents,Err) 
+! !               CALL CMISSField_NumberOfComponentsSet(Field,VariableType,NumberOfComponents,Err) 
 ! !             elseif (trim(adjustl(word))=="#interpolation_type") then
 ! !               read(fid,FMT=MAXFMT,end=777,err=999) interpolation_type
 ! !               select case (trim(adjustl(interpolation_type)))
 ! !               case ("constant")
-! !                 InterpolationType=CMISSFieldConstantInterpolation
+! !                 InterpolationType=CMISS_FIELD_CONSTANT_INTERPOLATION
 ! !               case ("elemental")
-! !                 InterpolationType=CMISSFieldElementBasedInterpolation
+! !                 InterpolationType=CMISS_FIELD_ELEMENT_BASED_INTERPOLATION
 ! !               case ("nodal")
-! !                 InterpolationType=CMISSFieldNodeBasedInterpolation
+! !                 InterpolationType=CMISS_FIELD_NODE_BASED_INTERPOLATION
 ! !               case default
 ! !                 write(*,*) "READ_FIELD: unsupported interpolation type encountered"
 ! !                 close(fid)
@@ -357,23 +357,23 @@ MODULE IOSTUFF
 ! !               end select
 ! !               ! hardcoded: assume all components are interpolated the same way
 ! !               do i=1,NumberOfComponents
-! !                 CALL CMISSFieldComponentInterpolationSet(Field,VariableType,i,InterpolationType,Err)
+! !                 CALL CMISSField_ComponentInterpolationSet(Field,VariableType,i,InterpolationType,Err)
 ! !               enddo
 ! !             elseif (trim(adjustl(word))=="#mesh_component") then
 ! !               read(fid,*,end=777,err=999) mcompn
-! ! !               if (InterpolationType==CMISSFieldNodeBasedInterpolation) then
+! ! !               if (InterpolationType==CMISS_FIELD_NODE_BASED_INTERPOLATION) then
 ! !                 do i=1,NumberOfComponents
 ! !                   write(*,*) mcompn
-! !                   CALL CMISSFieldComponentMeshComponentSet(Field,VariableType,i,mcompn,Err)
+! !                   CALL CMISSField_ComponentMeshComponentSet(Field,VariableType,i,mcompn,Err)
 ! !                 enddo
 ! ! !               endif
 ! !             elseif (trim(adjustl(word))=="#data_type") then
 ! !               read(fid,*,end=777,err=999) data_type
 ! !               select case (trim(data_type))
 ! !               case ("dp")
-! !                 DataType=CMISSFieldDPType
+! !                 DataType=CMISS_FIELD_DP_TYPE
 ! !               case ("intg")
-! !                 DataType=CMISSFieldIntgType
+! !                 DataType=CMISS_FIELD_INTG_TYPE
 ! !               case default
 ! !                 write(*,*) "READ_FIELD: unsupported data type encountered"
 ! !                 close(fid)
@@ -390,20 +390,20 @@ MODULE IOSTUFF
 !               if (len_trim(word)==0 .or. index(adjustl(word),"!")==1) cycle
              elseif (trim(adjustl(word))=="#data_variable_type") then
              IF(field_set.eqv..false.)THEN
-             CALL CMISSFieldVariableTypesSet(Field,VariableTypes,Err) 
+             CALL CMISSField_VariableTypesSet(Field,VariableTypes,Err) 
              DO var_idx=1,NumberOfVariables
                   VariableType=VariableTypes(var_idx)
-                  CALL CMISSFieldNumberOfComponentsSet(Field,VariableType,NumberOfComponents,Err) 
+                  CALL CMISSField_NumberOfComponentsSet(Field,VariableType,NumberOfComponents,Err) 
                   do i=1,NumberOfComponents
 
-                    CALL CMISSFieldComponentInterpolationSet(Field,VariableType,i,InterpolationType,Err)
-                    CALL CMISSFieldComponentMeshComponentSet(Field,VariableType,i,mcompn,Err)
+                    CALL CMISSField_ComponentInterpolationSet(Field,VariableType,i,InterpolationType,Err)
+                    CALL CMISSField_ComponentMeshComponentSet(Field,VariableType,i,mcompn,Err)
                   enddo
 
-                CALL CMISSFieldDataTypeSet(Field,VariableType,DataType,Err)
+                CALL CMISSField_DataTypeSet(Field,VariableType,DataType,Err)
              ENDDO
 
-             CALL CMISSFieldCreateFinish(Field,Err)
+             CALL CMISSField_CreateFinish(Field,Err)
              field_set=.true.
              ENDIF
 
@@ -417,28 +417,34 @@ MODULE IOSTUFF
                   read(fid,FMT=MAXFMT,end=777,err=999) word
                   if (len_trim(word)==0) exit ! exit if blank line
                   select case (DataTypes(var_count))
-                  case (CMISSFieldDPType)
+                  case (CMISS_FIELD_DP_TYPE)
                     read(word,*,end=777,err=999) ind,data_dp(1:NumberOfComponents)
                     do i=1,NumberOfComponents
                       select case (InterpolationType)
-                      case (CMISSFieldConstantInterpolation)
-                        CALL CMISSFieldParameterSetUpdateConstant(Field,VariableType,CMISSFieldValuesSetType,i,data_dp(i),Err)
-                      case (CMISSFieldElementBasedInterpolation)
-                        CALL CMISSFieldParameterSetUpdateElement(Field,VariableType,CMISSFieldValuesSetType,ind,i,data_dp(i),Err)
-                      case (CMISSFieldNodeBasedInterpolation)
-                        CALL CMISSFieldParameterSetUpdateNode(Field,VariableType,CMISSFieldValuesSetType,1,1,ind,i,data_dp(i),Err)
+                      case (CMISS_FIELD_CONSTANT_INTERPOLATION)
+                        CALL CMISSField_ParameterSetUpdateConstant(Field,VariableType,CMISS_FIELD_VALUES_SET_TYPE,i,data_dp(i),Err)
+                      case (CMISS_FIELD_ELEMENT_BASED_INTERPOLATION)
+                        CALL CMISSField_ParameterSetUpdateElement(Field,VariableType,CMISS_FIELD_VALUES_SET_TYPE,ind,i,data_dp(i), &
+                          & Err)
+                      case (CMISS_FIELD_NODE_BASED_INTERPOLATION)
+                        CALL CMISSField_ParameterSetUpdateNode(Field,VariableType,CMISS_FIELD_VALUES_SET_TYPE,1,1,ind,i, &
+                          & data_dp(i), &
+                          & Err)
                       end select
                     enddo
-                  case (CMISSFieldIntgType)
+                  case (CMISS_FIELD_INTG_TYPE)
                     read(word,*,end=777,err=999) ind,data_int(1:NumberOfComponents)
                     do i=1,NumberOfComponents
                       select case (InterpolationType)
-                      case (CMISSFieldConstantInterpolation)
-                        CALL CMISSFieldParameterSetUpdateConstant(Field,VariableType,CMISSFieldValuesSetType,i,data_int(i),Err)
-                      case (CMISSFieldElementBasedInterpolation)
-                        CALL CMISSFieldParameterSetUpdateElement(Field,VariableType,CMISSFieldValuesSetType,ind,i,data_int(i),Err)
-                      case (CMISSFieldNodeBasedInterpolation)
-                        CALL CMISSFieldParameterSetUpdateNode(Field,VariableType,CMISSFieldValuesSetType,1,1,ind,i,data_int(i),Err)
+                      case (CMISS_FIELD_CONSTANT_INTERPOLATION)
+                        CALL CMISSField_ParameterSetUpdateConstant(Field,VariableType,CMISS_FIELD_VALUES_SET_TYPE,i,data_int(i),Err)
+                      case (CMISS_FIELD_ELEMENT_BASED_INTERPOLATION)
+                        CALL CMISSField_ParameterSetUpdateElement(Field,VariableType,CMISS_FIELD_VALUES_SET_TYPE,ind,i, &
+                          & data_int(i), &
+                          & Err)
+                      case (CMISS_FIELD_NODE_BASED_INTERPOLATION)
+                        CALL CMISSField_ParameterSetUpdateNode(Field,VariableType,CMISS_FIELD_VALUES_SET_TYPE,1,1,ind,i, &
+                          & data_int(i),Err)
                       end select
                     enddo
                   end select
@@ -446,16 +452,16 @@ MODULE IOSTUFF
               elseif (trim(adjustl(word))=="#data_all") then  ! debug-option to initialise all field values in one go, NO INDEX
                 read(fid,FMT=MAXFMT,end=777,err=999) word
                 select case (DataTypes(var_count))
-                case (CMISSFieldDPType)
+                case (CMISS_FIELD_DP_TYPE)
                   read(word,*,end=777,err=999) data_dp(1:NumberOfComponents)
                   do i=1,NumberOfComponents
-                    CALL CMISSFieldComponentValuesInitialise(Field,VariableType,CMISSFieldValuesSetType, &
+                    CALL CMISSField_ComponentValuesInitialise(Field,VariableType,CMISS_FIELD_VALUES_SET_TYPE, &
                       & i,data_dp(i),Err)
                   enddo
-                case (CMISSFieldIntgType)
+                case (CMISS_FIELD_INTG_TYPE)
                   read(word,*,end=777,err=999) data_int(1:NumberOfComponents)
                   do i=1,NumberOfComponents
-                    CALL CMISSFieldComponentValuesInitialise(Field,VariableType,CMISSFieldValuesSetType, &
+                    CALL CMISSField_ComponentValuesInitialise(Field,VariableType,CMISS_FIELD_VALUES_SET_TYPE, &
                       & i,data_int(i),Err)
                   enddo
                 end select
