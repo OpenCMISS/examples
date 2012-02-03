@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Fieldml version="0.4"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:xlink="http://www.w3.org/1999/xlink"
-  xsi:noNamespaceSchemaLocation="http://www.fieldml.org/resources/xml/0.4/FieldML_0.4.xsd">
+<Fieldml version="0.5"
+  xsi:noNamespaceSchemaLocation="http://www.fieldml.org/resources/xml/0.5/FieldML_0.5.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink">
  <Region name="HEX-M2-V2-P1_FE">
-
-  <Import xlink:href="http://www.fieldml.org/resources/xml/0.4/FieldML_Library_0.4.xml" region="library">
+  <Import xlink:href="http://www.fieldml.org/resources/xml/0.5/FieldML_Library_0.5.xml" region="library">
     <ImportType localName="real.type" remoteName="real.1d"/>
     <ImportType localName="triquadratic.parameters.type" remoteName="parameters.3d.unit.triquadraticLagrange"/>
     <ImportType localName="trilinear.parameters.type" remoteName="parameters.3d.unit.trilinearLagrange"/>
     <ImportType localName="rc3.ensemble" remoteName="coordinates.rc.3d.component"/>
     <ImportType localName="rc3.type" remoteName="coordinates.rc.3d"/>
-
     <ImportEvaluator localName="triquadratic.node.argument" remoteName="localNodes.3d.cube3x3x3.argument"/>
     <ImportEvaluator localName="triquadratic.parameters.argument" remoteName="parameters.3d.unit.triquadraticLagrange.argument"/>
     <ImportEvaluator localName="triquadratic.interpolator" remoteName="interpolator.3d.unit.triquadraticLagrange"/>
