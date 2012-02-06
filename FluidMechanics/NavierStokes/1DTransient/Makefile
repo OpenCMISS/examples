@@ -2,6 +2,7 @@
 #
 # For use with GNU make.
 #
+# $Id: Makefile 1902 2011-01-23 04:58:45Z chrispbradley $
 #
 #----------------------------------------------------------------------------------------------------------------------------------
 # Makefile for compiling openCMISS examples
@@ -53,6 +54,7 @@ MAKEFLAGS = --no-builtin-rules --warn-undefined-variables
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
+-finit-real=nan
 ifndef OPENCMISS_ROOT
   OPENCMISS_ROOT := ../../../..
   GLOBAL_ROOT := $(CURDIR)/../../../..
