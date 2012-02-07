@@ -1,2 +1,0 @@
-TestingPoint.0=.,1 3 2 2,expected_results/linear_3x2x2,.,1e-6
-TestingPoint.1=.,4 2 1 1,expected_results/cubic_2x1x1,.,1e-6
