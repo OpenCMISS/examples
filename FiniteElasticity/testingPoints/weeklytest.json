@@ -1,0 +1,40 @@
+{"example": {
+  "globalTestDir": "42TestingPoints",
+  "test": [   
+    {
+     "id": 1,
+     "path": "SinglePhysics/NonlinearProblems/QuasistaticProblems/FiniteElasticity/3D/HEX/cubic_quadratic/LEVEL_1",
+     "args": "-DIM=3D -ELEM=HEX -BASIS_1=cubic -BASIS_2=quadratic -LEVEL=1 -snes_ls quadratic"},
+    {
+     "id": 2,
+     "path": "SinglePhysics/NonlinearProblems/QuasistaticProblems/FiniteElasticity/3D/HEX/cubic_quadratic/LEVEL_2",
+     "args": "-DIM=3D -ELEM=HEX -BASIS_1=cubic -BASIS_2=quadratic -LEVEL=2 -snes_ls quadratic"},
+     {
+     "id": 3,
+     "path": "SinglePhysics/NonlinearProblems/QuasistaticProblems/FiniteElasticity/3D/HEX/cubic_quadratic/LEVEL_3",
+     "args": "-DIM=3D -ELEM=HEX -BASIS_1=cubic -BASIS_2=quadratic -LEVEL=3 -snes_ls quadratic"},
+     {
+     "id": 4,
+     "path": "SinglePhysics/NonlinearProblems/QuasistaticProblems/FiniteElasticity/3D/HEX/cubic_linear/LEVEL_1",
+     "args": "-DIM=3D -ELEM=HEX -BASIS_1=cubic -BASIS_2=linear -LEVEL=1  -snes_ls quadratic"},
+     {
+     "id": 5,
+     "path": "SinglePhysics/NonlinearProblems/QuasistaticProblems/FiniteElasticity/3D/HEX/cubic_linear/LEVEL_2",
+     "args": "-DIM=3D -ELEM=HEX -BASIS_1=cubic -BASIS_2=linear -LEVEL=2  -snes_ls quadratic"},
+     {
+     "id": 6,
+     "path": "SinglePhysics/NonlinearProblems/QuasistaticProblems/FiniteElasticity/3D/HEX/cubic_linear/LEVEL_3",
+     "args": "-DIM=3D -ELEM=HEX -BASIS_1=cubic -BASIS_2=linear -LEVEL=3  -snes_ls quadratic"},
+     {
+     "id": 7,
+     "path": "SinglePhysics/NonlinearProblems/QuasistaticProblems/FiniteElasticity/3D/HEX/quadratic_linear/LEVEL_1",
+     "args": "-DIM=3D -ELEM=HEX -BASIS_1=quadratic -BASIS_2=linear -LEVEL=1"},
+     {
+     "id": 8,
+     "path": "SinglePhysics/NonlinearProblems/QuasistaticProblems/FiniteElasticity/3D/HEX/quadratic_linear/LEVEL_2",
+     "args": "-DIM=3D -ELEM=HEX -BASIS_1=quadratic -BASIS_2=linear -LEVEL=2"},
+     {
+     "id": 9,
+     "path": "SinglePhysics/NonlinearProblems/QuasistaticProblems/FiniteElasticity/3D/HEX/quadratic_linear/LEVEL_3",
+     "args": "-DIM=3D -ELEM=HEX -BASIS_1=quadratic -BASIS_2=linear -LEVEL=3"}]
+}}
