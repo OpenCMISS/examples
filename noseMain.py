@@ -76,13 +76,15 @@ class Example:
     self.arch = os.uname()[4]
     self.compilerVersion = compiler_version
     self.logPath = self.path.replace(examplesDir,logsDir)
-    self.globalTestDir = "" if ("globalTestDir" not in dct) else dct["globalTestDir"]
-    self.language = None if  ("language" not in dct) else dct["language"]
-    self.script = None if ("script" not in dct) else dct["script"]
-    test_dct = dct["test"]
+    self.language = None
     self.tests = []
-    for test_entry in test_dct :
-      self.addTest(Test(test_entry,self,globalExamplesDir))
+    if dct!=None :
+      self.globalTestDir = "" if ("globalTestDir" not in dct) else dct["globalTestDir"]
+      self.language = None if  ("language" not in dct) else dct["language"]
+      self.script = None if ("script" not in dct) else dct["script"]
+      test_dct = dct["test"]
+      for test_entry in test_dct :
+        self.addTest(Test(test_entry,self,globalExamplesDir))
 
   def addTest(self, test):
     self.tests.append(test)
@@ -91,9 +93,12 @@ class Example:
     return self.path
 
         
-def object_encode(dct) :
+def object_encode(dct=None) :
   global compiler_version,globalExamplesDir,examplesDir,logsDir
-  example = Example(dct["example"],compiler_version,globalExamplesDir,examplesDir,logsDir)
+  if dct!=None : 
+    example = Example(dct["example"],compiler_version,globalExamplesDir,examplesDir,logsDir)
+  else :
+    example = Example(None,compiler_version,globalExamplesDir,examplesDir,logsDir)
   return example
 
 def load_log_dir(examplePath) :
@@ -158,6 +163,10 @@ def test_example():
             yield check_run, 'run', example, test
             if (hasattr(test, 'expectedPath')):
               yield check_output,'check', example, test
+        elif size=='large' and (f=="Makefile") and not (os.path.exists(examplePath+"/nightlytest.json") or os.path.exists(examplePath+"/weeklytest.json")):
+          os.chdir(examplePath)
+          example = object_encode()
+          yield check_build, 'build', example
   os.system("mpdallexit")
   
 def check_build(status,example):

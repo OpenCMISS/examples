@@ -1,0 +1,7 @@
+{"example": {
+  "test": [   
+    {
+     "id": 1,
+     "expectedPath": "expected_results",
+     "tolerance": 1e-7}]
+}}
