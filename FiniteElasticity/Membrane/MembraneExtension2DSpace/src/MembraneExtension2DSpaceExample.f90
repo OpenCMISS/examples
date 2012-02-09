@@ -94,7 +94,7 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
   !Component 1, 2 are Mooney-Rivlin constants.  Component 3 is membrane thickness.
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfVariables=1
-  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfComponents=2
 
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=4
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfVariables=2
@@ -282,17 +282,12 @@ PROGRAM MEMBRANEEXTENSION2DSPACE
   CALL CMISSField_NumberOfComponentsSet(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,FieldMaterialNumberOfComponents,Err)
   CALL CMISSField_ComponentMeshComponentSet(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,1,MeshComponentNumber,Err)
   CALL CMISSField_ComponentMeshComponentSet(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,2,MeshComponentNumber,Err)
-
-  !Set membrane thickness (only specifiy this for 3D space)
-  CALL CMISSField_ComponentMeshComponentSet(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,3,MeshComponentNumber,Err)
   CALL CMISSField_VariableLabelSet(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,"Material",Err)
   CALL CMISSField_CreateFinish(MaterialField,Err)
 
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 3.0 respectively.
   CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,2.0_CMISSDP,Err)
   CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,3.0_CMISSDP,Err)
-  !Set membrane thickness (only specifiy this for 3D space)
-  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3,0.1_CMISSDP,Err)
 
   !Create a dependent field
   CALL CMISSField_Initialise(DependentField,Err)
