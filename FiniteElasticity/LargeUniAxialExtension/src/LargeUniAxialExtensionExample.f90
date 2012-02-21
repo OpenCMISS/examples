@@ -156,7 +156,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Create a region and assign the coordinate system to the region
-  CALL CMISSRegion_TypeInitialise(Region,Err)
+  CALL CMISSRegion_Initialise(Region,Err)
   CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
   CALL CMISSRegion_LabelSet(Region,"Region",Err)
   CALL CMISSRegion_CoordinateSystemSet(Region,CoordinateSystem,Err)
@@ -227,7 +227,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   !Define the mesh on the region
   IF(NumberGlobalXElements==0) THEN
     CALL CMISSGeneratedMesh_ExtentSet(GeneratedMesh,[WIDTH,HEIGHT],Err)
-    CALL CMISSGeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements,NumberGlobalYElement]),Err)
+    CALL CMISSGeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements,NumberGlobalYElements],Err)
   ELSE
     CALL CMISSGeneratedMesh_ExtentSet(GeneratedMesh,[WIDTH,HEIGHT,LENGTH],Err)
     CALL CMISSGeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements,NumberGlobalYElements, &

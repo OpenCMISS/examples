@@ -80,8 +80,6 @@ equationsSetUserNumber = 1
 equationsSetFieldUserNumber = 5
 problemUserNumber = 1
 
-CMISS.ErrorHandlingModeSet(CMISS.ErrorHandlingModes.TRAP_ERROR)
-
 # Set all diganostic levels on for testing
 #CMISS.DiagnosticsSetOn(CMISS.DiagnosticTypes.All,[1,2,3,4,5],"Diagnostics",["DOMAIN_MAPPINGS_LOCAL_FROM_GLOBAL_CALCULATE"])
 
@@ -194,10 +192,10 @@ fibreField.CreateFinish()
 # Create the equations_set
 equationsSetField = CMISS.Field()
 equationsSet = CMISS.EquationsSet()
-equationsSet.CreateStart(equationsSetUserNumber,region,fibreField, \
+equationsSet.CreateStart(equationsSetUserNumber,region,fibreField,
     CMISS.EquationsSetClasses.ELASTICITY,
-    CMISS.EquationsSetTypes.FINITE_ELASTICITY, \
-    CMISS.EquationsSetSubtypes.MOONEY_RIVLIN, \
+    CMISS.EquationsSetTypes.FINITE_ELASTICITY,
+    CMISS.EquationsSetSubtypes.MOONEY_RIVLIN,
     equationsSetFieldUserNumber, equationsSetField)
 equationsSet.CreateFinish()
 
@@ -219,16 +217,16 @@ if InterpolationType == 4:
 equationsSet.DependentCreateFinish()
 
 # Initialise dependent field from undeformed geometry and displacement bcs and set hydrostatic pressure
-CMISS.Field.ParametersToFieldParametersComponentCopy( \
-    geometricField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1, \
+CMISS.Field.ParametersToFieldParametersComponentCopy(
+    geometricField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,
     dependentField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1)
-CMISS.Field.ParametersToFieldParametersComponentCopy( \
-    geometricField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,2, \
+CMISS.Field.ParametersToFieldParametersComponentCopy(
+    geometricField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,2,
     dependentField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,2)
-CMISS.Field.ParametersToFieldParametersComponentCopy( \
-    geometricField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,3, \
+CMISS.Field.ParametersToFieldParametersComponentCopy(
+    geometricField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,3,
     dependentField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,3)
-CMISS.Field.ComponentValuesInitialiseDP( \
+CMISS.Field.ComponentValuesInitialiseDP(
     dependentField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,4,-14.0)
 
 # Create the material field
@@ -238,9 +236,9 @@ materialField.VariableLabelSet(CMISS.FieldVariableTypes.U,"Material")
 equationsSet.MaterialsCreateFinish()
 
 # Set Mooney-Rivlin constants c10 and c01 respectively.
-CMISS.Field.ComponentValuesInitialiseDP( \
+CMISS.Field.ComponentValuesInitialiseDP(
     materialField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,2.0)
-CMISS.Field.ComponentValuesInitialiseDP( \
+CMISS.Field.ComponentValuesInitialiseDP(
     materialField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,2,6.0)
 
 # Create equations
@@ -253,8 +251,8 @@ equationsSet.EquationsCreateFinish()
 # Define the problem
 problem = CMISS.Problem()
 problem.CreateStart(problemUserNumber)
-problem.SpecificationSet(CMISS.ProblemClasses.ELASTICITY, \
-        CMISS.ProblemTypes.FINITE_ELASTICITY, \
+problem.SpecificationSet(CMISS.ProblemClasses.ELASTICITY,
+        CMISS.ProblemTypes.FINITE_ELASTICITY,
         CMISS.ProblemSubTypes.NONE)
 problem.CreateFinish()
 

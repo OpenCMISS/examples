@@ -138,10 +138,10 @@ generatedMesh.GeometricParametersCalculate(geometricField)
 # Create standard Laplace equations set
 equationsSetField = CMISS.Field()
 equationsSet = CMISS.EquationsSet()
-equationsSet.CreateStart(equationsSetUserNumber,region,geometricField, \
+equationsSet.CreateStart(equationsSetUserNumber,region,geometricField,
         CMISS.EquationsSetClasses.CLASSICAL_FIELD,
-        CMISS.EquationsSetTypes.LAPLACE_EQUATION, \
-        CMISS.EquationsSetSubtypes.STANDARD_LAPLACE, \
+        CMISS.EquationsSetTypes.LAPLACE_EQUATION,
+        CMISS.EquationsSetSubtypes.STANDARD_LAPLACE,
         equationsSetFieldUserNumber, equationsSetField)
 equationsSet.CreateFinish()
 
@@ -165,8 +165,8 @@ equationsSet.EquationsCreateFinish()
 # Create Laplace problem
 problem = CMISS.Problem()
 problem.CreateStart(problemUserNumber)
-problem.SpecificationSet(CMISS.ProblemClasses.CLASSICAL_FIELD, \
-        CMISS.ProblemTypes.LAPLACE_EQUATION, \
+problem.SpecificationSet(CMISS.ProblemClasses.CLASSICAL_FIELD,
+        CMISS.ProblemTypes.LAPLACE_EQUATION,
         CMISS.ProblemSubTypes.STANDARD_LAPLACE)
 problem.CreateFinish()
 
