@@ -357,7 +357,7 @@ problem.Solve()
 # Export results
 fields = CMISS.Fields()
 CMISS.Fields.CreateRegion(fields,region)
-CMISS.Fields.NodesExport(fields,"../UniAxialExtension","FORTRAN")
-CMISS.Fields.ElementsExport(fields,"../UniAxialExtension","FORTRAN")
+CMISS.Fields.NodesExport(fields,"UniAxialExtension","FORTRAN")
+CMISS.Fields.ElementsExport(fields,"UniAxialExtension","FORTRAN")
 fields.Finalise()
 
