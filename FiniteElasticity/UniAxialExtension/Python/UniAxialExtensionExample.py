@@ -133,11 +133,11 @@ if(UsePressureBasis):
     pressureBasis = CMISS.Basis()
     pressureBasis.CreateStart(pressureBasisUserNumber)
     if InterpolationType in (1,2,3,4):
-        pressureBasis.type = CMISS.BasisTypes.LagrangeHermiteTP
+        pressureBasis.type = CMISS.BasisTypes.LAGRANGE_HERMITE_TP
     elif InterpolationType in (7,8,9):
-        pressureBasis.type = CMISS.BasisTypes.BasisSimplexType
+        pressureBasis.type = CMISS.BasisTypes.SIMPLEX
     pressureBasis.numberOfXi = numberOfXi
-    pressureBasis.interpolationXi = [CMISS.BasisInterpolationSpecifications.LinearLagrange]*numberOfXi
+    pressureBasis.interpolationXi = [CMISS.BasisInterpolationSpecifications.LINEAR_LAGRANGE]*numberOfXi
     if(NumberOfGaussXi>0):
         pressureBasis.quadratureNumberOfGaussXi = [NumberOfGaussXi]*numberOfXi
     pressureBasis.CreateFinish()
@@ -178,7 +178,7 @@ geometricField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,1)
 geometricField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,2,1)
 geometricField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,3,1)
 if InterpolationType == 4:
-    geometricField.fieldScalingType = CMISS.FieldScalingTypes.ArithmeticMean
+    geometricField.fieldScalingType = CMISS.FieldScalingTypes.ARITHMETIC_MEAN
 geometricField.CreateFinish()
 
 # Update the geometric field parameters manually
@@ -225,7 +225,7 @@ fibreField.MeshDecompositionSet(decomposition)
 fibreField.GeometricFieldSet(geometricField)
 fibreField.VariableLabelSet(CMISS.FieldVariableTypes.U,"Fibre")
 if InterpolationType == 4:
-    fibreField.fieldScalingType = CMISS.FieldScalingTypes.ArithmeticMean
+    fibreField.fieldScalingType = CMISS.FieldScalingTypes.ARITHMETIC_MEAN
 fibreField.CreateFinish()
 
 # Create the material field
@@ -240,7 +240,7 @@ materialField.VariableLabelSet(CMISS.FieldVariableTypes.U,"Material")
 materialField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,1)
 materialField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,2,1)
 if InterpolationType == 4:
-    materialField.fieldScalingType = CMISS.FieldScalingTypes.ArithmeticMean
+    materialField.fieldScalingType = CMISS.FieldScalingTypes.ARITHMETIC_MEAN
 materialField.CreateFinish()
 
 # Set Mooney-Rivlin constants c10 and c01 respectively.
@@ -276,7 +276,7 @@ if(UsePressureBasis):
     dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,4,2)
     dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,4,2)
 if InterpolationType == 4:
-    dependentField.fieldScalingType = CMISS.FieldScalingTypes.ArithmeticMean
+    dependentField.fieldScalingType = CMISS.FieldScalingTypes.ARITHMETIC_MEAN
 dependentField.CreateFinish()
 
 # Initialise dependent field from undeformed geometry and displacement bcs and set hydrostatic pressure

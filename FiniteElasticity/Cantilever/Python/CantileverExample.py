@@ -252,7 +252,6 @@ materialField.ComponentValuesInitialiseDP(
 #Create the source field with the gravity vector
 sourceField = CMISS.Field()
 equationsSet.SourceCreateStart(sourceFieldUserNumber,sourceField)
-sourceField.fieldScalingType = CMISS.FieldScalingTypes.ARITHMETIC_MEAN
 if InterpolationType == 4:
     sourceField.fieldScalingType = CMISS.FieldScalingTypes.ARITHMETIC_MEAN
 else:

@@ -201,7 +201,7 @@ materialField.VariableLabelSet(CMISS.FieldVariableTypes.U,"Material")
 materialField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,1)
 materialField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,2,1)
 if InterpolationType == 4:
-    materialField.fieldScalingType = CMISS.FieldScalingTypes.ArithmeticMean
+    materialField.fieldScalingType = CMISS.FieldScalingTypes.ARITHMETIC_MEAN
 materialField.CreateFinish()
 
 # Set Mooney-Rivlin constants c10 and c01 respectively.
@@ -237,7 +237,7 @@ if(UsePressureBasis):
     dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,4,2)
     dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,4,2)
 if InterpolationType == 4:
-    dependentField.fieldScalingType = CMISS.FieldScalingTypes.ArithmeticMean
+    dependentField.fieldScalingType = CMISS.FieldScalingTypes.ARITHMETIC_MEAN
 dependentField.CreateFinish()
 
 # Initialise dependent field from undeformed geometry and displacement bcs and set hydrostatic pressure
