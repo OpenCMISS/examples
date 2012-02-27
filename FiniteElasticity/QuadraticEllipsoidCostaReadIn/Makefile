@@ -62,10 +62,9 @@ endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_PATH = FiniteElasticity/SCRATCH/
+EXAMPLE_PATH = FiniteElasticity/
 
-
-EXAMPLE_NAME = QuadraticEllipsoidCosta
+EXAMPLE_NAME = QuadraticEllipsoidCostaReadIn
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 
