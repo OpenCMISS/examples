@@ -110,7 +110,7 @@ coordinateSystem.CreateFinish()
 # Create a region and assign the coordinate system to the region
 region = CMISS.Region()
 region.CreateStart(regionUserNumber,CMISS.WorldRegion)
-#region.LabelSet("Region")
+region.LabelSet("Region")
 region.coordinateSystem = coordinateSystem
 region.CreateFinish()
 
@@ -338,8 +338,8 @@ problem.Solve()
 
 # Export results
 fields = CMISS.Fields()
-CMISS.Fields.CreateRegion(fields,region)
-CMISS.Fields.NodesExport(fields,"Cantilever","FORTRAN")
-CMISS.Fields.ElementsExport(fields,"Cantilever","FORTRAN")
+fields.CreateRegion(region)
+fields.NodesExport("Cantilever","FORTRAN")
+fields.ElementsExport("Cantilever","FORTRAN")
 fields.Finalise()
 

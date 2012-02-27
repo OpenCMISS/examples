@@ -216,6 +216,7 @@ PROGRAM CANTILEVEREXAMPLE
   !Create a region and assign the coordinate system to the region
   CALL CMISSRegion_Initialise(Region,Err)
   CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  CALL CMISSRegion_LabelSet(Region,"Region",Err)
   CALL CMISSRegion_CoordinateSystemSet(Region,CoordinateSystem,Err)
   CALL CMISSRegion_CreateFinish(Region,Err)
 

@@ -119,9 +119,9 @@ region.CreateFinish()
 basis = CMISS.Basis()
 basis.CreateStart(basisUserNumber)
 if InterpolationType in (1,2,3,4):
-    basis.type = CMISS.BasisTypes.LagrangeHermiteTP
+    basis.type = CMISS.BasisTypes.LAGRANGE_HERMITE_TP
 elif InterpolationType in (7,8,9):
-    basis.type = CMISS.BasisTypes.BasisSimplexType
+    basis.type = CMISS.BasisTypes.SIMPLEX
 basis.numberOfXi = numberOfXi
 basis.interpolationXi = [CMISS.BasisInterpolationSpecifications.LINEAR_LAGRANGE]*numberOfXi
 if(NumberOfGaussXi>0):
@@ -228,20 +228,44 @@ if InterpolationType == 4:
     fibreField.fieldScalingType = CMISS.FieldScalingTypes.ArithmeticMean
 fibreField.CreateFinish()
 
-# Create the equations_set
-equationsSetField = CMISS.Field()
-equationsSet = CMISS.EquationsSet()
-equationsSet.CreateStart(equationsSetUserNumber,region,fibreField,
-    CMISS.EquationsSetClasses.ELASTICITY,
-    CMISS.EquationsSetTypes.FINITE_ELASTICITY,
-    CMISS.EquationsSetSubtypes.MOONEY_RIVLIN,
-    equationsSetFieldUserNumber, equationsSetField)
-equationsSet.CreateFinish()
+# Create the material field
+materialField = CMISS.Field()
+materialField.CreateStart(materialFieldUserNumber,region)
+materialField.TypeSet(CMISS.FieldTypes.MATERIAL)
+materialField.MeshDecompositionSet(decomposition)
+materialField.GeometricFieldSet(geometricField)
+materialField.NumberOfVariablesSet(1)
+materialField.NumberOfComponentsSet(CMISS.FieldVariableTypes.U,2)
+materialField.VariableLabelSet(CMISS.FieldVariableTypes.U,"Material")
+materialField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,1)
+materialField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,2,1)
+if InterpolationType == 4:
+    materialField.fieldScalingType = CMISS.FieldScalingTypes.ArithmeticMean
+materialField.CreateFinish()
+
+# Set Mooney-Rivlin constants c10 and c01 respectively.
+CMISS.Field.ComponentValuesInitialiseDP(
+    materialField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,2.0)
+CMISS.Field.ComponentValuesInitialiseDP(
+    materialField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,2,6.0)
 
 # Create the dependent field
 dependentField = CMISS.Field()
-equationsSet.DependentCreateStart(dependentFieldUserNumber,dependentField)
+dependentField.CreateStart(dependentFieldUserNumber,region)
 dependentField.VariableLabelSet(CMISS.FieldVariableTypes.U,"Dependent")
+dependentField.TypeSet(CMISS.FieldTypes.GENERAL)  
+dependentField.MeshDecompositionSet(decomposition)
+dependentField.GeometricFieldSet(geometricField) 
+dependentField.DependentTypeSet(CMISS.FieldDependentTypes.DEPENDENT) 
+dependentField.NumberOfVariablesSet(2)
+dependentField.NumberOfComponentsSet(CMISS.FieldVariableTypes.U,4)
+dependentField.NumberOfComponentsSet(CMISS.FieldVariableTypes.DELUDELN,4)
+dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,1)
+dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,2,1)
+dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,3,1)  
+dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,1,1)
+dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,2,1)
+dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,3,1)  
 dependentField.ComponentInterpolationSet(CMISS.FieldVariableTypes.U,4,CMISS.FieldInterpolationTypes.ELEMENT_BASED)
 dependentField.ComponentInterpolationSet(CMISS.FieldVariableTypes.DELUDELN,4,CMISS.FieldInterpolationTypes.ELEMENT_BASED)
 if(UsePressureBasis):
@@ -253,8 +277,7 @@ if(UsePressureBasis):
     dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,4,2)
 if InterpolationType == 4:
     dependentField.fieldScalingType = CMISS.FieldScalingTypes.ArithmeticMean
-equationsSet.DependentCreateFinish()
-
+dependentField.CreateFinish()
 
 # Initialise dependent field from undeformed geometry and displacement bcs and set hydrostatic pressure
 CMISS.Field.ParametersToFieldParametersComponentCopy(
@@ -269,17 +292,21 @@ CMISS.Field.ParametersToFieldParametersComponentCopy(
 CMISS.Field.ComponentValuesInitialiseDP(
     dependentField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,4,-8.0)
 
-# Create the material field
-materialField = CMISS.Field()
+# Create the equations_set
+equationsSetField = CMISS.Field()
+equationsSet = CMISS.EquationsSet()
+equationsSet.CreateStart(equationsSetUserNumber,region,fibreField,
+    CMISS.EquationsSetClasses.ELASTICITY,
+    CMISS.EquationsSetTypes.FINITE_ELASTICITY,
+    CMISS.EquationsSetSubtypes.MOONEY_RIVLIN,
+    equationsSetFieldUserNumber, equationsSetField)
+equationsSet.CreateFinish()
+
 equationsSet.MaterialsCreateStart(materialFieldUserNumber,materialField)
-materialField.VariableLabelSet(CMISS.FieldVariableTypes.U,"Material")
 equationsSet.MaterialsCreateFinish()
 
-# Set Mooney-Rivlin constants c10 and c01 respectively.
-CMISS.Field.ComponentValuesInitialiseDP(
-    materialField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,2.0)
-CMISS.Field.ComponentValuesInitialiseDP(
-    materialField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,2,6.0)
+equationsSet.DependentCreateStart(dependentFieldUserNumber,dependentField)
+equationsSet.DependentCreateFinish()
 
 # Create equations
 equations = CMISS.Equations()
@@ -356,8 +383,8 @@ problem.Solve()
 
 # Export results
 fields = CMISS.Fields()
-CMISS.Fields.CreateRegion(fields,region)
-CMISS.Fields.NodesExport(fields,"UniAxialExtension","FORTRAN")
-CMISS.Fields.ElementsExport(fields,"UniAxialExtension","FORTRAN")
+fields.CreateRegion(region)
+fields.NodesExport("UniAxialExtension","FORTRAN")
+fields.ElementsExport("UniAxialExtension","FORTRAN")
 fields.Finalise()
 
