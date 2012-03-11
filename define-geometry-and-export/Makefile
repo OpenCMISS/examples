@@ -65,5 +65,5 @@ endif
 
 EXAMPLE_NAME = define-geometry-and-export
 
-include $(GLOBAL_ROOT)/ExampleMakefile
+include $(GLOBAL_ROOT)/NewExampleMakefile
 

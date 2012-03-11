@@ -265,10 +265,10 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   BASIS_GAUSS_PRESSURE=4
   !Set output parameter
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
-  LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISSSolverSolverOutput
-  NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISSSolverProgressOutput
+  LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISS_SOLVER_SOLVER_OUTPUT
+  NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISS_SOLVER_PROGRESS_OUTPUT
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
-  EQUATIONS_NAVIER_STOKES_OUTPUT=CMISSEquationsNoOutput
+  EQUATIONS_NAVIER_STOKES_OUTPUT=CMISS_EQUATIONS_NO_OUTPUT
   !Set solver parameters
   LINEAR_SOLVER_NAVIER_STOKES_DIRECT_FLAG=.TRUE.
   RELATIVE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-05_CMISSDP
@@ -284,12 +284,12 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !
 
   !Different analytical cases
-  ! 1=CMISSEquationsSetStokesTwoDim1
-  ! 2=CMISSEquationsSetStokesTwoDim2
-  ! 3=CMISSEquationsSetStokesTwoDim3
-  ! 4=CMISSEquationsSetStokesThreeDim1
-  ! 5=CMISSEquationsSetStokesThreeDim2
-  ! 6=CMISSEquationsSetStokesThreeDim3
+  ! 1=CMISS_EQUATIONS_SET_STOKES_EQUATION_TWO_DIM_1
+  ! 2=CMISS_EQUATIONS_SET_STOKES_EQUATION_TWO_DIM_2
+  ! 3=CMISS_EQUATIONS_SET_STOKES_EQUATION_TWO_DIM_3
+  ! 4=CMISS_EQUATIONS_SET_STOKES_EQUATION_THREE_DIM_1
+  ! 5=CMISS_EQUATIONS_SET_STOKES_EQUATION_THREE_DIM_2
+  ! 6=CMISS_EQUATIONS_SET_STOKES_EQUATION_THREE_DIM_3
 
 
   WRITE(*,*)'1=POLYNOM, 2=EXP, 3=COS/SIN:'
@@ -307,12 +307,12 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
 
 
 
-  IF(INPUT_TYPE==1.AND.NUMBER_OF_DIMENSIONS==2) ANALYTICAL_TYPE=CMISSEquationsSetNavierStokesTwoDim1
-  IF(INPUT_TYPE==2.AND.NUMBER_OF_DIMENSIONS==2) ANALYTICAL_TYPE=CMISSEquationsSetNavierStokesTwoDim2
-  IF(INPUT_TYPE==3.AND.NUMBER_OF_DIMENSIONS==2) ANALYTICAL_TYPE=CMISSEquationsSetNavierStokesTwoDim3
-  IF(INPUT_TYPE==1.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMISSEquationsSetNavierStokesThreeDim1
-  IF(INPUT_TYPE==2.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMISSEquationsSetNavierStokesThreeDim2
-! ! !   IF(INPUT_TYPE==3.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMISSEquationsSetStokesThreeDim3
+  IF(INPUT_TYPE==1.AND.NUMBER_OF_DIMENSIONS==2) ANALYTICAL_TYPE=CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TWO_DIM_1
+  IF(INPUT_TYPE==2.AND.NUMBER_OF_DIMENSIONS==2) ANALYTICAL_TYPE=CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TWO_DIM_2
+  IF(INPUT_TYPE==3.AND.NUMBER_OF_DIMENSIONS==2) ANALYTICAL_TYPE=CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TWO_DIM_3
+  IF(INPUT_TYPE==1.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_THREE_DIM_1
+  IF(INPUT_TYPE==2.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_THREE_DIM_2
+! ! !   IF(INPUT_TYPE==3.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMISS_EQUATIONS_SET_STOKES_EQUATION_THREE_DIM_3
 
   !
   !================================================================================================================================
@@ -339,12 +339,12 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !COORDINATE SYSTEM
 
   !Start the creation of a new RC coordinate system
-  CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   !Set the coordinate system dimension
-  CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,NUMBER_OF_DIMENSIONS,Err)
+  CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystem,NUMBER_OF_DIMENSIONS,Err)
   !Finish the creation of the coordinate system
-  CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !
   !================================================================================================================================
@@ -353,12 +353,12 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !REGION
 
   !Start the creation of a new region
-  CALL CMISSRegionTypeInitialise(Region,Err)
-  CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  CALL CMISSRegion_Initialise(Region,Err)
+  CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
   !Set the regions coordinate system as defined above
-  CALL CMISSRegionCoordinateSystemSet(Region,CoordinateSystem,Err)
+  CALL CMISSRegion_CoordinateSystemSet(Region,CoordinateSystem,Err)
   !Finish the creation of the region
-  CALL CMISSRegionCreateFinish(Region,Err)
+  CALL CMISSRegion_CreateFinish(Region,Err)
 
   !
   !================================================================================================================================
@@ -368,65 +368,65 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
 
   !Start the creation of new bases
   MESH_NUMBER_OF_COMPONENTS=1
-  CALL CMISSBasisTypeInitialise(BasisSpace,Err)
-  CALL CMISSBasisCreateStart(BASIS_NUMBER_SPACE,BasisSpace,Err)
+  CALL CMISSBasis_Initialise(BasisSpace,Err)
+  CALL CMISSBasis_CreateStart(BASIS_NUMBER_SPACE,BasisSpace,Err)
   !Set the basis type (Lagrange/Simplex)
-  CALL CMISSBasisTypeSet(BasisSpace,BASIS_TYPE,Err)
+  CALL CMISSBasis_TypeSet(BasisSpace,BASIS_TYPE,Err)
   !Set the basis xi number
-  CALL CMISSBasisNumberOfXiSet(BasisSpace,NUMBER_OF_DIMENSIONS,Err)
+  CALL CMISSBasis_NumberOfXiSet(BasisSpace,NUMBER_OF_DIMENSIONS,Err)
   !Set the basis xi interpolation and number of Gauss points
   IF(NUMBER_OF_DIMENSIONS==2) THEN
-    CALL CMISSBasisInterpolationXiSet(BasisSpace,(/BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE/),Err)
-    IF(BASIS_TYPE/=CMISSBasisSimplexType) THEN
-      CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisSpace,(/BASIS_GAUSS_SPACE,BASIS_GAUSS_SPACE/),Err)
+    CALL CMISSBasis_InterpolationXiSet(BasisSpace,(/BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE/),Err)
+    IF(BASIS_TYPE/=CMISS_BASIS_SIMPLEX_TYPE) THEN
+      CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisSpace,(/BASIS_GAUSS_SPACE,BASIS_GAUSS_SPACE/),Err)
     ELSE
-      CALL CMISSBasisQuadratureOrderSet(BasisSpace,BASIS_GAUSS_SPACE+1,Err)
+      CALL CMISSBasis_QuadratureOrderSet(BasisSpace,BASIS_GAUSS_SPACE+1,Err)
     ENDIF
   ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-    CALL CMISSBasisInterpolationXiSet(BasisSpace,(/BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE, & 
+    CALL CMISSBasis_InterpolationXiSet(BasisSpace,(/BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE, & 
       & BASIS_XI_INTERPOLATION_SPACE/),Err)                         
-    IF(BASIS_TYPE/=CMISSBasisSimplexType) THEN
-      CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisSpace,(/BASIS_GAUSS_SPACE,BASIS_GAUSS_SPACE,BASIS_GAUSS_SPACE/), & 
+    IF(BASIS_TYPE/=CMISS_BASIS_SIMPLEX_TYPE) THEN
+      CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisSpace,(/BASIS_GAUSS_SPACE,BASIS_GAUSS_SPACE,BASIS_GAUSS_SPACE/), & 
         & Err)
     ELSE
-      CALL CMISSBasisQuadratureOrderSet(BasisSpace,BASIS_GAUSS_SPACE+1,Err)
+      CALL CMISSBasis_QuadratureOrderSet(BasisSpace,BASIS_GAUSS_SPACE+1,Err)
     ENDIF
   ENDIF
   !Finish the creation of the basis
-  CALL CMISSBasisCreateFinish(BasisSpace,Err)
+  CALL CMISSBasis_CreateFinish(BasisSpace,Err)
   !Start the creation of another basis
   IF(BASIS_XI_INTERPOLATION_VELOCITY==BASIS_XI_INTERPOLATION_SPACE) THEN
     BasisVelocity=BasisSpace
   ELSE
     MESH_NUMBER_OF_COMPONENTS=MESH_NUMBER_OF_COMPONENTS+1
     !Initialise a new velocity basis
-    CALL CMISSBasisTypeInitialise(BasisVelocity,Err)
+    CALL CMISSBasis_Initialise(BasisVelocity,Err)
     !Start the creation of a basis
-    CALL CMISSBasisCreateStart(BASIS_NUMBER_VELOCITY,BasisVelocity,Err)
+    CALL CMISSBasis_CreateStart(BASIS_NUMBER_VELOCITY,BasisVelocity,Err)
     !Set the basis type (Lagrange/Simplex)
-    CALL CMISSBasisTypeSet(BasisVelocity,BASIS_TYPE,Err)
+    CALL CMISSBasis_TypeSet(BasisVelocity,BASIS_TYPE,Err)
     !Set the basis xi number
-    CALL CMISSBasisNumberOfXiSet(BasisVelocity,NUMBER_OF_DIMENSIONS,Err)
+    CALL CMISSBasis_NumberOfXiSet(BasisVelocity,NUMBER_OF_DIMENSIONS,Err)
     !Set the basis xi interpolation and number of Gauss points
     IF(NUMBER_OF_DIMENSIONS==2) THEN
-      CALL CMISSBasisInterpolationXiSet(BasisVelocity,(/BASIS_XI_INTERPOLATION_VELOCITY,BASIS_XI_INTERPOLATION_VELOCITY/),Err)
-      IF(BASIS_TYPE/=CMISSBasisSimplexType) THEN 
-        CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisVelocity,(/BASIS_GAUSS_VELOCITY,BASIS_GAUSS_VELOCITY/),Err)
+      CALL CMISSBasis_InterpolationXiSet(BasisVelocity,(/BASIS_XI_INTERPOLATION_VELOCITY,BASIS_XI_INTERPOLATION_VELOCITY/),Err)
+      IF(BASIS_TYPE/=CMISS_BASIS_SIMPLEX_TYPE) THEN 
+        CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisVelocity,(/BASIS_GAUSS_VELOCITY,BASIS_GAUSS_VELOCITY/),Err)
       ELSE
-        CALL CMISSBasisQuadratureOrderSet(BasisVelocity,BASIS_GAUSS_VELOCITY+1,Err)
+        CALL CMISSBasis_QuadratureOrderSet(BasisVelocity,BASIS_GAUSS_VELOCITY+1,Err)
       ENDIF
     ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-      CALL CMISSBasisInterpolationXiSet(BasisVelocity,(/BASIS_XI_INTERPOLATION_VELOCITY,BASIS_XI_INTERPOLATION_VELOCITY, & 
+      CALL CMISSBasis_InterpolationXiSet(BasisVelocity,(/BASIS_XI_INTERPOLATION_VELOCITY,BASIS_XI_INTERPOLATION_VELOCITY, & 
         & BASIS_XI_INTERPOLATION_VELOCITY/),Err)                         
-      IF(BASIS_TYPE/=CMISSBasisSimplexType) THEN
-        CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisVelocity,(/BASIS_GAUSS_VELOCITY,BASIS_GAUSS_VELOCITY, & 
+      IF(BASIS_TYPE/=CMISS_BASIS_SIMPLEX_TYPE) THEN
+        CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisVelocity,(/BASIS_GAUSS_VELOCITY,BASIS_GAUSS_VELOCITY, & 
           & BASIS_GAUSS_VELOCITY/),Err)
       ELSE
-        CALL CMISSBasisQuadratureOrderSet(BasisVelocity,BASIS_GAUSS_VELOCITY+1,Err)
+        CALL CMISSBasis_QuadratureOrderSet(BasisVelocity,BASIS_GAUSS_VELOCITY+1,Err)
       ENDIF
     ENDIF
     !Finish the creation of the basis
-    CALL CMISSBasisCreateFinish(BasisVelocity,Err)
+    CALL CMISSBasis_CreateFinish(BasisVelocity,Err)
   ENDIF
   !Start the creation of another basis
   IF(BASIS_XI_INTERPOLATION_PRESSURE==BASIS_XI_INTERPOLATION_SPACE) THEN
@@ -436,33 +436,33 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   ELSE
     MESH_NUMBER_OF_COMPONENTS=MESH_NUMBER_OF_COMPONENTS+1
     !Initialise a new pressure basis
-    CALL CMISSBasisTypeInitialise(BasisPressure,Err)
+    CALL CMISSBasis_Initialise(BasisPressure,Err)
     !Start the creation of a basis
-    CALL CMISSBasisCreateStart(BASIS_NUMBER_PRESSURE,BasisPressure,Err)
+    CALL CMISSBasis_CreateStart(BASIS_NUMBER_PRESSURE,BasisPressure,Err)
     !Set the basis type (Lagrange/Simplex)
-    CALL CMISSBasisTypeSet(BasisPressure,BASIS_TYPE,Err)
+    CALL CMISSBasis_TypeSet(BasisPressure,BASIS_TYPE,Err)
     !Set the basis xi number
-    CALL CMISSBasisNumberOfXiSet(BasisPressure,NUMBER_OF_DIMENSIONS,Err)
+    CALL CMISSBasis_NumberOfXiSet(BasisPressure,NUMBER_OF_DIMENSIONS,Err)
     !Set the basis xi interpolation and number of Gauss points
     IF(NUMBER_OF_DIMENSIONS==2) THEN
-      CALL CMISSBasisInterpolationXiSet(BasisPressure,(/BASIS_XI_INTERPOLATION_PRESSURE,BASIS_XI_INTERPOLATION_PRESSURE/),Err)
-      IF(BASIS_TYPE/=CMISSBasisSimplexType) THEN
-        CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisPressure,(/BASIS_GAUSS_PRESSURE,BASIS_GAUSS_PRESSURE/),Err)
+      CALL CMISSBasis_InterpolationXiSet(BasisPressure,(/BASIS_XI_INTERPOLATION_PRESSURE,BASIS_XI_INTERPOLATION_PRESSURE/),Err)
+      IF(BASIS_TYPE/=CMISS_BASIS_SIMPLEX_TYPE) THEN
+        CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisPressure,(/BASIS_GAUSS_PRESSURE,BASIS_GAUSS_PRESSURE/),Err)
       ELSE
-        CALL CMISSBasisQuadratureOrderSet(BasisPressure,BASIS_GAUSS_PRESSURE+1,Err)
+        CALL CMISSBasis_QuadratureOrderSet(BasisPressure,BASIS_GAUSS_PRESSURE+1,Err)
       ENDIF
     ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-      CALL CMISSBasisInterpolationXiSet(BasisPressure,(/BASIS_XI_INTERPOLATION_PRESSURE,BASIS_XI_INTERPOLATION_PRESSURE, & 
+      CALL CMISSBasis_InterpolationXiSet(BasisPressure,(/BASIS_XI_INTERPOLATION_PRESSURE,BASIS_XI_INTERPOLATION_PRESSURE, & 
         & BASIS_XI_INTERPOLATION_PRESSURE/),Err)                         
-      IF(BASIS_TYPE/=CMISSBasisSimplexType) THEN
-        CALL CMISSBasisQuadratureNumberOfGaussXiSet(BasisPressure,(/BASIS_GAUSS_PRESSURE,BASIS_GAUSS_PRESSURE, & 
+      IF(BASIS_TYPE/=CMISS_BASIS_SIMPLEX_TYPE) THEN
+        CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisPressure,(/BASIS_GAUSS_PRESSURE,BASIS_GAUSS_PRESSURE, & 
           & BASIS_GAUSS_PRESSURE/),Err)
       ELSE
-        CALL CMISSBasisQuadratureOrderSet(BasisPressure,BASIS_GAUSS_PRESSURE+1,Err)
+        CALL CMISSBasis_QuadratureOrderSet(BasisPressure,BASIS_GAUSS_PRESSURE+1,Err)
       ENDIF
     ENDIF
     !Finish the creation of the basis
-    CALL CMISSBasisCreateFinish(BasisPressure,Err)
+    CALL CMISSBasis_CreateFinish(BasisPressure,Err)
   ENDIF
 
   !
@@ -472,39 +472,39 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !MESH
 
   !Start the creation of mesh nodes
-  CALL CMISSNodesTypeInitialise(Nodes,Err)
-  CALL CMISSMeshTypeInitialise(Mesh,Err)
-  CALL CMISSNodesCreateStart(Region,TOTAL_NUMBER_OF_NODES,Nodes,Err)
-  CALL CMISSNodesCreateFinish(Nodes,Err)
+  CALL CMISSNodes_Initialise(Nodes,Err)
+  CALL CMISSMesh_Initialise(Mesh,Err)
+  CALL CMISSNodes_CreateStart(Region,TOTAL_NUMBER_OF_NODES,Nodes,Err)
+  CALL CMISSNodes_CreateFinish(Nodes,Err)
   !Start the creation of the mesh
-  CALL CMISSMeshCreateStart(MeshUserNumber,Region,NUMBER_OF_DIMENSIONS,Mesh,Err)
+  CALL CMISSMesh_CreateStart(MeshUserNumber,Region,NUMBER_OF_DIMENSIONS,Mesh,Err)
   !Set number of mesh elements
-  CALL CMISSMeshNumberOfElementsSet(Mesh,TOTAL_NUMBER_OF_ELEMENTS,Err)
+  CALL CMISSMesh_NumberOfElementsSet(Mesh,TOTAL_NUMBER_OF_ELEMENTS,Err)
   !Set number of mesh components
-  CALL CMISSMeshNumberOfComponentsSet(Mesh,MESH_NUMBER_OF_COMPONENTS,Err)
+  CALL CMISSMesh_NumberOfComponentsSet(Mesh,MESH_NUMBER_OF_COMPONENTS,Err)
   !Specify spatial mesh component
-  CALL CMISSMeshElementsTypeInitialise(MeshElementsSpace,Err)
-  CALL CMISSMeshElementsTypeInitialise(MeshElementsVelocity,Err)
-  CALL CMISSMeshElementsTypeInitialise(MeshElementsPressure,Err)
+  CALL CMISSMeshElements_Initialise(MeshElementsSpace,Err)
+  CALL CMISSMeshElements_Initialise(MeshElementsVelocity,Err)
+  CALL CMISSMeshElements_Initialise(MeshElementsPressure,Err)
   MESH_COMPONENT_NUMBER_SPACE=1
   MESH_COMPONENT_NUMBER_VELOCITY=1
   MESH_COMPONENT_NUMBER_PRESSURE=1
-  CALL CMISSMeshElementsCreateStart(Mesh,MESH_COMPONENT_NUMBER_SPACE,BasisSpace,MeshElementsSpace,Err)
+  CALL CMISSMeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_SPACE,BasisSpace,MeshElementsSpace,Err)
   DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
-    CALL CMISSMeshElementsNodesSet(MeshElementsSpace,ELEMENT_NUMBER,CM%M(ELEMENT_NUMBER,1:NUMBER_OF_ELEMENT_NODES_SPACE),Err)
+    CALL CMISSMeshElements_NodesSet(MeshElementsSpace,ELEMENT_NUMBER,CM%M(ELEMENT_NUMBER,1:NUMBER_OF_ELEMENT_NODES_SPACE),Err)
   ENDDO
-  CALL CMISSMeshElementsCreateFinish(MeshElementsSpace,Err)
+  CALL CMISSMeshElements_CreateFinish(MeshElementsSpace,Err)
   !Specify velocity mesh component
   IF(BASIS_XI_INTERPOLATION_VELOCITY==BASIS_XI_INTERPOLATION_SPACE) THEN
     MeshElementsVelocity=MeshElementsSpace
   ELSE
     MESH_COMPONENT_NUMBER_VELOCITY=MESH_COMPONENT_NUMBER_SPACE+1
-    CALL CMISSMeshElementsCreateStart(Mesh,MESH_COMPONENT_NUMBER_VELOCITY,BasisVelocity,MeshElementsVelocity,Err)
+    CALL CMISSMeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_VELOCITY,BasisVelocity,MeshElementsVelocity,Err)
     DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
-      CALL CMISSMeshElementsNodesSet(MeshElementsVelocity,ELEMENT_NUMBER,CM%V(ELEMENT_NUMBER, & 
+      CALL CMISSMeshElements_NodesSet(MeshElementsVelocity,ELEMENT_NUMBER,CM%V(ELEMENT_NUMBER, & 
         & 1:NUMBER_OF_ELEMENT_NODES_VELOCITY),Err)
     ENDDO
-    CALL CMISSMeshElementsCreateFinish(MeshElementsVelocity,Err)
+    CALL CMISSMeshElements_CreateFinish(MeshElementsVelocity,Err)
   ENDIF
   !Specify pressure mesh component
   IF(BASIS_XI_INTERPOLATION_PRESSURE==BASIS_XI_INTERPOLATION_SPACE) THEN
@@ -515,15 +515,15 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
     MESH_COMPONENT_NUMBER_PRESSURE=MESH_COMPONENT_NUMBER_VELOCITY
   ELSE
     MESH_COMPONENT_NUMBER_PRESSURE=MESH_COMPONENT_NUMBER_VELOCITY+1
-    CALL CMISSMeshElementsCreateStart(Mesh,MESH_COMPONENT_NUMBER_PRESSURE,BasisPressure,MeshElementsPressure,Err)
+    CALL CMISSMeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_PRESSURE,BasisPressure,MeshElementsPressure,Err)
     DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
-      CALL CMISSMeshElementsNodesSet(MeshElementsPressure,ELEMENT_NUMBER,CM%P(ELEMENT_NUMBER, & 
+      CALL CMISSMeshElements_NodesSet(MeshElementsPressure,ELEMENT_NUMBER,CM%P(ELEMENT_NUMBER, & 
         & 1:NUMBER_OF_ELEMENT_NODES_PRESSURE),Err)
     ENDDO
-    CALL CMISSMeshElementsCreateFinish(MeshElementsPressure,Err)
+    CALL CMISSMeshElements_CreateFinish(MeshElementsPressure,Err)
   ENDIF
   !Finish the creation of the mesh
-  CALL CMISSMeshCreateFinish(Mesh,Err)
+  CALL CMISSMesh_CreateFinish(Mesh,Err)
 
   !
   !================================================================================================================================
@@ -532,43 +532,43 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !GEOMETRIC FIELD
 
   !Create a decomposition
-  CALL CMISSDecompositionTypeInitialise(Decomposition,Err)
-  CALL CMISSDecompositionCreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
+  CALL CMISSDecomposition_Initialise(Decomposition,Err)
+  CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
-  CALL CMISSDecompositionTypeSet(Decomposition,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
+  CALL CMISSDecomposition_TypeSet(Decomposition,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
   !Finish the decomposition
-  CALL CMISSDecompositionCreateFinish(Decomposition,Err)
+  CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
 
   !Start to create a default (geometric) field on the region
-  CALL CMISSFieldTypeInitialise(GeometricField,Err)
-  CALL CMISSFieldCreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
+  CALL CMISSField_Initialise(GeometricField,Err)
+  CALL CMISSField_CreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
   !Set the field type
-  CALL CMISSFieldTypeSet(GeometricField,CMISSFieldGeometricType,Err)
+  CALL CMISSField_TypeSet(GeometricField,CMISS_FIELD_GEOMETRIC_TYPE,Err)
   !Set the decomposition to use
-  CALL CMISSFieldMeshDecompositionSet(GeometricField,Decomposition,Err)
+  CALL CMISSField_MeshDecompositionSet(GeometricField,Decomposition,Err)
   !Set the scaling to use
-  CALL CMISSFieldScalingTypeSet(GeometricField,CMISSFieldNoScaling,Err)
+  CALL CMISSField_ScalingTypeSet(GeometricField,CMISS_FIELD_NO_SCALING,Err)
   !Set the mesh component to be used by the field components.
   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-    CALL CMISSFieldComponentMeshComponentSet(GeometricField,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
+    CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_SPACE,Err)
   ENDDO
   !Finish creating the field
-  CALL CMISSFieldCreateFinish(GeometricField,Err)
+  CALL CMISSField_CreateFinish(GeometricField,Err)
   !Update the geometric field parameters
   DO NODE_NUMBER=1,NUMBER_OF_NODES_SPACE
     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
       VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)
-      CALL CMISSDecompositionNodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
+      CALL CMISSDecomposition_NodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
       IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
-        CALL CMISSFieldParameterSetUpdateNode(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
-          & CMISSNoGlobalDerivative,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+        CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
+          & CMISS_NO_GLOBAL_DERIV,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
       ENDIF
     ENDDO
   ENDDO
-  CALL CMISSFieldParameterSetUpdateStart(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
-  CALL CMISSFieldParameterSetUpdateFinish(GeometricField,CMISSFieldUVariableType,CMISSFieldValuesSetType,Err)
+  CALL CMISSField_ParameterSetUpdateStart(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
+  CALL CMISSField_ParameterSetUpdateFinish(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
 
   !
   !================================================================================================================================
@@ -577,16 +577,17 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !EQUATIONS SETS
 
   !Create the equations set for static Stokes
-  CALL CMISSEquationsSetTypeInitialise(EquationsSetNavierStokes,Err)
-    CALL CMISSFieldTypeInitialise(EquationsSetField,Err)
-CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField,CMISSEquationsSetFluidMechanicsClass, &
-    & CMISSEquationsSetNavierStokesEquationType,CMISSEquationsSetStaticNavierStokesSubtype,EquationsSetFieldUserNumber,&
+  CALL CMISSEquationsSet_Initialise(EquationsSetNavierStokes,Err)
+    CALL CMISSField_Initialise(EquationsSetField,Err)
+CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField, &
+  & CMISS_EQUATIONS_SET_FLUID_MECHANICS_CLASS, &
+    & CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TYPE,CMISS_EQUATIONS_SET_STATIC_NAVIER_STOKES_SUBTYPE,EquationsSetFieldUserNumber,&
     & EquationsSetField, &
     & EquationsSetNavierStokes,Err)
   !Set the equations set to be a static Stokes problem
   
   !Finish creating the equations set
-  CALL CMISSEquationsSetCreateFinish(EquationsSetNavierStokes,Err)
+  CALL CMISSEquationsSet_CreateFinish(EquationsSetNavierStokes,Err)
 
 
   !
@@ -596,27 +597,27 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
   !DEPENDENT FIELDS
 
   !Create the equations set dependent field variables for static Navier-Stokes
-  CALL CMISSFieldTypeInitialise(DependentFieldNavierStokes,Err)
-  CALL CMISSEquationsSetDependentCreateStart(EquationsSetNavierStokes,DependentFieldUserNumberNavierStokes, & 
+  CALL CMISSField_Initialise(DependentFieldNavierStokes,Err)
+  CALL CMISSEquationsSet_DependentCreateStart(EquationsSetNavierStokes,DependentFieldUserNumberNavierStokes, & 
     & DependentFieldNavierStokes,Err)
   !Set the mesh component to be used by the field components.
   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-    CALL CMISSFieldComponentMeshComponentSet(DependentFieldNavierStokes,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
+    CALL CMISSField_ComponentMeshComponentSet(DependentFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_VELOCITY,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentFieldNavierStokes,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
+    CALL CMISSField_ComponentMeshComponentSet(DependentFieldNavierStokes,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_VELOCITY,Err)
   ENDDO
   COMPONENT_NUMBER=NUMBER_OF_DIMENSIONS+1
-    CALL CMISSFieldComponentMeshComponentSet(DependentFieldNavierStokes,CMISSFieldUVariableType,COMPONENT_NUMBER, & 
+    CALL CMISSField_ComponentMeshComponentSet(DependentFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_PRESSURE,Err)
-    CALL CMISSFieldComponentMeshComponentSet(DependentFieldNavierStokes,CMISSFieldDeludelnVariableType,COMPONENT_NUMBER, & 
+    CALL CMISSField_ComponentMeshComponentSet(DependentFieldNavierStokes,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_PRESSURE,Err)
   !Finish the equations set dependent field variables
-  CALL CMISSEquationsSetDependentCreateFinish(EquationsSetNavierStokes,Err)
+  CALL CMISSEquationsSet_DependentCreateFinish(EquationsSetNavierStokes,Err)
 
   !Initialise dependent field
   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-    CALL CMISSFieldComponentValuesInitialise(DependentFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+    CALL CMISSField_ComponentValuesInitialise(DependentFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
       & COMPONENT_NUMBER,INITIAL_FIELD_NAVIER_STOKES(COMPONENT_NUMBER),Err)
   ENDDO
 
@@ -628,14 +629,14 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
   !MATERIALS FIELDS
 
   !Create the equations set materials field variables for static Navier-Stokes
-  CALL CMISSFieldTypeInitialise(MaterialsFieldNavierStokes,Err)
-  CALL CMISSEquationsSetMaterialsCreateStart(EquationsSetNavierStokes,MaterialsFieldUserNumberNavierStokes, & 
+  CALL CMISSField_Initialise(MaterialsFieldNavierStokes,Err)
+  CALL CMISSEquationsSet_MaterialsCreateStart(EquationsSetNavierStokes,MaterialsFieldUserNumberNavierStokes, & 
     & MaterialsFieldNavierStokes,Err)
   !Finish the equations set materials field variables
-  CALL CMISSEquationsSetMaterialsCreateFinish(EquationsSetNavierStokes,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+  CALL CMISSEquationsSet_MaterialsCreateFinish(EquationsSetNavierStokes,Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialsFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
     & MaterialsFieldUserNumberNavierStokesMu,MU_PARAM_NAVIER_STOKES,Err)
-  CALL CMISSFieldComponentValuesInitialise(MaterialsFieldNavierStokes,CMISSFieldUVariableType,CMISSFieldValuesSetType, & 
+  CALL CMISSField_ComponentValuesInitialise(MaterialsFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
     & MaterialsFieldUserNumberNavierStokesRho,RHO_PARAM_NAVIER_STOKES,Err)
 
   !
@@ -645,16 +646,16 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
   !ANALYTIC FIELDS
 
   !Create the equations set analytic field variables for static Navier-Stokes
-  CALL CMISSFieldTypeInitialise(AnalyticFieldNavierStokes,Err)
+  CALL CMISSField_Initialise(AnalyticFieldNavierStokes,Err)
   IF(NUMBER_OF_DIMENSIONS==2) THEN  
-    CALL CMISSEquationsSetAnalyticCreateStart(EquationsSetNavierStokes,ANALYTICAL_TYPE,AnalyticFieldUserNumberNavierStokes, &
+    CALL CMISSEquationsSet_AnalyticCreateStart(EquationsSetNavierStokes,ANALYTICAL_TYPE,AnalyticFieldUserNumberNavierStokes, &
       & AnalyticFieldNavierStokes,Err)
   ELSE
-    CALL CMISSEquationsSetAnalyticCreateStart(EquationsSetNavierStokes,ANALYTICAL_TYPE,AnalyticFieldUserNumberNavierStokes, &
+    CALL CMISSEquationsSet_AnalyticCreateStart(EquationsSetNavierStokes,ANALYTICAL_TYPE,AnalyticFieldUserNumberNavierStokes, &
       & AnalyticFieldNavierStokes,Err)
   ENDIF
   !Finish the equations set analytic field variables
-  CALL CMISSEquationsSetAnalyticCreateFinish(EquationsSetNavierStokes,Err)
+  CALL CMISSEquationsSet_AnalyticCreateFinish(EquationsSetNavierStokes,Err)
 
   !
   !================================================================================================================================
@@ -664,14 +665,14 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
 
 
   !Create the equations set equations
-  CALL CMISSEquationsTypeInitialise(EquationsNavierStokes,Err)
-  CALL CMISSEquationsSetEquationsCreateStart(EquationsSetNavierStokes,EquationsNavierStokes,Err)
+  CALL CMISSEquations_Initialise(EquationsNavierStokes,Err)
+  CALL CMISSEquationsSet_EquationsCreateStart(EquationsSetNavierStokes,EquationsNavierStokes,Err)
   !Set the equations matrices sparsity type
-  CALL CMISSEquationsSparsityTypeSet(EquationsNavierStokes,CMISSEquationsSparseMatrices,Err)
+  CALL CMISSEquations_SparsityTypeSet(EquationsNavierStokes,CMISS_EQUATIONS_SPARSE_MATRICES,Err)
   !Set the equations set output
-  CALL CMISSEquationsOutputTypeSet(EquationsNavierStokes,EQUATIONS_NAVIER_STOKES_OUTPUT,Err)
+  CALL CMISSEquations_OutputTypeSet(EquationsNavierStokes,EQUATIONS_NAVIER_STOKES_OUTPUT,Err)
   !Finish the equations set equations
-  CALL CMISSEquationsSetEquationsCreateFinish(EquationsSetNavierStokes,Err)
+  CALL CMISSEquationsSet_EquationsCreateFinish(EquationsSetNavierStokes,Err)
 
 
   !
@@ -681,19 +682,19 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
   !PROBLEMS
 
   !Start the creation of a problem.
-  CALL CMISSProblemTypeInitialise(Problem,Err)
-  CALL CMISSControlLoopTypeInitialise(ControlLoop,Err)
-  CALL CMISSProblemCreateStart(ProblemUserNumber,Problem,Err)
+  CALL CMISSProblem_Initialise(Problem,Err)
+  CALL CMISSControlLoop_Initialise(ControlLoop,Err)
+  CALL CMISSProblem_CreateStart(ProblemUserNumber,Problem,Err)
   !Set the problem to be a static Navier-Stokes problem
-  CALL CMISSProblemSpecificationSet(Problem,CMISSProblemFluidMechanicsClass,CMISSProblemNavierStokesEquationType, &
-!     & CMISSProblemStaticNavierStokesSubtype,Err)
-    & CMISSProblemLaplaceNavierStokesSubtype,Err)
+  CALL CMISSProblem_SpecificationSet(Problem,CMISS_PROBLEM_FLUID_MECHANICS_CLASS,CMISS_PROBLEM_NAVIER_STOKES_EQUATION_TYPE, &
+!     & CMISS_PROBLEM_STATIC_NAVIER_STOKES_SUBTYPE,Err)
+    & CMISS_PROBLEM_LAPLACE_NAVIER_STOKES_SUBTYPE,Err)
   !Finish the creation of a problem.
-  CALL CMISSProblemCreateFinish(Problem,Err)
+  CALL CMISSProblem_CreateFinish(Problem,Err)
   !Start the creation of the problem control loop
-  CALL CMISSProblemControlLoopCreateStart(Problem,Err)
+  CALL CMISSProblem_ControlLoopCreateStart(Problem,Err)
   !Finish creating the problem control loop
-  CALL CMISSProblemControlLoopCreateFinish(Problem,Err)
+  CALL CMISSProblem_ControlLoopCreateFinish(Problem,Err)
 
   !
   !================================================================================================================================
@@ -702,46 +703,47 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
   !SOLVERS
 
   !Start the creation of the problem solvers
-  CALL CMISSSolverTypeInitialise(NonlinearSolverNavierStokes,Err)
-  CALL CMISSSolverTypeInitialise(LinearSolverNavierStokes,Err)
-  CALL CMISSProblemSolversCreateStart(Problem,Err)
+  CALL CMISSSolver_Initialise(NonlinearSolverNavierStokes,Err)
+  CALL CMISSSolver_Initialise(LinearSolverNavierStokes,Err)
+  CALL CMISSProblem_SolversCreateStart(Problem,Err)
   !Get the nonlinear static solver
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverNavierStokesUserNumber,NonlinearSolverNavierStokes,Err)
+  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,SolverNavierStokesUserNumber,NonlinearSolverNavierStokes,Err)
   !Set the nonlinear Jacobian type
-  CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISSSolverNewtonJacobianAnalyticCalculated,Err)
-!   CALL CMISSSolverNewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISSSolverNewtonJacobianFDCalculated,Err)
-!   CALL CMISSSolverNewtonLineSearchTypeSet(NonlinearSolverNavierStokes,CMISSSolverNewtonLinesearchNone,Err)
-!   CALL CMISSSolverNewtonLineSearchTypeSet(NonlinearSolverNavierStokes,CMISSSolverNewtonLinesearchNoNorms,Err)
-!   CALL CMISSSolverNewtonLineSearchAlphaSet(NonlinearSolverNavierStokes,LINESEARCH_ALPHA,Err)
+  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED, &
+    & Err)
+!   CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISS_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)
+!   CALL CMISSSolver_NewtonLineSearchTypeSet(NonlinearSolverNavierStokes,CMISS_SOLVER_NEWTON_LINESEARCH_NONE,Err)
+!   CALL CMISSSolver_NewtonLineSearchTypeSet(NonlinearSolverNavierStokes,CMISS_SOLVER_NEWTON_LINESEARCH_NONORMS,Err)
+!   CALL CMISSSolver_NewtonLineSearchAlphaSet(NonlinearSolverNavierStokes,LINESEARCH_ALPHA,Err)
   !Set the output type
-  CALL CMISSSolverOutputTypeSet(NonlinearSolverNavierStokes,NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE,Err)
+  CALL CMISSSolver_OutputTypeSet(NonlinearSolverNavierStokes,NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE,Err)
   !Set the solver settings
 
-! ! !   CALL CMISSSolverNewtonLineSearchMaxStepSet(NonlinearSolverNavierStokes,0.001_CMISSDP,Err)
-! ! !   CALL CMISSSolverNewtonLineSearchAlphaSet(NonlinearSolverNavierStokes,0.01_CMISSDP,Err)
+! ! !   CALL CMISSSolver_NewtonLineSearchMaxStepSet(NonlinearSolverNavierStokes,0.001_CMISSDP,Err)
+! ! !   CALL CMISSSolver_NewtonLineSearchAlphaSet(NonlinearSolverNavierStokes,0.01_CMISSDP,Err)
 
-!   CALL CMISSSolverNewtonAbsoluteToleranceSet(NonlinearSolverNavierStokes,1.0E-8_CMISSDP,Err)
-!   CALL CMISSSolverNewtonRelativeToleranceSet(NonlinearSolverNavierStokes,1.0E-4_CMISSDP,Err)
-! ! ! !   CALL CMISSSolverNewtonSolutionToleranceSet(NonlinearSolverNavierStokes,0.001_CMISSDP,Err)
+!   CALL CMISSSolver_NewtonAbsoluteToleranceSet(NonlinearSolverNavierStokes,1.0E-8_CMISSDP,Err)
+!   CALL CMISSSolver_NewtonRelativeToleranceSet(NonlinearSolverNavierStokes,1.0E-4_CMISSDP,Err)
+! ! ! !   CALL CMISSSolver_NewtonSolutionToleranceSet(NonlinearSolverNavierStokes,0.001_CMISSDP,Err)
   !Get the nonlinear linear solver
-  CALL CMISSSolverNewtonLinearSolverGet(NonlinearSolverNavierStokes,LinearSolverNavierStokes,Err)
+  CALL CMISSSolver_NewtonLinearSolverGet(NonlinearSolverNavierStokes,LinearSolverNavierStokes,Err)
   !Set the output type
-  CALL CMISSSolverOutputTypeSet(LinearSolverNavierStokes,LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE,Err)
+  CALL CMISSSolver_OutputTypeSet(LinearSolverNavierStokes,LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE,Err)
   !Set the solver settings
   IF(LINEAR_SOLVER_NAVIER_STOKES_DIRECT_FLAG) THEN
-    CALL CMISSSolverLinearTypeSet(LinearSolverNavierStokes,CMISSSolverLinearDirectSolveType,Err)
-    CALL CMISSSolverLibraryTypeSet(LinearSolverNavierStokes,CMISSSolverMUMPSLibrary,Err)
+    CALL CMISSSolver_LinearTypeSet(LinearSolverNavierStokes,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
+    CALL CMISSSolver_LibraryTypeSet(LinearSolverNavierStokes,CMISS_SOLVER_MUMPS_LIBRARY,Err)
   ELSE
-    CALL CMISSSolverLinearTypeSet(LinearSolverNavierStokes,CMISSSolverLinearIterativeSolveType,Err)
-! ! !     CALL CMISSSolverLinearIterativeMaximumIterationsSet(LinearSolverNavierStokes,MAXIMUM_ITERATIONS,Err)
-    CALL CMISSSolverLinearIterativeDivergenceToleranceSet(LinearSolverNavierStokes,DIVERGENCE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeRelativeToleranceSet(LinearSolverNavierStokes,RELATIVE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeAbsoluteToleranceSet(LinearSolverNavierStokes,ABSOLUTE_TOLERANCE,Err)
-    CALL CMISSSolverLinearIterativeGMRESRestartSet(LinearSolverNavierStokes,RESTART_VALUE,Err)
+    CALL CMISSSolver_LinearTypeSet(LinearSolverNavierStokes,CMISS_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
+! ! !     CALL CMISSSolver_LinearIterativeMaximumIterationsSet(LinearSolverNavierStokes,MAXIMUM_ITERATIONS,Err)
+    CALL CMISSSolver_LinearIterativeDivergenceToleranceSet(LinearSolverNavierStokes,DIVERGENCE_TOLERANCE,Err)
+    CALL CMISSSolver_LinearIterativeRelativeToleranceSet(LinearSolverNavierStokes,RELATIVE_TOLERANCE,Err)
+    CALL CMISSSolver_LinearIterativeAbsoluteToleranceSet(LinearSolverNavierStokes,ABSOLUTE_TOLERANCE,Err)
+    CALL CMISSSolver_LinearIterativeGMRESRestartSet(LinearSolverNavierStokes,RESTART_VALUE,Err)
   ENDIF
 
   !Finish the creation of the problem solver
-  CALL CMISSProblemSolversCreateFinish(Problem,Err)
+  CALL CMISSProblem_SolversCreateFinish(Problem,Err)
 
   !
   !================================================================================================================================
@@ -750,18 +752,18 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
   !SOLVER EQUATIONS
 
   !Start the creation of the problem solver equations
-  CALL CMISSSolverTypeInitialise(NonlinearSolverNavierStokes,Err)
-  CALL CMISSSolverEquationsTypeInitialise(SolverEquationsNavierStokes,Err)
-  CALL CMISSProblemSolverEquationsCreateStart(Problem,Err)
+  CALL CMISSSolver_Initialise(NonlinearSolverNavierStokes,Err)
+  CALL CMISSSolverEquations_Initialise(SolverEquationsNavierStokes,Err)
+  CALL CMISSProblem_SolverEquationsCreateStart(Problem,Err)
   !Get the linear solver equations
-  CALL CMISSProblemSolverGet(Problem,CMISSControlLoopNode,SolverNavierStokesUserNumber,NonlinearSolverNavierStokes,Err)
-  CALL CMISSSolverSolverEquationsGet(NonlinearSolverNavierStokes,SolverEquationsNavierStokes,Err)
+  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,SolverNavierStokesUserNumber,NonlinearSolverNavierStokes,Err)
+  CALL CMISSSolver_SolverEquationsGet(NonlinearSolverNavierStokes,SolverEquationsNavierStokes,Err)
   !Set the solver equations sparsity
-  CALL CMISSSolverEquationsSparsityTypeSet(SolverEquationsNavierStokes,CMISSSolverEquationsSparseMatrices,Err)
+  CALL CMISSSolverEquations_SparsityTypeSet(SolverEquationsNavierStokes,CMISS_SOLVER_SPARSE_MATRICES,Err)
   !Add in the equations set
-  CALL CMISSSolverEquationsEquationsSetAdd(SolverEquationsNavierStokes,EquationsSetNavierStokes,EquationsSetIndex,Err)
+  CALL CMISSSolverEquations_EquationsSetAdd(SolverEquationsNavierStokes,EquationsSetNavierStokes,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
-  CALL CMISSProblemSolverEquationsCreateFinish(Problem,Err)
+  CALL CMISSProblem_SolverEquationsCreateFinish(Problem,Err)
 
 
   !
@@ -771,10 +773,10 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
   !BOUNDARY CONDITIONS
 
   !Set up the boundary conditions as per the analytic solution
-  CALL CMISSBoundaryConditionsTypeInitialise(BoundaryConditionsNavierStokes,Err)
-  CALL CMISSSolverEquationsBoundaryConditionsCreateStart(SolverEquationsNavierStokes,BoundaryConditionsNavierStokes,Err)
-  CALL CMISSProblemSolverEquationsBoundaryConditionsAnalytic(SolverEquationsNavierStokes,Err)
-  CALL CMISSSolverEquationsBoundaryConditionsCreateFinish(SolverEquationsNavierStokes,Err)
+  CALL CMISSBoundaryConditions_Initialise(BoundaryConditionsNavierStokes,Err)
+  CALL CMISSSolverEquations_BoundaryConditionsCreateStart(SolverEquationsNavierStokes,BoundaryConditionsNavierStokes,Err)
+  CALL CMISSSolverEquations_BoundaryConditionsAnalytic(SolverEquationsNavierStokes,Err)
+  CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquationsNavierStokes,Err)
 
   !
   !================================================================================================================================
@@ -787,7 +789,7 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
 
   !Solve the problem
   WRITE(*,'(A)') "Solving problem..."
-  CALL CMISSProblemSolve(Problem,Err)
+  CALL CMISSProblem_Solve(Problem,Err)
   WRITE(*,'(A)') "Problem solved!"
 
   !
@@ -803,11 +805,11 @@ CALL CMISSEquationsSetCreateStart(EquationsSetUserNumberNavierStokes,Region,Geom
   EXPORT_FIELD_IO=.FALSE.
   IF(EXPORT_FIELD_IO) THEN
     WRITE(*,'(A)') "Exporting fields..."
-    CALL CMISSFieldsTypeInitialise(Fields,Err)
-    CALL CMISSFieldsTypeCreate(Region,Fields,Err)
-    CALL CMISSFieldIONodesExport(Fields,"StaticNavierStokes","FORTRAN",Err)
-    CALL CMISSFieldIOElementsExport(Fields,"StaticNavierStokes","FORTRAN",Err)
-    CALL CMISSFieldsTypeFinalise(Fields,Err)
+    CALL CMISSFields_Initialise(Fields,Err)
+    CALL CMISSFields_Create(Region,Fields,Err)
+    CALL CMISSFields_NodesExport(Fields,"StaticNavierStokes","FORTRAN",Err)
+    CALL CMISSFields_ElementsExport(Fields,"StaticNavierStokes","FORTRAN",Err)
+    CALL CMISSFields_Finalise(Fields,Err)
     WRITE(*,'(A)') "Field exported!"
   ENDIF
   

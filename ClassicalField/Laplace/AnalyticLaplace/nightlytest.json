@@ -1,0 +1,14 @@
+{"example": {
+  "globalTestDir": "42TestingPoints",
+  "test": [   
+    {
+      "id": 1,
+      "path": "SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/QUAD/linear/LEVEL_2",
+      "args": "1",
+      "expectedPath": "expected_results"},
+     {
+      "id": 2,
+      "path": "SinglePhysics/LinearProblems/StaticProblems/Laplace/2D/TRI/linear/LEVEL_2",
+      "args": "7",
+      "expectedPath": "expected_results"}]
+}}

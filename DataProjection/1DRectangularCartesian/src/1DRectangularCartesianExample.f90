@@ -70,7 +70,7 @@ PROGRAM DataProjection1DRectangularCartesian
   INTEGER(CMISSIntg) :: NumberOfDomains=2
   INTEGER(CMISSIntg) :: NumberOfNodes
   INTEGER(CMISSIntg) :: NumberOfXi=1
-  INTEGER(CMISSIntg) :: BasisInterpolation(1)=(/CMISSBasisCubicHermiteInterpolation/)
+  INTEGER(CMISSIntg) :: BasisInterpolation(1)=(/CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION/)
   INTEGER(CMISSIntg) :: WorldCoordinateSystemUserNumber
   INTEGER(CMISSIntg) :: WorldRegionUserNumber
   
@@ -90,7 +90,7 @@ PROGRAM DataProjection1DRectangularCartesian
   INTEGER(CMISSIntg) :: MaximumNumberOfIterationsSet=30 !default is 25
   REAL(CMISSDP) :: MaximumIterationUpdateSet=0.4_CMISSDP !default is 0.5
   INTEGER(CMISSIntg) :: NumberOfClosestElementsSet=3 !default is 2/4/8 for 1/2/3 dimensional projection 
-  INTEGER(CMISSIntg) :: ProjectionTypeSet=CMISSDataProjectionAllElementsProjectionType !same as default
+  INTEGER(CMISSIntg) :: ProjectionTypeSet=CMISS_DATA_PROJECTION_ALL_ELEMENTS_PROJECTION_TYPE !same as default
   REAL(CMISSDP) :: StartingXiSet(1)=[0.4_CMISSDP] !default is 0.5
   REAL(CMISSDP) :: AbsoluteToleranceGet
   REAL(CMISSDP) :: RelativeToleranceGet
@@ -165,73 +165,74 @@ PROGRAM DataProjection1DRectangularCartesian
 
   !=========================================================================================================================
   !Create RC coordinate system
-  CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,Err)
-  CALL CMISSCoordinateSystemTypeSet(CoordinateSystemUserNumber,CMISSCoordinateRectangularCartesianType,Err)
-  CALL CMISSCoordinateSystemDimensionSet(CoordinateSystemUserNumber,CoordinateSystemDimension,Err)
-  CALL CMISSCoordinateSystemOriginSet(CoordinateSystemUserNumber,CoordinateSystemOrigin,Err)
-  CALL CMISSCoordinateSystemCreateFinish(CoordinateSystemUserNumber,Err) 
+  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,Err)
+  CALL CMISSCoordinateSystem_TypeSet(CoordinateSystemUserNumber,CMISS_COORDINATE_RECTANGULAR_CARTESIAN_TYPE,Err)
+  CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystemUserNumber,CoordinateSystemDimension,Err)
+  CALL CMISSCoordinateSystem_OriginSet(CoordinateSystemUserNumber,CoordinateSystemOrigin,Err)
+  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystemUserNumber,Err) 
 
   !=========================================================================================================================
   !Create Region and set CS to newly created 3D RC CS
-  CALL CMISSRegionCreateStart(RegionUserNumber,WorldRegionUserNumber,Err)
-  CALL CMISSRegionCoordinateSystemSet(RegionUserNumber,CoordinateSystemUserNumber,Err)
-  CALL CMISSRegionCreateFinish(RegionUserNumber,Err)
+  CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegionUserNumber,Err)
+  CALL CMISSRegion_CoordinateSystemSet(RegionUserNumber,CoordinateSystemUserNumber,Err)
+  CALL CMISSRegion_CreateFinish(RegionUserNumber,Err)
     
   !=========================================================================================================================
   !Create Data Points and set the values
-  CALL CMISSDataPointsCreateStart(RegionUserNumber,SIZE(DataPointValues,1),Err)
+  CALL CMISSDataPoints_CreateStart(RegionUserNumber,SIZE(DataPointValues,1),Err)
   DO np=1,SIZE(DataPointValues,1)
-    CALL CMISSDataPointsValuesSet(RegionUserNumber,np,DataPointValues(np,:),Err)     
+    CALL CMISSDataPoints_ValuesSet(RegionUserNumber,np,DataPointValues(np,:),Err)     
   ENDDO
-  CALL CMISSDataPointsCreateFinish(RegionUserNumber,Err)  
+  CALL CMISSDataPoints_CreateFinish(RegionUserNumber,Err)  
   !=========================================================================================================================
   !Define basis function - 1D cubic hermite
-  CALL CMISSBasisCreateStart(BasisUserNumber,Err)
-  CALL CMISSBasisTypeSet(BasisUserNumber,CMISSBasisLagrangeHermiteTPType,Err)
-  CALL CMISSBasisNumberOfXiSet(BasisUserNumber,NumberOfXi,Err)
-  CALL CMISSBasisInterpolationXiSet(BasisUserNumber,BasisInterpolation,Err)
-  CALL CMISSBasisCreateFinish(BasisUserNumber,Err)  
+  CALL CMISSBasis_CreateStart(BasisUserNumber,Err)
+  CALL CMISSBasis_TypeSet(BasisUserNumber,CMISS_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
+  CALL CMISSBasis_NumberOfXiSet(BasisUserNumber,NumberOfXi,Err)
+  CALL CMISSBasis_InterpolationXiSet(BasisUserNumber,BasisInterpolation,Err)
+  CALL CMISSBasis_CreateFinish(BasisUserNumber,Err)  
   !=========================================================================================================================
   !Create a mesh
   MeshNumberOfElements=SIZE(ElementUserNodes,1)
-  CALL CMISSMeshCreateStart(MeshUserNumber,RegionUserNumber,MeshDimensions,Err)
-  CALL CMISSMeshNumberOfComponentsSet(RegionUserNumber,MeshUserNumber,MeshNumberOfComponents,Err)
-  CALL CMISSMeshNumberOfElementsSet(RegionUserNumber,MeshUserNumber,MeshNumberOfElements,Err)
+  CALL CMISSMesh_CreateStart(MeshUserNumber,RegionUserNumber,MeshDimensions,Err)
+  CALL CMISSMesh_NumberOfComponentsSet(RegionUserNumber,MeshUserNumber,MeshNumberOfComponents,Err)
+  CALL CMISSMesh_NumberOfElementsSet(RegionUserNumber,MeshUserNumber,MeshNumberOfElements,Err)
   !define nodes for the mesh
   NumberOfNodes=SIZE(FieldValues,2)
-  CALL CMISSNodesCreateStart(RegionUserNumber,NumberOfNodes,Err)
-  CALL CMISSNodesCreateFinish(RegionUserNumber,Err)  
+  CALL CMISSNodes_CreateStart(RegionUserNumber,NumberOfNodes,Err)
+  CALL CMISSNodes_CreateFinish(RegionUserNumber,Err)  
   !define elements for the mesh
-  CALL CMISSMeshElementsCreateStart(RegionUserNumber,MeshUserNumber,MeshComponentNumber,BasisUserNumber,Err)
+  CALL CMISSMeshElements_CreateStart(RegionUserNumber,MeshUserNumber,MeshComponentNumber,BasisUserNumber,Err)
   Do el=1,MeshNumberOfElements
-    CALL CMISSMeshElementsNodesSet(RegionUserNumber,MeshUserNumber,MeshComponentNumber,el,ElementUserNodes(el,:),Err)
+    CALL CMISSMeshElements_NodesSet(RegionUserNumber,MeshUserNumber,MeshComponentNumber,el,ElementUserNodes(el,:),Err)
   ENDDO
-  CALL CMISSMeshElementsCreateFinish(RegionUserNumber,MeshUserNumber,MeshComponentNumber,Err)
-  CALL CMISSMeshCreateFinish(RegionUserNumber,MeshUserNumber,Err)
+  CALL CMISSMeshElements_CreateFinish(RegionUserNumber,MeshUserNumber,MeshComponentNumber,Err)
+  CALL CMISSMesh_CreateFinish(RegionUserNumber,MeshUserNumber,Err)
   !=========================================================================================================================
   !Create a mesh decomposition 
-  CALL CMISSDecompositionCreateStart(DecompositionUserNumber,RegionUserNumber,MeshUserNumber,Err)
-  CALL CMISSDecompositionTypeSet(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,NumberOfDomains,Err)
-  CALL CMISSDecompositionCreateFinish(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,Err)
+  CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,RegionUserNumber,MeshUserNumber,Err)
+  CALL CMISSDecomposition_TypeSet(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL CMISSDecomposition_NumberOfDomainsSet(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,NumberOfDomains,Err)
+  CALL CMISSDecomposition_CreateFinish(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,Err)
   
   !=========================================================================================================================
   !Create a field to put the geometry
-  CALL CMISSFieldCreateStart(FieldUserNumber,RegionUserNumber,Err)
-  CALL CMISSFieldMeshDecompositionSet(RegionUserNumber,FieldUserNumber,MeshUserNumber,DecompositionUserNumber,Err)
-  CALL CMISSFieldTypeSet(RegionUserNumber,FieldUserNumber,CMISSFieldGeometricType,Err)
-  CALL CMISSFieldNumberOfVariablesSet(RegionUserNumber,FieldUserNumber,FieldNumberOfVariables,Err)
-  CALL CMISSFieldNumberOfComponentsSet(RegionUserNumber,FieldUserNumber,CMISSFieldUVariableType,FieldNumberOfComponents,Err)
+  CALL CMISSField_CreateStart(FieldUserNumber,RegionUserNumber,Err)
+  CALL CMISSField_MeshDecompositionSet(RegionUserNumber,FieldUserNumber,MeshUserNumber,DecompositionUserNumber,Err)
+  CALL CMISSField_TypeSet(RegionUserNumber,FieldUserNumber,CMISS_FIELD_GEOMETRIC_TYPE,Err)
+  CALL CMISSField_NumberOfVariablesSet(RegionUserNumber,FieldUserNumber,FieldNumberOfVariables,Err)
+  CALL CMISSField_NumberOfComponentsSet(RegionUserNumber,FieldUserNumber,CMISS_FIELD_U_VARIABLE_TYPE,FieldNumberOfComponents,Err)
   DO xi=1,NumberOfXi
-    CALL CMISSFieldComponentMeshComponentSet(RegionUserNumber,FieldUserNumber,CMISSFieldUVariableType,xi,xi,Err)
+    CALL CMISSField_ComponentMeshComponentSet(RegionUserNumber,FieldUserNumber,CMISS_FIELD_U_VARIABLE_TYPE,xi,xi,Err)
   ENDDO !xi    
-  CALL CMISSFieldCreateFinish(RegionUserNumber,FieldUserNumber,Err)
+  CALL CMISSField_CreateFinish(RegionUserNumber,FieldUserNumber,Err)
   !node 1
   ver_idx=1 ! version number
   DO der_idx=1,SIZE(FieldValues,1)
     DO node_idx=1,SIZE(FieldValues,2)
       DO comp_idx=1,SIZE(FieldValues,3)
-        CALL CMISSFieldParameterSetUpdateNode(RegionUserNumber,FieldUserNumber,CMISSFieldUVariableType,CMISSFieldValuesSetType, &
+        CALL CMISSField_ParameterSetUpdateNode(RegionUserNumber,FieldUserNumber,CMISS_FIELD_U_VARIABLE_TYPE, &
+          & CMISS_FIELD_VALUES_SET_TYPE, &
           & ver_idx,der_idx,node_idx,comp_idx,FieldValues(der_idx,node_idx,comp_idx),Err)
       ENDDO
     ENDDO
@@ -239,40 +240,40 @@ PROGRAM DataProjection1DRectangularCartesian
   
   !=========================================================================================================================
   !Create a data projection
-  CALL CMISSDataProjectionCreateStart(RegionUserNumber,FieldUserNumber,RegionUserNumber,Err)
+  CALL CMISSDataProjection_CreateStart(RegionUserNumber,FieldUserNumber,RegionUserNumber,Err)
   !=========================================================================================================================
   !Test parameter set functions
-  CALL CMISSDataProjectionAbsoluteToleranceSet(RegionUserNumber,AbsoluteToleranceSet,Err) !test
-  CALL CMISSDataProjectionMaximumIterationUpdateSet(RegionUserNumber,MaximumIterationUpdateSet,Err) !test
-  CALL CMISSDataProjectionMaximumNumberOfIterationsSet(RegionUserNumber,MaximumNumberOfIterationsSet,Err) !test
-  CALL CMISSDataProjectionNumberOfClosestElementsSet(RegionUserNumber,NumberOfClosestElementsSet,Err) !test
-  CALL CMISSDataProjectionProjectionTypeSet(RegionUserNumber,ProjectionTypeSet,Err)
-  CALL CMISSDataProjectionRelativeToleranceSet(RegionUserNumber,RelativeToleranceSet,Err) !test
-  CALL CMISSDataProjectionStartingXiSet(RegionUserNumber,StartingXiSet,Err) !test
+  CALL CMISSDataProjection_AbsoluteToleranceSet(RegionUserNumber,AbsoluteToleranceSet,Err) !test
+  CALL CMISSDataProjection_MaximumIterationUpdateSet(RegionUserNumber,MaximumIterationUpdateSet,Err) !test
+  CALL CMISSDataProjection_MaximumNumberOfIterationsSet(RegionUserNumber,MaximumNumberOfIterationsSet,Err) !test
+  CALL CMISSDataProjection_NumberOfClosestElementsSet(RegionUserNumber,NumberOfClosestElementsSet,Err) !test
+  CALL CMISSDataProjection_ProjectionTypeSet(RegionUserNumber,ProjectionTypeSet,Err)
+  CALL CMISSDataProjection_RelativeToleranceSet(RegionUserNumber,RelativeToleranceSet,Err) !test
+  CALL CMISSDataProjection_StartingXiSet(RegionUserNumber,StartingXiSet,Err) !test
   !=========================================================================================================================
   !Finish data projection  
-  CALL CMISSDataProjectionCreateFinish(RegionUserNumber,Err)
+  CALL CMISSDataProjection_CreateFinish(RegionUserNumber,Err)
   !=========================================================================================================================
   !Test parameter get functions
-  CALL CMISSDataProjectionAbsoluteToleranceGet(RegionUserNumber,AbsoluteToleranceGet,Err) !test
-  CALL CMISSDataProjectionMaximumIterationUpdateGet(RegionUserNumber,MaximumIterationUpdateGet,Err) !test
-  CALL CMISSDataProjectionMaximumNumberOfIterationsGet(RegionUserNumber,MaximumNumberOfIterationsGet,Err) !test
-  CALL CMISSDataProjectionNumberOfClosestElementsGet(RegionUserNumber,NumberOfClosestElementsGet,Err) !test
-  CALL CMISSDataProjectionProjectionTypeGet(RegionUserNumber,ProjectionTypeGet,Err) !test
-  CALL CMISSDataProjectionRelativeToleranceGet(RegionUserNumber,RelativeToleranceGet,Err) !test
-  CALL CMISSDataProjectionStartingXiGet(RegionUserNumber,StartingXiGet,Err) !test  
+  CALL CMISSDataProjection_AbsoluteToleranceGet(RegionUserNumber,AbsoluteToleranceGet,Err) !test
+  CALL CMISSDataProjection_MaximumIterationUpdateGet(RegionUserNumber,MaximumIterationUpdateGet,Err) !test
+  CALL CMISSDataProjection_MaximumNumberOfIterationsGet(RegionUserNumber,MaximumNumberOfIterationsGet,Err) !test
+  CALL CMISSDataProjection_NumberOfClosestElementsGet(RegionUserNumber,NumberOfClosestElementsGet,Err) !test
+  CALL CMISSDataProjection_ProjectionTypeGet(RegionUserNumber,ProjectionTypeGet,Err) !test
+  CALL CMISSDataProjection_RelativeToleranceGet(RegionUserNumber,RelativeToleranceGet,Err) !test
+  CALL CMISSDataProjection_StartingXiGet(RegionUserNumber,StartingXiGet,Err) !test  
   
   !=========================================================================================================================
   !Start data projection
-  CALL CMISSDataProjectionEvaluate(RegionUserNumber,Err)
+  CALL CMISSDataProjection_Evaluate(RegionUserNumber,Err)
   
   !=========================================================================================================================
   !Destroy used types
-  CALL CMISSDataProjectionDestroy(RegionUserNumber,Err)
-  CALL CMISSDataPointsDestroy(RegionUserNumber,Err)
+  CALL CMISSDataProjection_Destroy(RegionUserNumber,Err)
+  CALL CMISSDataPoints_Destroy(RegionUserNumber,Err)
     
-  CALL CMISSRegionDestroy(RegionUserNumber,Err)
-  CALL CMISSCoordinateSystemDestroy(CoordinateSystemUserNumber,Err)  
+  CALL CMISSRegion_Destroy(RegionUserNumber,Err)
+  CALL CMISSCoordinateSystem_Destroy(CoordinateSystemUserNumber,Err)  
   
   !=========================================================================================================================
   !Finishing program

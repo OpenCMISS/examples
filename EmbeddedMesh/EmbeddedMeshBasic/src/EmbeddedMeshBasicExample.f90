@@ -145,17 +145,17 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
     
   !Start the creation of a new RC coordinate system
-  CALL CMISSCoordinateSystemTypeInitialise(CoordinateSystem,Err)
-  CALL CMISSCoordinateSystemCreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
     !Set the coordinate system to be 2D
-    CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,2,Err)
+    CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystem,2,Err)
   ELSE
     !Set the coordinate system to be 3D
-    CALL CMISSCoordinateSystemDimensionSet(CoordinateSystem,3,Err)
+    CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystem,3,Err)
   ENDIF
   !Finish the creation of the coordinate system
-  CALL CMISSCoordinateSystemCreateFinish(CoordinateSystem,Err)
+  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
 !!!!!!!!!!!!!!!!!
 ! First mesh
@@ -163,116 +163,119 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   
   
   !Start the creation of the region
-  CALL CMISSRegionTypeInitialise(Region1,Err)
-  CALL CMISSRegionCreateStart(RegionOneUserNumber,WorldRegion,Region1,Err)
-  CALL CMISSRegionLabelSet(Region1,"FirstMeshRegion",Err)
+  CALL CMISSRegion_Initialise(Region1,Err)
+  CALL CMISSRegion_CreateStart(RegionOneUserNumber,WorldRegion,Region1,Err)
+  CALL CMISSRegion_LabelSet(Region1,"FirstMeshRegion",Err)
   !Set the regions coordinate system to the 2D RC coordinate system that we have created
-  CALL CMISSRegionCoordinateSystemSet(Region1,CoordinateSystem,Err)
+  CALL CMISSRegion_CoordinateSystemSet(Region1,CoordinateSystem,Err)
   !Finish the creation of the region
-  CALL CMISSRegionCreateFinish(Region1,Err)
+  CALL CMISSRegion_CreateFinish(Region1,Err)
   
   !Start the creation of a basis (default is trilinear lagrange)
-  CALL CMISSBasisTypeInitialise(Basis1,Err)
-  CALL CMISSBasisCreateStart(BasisOneUserNumber,Basis1,Err)
+  CALL CMISSBasis_Initialise(Basis1,Err)
+  CALL CMISSBasis_CreateStart(BasisOneUserNumber,Basis1,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    CALL CMISSBasisNumberOfXiSet(Basis1,2,Err)
-    CALL CMISSBasisInterpolationXiSet(Basis1,(/1,1/),Err)
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis1,(/3,3/),Err) 
+    CALL CMISSBasis_NumberOfXiSet(Basis1,2,Err)
+    CALL CMISSBasis_InterpolationXiSet(Basis1,(/1,1/),Err)
+    CALL CMISSBasis_QuadratureNumberOfGaussXiSet(Basis1,(/3,3/),Err) 
   ELSE
     !Set the basis to be a trilinear Lagrange basis
-    CALL CMISSBasisNumberOfXiSet(Basis1,3,Err)
-    CALL CMISSBasisInterpolationXiSet(Basis1,(/1,1,1/),Err)
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis1,(/3,3,3/),Err) 
+    CALL CMISSBasis_NumberOfXiSet(Basis1,3,Err)
+    CALL CMISSBasis_InterpolationXiSet(Basis1,(/1,1,1/),Err)
+    CALL CMISSBasis_QuadratureNumberOfGaussXiSet(Basis1,(/3,3,3/),Err) 
   ENDIF
   !Finish the creation of the basis
-  CALL CMISSBasisCreateFinish(Basis1,Err)
+  CALL CMISSBasis_CreateFinish(Basis1,Err)
 
   !Start the creation of a generated mesh in the region - the parent mesh
-  CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
-  CALL CMISSGeneratedMeshCreateStart(GeneratedMeshOneUserNumber,Region1,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_Initialise(GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_CreateStart(GeneratedMeshOneUserNumber,Region1,GeneratedMesh,Err)
   !Set up a regular x*y*z mesh
-  CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
+  CALL CMISSGeneratedMesh_TypeSet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_MESH_TYPE,Err)
   !Set the default basis
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,Basis1,Err)   
+  CALL CMISSGeneratedMesh_BasisSet(GeneratedMesh,Basis1,Err)   
   !Define the mesh on the region
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,[WIDTH,HEIGHT],Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS],Err)
+    CALL CMISSGeneratedMesh_ExtentSet(GeneratedMesh,[WIDTH,HEIGHT],Err)
+    CALL CMISSGeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS],Err)
   ELSE
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,[WIDTH,HEIGHT,LENGTH],Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
+    CALL CMISSGeneratedMesh_ExtentSet(GeneratedMesh,[WIDTH,HEIGHT,LENGTH],Err)
+    CALL CMISSGeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
       & NUMBER_GLOBAL_Z_ELEMENTS],Err)
   ENDIF    
   !Finish the creation of a generated mesh in the region
-  CALL CMISSMeshTypeInitialise(FirstMesh,Err)
-  CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshOneUserNumber,FirstMesh,Err)
+  CALL CMISSMesh_Initialise(FirstMesh,Err)
+  CALL CMISSGeneratedMesh_CreateFinish(GeneratedMesh,MeshOneUserNumber,FirstMesh,Err)
 
   !Create a decomposition
-  CALL CMISSDecompositionTypeInitialise(Decomposition1,Err)
-  CALL CMISSDecompositionCreateStart(DecompositionOneUserNumber,FirstMesh,Decomposition1,Err)
+  CALL CMISSDecomposition_Initialise(Decomposition1,Err)
+  CALL CMISSDecomposition_CreateStart(DecompositionOneUserNumber,FirstMesh,Decomposition1,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
-  CALL CMISSDecompositionTypeSet(Decomposition1,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition1,NumberOfComputationalNodes,Err)
+  CALL CMISSDecomposition_TypeSet(Decomposition1,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition1,NumberOfComputationalNodes,Err)
   !Finish the decomposition
-  CALL CMISSDecompositionCreateFinish(Decomposition1,Err)
+  CALL CMISSDecomposition_CreateFinish(Decomposition1,Err)
   
   !Start to create a default (geometric) field on the region
-  CALL CMISSFieldTypeInitialise(GeometricField1,Err)
-  CALL CMISSFieldCreateStart(GeometricFieldOneUserNumber,Region1,GeometricField1,Err)
+  CALL CMISSField_Initialise(GeometricField1,Err)
+  CALL CMISSField_CreateStart(GeometricFieldOneUserNumber,Region1,GeometricField1,Err)
   !Set the decomposition to use
-  CALL CMISSFieldMeshDecompositionSet(GeometricField1,Decomposition1,Err)
+  CALL CMISSField_MeshDecompositionSet(GeometricField1,Decomposition1,Err)
   !Set the domain to be used by the field components.
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField1,CMISSFieldUVariableType,1,1,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField1,CMISSFieldUVariableType,2,1,Err)
+  CALL CMISSField_ComponentMeshComponentSet(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,1,1,Err)
+  CALL CMISSField_ComponentMeshComponentSet(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,2,1,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
-    CALL CMISSFieldComponentMeshComponentSet(GeometricField1,CMISSFieldUVariableType,3,1,Err)
+    CALL CMISSField_ComponentMeshComponentSet(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,3,1,Err)
   ENDIF
   !Finish creating the field
-  CALL CMISSFieldCreateFinish(GeometricField1,Err)
+  CALL CMISSField_CreateFinish(GeometricField1,Err)
 
   !Update the geometric field parameters
-  CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField1,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField1,Err)
 
   !Create the dependent field with 1 variables and 1 component
-  CALL CMISSFieldTypeInitialise(DependentField1,Err)
-  CALL CMISSFieldCreateStart(DependentFieldOneUserNumber,Region1,DependentField1,Err)
-  CALL CMISSFieldTypeSet(DependentField1,CMISSFieldGeneralType,Err)
-  CALL CMISSFieldMeshDecompositionSet(DependentField1,Decomposition1,Err)
-  CALL CMISSFieldGeometricFieldSet(DependentField1,GeometricField1,Err)
-  CALL CMISSFieldDependentTypeSet(DependentField1,CMISSFieldDependentType,Err)
-  CALL CMISSFieldNumberOfVariablesSet(DependentField1,FieldDependentNumberOfVariables,Err)
-  CALL CMISSFieldNumberOfComponentsSet(DependentField1,CMISSFieldUVariableType,FieldDependentNumberOfComponents,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField1,CMISSFieldUVariableType,1,1,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField1,CMISSFieldUVariableType,2,1,Err)
+  CALL CMISSField_Initialise(DependentField1,Err)
+  CALL CMISSField_CreateStart(DependentFieldOneUserNumber,Region1,DependentField1,Err)
+  CALL CMISSField_TypeSet(DependentField1,CMISS_FIELD_GENERAL_TYPE,Err)
+  CALL CMISSField_MeshDecompositionSet(DependentField1,Decomposition1,Err)
+  CALL CMISSField_GeometricFieldSet(DependentField1,GeometricField1,Err)
+  CALL CMISSField_DependentTypeSet(DependentField1,CMISS_FIELD_DEPENDENT_TYPE,Err)
+  CALL CMISSField_NumberOfVariablesSet(DependentField1,FieldDependentNumberOfVariables,Err)
+  CALL CMISSField_NumberOfComponentsSet(DependentField1,CMISS_FIELD_U_VARIABLE_TYPE,FieldDependentNumberOfComponents,Err)
+  CALL CMISSField_ComponentMeshComponentSet(DependentField1,CMISS_FIELD_U_VARIABLE_TYPE,1,1,Err)
+  CALL CMISSField_ComponentMeshComponentSet(DependentField1,CMISS_FIELD_U_VARIABLE_TYPE,2,1,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
-    CALL CMISSFieldComponentMeshComponentSet(DependentField1,CMISSFieldUVariableType,3,1,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField1,CMISS_FIELD_U_VARIABLE_TYPE,3,1,Err)
   ENDIF
-  !CALL CMISSFieldScalingTypeSet(DependentField,CMISSFieldUnitScaling,Err)
-  CALL CMISSFieldCreateFinish(DependentField1,Err)
+  !CALL CMISSField_ScalingTypeSet(DependentField,CMISS_FIELD_UNIT_SCALING,Err)
+  CALL CMISSField_CreateFinish(DependentField1,Err)
 
   !Initialise the field with an initial guess
-  CALL CMISSFieldComponentValuesInitialise(DependentField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,0.5_CMISSDP,Err)
+  CALL CMISSField_ComponentValuesInitialise(DependentField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,0.5_CMISSDP, &
+    & Err)
 
   !Field value with a function x^2 + y^2 + z^2
   DO node_idx=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
-  CALL CMISSFieldParameterSetGetNode(GeometricField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,1,x,Err)
-  CALL CMISSFieldParameterSetGetNode(GeometricField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,2,y,Err)
+  CALL CMISSField_ParameterSetGetNode(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,1,x,Err)
+  CALL CMISSField_ParameterSetGetNode(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,2,y,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
-  CALL CMISSFieldParameterSetGetNode(GeometricField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,3,z,Err)
+  CALL CMISSField_ParameterSetGetNode(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,3,z,Err)
   ELSE
   Z = 0
   ENDIF
   FieldValue = x**2+y**2+z**2
-  CALL CMISSFieldParameterSetUpdateNode(DependentField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,1,fieldvalue,Err)
+  CALL CMISSField_ParameterSetUpdateNode(DependentField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,1, &
+    & fieldvalue,Err)
 
   WRITE(*,*) 'The values at the nodes for field 1',fieldvalue
   ENDDO
 
-   CALL CMISSNodesNumberOfNodesGet(RegionOneUserNumber,NumberOfNodes1,Err)
+   CALL CMISSNodes_NumberOfNodesGet(RegionOneUserNumber,NumberOfNodes1,Err)
    WRITe(*,*) 'nn',NumberOfNodes1
   
    DO node_idx=1,NumberofNodes1
-   CALL CMISSFieldParameterSetGetNode(DependentField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,1,value,Err)
+   CALL CMISSField_ParameterSetGetNode(DependentField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,1, &
+     & value,Err)
    WRITE(*,*) 'The values at the nodes for field 1 before',value
    ENDDO
 
@@ -281,113 +284,115 @@ PROGRAM EMBEDDEDMESHEXAMPLE
 !!!!!!!!!!!!!!!!!!
 
   !Start the creation of the region
-  CALL CMISSRegionTypeInitialise(Region2,Err)
-  CALL CMISSRegionCreateStart(RegionTwoUserNumber,WorldRegion,Region2,Err)
-  CALL CMISSRegionLabelSet(Region2,"SecondMeshRegion",Err)
+  CALL CMISSRegion_Initialise(Region2,Err)
+  CALL CMISSRegion_CreateStart(RegionTwoUserNumber,WorldRegion,Region2,Err)
+  CALL CMISSRegion_LabelSet(Region2,"SecondMeshRegion",Err)
   !Set the regions coordinate system to the 2D RC coordinate system that we have created
-  CALL CMISSRegionCoordinateSystemSet(Region2,CoordinateSystem,Err)
+  CALL CMISSRegion_CoordinateSystemSet(Region2,CoordinateSystem,Err)
   !Finish the creation of the region
-  CALL CMISSRegionCreateFinish(Region2,Err)
+  CALL CMISSRegion_CreateFinish(Region2,Err)
   
   !Start the creation of a basis (default is trilinear lagrange)
-  CALL CMISSBasisTypeInitialise(Basis2,Err)
-  CALL CMISSBasisCreateStart(BasisTwoUserNumber,Basis2,Err)
+  CALL CMISSBasis_Initialise(Basis2,Err)
+  CALL CMISSBasis_CreateStart(BasisTwoUserNumber,Basis2,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS_2==0) THEN
     !Set the basis to be a bilinear Lagrange basis
-    CALL CMISSBasisNumberOfXiSet(Basis2,2,Err)
-    CALL CMISSBasisInterpolationXiSet(Basis2,(/1,1/),Err)
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis2,(/3,3/),Err) 
+    CALL CMISSBasis_NumberOfXiSet(Basis2,2,Err)
+    CALL CMISSBasis_InterpolationXiSet(Basis2,(/1,1/),Err)
+    CALL CMISSBasis_QuadratureNumberOfGaussXiSet(Basis2,(/3,3/),Err) 
   ELSE
     !Set the basis to be a trilinear Lagrange basis
-    CALL CMISSBasisNumberOfXiSet(Basis2,3,Err)
-        CALL CMISSBasisInterpolationXiSet(Basis2,(/1,1,1/),Err)
-    CALL CMISSBasisQuadratureNumberOfGaussXiSet(Basis2,(/3,3,3/),Err) 
+    CALL CMISSBasis_NumberOfXiSet(Basis2,3,Err)
+        CALL CMISSBasis_InterpolationXiSet(Basis2,(/1,1,1/),Err)
+    CALL CMISSBasis_QuadratureNumberOfGaussXiSet(Basis2,(/3,3,3/),Err) 
   ENDIF
   !Finish the creation of the basis
-  CALL CMISSBasisCreateFinish(Basis2,Err)
+  CALL CMISSBasis_CreateFinish(Basis2,Err)
 
   !Start the creation of a generated mesh in the region - the child mesh
-  CALL CMISSGeneratedMeshTypeInitialise(GeneratedMesh,Err)
-  CALL CMISSGeneratedMeshCreateStart(GeneratedMeshTwoUserNumber,Region2,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_Initialise(GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_CreateStart(GeneratedMeshTwoUserNumber,Region2,GeneratedMesh,Err)
   !Set up a regular x*y*z mesh
-  CALL CMISSGeneratedMeshTypeSet(GeneratedMesh,CMISSGeneratedMeshRegularMeshType,Err)
+  CALL CMISSGeneratedMesh_TypeSet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_MESH_TYPE,Err)
   !Set the default basis
-  CALL CMISSGeneratedMeshBasisSet(GeneratedMesh,Basis2,Err)   
+  CALL CMISSGeneratedMesh_BasisSet(GeneratedMesh,Basis2,Err)   
   !Define the mesh on the region
   IF(NUMBER_GLOBAL_Z_ELEMENTS_2==0) THEN
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,[WIDTH,HEIGHT],Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS_2,NUMBER_GLOBAL_Y_ELEMENTS_2],Err)
+    CALL CMISSGeneratedMesh_ExtentSet(GeneratedMesh,[WIDTH,HEIGHT],Err)
+    CALL CMISSGeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS_2,NUMBER_GLOBAL_Y_ELEMENTS_2],Err)
   ELSE
-    CALL CMISSGeneratedMeshExtentSet(GeneratedMesh,[WIDTH,HEIGHT,LENGTH],Err)
-    CALL CMISSGeneratedMeshNumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS_2,NUMBER_GLOBAL_Y_ELEMENTS_2, &
+    CALL CMISSGeneratedMesh_ExtentSet(GeneratedMesh,[WIDTH,HEIGHT,LENGTH],Err)
+    CALL CMISSGeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS_2,NUMBER_GLOBAL_Y_ELEMENTS_2, &
       & NUMBER_GLOBAL_Z_ELEMENTS_2],Err)
   ENDIF    
   !Finish the creation of a generated mesh in the region
-  CALL CMISSMeshTypeInitialise(SecondMesh,Err)
-  CALL CMISSGeneratedMeshCreateFinish(GeneratedMesh,MeshTwoUserNumber,SecondMesh,Err)
+  CALL CMISSMesh_Initialise(SecondMesh,Err)
+  CALL CMISSGeneratedMesh_CreateFinish(GeneratedMesh,MeshTwoUserNumber,SecondMesh,Err)
 
   !Create a decomposition
-  CALL CMISSDecompositionTypeInitialise(Decomposition2,Err)
-  CALL CMISSDecompositionCreateStart(DecompositionTwoUserNumber,SecondMesh,Decomposition2,Err)
+  CALL CMISSDecomposition_Initialise(Decomposition2,Err)
+  CALL CMISSDecomposition_CreateStart(DecompositionTwoUserNumber,SecondMesh,Decomposition2,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
-  CALL CMISSDecompositionTypeSet(Decomposition2,CMISSDecompositionCalculatedType,Err)
-  CALL CMISSDecompositionNumberOfDomainsSet(Decomposition2,NumberOfComputationalNodes,Err)
+  CALL CMISSDecomposition_TypeSet(Decomposition2,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition2,NumberOfComputationalNodes,Err)
   !Finish the decomposition
-  CALL CMISSDecompositionCreateFinish(Decomposition2,Err)
+  CALL CMISSDecomposition_CreateFinish(Decomposition2,Err)
   
   !Start to create a default (geometric) field on the region
-  CALL CMISSFieldTypeInitialise(GeometricField2,Err)
-  CALL CMISSFieldCreateStart(GeometricFieldTwoUserNumber,Region2,GeometricField2,Err)
+  CALL CMISSField_Initialise(GeometricField2,Err)
+  CALL CMISSField_CreateStart(GeometricFieldTwoUserNumber,Region2,GeometricField2,Err)
   !Set the decomposition to use
-  CALL CMISSFieldMeshDecompositionSet(GeometricField2,Decomposition2,Err)
+  CALL CMISSField_MeshDecompositionSet(GeometricField2,Decomposition2,Err)
   !Set the domain to be used by the field components.
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField2,CMISSFieldUVariableType,1,1,Err)
-  CALL CMISSFieldComponentMeshComponentSet(GeometricField2,CMISSFieldUVariableType,2,1,Err)
+  CALL CMISSField_ComponentMeshComponentSet(GeometricField2,CMISS_FIELD_U_VARIABLE_TYPE,1,1,Err)
+  CALL CMISSField_ComponentMeshComponentSet(GeometricField2,CMISS_FIELD_U_VARIABLE_TYPE,2,1,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS_2/=0) THEN
-    CALL CMISSFieldComponentMeshComponentSet(GeometricField2,CMISSFieldUVariableType,3,1,Err)
+    CALL CMISSField_ComponentMeshComponentSet(GeometricField2,CMISS_FIELD_U_VARIABLE_TYPE,3,1,Err)
   ENDIF
   !Finish creating the field
-  CALL CMISSFieldCreateFinish(GeometricField2,Err)
+  CALL CMISSField_CreateFinish(GeometricField2,Err)
   
   !Update the geometric field parameters
-  CALL CMISSGeneratedMeshGeometricParametersCalculate(GeometricField2,GeneratedMesh,Err)
+  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField2,Err)
 
  !Create the dependent field with 1 variables and 1 component
-  CALL CMISSFieldTypeInitialise(DependentField2,Err)
-  CALL CMISSFieldCreateStart(DependentFieldTwoUserNumber,Region2,DependentField2,Err)
-  CALL CMISSFieldTypeSet(DependentField2,CMISSFieldGeneralType,Err)
-  CALL CMISSFieldMeshDecompositionSet(DependentField2,Decomposition2,Err)
-  CALL CMISSFieldGeometricFieldSet(DependentField2,GeometricField2,Err)
-  CALL CMISSFieldDependentTypeSet(DependentField2,CMISSFieldDependentType,Err)
-  CALL CMISSFieldNumberOfVariablesSet(DependentField2,FieldDependentNumberOfVariables,Err)
-  CALL CMISSFieldNumberOfComponentsSet(DependentField2,CMISSFieldUVariableType,FieldDependentNumberOfComponents,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField2,CMISSFieldUVariableType,1,1,Err)
-  CALL CMISSFieldComponentMeshComponentSet(DependentField2,CMISSFieldUVariableType,2,1,Err)
+  CALL CMISSField_Initialise(DependentField2,Err)
+  CALL CMISSField_CreateStart(DependentFieldTwoUserNumber,Region2,DependentField2,Err)
+  CALL CMISSField_TypeSet(DependentField2,CMISS_FIELD_GENERAL_TYPE,Err)
+  CALL CMISSField_MeshDecompositionSet(DependentField2,Decomposition2,Err)
+  CALL CMISSField_GeometricFieldSet(DependentField2,GeometricField2,Err)
+  CALL CMISSField_DependentTypeSet(DependentField2,CMISS_FIELD_DEPENDENT_TYPE,Err)
+  CALL CMISSField_NumberOfVariablesSet(DependentField2,FieldDependentNumberOfVariables,Err)
+  CALL CMISSField_NumberOfComponentsSet(DependentField2,CMISS_FIELD_U_VARIABLE_TYPE,FieldDependentNumberOfComponents,Err)
+  CALL CMISSField_ComponentMeshComponentSet(DependentField2,CMISS_FIELD_U_VARIABLE_TYPE,1,1,Err)
+  CALL CMISSField_ComponentMeshComponentSet(DependentField2,CMISS_FIELD_U_VARIABLE_TYPE,2,1,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS_2/=0) THEN
-    CALL CMISSFieldComponentMeshComponentSet(DependentField2,CMISSFieldUVariableType,3,1,Err)
+    CALL CMISSField_ComponentMeshComponentSet(DependentField2,CMISS_FIELD_U_VARIABLE_TYPE,3,1,Err)
   ENDIF
-   !CALL CMISSFieldScalingTypeSet(DependentField2,CMISSFieldUnitScaling,Err)
-  CALL CMISSFieldCreateFinish(DependentField2,Err)
+   !CALL CMISSField_ScalingTypeSet(DependentField2,CMISS_FIELD_UNIT_SCALING,Err)
+  CALL CMISSField_CreateFinish(DependentField2,Err)
 
   !Initialise the field with an initial guess
-  CALL CMISSFieldComponentValuesInitialise(DependentField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,0.1_CMISSDP,Err)
+  CALL CMISSField_ComponentValuesInitialise(DependentField2,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,0.1_CMISSDP, &
+    & Err)
  
-   CALL CMISSNodesNumberOfNodesGet(RegionTwoUserNumber,NumberOfNodes2,Err)
+   CALL CMISSNodes_NumberOfNodesGet(RegionTwoUserNumber,NumberOfNodes2,Err)
    !Before
    DO node_idx=1,NumberOfNodes2
-   CALL CMISSFieldParameterSetGetNode(DependentField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,1,value,Err)
+   CALL CMISSField_ParameterSetGetNode(DependentField2,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,1, &
+     & value,Err)
    WRITE(*,*) 'The values at the nodes for field 2 before',value
    ENDDO
 
   !Start creating an embedded mesh
-  CALL CMISSEmbeddedMeshTypeInitialise(MeshEmbedding,Err)
+  CALL CMISSMeshEmbedding_Initialise(MeshEmbedding,Err)
   
-  CALL CMISSMeshEmbeddingCreate(MeshEmbedding, FirstMesh, SecondMesh, Err)
+  CALL CMISSMeshEmbedding_Create(MeshEmbedding, FirstMesh, SecondMesh, Err)
   
    Allocate(ParentXiCoords(NumberofComponents,NumberOfNodes1)) 
    DO node_idx = 1,NumberofNodes1
    DO dim_idx = 1,NumberOfComponents
-   CALL CMISSFieldParameterSetGetNode(GeometricField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
+   CALL CMISSField_ParameterSetGetNode(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
      & node_idx,dim_idx,value,Err)
    ParentXiCoords(dim_idx,node_idx) = value
    ENDDO
@@ -397,7 +402,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   Allocate(ChildXiCoords(NumberofComponents,NumberOfNodes2)) 
     DO node_idx = 1,NumberofNodes2
     DO dim_idx = 1,NumberOfComponents
-    CALL CMISSFieldParameterSetGetNode(GeometricField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1, &
+    CALL CMISSField_ParameterSetGetNode(GeometricField2,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
       & node_idx,dim_idx,value,Err)
      ChildXiCoords(dim_idx,node_idx) = value
     ENDDO
@@ -408,8 +413,8 @@ PROGRAM EMBEDDEDMESHEXAMPLE
     Allocate(NodeNumbers1(NumberofNodes1))
     Allocate(NodeNumbers2(NumberofNodes2))
 
-   CALL CMISSMeshNumberOfElementsGet(RegionOneUserNumber,MeshOneUserNumber,NumberOfElements,Err)
-   CALL CMISSMeshNumberOfElementsGet(RegionTwoUserNumber,MeshTwoUserNumber,NumberOfElements2,Err)
+   CALL CMISSMesh_NumberOfElementsGet(RegionOneUserNumber,MeshOneUserNumber,NumberOfElements,Err)
+   CALL CMISSMesh_NumberOfElementsGet(RegionTwoUserNumber,MeshTwoUserNumber,NumberOfElements2,Err)
    !Preprocessing step:
 
 !   By each element 
@@ -417,10 +422,10 @@ PROGRAM EMBEDDEDMESHEXAMPLE
     Allocate(ElemArray(NumberOfElements2))
     Allocate(NodeElem(NumberOfElements,NumberofNodes2))
     DO elem_idx = 1,NumberOfElements
-     CALL CMISSMeshElementsNodesGet(RegionOneUserNumber,MeshOneUserNumber,1,elem_idx, &
+     CALL CMISSMeshElements_NodesGet(RegionOneUserNumber,MeshOneUserNumber,1,elem_idx, &
       & NodeNumbers1,Err)
       DO elem_idx2 =1,NumberOfElements2
-      CALL CMISSMeshElementsNodesGet(RegionTwoUserNumber,MeshTwoUserNumber,1,elem_idx2, &
+      CALL CMISSMeshElements_NodesGet(RegionTwoUserNumber,MeshTwoUserNumber,1,elem_idx2, &
        & NodeNumbers,Err)      
       DO node_idx=1,size(NodeNumbers)
       DO dim_idx = 1,NumberOfComponents   
@@ -439,16 +444,17 @@ PROGRAM EMBEDDEDMESHEXAMPLE
     DO node_idx = 1,NumberofNodes2
     NodeNumbers2(node_idx) = NodeElem(elem_idx,node_idx)
     ENDDO
-    CALL CMISSMeshEmbeddingSetChildNodePosition(MeshEmbedding,elem_idx, NodeNumbers2,ChildXiCoords, Err)
+    CALL CMISSMeshEmbedding_SetChildNodePosition(MeshEmbedding,elem_idx, NodeNumbers2,ChildXiCoords, Err)
    ENDDO
 
 
    !Data field from one mesh to the other
-    CALL CMISSMeshEmbeddingPushData(MeshEmbedding, DependentField1,1,DependentField2, 1, Err)
+    CALL CMISSMeshEmbedding_PushData(MeshEmbedding, DependentField1,1,DependentField2, 1, Err)
  
    !After
    DO node_idx=1,NumberofNodes2
-   CALL CMISSFieldParameterSetGetNode(DependentField2,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,node_idx,1,value,Err)
+   CALL CMISSField_ParameterSetGetNode(DependentField2,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,1, &
+     & value,Err)
    WRITE(*,*) 'The values at the nodes for field 2 after',value
    ENDDO
 
@@ -462,18 +468,18 @@ PROGRAM EMBEDDEDMESHEXAMPLE
       C2=C1((elem_idx2-1)*ineach+1:(elem_idx2)*ineach)
       DO gauss_idx = (elem_idx2-1)*ineach+1,(elem_idx2)*ineach
       !DO gauss_idx =1,NGP
-      CALL CMISSMeshEmbeddingSetGaussPointData(MeshEmbedding,elem_idx,gauss_idx, &
+      CALL CMISSMeshEmbedding_SetGaussPointData(MeshEmbedding,elem_idx,gauss_idx, &
         & C1,elem_idx2,C2, Err)
       ENDDO
    ENDDO
    
    !Move field data
 
-    CALL CMISSMeshEmbeddingPullGaussPointData(MeshEmbedding, DependentField1, 1,DependentField2, 1, Err)
+    CALL CMISSMeshEmbedding_PullGaussPointData(MeshEmbedding, DependentField1, 1,DependentField2, 1, Err)
 
    !After
    !DO gauss_idx=1,1
-   !CALL CMISSFieldParameterSetGetGaussPoint(DependentField1,CMISSFieldUVariableType,CMISSFieldValuesSetType,1,gauss_idx,1,value,Err)
+   !CALL CMISSField_ParameterSetGetGaussPoint(DependentField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,gauss_idx,1,value,Err)
    !WRITE(*,*) 'The values at the nodes for field 1 after',value
    !ENDDO
   CALL CMISSFinalise(Err)
