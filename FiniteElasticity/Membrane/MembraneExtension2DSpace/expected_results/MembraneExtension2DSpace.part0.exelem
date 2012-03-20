@@ -62,7 +62,7 @@
      4.  #Values=1
       Value indices:     1
       Scale factor indices:    4
- 3) Material, field,  rectangular cartesian, #Components=3
+ 3) Material, field,  rectangular cartesian, #Components=2
    1.   l.Lagrange*l.Lagrange, no modify, standard node based.
      #Nodes= 4
      1.  #Values=1
@@ -78,20 +78,6 @@
       Value indices:     1
       Scale factor indices:    4
    2.   l.Lagrange*l.Lagrange, no modify, standard node based.
-     #Nodes= 4
-     1.  #Values=1
-      Value indices:     1
-      Scale factor indices:    1
-     2.  #Values=1
-      Value indices:     1
-      Scale factor indices:    2
-     3.  #Values=1
-      Value indices:     1
-      Scale factor indices:    3
-     4.  #Values=1
-      Value indices:     1
-      Scale factor indices:    4
-   3.   l.Lagrange*l.Lagrange, no modify, standard node based.
      #Nodes= 4
      1.  #Values=1
       Value indices:     1
