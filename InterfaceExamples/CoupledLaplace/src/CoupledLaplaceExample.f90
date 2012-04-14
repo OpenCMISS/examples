@@ -65,6 +65,7 @@ PROGRAM COUPLEDLAPLACE
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystem1UserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystem2UserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemInterfaceUserNumber=42
   INTEGER(CMISSIntg), PARAMETER :: Region1UserNumber=3
   INTEGER(CMISSIntg), PARAMETER :: Region2UserNumber=4
   INTEGER(CMISSIntg), PARAMETER :: Basis1UserNumber=5
@@ -116,7 +117,7 @@ PROGRAM COUPLEDLAPLACE
 
   TYPE(CMISSBasisType) :: Basis1,Basis2,InterfaceBasis,InterfaceMappingBasis
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
-  TYPE(CMISSCoordinateSystemType) :: CoordinateSystem1,CoordinateSystem2,WorldCoordinateSystem
+  TYPE(CMISSCoordinateSystemType) :: CoordinateSystem1,CoordinateSystem2,CoordinateSystemInterface,WorldCoordinateSystem
   TYPE(CMISSDecompositionType) :: Decomposition1,Decomposition2,InterfaceDecomposition
   TYPE(CMISSEquationsType) :: Equations1,Equations2
   TYPE(CMISSEquationsSetType) :: EquationsSet1,EquationsSet2
@@ -224,6 +225,20 @@ PROGRAM COUPLEDLAPLACE
   ENDIF
   !Finish the creation of the coordinate system
   CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem2,Err)
+  
+  !Start the creation of a new RC coordinate system for the second region
+  PRINT *, ' == >> CREATING COORDINATE SYSTEM(Interface) << == '
+  CALL CMISSCoordinateSystem_Initialise(CoordinateSystemInterface,Err)
+  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemInterfaceUserNumber,CoordinateSystemInterface,Err)
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+    !Set the coordinate system to be 2D
+    CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystemInterface,2,Err)
+  ELSE
+    !Set the coordinate system to be 3D
+    CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystemInterface,3,Err)
+  ENDIF
+  !Finish the creation of the coordinate system
+  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystemInterface,Err)
   
   !Start the creation of the first region
   PRINT *, ' == >> CREATING REGION(1) << == '
@@ -342,6 +357,7 @@ PROGRAM COUPLEDLAPLACE
   !Add in the two meshes
   CALL CMISSInterface_MeshAdd(Interface,Mesh1,Mesh1Index,Err)
   CALL CMISSInterface_MeshAdd(Interface,Mesh2,Mesh2Index,Err)
+  CALL CMISSInterface_CoordinateSystemSet(Interface,CoordinateSystemInterface,Err)
   !Finish creating the interface
   CALL CMISSInterface_CreateFinish(Interface,Err)
 
@@ -388,11 +404,12 @@ PROGRAM COUPLEDLAPLACE
   !Set the default basis
   CALL CMISSGeneratedMesh_BasisSet(InterfaceGeneratedMesh,InterfaceBasis,Err)   
   !Define the mesh on the interface
-  CALL CMISSGeneratedMesh_OriginSet(InterfaceGeneratedMesh,[WIDTH,0.0_CMISSDP,0.0_CMISSDP],Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    CALL CMISSGeneratedMesh_ExtentSet(InterfaceGeneratedMesh,[0.0_CMISSDP,HEIGHT,0.0_CMISSDP],Err)
+    CALL CMISSGeneratedMesh_OriginSet(InterfaceGeneratedMesh,[WIDTH,0.0_CMISSDP],Err)
+    CALL CMISSGeneratedMesh_ExtentSet(InterfaceGeneratedMesh,[0.0_CMISSDP,HEIGHT],Err)
     CALL CMISSGeneratedMesh_NumberOfElementsSet(InterfaceGeneratedMesh,[NUMBER_GLOBAL_Y_ELEMENTS],Err)
   ELSE
+    CALL CMISSGeneratedMesh_OriginSet(InterfaceGeneratedMesh,[WIDTH,0.0_CMISSDP,0.0_CMISSDP],Err)
     CALL CMISSGeneratedMesh_ExtentSet(InterfaceGeneratedMesh,[0.0_CMISSDP,HEIGHT,LENGTH],Err)
     CALL CMISSGeneratedMesh_NumberOfElementsSet(InterfaceGeneratedMesh,[NUMBER_GLOBAL_Y_ELEMENTS, &
       & NUMBER_GLOBAL_Z_ELEMENTS],Err)
