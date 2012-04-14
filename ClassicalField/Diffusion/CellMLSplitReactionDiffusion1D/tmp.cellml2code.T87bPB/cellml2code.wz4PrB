@@ -1,0 +1,53 @@
+#include <math.h>
+#include <stdio.h>
+extern double fabs(double x);
+extern double acos(double x);
+extern double acosh(double x);
+extern double atan(double x);
+extern double atanh(double x);
+extern double asin(double x);
+extern double asinh(double x);
+extern double acos(double x);
+extern double acosh(double x);
+extern double asin(double x);
+extern double asinh(double x);
+extern double atan(double x);
+extern double atanh(double x);
+extern double ceil(double x);
+extern double cos(double x);
+extern double cosh(double x);
+extern double tan(double x);
+extern double tanh(double x);
+extern double sin(double x);
+extern double sinh(double x);
+extern double exp(double x);
+extern double floor(double x);
+extern double pow(double x, double y);
+extern double factorial(double x);
+extern double log(double x);
+extern double arbitrary_log(double x, double base);
+extern double gcd_pair(double a, double b);
+extern double lcm_pair(double a, double b);
+extern double gcd_multi(unsigned int size, ...);
+extern double lcm_multi(unsigned int size, ...);
+extern double multi_min(unsigned int size, ...);
+extern double multi_max(unsigned int size, ...);
+extern void NR_MINIMISE(double(*func)(double VOI, double *C, double *R, double *S, double *A),double VOI, double *C, double *R, double *S, double *A, double *V);
+
+
+void OC_CellML_RHS_routine(double VOI, double* OC_STATE, double* OC_RATE, double* OC_WANTED, double* OC_KNOWN)
+{
+
+double DUMMY_ASSIGNMENT;
+double CONSTANTS[1], ALGEBRAIC[0];
+
+DUMMY_ASSIGNMENT /*OC_KNOWN[0]*/ = 1.0;
+DUMMY_ASSIGNMENT /*OC_STATE[0]*/ = 0.0;
+CONSTANTS[0] = 0.500000;
+OC_RATE[0] = CONSTANTS[0];
+OC_WANTED[0] = VOI;
+
+
+}//OC_CellML_RHS_routine()
+
+;

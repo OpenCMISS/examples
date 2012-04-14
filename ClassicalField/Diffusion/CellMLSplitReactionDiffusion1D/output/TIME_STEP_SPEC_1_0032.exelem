@@ -1,0 +1,52 @@
+ Group name: Cell
+ Shape.  Dimension= 1
+ #Scale factor sets= 1
+ q.Lagrange, #Scale factors=           2
+ #Nodes= 2
+ #Fields= 3
+  1) coordinates,  coordinate, rectangular cartesian, #Components= 1
+    x.   q.Lagrange, no modify, standard node based.
+    #Nodes= 2
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:   1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:   2
+  2) dependent,  field,  rectangular cartesian, #Components= 1
+    1.   q.Lagrange, no modify, standard node based.
+    #Nodes= 2
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:   1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:   2
+  3) material,  field,  rectangular cartesian, #Components= 2
+    1.   q.Lagrange, no modify, standard node based.
+    #Nodes= 2
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:   1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:   2
+    2.   q.Lagrange, no modify, standard node based.
+    #Nodes= 2
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:   1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:   2
+ Element:                1  0  0
+    Nodes:
+               1           2
+    Scale factors:
+       1.0000000000000000        1.0000000000000000     
+ Element:                2  0  0
+    Nodes:
+               2           3
+    Scale factors:
+       1.0000000000000000        1.0000000000000000     
+  
