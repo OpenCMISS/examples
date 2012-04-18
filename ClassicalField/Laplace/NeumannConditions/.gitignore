@@ -1,0 +1,7 @@
+# FieldML outputs
+/*.xml
+/*.dofs.node
+/*.connectivity
+
+# Diagnostics output
+/*.diag

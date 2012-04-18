@@ -1,0 +1,18 @@
+{"example": {
+  "language": "python",
+  "script": "NeumannConditionsExample.py",
+  "test": [
+    {
+     "id": 1,
+     "args": "-x 3 -y 3 -z 0",
+     "tolerance": 1e-6,
+     "expectedPath": "expected_results/2D"
+    },
+    {
+     "id": 2,
+     "args": "-x 3 -y 3 -z 3",
+     "tolerance": 1e-6,
+     "expectedPath": "expected_results/3D"
+    }
+  ]
+}}
