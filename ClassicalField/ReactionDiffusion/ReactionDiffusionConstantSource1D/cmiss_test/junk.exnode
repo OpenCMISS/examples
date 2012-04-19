@@ -1,0 +1,10 @@
+ Group name: junk
+ #Fields=1
+ 1) concentration, field, rectangular cartesian, #Components=1
+   concentration.  Value index= 1, #Derivatives= 0  
+ Node:            1
+     0.1000000000000000E+01
+ Node:            2
+     0.4269990136290845E+00
+ Node:            3
+     0.1000000000000000E+01
