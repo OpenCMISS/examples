@@ -65,7 +65,7 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
 
   !Test program parameters
 
-  REAL(CMISSDP), PARAMETER :: LENGTH=5.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: LENGTH=100.0_CMISSDP
   
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
@@ -159,7 +159,7 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
-  NUMBER_GLOBAL_X_ELEMENTS=2
+  NUMBER_GLOBAL_X_ELEMENTS=10
   NUMBER_OF_DOMAINS=NumberOfComputationalNodes
 
   !Set all diganostic levels on for testing
@@ -400,7 +400,8 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   CALL CMISSControlLoop_Initialise(ControlLoop,Err)
   CALL CMISSProblem_ControlLoopGet(Problem,CMISS_CONTROL_LOOP_NODE,ControlLoop,Err)
   !Set the times
-  CALL CMISSControlLoop_TimesSet(ControlLoop,0.0_CMISSDP,0.50_CMISSDP,0.01_CMISSDP,Err)
+  CALL CMISSControlLoop_TimesSet(ControlLoop,0.0_CMISSDP,0.5_CMISSDP,0.01_CMISSDP,Err)
+  CALL CMISSControlLoop_OutputTypeSet(ControlLoop,CMISS_CONTROL_LOOP_PROGRESS_OUTPUT,Err)
   !Finish creating the problem control loop
   CALL CMISSProblem_ControlLoopCreateFinish(Problem,Err)
 
@@ -410,7 +411,9 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   !First solver is a DAE solver
   CALL CMISSSolver_Initialise(Solver,Err)
   CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,Solver,Err)
-  CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_NO_OUTPUT,Err)
+  CALL CMISSSolver_DAESolverTypeSet(Solver,CMISS_SOLVER_DAE_EULER,Err)
+  CALL CMISSSolver_DAETimeStepSet(Solver,0.0000001_CMISSDP,Err)
+  CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_MATRIX_OUTPUT,Err)
 
   !Second solver is the dynamic solver for solving the parabolic equation
   CALL CMISSSolver_Initialise(Solver,Err)
@@ -419,21 +422,24 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   !set theta - backward vs forward time step parameter
   CALL CMISSSolver_DynamicThetaSet(Solver,1.0_CMISSDP,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISS_SOLVER_NO_OUTPUT,Err)
-  CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
+  CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_TIMING_OUTPUT,Err)
   !get the dynamic linear solver from the solver
   CALL CMISSSolver_DynamicLinearSolverGet(Solver,LinearSolver,Err)
-  !set linear solver to be direct solver. Note, I found this stuff in fluidmechanics/darcy/dynamic/src example
-  !CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearDirectSolveType,Err)
+  CALL CMISSSolver_LibraryTypeSet(LinearSolver,CMISS_SOLVER_LAPACK_LIBRARY,Err)
+  CALL CMISSSolver_LinearTypeSet(LinearSolver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
+  CALL CMISSSolver_LinearDirectTypeSet(LinearSolver,CMISS_SOLVER_DIRECT_LU,Err)
   !CALL CMISSSolverLibraryTypeSet(LinearSolver,CMISSSolverCMISSLibrary,Err)
   !CALL CMISSSolverLinearTypeSet(LinearSolver,CMISSSolverLinearDirectSolveType,Err)
   !CALL CMISSSolverLibraryTypeSet(LinearSolver,CMISSSolverMUMPSLibrary,Err)
-  CALL CMISSSolver_LinearIterativeMaximumIterationsSet(LinearSolver,1000,Err)
+  !CALL CMISSSolver_LinearIterativeMaximumIterationsSet(LinearSolver,10000,Err)
 
 
   !Third solver is another DAE solver
   CALL CMISSSolver_Initialise(Solver,Err)
   CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,3,Solver,Err)
-  CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_NO_OUTPUT,Err)
+  CALL CMISSSolver_DAESolverTypeSet(Solver,CMISS_SOLVER_DAE_EULER,Err)
+  CALL CMISSSolver_DAETimeStepSet(Solver,0.0000001_CMISSDP,Err)
+  CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_MATRIX_OUTPUT,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverTimingOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISSSolverSolverOutput,Err)
   !CALL CMISSSolverOutputTypeSet(Solver,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
@@ -475,14 +481,14 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   CALL CMISSSolver_SolverEquationsGet(Solver,SolverEquations,Err)
   !Set the solver equations sparsity
   !CALL CMISSSolverEquationsSparsityTypeSet(SolverEquations,CMISSSolverEquationsSparseMatrices,Err)
-  CALL CMISSSolverEquations_SparsityTypeSet(SolverEquations,CMISS_SOLVER_FULL_MATRICES,Err)  
+  CALL CMISSSolverEquations_SparsityTypeSet(SolverEquations,CMISS_SOLVER_SPARSE_MATRICES,Err)  
   !Add in the equations set
   CALL CMISSSolverEquations_EquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblem_SolverEquationsCreateFinish(Problem,Err)
 
   !Create the equations set boundary conditions
-  BCNODES = (/1,3/)
+  BCNODES = (/1,11/)
   CALL CMISSBoundaryConditions_Initialise(BoundaryConditions,Err)
   CALL CMISSSolverEquations_BoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
   DO node=1,2

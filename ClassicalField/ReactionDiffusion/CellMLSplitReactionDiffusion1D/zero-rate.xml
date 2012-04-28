@@ -17,7 +17,7 @@
           <bvar><ci>t</ci></bvar>
           <ci>ca</ci>
         </apply>
-        <cn cellml:units="dimensionless">0.0</cn>
+        <cn cellml:units="dimensionless">0.5</cn>
       </apply>
       <apply><eq/>
 	<ci>intmd</ci>
