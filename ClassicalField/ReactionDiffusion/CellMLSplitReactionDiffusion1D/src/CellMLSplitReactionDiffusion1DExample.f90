@@ -40,9 +40,9 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/Diffusion/CellMLSplitReactionDiffusion1D/src/CellMLSplitReactionDiffusion1DExample.f90
+!> \example ClassicalField/ReactionDiffusion/CellMLSplitReactionDiffusion1D/src/CellMLSplitReactionDiffusion1DExample.f90
 !! Example program to solve a diffusion equation using openCMISS calls.
-!! \htmlinclude ClassicalField/Diffusion/CellMLSplitReactionDiffusion1D/history.html
+!! \htmlinclude ClassicalField/ReactionDiffusion/CellMLSplitReactionDiffusion1D/history.html
 !<
 
 !> Main program

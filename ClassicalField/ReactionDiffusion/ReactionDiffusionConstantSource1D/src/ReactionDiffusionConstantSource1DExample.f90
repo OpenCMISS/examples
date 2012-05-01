@@ -40,9 +40,9 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/Diffusion/ReactionDiffusionConstantSource1D/src/ReactionDiffusionConstantSource1DExample.f90
+!> \example ClassicalField/ReactionDiffusion/ReactionDiffusionConstantSource1D/src/ReactionDiffusionConstantSource1DExample.f90
 !! Example program to solve a constant source reaction-diffusion equation using openCMISS calls.
-!! \htmlinclude ClassicalField/Diffusion/ReactionDiffusionConstantSource1D/history.html
+!! \htmlinclude ClassicalField/ReactionDiffusion/ReactionDiffusionConstantSource1D/history.html
 !<
 
 !> Main program
