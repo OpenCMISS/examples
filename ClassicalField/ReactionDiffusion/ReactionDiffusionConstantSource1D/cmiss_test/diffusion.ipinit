@@ -1,0 +1,21 @@
+ CMISS Version 2.1  ipinit File Version 3
+ Heading:
+ 
+ Are any bdry conditions time-varying [N]? N
+ Specify whether initial solution is [1]:
+   (1) Zero
+   (2) Read in
+  *(3) Restart from previous solution
+    1
+ Essential boundary conditions defined at nodes:
+ Enter node #s/name [EXIT]: 1,3
+ Dependent variable number 1 :
+ The value of the dependent variable is [no b.c.]: 1.5
+ Enter node #s/name [EXIT]: 0
+ 
+ Flux boundary conditions defined at nodes:
+ Specify whether the flux values are [Exit]:
+   (1) Integrated (W/m^2)
+   (2) Point values (Watts)
+   (3) Proportional to u
+    0

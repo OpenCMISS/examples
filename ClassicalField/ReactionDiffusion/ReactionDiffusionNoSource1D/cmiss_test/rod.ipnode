@@ -1,0 +1,16 @@
+ CMISS Version 2.1  ipnode File Version 2
+ Heading:
+ 
+ The number of nodes is [    3]:     3
+ Number of coordinates [1]: 1
+ Do you want prompting for different versions of nj=1 [N]? N
+ The number of derivatives for coordinate 1 is [0]: 0
+ 
+ Node number [    1]:     1
+ The Xj(1) coordinate is [ 0.00000E+00]:    0.0000000000000000
+ 
+ Node number [    2]:     2
+ The Xj(1) coordinate is [ 0.00000E+00]:    2.5000000000000000
+ 
+ Node number [    3]:     3
+ The Xj(1) coordinate is [ 0.10000E+01]:   5.00000000000000000

@@ -1,0 +1,14 @@
+ CMISS Version 2.1  ipelem File Version 2
+ Heading:
+ 
+ The number of elements is [1]:     2
+ 
+ Element number [    1]:     1
+ The number of geometric Xj-coordinates is [1]: 1
+ The basis function type for geometric variable 1 is [1]:  1
+ Enter the 2 global numbers for basis 1:     1     2
+ 
+ Element number [    2]:     2
+ The number of geometric Xj-coordinates is [1]: 1
+ The basis function type for geometric variable 1 is [1]:  1
+ Enter the 2 global numbers for basis 1:     2     3

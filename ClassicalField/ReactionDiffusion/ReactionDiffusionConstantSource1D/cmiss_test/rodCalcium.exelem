@@ -1,0 +1,25 @@
+ Group name: rodCalcium
+ Shape.  Dimension=1
+ #Scale factor sets= 1
+   l.Lagrange, #Scale factors= 2
+ #Nodes=           2
+ #Fields=1
+ 1) concentration, field, rectangular cartesian, #Components=1
+   concentration.  l.Lagrange, no modify, standard node based.
+     #Nodes= 2
+      1.  #Values=1
+       Value indices:     1
+       Scale factor indices:   1
+      2.  #Values=1
+       Value indices:     1
+       Scale factor indices:   2
+ Element:            1 0 0
+   Nodes:
+                1            2
+   Scale factors:
+       0.1000000000000000E+01   0.1000000000000000E+01
+ Element:            2 0 0
+   Nodes:
+                2            3
+   Scale factors:
+       0.1000000000000000E+01   0.1000000000000000E+01
