@@ -1,0 +1,67 @@
+ Group name: Region 2           
+ Shape.  Dimension=1
+ #Scale factor sets= 1
+ l.Lagrange, #Scale factors=2
+ #Nodes=           2
+ #Fields=5
+ 1) Coordinate, coordinate, rectangular cartesian, #Components=1
+   x.   l.Lagrange, no modify, standard node based.
+     #Nodes= 2
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+ 2) Coordinate, field,  rectangular cartesian, #Components=1
+   1.   l.Lagrange, no modify, standard node based.
+     #Nodes= 2
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+ 3) del U/del n, field,  rectangular cartesian, #Components=1
+   1.   l.Lagrange, no modify, standard node based.
+     #Nodes= 2
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+ 4) Coordinate, field,  rectangular cartesian, #Components=2
+   1.   l.Lagrange, no modify, grid based.
+     #xi1=1
+   2.   l.Lagrange, no modify, standard node based.
+     #Nodes= 2
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+ 5) Coordinate, field,  rectangular cartesian, #Components=1
+   1.   l.Lagrange, no modify, standard node based.
+     #Nodes= 2
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+ Element:            1 0 0
+   Values:
+     5.0000000000000000E-01   5.0000000000000000E-01
+   Nodes:
+           1           2
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            2 0 0
+   Values:
+     5.0000000000000000E-01   5.0000000000000000E-01
+   Nodes:
+           2           3
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00

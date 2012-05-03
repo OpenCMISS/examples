@@ -1,0 +1,47 @@
+ CMISS Version 2.1  ipequa File Version 2
+ Heading:
+ 
+ Specify whether [1]:
+   (1) Static analysis
+   (2) Time integration
+   (3) Modal analysis
+   (4) Quasi-static analysis
+   (5) Wavefront path analysis
+   (6) Buckling analysis
+    2
+ Specify equation [1]:
+   (1) Linear elasticity
+   (2) Finite elasticity
+   (3) Advection-diffusion
+   (4) Wave equation
+   (5) Navier-Stokes equations
+   (6) Bio-heat transfer
+  *(7) Maxwells equations
+   (8) Huygens activation
+   (9) Cellular based modelling
+  (10) Oxygen transport
+  (11) Pulmonary transport
+  (12)
+   3
+ Specify whether solution is by [1]:
+   (1) Galerkin finite elements
+   (2) Direct boundary elements
+   (3) Finite Difference
+   (4) Collocation
+   (5) Finite volume technique
+   (6) Grid-based Finite Element
+   (7) Grid-based Finite Volume
+    1
+ Specify whether [1]:
+   (1) Linear analysis
+   (2) Nonlinear analysis
+    1
+ Are any equation coeffs time-varying [N]? N
+ Specify the number of dependent variables [1]: 1
+ 
+ Is the basis function type for dependent variable 1
+ different in each element [N]? N
+ The basis type number is [1]: 1
+ The max # of versions of variable 1 is [1]: 1
+ 
+ Do you want the global matrices stored as sparse matrices [Y]? n

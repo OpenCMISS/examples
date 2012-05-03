@@ -1,0 +1,13 @@
+{"example": {
+  "globalTestDir" : the global test directory, e.g. "42testingPoints", the default is ""
+  "test": [   
+    {
+      "id": 1,
+      "args": arguments passed into the test, e.g. "4 4 0 1", the default is "",
+      "path": the path to the directory the test is executing from the globalTestDir, the default is the examplePath
+      "processors": number of computational nodes running, the default is 1,
+      "expectedPath": the path to the expected files from test.path, the default is unset,
+      "outputPath": the path to the output directory from test.path, the default is unset,
+      "tolerance": the tolerance allowed to compare the output with expected values, the default is "1e-7"}]
+}}
+
