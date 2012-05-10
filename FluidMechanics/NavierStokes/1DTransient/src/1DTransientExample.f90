@@ -41,6 +41,7 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberBif=12
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokes=7
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberBifurcation=8
+  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumberNavierStokes=12
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberNavierStokes=9
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberBifurcation=10
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=11
@@ -57,10 +58,6 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesA0=5
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesA1=6
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesA2=7
-
-  !Program types
-
-  TYPE(EXPORT_CONTAINER):: CM
 
   !Program variables
 
@@ -103,7 +100,7 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   INTEGER(CMISSIntg) :: EQUATIONS_NAVIER_STOKES_OUTPUT
   INTEGER(CMISSIntg) :: COMPONENT_NUMBER
   INTEGER(CMISSIntg) :: NODE_NUMBER
-  INTEGER(CMISSIntg) :: ELEMENT_NUMBER
+!  INTEGER(CMISSIntg) :: ELEMENT_NUMBER
   INTEGER(CMISSIntg) :: NODE_COUNTER
   INTEGER(CMISSIntg) :: CONDITION
 
@@ -116,7 +113,7 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   INTEGER, ALLOCATABLE, DIMENSION(:):: INLET_WALL_NODES_NAVIER_STOKES
 
 
-  REAL(CMISSDP) :: INITIAL_FIELD_NAVIER_STOKES(3)
+!  REAL(CMISSDP) :: INITIAL_FIELD_NAVIER_STOKES(3)
   REAL(CMISSDP) :: BOUNDARY_CONDITIONS_NAVIER_STOKES(3)
   REAL(CMISSDP) :: DIVERGENCE_TOLERANCE
   REAL(CMISSDP) :: RELATIVE_TOLERANCE
@@ -147,7 +144,6 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   REAL(CMISSDP) :: DYNAMIC_SOLVER_NAVIER_STOKES_THETA
   REAL(CMISSDP) :: DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT
 
-  LOGICAL :: EXPORT_FIELD_IO
   LOGICAL :: LINEAR_SOLVER_NAVIER_STOKES_DIRECT_FLAG
   LOGICAL :: OUTLET_WALL_NODES_NAVIER_STOKES_FLAG
   LOGICAL :: INLET_WALL_NODES_NAVIER_STOKES_FLAG
@@ -177,13 +173,12 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   !Decompositions
   TYPE(CMISSDecompositionType) :: Decomposition
   !Fields
-  TYPE(CMISSFieldsType) :: Fields
+!  TYPE(CMISSFieldsType) :: Fields
   !Field types
   TYPE(CMISSFieldType) :: GeometricField
   TYPE(CMISSFieldType) :: DependentFieldNavierStokes
-  TYPE(CMISSFieldType) :: DependentFieldBif
   TYPE(CMISSFieldType) :: MaterialsFieldNavierStokes
-  TYPE(CMISSFieldType) :: MaterialsFieldBifurcation
+  TYPE(CMISSFieldType) :: IndependentFieldNavierStokes
   !Boundary conditions
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsNavierStokes
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsBifurcation
@@ -235,7 +230,8 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   !INITIALISE OPENCMISS
 
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
-  CALL CMISSDiagnosticsSetOn(CMISS_IN_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["DOMAIN_MAPPINGS_LOCAL_FROM_GLOBAL_CALCULATE"],Err)
+!  CALL CMISSDiagnosticsSetOn(CMISS_IN_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["DOMAIN_MAPPINGS_LOCAL_FROM_GLOBAL_CALCULATE"],Err)
+ CALL CMISSDiagnosticsSetOn(CMISS_ALL_DIAG_TYPE,[2,3,4,5],"Diagnostics",[""],Err)
   CALL CMISSOutputSetOn("Testing",Err)
   CALL CMISSErrorHandlingModeSet(CMISS_ERRORS_TRAP_ERROR,Err)
 
@@ -324,11 +320,11 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
 !  BASIS_XI_GAUSS_PRESSURE=3
   !Set output parameter
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
-  DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISS_SOLVER_PROGRESS_OUTPUT
-  NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISS_SOLVER_PROGRESS_OUTPUT
-  LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISS_SOLVER_PROGRESS_OUTPUT
+  DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISS_SOLVER_MATRIX_OUTPUT
+  NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISS_SOLVER_MATRIX_OUTPUT
+  LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISS_SOLVER_MATRIX_OUTPUT
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
-  EQUATIONS_NAVIER_STOKES_OUTPUT=CMISS_EQUATIONS_NO_OUTPUT
+  EQUATIONS_NAVIER_STOKES_OUTPUT=CMISS_EQUATIONS_MATRIX_OUTPUT
   !Set time parameter
   DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME=0.0_CMISSDP
   DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME=0.01_CMISSDP
@@ -681,6 +677,24 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   !================================================================================================================================x
   !
 
+  !INDEPENDENT FIELDS
+
+  !Create the equations set independent field variables for ALE Navier-Stokes
+  CALL CMISSField_Initialise(IndependentFieldNavierStokes,Err)
+  CALL CMISSEquationsSet_IndependentCreateStart(EquationsSetBifurcation,IndependentFieldUserNumberNavierStokes, & 
+    & IndependentFieldNavierStokes,Err)
+  !Set the mesh component to be used by the field components.
+  DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
+    CALL CMISSField_ComponentMeshComponentSet(IndependentFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
+      & MESH_COMPONENT_NUMBER_SPACE,Err)
+  ENDDO
+  !Finish the equations set independent field variables
+  CALL CMISSEquationsSet_IndependentCreateFinish(EquationsSetBifurcation,Err)
+
+  !
+  !================================================================================================================================
+  !
+
   !EQUATIONS
 
   !Create the equations set equations
@@ -760,9 +774,9 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   !Get the dynamic nonlinear solver
   CALL CMISSSolver_DynamicNonlinearSolverGet(DynamicSolverNavierStokes,NonlinearSolverNavierStokes,Err)
   !Set the nonlinear Jacobian type
-  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED, &
-    & Err)
-!  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISS_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)
+!  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED, &
+!    & Err)
+  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISS_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)
   !Set the output type
   CALL CMISSSolver_OutputTypeSet(NonlinearSolverNavierStokes,NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE,Err)
   !Set the solver settings
@@ -790,7 +804,6 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   !Set the nonlinear Jacobian type
   CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolverBifurcation,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED, &
     & Err)
-!  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISS_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)
   !Set the output type
   CALL CMISSSolver_OutputTypeSet(NonlinearSolverBifurcation,NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE,Err)
   !Set the solver settings
@@ -889,10 +902,10 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
       DO COMPONENT_NUMBER=2,NUMBER_OF_DIMENSIONS+1
         VALUE=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER)
         VALUE1=BOUNDARY_CONDITIONS_NAVIER_STOKES(COMPONENT_NUMBER+1)
-!        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsNavierStokes,DependentFieldNavierStokes, &
-!          & CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_NO_GLOBAL_DERIV,5,COMPONENT_NUMBER,CONDITION,VALUE,Err)
-!        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsNavierStokes,DependentFieldNavierStokes, &
-!          & CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_NO_GLOBAL_DERIV,7,COMPONENT_NUMBER,CONDITION,VALUE1,Err)
+        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsNavierStokes,DependentFieldNavierStokes, &
+          & CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_NO_GLOBAL_DERIV,5,COMPONENT_NUMBER,CONDITION,VALUE,Err)
+        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsNavierStokes,DependentFieldNavierStokes, &
+          & CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_NO_GLOBAL_DERIV,7,COMPONENT_NUMBER,CONDITION,VALUE1,Err)
       ENDDO
     ENDDO
   ENDIF
