@@ -250,15 +250,19 @@ solverEquations.BoundaryConditionsCreateFinish()
 problem.Solve()
 
 # Export results
-baseName = "laplace"
-dataFormat = "PLAIN_TEXT"
-fml = CMISS.FieldMLIO()
-fml.OutputCreate(mesh, "", baseName, dataFormat)
-fml.OutputAddFieldNoType(baseName + ".geometric", dataFormat, geometricField,
-    CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES)
-fml.OutputAddFieldNoType(baseName + ".phi", dataFormat, dependentField,
-    CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES)
-fml.OutputWrite("LaplaceExample.xml")
-fml.Finalise()
+# FieldML output doesn't work in parallel
+if numberOfComputationalNodes == 1:
+    baseName = "laplace"
+    dataFormat = "PLAIN_TEXT"
+    fml = CMISS.FieldMLIO()
+    fml.OutputCreate(mesh, "", baseName, dataFormat)
+    fml.OutputAddFieldNoType(baseName + ".geometric", dataFormat, geometricField,
+        CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES)
+    fml.OutputAddFieldNoType(baseName + ".phi", dataFormat, dependentField,
+        CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES)
+    fml.OutputAddFieldNoType(baseName + ".dphidn", dataFormat, dependentField,
+        CMISS.FieldVariableTypes.DELUDELN, CMISS.FieldParameterSetTypes.VALUES)
+    fml.OutputWrite("LaplaceExample.xml")
+    fml.Finalise()
 
 CMISS.Finalise()
