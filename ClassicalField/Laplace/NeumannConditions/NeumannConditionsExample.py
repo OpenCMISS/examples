@@ -64,8 +64,8 @@ parser.add_option("-z", "--z-elements", dest="z", type="int", default=0,
 (opts, args) = parser.parse_args()
 if opts.x <= 0:
     raise ValueError("Number of x elements must be > 0")
-if opts.y <= 0:
-    raise ValueError("Number of y elements must be > 0")
+if opts.y < 0:
+    raise ValueError("Number of y elements must be >= 0")
 if opts.z < 0:
     raise ValueError("Number of z elements must be >= 0")
 numberGlobalElements = (opts.x, opts.y, opts.z)
@@ -73,7 +73,10 @@ numberOfXi = sum(ne > 0 for ne in numberGlobalElements)
 
 # Set problem parameters
 width = 1.0
-length = 3.0
+if numberOfXi > 1:
+    length = 3.0
+else:
+    length = 0.0
 if numberOfXi > 2:
     height = 1.0
 else:
@@ -234,7 +237,8 @@ for node in range(1, nodes.numberOfNodes + 1):
         boundaryConditions.SetNode(dependentField,
                 CMISS.FieldVariableTypes.DELUDELN, 1, 1, node, 1,
                 CMISS.BoundaryConditionsTypes.NEUMANN_POINT, -1.0)
-    elif (abs(position[1]) < tol or abs(position[1] - length) < tol or
+    elif ((numberOfXi > 1 and
+            (abs(position[1]) < tol or abs(position[1] - length) < tol)) or
             (numberOfXi > 2 and
             (abs(position[2]) < tol or abs(position[2] - height) < tol))):
         # Set integrated free conditions at top and bottom, front and back
