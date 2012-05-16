@@ -238,12 +238,12 @@ for node in range(1, nodes.numberOfNodes + 1):
                 CMISS.BoundaryConditionsTypes.NEUMANN_POINT, -1.0)
     elif (numberOfXi > 2 and
             (abs(position[2]) < tol or abs(position[2] - height) < tol)):
-        # Set integrated free conditions at top and bottom, otherwise point
-        # values will be integrated over the outer edge faces on the top
-        # and bottom
+        # Set "integrated only" free conditions at top and bottom,
+        # otherwise point # values will be integrated over the outer
+        # edge faces on the top and bottom
         boundaryConditions.SetNode(dependentField,
                 CMISS.FieldVariableTypes.DELUDELN, 1, 1, node, 1,
-                CMISS.BoundaryConditionsTypes.NEUMANN_INTEGRATED, 0.0)
+                CMISS.BoundaryConditionsTypes.NEUMANN_INTEGRATED_ONLY, 0.0)
 solverEquations.BoundaryConditionsCreateFinish()
 
 # Solve the problem
