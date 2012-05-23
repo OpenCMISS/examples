@@ -97,7 +97,8 @@ else:
 # Output all diagnostics in Neumann integration routine
 CMISS.DiagnosticsSetOn(
         CMISS.DiagnosticTypes.IN, [1,2,3,4,5], "diagnostics",
-        ["BoundaryConditions_NeumannIntegrate"])
+        ["BoundaryConditions_NeumannIntegrate",
+        "BoundaryConditions_NeumannMatricesInitialise"])
 
 # Get the computational nodes information
 numberOfComputationalNodes = CMISS.ComputationalNumberOfNodesGet()
