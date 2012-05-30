@@ -61,6 +61,10 @@ parser.add_option("-y", "--y-elements", dest="y", type="int", default=3,
         help="Number of y elements")
 parser.add_option("-z", "--z-elements", dest="z", type="int", default=0,
         help="Number of z elements, defaults to zero for 2D")
+parser.add_option("-i", "--interpolation", dest="interpolation",
+        choices=("quadratic-lagrange", "cubic-hermite"),
+        default="quadratic-lagrange",
+        help="Basis interpolation type")
 (opts, args) = parser.parse_args()
 if opts.x <= 0:
     raise ValueError("Number of x elements must be > 0")
@@ -81,6 +85,15 @@ if numberOfXi > 2:
     height = 1.0
 else:
     height = 0.0
+
+if opts.interpolation == "quadratic-lagrange":
+    interpolationType = CMISS.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE
+    numGauss = 3
+    hasDerivatives = False
+elif opts.interpolation == "cubic-hermite":
+    interpolationType = CMISS.BasisInterpolationSpecifications.CUBIC_HERMITE
+    numGauss = 4
+    hasDerivatives = True
 
 (coordinateSystemUserNumber,
     regionUserNumber,
@@ -122,9 +135,8 @@ basis = CMISS.Basis()
 basis.CreateStart(basisUserNumber)
 basis.type = CMISS.BasisTypes.LAGRANGE_HERMITE_TP
 basis.numberOfXi = numberOfXi
-basis.interpolationXi = [
-        CMISS.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE] * numberOfXi
-basis.quadratureNumberOfGaussXi = [3] * numberOfXi
+basis.interpolationXi = [interpolationType] * numberOfXi
+basis.quadratureNumberOfGaussXi = [numGauss] * numberOfXi
 basis.CreateFinish()
 
 # Create a generated regular mesh
@@ -151,6 +163,7 @@ decomposition.CreateFinish()
 geometricField = CMISS.Field()
 geometricField.CreateStart(geometricFieldUserNumber, region)
 geometricField.meshDecomposition = decomposition
+geometricField.scalingType = CMISS.FieldScalingTypes.ARITHMETIC_MEAN
 geometricField.CreateFinish()
 
 # Set geometry from the generated mesh
@@ -169,6 +182,7 @@ equationsSet.CreateFinish()
 # Create dependent field
 dependentField = CMISS.Field()
 equationsSet.DependentCreateStart(dependentFieldUserNumber, dependentField)
+dependentField.scalingType = CMISS.FieldScalingTypes.ARITHMETIC_MEAN
 equationsSet.DependentCreateFinish()
 
 # Initialise dependent field
@@ -233,6 +247,17 @@ for node in range(1, nodes.numberOfNodes + 1):
         # Fix right nodes at zero
         boundaryConditions.SetNode(dependentField, CMISS.FieldVariableTypes.U,
                 1, 1, node, 1, CMISS.BoundaryConditionsTypes.FIXED, 0.0)
+        if numberOfXi > 1 and hasDerivatives:
+            boundaryConditions.SetNode(dependentField,
+                    CMISS.FieldVariableTypes.U, 1, 3, node, 1,
+                    CMISS.BoundaryConditionsTypes.FIXED, 0.0)
+        if numberOfXi > 2 and hasDerivatives:
+            boundaryConditions.SetNode(dependentField,
+                    CMISS.FieldVariableTypes.U, 1, 5, node, 1,
+                    CMISS.BoundaryConditionsTypes.FIXED, 0.0)
+            boundaryConditions.SetNode(dependentField,
+                    CMISS.FieldVariableTypes.U, 1, 7, node, 1,
+                    CMISS.BoundaryConditionsTypes.FIXED, 0.0)
     elif abs(position[0]) < tol:
         # Set Neumann condition of -1 at left side
         boundaryConditions.SetNode(dependentField,
@@ -254,15 +279,24 @@ solverEquations.BoundaryConditionsCreateFinish()
 problem.Solve()
 
 # Export results
-baseName = "laplace"
-dataFormat = "PLAIN_TEXT"
-fml = CMISS.FieldMLIO()
-fml.OutputCreate(mesh, "", baseName, dataFormat)
-fml.OutputAddFieldNoType(baseName + ".geometric", dataFormat, geometricField,
-    CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES)
-fml.OutputAddFieldNoType(baseName + ".phi", dataFormat, dependentField,
-    CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES)
-fml.OutputWrite("LaplaceExample.xml")
-fml.Finalise()
+if numberOfComputationalNodes == 1 and not hasDerivatives:
+    # Use FieldML output if we can, but it doesn't support
+    # parallel output or cubic Hermite interpolation
+    baseName = "laplace"
+    dataFormat = "PLAIN_TEXT"
+    fml = CMISS.FieldMLIO()
+    fml.OutputCreate(mesh, "", baseName, dataFormat)
+    fml.OutputAddFieldNoType(baseName + ".geometric", dataFormat, geometricField,
+        CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES)
+    fml.OutputAddFieldNoType(baseName + ".phi", dataFormat, dependentField,
+        CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES)
+    fml.OutputWrite("LaplaceExample.xml")
+    fml.Finalise()
+else:
+    fields = CMISS.Fields()
+    fields.CreateRegion(region)
+    fields.NodesExport("Laplace","FORTRAN")
+    fields.ElementsExport("Laplace","FORTRAN")
+    fields.Finalise()
 
 CMISS.Finalise()

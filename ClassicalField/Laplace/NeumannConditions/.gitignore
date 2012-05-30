@@ -2,6 +2,9 @@
 /*.xml
 /*.dofs.node
 /*.connectivity
+# ex outputs
+/*.exnode
+/*.exelem
 
 # Diagnostics output
 /*.diag
