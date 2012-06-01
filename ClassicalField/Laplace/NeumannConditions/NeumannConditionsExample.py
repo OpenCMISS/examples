@@ -230,6 +230,7 @@ problem.SolverEquationsCreateFinish()
 # Set boundary conditions
 boundaryConditions = CMISS.BoundaryConditions()
 solverEquations.BoundaryConditionsCreateStart(boundaryConditions)
+boundaryConditions.neumannSparsityType = CMISS.BoundaryConditionSparsityTypes.SPARSE
 nodes = CMISS.Nodes()
 region.NodesGet(nodes)
 for node in range(1, nodes.numberOfNodes + 1):
@@ -259,10 +260,10 @@ for node in range(1, nodes.numberOfNodes + 1):
                     CMISS.FieldVariableTypes.U, 1, 7, node, 1,
                     CMISS.BoundaryConditionsTypes.FIXED, 0.0)
     elif abs(position[0]) < tol:
-        # Set Neumann condition of -1 at left side
+        # Set Neumann condition of 1 at left side
         boundaryConditions.SetNode(dependentField,
                 CMISS.FieldVariableTypes.DELUDELN, 1, 1, node, 1,
-                CMISS.BoundaryConditionsTypes.NEUMANN_POINT, -1.0)
+                CMISS.BoundaryConditionsTypes.NEUMANN_POINT, 1.0)
     elif ((numberOfXi > 1 and
             (abs(position[1]) < tol or abs(position[1] - length) < tol)) or
             (numberOfXi > 2 and

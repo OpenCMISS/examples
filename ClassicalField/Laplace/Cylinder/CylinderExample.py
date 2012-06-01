@@ -232,10 +232,10 @@ for node in range(1, nodes.numberOfNodes + 1):
         boundaryConditions.SetNode(dependentField, CMISS.FieldVariableTypes.U,
                 1, 1, node, 1, CMISS.BoundaryConditionsTypes.FIXED, 0.0)
     elif abs(radius - outer_radius) < tol:
-        # Set Neumann condition of -1 at outer surface
+        # Set Neumann condition of 1 at outer surface
         boundaryConditions.SetNode(dependentField,
                 CMISS.FieldVariableTypes.DELUDELN, 1, 1, node, 1,
-                CMISS.BoundaryConditionsTypes.NEUMANN_POINT, -1.0)
+                CMISS.BoundaryConditionsTypes.NEUMANN_POINT, 1.0)
     elif (numberOfXi > 2 and
             (abs(position[2]) < tol or abs(position[2] - height) < tol)):
         # Set "integrated only" free conditions at top and bottom,
