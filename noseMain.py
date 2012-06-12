@@ -149,20 +149,28 @@ def check_build_library(compiler_version,arch,system,language=None):
   assert err==0
   
 def test_example():
-  global examplesDir
+  global examplesDir, logsDir
   os.system("mpd &")
+  invalid_json_filelist = logsDir + "/invalid_jason_filelist"
+  if os.path.exists(invalid_json_filelist) :
+    os.remove(invalid_json_filelist)
   for examplePath, subFolders, files in os.walk(examplesDir) :
     if examplePath.find(".svn")==-1 :
       for f in files :
         if (size=='small' and f=='nightlytest.json') or (size=='large' and f in ('nightlytest.json','weeklytest.json')) :
           os.chdir(examplePath)
-          json_data=open(f).read()
-          example = object_encode(json.loads(json_data))
-          yield check_build, 'build', example
-          for test in example.tests : 
-            yield check_run, 'run', example, test
-            if (hasattr(test, 'expectedPath')):
-              yield check_output,'check', example, test
+          try:
+            json_data=open(f).read()
+            example = object_encode(json.loads(json_data))
+            yield check_build, 'build', example
+            for test in example.tests : 
+              yield check_run, 'run', example, test
+              if (hasattr(test, 'expectedPath')):
+                yield check_output,'check', example, test
+          except ValueError:
+            if not os.path.exists(invalid_json_filelist) :
+              invalid_json_file = open(invalid_json_filelist,"w")
+            invalid_json_file.write("%s\n" %(examplePath))
         elif size=='large' and (f=="Makefile") and not (os.path.exists(examplePath+"/nightlytest.json") or os.path.exists(examplePath+"/weeklytest.json")):
           os.chdir(examplePath)
           example = object_encode()

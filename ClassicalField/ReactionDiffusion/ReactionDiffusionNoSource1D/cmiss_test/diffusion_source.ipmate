@@ -1,0 +1,62 @@
+ CMISS Version 2.1  ipmate File Version 2
+ Heading:
+ 
+ Are any material parameters time-varying [N]? N
+ 
+ Source term (constant) is [1]:
+   (1) Constant spatially
+   (2) Piecewise constant (defined by elements)
+   (3) Piecewise linear   (defined by nodes)
+   (4) Defined by grid points (CQ)
+   (5) Defined elsewhere by Gauss pt array (YG)
+ 3
+ Enter basis type number [1]: 1
+ The value at node 1 is [0.0000E+00]: 0.00000E+00
+ The value at node 2 is [0.0000E+00]: 0.5
+ The value at node 3 is [0.5000E+00]: 0
+ The value is [0.0000E+00]: 0.00000E+00
+ 
+ Source term (linear) is [1]:
+   (1) Constant spatially
+   (2) Piecewise constant (defined by elements)
+   (3) Piecewise linear   (defined by nodes)
+   (4) Defined by grid points (CQ)
+   (5) Defined elsewhere by Gauss pt array (YG)
+ 1
+ The value is [0.0000E+00]: 0.00000E+00
+ 
+ Storage coefficient is [1]:
+   (1) Constant spatially
+   (2) Piecewise constant (defined by elements)
+   (3) Piecewise linear   (defined by nodes)
+   (4) Defined by grid points (CQ)
+   (5) Defined elsewhere by Gauss pt array (YG)
+ 1
+ The value is [0.0000E+00]: 1
+ 
+ Diffusion coefficient (fibre_1) is [1]:
+   (1) Constant spatially
+   (2) Piecewise constant (defined by elements)
+   (3) Piecewise linear   (defined by nodes)
+   (4) Defined by grid points (CQ)
+   (5) Defined elsewhere by Gauss pt array (YG)
+ 1
+ The value is [0.0000E+00]: 0.5
+ 
+ Mass flow (fibre_1) is [1]:
+   (1) Constant spatially
+   (2) Piecewise constant (defined by elements)
+   (3) Piecewise linear   (defined by nodes)
+   (4) Defined by grid points (CQ)
+   (5) Defined elsewhere by Gauss pt array (YG)
+ 1
+ The value is [0.0000E+00]: 0.00000E+00
+ 
+ Grad Mass flow (fibre_1) is [1]:
+   (1) Constant spatially
+   (2) Piecewise constant (defined by elements)
+   (3) Piecewise linear   (defined by nodes)
+   (4) Defined by grid points (CQ)
+   (5) Defined elsewhere by Gauss pt array (YG)
+ 1
+ The value is [0.0000E+00]: 0.00000E+00

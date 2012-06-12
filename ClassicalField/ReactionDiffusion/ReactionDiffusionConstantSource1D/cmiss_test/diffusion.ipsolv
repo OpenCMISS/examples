@@ -1,0 +1,57 @@
+ CMISS Version 2.1  ipsolv File Version 3
+ Heading:
+ 
+ Specify whether time integration algorithm is [1]:
+   (1) Linear
+   (2) Quadratic
+   (3) Cubic
+    1
+ Specify whether [1]:
+   (1) Fixed time step
+   (2) Automatic stepping
+    1
+ Specify the time integration parameter [2/3]: 1
+ Specify the initial time (secs) [0]: 0.00000E+00
+ Specify the  final time (secs) [10]: 0.5
+ Specify the time increment (initial if automatic stepping) [1.0]: 0.01
+ Enter #time step intervals for history file o/p (0 for no o/p)[1]: 1
+ Enter filename for the output history file [current]: uvals
+ Is the history file to be stored as a binary file [N]? N
+ Do you want mass lumping [N]? N
+ Specify type of linear solution procedure [1]:
+   (1)  LU Decomposition
+   (2)  Single Value Decomposition
+   (3)  Least Squares
+   (4)  Cholesky Decomposition
+   (5)  Jacobi Iteration
+   (6)  Succesive Over Relaxation
+   (7)  Incomplete LU Decomposition(0)
+   (8)  Incomplete LU Decomposition(1)
+   (9)  Conjugate Gradient
+   (10) Biconjugate Gradient Stabilised
+   (11) Generalised Minimum Residual
+   (12) Black Box Multigrid (BOXMG)
+   (13) Preconditioned CG from BOXMG
+   (14) Algebraic Multigrid (AMG1R6)
+    1
+ Do you want the solution matrix stored as a sparse matrix [Y]? n
+ Specify the LU solver [2]:
+   (1) SuperLU
+   (2) Umfpack
+    2
+ Specify the pivot threshold [0.1D0]: 0.10000E+00
+ Specify option for linear solution [0]:
+   (0) No output
+   (1) Timing and error check
+   (2) & Solver output
+   (3) & Global solution matrices
+   (4) & Global stiffness matrices
+   (5) & Element matrices
+    5
+ Enter the solution output frequency (0 for no output) [1]: 1
+ Specify option for solution matrices output [0]:
+   (0) No output
+   (1) Solution matrix
+   (2) RHS vector
+   (3) Solution matrix & RHS vector
+    0

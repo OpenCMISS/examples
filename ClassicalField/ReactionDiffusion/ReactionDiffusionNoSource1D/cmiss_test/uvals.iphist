@@ -1,0 +1,523 @@
+ CMISS Version 2.1  iphist File Version 3
+ Heading:  
+
+ Number of regions stored:  1
+ Regions are:  1
+ The file contains the variables: YP
+
+ YP Data:
+
+ Total number of ny values stored:          6
+ Region  1 : Number of nc.s stored = 2
+             Number of ny.s for each nc :          3          3
+ Number of niy indicies stored =  1
+ Indicies are :  1
+ Number of NPNY indicies stored =  7
+ NPNY values:
+ NPNY index 0 :     1     1     1     1     1     1
+ NPNY index 1 :     1     1     1     1     1     1
+ NPNY index 2 :     1     1     1     1     1     1
+ NPNY index 3 :     1     1     1     1     1     1
+ NPNY index 4 :     1     2     3     1     2     3
+ NPNY index 5 :     1     1     1     2     2     2
+ NPNY index 6 :     1     1     1     1     1     1
+
+ Time =  0.0000E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.00000E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.00000E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.00000E+00
+
+ Time =  0.1000E-01
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.35914E-02
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.22817E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.22817E+00
+
+ Time =  0.2000E-01
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.71742E-02
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.22834E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.22834E+00
+
+ Time =  0.3000E-01
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.10748E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.22852E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.22852E+00
+
+ Time =  0.4000E-01
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.14314E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.22869E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.22869E+00
+
+ Time =  0.5000E-01
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.17871E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.22886E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.22886E+00
+
+ Time =  0.6000E-01
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.21420E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.22903E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.22903E+00
+
+ Time =  0.7000E-01
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.24960E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.22920E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.22920E+00
+
+ Time =  0.8000E-01
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.28491E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.22937E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.22937E+00
+
+ Time =  0.9000E-01
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.32015E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.22954E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.22954E+00
+
+ Time =  0.1000E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.35529E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.22971E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.22971E+00
+
+ Time =  0.1100E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.39036E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.22987E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.22987E+00
+
+ Time =  0.1200E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.42534E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23004E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23004E+00
+
+ Time =  0.1300E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.46023E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23021E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23021E+00
+
+ Time =  0.1400E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.49504E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23038E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23038E+00
+
+ Time =  0.1500E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.52977E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23054E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23054E+00
+
+ Time =  0.1600E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.56442E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23071E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23071E+00
+
+ Time =  0.1700E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.59898E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23088E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23088E+00
+
+ Time =  0.1800E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.63346E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23104E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23104E+00
+
+ Time =  0.1900E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.66786E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23121E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23121E+00
+
+ Time =  0.2000E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.70217E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23137E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23137E+00
+
+ Time =  0.2100E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.73640E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23153E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23153E+00
+
+ Time =  0.2200E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.77055E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23170E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23170E+00
+
+ Time =  0.2300E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.80462E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23186E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23186E+00
+
+ Time =  0.2400E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.83861E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23203E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23203E+00
+
+ Time =  0.2500E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.87252E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23219E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23219E+00
+
+ Time =  0.2600E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.90634E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23235E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23235E+00
+
+ Time =  0.2700E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.94009E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23251E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23251E+00
+
+ Time =  0.2800E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.97375E-01
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23267E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23267E+00
+
+ Time =  0.2900E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.10073E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23284E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23284E+00
+
+ Time =  0.3000E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.10408E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23300E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23300E+00
+
+ Time =  0.3100E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.10743E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23316E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23316E+00
+
+ Time =  0.3200E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.11076E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23332E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23332E+00
+
+ Time =  0.3300E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.11409E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23348E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23348E+00
+
+ Time =  0.3400E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.11740E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23364E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23364E+00
+
+ Time =  0.3500E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.12071E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23379E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23379E+00
+
+ Time =  0.3600E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.12402E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23395E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23395E+00
+
+ Time =  0.3700E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.12731E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23411E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23411E+00
+
+ Time =  0.3800E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.13060E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23427E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23427E+00
+
+ Time =  0.3900E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.13388E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23443E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23443E+00
+
+ Time =  0.4000E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.13715E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23458E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23458E+00
+
+ Time =  0.4100E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.14041E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23474E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23474E+00
+
+ Time =  0.4200E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.14367E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23490E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23490E+00
+
+ Time =  0.4300E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.14691E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23505E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23505E+00
+
+ Time =  0.4400E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.15015E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23521E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23521E+00
+
+ Time =  0.4500E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.15338E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23536E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23536E+00
+
+ Time =  0.4600E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.15661E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23552E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23552E+00
+
+ Time =  0.4700E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.15982E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23567E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23567E+00
+
+ Time =  0.4800E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.16303E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23583E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23583E+00
+
+ Time =  0.4900E+00
+ The time series contains the variables: YP
+ YP Data:
+ YP(      1,niy):  0.15000E+01
+ YP(      2,niy):  0.16623E+00
+ YP(      3,niy):  0.15000E+01
+ YP(      4,niy):  0.23598E+00
+ YP(      5,niy):  0.00000E+00
+ YP(      6,niy):  0.23598E+00

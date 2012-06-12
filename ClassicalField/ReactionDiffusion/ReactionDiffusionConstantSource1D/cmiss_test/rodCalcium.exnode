@@ -1,0 +1,10 @@
+ Group name: rodCalcium
+ #Fields=1
+ 1) concentration, field, rectangular cartesian, #Components=1
+   concentration.  Value index= 1, #Derivatives= 0  
+ Node:            1
+     0.5000000000000000E+01
+ Node:            2
+     0.4980622984195054E+01
+ Node:            3
+     0.5000000000000000E+01
