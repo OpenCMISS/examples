@@ -70,17 +70,17 @@
 #define MAX_COORDINATES 3
 
 #define CHECK_ERROR(S) \
-  if(Err != CMISSNoError) { \
-    if(Err == CMISSErrorConvertingPointer) { \
+  if(Err != CMISS_NO_ERROR) { \
+    if(Err == CMISS_ERROR_CONVERTING_POINTER) { \
       fprintf(stderr,"Error: %s: Error converting pointer.\n",(S)); \
     } \
-    else if(Err == CMISSPointerIsNULL) { \
+    else if(Err == CMISS_POINTER_IS_NULL) { \
       fprintf(stderr,"Error: %s: Pointer is null.\n",(S)); \
     } \
-    else if(Err == CMISSPointerNotNULL) { \
+    else if(Err == CMISS_POINTER_NOT_NULL) { \
       fprintf(stderr,"Error: %s: Pointer is not null.\n",(S)); \
     } \
-    else if(Err == CMISSCouldNotAllocatePointer) { \
+    else if(Err == CMISS_COULD_NOT_ALLOCATE_POINTER) { \
       fprintf(stderr,"Error: %s: Could not allocate pointer.\n",(S)); \
     } \
     exit(Err); \
@@ -222,13 +222,13 @@ int main()
   /* Create the equations_set */
   Err = CMISSEquationsSet_Initialise(&EquationsSet);
   Err = CMISSField_Initialise(&EquationsSetField);
-  Err = CMISSEquationsSet_CreateStart(EQUATIONS_SET_USER_NUMBER,Region,GeometricField,CMISS_EQUATIONS_SET_CLASSICAL_FIELD_CLASS, &
-    & CMISS_EQUATIONS_SET_LAPLACE_EQUATION_TYPE,CMISS_EQUATIONS_SET_STANDARD_LAPLACE_SUBTYPE,EQUATIONS_SET_FIELD_USER_NUMBER, &
-      & EquationsSetField,EquationsSet);
+  Err = CMISSEquationsSet_CreateStart(EQUATIONS_SET_USER_NUMBER,Region,GeometricField,CMISS_EQUATIONS_SET_CLASSICAL_FIELD_CLASS, \
+    CMISS_EQUATIONS_SET_LAPLACE_EQUATION_TYPE,CMISS_EQUATIONS_SET_STANDARD_LAPLACE_SUBTYPE,EQUATIONS_SET_FIELD_USER_NUMBER, \
+    EquationsSetField,EquationsSet);
   CHECK_ERROR("Creating equations set");
   /* Set the equations set to be a standard Laplace problem */
-  //Err = CMISSEquationsSet_SpecificationSet(EquationsSet,CMISS_EQUATIONS_SET_CLASSICAL_FIELD_CLASS, &
-    & CMISS_EQUATIONS_SET_LAPLACE_EQUATION_TYPE,CMISS_EQUATIONS_SET_STANDARD_LAPLACE_SUBTYPE);
+  Err = CMISSEquationsSet_SpecificationSet(EquationsSet,CMISS_EQUATIONS_SET_CLASSICAL_FIELD_CLASS, \
+    CMISS_EQUATIONS_SET_LAPLACE_EQUATION_TYPE,CMISS_EQUATIONS_SET_STANDARD_LAPLACE_SUBTYPE);
   /* Finish creating the equations set */
   Err = CMISSEquationsSet_CreateFinish(EquationsSet);
 
@@ -255,8 +255,8 @@ int main()
   Err = CMISSProblem_Initialise(&Problem);
   Err = CMISSProblem_CreateStart(PROBLEM_USER_NUMBER,Problem);
   /* Set the problem to be a standard Laplace problem */
-  Err = CMISSProblem_SpecificationSet(Problem,CMISS_PROBLEM_CLASSICAL_FIELD_CLASS,CMISS_PROBLEM_LAPLACE_EQUATION_TYPE, &
-    & CMISS_PROBLEM_STANDARD_LAPLACE_SUBTYPE);
+  Err = CMISSProblem_SpecificationSet(Problem,CMISS_PROBLEM_CLASSICAL_FIELD_CLASS,CMISS_PROBLEM_LAPLACE_EQUATION_TYPE, \
+    CMISS_PROBLEM_STANDARD_LAPLACE_SUBTYPE);
   /* Finish the creation of a problem. */
   Err = CMISSProblem_CreateFinish(Problem);
 
@@ -312,13 +312,13 @@ int main()
   Err = CMISSDecomposition_NodeDomainGet(Decomposition,LastNodeNumber,1,&LastNodeDomain);
   if(FirstNodeDomain==ComputationalNodeNumber)
     {
-      Err = CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,FirstNodeNumber,1, &
-        & CMISS_BOUNDARY_CONDITION_FIXED,0.0);
+      Err = CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,FirstNodeNumber,1, \
+        CMISS_BOUNDARY_CONDITION_FIXED,0.0);
     }
   if(LastNodeDomain==ComputationalNodeNumber)
     {
-      Err = CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,LastNodeNumber,1, &
-        & CMISS_BOUNDARY_CONDITION_FIXED,1.0);
+      Err = CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,LastNodeNumber,1, \
+        CMISS_BOUNDARY_CONDITION_FIXED,1.0);
     }
   /* Finish the creation of the equations set boundary conditions */
   Err = CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquations);
