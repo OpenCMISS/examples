@@ -1,5 +1,5 @@
 
-for ($t=0; $t<=70; $t+=10){
+for ($t=0; $t<=100; $t+=10){
   $num =  sprintf("%04d", $t);
   $node = "TIME_STEP_".$num.".exnode";
   gfx read node $node time $t;

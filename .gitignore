@@ -2,9 +2,18 @@
 object/
 bin/
 
+# Old files
+old/
+
 # OpenCMISS output
 *.diag
 *.out
+*.exnode
+*.exelem
+*.davidn
+*.opanal
+*.node
+*.connectivity
 
 # Editor files
 *.swp
