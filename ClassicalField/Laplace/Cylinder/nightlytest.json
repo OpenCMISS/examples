@@ -1,0 +1,18 @@
+{"example": {
+  "language": "python",
+  "script": "CylinderExample.py",
+  "test": [
+    {
+     "id": 1,
+     "args": "",
+     "tolerance": 1e-6,
+     "expectedPath": "expected_results"
+    },
+    {
+     "id": 2,
+     "args": "",
+     "tolerance": 1e-6,
+     "processors": 2
+    }
+  ]
+}}
