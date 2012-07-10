@@ -1219,20 +1219,20 @@ PROGRAM simple_geometryEXAMPLE
 
   !--------------------------------------------------------------------------------------------------------------------------------
   !Now turn the stimulus off
-!  NodeNumber=NumberOfNodesPerFibre/2
-!  DO WHILE(NodeNumber<NumberOfNodesM)
-!    CALL CMISSDecomposition_NodeDomainGet(DecompositionM,NodeNumber,1,NodeDomain,Err)
-!    IF(NodeDomain==ComputationalNodeNumber) CALL CMISSField_ParameterSetUpdateNode(CellMLParametersField, &
-!     & CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,stimcomponent,0.0_CMISSDP,Err)
-!    NodeNumber=NodeNumber+NumberOfNodesPerFibre
-!  ENDDO
+  NodeNumber=NumberOfNodesPerFibre/2
+  DO WHILE(NodeNumber<NumberOfNodesM)
+    CALL CMISSDecomposition_NodeDomainGet(DecompositionM,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) CALL CMISSField_ParameterSetUpdateNode(CellMLParametersField, &
+     & CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,stimcomponent,0.0_CMISSDP,Err)
+    NodeNumber=NodeNumber+NumberOfNodesPerFibre
+  ENDDO
 
 
-!  CALL CMISSControlLoop_TimesSet(ControlLoopMain,STIM_STOP,TIME_STOP,ELASTICITY_TIME_STEP,Err)
+  CALL CMISSControlLoop_TimesSet(ControlLoopMain,STIM_STOP,TIME_STOP,ELASTICITY_TIME_STEP,Err)
 
-!  !Solve the problem for the rest of the period
-!  WRITE(*,'(A)') "Start solve without stimulation"
-!  CALL CMISSProblem_Solve(Problem,Err)
+  !Solve the problem for the rest of the period
+  WRITE(*,'(A)') "Start solve without stimulation"
+  CALL CMISSProblem_Solve(Problem,Err)
 
   !--------------------------------------------------------------------------------------------------------------------------------
 !  time = time + PERIODD
