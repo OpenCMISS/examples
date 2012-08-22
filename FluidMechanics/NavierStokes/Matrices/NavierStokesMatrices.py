@@ -348,13 +348,35 @@ solverRhs.DataRestore(rhsData)
 solverJacobian = CMISS.DistributedMatrix()
 solverEquations.JacobianMatrixGet(solverJacobian)
 
-# Get Jacobian matrix as a SciPy sparse matrix
+# Get the solver Jacobian matrix as a SciPy sparse matrix and
+# calculate the matrix condition number
 try:
     sparseJacobian = solverJacobian.ToSciPy()
-    # Convert to a dense matrix
-    denseJacobian = sparseJacobian.toarray()
-    print("Jacobian matrix:")
-    print(denseJacobian)
+    try:
+        from scipy.sparse import linalg
+        # Using SciPy's sparse eigenvalue solver we can't actually find
+        # all eigenvalues and eigenvectors at once, only up to N - 1.
+        # We'll just find the 6 largest and smallest eigenvalues and use
+        # the largest and smallest to calculate the condition number
+        eigenvalues, eigenvectors = linalg.eigs(sparseJacobian, 6, which='LM')
+        maxEig = max(abs(e) for e in eigenvalues)
+        eigenvalues, eigenvectors = linalg.eigs(sparseJacobian, 6, which='SM')
+        minEig = min(abs(e) for e in eigenvalues)
+    except AttributeError:
+        # SciPy versions older than 0.9 don't have the sparse matrix
+        # eigenvalue solver, so use the dense matrix.
+        # This can find all eigenvalues and eigenvectors at once
+        from scipy import linalg
+        denseJacobian = sparseJacobian.toarray()
+        eigenvalues, eigenvectors = linalg.eig(denseJacobian)
+        maxEig = max(abs(e) for e in eigenvalues)
+        minEig = min(abs(e) for e in eigenvalues)
+    try:
+        cond = maxEig / minEig
+        print("Jacobian condition number: %f" % cond)
+    except ZeroDivisionError:
+        # If condition number is infinte we effectively have a zero row
+        print("Jacobian condition number is infinte.")
     solverJacobian.SciPyRestore(sparseJacobian)
 except ImportError:
     # If scipy isn't installed, just ignore this
