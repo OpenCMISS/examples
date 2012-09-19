@@ -277,7 +277,7 @@ Synergism of coupled subsarcolemmal Ca2+ clocks and sarcolemmal voltage clocks c
   </component>
   <component name="electric_potentials">
     <variable name="E_Na" public_interface="out" units="millivolt"/>
-    <variable name="E_K" public_interface="out" private_interface="out" units="millivolt"/>
+    <variable name="E_K" public_interface="out" units="millivolt"/>
     <variable name="E_Ks" public_interface="out" units="millivolt"/>
     <variable name="R" public_interface="in" units="joule_per_kilomole_kelvin"/>
     <variable name="T" public_interface="in" units="kelvin"/>
@@ -1809,7 +1809,7 @@ Synergism of coupled subsarcolemmal Ca2+ clocks and sarcolemmal voltage clocks c
         </apply>
       </apply>
     </math>
-    <variable name="Ach" public_interface="in" private_interface="out" units="millimolar"/>
+    <variable name="Ach" public_interface="in" units="millimolar"/>
   </component>
   <component name="i_st">
     <variable cmeta:id="i_st_i_st" name="i_st" public_interface="out" units="picoA"/>
