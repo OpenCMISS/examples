@@ -1,0 +1,30 @@
+{"example": {
+  "language": "python",
+  "script": "NeumannConditionsExample.py",
+  "test": [
+    {
+     "id": 1,
+     "args": "-x 3 -y 3 -z 0",
+     "tolerance": 1e-6,
+     "expectedPath": "expected_results/2D"
+    },
+    {
+     "id": 2,
+     "args": "-x 3 -y 3 -z 3",
+     "tolerance": 1e-6,
+     "expectedPath": "expected_results/3D"
+    },
+    {
+     "id": 3,
+     "args": "-x 5 -y 0 -z 0",
+     "tolerance": 1e-6,
+     "expectedPath": "expected_results/1D"
+    },
+    {
+     "id": 4,
+     "args": "-i cubic-hermite",
+     "tolerance": 1e-6,
+     "expectedPath": "expected_results/2D_cubic"
+    }
+  ]
+}}
