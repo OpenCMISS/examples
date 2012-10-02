@@ -1,0 +1,8 @@
+# Ignore everything in this directory
+*
+# Except for:
+Makefile
+resistance.xml
+visualise.com
+src/
+!.gitignore
