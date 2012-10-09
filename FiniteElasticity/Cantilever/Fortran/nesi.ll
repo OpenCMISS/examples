@@ -2,8 +2,8 @@
 #@ job_name = finiteelasticity_cantilever_fortran
 #@ class = default
 #@ group = nesi
+#@ account_no = uoa
 #@ notification = never
-#@ account_no = /nz/nesi
 #@ wall_clock_limit = 1:00:00
 #@ resources = ConsumableMemory(1024mb) ConsumableVirtualMemory(1024mb)
 #@ job_type = MPICH
