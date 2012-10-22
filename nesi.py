@@ -5,7 +5,7 @@ from time import strftime
 
 env = Environment(loader=FileSystemLoader('.'))
 template = env.get_template('nesi.template')
-rootLogDir = "%s/../Logs/examples" %(os.getcwd())
+rootLogDir = "%s/../logs/examples" %(os.getcwd())
 masterLogDir = "http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_nesi/examples"
 
 class Example:
@@ -54,7 +54,7 @@ class Example:
     cwd = os.getcwd()
     os.chdir(self.path)
     logPath = "%s/nesi_run_%s.log" %(self.logDir,str(date.today()))
-    command = "llsubmit nesi.ll %s 2>&1" %(logPath)
+    command = "llsubmit nesi.ll >> %s 2>&1" %(logPath)
     self.runFail = os.system(command)
     self.runLog = "%s/nesi_run_%s.log" %(self.masterLogDir,str(date.today()))
     self.runHistory = self.add_history("%s/nesi_run_history.log" %(self.logDir),self.runFail)
@@ -126,6 +126,4 @@ for path, subFolders, files in os.walk(top=root.path,topdown=True) :
         if example.buildFail==0 :
           example.run()
 
-htmlFile = open("aa.html","w")
-htmlFile.write(template.render(examples=root))
-htmlFile.close()
+print template.render(examples=root)
