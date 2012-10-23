@@ -1,4 +1,4 @@
-import os, mmap, re
+import os, mmap, re, sys
 from jinja2 import Template, Environment, FileSystemLoader
 from datetime import date	
 from time import strftime
@@ -143,6 +143,7 @@ class Example:
   def __repr__(self):
     return self.path
 
+
 root = Example(name="examples", path=".")
 for path, subFolders, files in os.walk(top=root.path,topdown=True) :
   if path.find(".svn")==-1 :	
@@ -160,3 +161,8 @@ for path, subFolders, files in os.walk(top=root.path,topdown=True) :
           example.run()
 
 print template.render(examples=root)
+f = open("aa.html","w")
+f.write(template.render(examples=root))
+f.close()
+if root.fail != 0 :
+  exit("ERROR: At least one examples failed")
