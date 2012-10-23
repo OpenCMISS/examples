@@ -3,7 +3,12 @@
 <SCRIPT LANGUAGE="JavaScript" SRC="http://autotest.bioeng.auckland.ac.nz/opencmiss-build/tree.js"> </SCRIPT>
 <link href="http://autotest.bioeng.auckland.ac.nz/opencmiss-build/tree.css" rel="stylesheet" />
 </head><body>
-<h1>OpenCMISS Nightly Testing Results</h1>
+<h2>OpenCMISS Examples Nightly Testing Results</h2>
+<para>
+* Click on + or - button to open or close the subtree. 
+* Mouse hover on the status (PASS or FAIL) of examples to see the status of five most recent tests.
+* Click on the status (PASS or FAIL) of examples to view the logs.
+</para>
 <ul id="tree1" class="mktree">
 {% for subclass in examples.children recursive %}
   <li class="liClosed">&nbsp;{{subclass.name}}
@@ -28,7 +33,7 @@
           </span></span>
           </li>
           {% if subclass.buildFail==0 %}
-            <li class="liBullet">&nbsp;Running the test:&nbsp;
+            <li class="liBullet">&nbsp;Executing the example:&nbsp;
             <span class="dropt">
             {% if subclass.runFail==0 %}
               <a class="success" href="{{subclass.runLog}}">PASS</a>

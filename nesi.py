@@ -1,4 +1,4 @@
-import os
+import os, mmap, re
 from jinja2 import Template, Environment, FileSystemLoader
 from datetime import date	
 from time import strftime
@@ -38,8 +38,10 @@ class Example:
     cwd = os.getcwd()
     os.chdir(self.path)
     logPath = "%s/nesi_build_%s.log" %(self.logDir,str(date.today()))
+    self.wrapWithPre(logPath,1)
     command = "make MPI_DIR=/usr/mpi/gcc/openmpi-1.6 >> %s 2>&1" %(logPath)
     self.buildFail = os.system(command)
+    self.wrapWithPre(logPath,0)
     self.buildLog = "%s/nesi_build_%s.log" %(self.masterLogDir,str(date.today()))
     self.buildHistory = self.add_history("%s/nesi_build_history.log" %(self.logDir),self.buildFail)   
     if self.buildFail != 0 :
@@ -50,20 +52,51 @@ class Example:
         parent = parent.parent   
     os.chdir(cwd)
 
+  def wrapWithPre(self,path,openTag=1) :
+    if openTag== 1 :
+      f1 = open(path,"w")
+      f1.write("<pre>")
+    else :
+      f1 = open(path,"a")
+      f1.write("</pre>")
+    f1.close()
+
   def run(self) :
     cwd = os.getcwd()
     os.chdir(self.path)
     logPath = "%s/nesi_run_%s.log" %(self.logDir,str(date.today()))
-    command = "llsubmit nesi.ll >> %s 2>&1" %(logPath)
+    self.wrapWithPre(logPath,1)
+    command = "llsubmit -s nesi.ll > %s 2>&1" %(logPath)
     self.runFail = os.system(command)
+    self.wrapWithPre(logPath,0)
     self.runLog = "%s/nesi_run_%s.log" %(self.masterLogDir,str(date.today()))
-    self.runHistory = self.add_history("%s/nesi_run_history.log" %(self.logDir),self.runFail)
+    if self.runFail == 0 :
+      # Find the output log and replace with the submission log
+      size = os.stat(logPath).st_size
+      f = open(logPath, "r")
+      data = mmap.mmap(f.fileno(), size, access=mmap.ACCESS_READ)
+      m = re.search(r'\.[0-9]+', data)
+      f.close()   
+      f1 = open("nesi%s.out" %(m.group(0)), "r")
+      output = f1.read()
+      f1.close()
+      self.wrapWithPre(logPath,1)
+      f = open(logPath,"a")
+      if output.find("ERROR")>0 :
+        self.runFail=1
+      f.write(output)
+      f.close()
+      self.wrapWithPre(logPath,0)
+    self.runHistory = self.add_history("%s/nesi_run_history.log" %(self.logDir),self.runFail)  
     if self.runFail != 0 :
       self.fail = 1
       parent = self.parent
       while (parent!=None) :
         parent.fail = parent.fail+1
         parent = parent.parent
+      
+      
+    
     os.chdir(cwd)
 
   def add_history(self,path,fail) :
