@@ -43,6 +43,7 @@ class Example:
     self.buildFail = os.system(command)
     self.wrapWithPre(logPath,0)
     self.buildLog = "%s/nesi_build_%s.log" %(self.masterLogDir,str(date.today()))
+    self.buildHistoryLog = "%s/nesi_build_history.log" %(self.masterLogDir)
     self.buildHistory = self.add_history("%s/nesi_build_history.log" %(self.logDir),self.buildFail)   
     if self.buildFail != 0 :
       self.fail = 1
@@ -70,6 +71,7 @@ class Example:
     self.runFail = os.system(command)
     self.wrapWithPre(logPath,0)
     self.runLog = "%s/nesi_run_%s.log" %(self.masterLogDir,str(date.today()))
+    self.runHistoryLog = "%s/nesi_run_history.log" %(self.masterLogDir)
     if self.runFail == 0 :
       # Find the output log and replace with the submission log
       size = os.stat(logPath).st_size

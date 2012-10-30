@@ -17,24 +17,26 @@
           {{ loop(subclass.children) }}     
         {% else %}
           <li class="liBullet">&nbsp;Building the example:&nbsp;
-          <span class="dropt">
           {% if subclass.buildFail==0 %}
             <a class="success" href="{{subclass.buildLog}}">PASS</a>
           {% else %}
             <a class="fail" href="{{subclass.buildLog}}">FAIL</a>
-          {% endif %}
+          {% endif %}&nbsp;
+          <span class="dropt">
+          <a href="{{subclass.buildHistoryLog}}">History</a>
           <span style="width:230px;">
           {{subclass.buildHistory}}
           </span></span>
           </li>
           {% if subclass.buildFail==0 %}
             <li class="liBullet">&nbsp;Executing the example:&nbsp;
-            <span class="dropt">
             {% if subclass.runFail==0 %}
               <a class="success" href="{{subclass.runLog}}">PASS</a>
             {% else %}
               <a class="fail" href="{{subclass.runLog}}">FAIL</a>
-            {% endif %}
+            {% endif %}&nbsp;
+            <span class="dropt">
+            <a href="{{subclass.runHistoryLog}}">History</a>
             <span style="width:230px;">
             {{subclass.runHistory}}
             </span></span>&nbsp;
