@@ -1,12 +1,49 @@
 <html><head>
 <title>Test output</title>
 <SCRIPT LANGUAGE="JavaScript" SRC="http://autotest.bioeng.auckland.ac.nz/opencmiss-build/tree.js"> </SCRIPT>
+<script>
+function searchTree(frm) {
+  if (frm.example.value != "") {
+    collapseTree('root');
+    var rootsAr = document.getElementById("root");
+    searchChild(rootsAr, frm.example.value);
+  }
+}
+
+function searchChild(item, str){
+  for (var i = 0; i < item.childNodes.length; i++) {
+    var it = item.childNodes[i];
+    if (it.nodeName == "LI") {
+      if (it.id.toLowerCase().indexOf(str.toLowerCase())>=0){
+        expandToItem("root",it.id);
+      }
+      else {
+        for (var j=0;j<it.childNodes.length;j++) {
+          var ut = it.childNodes[j];
+          if (ut.nodeName == "UL") {
+            searchChild(ut, str)
+          }
+        }
+      }
+    }
+  }
+}
+</script>
 <link href="http://autotest.bioeng.auckland.ac.nz/opencmiss-build/tree.css" rel="stylesheet" />
 </head><body>
 <h2>OpenCMISS Examples Nightly Testing Results</h2>
-<ul id="tree1" class="mktree">
+<br>
+<form action="javascript:searchTree(document.getElementById('exampleF').value)">
+Search: <input id="exampleF" type="text" name="example">&nbsp;
+<input type="submit" value="Submit" onClick="searchTree(this.form)">
+</form>
+&nbsp;
+<a href="javascript:void(0);" onClick="expandTree('root');">Expand all</a>&nbsp;
+<a href="javascript:void(0);" onClick="collapseTree('root');">Collapse all</a>
+<br>
+<ul id="root" class="mktree">
 {% for subclass in examples.children recursive %}
-  <li class="liClosed">&nbsp;{{subclass.name}}
+  <li class="liClosed" id="{{subclass.path}}">&nbsp;{{subclass.name}}
      {% if subclass.fail==0 %}
         <a class="success">PASS</a>
      {% else %}
@@ -52,6 +89,7 @@
 {% else %}
   <a class="fail">There are {{examples.fail}} fail(s).</a>
 {% endif %}
+<br>
 
 <ul class="nb">
 NB:
