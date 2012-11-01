@@ -210,8 +210,8 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   !INITIALISE OPENCMISS
 
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
-  CALL CMISSDiagnosticsSetOn(CMISS_IN_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["DOMAIN_MAPPINGS_LOCAL_FROM_GLOBAL_CALCULATE"],Err)
-  CALL CMISSOutputSetOn("Testing",Err)
+!  CALL CMISSDiagnosticsSetOn(CMISS_IN_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["DOMAIN_MAPPINGS_LOCAL_FROM_GLOBAL_CALCULATE"],Err)
+!  CALL CMISSOutputSetOn("Testing",Err)
   CALL CMISSErrorHandlingModeSet(CMISS_ERRORS_TRAP_ERROR,Err)
 
   !================================================================================================================================
@@ -277,7 +277,7 @@ PROGRAM NAVIERSTOKES1DTRANSIENTEXAMPLE
   !Set material parameters
   MU_PARAM_NAVIER_STOKES=0.0035_CMISSDP !g/(mm.s)=kg/(m.s)=Pa.s
   RHO_PARAM_NAVIER_STOKES=1.050_CMISSDP !g/cm3
-  E_PARAM_NAVIER_STOKES=800_CMISSDP !KPa
+  E_PARAM_NAVIER_STOKES=800.0_CMISSDP !KPa
   H0_PARAM_NAVIER_STOKES=0.5_CMISSDP !mm
   A0_PARAM_NAVIER_STOKES=18.1_CMISSDP !mm2
   SIGMA_PARAM_NAVIER_STOKES=0.5_CMISSDP
