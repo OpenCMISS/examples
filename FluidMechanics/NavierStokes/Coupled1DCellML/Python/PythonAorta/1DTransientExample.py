@@ -97,8 +97,8 @@ import fem_topology
 sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
 
 #CMISS.DiagnosticsSetOn(CMISS.DiagnosticTypes.ALL,[1,2,3,4,5],"Diagnostics",[""])
-CMISS.ErrorHandlingModeSet(CMISS.ErrorHandlingModes.TRAP_ERROR)
-CMISS.OutputSetOn("Testing")
+#CMISS.ErrorHandlingModeSet(CMISS.ErrorHandlingModes.TRAP_ERROR)
+#CMISS.OutputSetOn("Testing")
 
 # Get computational nodes information
 NumberOfComputationalNodes = CMISS.ComputationalNumberOfNodesGet()
@@ -110,8 +110,8 @@ ComputationalNodeNumber = CMISS.ComputationalNodeNumberGet()
 
 # Set geometry parameters
 NumberOfDimensions = 1
-TotalNumberOfElements = 6
-NumberOfNodesSpace = 13
+TotalNumberOfElements = 9
+NumberOfNodesSpace = 19
 NumberOfNodesFlow = NumberOfNodesSpace
 NumberOfNodesArea = NumberOfNodesSpace
 TotalNumberOfNodes = NumberOfNodesSpace*3
@@ -145,10 +145,13 @@ A0_PARAM = [0]*(TotalNumberOfElements+1)  # Area (m2)
 Beta = [0]*(TotalNumberOfElements+1)      # Beta (Pa/m)
 A0_PARAM[1] = 19.6e-6                 
 A0_PARAM[2] = 19.6e-6
-A0_PARAM[3] = 12.8e-6
-A0_PARAM[4] = 12.8e-6
-A0_PARAM[5] = 12.8e-6
-A0_PARAM[6] = 12.8e-6
+A0_PARAM[3] = 19.6e-6
+A0_PARAM[4] = 19.6e-6
+A0_PARAM[5] = 19.6e-6
+A0_PARAM[6] = 19.6e-6
+A0_PARAM[7] = 19.6e-6
+A0_PARAM[8] = 12.8e-6
+A0_PARAM[9] = 12.8e-6
 for i in range(1,TotalNumberOfElements+1):
     Beta[i] = (4.0*(3.1416**0.5)*E_PARAM_NAVIER_STOKES*H0_PARAM_NAVIER_STOKES)/(3.0*A0_PARAM[i])
     
@@ -171,23 +174,26 @@ A1 = 1.0
 A2 = 0.653
 A3 = 0.653
 
+# Set bifurcation nodes 
+bifurcationNodeNumber1 = 15
 # Set terminal nodes 
 # (terminal node with either versions set so that method of characteristics may
 # be used for 1D-0D coupling or just a regular terminal boundary condition)
-coupledNodeNumber1 = 11
-coupledNodeNumber2 = 13
+coupledNodeNumber1 = 17
+coupledNodeNumber2 = 19
+
 
 # Set output parameters
 # (NONE/PROGRESS/TIMING/SOLVER/MATRIX)
-DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE = CMISS.SolverOutputTypes.MATRIX
-NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE = CMISS.SolverOutputTypes.MATRIX
-LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE = CMISS.SolverOutputTypes.MATRIX
+DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE = CMISS.SolverOutputTypes.NONE
+NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE = CMISS.SolverOutputTypes.NONE
+LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE = CMISS.SolverOutputTypes.NONE
 # (NONE/TIMING/MATRIX/ELEMENT)
-EQUATIONS_NAVIER_STOKES_OUTPUT = CMISS.SolverOutputTypes.MATRIX
+EQUATIONS_NAVIER_STOKES_OUTPUT = CMISS.SolverOutputTypes.NONE
 
 # Set time parameters
 DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME = 0.0
-DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME = 0.01
+DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME = 0.1
 DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT = 0.01
 DYNAMIC_SOLVER_NAVIER_STOKES_THETA = [1.0/2.0]
 
@@ -335,32 +341,32 @@ for i in range(1,TotalNumberOfElements+1):
     MeshElementsSpace.NodesSet(i,ElementNodes[i-1])
     
     #   NODES
-    #               7-10-11
-    #              /
-    #             6
-    #            /
-    #   1-2-3-4-5
-    #            \   
-    #             8 
-    #              \
-    #               9-12-13
+    #                                         7-10-11
+    #                                        /
+    #                                       6
+    #                                      /
+    #   1-2-3-4-5-6-7-8-9-10-11-12-13-14-15
+    #                                      \   
+    #                                       8 
+    #                                        \
+    #                                         9-12-13
     #  
     #   ELEMENTS
-    #               --5--
-    #              /
-    #             3
-    #            /
-    #   --1---2--
-    #            \   
-    #             4 
-    #              \
-    #               --6--
-    
+    #                           
+    #                          
+    #                         8
+    #                        /
+    #   --1--2--3--4--5--6--7
+    #                        \   
+    #                         9 
+    #                          
+    #                           
+
 # Set versions at bifurcation
 # (globalElementNumber,versionNumber,derivativeNumber,localElementNodeNumber)
-MeshElementsSpace.LocalElementNodeVersionSet(2,1,1,3) 
-MeshElementsSpace.LocalElementNodeVersionSet(3,2,1,1) 
-MeshElementsSpace.LocalElementNodeVersionSet(4,3,1,1) 
+MeshElementsSpace.LocalElementNodeVersionSet(7,1,1,3) 
+MeshElementsSpace.LocalElementNodeVersionSet(8,2,1,1) 
+MeshElementsSpace.LocalElementNodeVersionSet(9,3,1,1) 
     
 MeshElementsSpace.CreateFinish()
 # Specify flow mesh component
@@ -402,7 +408,7 @@ GeometricField.TypeSet = CMISS.FieldTypes.GEOMETRIC
 GeometricField.meshDecomposition = Decomposition
 GeometricField.ScalingTypeSet = CMISS.FieldScalingTypes.NONE
 # Set the mesh component to be used by the field components.
-for ComponentNumber in range(1,2):
+for ComponentNumber in range(1,CoordinateSystem.dimension+1):
     GeometricField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,ComponentNumber,MeshComponentNumberSpace)
 # Finish creating the field
 GeometricField.CreateFinish()
@@ -415,18 +421,20 @@ for UserNodeNumber in range(1,NumberOfNodesSpace+1):
         VersionNumber,1,UserNodeNumber,1,xValues[UserNodeNumber-1][VersionNumber-1])
     GeometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
         VersionNumber,1,UserNodeNumber,2,yValues[UserNodeNumber-1][VersionNumber-1])
-    GeometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
-        VersionNumber,1,UserNodeNumber,3,zValues[UserNodeNumber-1][VersionNumber-1])
+    if(CoordinateSystem.dimension==3):
+        GeometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+            VersionNumber,1,UserNodeNumber,3,zValues[UserNodeNumber-1][VersionNumber-1])
         
-UserNodeNumber = 5
+UserNodeNumber = bifurcationNodeNumber1
 for VersionNumber in range(2,4):
     # (field,variableType,fieldSetType,versionNumber,derivativeNumber,userNodeNumber,componentNumber,value)
     GeometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
         VersionNumber,1,UserNodeNumber,1,xValues[UserNodeNumber-1][VersionNumber-1])
     GeometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
         VersionNumber,1,UserNodeNumber,2,yValues[UserNodeNumber-1][VersionNumber-1])
-    GeometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
-        VersionNumber,1,UserNodeNumber,3,zValues[UserNodeNumber-1][VersionNumber-1])
+    if(CoordinateSystem.dimension==3):
+        GeometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+            VersionNumber,1,UserNodeNumber,3,zValues[UserNodeNumber-1][VersionNumber-1])
 
 #================================================================================================================================
 #  Equations Sets
@@ -510,25 +518,38 @@ DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
     CMISS.FieldParameterSetTypes.VALUES,1,1,5,1,Q1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-    CMISS.FieldParameterSetTypes.VALUES,2,1,5,1,Q2)
+    CMISS.FieldParameterSetTypes.VALUES,1,1,6,1,Q1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-    CMISS.FieldParameterSetTypes.VALUES,3,1,5,1,Q3)
+    CMISS.FieldParameterSetTypes.VALUES,1,1,7,1,Q1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-    CMISS.FieldParameterSetTypes.VALUES,1,1,6,1,Q2)
+    CMISS.FieldParameterSetTypes.VALUES,1,1,8,1,Q1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-    CMISS.FieldParameterSetTypes.VALUES,1,1,7,1,Q2)
+    CMISS.FieldParameterSetTypes.VALUES,1,1,9,1,Q1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-    CMISS.FieldParameterSetTypes.VALUES,1,1,8,1,Q3)
+    CMISS.FieldParameterSetTypes.VALUES,1,1,10,1,Q1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-    CMISS.FieldParameterSetTypes.VALUES,1,1,9,1,Q3)
+    CMISS.FieldParameterSetTypes.VALUES,1,1,11,1,Q1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-    CMISS.FieldParameterSetTypes.VALUES,1,1,10,1,Q2)
+    CMISS.FieldParameterSetTypes.VALUES,1,1,12,1,Q1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-    CMISS.FieldParameterSetTypes.VALUES,1,1,11,1,Q2)
+    CMISS.FieldParameterSetTypes.VALUES,1,1,13,1,Q1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-    CMISS.FieldParameterSetTypes.VALUES,1,1,12,1,Q3)
+    CMISS.FieldParameterSetTypes.VALUES,1,1,14,1,Q1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-    CMISS.FieldParameterSetTypes.VALUES,1,1,13,1,Q3)
+    CMISS.FieldParameterSetTypes.VALUES,1,1,bifurcationNodeNumber1,1,Q1)
+DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
+    CMISS.FieldParameterSetTypes.VALUES,2,1,bifurcationNodeNumber1,1,Q2)
+DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
+    CMISS.FieldParameterSetTypes.VALUES,3,1,bifurcationNodeNumber1,1,Q3)
+DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
+    CMISS.FieldParameterSetTypes.VALUES,1,1,16,1,Q2)
+DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
+    CMISS.FieldParameterSetTypes.VALUES,1,1,coupledNodeNumber1,1,Q2)
+DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
+    CMISS.FieldParameterSetTypes.VALUES,1,1,18,1,Q3)
+DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
+    CMISS.FieldParameterSetTypes.VALUES,1,1,coupledNodeNumber2,1,Q3)
+
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
     CMISS.FieldParameterSetTypes.VALUES,1,1,1,2,A1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
@@ -540,38 +561,42 @@ DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
     CMISS.FieldParameterSetTypes.VALUES,1,1,5,2,A1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-    CMISS.FieldParameterSetTypes.VALUES,2,1,5,2,A2)
+    CMISS.FieldParameterSetTypes.VALUES,1,1,6,2,A1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-    CMISS.FieldParameterSetTypes.VALUES,3,1,5,2,A3)
+    CMISS.FieldParameterSetTypes.VALUES,1,1,7,2,A1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-    CMISS.FieldParameterSetTypes.VALUES,1,1,6,2,A2)
+    CMISS.FieldParameterSetTypes.VALUES,1,1,8,2,A1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-    CMISS.FieldParameterSetTypes.VALUES,1,1,7,2,A2)
+    CMISS.FieldParameterSetTypes.VALUES,1,1,9,2,A1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-    CMISS.FieldParameterSetTypes.VALUES,1,1,8,2,A3)
+    CMISS.FieldParameterSetTypes.VALUES,1,1,10,2,A1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-    CMISS.FieldParameterSetTypes.VALUES,1,1,9,2,A3)
+    CMISS.FieldParameterSetTypes.VALUES,1,1,11,2,A1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-    CMISS.FieldParameterSetTypes.VALUES,1,1,10,2,A2)
+    CMISS.FieldParameterSetTypes.VALUES,1,1,12,2,A1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-    CMISS.FieldParameterSetTypes.VALUES,1,1,11,2,A2)
+    CMISS.FieldParameterSetTypes.VALUES,1,1,13,2,A1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-    CMISS.FieldParameterSetTypes.VALUES,1,1,12,2,A3)
+    CMISS.FieldParameterSetTypes.VALUES,1,1,14,2,A1)
 DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-    CMISS.FieldParameterSetTypes.VALUES,1,1,13,2,A3)
+    CMISS.FieldParameterSetTypes.VALUES,1,1,bifurcationNodeNumber1,2,A1)
+DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
+    CMISS.FieldParameterSetTypes.VALUES,2,1,bifurcationNodeNumber1,2,A2)
+DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
+    CMISS.FieldParameterSetTypes.VALUES,3,1,bifurcationNodeNumber1,2,A3)
+DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
+    CMISS.FieldParameterSetTypes.VALUES,1,1,16,2,A2)
+DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
+    CMISS.FieldParameterSetTypes.VALUES,1,1,coupledNodeNumber1,2,A2)
+DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
+    CMISS.FieldParameterSetTypes.VALUES,1,1,18,2,A3)
+DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
+    CMISS.FieldParameterSetTypes.VALUES,1,1,coupledNodeNumber2,2,A3)
 
-DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,
-    CMISS.FieldParameterSetTypes.VALUES,1,1,5,1,0.0)
-DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,
-    CMISS.FieldParameterSetTypes.VALUES,2,1,5,1,0.0)
-DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,
-    CMISS.FieldParameterSetTypes.VALUES,3,1,5,1,0.0)
-DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,
-    CMISS.FieldParameterSetTypes.VALUES,1,1,5,2,0.0)
-DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,
-    CMISS.FieldParameterSetTypes.VALUES,2,1,5,2,0.0)
-DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,
-    CMISS.FieldParameterSetTypes.VALUES,3,1,5,2,0.0)
+for componentNumber in range(1,3):
+    for versionNumber in range(1,4):
+        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,
+            CMISS.FieldParameterSetTypes.VALUES,versionNumber,1,bifurcationNodeNumber1,componentNumber,0.0)
 
 #================================================================================================================================
 #  Materials Field
@@ -660,7 +685,7 @@ IndependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.
 EquationsSetCharacteristic.IndependentCreateFinish()
 
 # Normal Wave Direction for bifurcation
-nodeIdx = 5
+nodeIdx = bifurcationNodeNumber1
 # 1 inlet/parent
 componentIdx = 1 # Incoming
 versionIdx = 1
@@ -680,24 +705,24 @@ for versionIdx in range(2,4):
 if (cellmlFlag):
 
     # Incoming normals
-    nodeIdx = 11
+    nodeIdx = coupledNodeNumber1
     componentIdx = 1
     VALUE = 1.0
     versionIdx = 1
     IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
         versionIdx,1,nodeIdx,componentIdx,VALUE)
-    nodeIdx = 13
+    nodeIdx = coupledNodeNumber2
     IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
         versionIdx,1,nodeIdx,componentIdx,VALUE)
 
     # Outgoing normals
-    nodeIdx = 11
+    nodeIdx = coupledNodeNumber1
     componentIdx = 2
     VALUE = -1.0
     versionIdx = 1
     IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
         versionIdx,1,nodeIdx,componentIdx,VALUE)
-    nodeIdx = 13
+    nodeIdx = coupledNodeNumber2
     IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
         versionIdx,1,nodeIdx,componentIdx,VALUE)
 
