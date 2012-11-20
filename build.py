@@ -12,12 +12,12 @@ size = 'small' if (not 'SIZE' in os.environ) else os.environ['SIZE']
 testSets = ["nightlytest.json","weeklytest.json"] if (size == 'large') else ["nightlytest.json"]
 examplesDir = globalExamplesDir if (not 'DIR' in os.environ) else "%s/%s" %(globalExamplesDir,os.environ['DIR'])
 rootLogDir = "%s/%s" %(os.environ['OPENCMISS_ROOT'],"build/logs") 
-masterLogDir = "http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_%s" %(os.environ['archname'])
+machine = os.environ['MACHINE'] if ('MACHINE' in os.environ) else None
+masterLogDir = "http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_%s" %(machine if machine != None else os.environ['archname'])
 compiler = 'gnu' if (not 'COMPILER' in os.environ) else os.environ['COMPILER']
 compilerVersion = 'gnu_4.6' if (not 'OPENCMISS_COMPILER_PATH' in os.environ) else os.environ['OPENCMISS_COMPILER_PATH']
 system = os.uname()[0].lower()
 arch = os.uname()[4]
-machine = os.environ['MACHINE'] if ('MACHINE' in os.environ) else None
 
 class Class:
 

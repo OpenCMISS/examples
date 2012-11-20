@@ -110,8 +110,6 @@ Search: <input id="exampleF" type="text" name="example">&nbsp;
 <ul class="nb">
 NB:
 <li>Click on + or - button to open or close the subtree.</li>
-<li>Mouse hover on the status (<a class="success">PASS</a> or <a class="fail">FAIL</a>) of examples to see the status of five most recent tests.</li>
-<li>Click on the status (<a class="success">PASS</a> or <a class="fail">FAIL</a>) of examples to view the logs.</li>
 </ul>
 </body></html>
 
