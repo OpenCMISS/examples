@@ -7,7 +7,7 @@ import fileinput
 
 env = Environment(loader=FileSystemLoader('.'))
 template = env.get_template('build.template')
-nesiTemplate = env.get_template('nesi1.template')
+nesiTemplate = env.get_template('nesi.template')
 globalExamplesDir = os.environ['OPENCMISSEXAMPLES_ROOT']
 size = 'small' if (not 'SIZE' in os.environ) else os.environ['SIZE']
 testSets = ["nightlytest.json","weeklytest.json"] if (size == 'large') else ["nightlytest.json"]

@@ -1,102 +1,17 @@
-<html><head>
-<title>Test output</title>
-<SCRIPT LANGUAGE="JavaScript" SRC="http://autotest.bioeng.auckland.ac.nz/opencmiss-build/tree.js"> </SCRIPT>
-<script>
-function searchTree(frm) {
-  if (frm.example.value != "") {
-    collapseTree('root');
-    var rootsAr = document.getElementById("root");
-    searchChild(rootsAr, frm.example.value);
-  }
-}
-
-function searchChild(item, str){
-  for (var i = 0; i < item.childNodes.length; i++) {
-    var it = item.childNodes[i];
-    if (it.nodeName == "LI") {
-      if (it.id.toLowerCase().indexOf(str.toLowerCase())>=0){
-        expandToItem("root",it.id);
-      }
-      else {
-        for (var j=0;j<it.childNodes.length;j++) {
-          var ut = it.childNodes[j];
-          if (ut.nodeName == "UL") {
-            searchChild(ut, str)
-          }
-        }
-      }
-    }
-  }
-}
-</script>
-<link href="http://autotest.bioeng.auckland.ac.nz/opencmiss-build/tree.css" rel="stylesheet" />
-</head><body>
-<h2>OpenCMISS Examples Nightly Testing Results</h2>
-<br>
-<form action="javascript:searchTree(document.getElementById('exampleF').value)">
-Search: <input id="exampleF" type="text" name="example">&nbsp;
-<input type="submit" value="Submit" onClick="searchTree(this.form)">
-</form>
-&nbsp;
-<a href="javascript:void(0);" onClick="expandTree('root');">Expand all</a>&nbsp;
-<a href="javascript:void(0);" onClick="collapseTree('root');">Collapse all</a>
-<br>
-<ul id="root" class="mktree">
-{% for subclass in examples.children recursive %}
-  <li class="liClosed" id="{{subclass.path}}">&nbsp;{{subclass.name}}
-     {% if subclass.fail==0 %}
-        <a class="success">PASS</a>
-     {% else %}
-        <a class="fail">{{subclass.fail}} FAIL(s)</a>
-     {% endif %}
-      <ul>
-        {% if subclass.children %}
-          {{ loop(subclass.children) }}     
-        {% else %}
-          <li class="liBullet">&nbsp;Building the example:&nbsp;
-          {% if subclass.buildFail==0 %}
-            <a class="success" href="{{subclass.buildLog}}">PASS</a>
-          {% else %}
-            <a class="fail" href="{{subclass.buildLog}}">FAIL</a>
-          {% endif %}&nbsp;
-          <span class="dropt">
-          <a href="{{subclass.buildHistoryLog}}">History</a>
-          <span style="width:230px;">
-          {{subclass.buildHistory}}
-          </span></span>
-          </li>
-          {% if subclass.buildFail==0 %}
-            <li class="liBullet">&nbsp;Executing the example:&nbsp;
-            {% if subclass.runFail==0 %}
-              <a class="success" href="{{subclass.runLog}}">PASS</a>
-            {% else %}
-              <a class="fail" href="{{subclass.runLog}}">FAIL</a>
-            {% endif %}&nbsp;
-            <span class="dropt">
-            <a href="{{subclass.runHistoryLog}}">History</a>
-            <span style="width:230px;">
-            {{subclass.runHistory}}
-            </span></span>&nbsp;
-            </li>
-          {% endif %}
-        {% endif %}
-      </ul>
-    </li>
-{% endfor %}
-</ul>
-{% if examples.fail==0 %}
-  <a class="success">All the examples passes</a>
-{% else %}
-  <a class="fail">There are {{examples.fail}} fail(s).</a>
-{% endif %}
-<br>
-
-<ul class="nb">
-NB:
-<li>Click on + or - button to open or close the subtree.</li>
-<li>Mouse hover on the status (<a class="success">PASS</a> or <a class="fail">FAIL</a>) of examples to see the status of five most recent tests.</li>
-<li>Click on the status (<a class="success">PASS</a> or <a class="fail">FAIL</a>) of examples to view the logs.</li>
-</ul>
-</body></html>
-
-
+#@ shell = /bin/sh
+#@ job_name = nesi
+#@ class = default
+#@ group = nesi
+#@ account_no = uoa
+#@ notification = never
+#@ wall_clock_limit = 1:00:00
+#@ resources = ConsumableMemory(1024mb) ConsumableVirtualMemory(1024mb)
+#@ job_type = MPICH
+#@ total_tasks = {{test.processors}}
+#@ blocking=unlimited
+#@ initialdir = {{test.path}}
+#@ output = $(job_name).$(jobid).out
+#@ error = $(job_name).$(jobid).out
+#@ queue
+ 
+mpirun  {{test.command}}
