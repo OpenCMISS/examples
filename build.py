@@ -6,6 +6,7 @@ import json
 
 env = Environment(loader=FileSystemLoader('.'))
 template = env.get_template('build.template')
+nesiTemplate = env.get_template('nesi1.template')
 globalExamplesDir = os.environ['OPENCMISSEXAMPLES_ROOT']
 size = 'small' if (not 'SIZE' in os.environ) else os.environ['SIZE']
 testSets = ["nightlytest.json","weeklytest.json"] if (size == 'large') else ["nightlytest.json"]
@@ -16,6 +17,7 @@ compiler = 'gnu' if (not 'COMPILER' in os.environ) else os.environ['COMPILER']
 compilerVersion = 'gnu_4.6' if (not 'OPENCMISS_COMPILER_PATH' in os.environ) else os.environ['OPENCMISS_COMPILER_PATH']
 system = os.uname()[0].lower()
 arch = os.uname()[4]
+machine = os.environ['MACHINE'] if ('MACHINE' in os.environ) else None
 
 class Class:
 
@@ -65,7 +67,8 @@ class Example(Class):
       self.script = None if ("script" not in dct) else dct["script"]
       test_dct = dct["test"]
       for test_entry in test_dct :
-        self.addTest(Test(test_entry,self))
+        if not ((machine=="nesi") ^ ("machine" in test_entry and test_entry["machine"] == "nesi")) :
+          self.addTest(Test(test_entry,self))
 
   def ensureDir(self,path) :
     if not os.path.exists(path):
@@ -170,6 +173,7 @@ class Test(Example):
     self.id = dct["id"]
     self.args = "" 
     self.processors = 1 
+    self.machine = None
     if ("expectedPath" in dct):
       self.outputPath = "." 
       self.tolerance = 1e-7 
@@ -187,17 +191,38 @@ class Test(Example):
     self.wrapWithPre(logPath,1)
     if self.parent.language == "python" :
       command = "python %s %s > %s 2>&1" %(self.parent.script, self.args,logPath)
+    elif self.machine == "nesi" :
+      f = open("nesi_%d.ll" %(self.id),"w")
+      f.write(nesiTemplate.render(test=self))
+      f.close()
+      command = "llsubmit -s nesi_%d.ll > %s 2>&1" %(self.id,logPath)
     else :
-      command = "%s/bin/%s-%s/mpich2/%s/%sExample-debug %s > %s 2>&1" %(self.parent.path,arch,system,compilerVersion,self.exampleName,self.args, logPath)
-    #command = "llsubmit -s nesi.ll > %s 2>&1" %(logPath)
+      command = "%s/bin/%s-%s/mpich2/%s/%sExample-debug %s > %s 2>&1" %(self.parent.path,arch,system,compilerVersion,self.exampleName,self.args,logPath)
     self.runFail = os.system(command)
     self.wrapWithPre(logPath,0)
     self.runLog = "%s/nightly_run_%d_%s_%s.log" %(self.masterLogDir,self.id,compilerVersion,str(date.today()))
-    self.runHistoryLog = "%s/nightly_run_history_%d_%s.log" %(self.masterLogDir,self.id,compilerVersion)
-    self.runHistory = self.add_history("%s/nightly_run_history_%d_%s.log" %(self.logDir,self.id,compilerVersion),self.runFail)  
+    self.runHistoryLog = "%s/nightly_run_history_%d_%s.log" %(self.masterLogDir,self.id,compilerVersion)  
     if self.runFail != 0 :
       self.fail = 1
       self.accumulateParentFail() 
+    elif self.machine == "nesi" :
+      # Find the output log and replace with the submission log
+      size = os.stat(logPath).st_size
+      f = open(logPath, "r")
+      data = mmap.mmap(f.fileno(), size, access=mmap.ACCESS_READ)
+      m = re.search(r'\.[0-9]+', data)
+      f.close()   
+      f1 = open("nesi%s.out" %(m.group(0)), "r")
+      output = f1.read()
+      f1.close()
+      self.wrapWithPre(logPath,1)
+      f = open(logPath,"a")
+      if output.find("ERROR")>0 :
+        self.runFail=1
+      f.write(output)
+      f.close()
+      self.wrapWithPre(logPath,0)
+    self.runHistory = self.add_history("%s/nightly_run_history_%d_%s.log" %(self.logDir,self.id,compilerVersion),self.runFail)  
     os.chdir(cwd)
 
 
@@ -239,7 +264,12 @@ def fileInTestSets(f) :
   global testSets
   for t in testSets :
     if f == t :
-      return True
+      if machine == "nesi" :
+        for line in f:
+          if 'nesi' in line:
+            return True
+      else :
+        return True
   return False
 
 root = Class(name="examples", path=examplesDir)
