@@ -3,6 +3,7 @@ from jinja2 import Template, Environment, FileSystemLoader
 from datetime import date	
 from time import strftime
 import json
+import fileinput
 
 env = Environment(loader=FileSystemLoader('.'))
 template = env.get_template('build.template')
@@ -13,6 +14,7 @@ testSets = ["nightlytest.json","weeklytest.json"] if (size == 'large') else ["ni
 examplesDir = globalExamplesDir if (not 'DIR' in os.environ) else "%s/%s" %(globalExamplesDir,os.environ['DIR'])
 rootLogDir = "%s/%s" %(os.environ['OPENCMISS_ROOT'],"build/logs") 
 machine = os.environ['MACHINE'] if ('MACHINE' in os.environ) else None
+mpi = os.environ['OPENCMISS_MPI_PATH']
 masterLogDir = "http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_%s" %(machine if machine != None else os.environ['archname'])
 compiler = 'gnu' if (not 'COMPILER' in os.environ) else os.environ['COMPILER']
 compilerVersion = 'gnu_4.6' if (not 'OPENCMISS_COMPILER_PATH' in os.environ) else os.environ['OPENCMISS_COMPILER_PATH']
@@ -192,12 +194,13 @@ class Test(Example):
     if self.parent.language == "python" :
       command = "python %s %s > %s 2>&1" %(self.parent.script, self.args,logPath)
     elif self.machine == "nesi" :
+      self.command = "%s/bin/%s-%s/%s/%s/%sExample-debug %s" %(self.parent.path,arch,system,mpi,compilerVersion,self.exampleName,self.args)
       f = open("nesi_%d.ll" %(self.id),"w")
       f.write(nesiTemplate.render(test=self))
       f.close()
       command = "llsubmit -s nesi_%d.ll > %s 2>&1" %(self.id,logPath)
     else :
-      command = "%s/bin/%s-%s/mpich2/%s/%sExample-debug %s > %s 2>&1" %(self.parent.path,arch,system,compilerVersion,self.exampleName,self.args,logPath)
+      command = "%s/bin/%s-%s/%s/%s/%sExample-debug %s > %s 2>&1" %(self.parent.path,arch,system,mpi,compilerVersion,self.exampleName,self.args,logPath)
     self.runFail = os.system(command)
     self.wrapWithPre(logPath,0)
     self.runLog = "%s/nightly_run_%d_%s_%s.log" %(self.masterLogDir,self.id,compilerVersion,str(date.today()))
@@ -260,14 +263,14 @@ def object_encode(name,parent,dct=None) :
     example = Example(name,dct["example"],parent)
   return example
 
-def fileInTestSets(f) :
+def fileInTestSets(f,path) :
   global testSets
   for t in testSets :
     if f == t :
       if machine == "nesi" :
-        for line in f:
-          if 'nesi' in line:
-            return True
+        linestring = open("%s/%s" %(path,f), 'r').read()
+        if linestring.find("nesi")!=-1:
+          return True
       else :
         return True
   return False
@@ -276,7 +279,7 @@ root = Class(name="examples", path=examplesDir)
 for path, subFolders, files in os.walk(top=root.path,topdown=True) :
   if path.find(".svn")==-1 :	
     for f in files :
-      if fileInTestSets(f) :
+      if fileInTestSets(f,path) :
         pathFromRoot = path[len(root.path)+1:path.rfind('/')]
         parent = root
         if len(pathFromRoot.strip()) != 0 :
