@@ -1,14 +1,13 @@
-import os, mmap, re, sys
-from jinja2 import Template, Environment, FileSystemLoader
+import os, mmap, re
+from jinja2 import Environment, FileSystemLoader
 from datetime import date	
 from time import strftime
 import json
-import fileinput
 
-env = Environment(loader=FileSystemLoader('.'))
-template = env.get_template('build.template')
-nesiTemplate = env.get_template('nesi.template')
 globalExamplesDir = os.environ['OPENCMISSEXAMPLES_ROOT']
+env = Environment(loader=FileSystemLoader(globalExamplesDir))
+template = env.get_template('scripts/run_tests.template')
+nesiTemplate = env.get_template('scripts/nesi.template')
 size = 'small' if (not 'SIZE' in os.environ) else os.environ['SIZE']
 testSets = ["nightlytest.json","weeklytest.json"] if (size == 'large') else ["nightlytest.json"]
 examplesDir = globalExamplesDir if (not 'DIR' in os.environ) else "%s/%s" %(globalExamplesDir,os.environ['DIR'])
@@ -21,7 +20,7 @@ compilerVersion = 'gnu_4.6' if (not 'OPENCMISS_COMPILER_PATH' in os.environ) els
 system = os.uname()[0].lower()
 arch = os.uname()[4]
 
-class Class:
+class TestTreeNode:
 
   def __init__(self,name,path=None,parent=None):
     self.name = name
@@ -50,13 +49,61 @@ class Class:
       parent.fail = parent.fail+1
       parent.accumulateParentFail() 
 
+  def tail(self,f,window=5):
+    BUFSIZ = 1024
+    f.seek(0, 2)
+    bytes = f.tell()
+    size = window
+    block = -1
+    data = []
+    while size > 0 and bytes > 0:
+        if (bytes - BUFSIZ > 0):
+            # Seek back one whole BUFSIZ
+            f.seek(block*BUFSIZ, 2)
+            # read BUFFER
+            data.append(f.read(BUFSIZ))
+        else:
+            # file too small, start from begining
+            f.seek(0,0)
+            # only read what was not read
+            data.append(f.read(bytes))
+        linesFound = data[-1].count('\n')
+        size -= linesFound
+        bytes -= BUFSIZ
+        block -= 1
+    return '\n'.join(''.join(data).splitlines()[-window:])
+
+
+  def add_history(self,path,fail) :
+    if os.path.exists(path) :
+      history = open(path,"a")
+    else :
+      history = open(path,"w")
+      history.write("Completed Time&ensp;Status<br>\n")
+    if fail==0 :
+      history.write(strftime("%Y-%m-%d %H:%M:%S")+'&ensp;<a class="success">success</a><br>\n')
+    else :
+      history.write(strftime("%Y-%m-%d %H:%M:%S")+'&ensp;<a class="fail">fail</a><br>\n')
+    history.close()
+    history = open(path,"r")
+    return self.tail(history)
+
+  def wrapWithPre(self,path,openTag=1) :
+    if openTag== 1 :
+      f1 = open(path,"w")
+      f1.write("<pre>")
+    else :
+      f1 = open(path,"a")
+      f1.write("</pre>")
+    f1.close()
+
   def __repr__(self):
     return self.path
 
-class Example(Class):
+class Example(TestTreeNode):
   
   def __init__(self,name,dct,parent):
-    Class.__init__(self,name=name,parent=parent)
+    TestTreeNode.__init__(self,name=name,parent=parent)
     self.logDir = self.path.replace(globalExamplesDir,rootLogDir)
     self.masterLogDir = self.path.replace(globalExamplesDir,masterLogDir)
     self.ensureDir(self.logDir) 
@@ -69,8 +116,11 @@ class Example(Class):
       self.script = None if ("script" not in dct) else dct["script"]
       test_dct = dct["test"]
       for test_entry in test_dct :
-        if not ((machine=="nesi") ^ ("machine" in test_entry and test_entry["machine"] == "nesi")) :
-          self.addTest(Test(test_entry,self))
+        if "machine" in test_entry:
+          if machine == test_entry["machine"]:
+            self.addTest(Test(test_entry, self))
+        elif machine == None:
+          self.addTest(Test(test_entry, self))
 
   def ensureDir(self,path) :
     if not os.path.exists(path):
@@ -88,6 +138,7 @@ class Example(Class):
         test.run()
         if test.runFail == 0 and hasattr(test, 'expectedPath'):
           test.check()
+    print "%s tests completed. Result: %s" %(self.path[len(globalExamplesDir)+1:], "success" if self.fail == 0 else "fail")
 
   def build(self) :
     cwd = os.getcwd()
@@ -119,58 +170,12 @@ class Example(Class):
       self.fail = 1
       self.accumulateParentFail()
 
-  def add_history(self,path,fail) :
-    if os.path.exists(path) :
-      history = open(path,"a")
-    else :
-      history = open(path,"w")
-      history.write("Completed Time&ensp;Status<br>\n")
-    if fail==0 :
-      history.write(strftime("%Y-%m-%d %H:%M:%S")+'&ensp;<a class="success">success</a><br>\n')
-    else :
-      history.write(strftime("%Y-%m-%d %H:%M:%S")+'&ensp;<a class="fail">fail</a><br>\n')
-    history.close()
-    history = open(path,"r")
-    return self.tail(history)
-
-
-  def tail(self,f,window=5):
-    BUFSIZ = 1024
-    f.seek(0, 2)
-    bytes = f.tell()
-    size = window
-    block = -1
-    data = []
-    while size > 0 and bytes > 0:
-        if (bytes - BUFSIZ > 0):
-            # Seek back one whole BUFSIZ
-            f.seek(block*BUFSIZ, 2)
-            # read BUFFER
-            data.append(f.read(BUFSIZ))
-        else:
-            # file too small, start from begining
-            f.seek(0,0)
-            # only read what was not read
-            data.append(f.read(bytes))
-        linesFound = data[-1].count('\n')
-        size -= linesFound
-        bytes -= BUFSIZ
-        block -= 1
-    return '\n'.join(''.join(data).splitlines()[-window:])
 
   def __repr__(self):
     return self.path
 
-  def wrapWithPre(self,path,openTag=1) :
-    if openTag== 1 :
-      f1 = open(path,"w")
-      f1.write("<pre>")
-    else :
-      f1 = open(path,"a")
-      f1.write("</pre>")
-    f1.close()
 
-class Test(Example):
+class Test(TestTreeNode):
   def __init__(self, dct, example):
     self.id = dct["id"]
     self.args = "" 
@@ -222,6 +227,8 @@ class Test(Example):
       f = open(logPath,"a")
       if output.find("ERROR")>0 :
         self.runFail=1
+        self.fail = 1
+        self.accumulateParentFail()
       f.write(output)
       f.close()
       self.wrapWithPre(logPath,0)
@@ -256,7 +263,6 @@ class Test(Example):
 
 
 def object_encode(name,parent,dct=None) :
-  global compilerVersion,globalExamplesDir,examplesDir
   if dct==None :
     example = Example(name=name,parent=parent)
   else :
@@ -264,18 +270,17 @@ def object_encode(name,parent,dct=None) :
   return example
 
 def fileInTestSets(f,path) :
-  global testSets
-  for t in testSets :
-    if f == t :
-      if machine == "nesi" :
-        linestring = open("%s/%s" %(path,f), 'r').read()
-        if linestring.find("nesi")!=-1:
-          return True
-      else :
+  if f in testSets :
+    if machine == None :
+      return True
+    else :
+      linestring = open("%s/%s" %(path,f), 'r').read()
+      if linestring.find(machine)!=-1:
         return True
   return False
 
-root = Class(name="examples", path=examplesDir)
+root = TestTreeNode(name="examples", path=examplesDir)
+print '<div style="display:none">'
 for path, subFolders, files in os.walk(top=root.path,topdown=True) :
   if path.find(".svn")==-1 :	
     for f in files :
@@ -286,7 +291,7 @@ for path, subFolders, files in os.walk(top=root.path,topdown=True) :
           for dirToPath in pathFromRoot.split("/") :
             t = parent.findChild(dirToPath)
             if t==None :
-              t = Class(name=dirToPath,parent=parent)
+              t = TestTreeNode(name=dirToPath,parent=parent)
             parent = t
         # Example
         os.chdir(path)
@@ -297,8 +302,7 @@ for path, subFolders, files in os.walk(top=root.path,topdown=True) :
         except ValueError:
           example = Example(name=path[path.rfind('/')+1:],parent=parent,dct=None)
           example.invalidConfig()
-        
-
+print '</div>'
 os.chdir(globalExamplesDir)
 
 print template.render(examples=root)

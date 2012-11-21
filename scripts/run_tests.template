@@ -45,9 +45,9 @@ Search: <input id="exampleF" type="text" name="example">&nbsp;
 {% for subclass in examples.children recursive %}
   <li class="liClosed" id="{{subclass.path}}">&nbsp;{{subclass.name}}
      {% if subclass.fail==0 %}
-        <a class="success">PASS</a>
+        <span class="success">PASS</span>
      {% else %}
-        <a class="fail">{{subclass.fail}} FAIL(s)</a>
+        <span class="fail">{{subclass.fail}} FAIL(s)</span>
      {% endif %}
       <ul>
         {% if subclass.children %}
@@ -101,9 +101,9 @@ Search: <input id="exampleF" type="text" name="example">&nbsp;
 {% endfor %}
 </ul>
 {% if examples.fail==0 %}
-  <a class="success">All the examples passes</a>
+  <span class="success">All the examples passes</span>
 {% else %}
-  <a class="fail">There are {{examples.fail}} fail(s).</a>
+  <span class="fail">There are {{examples.fail}} fail(s).</span>
 {% endif %}
 <br>
 
