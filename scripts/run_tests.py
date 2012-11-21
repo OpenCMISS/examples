@@ -8,15 +8,15 @@ globalExamplesDir = os.environ['OPENCMISSEXAMPLES_ROOT']
 env = Environment(loader=FileSystemLoader(globalExamplesDir))
 template = env.get_template('scripts/run_tests.template')
 nesiTemplate = env.get_template('scripts/nesi.template')
-size = 'small' if (not 'SIZE' in os.environ) else os.environ['SIZE']
+size = os.environ.get("SIZE", "small")
 testSets = ["nightlytest.json","weeklytest.json"] if (size == 'large') else ["nightlytest.json"]
 examplesDir = globalExamplesDir if (not 'DIR' in os.environ) else "%s/%s" %(globalExamplesDir,os.environ['DIR'])
 rootLogDir = "%s/%s" %(os.environ['OPENCMISS_ROOT'],"build/logs") 
-machine = os.environ['MACHINE'] if ('MACHINE' in os.environ) else None
-mpi = os.environ['OPENCMISS_MPI_PATH']
+machine = os.environ.get("MACHINE", None)
+mpi = os.environ.get('OPENCMISS_MPI_PATH','mpich2')
 masterLogDir = "http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_%s" %(machine if machine != None else os.environ['archname'])
-compiler = 'gnu' if (not 'COMPILER' in os.environ) else os.environ['COMPILER']
-compilerVersion = 'gnu_4.6' if (not 'OPENCMISS_COMPILER_PATH' in os.environ) else os.environ['OPENCMISS_COMPILER_PATH']
+compiler = os.environ.get("COMPILER", 'gnu')
+compilerVersion = os.environ.get("OPENCMISS_COMPILER_PATH", "gnu_4.6")
 system = os.uname()[0].lower()
 arch = os.uname()[4]
 
