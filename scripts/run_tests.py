@@ -1,4 +1,4 @@
-import os, mmap, re
+import os, mmap, re, sys
 from jinja2 import Environment, FileSystemLoader
 from datetime import date	
 from time import strftime
@@ -280,7 +280,8 @@ def fileInTestSets(f,path) :
   return False
 
 root = TestTreeNode(name="examples", path=examplesDir)
-print '<div style="display:none">'
+if "html" in sys.argv :
+  print '<div style="display:none">'
 for path, subFolders, files in os.walk(top=root.path,topdown=True) :
   if path.find(".svn")==-1 :	
     for f in files :
@@ -302,9 +303,11 @@ for path, subFolders, files in os.walk(top=root.path,topdown=True) :
         except ValueError:
           example = Example(name=path[path.rfind('/')+1:],parent=parent,dct=None)
           example.invalidConfig()
-print '</div>'
+if "html" in sys.argv :
+  print '</div>'
 os.chdir(globalExamplesDir)
 
-print template.render(examples=root)
+if "html" in sys.argv :
+  print template.render(examples=root)
 if root.fail != 0 :
   exit("ERROR: At least one examples failed")
