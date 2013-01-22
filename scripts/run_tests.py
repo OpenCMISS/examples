@@ -145,7 +145,7 @@ class Example(TestTreeNode):
     os.chdir(self.path)
     logPath = "%s/nightly_build_%s_%s.log" %(self.logDir,compilerVersion,str(date.today()))
     self.wrapWithPre(logPath,1)
-    os.system("make clean")
+    os.system("make clean  >> %s 2>&1" %(logPath))
     command = "make >> %s 2>&1" %(logPath)
     self.buildFail = os.system(command)
     self.wrapWithPre(logPath,0)
