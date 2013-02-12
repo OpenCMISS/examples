@@ -62,7 +62,7 @@ endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_PATH=ClassicalField/Diffusion/
+EXAMPLE_PATH=ClassicalField/ReactionDiffusion/
 
 EXAMPLE_NAME = ReactionDiffusionNoSource1D
 
