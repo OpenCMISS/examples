@@ -284,7 +284,7 @@ PROGRAM FortranExample
   !PROBLEM CONTROL PANEL
   !================================================================================================================================
 
-  cellmlFlag = .TRUE.
+  cellmlFlag = .FALSE.
   windkesselFlag = .FALSE.
   versionsFlag = .FALSE.
   numberOfCoordinateDimensions=2
@@ -629,9 +629,9 @@ PROGRAM FortranExample
   DO nodeIdx=1,NUMBER_OF_NODES_SPACE
     !(field,variableType,fieldSetType,versionNumber,derivativeNumber,userNodeNumber,componentNumber,value,err)
     CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,1,X,Err)
+      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,1,Y,Err)
     CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,Y,Err)
+      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,X,Err)
   ENDDO
 
   !parent vessel
@@ -642,43 +642,43 @@ PROGRAM FortranExample
     X=X+0.5_CMISSDP
      !(field,variableType,fieldSetType,versionNumber,derivativeNumber,userNodeNumber,componentNumber,value,err)
     CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,1,X,Err)
+      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,1,Y,Err)
     CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,Y,Err)
+      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,X,Err)
   ENDDO
   ! node 5 versions 2,3 (same x/y values)
   nodeIdx=5
   DO versionIdx=2,3
     CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,1,X,Err)
+      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,1,Y,Err)
     CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,Y,Err)
+      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,X,Err)
   ENDDO
 
   DO nodeIdx=6,7
     X=X+0.5_CMISSDP
     Y=Y+0.5_CMISSDP
     CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,1,X,Err)
+      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,1,Y,Err)
     CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,Y,Err)
+      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,X,Err)
   ENDDO
 
   DO nodeIdx=10,11
     X=X+0.5_CMISSDP
     CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,1,X,Err)
+      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,1,Y,Err)
     CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,Y,Err)
+      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,X,Err)
   ENDDO
   IF(versionsFlag) THEN
   ! node 11 versions 2 (same x/y values)
     nodeIdx=11
     versionIdx=2
     CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,1,X,Err)
+      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,1,Y,Err)
     CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,Y,Err)
+      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,X,Err)
   ENDIF
 
   X=2.0_CMISSDP
@@ -687,26 +687,26 @@ PROGRAM FortranExample
     X=X+0.5_CMISSDP
     Y=Y-0.5_CMISSDP
     CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,1,X,Err)
+      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,1,Y,Err)
     CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,Y,Err)
+      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,X,Err)
   ENDDO
 
   DO nodeIdx=12,13
     X=X+0.5_CMISSDP
     CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,1,X,Err)
+      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,1,Y,Err)
     CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,Y,Err)
+      & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,X,Err)
   ENDDO
   IF(versionsFlag) THEN
   ! node 13 versions 2 (same x/y values)
     nodeIdx=13
     versionIdx=2
     CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,1,X,Err)
+      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,1,Y,Err)
     CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,Y,Err)
+      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,X,Err)
   ENDIF
 
     
