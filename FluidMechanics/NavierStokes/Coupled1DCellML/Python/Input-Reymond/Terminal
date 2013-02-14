@@ -1,0 +1,28 @@
+NumberOfTerminalNodes: 6
+19
+31
+49
+57
+69
+87
+
+resistanceProximal[1] = 1.7025E+6
+resistanceProximal[2] = 1.7025E+6
+resistanceProximal[3] = 1.7025E+6
+resistanceProximal[4] = 1.7025E+6
+resistanceProximal[5] = 1.7025E+6
+resistanceProximal[6] = 1.7025E+6
+
+resistanceDistal[1] = 0.0
+resistanceDistal[2] = 0.0
+resistanceDistal[3] = 0.0
+resistanceDistal[4] = 0.0
+resistanceDistal[5] = 0.0
+resistanceDistal[6] = 0.0
+
+capacitance[1] = 0.0
+capacitance[2] = 0.0
+capacitance[3] = 0.0
+capacitance[4] = 0.0
+capacitance[5] = 0.0
+capacitance[6] = 0.0

@@ -1,0 +1,691 @@
+ CMISS Version 1.21 ipelem File Version 2
+ Heading: 
+ 
+ The number of elements is [1]: 90
+
+ Element number [    1]:     1
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 1 2 3
+
+ Element number [    1]:     2
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 3 4 5
+
+ Element number [    1]:     3
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 5 6 7
+ 
+ Element number [    1]:     4
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 7 8 9
+
+ Element number [    1]:     5
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 9 10 11
+
+ Element number [    1]:     6
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 11 12 13
+
+ Element number [    1]:     7
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 13 14 15
+
+ Element number [    1]:     8
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 15 16 17
+
+ Element number [    1]:     9
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 17 18 19
+ 
+ Element number [    1]:     10
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 19 20 21
+ The version number for occurrence  1 of node     21, njj=1 is [ 1]: 1
+ The version number for occurrence  1 of node     21, njj=2 is [ 1]: 1 
+ The version number for occurrence  1 of node     21, njj=3 is [ 1]: 1 
+
+ Element number [    1]:     11
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 21 22 23
+ The version number for occurrence  1 of node     21, njj=1 is [ 1]: 2
+ The version number for occurrence  1 of node     21, njj=2 is [ 1]: 2 
+ The version number for occurrence  1 of node     21, njj=3 is [ 1]: 2 
+
+ Element number [    1]:     12
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 21 24 25
+ The version number for occurrence  1 of node     21, njj=1 is [ 1]: 3
+ The version number for occurrence  1 of node     21, njj=2 is [ 1]: 3 
+ The version number for occurrence  1 of node     21, njj=3 is [ 1]: 3
+
+ Element number [    1]:     13
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 21 26 27
+ The version number for occurrence  1 of node     21, njj=1 is [ 1]: 4
+ The version number for occurrence  1 of node     21, njj=2 is [ 1]: 4
+ The version number for occurrence  1 of node     21, njj=3 is [ 1]: 4
+
+ Element number [    1]:     14
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 23 28 29
+
+ Element number [    1]:     15
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 29 30 31
+
+ Element number [    1]:     16
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 27 32 33
+
+ Element number [    1]:     17
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 33 34 35
+
+ Element number [    1]:     18
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 25 36 37
+
+ Element number [    1]:     19
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 37 38 39
+
+ Element number [    1]:     20
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 39 40 41
+ The version number for occurrence  1 of node     41, njj=1 is [ 1]: 1
+ The version number for occurrence  1 of node     41, njj=2 is [ 1]: 1 
+ The version number for occurrence  1 of node     41, njj=3 is [ 1]: 1 
+
+ Element number [    1]:     21
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 41 42 43
+ The version number for occurrence  1 of node     41, njj=1 is [ 1]: 2
+ The version number for occurrence  1 of node     41, njj=2 is [ 1]: 2 
+ The version number for occurrence  1 of node     41, njj=3 is [ 1]: 2 
+
+ Element number [    1]:     22
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 41 44 45
+ The version number for occurrence  1 of node     41, njj=1 is [ 1]: 3
+ The version number for occurrence  1 of node     41, njj=2 is [ 1]: 3 
+ The version number for occurrence  1 of node     41, njj=3 is [ 1]: 3 
+
+ Element number [    1]:     23
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 43 46 47
+ The version number for occurrence  1 of node     47, njj=1 is [ 1]: 1
+ The version number for occurrence  1 of node     47, njj=2 is [ 1]: 1 
+ The version number for occurrence  1 of node     47, njj=3 is [ 1]: 1 
+
+ Element number [    1]:     24
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 47 48 49
+ The version number for occurrence  1 of node     47, njj=1 is [ 1]: 2
+ The version number for occurrence  1 of node     47, njj=2 is [ 1]: 2 
+ The version number for occurrence  1 of node     47, njj=3 is [ 1]: 2 
+
+ Element number [    1]:     25
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 47 50 51
+ The version number for occurrence  1 of node     47, njj=1 is [ 1]: 3
+ The version number for occurrence  1 of node     47, njj=2 is [ 1]: 3 
+ The version number for occurrence  1 of node     47, njj=3 is [ 1]: 3 
+
+ Element number [    1]:     26
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 51 52 53
+
+ Element number [    1]:     27
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 49 54 55
+
+ Element number [    1]:     28
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 55 56 57
+
+ Element number [    1]:     29
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 57 58 59
+
+ Element number [    1]:     30
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 59 60 61
+ The version number for occurrence  1 of node     61, njj=1 is [ 1]: 1
+ The version number for occurrence  1 of node     61, njj=2 is [ 1]: 1 
+ The version number for occurrence  1 of node     61, njj=3 is [ 1]: 1 
+
+ Element number [    1]:     31
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 61 62 63
+ The version number for occurrence  1 of node     61, njj=1 is [ 1]: 2
+ The version number for occurrence  1 of node     61, njj=2 is [ 1]: 2 
+ The version number for occurrence  1 of node     61, njj=3 is [ 1]: 2 
+
+ Element number [    1]:     32
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 61 64 65
+ The version number for occurrence  1 of node     61, njj=1 is [ 1]: 3
+ The version number for occurrence  1 of node     61, njj=2 is [ 1]: 3 
+ The version number for occurrence  1 of node     61, njj=3 is [ 1]: 3 
+
+ Element number [    1]:     33
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 65 66 67
+
+ Element number [    1]:     34
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 67 68 69
+
+ Element number [    1]:     35
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 69 70 71
+
+ Element number [    1]:     36
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 71 72 73
+
+ Element number [    1]:     37
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 73 74 75
+
+ Element number [    1]:     38
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 63 76 77
+
+ Element number [    1]:     39
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 77 78 79
+
+ Element number [    1]:     40
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 79 80 81
+
+ Element number [    1]:     41
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 81 82 83
+
+ Element number [    1]:     42
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 83 84 85
+
+ Element number [    1]:     43
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 85 86 87
+
+ Element number [    1]:     44
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 87 88 89
+
+ Element number [    1]:     45
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 89 90 91
+
+ Element number [    1]:     46
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 91 92 93
+
+ Element number [    1]:     47
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 93 94 95
+
+ Element number [    1]:     48
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 95 96 97
+
+ Element number [    1]:     49
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 97 98 99
+
+ Element number [    1]:     50
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 99 100 101
+
+ Element number [    1]:     51
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 101 102 103
+
+ Element number [    1]:     52
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 103 104 105
+
+ Element number [    1]:     53
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 105 106 107
+
+ Element number [    1]:     54
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 107 108 109
+
+ Element number [    1]:     55
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 109 110 111
+
+ Element number [    1]:     56
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 111 112 113
+
+ Element number [    1]:     57
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 45 114 115
+ The version number for occurrence  1 of node     115, njj=1 is [ 1]: 1
+ The version number for occurrence  1 of node     115, njj=2 is [ 1]: 1 
+ The version number for occurrence  1 of node     115, njj=3 is [ 1]: 1 
+
+ Element number [    1]:     58
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 115 116 117
+ The version number for occurrence  1 of node     115, njj=1 is [ 1]: 2
+ The version number for occurrence  1 of node     115, njj=2 is [ 1]: 2 
+ The version number for occurrence  1 of node     115, njj=3 is [ 1]: 2 
+
+ Element number [    1]:     59
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 115 118 119
+ The version number for occurrence  1 of node     115, njj=1 is [ 1]: 3
+ The version number for occurrence  1 of node     115, njj=2 is [ 1]: 3 
+ The version number for occurrence  1 of node     115, njj=3 is [ 1]: 3 
+
+ Element number [    1]:     60
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 119 120 121
+
+ Element number [    1]:     61
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 117 122 123
+
+ Element number [    1]:     62
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 123 124 125
+
+ Element number [    1]:     63
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 125 126 127
+
+ Element number [    1]:     64
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 127 128 129
+ The version number for occurrence  1 of node     129, njj=1 is [ 1]: 1
+ The version number for occurrence  1 of node     129, njj=2 is [ 1]: 1 
+ The version number for occurrence  1 of node     129, njj=3 is [ 1]: 1 
+
+ Element number [    1]:     65
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 129 130 131
+ The version number for occurrence  1 of node     129, njj=1 is [ 1]: 2
+ The version number for occurrence  1 of node     129, njj=2 is [ 1]: 2 
+ The version number for occurrence  1 of node     129, njj=3 is [ 1]: 2 
+
+ Element number [    1]:     66
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 129 132 133
+ The version number for occurrence  1 of node     129, njj=1 is [ 1]: 3
+ The version number for occurrence  1 of node     129, njj=2 is [ 1]: 3 
+ The version number for occurrence  1 of node     129, njj=3 is [ 1]: 3 
+
+ Element number [    1]:     67
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 133 134 135
+
+ Element number [    1]:     68
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 135 136 137
+
+ Element number [    1]:     69
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 137 138 139
+
+ Element number [    1]:     70
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 139 140 141
+
+ Element number [    1]:     71
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 141 142 143
+
+ Element number [    1]:     72
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 131 144 145
+
+ Element number [    1]:     73
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 145 146 147
+
+ Element number [    1]:     74
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 147 148 149
+
+ Element number [    1]:     75
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 149 150 151
+
+ Element number [    1]:     76
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 151 152 153
+
+ Element number [    1]:     77
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 153 154 155
+
+ Element number [    1]:     78
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 155 156 157
+
+ Element number [    1]:     79
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 157 158 159
+
+ Element number [    1]:     80
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 159 160 161
+
+ Element number [    1]:     81
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 161 162 163
+
+ Element number [    1]:     82
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 163 164 165
+
+ Element number [    1]:     83
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 165 166 167
+
+ Element number [    1]:     84
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 167 168 169
+
+ Element number [    1]:     85
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 169 170 171
+
+ Element number [    1]:     86
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 171 172 173
+
+ Element number [    1]:     87
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 173 174 175
+
+ Element number [    1]:     88
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 175 176 177
+
+ Element number [    1]:     89
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 177 178 179
+
+ Element number [    1]:     90
+ The number of geometric Xj-coordinates is [3]: 3
+ The basis function type for geometric variable 1 is [1]:  1
+ The basis function type for geometric variable 2 is [1]:  1
+ The basis function type for geometric variable 3 is [1]:  1
+ Enter the 3 global numbers for basis 1: 179 180 181

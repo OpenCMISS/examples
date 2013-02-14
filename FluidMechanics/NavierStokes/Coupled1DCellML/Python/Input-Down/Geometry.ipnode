@@ -1,0 +1,1555 @@
+ CMISS Version 1.21 ipnode File Version 2
+ Heading:
+ 
+ The number of nodes is [1]: 181
+ Number of coordinates [3]: 3
+ Do you want prompting for different versions of nj=1 [N]? Y
+ Do you want prompting for different versions of nj=2 [N]? Y
+ Do you want prompting for different versions of nj=3 [N]? Y
+ The number of derivatives for coordinate 1 is [0]: 0
+ The number of derivatives for coordinate 2 is [0]: 0
+ The number of derivatives for coordinate 3 is [0]: 0
+ 
+ Node number [    1]:     1
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.934738e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  4.721062e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.502000e+01
+
+ Node number [    1]:     2
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.16347e+00  
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.54868e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.489100e+01
+
+ Node number [    1]:     3
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.355240e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  5.979610e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.477000e+01
+ 
+ Node number [    1]:     4
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.13646e+00  
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.60811e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.46400e+01
+
+ Node number [    1]:     5
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.444264e-01
+ The number of versions for nj=1 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  6.044373e-01
+ The number of versions for nj=1 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.452000e+01
+ 
+ Node number [    1]:     6
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.14551e+00  
+ The number of versions for nj=1 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.61302e+00
+ The number of versions for nj=1 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.43900e+01
+
+ Node number [    1]:     7
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.484624e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  6.165459e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.427000e+01
+ 
+ Node number [    1]:     8
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.16089e+00  
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.60480e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.41400e+01
+
+ Node number [    1]:     9
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.726789e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  5.882932e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.402000e+01
+ 
+ Node number [    1]:     10
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.18159e+00  
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.56919e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.38900e+01
+
+ Node number [    1]:     11
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.807512e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  5.519683e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.377000e+01
+ 
+ Node number [    1]:     12
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.15657e+00  
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.53913e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.364500e+01
+
+ Node number [    1]:     13
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.311560e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  5.264553e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.352000e+01
+ 
+ Node number [    1]:     14
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.12537e+00  
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.51256e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.339500e+01
+
+ Node number [    1]:     15
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.293486e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  4.914309e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.327000e+01
+
+ Node number [    1]:     16
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.14484e+00  
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.44728e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.31400e+01
+
+ Node number [    1]:     17
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.581312e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  3.986943e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.302000e+01
+ 
+ Node number [    1]:     18
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.15542e+00  
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.34574e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.289500e+01
+
+ Node number [    1]:     19
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.497913e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  2.988298e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.277000e+01
+
+ Node number [    1]:     20
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.15018e+00  
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.25788e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.26400e+01
+
+ Node number [    1]:     21
+ The number of versions for nj=1 is [1]:  4
+ For version number 1:
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.509417e-01
+ For version number 2:
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.509417e-01
+ For version number 3:
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.509417e-01
+ For version number 4:
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.509417e-01
+ The number of versions for nj=2 is [1]:  4
+ For version number 1:
+ The Xj(2) coordinate is [ 0.00000e-02]:  2.237496e-01
+ For version number 2:
+ The Xj(2) coordinate is [ 0.00000e-02]:  2.237496e-01
+ For version number 3:
+ The Xj(2) coordinate is [ 0.00000e-02]:  2.237496e-01
+ For version number 4:
+ The Xj(2) coordinate is [ 0.00000e-02]:  2.237496e-01
+ The number of versions for nj=3 is [1]:  4
+ For version number 1:
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.252000e+01
+ For version number 2:
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.252000e+01
+ For version number 3:
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.252000e+01
+ For version number 4:
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.252000e+01
+
+ Node number [    1]:     22                              
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.145200e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  2.687000e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.251000e+01
+
+ Node number [    1]:     23
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -1.219490e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  3.137282e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.250000e+01
+                                                        
+ Node number [    1]:     24                              
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.15498e+00    
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.19429e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.12389e+02
+
+ Node number [    1]:     25
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.595566e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  1.602908e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.227000e+01
+
+ Node number [    1]:     26                        
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  2.880000e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  3.110000e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.252000e+01
+
+ Node number [    1]:     27
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  4.250000e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  3.976869e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.252000e+01
+
+ Node number [    1]:     28                            
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -2.60000e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  2.968000e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.248000e+01
+
+ Node number [    1]:     29
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -3.980754e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  2.800878e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.246000e+01
+
+ Node number [    1]:     30
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -5.14000e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  3.160000e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.243500e+01
+
+ Node number [    1]:     31
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -6.305851e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  3.520696e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.241000e+01
+
+ Node number [    1]:     32                            
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  5.630000e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  3.710000e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.252000e+01
+
+ Node number [    1]:     33
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  7.011000e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  3.440500e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.252000e+01
+
+ Node number [    1]:     34
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  8.170000e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  3.172000e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.252000e+01
+
+ Node number [    1]:     35
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  9.330000e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  2.904148e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.252000e+01
+
+ Node number [    1]:     36                             
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.16466e+00    
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.13079e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.12147e+02
+
+ Node number [    1]:     37
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.677172e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  1.063208e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.202000e+01
+
+ Node number [    1]:     38                             
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.16515e+00    
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.91397e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.11890e+02
+
+ Node number [    1]:     39
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.598992e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  8.307451e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.177000e+01
+
+ Node number [    1]:     40                              
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.15275e+00    
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.76329e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.11640e+02
+
+ Node number [    1]:     41
+ The number of versions for nj=1 is [1]:  3
+ For version number 1:
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.437523e-01
+ For version number 2:
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.437523e-01
+ For version number 3:
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.437523e-01
+ The number of versions for nj=2 is [1]:  3
+ For version number 1:
+ The Xj(2) coordinate is [ 0.00000e-02]:  7.516623e-02
+ For version number 2:
+ The Xj(2) coordinate is [ 0.00000e-02]:  7.516623e-02
+ For version number 3:
+ The Xj(2) coordinate is [ 0.00000e-02]:  7.516623e-02
+ The number of versions for nj=3 is [1]:  3
+ For version number 1:
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.152000e+01
+ For version number 2:
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.152000e+01
+ For version number 3:
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.152000e+01
+ 
+ Node number [    1]:     42
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  2.103500e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  8.512500e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.139500e+01
+
+ Node number [    1]:     43
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  2.770149e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  9.509288e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.127000e+01
+
+ Node number [    1]:     44
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  5.231500e-02
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  7.711100e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.139500e+01
+
+ Node number [    1]:     45
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -3.91225e-02
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  7.905692e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.127000e+01
+
+ Node number [    1]:     46 
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  3.204000e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  1.175500e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.114500e+01
+
+ Node number [    1]:     47 
+ The number of versions for nj=1 is [1]:  3
+ For version number 1:
+ The Xj(1) coordinate is [ 0.00000e-02]:  3.638353e-01
+ For version number 2:
+ The Xj(1) coordinate is [ 0.00000e-02]:  3.638353e-01
+ For version number 3:
+ The Xj(1) coordinate is [ 0.00000e-02]:  3.638353e-01
+ The number of versions for nj=2 is [1]:  3
+ For version number 1:
+ The Xj(2) coordinate is [ 0.00000e-02]:  1.400409e-01
+ For version number 2:
+ The Xj(2) coordinate is [ 0.00000e-02]:  1.400409e-01
+ For version number 3:
+ The Xj(2) coordinate is [ 0.00000e-02]:  1.400409e-01
+ The number of versions for nj=3 is [1]:  3
+ For version number 1:
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.102000e+01
+ For version number 2:
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.102000e+01
+ For version number 3:
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.102000e+01
+
+ Node number [    1]:     48
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  4.102500e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  1.078009e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.089500e+01
+
+ Node number [    1]:     49
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  4.567028e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  7.560009e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.077000e+01
+
+ Node number [    1]:     50
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  3.960000e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  2.374000e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.089500e+01
+
+ Node number [    1]:     51
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  4.280758e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  3.348244e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.077000e+01
+
+ Node number [    1]:     52
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  4.686000e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  4.912000e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.064500e+01
+
+ Node number [    1]:     53
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  5.092015e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  6.476143e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.052000e+01
+
+ Node number [    1]:     54
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  5.103000e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  4.300000e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.064500e+01
+
+ Node number [    1]:     55
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  5.639127e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  1.038873e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.052000e+01
+
+ Node number [    1]:     56
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  6.134500e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -3.73000e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.039500e+01
+
+ Node number [    1]:     57
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  6.629758e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -8.499238e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.027000e+01
+
+ Node number [    1]:     58
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  7.167000e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -1.36500e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.014500e+01
+
+ Node number [    1]:     59
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  7.705224e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -1.880548e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.002000e+01
+
+ Node number [    1]:     60
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  8.02e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -2e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.895e+00
+
+ Node number [    1]:     61
+ The number of versions for nj=1 is [1]:  3
+ For version number 1:
+ The Xj(1) coordinate is [ 0.00000e-02]:  8.337758e-01
+ For version number 2:
+ The Xj(1) coordinate is [ 0.00000e-02]:  8.337758e-01
+ For version number 3:
+ The Xj(1) coordinate is [ 0.00000e-02]:  8.337758e-01
+ The number of versions for nj=2 is [1]:  3
+ For version number 1:
+ The Xj(2) coordinate is [ 0.00000e-02]:  -2.133560e-01
+ For version number 2:
+ The Xj(2) coordinate is [ 0.00000e-02]:  -2.133560e-01
+ For version number 3:
+ The Xj(2) coordinate is [ 0.00000e-02]:  -2.133560e-01
+ The number of versions for nj=3 is [1]:  3
+ For version number 1:
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.770000e+00
+ For version number 2:
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.770000e+00
+ For version number 3:
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.770000e+00
+
+ Node number [    1]:     62
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  8.396000e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -2.12150e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.645000e+00
+
+ Node number [    1]:     63
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  8.456878e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -2.114778e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.520000e+00
+
+ Node number [    1]:     64
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  8.456878e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -1.77600e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.645000e+00
+
+ Node number [    1]:     65
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  8.760000e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -1.420456e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.520000e+00
+
+ Node number [    1]:     66
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.93904e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -0.10847e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.395000e+00
+
+ Node number [    1]:     67
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  9.470339e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -6.825500e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.270000e+00
+
+ Node number [    1]:     68
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.93306e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -0.15118e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.145000e+00
+
+ Node number [    1]:     69
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  9.249734e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  5.611261e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.020000e+00
+
+ Node number [    1]:     70
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.96270e+00  
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.17388e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  8.895000e+00
+
+ Node number [    1]:     71
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.001283e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  2.746518e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  8.770000e+00
+
+ Node number [    1]:     72
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.99263e+00  
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.27509e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  8.645000e+00
+
+ Node number [    1]:     73
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  9.860045e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  2.631078e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  8.520000e+00
+
+ Node number [    1]:     74
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.10273e+01  
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.31685e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  8.395000e+00
+
+ Node number [    1]:     75
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.078489e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  3.822322e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  8.270000e+00
+
+ Node number [    1]:     76
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.84904e+00 
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -0.19714e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.395000e+00
+
+ Node number [    1]:     77
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  8.485404e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -1.797081e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.270000e+00
+
+ Node number [    1]:     78
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.84045e+00 
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -0.16009e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.145000e+00
+
+ Node number [    1]:     79
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  8.309713e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -1.419632e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.020000e+00
+
+ Node number [    1]:     80
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.82421e+00 
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -0.12295e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  8.895000e+00
+
+ Node number [    1]:     81
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  8.161252e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -1.096374e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  8.770000e+00
+
+ Node number [    1]:     82
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  7.990007e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -1.09460e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  8.640000e+00 
+
+ Node number [    1]:     83
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  7.839615e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -1.063421e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  8.520000e+00
+
+ Node number [    1]:     84
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  7.7599e-01 
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -8.3284e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  8.395000e+00
+
+ Node number [    1]:     85
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  7.728931e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -5.259172e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  8.270000e+00
+
+ Node number [    1]:     86
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.77517e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -0.22274e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.81450e+01
+
+ Node number [    1]:     87
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  7.797781e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  1.176974e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  8.020000e+00
+
+ Node number [    1]:     88
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.78425e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.53007e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.78950e+01
+
+ Node number [    1]:     89
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  7.874062e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  9.532798e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  7.770000e+00
+
+ Node number [    1]:     90
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.78481e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.13056e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.76450e+01
+
+ Node number [    1]:     91
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  7.837229e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  1.683670e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  7.520000e+00
+   
+ Node number [    1]:     92
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.79010e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.22116e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.73904e+01
+
+ Node number [    1]:     93
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  8.034201e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  2.725285e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  7.270000e+00
+   
+ Node number [    1]:     94
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.83038e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.32032e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.71496e+01
+
+ Node number [    1]:     95
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  8.606169e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  3.666405e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  7.020000e+00
+   
+ Node number [    1]:     96
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.86907e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.39946e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.68950e+01
+
+ Node number [    1]:     97
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  8.871387e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  4.303441e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  6.770000e+00
+
+ Node number [    1]:     98
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.96296e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.47826e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.66234e+01
+
+ Node number [    1]:     99
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.021213e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  5.089440e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  6.520000e+00
+
+ Node number [    1]:     100
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.10756e+01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.52846e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.63900e+01
+
+ Node number [    1]:     101
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.118334e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  5.510928e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  6.270000e+00
+    
+ Node number [    1]:     102
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.11570e+01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.60092e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.61407e+01
+
+ Node number [    1]:     103
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.188293e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  6.632031e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  6.020000e+00
+
+ Node number [    1]:     104
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.12105e+01  
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.73938e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.58907e+01
+    
+ Node number [    1]:     105
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.226943e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  8.049219e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  5.770000e+00
+
+ Node number [    1]:     106
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.12405e+01  
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.84829e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.56450e+01
+
+ Node number [    1]:     107
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.260440e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  8.744933e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  5.520000e+00
+
+ Node number [    1]:     108
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.13060e+01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.88249e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.53904e+01
+
+ Node number [    1]:     109
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.349510e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  8.789686e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  5.270000e+00
+
+ Node number [    1]:     110
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.13782e+01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.87125e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.51450e+01
+
+ Node number [    1]:     111
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.396547e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  8.562598e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  5.020000e+00
+
+ Node number [    1]:     112
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  0.14024e+01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.83136e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.48950e+01
+
+ Node number [    1]:     113
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  1.403231e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  8.025793e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  4.770000e+00
+ 
+ Node number [    1]:     114
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -7.501000e-02
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  1.0150000e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.114500e+01
+
+ Node number [    1]:     115
+ The number of versions for nj=1 is [1]:  3
+ For version number 1:
+ The Xj(1) coordinate is [ 0.00000e-02]:  -1.109694e-01
+ For version number 2:
+ The Xj(1) coordinate is [ 0.00000e-02]:  -1.109694e-01
+ For version number 3:
+ The Xj(1) coordinate is [ 0.00000e-02]:  -1.109694e-01
+ The number of versions for nj=2 is [1]:  3
+ For version number 1:
+ The Xj(2) coordinate is [ 0.00000e-02]:  1.241383e-01
+ For version number 2:
+ The Xj(2) coordinate is [ 0.00000e-02]:  1.241383e-01
+ For version number 3:
+ The Xj(2) coordinate is [ 0.00000e-02]:  1.241383e-01
+ The number of versions for nj=3 is [1]:  3
+ For version number 1:
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.102000e+01
+ For version number 2:
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.102000e+01
+ For version number 3:
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.102000e+01
+
+ Node number [    1]:     116
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -1.724500e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  7.0516500e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.0895000e+01
+
+ Node number [    1]:     117
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -2.349465e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  1.693339e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.077000e+01
+
+ Node number [    1]:     118
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -1.39700e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  2.230000e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.089500e+01
+
+ Node number [    1]:     119
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -1.685436e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  3.223295e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.077000e+01
+
+ Node number [    1]:     120
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -2.27100e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  4.334800e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.064500e+01
+
+ Node number [    1]:     121
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -2.857212e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  5.446284e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.052000e+01
+
+ Node number [    1]:     122
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -2.90900e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -1.85220e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.064500e+01
+
+ Node number [    1]:     123
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -3.468691e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -5.397733e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.052000e+01
+
+ Node number [    1]:     124
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -4.025800e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -9.660000e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.039500e+01
+
+ Node number [    1]:     125
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -4.583607e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -1.391833e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.027000e+01
+
+ Node number [    1]:     126
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -5.064500e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -2.045900e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.014500e+01
+
+ Node number [    1]:     127
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -5.546288e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -2.702838e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  1.002000e+01
+
+ Node number [    1]:     128
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.57470e+00 
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -0.29837e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.98950e+01
+
+ Node number [    1]:     129
+ The number of versions for nj=1 is [1]:  3
+ For version number 1:
+ The Xj(1) coordinate is [ 0.00000e-02]:  -5.830927e-01
+ For version number 2:
+ The Xj(1) coordinate is [ 0.00000e-02]:  -5.830927e-01
+ For version number 3:
+ The Xj(1) coordinate is [ 0.00000e-02]:  -5.830927e-01
+ The number of versions for nj=2 is [1]:  3
+ For version number 1:
+ The Xj(2) coordinate is [ 0.00000e-02]:  -3.019101e-01
+ For version number 2:
+ The Xj(2) coordinate is [ 0.00000e-02]:  -3.019101e-01
+ For version number 3:
+ The Xj(2) coordinate is [ 0.00000e-02]:  -3.019101e-01
+ The number of versions for nj=3 is [1]:  3
+ For version number 1:
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.770000e+00
+ For version number 2:
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.770000e+00
+ For version number 3:
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.770000e+00
+
+ Node number [    1]:     130
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.53623e+00 
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -0.31185e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.96404e+01
+
+ Node number [    1]:     131
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -4.922188e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -3.289785e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.520000e+00
+
+ Node number [    1]:     132
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.62718e+00 
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -0.25256e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.96450e+01
+  
+ Node number [    1]:     133
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -6.925043e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -1.927844e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.520000e+00
+
+ Node number [    1]:     134
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.74870e+00 
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -0.19531e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.93904e+01
+
+ Node number [    1]:     135
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -7.843781e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -1.848920e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.270000e+00
+
+ Node number [    1]:     136
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.77498e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -0.97237e-01  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.91488e+01
+
+ Node number [    1]:     137
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -7.603502e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  1.918320e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.020000e+00
+
+ Node number [    1]:     138
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.78871e+00  
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.12220e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.88950e+01
+
+ Node number [    1]:     139
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -8.223428e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  2.012873e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  8.770000e+00
+
+ Node number [    1]:     140
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:   -0.82799e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.21112e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.86400e+01
+
+ Node number [    1]:     141
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -8.405231e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  2.139661e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  8.520000e+00
+
+ Node number [    1]:     142
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.89294e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.26689e+00
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.83950e+01
+
+ Node number [    1]:     143
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -9.577460e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  3.331194e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  8.270000e+00
+
+ Node number [    1]:     144
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.54057e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -0.34226e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.93904e+01
+
+ Node number [    1]:     145
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -5.951669e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -3.378162e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.270000e+00
+
+ Node number [    1]:     146
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.60356e+00 
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -0.28455e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.91404e+01
+
+ Node number [    1]:     147
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -5.958465e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -2.292511e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  9.020000e+00
+
+ Node number [    1]:     148
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.58399e+00 
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -0.20049e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.88950e+01
+
+ Node number [    1]:     149
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -5.673148e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -1.830014e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  8.770000e+00
+
+ Node number [    1]:     150
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.54281e+00 
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -0.17630e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.86400e+01
+
+ Node number [    1]:     151
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -5.294475e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -1.645566e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  8.520000e+00
+
+ Node number [    1]:     152
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.54903e+00 
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -0.12121e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.83904e+01
+
+ Node number [    1]:     153
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -5.743654e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -7.595351e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:   8.270000e+00
+
+ Node number [    1]:     154
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.58900e+00   
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -0.44168e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.81450e+01
+
+ Node number [    1]:     155
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -5.996405e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  -1.232504e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  8.020000e+00
+
+ Node number [    1]:     156
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.60561e+00  
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.32769e-01  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.78904e+01
+
+ Node number [    1]:     157
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -6.126239e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  7.673037e-02
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  7.770000e+00
+
+ Node number [    1]:     158
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.62774e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.11645e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.76496e+01
+
+ Node number [    1]:     159
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -6.487552e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  1.589032e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  7.520000e+00
+
+ Node number [    1]:     160
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.67536e+00  
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.20424e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.73904e+01
+
+ Node number [    1]:     161
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -6.978909e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  2.459699e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  7.270000e+00
+
+ Node number [    1]:     162
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.70524e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.28551e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.71450e+01
+
+ Node number [    1]:     163
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -7.175230e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  3.255579e-01 
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  7.020000e+00
+ 
+ Node number [    1]:     164
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.75175e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.37270e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.68950e+01
+
+ Node number [    1]:     165
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -8.061175e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  4.166689e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  6.770000e+00
+
+ Node number [    1]:     166
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.90349e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.44999e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  6.64100e+00
+
+ Node number [    1]:     167
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -9.868800e-01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  4.708775e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  6.520000e+00
+
+ Node number [    1]:     168
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.10069e+01 
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.47151e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.63900e+01
+
+ Node number [    1]:     169
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -1.017984e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  4.768260e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  6.270000e+00
+
+ Node number [    1]:     170
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.10722e+01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.51484e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.61407e+01
+
+ Node number [    1]:     171
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -1.128167e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  5.652883e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  6.020000e+00
+
+ Node number [    1]:     172
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.11731e+01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.63500e+00 
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.58907e+01
+
+ Node number [    1]:     173
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -1.208045e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  6.967003e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  5.770000e+00
+
+ Node number [    1]:     174
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.12343e+01  
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.73608e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.56450e+01
+
+ Node number [    1]:     175
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -1.259579e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  7.611176e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  5.520000e+00
+
+ Node number [    1]:     176
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.12960e+01 
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.77575e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.53950e+01
+ 
+ Node number [    1]:     177
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -1.331785e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  7.777168e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  5.270000e+00
+
+ Node number [    1]:     178
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.13564e+01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.76081e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.51450e+01
+
+ Node number [    1]:     179
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -1.377473e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  7.408178e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  5.020000e+00
+
+ Node number [    1]:     180
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -0.14003e+01
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  0.73488e+00  
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  0.48900e+01
+
+ Node number [    1]:     181
+ The number of versions for nj=1 is [1]:  1
+ The Xj(1) coordinate is [ 0.00000e-02]:  -1.421180e+00
+ The number of versions for nj=2 is [1]:  1
+ The Xj(2) coordinate is [ 0.00000e-02]:  7.327119e-01
+ The number of versions for nj=3 is [1]:  1
+ The Xj(3) coordinate is [ 0.00000e-02]:  4.770000e+00
