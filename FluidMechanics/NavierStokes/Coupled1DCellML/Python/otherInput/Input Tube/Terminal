@@ -1,0 +1,8 @@
+NumberOfTerminalNodes: 1
+3
+
+resistanceProximal[1] = 3.7025E+6
+
+resistanceDistal[1] = 0.0
+
+capacitance[1] = 0.0

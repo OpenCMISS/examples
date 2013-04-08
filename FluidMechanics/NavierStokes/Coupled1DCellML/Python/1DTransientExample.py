@@ -60,48 +60,50 @@
 #================================================================================================================================
 
 # Program Variables
-EquationsSetFieldUserNumberNavierStokes = 1337
+EquationsSetFieldUserNumberNavierStokes   = 1337
 EquationsSetFieldUserNumberCharacteristic = 1338
 
-DomainUserNumber = 1
 CoordinateSystemUserNumber = 1
+DomainUserNumber = 1
 RegionUserNumber = 2
-MeshUserNumber = 3
-DecompositionUserNumber = 4
-GeometricFieldUserNumber = 5
-DependentFieldUserNumber = 6
-MaterialsFieldUserNumber = 7
+MeshUserNumber   = 3
+DecompositionUserNumber    = 4
+GeometricFieldUserNumber   = 5
+DependentFieldUserNumber   = 6
+MaterialsFieldUserNumber   = 7
 IndependentFieldUserNumber = 8
-EquationsSetUserNumberNavierStokes = 9
+EquationsSetUserNumberNavierStokes   = 9
 EquationsSetUserNumberCharacteristic = 10
 ProblemUserNumber = 11
-CellMLUserNumber = 12
+CellMLUserNumber  = 12
 CellMLModelsFieldUserNumber = 13
-CellMLStateFieldUserNumber = 14
+CellMLStateFieldUserNumber  = 14
 CellMLIntermediateFieldUserNumber = 15
-CellMLParametersFieldUserNumber = 16
-MaterialsFieldUserNumberCellML = 17
+CellMLParametersFieldUserNumber   = 16
+MaterialsFieldUserNumberCellML    = 17
 
 SolverCharacteristicUserNumber = 1
-SolverNavierStokesUserNumber = 2
+SolverNavierStokesUserNumber   = 2
 
-MaterialsFieldUserNumberMu = 1
+MaterialsFieldUserNumberMu  = 1
 MaterialsFieldUserNumberRho = 2
-MaterialsFieldUserNumberK = 3
-MaterialsFieldUserNumberAs = 4
-MaterialsFieldUserNumberRe = 5
-MaterialsFieldUserNumberFr = 6
-MaterialsFieldUserNumberSt = 7
-MaterialsFieldUserNumberA0 = 8
-MaterialsFieldUserNumberE = 9
-MaterialsFieldUserNumberH0 = 10
+MaterialsFieldUserNumberK   = 3
+MaterialsFieldUserNumberAs  = 4
+MaterialsFieldUserNumberRe  = 5
+MaterialsFieldUserNumberFr  = 6
+MaterialsFieldUserNumberSt  = 7
+MaterialsFieldUserNumberA0  = 8
+MaterialsFieldUserNumberE   = 9
+MaterialsFieldUserNumberH0  = 10
 
 #================================================================================================================================
 #  Initialise OpenCMISS
 #================================================================================================================================
 
+import numpy
+from scipy.sparse import linalg
+from scipy import linalg
 from opencmiss import CMISS
-# Add Python bindings directory to PATH
 import pdb
 import sys,os
 import fem_topology
@@ -112,7 +114,7 @@ sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','pytho
 #CMISS.OutputSetOn("Testing")
 
 NumberOfComputationalNodes = CMISS.ComputationalNumberOfNodesGet()
-ComputationalNodeNumber = CMISS.ComputationalNodeNumberGet()
+ComputationalNodeNumber    = CMISS.ComputationalNodeNumberGet()
 
 #================================================================================================================================
 #  Problem Control Panel
@@ -125,15 +127,15 @@ IPNODE_LINE = IPNODE_FILE.split()
 IPELEM_LINE = IPELEM_FILE.split()
 
 # Set geometry parameters
-NumberOfNodesSpace = int(IPNODE_LINE[14].split()[-1]) 
+NumberOfNodesSpace    = int(IPNODE_LINE[14].split()[-1]) 
 TotalNumberOfElements = int(IPELEM_LINE[14].split()[-1])
 
 # Set branching nodes 
-NumberOfBifurcations = 0
+NumberOfBifurcations  = 0
 NumberOfTrifurcations = 0
-bifurcationNodeNumber = []
-bifurcationElementNumber = []
-trifurcationNodeNumber = []
+bifurcationNodeNumber     = []
+trifurcationNodeNumber    = []
+bifurcationElementNumber  = []
 trifurcationElementNumber = []
 bifurcationNodeNumber.append('null')
 bifurcationElementNumber.append('null')
@@ -141,28 +143,28 @@ trifurcationNodeNumber.append('null')
 trifurcationElementNumber.append('null')
 
 # Set flags
-cellmlFlag = False
+cellmlFlag = True
 windkesselFlag = False
 
 # Set geometry parameters
 NumberOfDimensions = 1
-NumberOfNodesFlow = NumberOfNodesSpace
-NumberOfNodesArea = NumberOfNodesSpace
+NumberOfNodesFlow  = NumberOfNodesSpace
+NumberOfNodesArea  = NumberOfNodesSpace
 TotalNumberOfNodes = NumberOfNodesSpace*3
 
 # Set basis parameters
-BasisUserNumberSpace = 1
-BasisUserNumberFlow = 2
-BasisUserNumberArea = 3
-BasisUserNumberMaterial = 4
+BasisUserNumberSpace      = 1
+BasisUserNumberFlow       = 2
+BasisUserNumberArea       = 3
+BasisUserNumberMaterial   = 4
 BasisXiInterpolationSpace = 2
-BasisXiInterpolationFlow = 2
-BasisXiInterpolationArea = 2
+BasisXiInterpolationFlow  = 2
+BasisXiInterpolationArea  = 2
 
 # Set interpolation parameters
 BasisXiGaussSpace = 3
-BasisXiGaussFlow = 3
-BasisXiGaussArea = 3
+BasisXiGaussFlow  = 3
+BasisXiGaussArea  = 3
 
 #================================================================================================================================
 #  Reading Mesh
@@ -194,7 +196,7 @@ REGION.ReadMesh(BasisUserNumberSpace,MeshUserNumber,
 
 # Variables    
 FieldVariable = 1
-ElementNodes = [0,0,0]*(TotalNumberOfElements)
+ElementNodes  = [0,0,0]*(TotalNumberOfElements)
 xValues = [0]*(NumberOfNodesSpace)
 yValues = [0]*(NumberOfNodesSpace)
 zValues = [0]*(NumberOfNodesSpace)
@@ -239,21 +241,23 @@ for i in range(1,TotalNumberOfElements+1):
 
 # Set material parameters
 Pi = 3.141593                               # Pi
-MU_PARAM = 0.0035                           # Mu (pa.s)
-RHO_PARAM = 1050.0                          # Rho (kg/m3)
-A0_PARAM = [0]*(NumberOfNodesSpace+1)       # Area (m2)
-E_PARAM = [0]*(NumberOfNodesSpace+1)        # Elasticity (pa)
-H0_PARAM = [0]*(NumberOfNodesSpace+1)       # Thickness (m)
+RHO_PARAM = 1050.0                          # Rho        (kg/m3)
+MU_PARAM  = 0.004                           # Mu         (pa.s)
+A0_PARAM  = [0]*(NumberOfNodesSpace+1)      # Area       (m2)
+H0_PARAM  = [0]*(NumberOfNodesSpace+1)      # Thickness  (m)
+E_PARAM   = [0]*(NumberOfNodesSpace+1)      # Elasticity (pa)
+delta_t   = [0]*(NumberOfNodesSpace+1)
+lmbda     = [0]*(NumberOfNodesSpace+1)
 
 # Set reference values
-Qs = 100.0e-6                               # Flow (m3/s)
-As = 100.0e-6                               # Area (m2)
-Xs = 1.0                                    # Distance (m)
-Ts = 1.0                                    # Time (s)
-K = 4.0/3.0                                 # Parabolic flow section
-Re = 8.0*Pi*MU_PARAM*Xs/(RHO_PARAM*Qs)      # Reynolds number
-Fr = (As**2.5/Qs**2.0)/(2.0*RHO_PARAM)      # Froude number
-St = (As*Xs)/(Ts*Qs)                        # Strouhal number
+K  = 4.0/3.0                                # Flow Profile
+Qs = 100.0e-6                               # Flow     (m3/s)
+As = 100.0e-6                               # Area     (m2)
+Xs = 0.001                                  # Length   (m)
+Ts = 0.001                                  # Time     (s)
+Re = 8.0*Pi*MU_PARAM*Xs/(RHO_PARAM*Qs)      # Reynolds
+Fr = (As**2.5/Qs**2.0)/(2.0*RHO_PARAM)      # Froude 
+St = (As*Xs)/(Ts*Qs)                        # Strouhal
 
 # Reading Initial file
 IPNODE_FILE = open("Input/Material").read()
@@ -263,7 +267,7 @@ IPNODE_LINE = IPNODE_FILE.split()
 for i in range(1,NumberOfNodesSpace+1):
     A0_PARAM[i] = float(IPNODE_LINE[2+3*(i-1)].split()[-1]) 
 for i in range(1,NumberOfNodesSpace+1):
-    E_PARAM[i] = float(IPNODE_LINE[(2+3*(NumberOfNodesSpace-1))+3*i].split()[-1]) 
+    E_PARAM[i]  = float(IPNODE_LINE[(2+3*(NumberOfNodesSpace-1))+3*i].split()[-1]) 
 for i in range(1,NumberOfNodesSpace+1):
     H0_PARAM[i] = float(IPNODE_LINE[(2*(2+3*(NumberOfNodesSpace-1)))+1+3*i].split()[-1]) 
 
@@ -275,6 +279,12 @@ for i in range(1,NumberOfNodesSpace+1):
     Q[i] = 0.0
     A[i] = A0_PARAM[i]/As
 
+# Set time step
+for i in range(1,NumberOfNodesSpace+1):
+    lmbda[i] = (Q[0]*Qs/(A0_PARAM[i]))+(A0_PARAM[i]**(0.25))*((2.0*(Pi**(0.5))
+        *E_PARAM[i]*H0_PARAM[i]/(3.0*A0_PARAM[i]*RHO_PARAM))**(0.5))
+    delta_t[i] = ((3.0**(0.5))/3.0)*0.05/lmbda[i]
+
 # Reading Terminal file
 IPNODE_FILE = open("Input/Terminal").read()
 IPNODE_LINE = IPNODE_FILE.split()
@@ -283,9 +293,9 @@ IPNODE_LINE = IPNODE_FILE.split()
 NumberOfTerminalNodes = int(IPNODE_LINE[1].split()[-1])
 
 # Set terminal conditions
-coupledNodeNumber = [0]*(NumberOfTerminalNodes+1)
+coupledNodeNumber  = [0]*(NumberOfTerminalNodes+1)
 resistanceProximal = [0]*(NumberOfTerminalNodes+1)
-resistanceDistal = [0]*(NumberOfTerminalNodes+1)
+resistanceDistal   = [0]*(NumberOfTerminalNodes+1)
 capacitance = [0]*(NumberOfTerminalNodes+1)
 Ae = [0]*(NumberOfTerminalNodes+1)
 
@@ -303,29 +313,32 @@ for i in range(1,NumberOfTerminalNodes+1):
 
 # Set output parameters
 # (NONE/PROGRESS/TIMING/SOLVER/MATRIX)
-DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE = CMISS.SolverOutputTypes.NONE
+DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE   = CMISS.SolverOutputTypes.NONE
 NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE = CMISS.SolverOutputTypes.NONE
-LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE = CMISS.SolverOutputTypes.NONE
+LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE    = CMISS.SolverOutputTypes.NONE
 # (NONE/TIMING/SOLVER/MATRIX)
 EQUATIONS_NAVIER_STOKES_OUTPUT = CMISS.SolverOutputTypes.NONE
 
 # Set time parameters
-DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME = 0.0
-DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME = 1.0
-DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT = 0.01
-DYNAMIC_SOLVER_NAVIER_STOKES_THETA = [0.5]
+DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME     = 0.0
+DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME      = 700.0
+DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT = 1.0
+DYNAMIC_SOLVER_NAVIER_STOKES_THETA = [1.0]
 
 # Set result output parameters
 DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY = 1
 
 # Set solver parameters
+DYNAMIC_SOLVER_ZLAMAL_TIME_SCHEME = 5
 LINEAR_SOLVER_NAVIER_STOKES_DIRECT_FLAG = False
-RELATIVE_TOLERANCE = 1.0E-10  # default: 1.0E-05
-ABSOLUTE_TOLERANCE = 1.0E-10  # default: 1.0E-10
-DIVERGENCE_TOLERANCE = 1.0E20 # default: 1.0E5
-MAXIMUM_ITERATIONS = 100000   # default: 100000
-RESTART_VALUE = 3000          # default: 30
-LINESEARCH_ALPHA = 1.0
+RELATIVE_TOLERANCE_D = 1.0E-5   # default: 1.0E-05
+ABSOLUTE_TOLERANCE_D = 1.0E-8   # default: 1.0E-10
+RELATIVE_TOLERANCE_S = 1.0E-10  # default: 1.0E-05
+ABSOLUTE_TOLERANCE_S = 1.0E-10  # default: 1.0E-10
+DIVERGENCE_TOLERANCE = 1.0E+20  # default: 1.0E+05
+MAXIMUM_ITERATIONS   = 100000   # default: 100000
+RESTART_VALUE        = 3000     # default: 30
+LINESEARCH_ALPHA     = 1.0
 
 # Set CellML flag
 if (cellmlFlag):
@@ -412,7 +425,7 @@ BasisMaterial.CreateFinish()
   
 # Start the creation of mesh nodes
 Nodes = CMISS.Nodes()
-Mesh = CMISS.Mesh()
+Mesh  = CMISS.Mesh()
 Nodes.CreateStart(Region,TotalNumberOfNodes)
 Nodes.CreateFinish()
 # Start the creation of the mesh
@@ -422,13 +435,13 @@ Mesh.NumberOfElementsSet(TotalNumberOfElements)
 # Set number of mesh components
 Mesh.NumberOfComponentsSet(MeshNumberOfComponents)
 # Specify spatial mesh component
-MeshElementsSpace = CMISS.MeshElements()
-MeshElementsFlow = CMISS.MeshElements()
-MeshElementsArea = CMISS.MeshElements()
+MeshElementsSpace    = CMISS.MeshElements()
+MeshElementsFlow     = CMISS.MeshElements()
+MeshElementsArea     = CMISS.MeshElements()
 MeshElementsMaterial = CMISS.MeshElements()
-MeshComponentNumberSpace = 1
-MeshComponentNumberFlow = 1
-MeshComponentNumberArea = 1
+MeshComponentNumberSpace    = 1
+MeshComponentNumberFlow     = 1
+MeshComponentNumberArea     = 1
 MeshComponentNumberMaterial = 2
 
 # Specify space mesh component
@@ -458,7 +471,7 @@ MeshElementsSpace.CreateFinish()
     #              /           \
     #             /             \
     #            /               l int iliac
-    #   abd Aorta             
+    #   dsc Aorta             
     #            \               r int iliac
     #             \             /
     #              \           /
@@ -1026,6 +1039,7 @@ Problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],SolverNavierStokesUserNumb
 DynamicSolverNavierStokes.OutputTypeSet(DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE)
 # Set theta
 DynamicSolverNavierStokes.DynamicThetaSet(DYNAMIC_SOLVER_NAVIER_STOKES_THETA)
+#;DynamicSolverNavierStokes.DynamicSchemeSet(DYNAMIC_SOLVER_ZLAMAL_TIME_SCHEME)
 # Get the dynamic nonlinear solver
 DynamicSolverNavierStokes.DynamicNonlinearSolverGet(NonlinearSolverNavierStokes)
 # Set the nonlinear Jacobian type
@@ -1033,8 +1047,8 @@ NonlinearSolverNavierStokes.NewtonJacobianCalculationTypeSet(CMISS.JacobianCalcu
 # Set the output type
 NonlinearSolverNavierStokes.OutputTypeSet(NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE)
 # Set the solver settings
-NonlinearSolverNavierStokes.NewtonAbsoluteToleranceSet(ABSOLUTE_TOLERANCE)
-NonlinearSolverNavierStokes.NewtonRelativeToleranceSet(RELATIVE_TOLERANCE)
+NonlinearSolverNavierStokes.NewtonAbsoluteToleranceSet(ABSOLUTE_TOLERANCE_D)
+NonlinearSolverNavierStokes.NewtonRelativeToleranceSet(RELATIVE_TOLERANCE_D)
 # Get the dynamic nonlinear linear solver
 NonlinearSolverNavierStokes.NewtonLinearSolverGet(LinearSolverNavierStokes)
 # Set the output type
@@ -1047,8 +1061,8 @@ else:
     LinearSolverNavierStokes.LinearTypeSet(CMISS.LinearSolverTypes.ITERATIVE)
     LinearSolverNavierStokes.LinearIterativeMaximumIterationsSet(MAXIMUM_ITERATIONS)
     LinearSolverNavierStokes.LinearIterativeDivergenceToleranceSet(DIVERGENCE_TOLERANCE)
-    LinearSolverNavierStokes.LinearIterativeRelativeToleranceSet(RELATIVE_TOLERANCE)
-    LinearSolverNavierStokes.LinearIterativeAbsoluteToleranceSet(ABSOLUTE_TOLERANCE)
+    LinearSolverNavierStokes.LinearIterativeRelativeToleranceSet(RELATIVE_TOLERANCE_D)
+    LinearSolverNavierStokes.LinearIterativeAbsoluteToleranceSet(ABSOLUTE_TOLERANCE_D)
     LinearSolverNavierStokes.LinearIterativeGMRESRestartSet(RESTART_VALUE)
 
 # 2nd Solver - Get the static nonlinear solver
@@ -1058,8 +1072,8 @@ NonlinearSolverCharacteristic.NewtonJacobianCalculationTypeSet(CMISS.JacobianCal
 # Set the output type
 NonlinearSolverCharacteristic.OutputTypeSet(NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE)
 # Set the solver settings
-NonlinearSolverCharacteristic.NewtonAbsoluteToleranceSet(ABSOLUTE_TOLERANCE)
-NonlinearSolverCharacteristic.NewtonRelativeToleranceSet(RELATIVE_TOLERANCE)
+NonlinearSolverCharacteristic.NewtonAbsoluteToleranceSet(ABSOLUTE_TOLERANCE_S)
+NonlinearSolverCharacteristic.NewtonRelativeToleranceSet(RELATIVE_TOLERANCE_S)
 # Get the nonlinear linear solver
 NonlinearSolverCharacteristic.NewtonLinearSolverGet(LinearSolverCharacteristic)
 # Set the output type
@@ -1072,8 +1086,8 @@ else:
     LinearSolverCharacteristic.LinearTypeSet(CMISS.LinearSolverTypes.ITERATIVE)
     LinearSolverCharacteristic.LinearIterativeMaximumIterationsSet(MAXIMUM_ITERATIONS)
     LinearSolverCharacteristic.LinearIterativeDivergenceToleranceSet(DIVERGENCE_TOLERANCE)
-    LinearSolverCharacteristic.LinearIterativeRelativeToleranceSet(RELATIVE_TOLERANCE)
-    LinearSolverCharacteristic.LinearIterativeAbsoluteToleranceSet(ABSOLUTE_TOLERANCE)
+    LinearSolverCharacteristic.LinearIterativeRelativeToleranceSet(RELATIVE_TOLERANCE_S)
+    LinearSolverCharacteristic.LinearIterativeAbsoluteToleranceSet(ABSOLUTE_TOLERANCE_S)
     LinearSolverCharacteristic.LinearIterativeGMRESRestartSet(RESTART_VALUE)
 
 # Finish the creation of the problem solver
@@ -1181,6 +1195,78 @@ print "Solving problem..."
 Problem.Solve()
 print "Problem solved!"
 print "#"
+
+#================================================================================================================================
+#  Data Analysis
+#================================================================================================================================
+
+# Get stiffness matrix using the dynamic type
+stiffnessMatrix = CMISS.DistributedMatrix()
+EquationsNavierStokes.DynamicMatrixGetByType(CMISS.EquationsSetDynamicMatrixTypes.STIFFNESS,stiffnessMatrix)
+stiffness = stiffnessMatrix.DataGet()
+#print('K Matrix:')
+#print(stiffness)
+
+dampingMatrix = CMISS.DistributedMatrix()
+EquationsNavierStokes.DynamicMatrixGetByType(CMISS.EquationsSetDynamicMatrixTypes.DAMPING,dampingMatrix)
+damping = dampingMatrix.DataGet()
+#print('C Matrix:')
+#print(damping)
+
+solverJacobian = CMISS.DistributedMatrix()
+SolverEquationsNavierStokes.JacobianMatrixGet(solverJacobian)
+Jacobian = solverJacobian.DataGet()
+#print("solverJacobian:")
+#print(Jacobian)
+
+dampingMatrix   = dampingMatrix.ToSciPy()
+stiffnessMatrix = stiffnessMatrix.ToSciPy()
+solverJacobian  = solverJacobian.ToSciPy()
+
+theta = DYNAMIC_SOLVER_NAVIER_STOKES_THETA[0]
+dt    = DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT
+dofNumber = solverJacobian.shape
+A_Matrix  = dampingMatrix + dt*theta*stiffnessMatrix
+Identity  = numpy.matrix(numpy.identity(dofNumber[0]))
+
+solverA_Matrix           = numpy.zeros(shape=(dofNumber[0],dofNumber[0]))
+solverJacobianMatrix     = numpy.zeros(shape=(dofNumber[0],dofNumber[0]))
+solverStiffnessMatrix    = numpy.zeros(shape=(dofNumber[0],dofNumber[0]))
+inv_solverJacobianMatrix = numpy.zeros(shape=(dofNumber[0],dofNumber[0]))
+
+for i in range(0,dofNumber[0]):
+    for j in range(0,dofNumber[0]):
+        solverJacobianMatrix[i][j]  = solverJacobian[i,j]
+
+for i in range(0,dofNumber[0]):
+    for j in range(0,dofNumber[0]):
+        solverStiffnessMatrix[i][j] = stiffnessMatrix[i+1][j+1]
+        solverA_Matrix[i][j]        = A_Matrix[i+1][j+1]
+
+#inv_solverJacobianMatrix = linalg.inv(solverJacobianMatrix)
+#JacobianMatrix           = (solverJacobianMatrix-solverA_Matrix)/(dt*theta)
+#AmplificationMatrix      = Identity-dt*inv_solverJacobianMatrix.dot(JacobianMatrix+solverStiffnessMatrix)
+
+#print("AmplificationMatrix:")
+#print(AmplificationMatrix)
+#import numpy as np
+#np.savetxt('test.txt', AmplificationMatrix)
+#from scipy.sparse import linalg
+
+#print("Critical Time Step: %f" % delta_t[1] )
+#eigenvalues, eigenvectors = linalg.eigs(AmplificationMatrix, 50, which='LM')
+#maxEig = max(abs(e) for e in eigenvalues)
+#print("Max Eigenvalue: %f" % maxEig)
+#eigenvalues, eigenvectors = linalg.eigs(AmplificationMatrix, 50, which='SM')
+#minEig = min(abs(e) for e in eigenvalues)
+#print("Min Eigenvalue: %f" % minEig)
+
+#try:
+#    cond = maxEig / minEig
+#    print("Amplification condition number: %f" % cond)
+#except ZeroDivisionError:
+#    # If condition number is infinte we effectively have a zero row
+#    print("Amplification condition number is infinte.")
 
 #================================================================================================================================
 #  Finish Program
