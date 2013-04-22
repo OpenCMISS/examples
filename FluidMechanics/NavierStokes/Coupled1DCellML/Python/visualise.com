@@ -29,7 +29,7 @@ gfx define field vector_field coord rectangular_cartesian component General.1 Ge
 gfx cre spectrum Flow
 gfx modify spectrum Flow linear reverse range -0.1 1.5 extend_above extend_below rainbow colour_range 0 1 component 1;
 gfx cre spectrum Area
-gfx modify spectrum Area linear reverse range 0.1 1.3 extend_above extend_below rainbow colour_range 0 1 component 1;
+gfx modify spectrum Area linear reverse range 0.916 0.92 extend_above extend_below rainbow colour_range 0 1 component 1;
 
 gfx modify g_element OpenCMISS cylinders constant_radius 1.0 data flow spectrum Flow radius_scalar area  scale_factor 10
 gfx modify g_element OpenCMISS node_points label General

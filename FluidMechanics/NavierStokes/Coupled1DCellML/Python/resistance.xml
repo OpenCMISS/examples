@@ -140,7 +140,7 @@
 	<ci>Pressure</ci>
 	<apply><times/>
 	  <ci>Resistance</ci>
-	  <ci>FlowRate</ci>
+          <ci>FlowRate</ci>
         </apply>
       </apply>
     </math>

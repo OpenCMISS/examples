@@ -1,0 +1,19 @@
+NumberOfTerminalNodes: 2
+5
+7
+
+resistanceProximal[1] = 17.0E+3
+resistanceProximal[2] = 17.0E+3
+
+resistanceDistal[1] = 0.0
+resistanceDistal[2] = 0.0
+
+capacitance[1] = 0.0
+capacitance[2] = 0.0
+
+pVesselWall[1] = 0.0
+pVesselWall[2] = 0.0
+
+pExternal[1] = 0.0
+pExternal[2] = 0.0
+
