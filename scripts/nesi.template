@@ -13,5 +13,7 @@
 #@ output = $(job_name).$(jobid).out
 #@ error = $(job_name).$(jobid).out
 #@ queue
- 
+
+ulimit -m 1048576 -v 1048576
+
 mpirun  {{test.command}}
