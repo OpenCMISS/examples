@@ -4,7 +4,6 @@ for $i (0..10000)
      $filename = sprintf("./output/MainTime_%01d.part0.exnode", $i);
      print "Reading $filename time $i\n";
      gfx read node "$filename" time $i;
-#     gfx print window 1 file pic$i.jpg
   }
 
 #Read in the element description
@@ -28,11 +27,11 @@ gfx define field vector_field coord rectangular_cartesian component General.1 Ge
 
 gfx cre spectrum Flow
 gfx modify spectrum Flow linear reverse range -0.1 1.5 extend_above extend_below rainbow colour_range 0 1 component 1;
-gfx cre spectrum Area
-gfx modify spectrum Area linear reverse range 0.916 0.92 extend_above extend_below rainbow colour_range 0 1 component 1;
+gfx cre spectrum Pressure
+gfx modify spectrum Pressure linear reverse range 0.0 30.0 extend_above extend_below rainbow colour_range 0 1 component 1;
 
-gfx modify g_element OpenCMISS cylinders constant_radius 1.0 data flow spectrum Flow radius_scalar area  scale_factor 10
-gfx modify g_element OpenCMISS node_points label General
+gfx modify g_element OpenCMISS cylinders constant_radius 1.0 data flow spectrum Flow radius_scalar area  scale_factor 1
+gfx modify g_element OpenCMISS node_points label cmiss_number
 
 gfx edit scene
 #gfx edit spectrum
@@ -43,4 +42,6 @@ gfx timekeeper default set 1.0;
 gfx timekeeper default speed 1;
 gfx timekeeper default play;
 gfx create time_editor
+#jpeg2yuv -f 25 -j %d.jpg -I p | mpeg2enc -o mpegfile.m1v
+#gfx print window 1 file coronary_rotate$i.sgi
 

@@ -1,7 +1,7 @@
 #> \file
 #> \author Soroush Safaei
-#> \brief This is an example program to solve 1D Transient Navier-Stokes over a branch
-#>  with coupled 0D lumped models (resistance, RCR) defined in CellML.
+#> \brief This is an example program to solve 1D Transient Navier-Stokes 
+#>  over the arterial tree with coupled 0D lumped models (RCR) defined in CellML.
 #>
 #> \section LICENSE
 #>
@@ -39,7 +39,7 @@
 #> the provisions above, a recipient may use your version of this file under
 #> the terms of any one of the MPL, the GPL or the LGPL.
 #>
-#> OpenCMISS/example/FluidMechanics/NavierStokes/Coupled1DCellML/src/Coupled1DCellMLExample.f90
+#> OpenCMISS/example/FluidMechanics/NavierStokes/Coupled1DCellML/Python/1DTransientExample.py
 #<
 
 #================================================================================================================================
@@ -49,9 +49,9 @@
     #----------------------------------------------------------------------------------------------------------------------------
     # Don't forget to determine these values before running the example:
     #
-    # cellmlFlag
-    # References
+    # Reference Values
     # TimeStep
+    # Flags
     #
     #----------------------------------------------------------------------------------------------------------------------------
 
@@ -82,8 +82,9 @@ CellMLIntermediateFieldUserNumber = 15
 CellMLParametersFieldUserNumber   = 16
 MaterialsFieldUserNumberCellML    = 17
 
-SolverCharacteristicUserNumber = 1
-SolverNavierStokesUserNumber   = 2
+SolverDAEUserNumber = 1
+SolverCharacteristicUserNumber = 2
+SolverNavierStokesUserNumber   = 3
 
 MaterialsFieldUserNumberMu  = 1
 MaterialsFieldUserNumberRho = 2
@@ -106,6 +107,7 @@ from scipy.sparse import linalg
 from scipy import linalg
 from opencmiss import CMISS
 import pdb
+import shutil
 import sys,os
 import fem_topology
 sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
@@ -114,10 +116,6 @@ sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','pytho
 #CMISS.DiagnosticsSetOn(CMISS.DiagnosticTypes.ALL,[1,2,3,4,5],"Diagnostics",[""])
 #CMISS.ErrorHandlingModeSet(CMISS.ErrorHandlingModes.TRAP_ERROR)
 #CMISS.OutputSetOn("Testing")
-
-# Get the computational nodes info
-NumberOfComputationalNodes = CMISS.ComputationalNumberOfNodesGet()
-ComputationalNodeNumber    = CMISS.ComputationalNodeNumberGet()
 
 #================================================================================================================================
 #  Problem Control Panel
@@ -150,15 +148,15 @@ trifurcationNodeNumber.append('null')
 trifurcationElementNumber.append('null')
 
 # Set the flags
-cellmlFlag     = True
-analysisFlag   = False
-windkesselFlag = False
+cellmlFlag   = True
+lengthFlag   = False
+analysisFlag = False
+
 
 # Set the basis parameters
 BasisUserNumberSpace      = 1
 BasisUserNumberFlow       = 2
 BasisUserNumberArea       = 3
-BasisUserNumberMaterial   = 4
 BasisXiInterpolationSpace = 2
 BasisXiInterpolationFlow  = 2
 BasisXiInterpolationArea  = 2
@@ -193,8 +191,9 @@ REGION.BASES.BasesCreateStart(BasisUserNumberSpace)
 REGION.BASES.BasisTypeSet(BasisUserNumberSpace,"Quadratic_Lagrange")
 REGION.BASES.BasisNumberOfXiCoordinatesSet(BasisUserNumberSpace,NumberOfXi)
 REGION.BASES.BasesCreateFinish(BasisUserNumberSpace)
-REGION.ReadMesh(BasisUserNumberSpace,MeshUserNumber,
-    GeometricFieldUserNumber,"CMISS","Input/Geometry","Input/Geometry")
+
+# Read Mesh
+REGION.ReadMesh(BasisUserNumberSpace,MeshUserNumber,GeometricFieldUserNumber,"CMISS","Input/Geometry","Input/Geometry")
 
 # Variables    
 FieldVariable = 1
@@ -211,8 +210,8 @@ for i in range(1,NumberOfNodesSpace+1):
 
 # Number of bifurcations
 for i in range(1,NumberOfNodesSpace+1):
-    if (xValues[i-1][1] != 0):
-        if (xValues[i-1][3] == 0):
+    if (xValues[i-1][1] != 0 or yValues[i-1][1] != 0 or zValues[i-1][1] != 0):
+        if (xValues[i-1][3] == 0 or yValues[i-1][3] == 0 or zValues[i-1][3] == 0):
             NumberOfBifurcations = NumberOfBifurcations+1
             bifurcationNodeNumber.append(i)
 
@@ -225,8 +224,8 @@ for i in range(1,TotalNumberOfElements+1):
 
 # Number of trifurcations
 for i in range(1,NumberOfNodesSpace+1):
-    if (xValues[i-1][1] != 0):
-        if (xValues[i-1][3] != 0):
+    if (xValues[i-1][1] != 0 or yValues[i-1][1] != 0 or zValues[i-1][1] != 0):
+        if (xValues[i-1][3] != 0 or yValues[i-1][3] != 0 or zValues[i-1][3] != 0):
             NumberOfTrifurcations = NumberOfTrifurcations+1
             trifurcationNodeNumber.append(i)
 
@@ -251,9 +250,9 @@ E_PARAM   = [0]*(NumberOfNodesSpace+1)      # Elasticity (pa)
 delta_t   = [0]*(NumberOfNodesSpace+1)      # TimeStep   (s)
 lmbda     = [0]*(NumberOfNodesSpace+1)      # Eigenvalues
 
-# Set the reference values
+# Set the reference values - (OpenCMISS*Ref=Real)
 K  = 4.0/3.0                                # Flow Profile
-Qs = 100.0e-6                               # Flow     (m3/s)
+Qs = 100.0e-6                               # Flow     (m3/s)  
 As = 100.0e-6                               # Area     (m2)
 Xs = 0.001                                  # Length   (m)
 Ts = 0.001                                  # Time     (s)
@@ -265,7 +264,7 @@ St = (As*Xs)/(Ts*Qs)                        # Strouhal
 IPNODE_FILE = open("Input/Material").read()
 IPNODE_LINE = IPNODE_FILE.split()
 
-# Set the Area, Elasticity & Thickness for each element
+# Set the material parameters for each element
 for i in range(1,NumberOfNodesSpace+1):
     A0_PARAM[i] = float(IPNODE_LINE[2+3*(i-1)].split()[-1]) 
 for i in range(1,NumberOfNodesSpace+1):
@@ -281,41 +280,14 @@ for i in range(1,NumberOfNodesSpace+1):
     Q[i] = 0.0
     A[i] = (A0_PARAM[i]/As)
 
-# Check the timestep and eigenvalues
-for i in range(1,NumberOfNodesSpace+1):
-    lmbda[i] = (Q[0]*Qs/(A0_PARAM[i]))+(A0_PARAM[i]**(0.25))*((2.0*(Pi**(0.5))
-        *E_PARAM[i]*H0_PARAM[i]/(3.0*A0_PARAM[i]*RHO_PARAM))**(0.5))
-    delta_t[i] = ((3.0**(0.5))/3.0)*0.05/lmbda[i]
-
-# Read the TERMINAL file
-IPNODE_FILE = open("Input/Terminal").read()
-IPNODE_LINE = IPNODE_FILE.split()
-
 # Set the terminal nodes
-NumberOfTerminalNodes = int(IPNODE_LINE[1].split()[-1])
+NumberOfTerminalNodes = int(IPNODE_LINE[9*NumberOfNodesSpace+1].split()[-1])
 coupledNodeNumber  = [0]*(NumberOfTerminalNodes+1)
-resistanceProximal = [0]*(NumberOfTerminalNodes+1)
-resistanceDistal   = [0]*(NumberOfTerminalNodes+1)
-capacitance = [0]*(NumberOfTerminalNodes+1)
-pVesselWall = [0]*(NumberOfTerminalNodes+1)
-pExternal   = [0]*(NumberOfTerminalNodes+1)
 Ae = [0]*(NumberOfTerminalNodes+1)
-
-# Set the lumped model parameters
 for i in range(1,NumberOfTerminalNodes+1):
-    coupledNodeNumber[i] = int(IPNODE_LINE[1+i].split()[-1])
+    coupledNodeNumber[i] = int(IPNODE_LINE[9*NumberOfNodesSpace+1+i].split()[-1])
 for i in range(1,NumberOfTerminalNodes+1):
     Ae[i] = A0_PARAM[coupledNodeNumber[i]]/As
-for i in range(1,NumberOfTerminalNodes+1):
-    resistanceProximal[i] = float(IPNODE_LINE[1+NumberOfTerminalNodes+3*i].split()[-1])
-for i in range(1,NumberOfTerminalNodes+1):
-    resistanceDistal[i] = float(IPNODE_LINE[(1+NumberOfTerminalNodes+3*NumberOfTerminalNodes)+3*i].split()[-1])
-for i in range(1,NumberOfTerminalNodes+1):
-    capacitance[i] = float(IPNODE_LINE[(1+NumberOfTerminalNodes+6*NumberOfTerminalNodes)+3*i].split()[-1])
-for i in range(1,NumberOfTerminalNodes+1):
-    pVesselWall[i] = float(IPNODE_LINE[(1+NumberOfTerminalNodes+9*NumberOfTerminalNodes)+3*i].split()[-1])
-for i in range(1,NumberOfTerminalNodes+1):
-    pExternal[i] = float(IPNODE_LINE[(1+NumberOfTerminalNodes+12*NumberOfTerminalNodes)+3*i].split()[-1])
 
 # Set the output parameters
 # (NONE/PROGRESS/TIMING/SOLVER/MATRIX)
@@ -323,17 +295,17 @@ DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE   = CMISS.SolverOutputTypes.NONE
 NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE = CMISS.SolverOutputTypes.NONE
 LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE    = CMISS.SolverOutputTypes.NONE
 # (NONE/TIMING/SOLVER/MATRIX)
+CMISS_SOLVER_OUTPUT_TYPE       = CMISS.SolverOutputTypes.NONE
 EQUATIONS_NAVIER_STOKES_OUTPUT = CMISS.SolverOutputTypes.NONE
 DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY = 1
 
 # Set the time parameters
 DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME     = 0.0
-DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME      = 700.0
+DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME      = 900.0
 DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT = 1.0
 DYNAMIC_SOLVER_NAVIER_STOKES_THETA = [1.0]
 
 # Set the solver parameters
-DYNAMIC_SOLVER_ZLAMAL_TIME_SCHEME = 5
 LINEAR_SOLVER_NAVIER_STOKES_DIRECT_FLAG = False
 RELATIVE_TOLERANCE_D = 1.0E-5   # default: 1.0E-05
 ABSOLUTE_TOLERANCE_D = 1.0E-8   # default: 1.0E-10
@@ -350,9 +322,11 @@ if (cellmlFlag):
     EquationsSetSubtype = CMISS.EquationsSetSubtypes.Coupled1D0D_NAVIER_STOKES
     # Characteristic (nodal/characteristic) solver remains the same
     EquationsSetCharacteristicSubtype = CMISS.EquationsSetSubtypes.Coupled1D0D_CHARACTERISTIC
-    # New problem type to execute the 1D-0D coupling subloop at each timestep
-    ProblemSubtype = CMISS.ProblemSubTypes.Coupled1D0D_NAVIER_STOKES
-else: 
+    ProblemSubtype = CMISS.ProblemSubTypes.Coupled1dDae_NAVIER_STOKES
+else:
+    # Order of solvers
+    SolverCharacteristicUserNumber = 1
+    SolverNavierStokesUserNumber = 2
     EquationsSetSubtype = CMISS.EquationsSetSubtypes.OneDTRANSIENT_NAVIER_STOKES
     EquationsSetCharacteristicSubtype = CMISS.EquationsSetSubtypes.STATIC_CHARACTERISTIC
     ProblemSubtype = CMISS.ProblemSubTypes.OneDTRANSIENT_NAVIER_STOKES
@@ -389,7 +363,7 @@ Region.CreateFinish()
 #================================================================================================================================
 
 # Start the creation of SPACE bases
-MeshNumberOfComponents = 2
+MeshNumberOfComponents = 1
 BasisSpace = CMISS.Basis()
 BasisSpace.CreateStart(BasisUserNumberSpace)
 # Set the basis type (Lagrange/Simplex)
@@ -410,23 +384,10 @@ if (BasisXiInterpolationFlow == BasisXiInterpolationSpace):
 if (BasisXiInterpolationArea == BasisXiInterpolationSpace):
     BasisArea = BasisSpace
 
-# Start the creation of MATERIAL bases
-BasisMaterial = CMISS.Basis()
-BasisMaterial.CreateStart(BasisUserNumberMaterial)
-# Set the basis type (Lagrange/Simplex)
-BasisMaterial.type = CMISS.BasisTypes.LAGRANGE_HERMITE_TP
-# Set the basis xi number
-BasisMaterial.numberOfXi = NumberOfDimensions
-# Set the basis xi interpolation and number of Gauss points
-BasisMaterial.interpolationXi = [CMISS.BasisInterpolationSpecifications.LINEAR_LAGRANGE]
-BasisMaterial.quadratureNumberOfGaussXi = [BasisXiGaussSpace]
-# Finish the creation of the basis
-BasisMaterial.CreateFinish()
-
 #================================================================================================================================
 #  Mesh
 #================================================================================================================================
-  
+
 # Start the creation of mesh nodes
 Nodes = CMISS.Nodes()
 Mesh  = CMISS.Mesh()
@@ -442,11 +403,9 @@ Mesh.NumberOfComponentsSet(MeshNumberOfComponents)
 MeshElementsSpace    = CMISS.MeshElements()
 MeshElementsFlow     = CMISS.MeshElements()
 MeshElementsArea     = CMISS.MeshElements()
-MeshElementsMaterial = CMISS.MeshElements()
 MeshComponentNumberSpace    = 1
 MeshComponentNumberFlow     = 1
 MeshComponentNumberArea     = 1
-MeshComponentNumberMaterial = 2
 
 # Specify the space mesh component
 MeshElementsSpace.CreateStart(Mesh,MeshComponentNumberSpace,BasisSpace)
@@ -464,32 +423,7 @@ for i in range(1,NumberOfTrifurcations+1):
     MeshElementsSpace.LocalElementNodeVersionSet(trifurcationElementNumber[i]+1,2,1,1) 
     MeshElementsSpace.LocalElementNodeVersionSet(trifurcationElementNumber[i]+2,3,1,1)
     MeshElementsSpace.LocalElementNodeVersionSet(trifurcationElementNumber[i]+3,4,1,1) 
-
 MeshElementsSpace.CreateFinish()                        
-
-    # Arterial Tree
-    #
-    #                                         l femoral---l popl
-    #                                        /
-    #                                       /
-    #                            l ext iliac
-    #                           /           \
-    #                          /             \
-    #               l com iliac               l pro fem
-    #              /           \
-    #             /             \
-    #            /               l int iliac
-    #   dsc Aorta             
-    #            \               r int iliac
-    #             \             /
-    #              \           /
-    #               r com iliac               r pro fem
-    #                          \             /
-    #                           \           /
-    #                            r ext iliac
-    #                                       \
-    #                                        \
-    #                                         r femoral---r popl
 
 # Specify the flow mesh component
 if (BasisXiInterpolationFlow == BasisXiInterpolationSpace):
@@ -497,25 +431,7 @@ if (BasisXiInterpolationFlow == BasisXiInterpolationSpace):
 # Specify the area mesh component
 if (BasisXiInterpolationArea == BasisXiInterpolationSpace):
     MeshElementsArea = MeshElementsSpace
-
-# Specify the material mesh component
-MeshElementsMaterial.CreateStart(Mesh,MeshComponentNumberMaterial,BasisMaterial)
-for i in range(1,TotalNumberOfElements+1):
-    # (globalElementNumber,versionNumber,derivativeNumber,localElementNodeNumber)
-    MeshElementsMaterial.NodesSet(i,[ElementNodes[i-1][0],ElementNodes[i-1][2]])
-# Bifurcation material mesh
-for i in range(1,NumberOfBifurcations+1):
-    MeshElementsMaterial.LocalElementNodeVersionSet(bifurcationElementNumber[i]+0,1,1,2) 
-    MeshElementsMaterial.LocalElementNodeVersionSet(bifurcationElementNumber[i]+1,2,1,1) 
-    MeshElementsMaterial.LocalElementNodeVersionSet(bifurcationElementNumber[i]+2,3,1,1) 
-# Trifurcation material mesh
-for i in range(1,NumberOfTrifurcations+1):
-    MeshElementsMaterial.LocalElementNodeVersionSet(trifurcationElementNumber[i]+0,1,1,2) 
-    MeshElementsMaterial.LocalElementNodeVersionSet(trifurcationElementNumber[i]+1,2,1,1) 
-    MeshElementsMaterial.LocalElementNodeVersionSet(trifurcationElementNumber[i]+2,3,1,1)
-    MeshElementsMaterial.LocalElementNodeVersionSet(trifurcationElementNumber[i]+3,4,1,1) 
-MeshElementsMaterial.CreateFinish()
-
+    
 # Finish the creation of the mesh
 Mesh.CreateFinish()
 
@@ -618,6 +534,7 @@ DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'General'
 DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.DELUDELN,'Derivatives')
 DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.V,'Characteristics')
 DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U1,'calculated pressure')
+DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U2,'Pressure')
 
 # Set the mesh component to be used by the field components.
 # Flow 
@@ -641,7 +558,11 @@ if (cellmlFlag):
     COMPONENT_NUMBER = 1
     DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U1,COMPONENT_NUMBER,  
         MeshComponentNumberSpace)
-        
+# Pressure
+COMPONENT_NUMBER = 1
+DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U2,COMPONENT_NUMBER,  
+     MeshComponentNumberSpace)
+     
 # Finish the equations set dependent field variables
 EquationsSetCharacteristic.DependentCreateFinish()
 
@@ -693,7 +614,7 @@ EquationsSetNavierStokes.MaterialsCreateStart(MaterialsFieldUserNumber,Materials
 MaterialsFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'Materials')
 # Set the mesh component to be used by the field components.
 for ComponentNumber in range(8,11):
-    MaterialsFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,ComponentNumber,MeshComponentNumberMaterial)
+    MaterialsFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,ComponentNumber,MeshComponentNumberSpace)
 # Finish the equations set materials field variables
 EquationsSetNavierStokes.MaterialsCreateFinish()
 
@@ -719,7 +640,7 @@ MaterialsFieldNavierStokes.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.
      MaterialsFieldUserNumberSt,St)
 
 # Initialise A0,E,H0 Parameters
-for i in range(1,NumberOfNodesSpace+1,2):
+for i in range(1,NumberOfNodesSpace+1,1):
     MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
         1,1,i,MaterialsFieldUserNumberA0,A0_PARAM[i])
     MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
@@ -764,13 +685,16 @@ if (cellmlFlag):
     pExternalComponent = 2
     #-------------------------------------------------------------------------------------------------------------------  
 
+    pVesselWall = 0.0
+    pExternal   = 0.0
+
     # Set the values at coupled node 
-    # (versionNumber,derivativeNumber,userNodeNumber,componentNumber,value)
     for i in range (1,NumberOfTerminalNodes+1):
+        # (versionNumber,derivativeNumber,userNodeNumber,componentNumber,value)
         MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,
-            CMISS.FieldParameterSetTypes.VALUES,1,1,coupledNodeNumber[i],pVesselWallComponent,pVesselWall[i])
+            CMISS.FieldParameterSetTypes.VALUES,1,1,coupledNodeNumber[i],pVesselWallComponent,pVesselWall)
         MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,
-            CMISS.FieldParameterSetTypes.VALUES,1,1,coupledNodeNumber[i],pExternalComponent,pExternal[i])
+            CMISS.FieldParameterSetTypes.VALUES,1,1,coupledNodeNumber[i],pExternalComponent,pExternal)
 
 #================================================================================================================================
 # Independent Field - Characteristic Wave Normal Direction
@@ -779,10 +703,12 @@ if (cellmlFlag):
 # Create the equations set independent field variables for Characteristic Solver
 IndependentFieldNavierStokes = CMISS.Field()
 EquationsSetCharacteristic.IndependentCreateStart(IndependentFieldUserNumber,IndependentFieldNavierStokes)
-IndependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'Normal wave direction')
+IndependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'Normal Wave Direction')
+IndependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.V,'Input Boundary Condition')
 # Set the mesh component to be used by the field components.
 IndependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,MeshComponentNumberSpace)
 IndependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,2,MeshComponentNumberSpace)
+IndependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.V,1,MeshComponentNumberSpace)
 # Finish the equations set independent field variables
 EquationsSetCharacteristic.IndependentCreateFinish()
 
@@ -848,136 +774,81 @@ if (cellmlFlag):
 
     pCellMLComponent = 1
 
+    # Create the CellML environment
+    CellML = CMISS.CellML()
+    CellML.CreateStart(CellMLUserNumber,Region)
+    # Number of CellML models
+    CellMLModelIndex = [0]*(NumberOfTerminalNodes+1)
+
     # Windkessel Model
-    if (windkesselFlag):
-        # Create the CellML environment
-        CellML = CMISS.CellML()
-        CellML.CreateStart(CellMLUserNumber,Region)
+    for i in range (1,NumberOfTerminalNodes+1):
+        CellMLModelIndex[i] = CellML.ModelImport("./Input/CellMLModels/"+str(i)+"/WindkesselMain.cellml")
+        # known (to OpenCMISS) variables
+        CellML.VariableSetAsKnown(CellMLModelIndex[i],"interface/FlowRate")
+        # to get from the CellML side 
+        CellML.VariableSetAsWanted(CellMLModelIndex[i],"interface/Pressure")
+    CellML.CreateFinish()
 
-        # Import an RCR windkessel model
-        CellML.ModelImport("windkessel.xml",WindkesselModelIndex)    
-
-        # - known (to OpenCMISS) variables 
-        CellML.VariableSetAsKnown(WindkesselModelIndex,"equations/Q")
-        CellML.VariableSetAsKnown(WindkesselModelIndex,"equations/R_p")
-        CellML.VariableSetAsKnown(WindkesselModelIndex,"equations/R_d")
-        CellML.VariableSetAsKnown(WindkesselModelIndex,"equations/C")
-        CellML.VariableSetAsKnown(WindkesselModelIndex,"equations/t")
-        # - to get from the CellML side 
-        CellML.VariableSetAsWanted(WindkesselModelIndex,"equations/P")
-
-        CellML.CreateFinish()
-
-        # Start the creation of CellML <--> OpenCMISS field maps
-        CellML.FieldMapsCreateStart()
+    # Start the creation of CellML <--> OpenCMISS field maps
+    CellML.FieldMapsCreateStart()
+    
+    # ModelIndex
+    for i in range (1,NumberOfTerminalNodes+1):
         # Now we can set up the field variable component <--> CellML model variable mappings.
-
         # Map the OpenCMISS boundary flow rate values --> CellML
         # Q is component 1 of the DependentField
         CellML.CreateFieldToCellMLMap(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,1,
-            CMISS.FieldParameterSetTypes.VALUES,WindkesselModelIndex,"equations/Q",CMISS.FieldParameterSetTypes.VALUES)
-        CellML.CreateFieldToCellMLMap(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,1,
-            CMISS.FieldParameterSetTypes.VALUES,WindkesselModelIndex,"equations/t",CMISS.FieldParameterSetTypes.VALUES)
+            CMISS.FieldParameterSetTypes.VALUES,CellMLModelIndex[i],"interface/FlowRate",CMISS.FieldParameterSetTypes.VALUES)
         # Map the returned pressure values from CellML --> CMISS
-        # pCellML is component 1 of the Dependent field U1 variable
-        CellML.CreateCellMLToFieldMap(WindkesselModelIndex,"equations/Pressure",CMISS.FieldParameterSetTypes.VALUES,
+        # pCellML is component 2 of the Dependent field U1 variable
+        CellML.CreateCellMLToFieldMap(CellMLModelIndex[i],"interface/Pressure",CMISS.FieldParameterSetTypes.VALUES,
             DependentFieldNavierStokes,CMISS.FieldVariableTypes.U1,pCellMLComponent,CMISS.FieldParameterSetTypes.VALUES)
 
-        # Finish the creation of CellML <--> OpenCMISS field maps
-        CellML.FieldMapsCreateFinish()
+    # Finish the creation of CellML <--> OpenCMISS field maps
+    CellML.FieldMapsCreateFinish()
 
-        # Create the CellML models field --- only 1 model here
-        CellMLModelsField = CMISS.Field()
-        CellML.ModelsFieldCreateStart(CellMLModelsFieldUserNumber,CellMLModelsField)
-        CellML.ModelsFieldCreateFinish()
+    # Create the CellML models field
+    CellMLModelsField = CMISS.Field()
+    CellML.ModelsFieldCreateStart(CellMLModelsFieldUserNumber,CellMLModelsField)
+    # Finish the CellML models field
+    CellML.ModelsFieldCreateFinish()
+    
+    # Set models field at each DOF
+    for i in range (1,NumberOfTerminalNodes+1):
+        CellMLModelsField.ParameterSetUpdateNode(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+            1,1,coupledNodeNumber[i],1,CellMLModelIndex[i])
+    
+    # Start the creation of the CellML state field
+    CellMLStateField = CMISS.Field()
+    CellML.StateFieldCreateStart(CellMLStateFieldUserNumber,CellMLStateField)
+    # Finish the creation of the CellML state field
+    CellML.StateFieldCreateFinish()
 
-        # Create the CellML parameters field --- will be the Resistance and Flow rate
-        CellMLParametersField = CMISS.Field()
-        CellML.ParametersFieldCreateStart(CellMLParametersFieldUserNumber,CellMLParametersField)
-        CellML.ParametersFieldCreateFinish()
+    # Create the CellML parameters field
+    CellMLParametersField = CMISS.Field()
+    CellML.ParametersFieldCreateStart(CellMLParametersFieldUserNumber,CellMLParametersField)
+    # Finish the CellML parameters field
+    CellML.ParametersFieldCreateFinish()
 
-        # Create the CellML intermediate field --- will be the pressure value returned from CellML to be used for 
-        # recalculation of the incoming Riemann variable W(2)
-        CellMLIntermediateField = CMISS.Field()
-        CellML.IntermediateFieldCreateStart(CellMLIntermediateFieldUserNumber,CellMLIntermediateField)
-        CellML.IntermediateFieldCreateFinish()
+    # Create the CellML intermediate field --- will be the pressure value returned from CellML to be used for 
+    # recalculation of the incoming Riemann variable W(2)
+    CellMLIntermediateField = CMISS.Field()
+    CellML.IntermediateFieldCreateStart(CellMLIntermediateFieldUserNumber,CellMLIntermediateField)
+    # Finish the CellML intermediate field
+    CellML.IntermediateFieldCreateFinish()
 
-        # Initialise pCellML (and previous pCellML coupling iteration values) values to 0 at the outlet nodes
-        pCellML = 0.0
-        pPrevious = 0.0
-        for i in range (1,NumberOfTerminalNodes+1):
-            # (versionNumber,derivativeNumber,userNodeNumber,componentNumber,value)
-            DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U1,CMISS.FieldParameterSetTypes.VALUES,
-                1,1,coupledNodeNumber[i],pCellMLComponent,pCellML)
+    # Initialise pCellML & previous pCellML
+    pCellML   = [0.0]*(NumberOfTerminalNodes+1)
+    pPrevious = [0.0]*(NumberOfTerminalNodes+1)
 
-        DependentFieldNavierStokes.ParameterSetCreate(CMISS.FieldVariableTypes.U1,CMISS.FieldParameterSetTypes.PREVIOUS_VALUES)
-
-        for i in range (1,NumberOfTerminalNodes+1):
-            DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U1,
-                CMISS.FieldParameterSetTypes.PREVIOUS_VALUES,1,1,coupledNodeNumber[i],pCellMLComponent,pPrevious)
-
-    # R Model
-    else: 
-        # Create the CellML environment
-        CellML = CMISS.CellML()
-        CellML.CreateStart(CellMLUserNumber,Region)
-
-        # Import a simple resistance model P = RQ, analogous to V = IR
-        CellML.ModelImport("resistance.xml")
-        ResistanceModelIndex=1
-        # - known (to OpenCMISS) variables 
-        CellML.VariableSetAsKnown(ResistanceModelIndex,"equations/FlowRate")
-        CellML.VariableSetAsKnown(ResistanceModelIndex,"equations/Resistance")
-        # - to get from the CellML side 
-        CellML.VariableSetAsWanted(ResistanceModelIndex,"equations/Pressure")
-
-        CellML.CreateFinish()
-
-        # Start the creation of CellML <--> OpenCMISS field maps
-        CellML.FieldMapsCreateStart()
-        # Now we can set up the field variable component <--> CellML model variable mappings.
-
-        # Map the OpenCMISS boundary flow rate values --> CellML
-        # Q is component 1 of the DependentField
-        CellML.CreateFieldToCellMLMap(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,1, 
-            CMISS.FieldParameterSetTypes.VALUES,ResistanceModelIndex,"equations/FlowRate",CMISS.FieldParameterSetTypes.VALUES)
-        # Map the returned pressure values from CellML --> CMISS
-        # pCellML is component 2 of the Dependent field V variable
-        CellML.CreateCellMLToFieldMap(ResistanceModelIndex,"equations/Pressure",CMISS.FieldParameterSetTypes.VALUES, 
-            DependentFieldNavierStokes,CMISS.FieldVariableTypes.U1,pCellMLComponent,CMISS.FieldParameterSetTypes.VALUES)
-
-        # Finish the creation of CellML <--> OpenCMISS field maps
-        CellML.FieldMapsCreateFinish()
-
-        # Create the CellML models field --- only 1 model here
-        CellMLModelsField = CMISS.Field()
-        CellML.ModelsFieldCreateStart(CellMLModelsFieldUserNumber,CellMLModelsField)
-        CellML.ModelsFieldCreateFinish()
-
-        # Create the CellML parameters field --- will be the Resistance and Flow rate
-        CellMLParametersField = CMISS.Field()
-        CellML.ParametersFieldCreateStart(CellMLParametersFieldUserNumber,CellMLParametersField)
-        CellML.ParametersFieldCreateFinish()
-
-        # Create the CellML intermediate field --- will be the pressure value returned from CellML to be used for 
-        # recalculation of the incoming Riemann variable W(2)
-        CellMLIntermediateField = CMISS.Field()
-        CellML.IntermediateFieldCreateStart(CellMLIntermediateFieldUserNumber,CellMLIntermediateField)
-        CellML.IntermediateFieldCreateFinish()
-
-        # Initialise pCellML (and previous pCellML coupling iteration values) values to 0 at the outlet nodes
-        pCellML = 0.0
-        pPrevious = 0.0
-        for i in range (1,NumberOfTerminalNodes+1):
-            # (field,variableType,fieldSetType,versionNumber,derivativeNumber,userNodeNumber,componentNumber,value)
-            DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U1,CMISS.FieldParameterSetTypes.VALUES,
-                1,1,coupledNodeNumber[i],pCellMLComponent,pCellML)
-
-        DependentFieldNavierStokes.ParameterSetCreate(CMISS.FieldVariableTypes.U1,CMISS.FieldParameterSetTypes.PREVIOUS_VALUES)
-
-        for i in range (1,NumberOfTerminalNodes+1):
-            DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U1, 
-                CMISS.FieldParameterSetTypes.PREVIOUS_VALUES,1,1,coupledNodeNumber[i],pCellMLComponent,pPrevious)
+    for i in range (1,NumberOfTerminalNodes+1):
+        # (versionNumber,derivativeNumber,userNodeNumber,componentNumber,value)
+        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U1,
+           CMISS.FieldParameterSetTypes.VALUES,1,1,coupledNodeNumber[i],pCellMLComponent,pCellML[i])
+    DependentFieldNavierStokes.ParameterSetCreate(CMISS.FieldVariableTypes.U1,CMISS.FieldParameterSetTypes.PREVIOUS_VALUES)
+    for i in range (1,NumberOfTerminalNodes+1):
+        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U1,
+            CMISS.FieldParameterSetTypes.PREVIOUS_VALUES,1,1,coupledNodeNumber[i],pCellMLComponent,pPrevious[i])
 
 #================================================================================================================================
 #  Equations
@@ -1039,15 +910,15 @@ Problem.ControlLoopCreateFinish()
 #================================================================================================================================
 #  Solvers
 #================================================================================================================================
-
+      
 # Start the creation of the problem solvers
+Problem.SolversCreateStart()
+
 DynamicSolverNavierStokes = CMISS.Solver()
 NonlinearSolverNavierStokes = CMISS.Solver()
 LinearSolverNavierStokes = CMISS.Solver()
 NonlinearSolverCharacteristic = CMISS.Solver()
 LinearSolverCharacteristic = CMISS.Solver()
-
-Problem.SolversCreateStart()
 
 # 1st Solver - Get the dynamic dynamic solver
 Problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],SolverNavierStokesUserNumber,DynamicSolverNavierStokes)
@@ -1055,7 +926,6 @@ Problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],SolverNavierStokesUserNumb
 DynamicSolverNavierStokes.OutputTypeSet(DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE)
 # Set the theta
 DynamicSolverNavierStokes.DynamicThetaSet(DYNAMIC_SOLVER_NAVIER_STOKES_THETA)
-# DynamicSolverNavierStokes.DynamicSchemeSet(DYNAMIC_SOLVER_ZLAMAL_TIME_SCHEME)
 # Get the dynamic nonlinear solver
 DynamicSolverNavierStokes.DynamicNonlinearSolverGet(NonlinearSolverNavierStokes)
 # Set the nonlinear Jacobian type
@@ -1106,23 +976,14 @@ else:
     LinearSolverCharacteristic.LinearIterativeAbsoluteToleranceSet(ABSOLUTE_TOLERANCE_S)
     LinearSolverCharacteristic.LinearIterativeGMRESRestartSet(RESTART_VALUE)
 
-# Finish the creation of the problem solver
-Problem.SolversCreateFinish()
-
 # 3rd Solver - CellML Solver
 if (cellmlFlag):
-
-    # Create the problem solver CellML equations
     CellMLSolver = CMISS.Solver()
-    CellMLEquations = CMISS.CellMLEquations()
-
-    Problem.CellMLEquationsCreateStart()
-
-    DynamicSolverNavierStokes.NewtonCellMLSolverGet(CellMLSolver) 
-    CellMLSolver.CellMLEquationsGet(CellMLEquations)
-    CellMLEquations.CellMLAdd(CellML)
-
-    Problem.CellMLEquationsCreateFinish()
+    Problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],SolverDAEUserNumber,CellMLSolver)
+    CellMLSolver.OutputTypeSet(CMISS_SOLVER_OUTPUT_TYPE)
+    
+# Finish the creation of the problem solver
+Problem.SolversCreateFinish()
 
 #================================================================================================================================
 #  Solver Equations
@@ -1155,6 +1016,22 @@ EquationsSetCharacteristic = SolverEquationsCharacteristic.EquationsSetAdd(Equat
 # Finish the creation of the problem solver equations
 Problem.SolverEquationsCreateFinish()
 
+# 3rd Solver - CellML Solver
+if (cellmlFlag):
+    # Create the problem solver CellML equations
+    CellMLSolver = CMISS.Solver()
+    CellMLEquations = CMISS.CellMLEquations()
+    
+    Problem.CellMLEquationsCreateStart()
+    
+    # 3rd Solver - Get the CellML Solver equations
+    Problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],SolverDAEUserNumber,CellMLSolver)
+    CellMLSolver.CellMLEquationsGet(CellMLEquations)
+    # Add in the equations set
+    CellMLEquations.CellMLAdd(CellML)    
+    # Finish the creation of the problem solver equations
+    Problem.CellMLEquationsCreateFinish()
+    
 #================================================================================================================================
 #  Boundary Conditions
 #================================================================================================================================
@@ -1163,43 +1040,30 @@ Problem.SolverEquationsCreateFinish()
 BoundaryConditionsNavierStokes = CMISS.BoundaryConditions()
 SolverEquationsNavierStokes.BoundaryConditionsCreateStart(BoundaryConditionsNavierStokes)
 
-# Flow(inlet)
+# - Flow(inlet)
 # (versionNumber,derivativeNumber,nodeUserNumber,componentNumber,condition,value)
 BoundaryConditionsNavierStokes.SetNode(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,
     1,1,1,1,CMISS.BoundaryConditionsTypes.FIXED_INLET,Q[0])
 
-# Area(outlet)
+# - Area(outlet)
 for i in range (1,NumberOfTerminalNodes+1):
     BoundaryConditionsNavierStokes.SetNode(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,
         1,1,coupledNodeNumber[i],2,CMISS.BoundaryConditionsTypes.FIXED_OUTLET,Ae[i])
-
+  
 # Characteristic BCs
 BoundaryConditionsCharacteristic = CMISS.BoundaryConditions()
 SolverEquationsCharacteristic.BoundaryConditionsCreateStart(BoundaryConditionsCharacteristic)
 
-# Area(outlet)
-if (cellmlFlag):
-    for i in range (1,NumberOfTerminalNodes+1):
-        BoundaryConditionsCharacteristic.SetNode(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,
-            1,1,coupledNodeNumber[i],2,CMISS.BoundaryConditionsTypes.FIXED_OUTLET,Ae[i])
+# - Area(outlet)
+for i in range (1,NumberOfTerminalNodes+1):
+    BoundaryConditionsCharacteristic.SetNode(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,
+        1,1,coupledNodeNumber[i],2,CMISS.BoundaryConditionsTypes.FIXED_OUTLET,Ae[i])
 
 # Finish the creation of the equations set boundary conditions
 SolverEquationsNavierStokes.BoundaryConditionsCreateFinish()
 SolverEquationsCharacteristic.BoundaryConditionsCreateFinish()
 
-#================================================================================================================================
-#  CellML Parameters
-#================================================================================================================================
-
-if (cellmlFlag):
-
-    # Set the CellML model parameters (Resistance/Capacitance) at boundary nodes
-    resistanceComponent = CellML.FieldComponentGet(ResistanceModelIndex,CMISS.CellMLFieldTypes.PARAMETERS,"equations/Resistance")
-    for i in range (1,NumberOfTerminalNodes+1):
-        BoundaryNodeDomain = Decomposition.NodeDomainGet(coupledNodeNumber[i],1)
-        if (BoundaryNodeDomain == ComputationalNodeNumber):
-            CellMLParametersField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,
-                coupledNodeNumber[i],resistanceComponent,resistanceProximal[i])
+# Note: CellML Parameters (e.g. resistance, capacitance) should be set within each CellML model file
   
 #================================================================================================================================
 #  Run Solvers
@@ -1214,7 +1078,7 @@ print "#"
 #================================================================================================================================
 #  Data Analysis
 #================================================================================================================================
-
+        
 if (analysisFlag):
     # Get the stiffness matrix using the dynamic type
     stiffnessMatrix = CMISS.DistributedMatrix()
@@ -1260,22 +1124,16 @@ if (analysisFlag):
         for j in range(0,dofNumber[0]):
             solverStiffnessMatrix[i][j] = stiffnessMatrix[i+1][j+1]
             solverA_Matrix[i][j]        = A_Matrix[i+1][j+1]
-
+            
+    import numpy as np
     inv_solverJacobianMatrix = linalg.inv(solverJacobianMatrix)
     JacobianMatrix = (solverJacobianMatrix-solverA_Matrix)/(dt*theta)
-    AmplificationMatrix = Identity-dt*inv_solverJacobianMatrix.dot(JacobianMatrix+solverStiffnessMatrix)
+    AmplificationMatrix = Identity-dt*np.dot(inv_solverJacobianMatrix,(JacobianMatrix+solverStiffnessMatrix))
 
-    print("AmplificationMatrix:")
-    print(AmplificationMatrix)
-    import numpy as np
-    #np.savetxt('test.txt', AmplificationMatrix)
-    from scipy.sparse import linalg
-
-    print("Critical Time Step: %f" % delta_t[1] )
-    eigenvalues, eigenvectors = linalg.eigs(AmplificationMatrix, 50, which='LM')
+    eigenvalues, eigenvectors = linalg.eig(AmplificationMatrix)
     maxEig = max(abs(e) for e in eigenvalues)
     print("Max Eigenvalue: %f" % maxEig)
-    eigenvalues, eigenvectors = linalg.eigs(AmplificationMatrix, 50, which='SM')
+    eigenvalues, eigenvectors = linalg.eig(AmplificationMatrix)
     minEig = min(abs(e) for e in eigenvalues)
     print("Min Eigenvalue: %f" % minEig)
 
@@ -1285,7 +1143,46 @@ if (analysisFlag):
     except ZeroDivisionError:
         # If condition number is infinte we effectively have a zero row
         print("Amplification condition number is infinte.")
+        
+if (lengthFlag):
+    # Check the element length
+    elementNumber = [0]*(TotalNumberOfElements+1)
+    elementLength = [0]*(TotalNumberOfElements+1)
+    for i in range(1,TotalNumberOfElements+1):
+        Node1 = ElementNodes[i-1][0]
+        Node2 = ElementNodes[i-1][1]
+        Node3 = ElementNodes[i-1][2]
+        Length1 = (((xValues[Node1-1][0]-xValues[Node2-1][0])**2)
+                  +((yValues[Node1-1][0]-yValues[Node2-1][0])**2)
+                  +((zValues[Node1-1][0]-zValues[Node2-1][0])**2))**0.5
+        Length2 = (((xValues[Node2-1][0]-xValues[Node3-1][0])**2)
+                  +((yValues[Node2-1][0]-yValues[Node3-1][0])**2)
+                  +((zValues[Node2-1][0]-zValues[Node3-1][0])**2))**0.5
+        elementNumber[i] = i
+        elementLength[i] = Length1 + Length2
+        elementLength[0] = elementLength[i]
+        print "Element %1.0f" %elementNumber[i], 
+        print "Length: %1.1f" %elementLength[i],
+        print "Length1: %1.1f" %Length1,
+        print "Length2: %1.1f" %Length2
+    maxElementLength = max(elementLength)*Xs
+    minElementLength = min(elementLength)*Xs
+    print("Max Element Length: %1.3f" % maxElementLength)
+    print("Min Element Length: %1.3f" % minElementLength)
+               
+    # Check the timestep
+    for i in range(1,NumberOfNodesSpace+1):
+        lmbda[i] = (Q[0]*Qs/(A0_PARAM[i]))+(A0_PARAM[i]**(0.25))*((2.0*(Pi**(0.5))
+                   *E_PARAM[i]*H0_PARAM[i]/(3.0*A0_PARAM[i]*RHO_PARAM))**(0.5))
+        delta_t[i] = ((3.0**(0.5))/3.0)*minElementLength/lmbda[i]
+        delta_t[0] = delta_t[i]
+    minTimeStep = min(delta_t)
+    print("Min Time Step:      %3.5f" % minTimeStep )
 
 #================================================================================================================================
 #  Finish Program
 #================================================================================================================================
+
+print "#"
+print "Program successfully completed."
+
