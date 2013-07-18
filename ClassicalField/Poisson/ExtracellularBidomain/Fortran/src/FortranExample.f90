@@ -1,6 +1,7 @@
 !> \file
 !> \author Chris Bradley
-!> \brief This is an example program to solve a Laplace equation using OpenCMISS calls.
+!> \brief This is an example program to solve a special case of a generalised Poisson equation, 
+!<  namely the extracellular bidomain equation, using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -39,17 +40,19 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/Laplace/GeneralisedLaplace/Fortran/src/FortranExample.f90
-!! Example program to solve a Generalised Laplace equation using OpenCMISS calls.
-!! \htmlinclude ClassicalField/Laplace/GeneralisedLaplace/history.html
+!> \example ClassicalField/Poisson/ExtracellularBidomain/Fortran/src/FortranExample.f90
+!! Example program to solve a special case of a generalised Poisson equation, 
+!! namely the extracellular bidomain equation, using OpenCMISS calls.
+!! \htmlinclude ClassicalField/Poisson/ExtracellularBidomain/history.html
 !!
 !<
 
 !> Main program
-PROGRAM GENERALISEDLAPLACEEXAMPLE
+PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
 
   USE OPENCMISS
   USE MPI
+!  USE CONSTANTS   !for pi
 
 #ifdef WIN32
   USE IFQWIN
@@ -73,6 +76,7 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumber=14
   
   INTEGER(CMISSIntg), PARAMETER :: FibreFieldUserNumber=13
   INTEGER(CMISSIntg), PARAMETER :: FibreFieldNumberOfVariables=1
@@ -111,7 +115,7 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,EquationsSetField,DependentField,MaterialsField,FibreField
+  TYPE(CMISSFieldType) :: GeometricField,EquationsSetField,DependentField,MaterialsField,FibreField,SourceField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
   TYPE(CMISSMeshType) :: Mesh
@@ -171,7 +175,6 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
     NUMBER_GLOBAL_X_ELEMENTS=2
     NUMBER_GLOBAL_Y_ELEMENTS=2
     NUMBER_GLOBAL_Z_ELEMENTS=2
-!    INTERPOLATION_TYPE=1
     
     INTERPOLATION_TYPE=CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION
 !    INTERPOLATION_TYPE=CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION
@@ -192,7 +195,7 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
-  WRITE(Filename,'(A,"_",I0,"x",I0,"x",I0,"_",I0)') "GeneralisedLaplace",NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
+  WRITE(Filename,'(A,"_",I0,"x",I0,"x",I0,"_",I0)') "ExtracellularBidomain",NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
     & NUMBER_GLOBAL_Z_ELEMENTS,INTERPOLATION_TYPE
     
   CALL CMISSOutputSetOn(Filename,Err)
@@ -213,7 +216,7 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   !Start the creation of the region
   CALL CMISSRegion_Initialise(Region,Err)
   CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
-  CALL CMISSRegion_LabelSet(Region,"GeneralisedLaplaceRegion",Err)
+  CALL CMISSRegion_LabelSet(Region,"ExtracellularBidomainRegion",Err)
   !Set the regions coordinate system to the 2D RC coordinate system that we have created
   CALL CMISSRegion_CoordinateSystemSet(Region,CoordinateSystem,Err)
   !Finish the creation of the region
@@ -341,13 +344,7 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   !          entry in Angle(3) means rotated around x-axis => no change
   ! 45° equivalent to pi/4, 90° equivalent to pi/2
   
-!  FibreFieldAngle=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)
-
-!  FibreFieldAngle=(/0.0_CMISSDP,PI/4,PI/4/)
-  FibreFieldAngle=(/PI/4,0.0_CMISSDP,0.0_CMISSDP/)
-!  FibreFieldAngle=(/PI/4.0_CMISSDP,PI/6.0_CMISSDP,0.0_CMISSDP/)
-
-!  FibreFieldAngle=(/PI/2,0.0_CMISSDP,0.0_CMISSDP/)
+  FibreFieldAngle=(/PI/4.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)
 
   DO node_idx=1,TotalNumberOfNodes
     CALL CMISSDecomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
@@ -368,22 +365,35 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   CALL CMISSField_GeometricFieldSet(MaterialsField,GeometricField,Err)
   CALL CMISSField_NumberOfVariablesSet(MaterialsField,1,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+    ! need 2 tensors, (sigma_i+sigma_e) and sigma_i
     ! symmetric 2x2 tensor => 3 different entries
     ! 1 - 11, 2 - 22, 3 - 12=21
-    CALL CMISSField_NumberOfComponentsSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,3,Err)
-    CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
-    CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,2,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
-    CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,3,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
-  ELSE
-    ! symmetric 3x3 tensor => 6 different entries
-    ! 1 - 11, 2 - 22, 3 - 33, 4 - 12=21, 5 - 23=32, 6 - 13=31
+    ! first i+e then i
     CALL CMISSField_NumberOfComponentsSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,6,Err)
     CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
     CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,2,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
     CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,3,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
     CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,4,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
     CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,5,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,6,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)    
+  ELSE
+    ! need 2 tensors, (sigma_i+sigma_e) and sigma_i
+    ! symmetric 3x3 tensor => 6 different entries
+    ! 1 - 11, 2 - 22, 3 - 33, 4 - 12=21, 5 - 23=32, 6 - 13=31
+    ! first i+e then i    
+    CALL CMISSField_NumberOfComponentsSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,12,Err)
+    CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,2,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,3,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,4,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,5,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
     CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,6,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,7,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,8,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,9,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,10,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,11,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,12,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)    
   ENDIF
   !default is CMISS_FIELD_NODE_BASED_INTERPOLATION
   CALL CMISSField_VariableLabelSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,"Material",Err)
@@ -392,13 +402,22 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
 
   !Set material parameters
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+    ! sigma_i + sigma_e
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & 1,0.5_CMISSDP,Err)  ! 11
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & 2,0.1_CMISSDP,Err)  ! 22
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & 3,0.0_CMISSDP,Err)  ! 12=21
+    ! sigma_i
+    CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+      & 4,1.0_CMISSDP,Err)  ! 11
+    CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+      & 5,2.0_CMISSDP,Err)  ! 22
+    CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+      & 6,0.0_CMISSDP,Err)  ! 12=21      
   ELSE
+    ! sigma_i + sigma_e  
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & 1,0.5_CMISSDP,Err)  ! 11
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
@@ -411,17 +430,51 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
       & 5,0.0_CMISSDP,Err)  ! 23=32
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & 6,0.0_CMISSDP,Err)  !13=31
+    ! sigma_i      
+    CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+      & 7,0.5_CMISSDP,Err)  ! 11
+    CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+      & 8,0.1_CMISSDP,Err)  ! 22
+    CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+      & 9,0.1_CMISSDP,Err)  ! 33
+    CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+      & 10,0.0_CMISSDP,Err)  ! 12=21
+    CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+      & 11,0.0_CMISSDP,Err)  ! 23=32
+    CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+      & 12,0.0_CMISSDP,Err)  !13=31    
   ENDIF   
   
   !Update the geometric field parameters
   CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
   
-  !Create the Generalised Laplace Equations set
+  !Start to create source field on the region
+  CALL CMISSField_Initialise(SourceField,Err)
+  CALL CMISSField_CreateStart(SourceFieldUserNumber,Region,SourceField,Err)
+  CALL CMISSField_TypeSet(SourceField,CMISS_FIELD_GENERAL_TYPE,Err)
+  !Set the decomposition to use  
+  CALL CMISSField_MeshDecompositionSet(SourceField,Decomposition,Err)
+  CALL CMISSField_GeometricFieldSet(SourceField,GeometricField,Err)
+  CALL CMISSField_NumberOfVariablesSet(SourceField,1,Err)
+  CALL CMISSField_VariableTypesSet(SourceField,(/CMISS_FIELD_U_VARIABLE_TYPE/),Err)
+  CALL CMISSField_VariableLabelSet(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,'Source',Err)
+  CALL CMISSField_NumberOfComponentsSet(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,1,Err)
+  CALL CMISSField_CreateFinish(SourceField,Err)
+  
+!  CALL CMISSField_ComponentValuesInitialise(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+!    & 1,0.0_CMISSDP,Err)
+!  CALL CMISSDecomposition_NodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
+!  IF(FirstNodeDomain==ComputationalNodeNumber) THEN
+!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,FirstNodeNumber,1, &
+!      & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+!  ENDIF
+
+  !Create the extracellular bidomain Poisson Equations set
   CALL CMISSEquationsSet_Initialise(EquationsSet,Err)
   CALL CMISSField_Initialise(EquationsSetField,Err)
   CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumber,Region,FibreField,CMISS_EQUATIONS_SET_CLASSICAL_FIELD_CLASS, &
-    & CMISS_EQUATIONS_SET_LAPLACE_EQUATION_TYPE,CMISS_EQUATIONS_SET_GENERALISED_LAPLACE_SUBTYPE,EquationsSetFieldUserNumber, &
-    & EquationsSetField,EquationsSet,Err)
+    & CMISS_EQUATIONS_SET_POISSON_EQUATION_TYPE,CMISS_EQUATIONS_SET_EXTRACELLULAR_BIDOMAIN_POISSON_SUBTYPE, &
+    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSet,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSet_CreateFinish(EquationsSet,Err)
 
@@ -443,6 +496,11 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   !Finish the equations set dependent field variables
   CALL CMISSEquationsSet_MaterialsCreateFinish(EquationsSet,Err)
 
+  !Create the equations set source field variables
+  CALL CMISSEquationsSet_SourceCreateStart(EquationsSet,SourceFieldUserNumber,SourceField,Err)
+  !Finish the equations set dependent field variables
+  CALL CMISSEquationsSet_SourceCreateFinish(EquationsSet,Err)
+
   !Create the equations set equations
   CALL CMISSEquations_Initialise(Equations,Err)
   CALL CMISSEquationsSet_EquationsCreateStart(EquationsSet,Equations,Err)
@@ -450,19 +508,19 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   CALL CMISSEquations_SparsityTypeSet(Equations,CMISS_EQUATIONS_SPARSE_MATRICES,Err)
   !CALL CMISSEquations_SparsityTypeSet(Equations,CMISS_EQUATIONS_FULL_MATRICES,Err)
   !Set the equations set output
-  CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_NO_OUTPUT,Err)
+  !CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_NO_OUTPUT,Err)
   !CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_TIMING_OUTPUT,Err)
   !CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_MATRIX_OUTPUT,Err)
-  !CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_ELEMENT_MATRIX_OUTPUT,Err)
+  CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_ELEMENT_MATRIX_OUTPUT,Err)
   !Finish the equations set equations
   CALL CMISSEquationsSet_EquationsCreateFinish(EquationsSet,Err)
   
   !Start the creation of a problem.
   CALL CMISSProblem_Initialise(Problem,Err)
   CALL CMISSProblem_CreateStart(ProblemUserNumber,Problem,Err)
-  !Set the problem to be a generalised Laplace problem
-  CALL CMISSProblem_SpecificationSet(Problem,CMISS_PROBLEM_CLASSICAL_FIELD_CLASS,CMISS_PROBLEM_LAPLACE_EQUATION_TYPE, &
-    & CMISS_PROBLEM_GENERALISED_LAPLACE_SUBTYPE,Err)
+  !Set the problem to be a extracellular bidomain Poisson problem --> "subproblem" of linear source subtype
+  CALL CMISSProblem_SpecificationSet(Problem,CMISS_PROBLEM_CLASSICAL_FIELD_CLASS,CMISS_PROBLEM_POISSON_EQUATION_TYPE, &
+    & CMISS_PROBLEM_LINEAR_SOURCE_POISSON_SUBTYPE,Err)
   !Finish the creation of a problem.
   CALL CMISSProblem_CreateFinish(Problem,Err)
 
@@ -475,8 +533,8 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   CALL CMISSSolver_Initialise(Solver,Err)
   CALL CMISSProblem_SolversCreateStart(Problem,Err)
   CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,Solver,Err)
-  !CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_NO_OUTPUT,Err)
-  CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
+  CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_NO_OUTPUT,Err)
+  !CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
   !CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_TIMING_OUTPUT,Err)
   !CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_SOLVER_OUTPUT,Err)
   !CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_MATRIX_OUTPUT,Err)
@@ -526,92 +584,12 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   CALL CMISSDecomposition_NodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
   IF(FirstNodeDomain==ComputationalNodeNumber) THEN
     CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,FirstNodeNumber,1, &
-      & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-  ENDIF
-  IF(LastNodeDomain==ComputationalNodeNumber) THEN
-    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,LastNodeNumber,1, &
       & CMISS_BOUNDARY_CONDITION_FIXED,1.0_CMISSDP,Err)
   ENDIF
-  
-!  !Set the boundaries to analytical value of phi (-> see function below)
-!  CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_FRONT_SURFACE,FrontSurfaceNodes,FrontNormalXi,Err)
-!  CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_LEFT_SURFACE,LeftSurfaceNodes,LeftNormalXi,Err)
-!  CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_RIGHT_SURFACE,RightSurfaceNodes,RightNormalXi,Err)
-!  CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_BACK_SURFACE,BackSurfaceNodes,BackNormalXi,Err)
-!  
-!!  !only valid as sigma for no rotation, as effective conductivity needed for analytical example
-!!  CALL CMISSField_ParameterSetGetConstant(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,SIGMA11,Err)
-!!  CALL CMISSField_ParameterSetGetConstant(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,SIGMA22,Err)
-!!  CALL CMISSField_ParameterSetGetConstant(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3,SIGMA12,Err)
-!  
-!  ! front
-!  DO node_idx=1,SIZE(FrontSurfaceNodes,1)
-!    NodeNumber=FrontSurfaceNodes(node_idx)
-!    CALL CMISSDecomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
-!    IF(NodeDomain==ComputationalNodeNumber) THEN
-!      !WRITE(*,*) NodeNumber
-!      CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,1,&
-!        & X,Err)
-!      CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,2,&
-!        & Y,Err)
-!!      VALUE=PHI(X,Y,SIGMA11,SIGMA22,SIGMA12)
-!      VALUE=PHI(X,Y,0.3_CMISSDP,0.3_CMISSDP,0.2_CMISSDP)
-!!      VALUE=PHI(X,Y,2.0_CMISSDP,1.0_CMISSDP,0.0_CMISSDP)
-!      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-!        & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
-!    ENDIF
-!  ENDDO
-!  ! left
-!  DO node_idx=1,SIZE(LeftSurfaceNodes,1)
-!    NodeNumber=LeftSurfaceNodes(node_idx)
-!    CALL CMISSDecomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
-!    IF(NodeDomain==ComputationalNodeNumber) THEN
-!      !WRITE(*,*) NodeNumber    
-!      CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,1,&
-!        & X,Err)
-!      CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,2,&
-!        & Y,Err)
-!!      VALUE=PHI(X,Y,SIGMA11,SIGMA22,SIGMA12)
-!      VALUE=PHI(X,Y,0.3_CMISSDP,0.3_CMISSDP,0.2_CMISSDP) 
-!!      VALUE=PHI(X,Y,2.0_CMISSDP,1.0_CMISSDP,0.0_CMISSDP)
-!      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-!        & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
-!    ENDIF
-!  ENDDO
-!  ! right
-!  DO node_idx=1,SIZE(RightSurfaceNodes,1)
-!    NodeNumber=RightSurfaceNodes(node_idx)
-!    CALL CMISSDecomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
-!    IF(NodeDomain==ComputationalNodeNumber) THEN
-!      !WRITE(*,*) NodeNumber
-!      CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,1,&
-!        & X,Err)
-!      CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,2,&
-!        & Y,Err)
-!!      VALUE=PHI(X,Y,SIGMA11,SIGMA22,SIGMA12)
-!      VALUE=PHI(X,Y,0.3_CMISSDP,0.3_CMISSDP,0.2_CMISSDP)
-!!      VALUE=PHI(X,Y,2.0_CMISSDP,1.0_CMISSDP,0.0_CMISSDP)
-!      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-!        & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
-!    ENDIF
-!  ENDDO
-!  ! back
-!  DO node_idx=1,SIZE(BackSurfaceNodes,1)
-!    NodeNumber=BackSurfaceNodes(node_idx)
-!    CALL CMISSDecomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
-!    IF(NodeDomain==ComputationalNodeNumber) THEN
-!       !WRITE(*,*) NodeNumber
-!      CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,1,&
-!        & X,Err)
-!      CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,2,&
-!        & Y,Err)
-!!      VALUE=PHI(X,Y,SIGMA11,SIGMA22,SIGMA12)
-!      VALUE=PHI(X,Y,0.3_CMISSDP,0.3_CMISSDP,0.2_CMISSDP)
-!!      VALUE=PHI(X,Y,2.0_CMISSDP,1.0_CMISSDP,0.0_CMISSDP)
-!      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-!        & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
-!    ENDIF
-!  ENDDO
+!  IF(LastNodeDomain==ComputationalNodeNumber) THEN
+!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,LastNodeNumber,1, &
+!      & CMISS_BOUNDARY_CONDITION_FIXED,1.0_CMISSDP,Err)
+!  ENDIF
   
   !Finish the creation of the equations set boundary conditions
   CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
@@ -622,39 +600,9 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   !Export results
   CALL CMISSFields_Initialise(Fields,Err)
   CALL CMISSFields_Create(Region,Fields,Err)
-  CALL CMISSFields_NodesExport(Fields,"GeneralisedLaplace","FORTRAN",Err)
-  CALL CMISSFields_ElementsExport(Fields,"GeneralisedLaplace","FORTRAN",Err)
+  CALL CMISSFields_NodesExport(Fields,"ExtracellularBidomain","FORTRAN",Err)
+  CALL CMISSFields_ElementsExport(Fields,"ExtracellularBidomain","FORTRAN",Err)
   
-!--------------------------------------------------------------------------------------------------------------------------------  
-  ! do the calculation of the L2-norm-error
-  ! calculate analytical solution and error for each node
-!  TOTAL_ERROR_SQUARED=0.0_CMISSDP
-!  WRITE(*,*) "#        node         X-value           Y-value         analytical_solution     calculated_solution     nodal_error"
-!  
-!  DO node_idx=1,TotalNumberOfNodes
-!    CALL CMISSDecomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
-!    IF(NodeDomain==ComputationalNodeNumber) THEN
-!      CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,1,&
-!        & X,Err)
-!      CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,2,&
-!        & Y,Err)
-!      ANALYTICAL_SOL_X_Y=PHI(X,Y,0.3_CMISSDP,0.3_CMISSDP,0.2_CMISSDP)
-!      CALL CMISSField_ParameterSetGetNode(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,1,&
-!        & CALCULATED_SOLUTION_X_Y,Err)
-!      NODAL_ERROR=ABS(ANALYTICAL_SOL_X_Y-CALCULATED_SOLUTION_X_Y)
-!      TOTAL_ERROR_SQUARED=TOTAL_ERROR_SQUARED+NODAL_ERROR**2
-!    ENDIF
-!    WRITE(*,*) node_idx, X, Y, ANALYTICAL_SOL_X_Y, CALCULATED_SOLUTION_X_Y, NODAL_ERROR
-!  ENDDO
-
-  DX=WIDTH/NUMBER_GLOBAL_X_ELEMENTS
-  DY=HEIGHT/NUMBER_GLOBAL_Y_ELEMENTS
-  DZ=LENGTH/NUMBER_GLOBAL_Z_ELEMENTS  
-!  ERROR_L2=SQRT(DX*DY*DZ*TOTAL_ERROR_SQUARED)
-!  
-!  WRITE(*,*) "# L2NORM_ERROR: ",ERROR_L2
-  WRITE(*,*) DX, DY, DZ
-
 !--------------------------------------------------------------------------------------------------------------------------------    
   CALL CMISSFields_Finalise(Fields,Err)
   
@@ -675,12 +623,5 @@ CONTAINS
     STOP
 
   END SUBROUTINE HANDLE_ERROR
-  !------------------------------------------------------------------------------------------------------------------------------
-  ! analytical solution
-  REAL(CMISSDP) FUNCTION PHI(X,Y,SIGMA11,SIGMA22,SIGMA12)
-    REAL(CMISSDP), INTENT(IN) :: X,Y,SIGMA11,SIGMA22,SIGMA12
-    PHI = 2.0_CMISSDP*EXP(X)*EXP(-SIGMA12/SIGMA22*Y)*COS(SQRT(SIGMA11*SIGMA22-SIGMA12*SIGMA12)/SIGMA22*Y)
-    RETURN
-  END FUNCTION PHI
   !------------------------------------------------------------------------------------------------------------------------------  
-END PROGRAM GENERALISEDLAPLACEEXAMPLE
+END PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
