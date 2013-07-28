@@ -39,7 +39,7 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 
 !> Main program
-PROGRAM DataProjection1DRectangularCartesian
+PROGRAM DataProjection3DRectangularCartesian
 
   USE MPI
   USE OPENCMISS
@@ -69,7 +69,6 @@ PROGRAM DataProjection1DRectangularCartesian
   INTEGER(CMISSIntg) :: MeshDimensions=3
   INTEGER(CMISSIntg) :: MeshNumberOfElements
   INTEGER(CMISSIntg) :: MeshNumberOfComponents=1
-  INTEGER(CMISSIntg) :: NumberOfDataProjections=1
   INTEGER(CMISSIntg) :: NumberOfDomains=1 !NumberOfDomains=2 for parallel processing, need to set up MPI
   INTEGER(CMISSIntg) :: NumberOfNodes
   INTEGER(CMISSIntg) :: NumberOfXi=3
@@ -287,30 +286,26 @@ PROGRAM DataProjection1DRectangularCartesian
   
   !=========================================================================================================================
   !Create a data projection
-  CALL CMISSDataProjection_CreateStart(RegionUserNumber,FieldUserNumber,RegionUserNumber,Err)
-  CALL CMISSDataProjection_ProjectionTypeSet(RegionUserNumber,CMISS_DATA_PROJECTION_ALL_ELEMENTS_PROJECTION_TYPE,Err) !Set to element projection for data points embedding. The default is boundary/surface projection.
-  CALL CMISSDataProjection_CreateFinish(RegionUserNumber,Err)
+  CALL CMISSDataProjection_CreateStart(DataProjectionUserNumber,RegionUserNumber,MeshUserNumber,RegionUserNumber,Err)
+  CALL CMISSDataProjection_ProjectionTypeSet(DataProjectionUserNumber,RegionUserNumber, &
+    & CMISS_DATA_PROJECTION_ALL_ELEMENTS_PROJECTION_TYPE,Err) !Set to element projection for data points embedding. The default is boundary/surface projection.
+  CALL CMISSDataProjection_CreateFinish(DataProjectionUserNumber,RegionUserNumber,Err)
   
   !=========================================================================================================================
   !Start data projection
-  CALL CMISSDataProjection_Evaluate(RegionUserNumber,Err)
+  CALL CMISSDataProjection_ProjectionEvaluate(dataProjectionUserNumber,RegionUserNumber,FieldUserNumber,RegionUserNumber,Err)
 
   !Retrieve projection results
   DO data_point_idx=1,NumberOfDataPoints
-    CALL CMISSDataPoints_ProjectionDistanceGet(RegionUserNumber,data_point_idx,DataPointProjectionDistance(data_point_idx),Err)
-    CALL CMISSDataPoints_ProjectionElementNumberGet(RegionUserNumber,data_point_idx,DataPointProjectionElementNumber( &
-      & data_point_idx),Err)
-    CALL CMISSDataPoints_ProjectionExitTagGet(RegionUserNumber,data_point_idx,DataPointProjectionExitTag(data_point_idx),Err)
-    CALL CMISSDataPoints_ProjectionXiGet(RegionUserNumber,data_point_idx,DataPointProjectionXi(data_point_idx,:),Err)
+    CALL CMISSDataProjection_ResultDistanceGet(RegionUserNumber,DataProjectionUserNumber,data_point_idx, &
+      & DataPointProjectionDistance(data_point_idx),Err)
+    CALL CMISSDataProjection_ResultElementNumberGet(RegionUserNumber,DataProjectionUserNumber,data_point_idx, &
+      & DataPointProjectionElementNumber(data_point_idx),Err)
+    CALL CMISSDataProjection_ResultExitTagGet(RegionUserNumber,DataProjectionUserNumber,data_point_idx, &
+      & DataPointProjectionExitTag(data_point_idx),Err)
+    CALL CMISSDataProjection_ResultXiGet(RegionUserNumber,DataProjectionUserNumber,data_point_idx, &
+      & DataPointProjectionXi(data_point_idx,:),Err)
   ENDDO  
-  
-  !=========================================================================================================================
-  !Destroy used types
-  CALL CMISSDataProjection_Destroy(RegionUserNumber,Err)
-  CALL CMISSDataPoints_Destroy(RegionUserNumber,Err)
-    
-  CALL CMISSRegion_Destroy(RegionUserNumber,Err)
-  CALL CMISSCoordinateSystem_Destroy(CoordinateSystemUserNumber,Err)  
   
   !=========================================================================================================================
   !Finishing program
@@ -318,7 +313,7 @@ PROGRAM DataProjection1DRectangularCartesian
   WRITE(*,'(A)') "Program successfully completed."
   STOP  
   
-END PROGRAM DataProjection1DRectangularCartesian
+END PROGRAM DataProjection3DRectangularCartesian
   
   
   
