@@ -59,9 +59,7 @@ PROGRAM DataProjection3DRectangularCartesian
   INTEGER(CMISSIntg),PARAMETER :: FieldUserNumber=1  
   INTEGER(CMISSIntg),PARAMETER :: MeshUserNumber=1
   INTEGER(CMISSIntg),PARAMETER :: RegionUserNumber=1
-
   REAL(CMISSDP), PARAMETER :: CoordinateSystemOrigin(3)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)  
-  !Program types
 
   !Program variables
   INTEGER(CMISSIntg) :: MeshComponentNumber=1
@@ -80,9 +78,7 @@ PROGRAM DataProjection3DRectangularCartesian
   INTEGER(CMISSIntg) :: FieldNumberOfVariables=1
   INTEGER(CMISSIntg) :: FieldNumberOfComponents=3 
   
-
   INTEGER(CMISSIntg) :: data_point_idx,elem_idx,ver_idx,der_idx,node_idx,comp_idx
-    
   REAL(CMISSDP), DIMENSION(5,3) :: DataPointValues !(number_of_data_points,dimension)
   REAL(CMISSDP), DIMENSION(5) :: DataPointProjectionDistance !(number_of_data_points)
   INTEGER(CMISSIntg), DIMENSION(5) :: DataPointProjectionElementNumber !(number_of_data_points)
