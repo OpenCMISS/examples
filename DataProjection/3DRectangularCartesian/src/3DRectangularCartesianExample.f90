@@ -54,6 +54,7 @@ PROGRAM DataProjection1DRectangularCartesian
   INTEGER(CMISSIntg),PARAMETER :: BasisUserNumber=1  
   INTEGER(CMISSIntg),PARAMETER :: CoordinateSystemDimension=3
   INTEGER(CMISSIntg),PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg),PARAMETER :: DataProjectionUserNumber=1
   INTEGER(CMISSIntg),PARAMETER :: DecompositionUserNumber=1
   INTEGER(CMISSIntg),PARAMETER :: FieldUserNumber=1  
   INTEGER(CMISSIntg),PARAMETER :: MeshUserNumber=1
@@ -62,12 +63,13 @@ PROGRAM DataProjection1DRectangularCartesian
   REAL(CMISSDP), PARAMETER :: CoordinateSystemOrigin(3)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)  
   !Program types
 
-  !Program variables   
+  !Program variables
   INTEGER(CMISSIntg) :: MeshComponentNumber=1
   INTEGER(CMISSIntg) :: NumberOfDataPoints 
   INTEGER(CMISSIntg) :: MeshDimensions=3
   INTEGER(CMISSIntg) :: MeshNumberOfElements
   INTEGER(CMISSIntg) :: MeshNumberOfComponents=1
+  INTEGER(CMISSIntg) :: NumberOfDataProjections=1
   INTEGER(CMISSIntg) :: NumberOfDomains=1 !NumberOfDomains=2 for parallel processing, need to set up MPI
   INTEGER(CMISSIntg) :: NumberOfNodes
   INTEGER(CMISSIntg) :: NumberOfXi=3
