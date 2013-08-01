@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Fieldml version="0.5"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xsi:noNamespaceSchemaLocation="http://www.fieldml.org/resources/xml/0.5/FieldML_0.5.xsd">
+ <Region name="BlockChannel">
+
+  <!-- A 2D M2-V2-P1 type FE mesh that represents a channel with a block for SUPG testing -->
+
+  <Import xlink:href="http://www.fieldml.org/resources/xml/0.5/FieldML_Library_0.5.xml" region="library">
+    <ImportType localName="real.type" remoteName="real.1d"/>
+    <ImportType localName="biquadratic.parameters.type" remoteName="parameters.2d.unit.biquadraticLagrange"/>
+    <ImportType localName="bilinear.parameters.type" remoteName="parameters.2d.unit.bilinearLagrange"/>
+    <ImportType localName="rc2.ensemble" remoteName="coordinates.rc.2d.component"/>
+    <ImportType localName="rc2.type" remoteName="coordinates.rc.2d"/>
+
+    <ImportEvaluator localName="biquadratic.node.argument" remoteName="localNodes.2d.square3x3.argument"/>
+    <ImportEvaluator localName="biquadratic.parameters.argument" remoteName="parameters.2d.unit.biquadraticLagrange.argument"/>
+    <ImportEvaluator localName="biquadratic.interpolator" remoteName="interpolator.2d.unit.biquadraticLagrange"/>
+    <ImportEvaluator localName="bilinear.node.argument" remoteName="localNodes.2d.square2x2.argument"/>
+    <ImportEvaluator localName="bilinear.parameters.argument" remoteName="parameters.2d.unit.bilinearLagrange.argument"/>
+    <ImportEvaluator localName="bilinear.interpolator" remoteName="interpolator.2d.unit.bilinearLagrange"/>
+
+    <ImportEvaluator localName="chart.argument" remoteName="chart.2d.argument"/>
+    <ImportEvaluator localName="rc2.component.argument" remoteName="coordinates.rc.2d.component.argument"/>
+    <ImportEvaluator localName="shape.unit.square" remoteName="shape.unit.square"/>
+  </Import>
+
+  <!-- Ensembles: discrete unordered integer datasets that are used as strongly typed identifiers. ParameterEvaluators are used to provide the order atbibutes for indexing Ensembles.  -->
+
+  <EnsembleType name="BlockChannelMesh.nodes">
+   <Members>
+    <MemberRange min="1" max="1099" />
+   </Members>
+  </EnsembleType>
+
+  <ArgumentEvaluator name="BlockChannelMesh.nodes.argument" valueType="BlockChannelMesh.nodes" />
+
+  <MeshType name="BlockChannelMesh.mesh">
+    <Elements name="element">
+     <Members>
+       <MemberRange min="1" max="246"/>
+     </Members>
+    </Elements>
+    <Chart name="xi">
+      <Components name="xi" count="2"/>
+    </Chart>
+    <Shapes evaluator="shape.unit.square" />
+  </MeshType>
+
+  <ArgumentEvaluator name="BlockChannelMesh.mesh.argument" valueType="BlockChannelMesh.mesh" />
+
+  <ArgumentEvaluator name="BlockChannelMesh.nodal_dofs" valueType="real.type" />
+
+  <!-- Resource definition (here based on old .C, .M style files but resources can be defined as below for any regular datasets -->
+
+  <DataResource name="BlockChannelMesh.node.coordinates.resource">
+    <DataResourceDescription>
+      <DataResourceHref xlink:href="supg.C" format="PLAIN_TEXT"/>
+    </DataResourceDescription>
+    <ArrayDataSource name="BlockChannelMesh.node.coordinates.data" location="2" rank="2">
+      <RawArraySize>
+        1099 2
+      </RawArraySize>
+    </ArrayDataSource>
+  </DataResource>
+
+  <DataResource name="BlockChannelMesh.biquadratic.ordering.resource">
+    <DataResourceDescription>
+      <DataResourceString>
+	3 6 1 9 7 5 4 8 2
+      </DataResourceString>
+    </DataResourceDescription>
+    <ArrayDataSource name="BlockChannelMesh.biquadratic.ordering.data" location="1" rank="1">
+      <RawArraySize>
+        9
+      </RawArraySize>
+    </ArrayDataSource>
+  </DataResource>
+
+  <DataResource name="BlockChannelMesh.bilinear.ordering.resource">
+    <DataResourceDescription>
+      <DataResourceString>
+        3 1 4 2
+      </DataResourceString>
+    </DataResourceDescription>
+    <ArrayDataSource name="BlockChannelMesh.bilinear.ordering.data" location="1" rank="1">
+      <RawArraySize>
+        4
+      </RawArraySize>
+    </ArrayDataSource>
+  </DataResource>
+
+  <DataResource name="BlockChannelMesh.nodes.resource">
+    <DataResourceDescription>
+      <DataResourceHref xlink:href="supg.M" format="PLAIN_TEXT"/>
+    </DataResourceDescription>
+    <ArrayDataSource name="BlockChannelMesh.square3x3.nodes.data" location="2" rank="2">
+      <RawArraySize>
+        246 9
+      </RawArraySize>
+    </ArrayDataSource>
+    <ArrayDataSource name="BlockChannelMesh.square2x2.nodes.data" location="248" rank="2">
+      <RawArraySize>
+        246 4
+      </RawArraySize>
+    </ArrayDataSource>
+  </DataResource>
+
+<!-- Mesh connectivity parameter evaluators -->
+
+  <ParameterEvaluator name="BlockChannelMesh.square3x3_nodes" valueType="BlockChannelMesh.nodes">
+   <DenseArrayData data="BlockChannelMesh.square3x3.nodes.data">
+    <DenseIndexes>
+     <IndexEvaluator evaluator="biquadratic.node.argument" order="BlockChannelMesh.biquadratic.ordering.data"/>
+     <IndexEvaluator evaluator="BlockChannelMesh.mesh.argument.element" />
+    </DenseIndexes>
+   </DenseArrayData>
+  </ParameterEvaluator>
+
+  <ParameterEvaluator name="BlockChannelMesh.square2x2_nodes" valueType="BlockChannelMesh.nodes">
+   <DenseArrayData data="BlockChannelMesh.square2x2.nodes.data">
+    <DenseIndexes>
+     <IndexEvaluator evaluator="bilinear.node.argument" order="BlockChannelMesh.bilinear.ordering.data"/>
+     <IndexEvaluator evaluator="BlockChannelMesh.mesh.argument.element" />
+    </DenseIndexes>
+   </DenseArrayData>
+  </ParameterEvaluator>
+
+ <!-- Aggregate Evaluators (create vectors out of scalars indexed over an ensemble) -->
+
+  <AggregateEvaluator name="BlockChannelMesh.element_params.biquadratic_lagrange" valueType="biquadratic.parameters.type">
+   <Bindings>
+    <BindIndex argument="biquadratic.node.argument" indexNumber="1" />
+    <Bind argument="BlockChannelMesh.nodes.argument" source="BlockChannelMesh.square3x3_nodes" />
+   </Bindings>
+   <ComponentEvaluators default="BlockChannelMesh.nodal_dofs" />
+  </AggregateEvaluator>
+
+  <ReferenceEvaluator name="BlockChannelMesh.biquadratic_lagrange" evaluator="biquadratic.interpolator" valueType="real.type">
+   <Bindings>
+    <Bind argument="chart.argument" source="BlockChannelMesh.mesh.argument.xi" />
+    <Bind argument="biquadratic.parameters.argument" source="BlockChannelMesh.element_params.biquadratic_lagrange" />
+   </Bindings>
+  </ReferenceEvaluator>
+
+  <AggregateEvaluator name="BlockChannelMesh.element_params.bilinear_lagrange" valueType="bilinear.parameters.type">
+   <Bindings>
+    <BindIndex argument="bilinear.node.argument" indexNumber="1" />
+    <Bind argument="BlockChannelMesh.nodes.argument" source="BlockChannelMesh.square2x2_nodes" />
+   </Bindings>
+   <ComponentEvaluators default="BlockChannelMesh.nodal_dofs" />
+  </AggregateEvaluator>
+
+  <ReferenceEvaluator name="BlockChannelMesh.bilinear_lagrange" evaluator="bilinear.interpolator" valueType="real.type">
+   <Bindings>
+    <Bind argument="chart.argument" source="BlockChannelMesh.mesh.argument.xi" />
+    <Bind argument="bilinear.parameters.argument" source="BlockChannelMesh.element_params.bilinear_lagrange" />
+   </Bindings>
+  </ReferenceEvaluator>
+
+  <PiecewiseEvaluator name="BlockChannelMesh.template.bilinear" valueType="real.type">
+   <IndexEvaluators>
+    <IndexEvaluator evaluator="BlockChannelMesh.mesh.argument.element" indexNumber="1" />
+   </IndexEvaluators>
+   <EvaluatorMap default="BlockChannelMesh.bilinear_lagrange" />
+  </PiecewiseEvaluator>
+
+  <PiecewiseEvaluator name="BlockChannelMesh.template.biquadratic" valueType="real.type">
+   <IndexEvaluators>
+    <IndexEvaluator evaluator="BlockChannelMesh.mesh.argument.element" indexNumber="1" />
+   </IndexEvaluators>
+   <EvaluatorMap default="BlockChannelMesh.biquadratic_lagrange" />
+  </PiecewiseEvaluator>
+
+  <ParameterEvaluator name="BlockChannelMesh.node.coordinates" valueType="real.type">
+   <DenseArrayData data="BlockChannelMesh.node.coordinates.data">
+    <DenseIndexes>
+     <IndexEvaluator evaluator="rc2.component.argument" />
+     <IndexEvaluator evaluator="BlockChannelMesh.nodes.argument" />
+    </DenseIndexes>
+   </DenseArrayData>
+  </ParameterEvaluator>
+  
+  <AggregateEvaluator name="BlockChannelMesh.coordinates" valueType="rc2.type">
+   <Bindings>
+    <Bind argument="BlockChannelMesh.nodal_dofs" source="BlockChannelMesh.node.coordinates" />
+   </Bindings>
+   <ComponentEvaluators default="BlockChannelMesh.template.biquadratic" />
+  </AggregateEvaluator>
+
+ </Region>
+</Fieldml>
