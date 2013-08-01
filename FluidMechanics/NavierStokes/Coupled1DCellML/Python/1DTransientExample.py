@@ -81,6 +81,7 @@ CellMLStateFieldUserNumber  = 14
 CellMLIntermediateFieldUserNumber = 15
 CellMLParametersFieldUserNumber   = 16
 MaterialsFieldUserNumberCellML    = 17
+AnalyticFieldUserNumber    = 18
 
 SolverDAEUserNumber = 1
 SolverCharacteristicUserNumber = 2
@@ -695,6 +696,17 @@ if (cellmlFlag):
             CMISS.FieldParameterSetTypes.VALUES,1,1,coupledNodeNumber[i],pVesselWallComponent,pVesselWall)
         MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,
             CMISS.FieldParameterSetTypes.VALUES,1,1,coupledNodeNumber[i],pExternalComponent,pExternal)
+
+#================================================================================================================================
+# Analytic Field - Fourier decomposed waveform from literature values
+#================================================================================================================================
+
+AnalyticFieldNavierStokes = CMISS.Field()
+EquationsSetNavierStokes.AnalyticCreateStart(CMISS.NavierStokesAnalyticFunctionTypes.FlowrateReymonds,AnalyticFieldUserNumber,AnalyticFieldNavierStokes)
+# Set the field label
+AnalyticFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'Analytic inlet flow rate')
+EquationsSetNavierStokes.AnalyticCreateFinish()
+AnalyticFieldNavierStokes.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1000.0)
 
 #================================================================================================================================
 # Independent Field - Characteristic Wave Normal Direction
