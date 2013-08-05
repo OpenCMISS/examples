@@ -324,7 +324,7 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   !Set the domain to be used by the field components.
   CALL CMISSField_ComponentMeshComponentSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,Err)
   CALL CMISSField_ComponentMeshComponentSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,2,1,Err)
-  IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
+  IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN  
     CALL CMISSField_ComponentMeshComponentSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,3,1,Err)
   ENDIF
   !Finish creating the field  
@@ -481,15 +481,15 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   !CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_SOLVER_OUTPUT,Err)
   !CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_MATRIX_OUTPUT,Err)
   
-!  CALL CMISSSolver_LinearTypeSet(Solver,CMISS_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
-!  CALL CMISSSolver_LinearIterativeAbsoluteToleranceSet(Solver,1.0E-12_CMISSDP,Err)
-!  CALL CMISSSolver_LinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMISSDP,Err)
-!  CALL CMISSSolver_LinearIterativeTypeSet(Solver,CMISS_SOLVER_ITERATIVE_BiCGSTAB,Err)
-!!  CALL CMISSSolver_LinearIterativeTypeSet(Solver,CMISS_SOLVER_ITERATIVE_CONJUGATE_GRADIENT,Err)
-!!  !CALL CMISSSolver_LinearIterativeTypeSet(Solver,CMISS_SOLVER_ITERATIVE_GMRES,Err)
-!  CALL CMISSSolver_LinearIterativeMaximumIterationsSet(Solver,1000000000,Err)
+  CALL CMISSSolver_LinearTypeSet(Solver,CMISS_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
+  CALL CMISSSolver_LinearIterativeAbsoluteToleranceSet(Solver,1.0E-12_CMISSDP,Err)
+  CALL CMISSSolver_LinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMISSDP,Err)
+  CALL CMISSSolver_LinearIterativeTypeSet(Solver,CMISS_SOLVER_ITERATIVE_BiCGSTAB,Err)
+!  CALL CMISSSolver_LinearIterativeTypeSet(Solver,CMISS_SOLVER_ITERATIVE_CONJUGATE_GRADIENT,Err)
+!  !CALL CMISSSolver_LinearIterativeTypeSet(Solver,CMISS_SOLVER_ITERATIVE_GMRES,Err)
+  CALL CMISSSolver_LinearIterativeMaximumIterationsSet(Solver,1000000000,Err)
   
-  CALL CMISSSolver_LinearTypeSet(Solver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
+!  CALL CMISSSolver_LinearTypeSet(Solver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
   
   !CALL CMISSSolver_LibraryTypeSet(Solver,CMISS_SOLVER_MUMPS_LIBRARY,Err)
   !CALL CMISSSolver_LibraryTypeSet(Solver,CMISS_SOLVER_LAPACK_LIBRARY,Err)
@@ -648,8 +648,8 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
 !  ENDDO
 
   DX=WIDTH/NUMBER_GLOBAL_X_ELEMENTS
-  DY=HEIGHT/NUMBER_GLOBAL_Y_ELEMENTS
-  DZ=LENGTH/NUMBER_GLOBAL_Z_ELEMENTS  
+!  DY=HEIGHT/NUMBER_GLOBAL_Y_ELEMENTS
+!  DZ=LENGTH/NUMBER_GLOBAL_Z_ELEMENTS  
 !  ERROR_L2=SQRT(DX*DY*DZ*TOTAL_ERROR_SQUARED)
 !  
 !  WRITE(*,*) "# L2NORM_ERROR: ",ERROR_L2

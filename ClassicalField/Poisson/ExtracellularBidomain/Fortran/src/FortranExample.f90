@@ -76,7 +76,6 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=12
-  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumber=14
   
   INTEGER(CMISSIntg), PARAMETER :: FibreFieldUserNumber=13
   INTEGER(CMISSIntg), PARAMETER :: FibreFieldNumberOfVariables=1
@@ -115,7 +114,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,EquationsSetField,DependentField,MaterialsField,FibreField,SourceField
+  TYPE(CMISSFieldType) :: GeometricField,EquationsSetField,DependentField,MaterialsField,FibreField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
   TYPE(CMISSMeshType) :: Mesh
@@ -292,6 +291,12 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
  
   !Destory the mesh now that we have decomposed it
 !  CALL CMISSMesh_Destroy(Mesh,Err)
+
+!--------------------------------------------------------------------------------------------------------------------------------
+! FIELDS
+!--------------------------------------------------------------------------------------------------------------------------------
+!
+! GEOMETRIC 
  
   !Start to create a default (geometric) field on the region
   CALL CMISSField_Initialise(GeometricField,Err)
@@ -307,6 +312,10 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   !Finish creating the field
   CALL CMISSField_CreateFinish(GeometricField,Err)
   
+!-------------------------------------------------------------------------
+!
+! FIBRE  
+  
   !Start to create a fibre field and attach it to the geometric field
   CALL CMISSField_Initialise(FibreField,Err)
   CALL CMISSField_CreateStart(FibreFieldUserNumber,Region,FibreField,Err)
@@ -317,7 +326,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   CALL CMISSField_NumberOfVariablesSet(FibreField,FibreFieldNumberOfVariables,Err)
   
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    FibreFieldNumberOfComponents=2
+    FibreFieldNumberOfComponents=2  !make it 1
   ELSE
     FibreFieldNumberOfComponents=3
   ENDIF    
@@ -326,7 +335,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   CALL CMISSField_VariableLabelSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,"Fibre",Err)
   !Set the domain to be used by the field components.
   CALL CMISSField_ComponentMeshComponentSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,Err)
-  CALL CMISSField_ComponentMeshComponentSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,2,1,Err)
+  CALL CMISSField_ComponentMeshComponentSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,2,1,Err)   ! as 2D = 1, after if
   IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
     CALL CMISSField_ComponentMeshComponentSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,3,1,Err)
   ENDIF
@@ -355,8 +364,12 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
       ENDDO
     ENDIF
   ENDDO
+
+!-------------------------------------------------------------------------
+!
+! MATERIAL  
   
-  !Start to create material field on the region
+  !Start to create a material field on the region
   CALL CMISSField_Initialise(MaterialsField,Err)
   CALL CMISSField_CreateStart(MaterialsFieldUserNumber,Region,MaterialsField,Err)
   CALL CMISSField_TypeSet(MaterialsField,CMISS_FIELD_MATERIAL_TYPE,Err)
@@ -444,62 +457,92 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & 12,0.0_CMISSDP,Err)  !13=31    
   ENDIF   
+
+!-------------------------------------------------------------------------
   
   !Update the geometric field parameters
   CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
-  
-  !Start to create source field on the region
-  CALL CMISSField_Initialise(SourceField,Err)
-  CALL CMISSField_CreateStart(SourceFieldUserNumber,Region,SourceField,Err)
-  CALL CMISSField_TypeSet(SourceField,CMISS_FIELD_GENERAL_TYPE,Err)
-  !Set the decomposition to use  
-  CALL CMISSField_MeshDecompositionSet(SourceField,Decomposition,Err)
-  CALL CMISSField_GeometricFieldSet(SourceField,GeometricField,Err)
-  CALL CMISSField_NumberOfVariablesSet(SourceField,1,Err)
-  CALL CMISSField_VariableTypesSet(SourceField,(/CMISS_FIELD_U_VARIABLE_TYPE/),Err)
-  CALL CMISSField_VariableLabelSet(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,'Source',Err)
-  CALL CMISSField_NumberOfComponentsSet(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,1,Err)
-  CALL CMISSField_CreateFinish(SourceField,Err)
-  
-!  CALL CMISSField_ComponentValuesInitialise(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-!    & 1,0.0_CMISSDP,Err)
-!  CALL CMISSDecomposition_NodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
-!  IF(FirstNodeDomain==ComputationalNodeNumber) THEN
-!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,FirstNodeNumber,1, &
-!      & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-!  ENDIF
+
+!-------------------------------------------------------------------------
+!
+! EQUATIONSSET  
 
   !Create the extracellular bidomain Poisson Equations set
   CALL CMISSEquationsSet_Initialise(EquationsSet,Err)
+  
   CALL CMISSField_Initialise(EquationsSetField,Err)
+  
   CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumber,Region,FibreField,CMISS_EQUATIONS_SET_CLASSICAL_FIELD_CLASS, &
     & CMISS_EQUATIONS_SET_POISSON_EQUATION_TYPE,CMISS_EQUATIONS_SET_EXTRACELLULAR_BIDOMAIN_POISSON_SUBTYPE, &
     & EquationsSetFieldUserNumber,EquationsSetField,EquationsSet,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSet_CreateFinish(EquationsSet,Err)
 
+!-------------------------------------------------------------------------
+!
+! DEPENDENT  
+
   !Create the equations set dependent field variables
   CALL CMISSField_Initialise(DependentField,Err)
-  CALL CMISSEquationsSet_DependentCreateStart(EquationsSet,DependentFieldUserNumber,DependentField,Err)
+  CALL CMISSField_CreateStart(DependentFieldUserNumber,Region,DependentField,Err) 
+  CALL CMISSField_TypeSet(DependentField,CMISS_FIELD_GENERAL_TYPE,Err)
+  CALL CMISSField_DependentTypeSet(DependentField,CMISS_FIELD_DEPENDENT_TYPE,Err)  
+  !Set the decomposition to use
+  CALL CMISSField_MeshDecompositionSet(DependentField,Decomposition,Err)
+  CALL CMISSField_GeometricFieldSet(DependentField,GeometricField,Err)
+  CALL CMISSField_NumberOfVariablesSet(DependentField,3,Err)  
+  CALL CMISSField_VariableTypesSet(DependentField,&
+    & (/CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,CMISS_FIELD_V_VARIABLE_TYPE/),Err)  
+    
+  CALL CMISSField_VariableLabelSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,"Phi",Err)        
+  CALL CMISSField_VariableLabelSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,"del Phi/del n",Err)        
+  CALL CMISSField_VariableLabelSet(DependentField,CMISS_FIELD_V_VARIABLE_TYPE,"V_m",Err)            
+    
+  CALL CMISSField_DimensionSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE, &
+                              & CMISS_FIELD_SCALAR_DIMENSION_TYPE,Err)
+  CALL CMISSField_DimensionSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE, &
+                              & CMISS_FIELD_SCALAR_DIMENSION_TYPE,Err)
+  CALL CMISSField_DimensionSet(DependentField,CMISS_FIELD_V_VARIABLE_TYPE, &
+                              & CMISS_FIELD_SCALAR_DIMENSION_TYPE,Err)    
+                              
+  CALL CMISSField_NumberOfComponentsSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,Err)
+  CALL CMISSField_NumberOfComponentsSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,1,Err)
+  CALL CMISSField_NumberOfComponentsSet(DependentField,CMISS_FIELD_V_VARIABLE_TYPE,1,Err)
+    
+  CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,Err)
+  CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,1,1,Err)   
+  CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_V_VARIABLE_TYPE,1,1,Err)                               
+    
   !Set the DOFs to be contiguous across components
   CALL CMISSField_DOFOrderTypeSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_SEPARATED_COMPONENT_DOF_ORDER,Err)
   CALL CMISSField_DOFOrderTypeSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,CMISS_FIELD_SEPARATED_COMPONENT_DOF_ORDER,Err)
+  CALL CMISSField_DOFOrderTypeSet(DependentField,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_SEPARATED_COMPONENT_DOF_ORDER,Err)  
+  
+  CALL CMISSField_CreateFinish(DependentField,Err)
+  
+  !Initialise the field with an initial guess
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,0.5_CMISSDP, &
+    & Err)  
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+    & 1,0.0_CMISSDP,Err)      
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,-2.0_CMISSDP, &
+    & Err)  
+
+!-------------------------------------------------------------------------
+
+  !Create the equations set dependent field variables
+  CALL CMISSEquationsSet_DependentCreateStart(EquationsSet,DependentFieldUserNumber,DependentField,Err)
   !Finish the equations set dependent field variables
   CALL CMISSEquationsSet_DependentCreateFinish(EquationsSet,Err)
 
-  !Initialise the field with an initial guess
-  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,0.5_CMISSDP, &
-    & Err)
+!-------------------------------------------------------------------------
 
   !Create the equations set material field variables
   CALL CMISSEquationsSet_MaterialsCreateStart(EquationsSet,MaterialsFieldUserNumber,MaterialsField,Err)
-  !Finish the equations set dependent field variables
+  !Finish the equations set material field variables
   CALL CMISSEquationsSet_MaterialsCreateFinish(EquationsSet,Err)
 
-  !Create the equations set source field variables
-  CALL CMISSEquationsSet_SourceCreateStart(EquationsSet,SourceFieldUserNumber,SourceField,Err)
-  !Finish the equations set dependent field variables
-  CALL CMISSEquationsSet_SourceCreateFinish(EquationsSet,Err)
+!--------------------------------------------------------------------------------------------------------------------------------
 
   !Create the equations set equations
   CALL CMISSEquations_Initialise(Equations,Err)
@@ -520,7 +563,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   CALL CMISSProblem_CreateStart(ProblemUserNumber,Problem,Err)
   !Set the problem to be a extracellular bidomain Poisson problem --> "subproblem" of linear source subtype
   CALL CMISSProblem_SpecificationSet(Problem,CMISS_PROBLEM_CLASSICAL_FIELD_CLASS,CMISS_PROBLEM_POISSON_EQUATION_TYPE, &
-    & CMISS_PROBLEM_LINEAR_SOURCE_POISSON_SUBTYPE,Err)
+    & CMISS_PROBLEM_EXTRACELLULAR_BIDOMAIN_POISSON_SUBTYPE,Err)
   !Finish the creation of a problem.
   CALL CMISSProblem_CreateFinish(Problem,Err)
 
@@ -584,12 +627,12 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   CALL CMISSDecomposition_NodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
   IF(FirstNodeDomain==ComputationalNodeNumber) THEN
     CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,FirstNodeNumber,1, &
+      & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+  ENDIF
+  IF(LastNodeDomain==ComputationalNodeNumber) THEN
+    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,LastNodeNumber,1, &
       & CMISS_BOUNDARY_CONDITION_FIXED,1.0_CMISSDP,Err)
   ENDIF
-!  IF(LastNodeDomain==ComputationalNodeNumber) THEN
-!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,LastNodeNumber,1, &
-!      & CMISS_BOUNDARY_CONDITION_FIXED,1.0_CMISSDP,Err)
-!  ENDIF
   
   !Finish the creation of the equations set boundary conditions
   CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
