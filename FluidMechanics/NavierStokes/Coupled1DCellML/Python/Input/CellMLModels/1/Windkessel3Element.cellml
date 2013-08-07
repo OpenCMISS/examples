@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<model xmlns="http://www.cellml.org/cellml/1.1#" xmlns:cmeta="http://www.cellml.org/metadata/1.0#" cmeta:id="Windkessel3Element" name="Windkessel3Element">
+
+<import xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="Units.cellml">
+<units name="UnitP" units_ref="UnitP"/>
+<units name="UnitQ" units_ref="UnitQ"/>
+<units name="UnitR" units_ref="UnitR"/>
+<units name="UnitC" units_ref="UnitC"/>
+<units name="UnitT" units_ref="UnitT"/></import>
+
+<import xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="Resistance.cellml">
+<component component_ref="Resistance" name="Rp"/>
+</import>
+
+<import xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="Lowpass.cellml">
+<component component_ref="Lowpass" name="RC"/>
+</import>
+
+<component name="Windkessel3Element">
+<variable name="Pinterface" private_interface="in" public_interface="out" units="UnitP"/>
+
+<variable name="Qinterface" private_interface="out" public_interface="in" units="UnitQ"/>
+
+<variable name="t" private_interface="out" public_interface="in" units="UnitT"/></component>
+
+<group>
+<relationship_ref relationship="encapsulation"/>
+<component_ref component="Windkessel3Element">
+<component_ref component="Rp"/>
+<component_ref component="RC"/>
+<component_ref component="ParameterValues"/></component_ref>
+</group>
+
+<!-- Connect Rproximal to 3-element Windkessel model (inputs of RCR model become inputs of R model) -->
+<connection>
+<map_components component_1="Windkessel3Element" component_2="Rp"/>
+<map_variables variable_1="Pinterface" variable_2="Pi"/>
+<map_variables variable_1="Qinterface" variable_2="Qi"/>
+</connection>
+
+<!-- Connect Rproximal to RC lowpass filter (outputs of R become inputs of RC) -->
+<connection>
+<map_components component_1="Rp" component_2="RC"/>
+<map_variables variable_1="Po" variable_2="Pi"/>
+<map_variables variable_1="Qo" variable_2="Qi"/>
+</connection>
+
+<!-- Connect RC lowpass filter to 3-element Windkessel model (outputs of RC model become outputs of RCR model) -->
+
+
+<import xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="ParameterValues.cellml">
+<component component_ref="ParameterValues" name="ParameterValues"/>
+</import>
+
+<connection>
+<map_components component_1="ParameterValues" component_2="Rp"/>
+<map_variables variable_1="ResistanceProximal" variable_2="R"/>
+</connection>
+
+<connection>
+<map_components component_1="ParameterValues" component_2="RC"/>
+<map_variables variable_1="ResistanceDistal" variable_2="R"/>
+<map_variables variable_1="Capacitance" variable_2="C"/>
+
+<map_variables variable_1="PressureTerminal" variable_2="Po"/></connection>
+
+<connection><map_components component_1="Windkessel3Element" component_2="RC"/><map_variables variable_1="t" variable_2="t"/></connection></model>

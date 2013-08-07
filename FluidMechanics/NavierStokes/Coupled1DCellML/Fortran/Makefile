@@ -64,9 +64,9 @@ endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_PATH=FluidMechanics/NavierStokes/
+EXAMPLE_PATH=FluidMechanics/NavierStokes/Coupled1DCellML/
 
-EXAMPLE_NAME = 1DTransient
+EXAMPLE_NAME = Fortran
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 
