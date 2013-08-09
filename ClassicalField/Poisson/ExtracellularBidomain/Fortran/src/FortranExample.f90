@@ -76,6 +76,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumber=14  
   
   INTEGER(CMISSIntg), PARAMETER :: FibreFieldUserNumber=13
   INTEGER(CMISSIntg), PARAMETER :: FibreFieldNumberOfVariables=1
@@ -95,16 +96,16 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, &
     & INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI,node_idx,component_idx,TotalNumberOfNodes
   INTEGER(CMISSIntg) :: FibreFieldNumberOfComponents  
-  REAL(CMISSDP) :: SIGMA11,SIGMA22,SIGMA12,X,Y,VALUE
-  REAL(CMISSDP) :: ANALYTICAL_SOL_X_Y,CALCULATED_SOLUTION_X_Y,NODAL_ERROR,TOTAL_ERROR_SQUARED,DX,DY,DZ,ERROR_L2
+!  REAL(CMISSDP) :: SIGMA11,SIGMA22,SIGMA12,X,Y,VALUE
+!  REAL(CMISSDP) :: ANALYTICAL_SOL_X_Y,CALCULATED_SOLUTION_X_Y,NODAL_ERROR,TOTAL_ERROR_SQUARED,DX,DY,DZ,ERROR_L2
   REAL(CMISSDP) :: FibreFieldAngle(3)
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT,Filename
   
-  INTEGER(CMISSIntg),ALLOCATABLE :: FrontSurfaceNodes(:)
-  INTEGER(CMISSIntg),ALLOCATABLE :: LeftSurfaceNodes(:)
-  INTEGER(CMISSIntg),ALLOCATABLE :: RightSurfaceNodes(:)
-  INTEGER(CMISSIntg),ALLOCATABLE :: BackSurfaceNodes(:)
-  INTEGER(CMISSIntg) :: FrontNormalXi,LeftNormalXi,RightNormalXi,BackNormalXi
+!  INTEGER(CMISSIntg),ALLOCATABLE :: FrontSurfaceNodes(:)
+!  INTEGER(CMISSIntg),ALLOCATABLE :: LeftSurfaceNodes(:)
+!  INTEGER(CMISSIntg),ALLOCATABLE :: RightSurfaceNodes(:)
+!  INTEGER(CMISSIntg),ALLOCATABLE :: BackSurfaceNodes(:)
+!  INTEGER(CMISSIntg) :: FrontNormalXi,LeftNormalXi,RightNormalXi,BackNormalXi
 
   !CMISS variables
 
@@ -114,7 +115,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,EquationsSetField,DependentField,MaterialsField,FibreField
+  TYPE(CMISSFieldType) :: GeometricField,EquationsSetField,DependentField,MaterialsField,FibreField,SourceField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
   TYPE(CMISSMeshType) :: Mesh
@@ -326,7 +327,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   CALL CMISSField_NumberOfVariablesSet(FibreField,FibreFieldNumberOfVariables,Err)
   
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    FibreFieldNumberOfComponents=2  !make it 1
+    FibreFieldNumberOfComponents=2  
   ELSE
     FibreFieldNumberOfComponents=3
   ENDIF    
@@ -353,7 +354,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   !          entry in Angle(3) means rotated around x-axis => no change
   ! 45° equivalent to pi/4, 90° equivalent to pi/2
   
-  FibreFieldAngle=(/PI/4.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)
+  FibreFieldAngle=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)
 
   DO node_idx=1,TotalNumberOfNodes
     CALL CMISSDecomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
@@ -406,7 +407,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
     CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,9,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
     CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,10,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
     CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,11,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
-    CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,12,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)    
+    CALL CMISSField_ComponentInterpolationSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,12,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
   ENDIF
   !default is CMISS_FIELD_NODE_BASED_INTERPOLATION
   CALL CMISSField_VariableLabelSet(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,"Material",Err)
@@ -417,26 +418,26 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
     ! sigma_i + sigma_e
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & 1,0.5_CMISSDP,Err)  ! 11
+      & 1,2.0_CMISSDP,Err)  ! 11
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & 2,0.1_CMISSDP,Err)  ! 22
+      & 2,1.0_CMISSDP,Err)  ! 22
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & 3,0.0_CMISSDP,Err)  ! 12=21
     ! sigma_i
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & 4,1.0_CMISSDP,Err)  ! 11
+      & 4,2.0_CMISSDP,Err)  ! 11
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & 5,2.0_CMISSDP,Err)  ! 22
+      & 5,1.0_CMISSDP,Err)  ! 22
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & 6,0.0_CMISSDP,Err)  ! 12=21      
   ELSE
     ! sigma_i + sigma_e  
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & 1,0.5_CMISSDP,Err)  ! 11
+      & 1,2.0_CMISSDP,Err)  ! 11
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & 2,0.1_CMISSDP,Err)  ! 22
+      & 2,1.0_CMISSDP,Err)  ! 22
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & 3,0.1_CMISSDP,Err)  ! 33
+      & 3,1.0_CMISSDP,Err)  ! 33
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & 4,0.0_CMISSDP,Err)  ! 12=21
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
@@ -445,11 +446,11 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
       & 6,0.0_CMISSDP,Err)  !13=31
     ! sigma_i      
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & 7,0.5_CMISSDP,Err)  ! 11
+      & 7,2.0_CMISSDP,Err)  ! 11
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & 8,0.1_CMISSDP,Err)  ! 22
+      & 8,1.0_CMISSDP,Err)  ! 22
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & 9,0.1_CMISSDP,Err)  ! 33
+      & 9,1.0_CMISSDP,Err)  ! 33
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & 10,0.0_CMISSDP,Err)  ! 12=21
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
@@ -462,6 +463,27 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   
   !Update the geometric field parameters
   CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
+
+!-------------------------------------------------------------------------
+!
+! SOURCE
+
+  !Start to create a source field on the region
+  CALL CMISSField_Initialise(SourceField,Err)
+  CALL CMISSField_CreateStart(SourceFieldUserNumber,Region,SourceField,Err)
+  CALL CMISSField_TypeSet(SourceField,CMISS_FIELD_GENERAL_TYPE,Err)
+  !Set the decomposition to use
+  CALL CMISSField_MeshDecompositionSet(SourceField,Decomposition,Err)
+  CALL CMISSField_GeometricFieldSet(SourceField,GeometricField,Err)
+  CALL CMISSField_NumberOfVariablesSet(SourceField,1,Err)
+  CALL CMISSField_NumberOfComponentsSet(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,1,Err)   
+  CALL CMISSField_VariableLabelSet(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,"Vm",Err)
+  !Finish creating the field
+  CALL CMISSField_CreateFinish(SourceField,Err)
+
+  !Set source value
+  CALL CMISSField_ComponentValuesInitialise(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+      & 1,1.0_CMISSDP,Err)
 
 !-------------------------------------------------------------------------
 !
@@ -490,42 +512,32 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   !Set the decomposition to use
   CALL CMISSField_MeshDecompositionSet(DependentField,Decomposition,Err)
   CALL CMISSField_GeometricFieldSet(DependentField,GeometricField,Err)
-  CALL CMISSField_NumberOfVariablesSet(DependentField,3,Err)  
+  CALL CMISSField_NumberOfVariablesSet(DependentField,2,Err)  
   CALL CMISSField_VariableTypesSet(DependentField,&
-    & (/CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,CMISS_FIELD_V_VARIABLE_TYPE/),Err)  
+    & (/CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_DELUDELN_VARIABLE_TYPE/),Err)  
     
   CALL CMISSField_VariableLabelSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,"Phi",Err)        
   CALL CMISSField_VariableLabelSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,"del Phi/del n",Err)        
-  CALL CMISSField_VariableLabelSet(DependentField,CMISS_FIELD_V_VARIABLE_TYPE,"V_m",Err)            
     
   CALL CMISSField_DimensionSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE, &
                               & CMISS_FIELD_SCALAR_DIMENSION_TYPE,Err)
   CALL CMISSField_DimensionSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE, &
                               & CMISS_FIELD_SCALAR_DIMENSION_TYPE,Err)
-  CALL CMISSField_DimensionSet(DependentField,CMISS_FIELD_V_VARIABLE_TYPE, &
-                              & CMISS_FIELD_SCALAR_DIMENSION_TYPE,Err)    
                               
   CALL CMISSField_NumberOfComponentsSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,Err)
   CALL CMISSField_NumberOfComponentsSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,1,Err)
-  CALL CMISSField_NumberOfComponentsSet(DependentField,CMISS_FIELD_V_VARIABLE_TYPE,1,Err)
     
   CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,Err)
   CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,1,1,Err)   
-  CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_V_VARIABLE_TYPE,1,1,Err)                               
     
   !Set the DOFs to be contiguous across components
   CALL CMISSField_DOFOrderTypeSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_SEPARATED_COMPONENT_DOF_ORDER,Err)
   CALL CMISSField_DOFOrderTypeSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,CMISS_FIELD_SEPARATED_COMPONENT_DOF_ORDER,Err)
-  CALL CMISSField_DOFOrderTypeSet(DependentField,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_SEPARATED_COMPONENT_DOF_ORDER,Err)  
   
   CALL CMISSField_CreateFinish(DependentField,Err)
   
   !Initialise the field with an initial guess
   CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,0.5_CMISSDP, &
-    & Err)  
-  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,0.0_CMISSDP,Err)      
-  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,-2.0_CMISSDP, &
     & Err)  
 
 !-------------------------------------------------------------------------
@@ -541,6 +553,13 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   CALL CMISSEquationsSet_MaterialsCreateStart(EquationsSet,MaterialsFieldUserNumber,MaterialsField,Err)
   !Finish the equations set material field variables
   CALL CMISSEquationsSet_MaterialsCreateFinish(EquationsSet,Err)
+
+!-------------------------------------------------------------------------
+
+  !Create the equations set source field variables
+  CALL CMISSEquationsSet_SourceCreateStart(EquationsSet,SourceFieldUserNumber,SourceField,Err)
+  !Finish the equations set material field variables
+  CALL CMISSEquationsSet_SourceCreateFinish(EquationsSet,Err)
 
 !--------------------------------------------------------------------------------------------------------------------------------
 

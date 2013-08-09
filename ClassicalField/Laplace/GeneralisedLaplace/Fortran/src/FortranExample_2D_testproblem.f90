@@ -1,6 +1,6 @@
 !> \file
 !> \author Chris Bradley
-!> \brief This is an example program to solve a Laplace equation using OpenCMISS calls.
+!> \brief This is an example program to solve a generalised Laplace equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -333,18 +333,27 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   CALL CMISSNodes_Initialise(Nodes,Err)
   CALL CMISSRegion_NodesGet(Region,Nodes,Err)
   CALL CMISSNodes_NumberOfNodesGet(Nodes,TotalNumberOfNodes,Err)
-  
+
   !Rotation Angles (in radiant!!)
-  ! 45° equivalent to pi/4 = 0.78539816339, 90° equivalent to pi/2 = 1.57079632679
+  ! in 2D an entry in Angle(1) means rotated x-axis, 
+  !          entry in Angle(2) doesn't make sense, as rotates out of surface ...
+  ! in 3D an entry in Angle(1) means rotated around z-axis, entry in Angle(2) means rotated around y-axis
+  !          entry in Angle(3) means rotated around x-axis => no change
+  ! 45° equivalent to pi/4, 90° equivalent to pi/2
+  
 !  FibreFieldAngle=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)
+
   FibreFieldAngle=(/PI/4,0.0_CMISSDP,0.0_CMISSDP/)
 !  FibreFieldAngle=(/PI/2,0.0_CMISSDP,0.0_CMISSDP/)
 
   DO node_idx=1,TotalNumberOfNodes
-    DO component_idx=1,FibreFieldNumberOfComponents
-      CALL CMISSField_ParameterSetUpdateNode(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
-        & DerivativeUserNumber,node_idx,component_idx,FibreFieldAngle(component_idx),Err)
-    ENDDO
+    CALL CMISSDecomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      DO component_idx=1,FibreFieldNumberOfComponents
+        CALL CMISSField_ParameterSetUpdateNode(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
+          & DerivativeUserNumber,node_idx,component_idx,FibreFieldAngle(component_idx),Err)
+      ENDDO
+    ENDIF
   ENDDO
 
   !WRITE(*,*) TotalNumberOfNodes
@@ -475,10 +484,13 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
 !  CALL CMISSSolver_LinearTypeSet(Solver,CMISS_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
 !  CALL CMISSSolver_LinearIterativeAbsoluteToleranceSet(Solver,1.0E-12_CMISSDP,Err)
 !  CALL CMISSSolver_LinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMISSDP,Err)
+!  CALL CMISSSolver_LinearIterativeTypeSet(Solver,CMISS_SOLVER_ITERATIVE_BiCGSTAB,Err)
+!!  CALL CMISSSolver_LinearIterativeTypeSet(Solver,CMISS_SOLVER_ITERATIVE_CONJUGATE_GRADIENT,Err)
+!!  !CALL CMISSSolver_LinearIterativeTypeSet(Solver,CMISS_SOLVER_ITERATIVE_GMRES,Err)
+!  CALL CMISSSolver_LinearIterativeMaximumIterationsSet(Solver,1000000000,Err)
   
   CALL CMISSSolver_LinearTypeSet(Solver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
   
-  !CALL CMISSSolver_LinearTypeSet(Solver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
   !CALL CMISSSolver_LibraryTypeSet(Solver,CMISS_SOLVER_MUMPS_LIBRARY,Err)
   !CALL CMISSSolver_LibraryTypeSet(Solver,CMISS_SOLVER_LAPACK_LIBRARY,Err)
   !CALL CMISSSolver_LibraryTypeSet(Solver,CMISS_SOLVER_SUPERLU_LIBRARY,Err)
@@ -521,7 +533,7 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
 !      & CMISS_BOUNDARY_CONDITION_FIXED,1.0_CMISSDP,Err)
 !  ENDIF
   
-  !Set the boundaries to analytical value of phi (-> see function below)
+  !Set the boundaries to analytical value of phi (-> see function below, ref.: phd-thesis Chris Bradley)
   CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_FRONT_SURFACE,FrontSurfaceNodes,FrontNormalXi,Err)
   CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_LEFT_SURFACE,LeftSurfaceNodes,LeftNormalXi,Err)
   CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_RIGHT_SURFACE,RightSurfaceNodes,RightNormalXi,Err)
