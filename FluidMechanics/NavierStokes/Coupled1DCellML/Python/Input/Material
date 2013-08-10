@@ -1,0 +1,15 @@
+A0_PARAM[1] = 91.6e-6
+A0_PARAM[2] = 91.6e-6
+A0_PARAM[3] = 91.6e-6
+
+E_PARAM[1] = 4.0e+5
+E_PARAM[2] = 4.0e+5 
+E_PARAM[3] = 4.0e+5 
+
+H0_PARAM[1] = 0.8e-3  
+H0_PARAM[2] = 0.8e-3  
+H0_PARAM[3] = 0.8e-3
+
+NumberOfTerminalNodes: 1
+3
+

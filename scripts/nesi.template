@@ -1,0 +1,19 @@
+#@ shell = /bin/sh
+#@ job_name = nesi
+#@ class = default
+#@ group = nesi
+#@ account_no = uoa
+#@ notification = never
+#@ wall_clock_limit = 1:00:00
+#@ resources = ConsumableMemory(1024mb) ConsumableVirtualMemory(1024mb)
+#@ job_type = MPICH
+#@ total_tasks = {{test.processors}}
+#@ blocking=unlimited
+#@ initialdir = {{test.path}}
+#@ output = $(job_name).$(jobid).out
+#@ error = $(job_name).$(jobid).out
+#@ queue
+
+ulimit -m 1048576 -v 1048576
+
+mpirun  {{test.command}}

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model
+    name="zero_rate_example"
+    xmlns="http://www.cellml.org/cellml/1.1#"
+    xmlns:cellml="http://www.cellml.org/cellml/1.1#">
+
+  <component name="dude">
+  
+    <variable name="param" units="dimensionless" initial_value="1.0"/>
+    <variable name="intmd" units="dimensionless"/>
+    
+    <variable name="t" units="dimensionless"/>
+    <variable name="ca" initial_value="0.0" units="dimensionless"/>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply><eq/>
+        <apply><diff/>
+          <bvar><ci>t</ci></bvar>
+          <ci>ca</ci>
+        </apply>
+        <cn cellml:units="dimensionless">0.5</cn>
+      </apply>
+      <apply><eq/>
+	<ci>intmd</ci>
+	<ci>t</ci>
+	</apply>
+    </math>
+  </component>
+  
+</model>

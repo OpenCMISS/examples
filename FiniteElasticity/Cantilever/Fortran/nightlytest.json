@@ -1,0 +1,21 @@
+{"example": {
+  "test": [
+    {
+     "id": 1,
+     "args": "1 3 2 2",
+     "tolerance": 1e-6,
+     "expectedPath": "expected_results/linear_3x2x2"
+    },
+    {
+     "id": 2,
+     "args": "4 2 1 1",
+     "tolerance": 1e-6,
+     "expectedPath": "expected_results/cubic_2x1x1"
+    },
+    {
+      "id": 3,
+      "machine": "nesi",
+      "processors": 2
+     }
+  ]
+}}
