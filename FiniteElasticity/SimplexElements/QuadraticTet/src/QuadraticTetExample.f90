@@ -60,10 +60,6 @@ PROGRAM QUADRATICTETEXAMPLE
 
   !Test program parameters
 
-  REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: WIDTH=1.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: LENGTH=1.0_CMISSDP
-
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: NumberOfSpatialCoordinates=3
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
@@ -100,10 +96,7 @@ PROGRAM QUADRATICTETEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=13
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
-  INTEGER(CMISSIntg), PARAMETER :: DerivativeUserNumber=1
-
   !Program types
-
 
   !Program variables
 
@@ -137,14 +130,12 @@ PROGRAM QUADRATICTETEXAMPLE
   TYPE(CMISSMeshElementsType) :: ElementsLin
   TYPE(CMISSControlLoopType) :: ControlLoop
 
-  !REAL(CMISSDP), POINTER :: FieldData(:)
-
 #ifdef WIN32
   !Quickwin type
   LOGICAL :: QUICKWIN_STATUS=.FALSE.
   TYPE(WINDOWCONFIG) :: QUICKWIN_WINDOW_CONFIG
 #endif
-
+ 
   !Generic CMISS variables
   INTEGER(CMISSIntg) :: Err
 
@@ -167,7 +158,7 @@ PROGRAM QUADRATICTETEXAMPLE
   WRITE(*,'(A)') "Program starting."
 
   !Set all diganostic levels on for testing
-  CALL CMISSDiagnosticsSetOn(CMISS_FROM_DIAG_TYPE,(/1,2,3,4,5/),"Diagnostics",(/"PROBLEM_FINITE_ELEMENT_CALCULATE"/),Err) !CMISS_ALL_DIAG_TYPE
+  CALL CMISSDiagnosticsSetOn(CMISS_FROM_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["PROBLEM_FINITE_ELEMENT_CALCULATE"],Err) !CMISS_ALL_DIAG_TYPE
 
   !Get the number of computational nodes and this computational node number
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -189,7 +180,7 @@ PROGRAM QUADRATICTETEXAMPLE
   CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   CALL CMISSCoordinateSystem_TypeSet(CoordinateSystem,CMISS_COORDINATE_RECTANGULAR_CARTESIAN_TYPE,Err)
   CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystem,NumberOfSpatialCoordinates,Err)
-  CALL CMISSCoordinateSystem_OriginSet(CoordinateSystem,(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/),Err)
+  CALL CMISSCoordinateSystem_OriginSet(CoordinateSystem,[0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP],Err)
   CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Create a region and assign the CS to the region
@@ -203,8 +194,8 @@ PROGRAM QUADRATICTETEXAMPLE
   CALL CMISSBasis_CreateStart(BasisQuadserNumberQuad,BasisQuad,Err) 
   CALL CMISSBasis_TypeSet(BasisQuad,CMISS_BASIS_SIMPLEX_TYPE,Err)
   CALL CMISSBasis_NumberOfXiSet(BasisQuad,NumberOfXiCoordinates,Err)
-  CALL CMISSBasis_InterpolationXiSet(BasisQuad,(/CMISS_BASIS_QUADRATIC_SIMPLEX_INTERPOLATION, &
-    & CMISS_BASIS_QUADRATIC_SIMPLEX_INTERPOLATION,CMISS_BASIS_QUADRATIC_SIMPLEX_INTERPOLATION/),Err)
+  CALL CMISSBasis_InterpolationXiSet(BasisQuad,[CMISS_BASIS_QUADRATIC_SIMPLEX_INTERPOLATION, &
+    & CMISS_BASIS_QUADRATIC_SIMPLEX_INTERPOLATION,CMISS_BASIS_QUADRATIC_SIMPLEX_INTERPOLATION],Err)
   CALL CMISSBasis_CreateFinish(BasisQuad,Err)
 
   !Define basis function - Simplex tri-linear (pressure)
@@ -212,8 +203,8 @@ PROGRAM QUADRATICTETEXAMPLE
   CALL CMISSBasis_CreateStart(BasisQuadserNumberLin,BasisLin,Err) 
   CALL CMISSBasis_TypeSet(BasisLin,CMISS_BASIS_SIMPLEX_TYPE,Err)
   CALL CMISSBasis_NumberOfXiSet(BasisLin,NumberOfXiCoordinates,Err)
-  CALL CMISSBasis_InterpolationXiSet(BasisLin,(/CMISS_BASIS_LINEAR_SIMPLEX_INTERPOLATION, &
-    & CMISS_BASIS_LINEAR_SIMPLEX_INTERPOLATION,CMISS_BASIS_LINEAR_SIMPLEX_INTERPOLATION/),Err)
+  CALL CMISSBasis_InterpolationXiSet(BasisLin,[CMISS_BASIS_LINEAR_SIMPLEX_INTERPOLATION, &
+    & CMISS_BASIS_LINEAR_SIMPLEX_INTERPOLATION,CMISS_BASIS_LINEAR_SIMPLEX_INTERPOLATION],Err)
   CALL CMISSBasis_CreateFinish(BasisLin,Err)
 
   !Create a mesh
@@ -231,12 +222,12 @@ PROGRAM QUADRATICTETEXAMPLE
   !Geometry (and displacement) nodes
   CALL CMISSMeshElements_Initialise(ElementsQuad,Err)
   CALL CMISSMeshElements_CreateStart(Mesh,MeshComponentNumberQuad,BasisQuad,ElementsQuad,Err)
-  CALL CMISSMeshElements_NodesSet(ElementsQuad,1,(/1,5,2,7,6,3,8,10,9,4/),Err)
+  CALL CMISSMeshElements_NodesSet(ElementsQuad,1,[1,5,2,7,6,3,8,10,9,4],Err)
   CALL CMISSMeshElements_CreateFinish(ElementsQuad,Err)
   !Pressure nodes
   CALL CMISSMeshElements_Initialise(ElementsLin,Err)
   CALL CMISSMeshElements_CreateStart(Mesh,MeshComponentNumberLin,BasisLin,ElementsLin,Err)
-  CALL CMISSMeshElements_NodesSet(ElementsLin,1,(/1,2,3,4/),Err)
+  CALL CMISSMeshElements_NodesSet(ElementsLin,1,[1,2,3,4],Err)
   CALL CMISSMeshElements_CreateFinish(ElementsLin,Err)
 
   CALL CMISSMesh_CreateFinish(Mesh,Err) 
@@ -364,7 +355,7 @@ PROGRAM QUADRATICTETEXAMPLE
   !Create a dependent field with two variables and four components
   CALL CMISSField_Initialise(DependentField,Err)
   CALL CMISSField_CreateStart(FieldDependentUserNumber,Region,DependentField,Err)
-  CALL CMISSField_TypeSet(DependentField,CMISS_FIELD_GENERAL_TYPE,Err)  
+  CALL CMISSField_TypeSet(DependentField,CMISS_FIELD_GEOMETRIC_GENERAL_TYPE,Err)  
   CALL CMISSField_MeshDecompositionSet(DependentField,Decomposition,Err)
   CALL CMISSField_GeometricFieldSet(DependentField,GeometricField,Err) 
   CALL CMISSField_DependentTypeSet(DependentField,CMISS_FIELD_DEPENDENT_TYPE,Err) 

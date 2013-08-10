@@ -914,7 +914,7 @@ PROGRAM FINITEELASTICITYDARCYEXAMPLE
   !
   CALL CMISSField_CreateStart(FieldDependentSolidUserNumber,Region,DependentFieldSolid,Err)
   !
-  CALL CMISSField_TypeSet(DependentFieldSolid,CMISS_FIELD_GENERAL_TYPE,Err)  
+  CALL CMISSField_TypeSet(DependentFieldSolid,CMISS_FIELD_GEOMETRIC_GENERAL_TYPE,Err)  
   CALL CMISSField_MeshDecompositionSet(DependentFieldSolid,Decomposition,Err)
   CALL CMISSField_GeometricFieldSet(DependentFieldSolid,GeometricFieldSolid,Err) 
   CALL CMISSField_DependentTypeSet(DependentFieldSolid,CMISS_FIELD_DEPENDENT_TYPE,Err) 
