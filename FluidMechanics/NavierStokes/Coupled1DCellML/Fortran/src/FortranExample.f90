@@ -178,7 +178,7 @@ PROGRAM FortranExample
   LOGICAL :: LINEAR_SOLVER_NAVIER_STOKES_DIRECT_FLAG
   LOGICAL :: OUTLET_WALL_NODES_NAVIER_STOKES_FLAG
   LOGICAL :: INLET_WALL_NODES_NAVIER_STOKES_FLAG
-  LOGICAL :: cellmlFlag,versionsFlag,windkesselFlag,mixedFlag
+  LOGICAL :: cellmlFlag,windkesselFlag,mixedFlag
 
   INTEGER(CMISSIntg) :: SolverDaeUserNumber
   INTEGER(CMISSIntg) :: SolverCharacteristicUserNumber
@@ -309,10 +309,13 @@ PROGRAM FortranExample
   !            \
   !             --6--
 
+  ! Set true to use CellML models
   cellmlFlag = .TRUE.
+  ! Set true to use a windkessel DAE solver
   windkesselFlag = .TRUE.
+  ! Set true to set one boundary to resistance, one to windkessel
   mixedFlag = .FALSE.
-  versionsFlag = .FALSE.
+
   numberOfCoordinateDimensions=2
   BASIS_NUMBER_SPACE=1
   BASIS_NUMBER_VELOCITY=2
@@ -449,6 +452,12 @@ PROGRAM FortranExample
     ProblemSubtype=CMISS_PROBLEM_1DTRANSIENT_NAVIER_STOKES_SUBTYPE
   ENDIF
 
+  ! Default cellml model-specific flags to false if CellML is turned off
+  IF (.NOT. cellmlFlag) THEN
+    windkesselFlag = .FALSE.
+    mixedFlag = .FALSE.
+  ENDIF
+
   !================================================================================================================================
   !Coordinate System
   !================================================================================================================================
@@ -543,14 +552,6 @@ PROGRAM FortranExample
   CALL CMISSMeshElements_LocalElementNodeVersionSet(MeshElementsSpace,2,1,CMISS_NO_GLOBAL_DERIV,3,Err) 
   CALL CMISSMeshElements_LocalElementNodeVersionSet(MeshElementsSpace,3,2,CMISS_NO_GLOBAL_DERIV,1,Err) 
   CALL CMISSMeshElements_LocalElementNodeVersionSet(MeshElementsSpace,4,3,CMISS_NO_GLOBAL_DERIV,1,Err) 
-
-  IF(versionsFlag) THEN
-    !set versions at 2 terminal vessels element 5 and 6, nodes 11 and 13- will be on same element
-    CALL CMISSMeshElements_LocalElementNodeVersionSet(MeshElementsSpace,5,1,CMISS_NO_GLOBAL_DERIV,3,Err) 
-    CALL CMISSMeshElements_LocalElementNodeVersionSet(MeshElementsSpace,5,2,CMISS_NO_GLOBAL_DERIV,3,Err) 
-    CALL CMISSMeshElements_LocalElementNodeVersionSet(MeshElementsSpace,6,1,CMISS_NO_GLOBAL_DERIV,3,Err) 
-    CALL CMISSMeshElements_LocalElementNodeVersionSet(MeshElementsSpace,6,2,CMISS_NO_GLOBAL_DERIV,3,Err) 
-  ENDIF
 
   CALL CMISSMeshElements_CreateFinish(MeshElementsSpace,Err)
 
@@ -668,15 +669,6 @@ PROGRAM FortranExample
         & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,X,Err)
     ENDIF
   ENDDO
-  IF(versionsFlag) THEN
-  ! node 11 versions 2 (same x/y values)
-    nodeIdx=11
-    versionIdx=2
-    CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,1,Y,Err)
-    CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,X,Err)
-  ENDIF
 
   X=2.0_CMISSDP
   Y=0.0_CMISSDP
@@ -702,16 +694,6 @@ PROGRAM FortranExample
         & 1,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,X,Err)
     ENDIF
   ENDDO
-  IF(versionsFlag) THEN
-  ! node 13 versions 2 (same x/y values)
-    nodeIdx=13
-    versionIdx=2
-    CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,1,Y,Err)
-    CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,2,X,Err)
-  ENDIF
-
     
   !================================================================================================================================
   !Equations Sets
@@ -861,48 +843,6 @@ PROGRAM FortranExample
     ENDDO
   ENDIF
 
-  IF(versionsFlag) THEN
-
-    ! Branch versions at node 11
-    nodeIdx=11
-    versionIdx=2
-    componentIdx=1
-    VALUE=Q2  
-    CALL CMISSField_ParameterSetUpdateNode(DependentFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,componentIdx,VALUE,Err)
-    componentIdx=2
-    VALUE=A2  
-    CALL CMISSField_ParameterSetUpdateNode(DependentFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,componentIdx,VALUE,Err)
-    !Initialize dependent characteristic field W (V_type) to 0
-    VALUE=0.0_CMISSDP
-    componentIdx=1
-    DO versionIdx=1,2
-      CALL CMISSField_ParameterSetUpdateNode(DependentFieldNavierStokes,CMISS_FIELD_V_VARIABLE_TYPE, &
-        & CMISS_FIELD_VALUES_SET_TYPE,versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,componentIdx,VALUE,Err)
-    ENDDO
-
-    ! Branch versions at node 13
-    nodeIdx=13
-    versionIdx=2
-    componentIdx=1
-    VALUE=Q3  
-    CALL CMISSField_ParameterSetUpdateNode(DependentFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,componentIdx,VALUE,Err)
-    componentIdx=2
-    VALUE=A3  
-    CALL CMISSField_ParameterSetUpdateNode(DependentFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,componentIdx,VALUE,Err)
-    !Initialize dependent characteristic field W (V_type) to 0
-    VALUE=0.0_CMISSDP
-    componentIdx=1
-    DO versionIdx=1,2
-      CALL CMISSField_ParameterSetUpdateNode(DependentFieldNavierStokes,CMISS_FIELD_V_VARIABLE_TYPE, &
-        & CMISS_FIELD_VALUES_SET_TYPE,versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,componentIdx,VALUE,Err)
-    ENDDO
-    
-  ENDIF
-
 
   !================================================================================================================================
   !Materials Field
@@ -961,24 +901,6 @@ PROGRAM FortranExample
       CALL CMISSField_ParameterSetUpdateNode(MaterialsFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
         & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,MaterialsFieldUserNumberA0,A0_PARAM(nodeIdx+1),Err)
     ENDDO
-  ENDIF
-  IF(versionsFlag) THEN
-    nodeIdx=11
-    versionIdx=2
-    CALL CMISSField_ParameterSetUpdateNode(MaterialsFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,MaterialsFieldUserNumberE,E_PARAM_NAVIER_STOKES(nodeIdx),Err)
-    CALL CMISSField_ParameterSetUpdateNode(MaterialsFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,MaterialsFieldUserNumberH0,H0_PARAM_NAVIER_STOKES(nodeIdx),Err)
-    CALL CMISSField_ParameterSetUpdateNode(MaterialsFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,MaterialsFieldUserNumberA0,A0_PARAM(nodeIdx),Err)
-    nodeIdx=13
-    versionIdx=2
-    CALL CMISSField_ParameterSetUpdateNode(MaterialsFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,MaterialsFieldUserNumberE,E_PARAM_NAVIER_STOKES(nodeIdx),Err)
-    CALL CMISSField_ParameterSetUpdateNode(MaterialsFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,MaterialsFieldUserNumberH0,H0_PARAM_NAVIER_STOKES(nodeIdx),Err)
-    CALL CMISSField_ParameterSetUpdateNode(MaterialsFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,MaterialsFieldUserNumberA0,A0_PARAM(nodeIdx),Err)
   ENDIF
 
   IF(cellmlFlag) THEN
@@ -1057,36 +979,7 @@ PROGRAM FortranExample
     ENDDO
   ENDIF
 
-  IF (versionsFlag) THEN
-
-    ! normalDirection node 11
-    nodeIdx=11
-    componentIdx=1
-    ! 1 inlet/parent from element 5
-    VALUE=1.0_CMISSDP
-    versionIdx=1
-    CALL CMISSField_ParameterSetUpdateNode(IndependentFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE, &
-       & CMISS_FIELD_VALUES_SET_TYPE,versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,componentIdx,VALUE,Err)
-    ! 1 outlet/daughter from coupled domain
-    VALUE=-1.0_CMISSDP
-    versionIdx=2
-    CALL CMISSField_ParameterSetUpdateNode(IndependentFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE, &
-      & CMISS_FIELD_VALUES_SET_TYPE,versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,componentIdx,VALUE,Err)
-
-    ! normalDirection node 13
-    nodeIdx=13
-    ! 1 inlet/parent from element 6
-    VALUE=1.0_CMISSDP
-    versionIdx=1
-    CALL CMISSField_ParameterSetUpdateNode(IndependentFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE, &
-       & CMISS_FIELD_VALUES_SET_TYPE,versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,componentIdx,VALUE,Err)
-    ! 1 outlet/daughter from coupled domain
-    VALUE=-1.0_CMISSDP
-    versionIdx=2
-    CALL CMISSField_ParameterSetUpdateNode(IndependentFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE, &
-      & CMISS_FIELD_VALUES_SET_TYPE,versionIdx,CMISS_NO_GLOBAL_DERIV,nodeIdx,componentIdx,VALUE,Err)
-
-  ELSE IF ((versionsFlag .EQV. .FALSE.) .AND. cellmlFlag) THEN
+  IF (cellmlFlag) THEN
 
     ! Incoming normals for 11,13
     nodeIdx=11
@@ -1527,12 +1420,6 @@ PROGRAM FortranExample
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsNavierStokes,DependentFieldNavierStokes, &
         & CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_NO_GLOBAL_DERIV,coupledNodeNumber2,2,CONDITION,VALUE1,Err)
-    ENDIF
-    IF (versionsFlag) THEN
-      CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsNavierStokes,DependentFieldNavierStokes, &
-        & CMISS_FIELD_U_VARIABLE_TYPE,2,CMISS_NO_GLOBAL_DERIV,coupledNodeNumber1,2,CONDITION,VALUE1,Err)
-      CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsNavierStokes,DependentFieldNavierStokes, &
-        & CMISS_FIELD_U_VARIABLE_TYPE,2,CMISS_NO_GLOBAL_DERIV,coupledNodeNumber2,2,CONDITION,VALUE1,Err)
     ENDIF
   ENDIF
 
