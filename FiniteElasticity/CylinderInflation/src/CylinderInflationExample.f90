@@ -98,9 +98,6 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
 
-  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshDimensions=3
-  INTEGER(CMISSIntg), PARAMETER :: NumberOfXiCoordinates=3
-  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshComponents=2
   INTEGER(CMISSIntg), PARAMETER :: QuadraticMeshComponentNumber=1
   INTEGER(CMISSIntg), PARAMETER :: LinearMeshComponentNumber=2
 
@@ -120,7 +117,7 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfVariables=2
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponents=4
 
-  INTEGER(CMISSIntg), PARAMETER :: FieldAnalyticUserNumber=1337
+  INTEGER(CMISSIntg), PARAMETER :: FieldAnalyticUserNumber=6
 
   INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=5
@@ -156,15 +153,7 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   TYPE(CMISSControlLoopType) :: ControlLoop
 
   !Other variables
-  INTEGER(CMISSIntg) :: NN,NE,E
-
-  INTEGER(CMISSIntg),ALLOCATABLE :: BottomSurfaceNodes(:)
-  INTEGER(CMISSIntg),ALLOCATABLE :: InnerSurfaceNodes(:)
-  INTEGER(CMISSIntg),ALLOCATABLE :: OuterSurfaceNodes(:)
-  INTEGER(CMISSIntg) :: BottomNormalXi,InnerNormalXi,OuterNormalXi
-  REAL(CMISSDP) :: xValue,yValue, InitialPressure
-  !LOGICAL :: X_FIXED,Y_FIXED
-  
+  INTEGER(CMISSIntg) :: NE,E  
 
 #ifdef WIN32
   !Quickwin type
@@ -341,7 +330,7 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   !Create the dependent field with 2 variables and 4 components (3 displacement, 1 pressure)
   CALL CMISSField_Initialise(DependentField,Err)
   CALL CMISSField_CreateStart(FieldDependentUserNumber,Region,DependentField,Err)
-  CALL CMISSField_TypeSet(DependentField,CMISS_FIELD_GENERAL_TYPE,Err)
+  CALL CMISSField_TypeSet(DependentField,CMISS_FIELD_GEOMETRIC_GENERAL_TYPE,Err)
   CALL CMISSField_MeshDecompositionSet(DependentField,Decomposition,Err)
   CALL CMISSField_GeometricFieldSet(DependentField,GeometricField,Err)
   CALL CMISSField_DependentTypeSet(DependentField,CMISS_FIELD_DEPENDENT_TYPE,Err)

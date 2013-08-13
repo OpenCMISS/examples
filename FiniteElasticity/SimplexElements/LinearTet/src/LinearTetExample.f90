@@ -60,10 +60,6 @@ PROGRAM LINEARTETEXAMPLE
 
   !Test program parameters
 
-  REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: WIDTH=1.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: LENGTH=1.0_CMISSDP
-
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: NumberOfSpatialCoordinates=3
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
@@ -156,7 +152,7 @@ PROGRAM LINEARTETEXAMPLE
   WRITE(*,'(A)') "Program starting."
 
   !Set all diganostic levels on for testing
-  CALL CMISSDiagnosticsSetOn(CMISS_FROM_DIAG_TYPE,(/1,2,3,4,5/),"Diagnostics",(/"PROBLEM_FINITE_ELEMENT_CALCULATE"/),Err) !CMISS_ALL_DIAG_TYPE
+  CALL CMISSDiagnosticsSetOn(CMISS_FROM_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["PROBLEM_FINITE_ELEMENT_CALCULATE"],Err) !CMISS_ALL_DIAG_TYPE
 
   !Get the number of computational nodes and this computational node number
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -178,7 +174,7 @@ PROGRAM LINEARTETEXAMPLE
   CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   CALL CMISSCoordinateSystem_TypeSet(CoordinateSystem,CMISS_COORDINATE_RECTANGULAR_CARTESIAN_TYPE,Err)
   CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystem,NumberOfSpatialCoordinates,Err)
-  CALL CMISSCoordinateSystem_OriginSet(CoordinateSystem,(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/),Err)
+  CALL CMISSCoordinateSystem_OriginSet(CoordinateSystem,[0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP],Err)
   CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Create a region and assign the CS to the region
@@ -192,8 +188,8 @@ PROGRAM LINEARTETEXAMPLE
   CALL CMISSBasis_CreateStart(BasisUserNumber,Basis,Err) 
   CALL CMISSBasis_TypeSet(Basis,CMISS_BASIS_SIMPLEX_TYPE,Err)
   CALL CMISSBasis_NumberOfXiSet(Basis,NumberOfXiCoordinates,Err)
-  CALL CMISSBasis_InterpolationXiSet(Basis,(/CMISS_BASIS_LINEAR_SIMPLEX_INTERPOLATION, &
-    & CMISS_BASIS_LINEAR_SIMPLEX_INTERPOLATION,CMISS_BASIS_LINEAR_SIMPLEX_INTERPOLATION/),Err)
+  CALL CMISSBasis_InterpolationXiSet(Basis,[CMISS_BASIS_LINEAR_SIMPLEX_INTERPOLATION, &
+    & CMISS_BASIS_LINEAR_SIMPLEX_INTERPOLATION,CMISS_BASIS_LINEAR_SIMPLEX_INTERPOLATION],Err)
   CALL CMISSBasis_CreateFinish(Basis,Err)
 
   !Create a mesh
@@ -210,7 +206,7 @@ PROGRAM LINEARTETEXAMPLE
 
   CALL CMISSMeshElements_Initialise(Elements,Err)
   CALL CMISSMeshElements_CreateStart(Mesh,MeshComponentNumber,Basis,Elements,Err)
-  CALL CMISSMeshElements_NodesSet(Elements,1,(/1,2,3,4/),Err)
+  CALL CMISSMeshElements_NodesSet(Elements,1,[1,2,3,4],Err)
   CALL CMISSMeshElements_CreateFinish(Elements,Err)
 
   CALL CMISSMesh_CreateFinish(Mesh,Err) 
@@ -295,7 +291,7 @@ PROGRAM LINEARTETEXAMPLE
   !Create a dependent field with two variables and four components
   CALL CMISSField_Initialise(DependentField,Err)
   CALL CMISSField_CreateStart(FieldDependentUserNumber,Region,DependentField,Err)
-  CALL CMISSField_TypeSet(DependentField,CMISS_FIELD_GENERAL_TYPE,Err)  
+  CALL CMISSField_TypeSet(DependentField,CMISS_FIELD_GEOMETRIC_GENERAL_TYPE,Err)  
   CALL CMISSField_MeshDecompositionSet(DependentField,Decomposition,Err)
   CALL CMISSField_GeometricFieldSet(DependentField,GeometricField,Err) 
   CALL CMISSField_DependentTypeSet(DependentField,CMISS_FIELD_DEPENDENT_TYPE,Err) 

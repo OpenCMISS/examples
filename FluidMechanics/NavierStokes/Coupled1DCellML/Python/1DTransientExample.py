@@ -81,6 +81,7 @@ CellMLStateFieldUserNumber  = 14
 CellMLIntermediateFieldUserNumber = 15
 CellMLParametersFieldUserNumber   = 16
 MaterialsFieldUserNumberCellML    = 17
+AnalyticFieldUserNumber    = 18
 
 SolverDAEUserNumber = 1
 SolverCharacteristicUserNumber = 2
@@ -698,6 +699,17 @@ if (cellmlFlag):
             CMISS.FieldParameterSetTypes.VALUES,1,1,coupledNodeNumber[i],pExternalComponent,pExternal)
 
 #================================================================================================================================
+# Analytic Field - Fourier decomposed waveform from literature values
+#================================================================================================================================
+
+AnalyticFieldNavierStokes = CMISS.Field()
+EquationsSetNavierStokes.AnalyticCreateStart(CMISS.NavierStokesAnalyticFunctionTypes.FlowrateReymonds,AnalyticFieldUserNumber,AnalyticFieldNavierStokes)
+# Set the field label
+AnalyticFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'Analytic inlet flow rate')
+EquationsSetNavierStokes.AnalyticCreateFinish()
+AnalyticFieldNavierStokes.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1000.0)
+
+#================================================================================================================================
 # Independent Field - Characteristic Wave Normal Direction
 #================================================================================================================================
 
@@ -705,11 +717,9 @@ if (cellmlFlag):
 IndependentFieldNavierStokes = CMISS.Field()
 EquationsSetCharacteristic.IndependentCreateStart(IndependentFieldUserNumber,IndependentFieldNavierStokes)
 IndependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'Normal Wave Direction')
-IndependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.V,'Input Boundary Condition')
 # Set the mesh component to be used by the field components.
 IndependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,MeshComponentNumberSpace)
 IndependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,2,MeshComponentNumberSpace)
-IndependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.V,1,MeshComponentNumberSpace)
 # Finish the equations set independent field variables
 EquationsSetCharacteristic.IndependentCreateFinish()
 
