@@ -13,8 +13,8 @@
     <variable name="Qo" public_interface="out" units="UnitQ"/>
     <variable name="R" public_interface="in" units="UnitR"/>
     <variable name="C" public_interface="in" units="UnitC"/>
-    <variable name="t" public_interface="in" units="UnitT"/>
+    <variable name="t" public_interface="in" units="second"/>
     
-    <math xmlns="http://www.w3.org/1998/Math/MathML" id="RC equations"><apply><eq/><apply><times/><apply><minus/><ci>Qi</ci><ci>Qo</ci></apply><ci>C</ci></apply><apply><diff/><bvar><ci>t</ci></bvar><ci>Pi</ci></apply></apply><apply><eq/><apply><divide/><apply><minus/><ci>Pi</ci><ci>Po</ci></apply><ci>R</ci></apply><ci>Qo</ci></apply></math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML" id="RC equations"><apply><eq/><apply><divide/><apply><minus/><ci>Qi</ci><ci>Qo</ci></apply><ci>C</ci></apply><apply><diff/><bvar><ci>t</ci></bvar><ci>Pi</ci></apply></apply><apply><eq/><apply><divide/><apply><minus/><ci>Pi</ci><ci>Po</ci></apply><ci>R</ci></apply><ci>Qo</ci></apply></math>
   </component>
 </model>

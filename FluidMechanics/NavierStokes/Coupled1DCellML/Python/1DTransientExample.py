@@ -107,6 +107,7 @@ from scipy.sparse import linalg
 from scipy import linalg
 from opencmiss import CMISS
 import pdb
+import csv,time
 import shutil
 import sys,os
 import fem_topology
@@ -138,6 +139,7 @@ TotalNumberOfNodes = NumberOfNodesSpace*3
 # Set the branching nodes (bifurcation,trifurcation)
 NumberOfBifurcations  = 0
 NumberOfTrifurcations = 0
+NumberOfTerminalNodes = 0
 bifurcationNodeNumber     = []
 trifurcationNodeNumber    = []
 bifurcationElementNumber  = []
@@ -261,17 +263,15 @@ Fr = (As**2.5/Qs**2.0)/(2.0*RHO_PARAM)      # Froude
 St = (As*Xs)/(Ts*Qs)                        # Strouhal
 
 # Read the MATERIAL file
-IPNODE_FILE = open("Input/Material").read()
-IPNODE_LINE = IPNODE_FILE.split()
-
-# Set the material parameters for each element
-for i in range(1,NumberOfNodesSpace+1):
-    A0_PARAM[i] = float(IPNODE_LINE[2+3*(i-1)].split()[-1]) 
-for i in range(1,NumberOfNodesSpace+1):
-    E_PARAM[i]  = float(IPNODE_LINE[(2+3*(NumberOfNodesSpace-1))+3*i].split()[-1]) 
-for i in range(1,NumberOfNodesSpace+1):
-    H0_PARAM[i] = float(IPNODE_LINE[(2*(2+3*(NumberOfNodesSpace-1)))+1+3*i].split()[-1]) 
-
+with open('Input/Material.csv', 'rb') as csvfile:
+    reader = csv.reader(csvfile, delimiter='\t')
+    for row in reader:
+        A0_PARAM[int(row[0])] = float(row[1])
+        E_PARAM [int(row[0])] = float(row[2])
+        H0_PARAM[int(row[0])] = float(row[3])
+        if row[4]:
+            NumberOfTerminalNodes = NumberOfTerminalNodes+1
+            
 # Set the initial conditions
 Q = [0]*(NumberOfNodesSpace+1)
 A = [0]*(NumberOfNodesSpace+1)
@@ -281,13 +281,14 @@ for i in range(1,NumberOfNodesSpace+1):
     A[i] = (A0_PARAM[i]/As)
 
 # Set the terminal nodes
-NumberOfTerminalNodes = int(IPNODE_LINE[9*NumberOfNodesSpace+1].split()[-1])
 coupledNodeNumber  = [0]*(NumberOfTerminalNodes+1)
 Ae = [0]*(NumberOfTerminalNodes+1)
-for i in range(1,NumberOfTerminalNodes+1):
-    coupledNodeNumber[i] = int(IPNODE_LINE[9*NumberOfNodesSpace+1+i].split()[-1])
-for i in range(1,NumberOfTerminalNodes+1):
-    Ae[i] = A0_PARAM[coupledNodeNumber[i]]/As
+with open('Input/Material.csv', 'rb') as csvfile:
+    reader = csv.reader(csvfile, delimiter='\t')
+    for row in reader:
+        if row[4]:
+            coupledNodeNumber[int(row[0])] = int(row[4])
+            Ae[int(row[0])] = A0_PARAM[coupledNodeNumber[int(row[0])]]/As
 
 # Set the output parameters
 # (NONE/PROGRESS/TIMING/SOLVER/MATRIX)
@@ -301,7 +302,7 @@ DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY = 1
 
 # Set the time parameters
 DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME     = 0.0
-DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME      = 900.0
+DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME      = 800.0
 DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT = 1.0
 DYNAMIC_SOLVER_NAVIER_STOKES_THETA = [1.0]
 
@@ -691,9 +692,9 @@ if (cellmlFlag):
     # Set the values at coupled node 
     for i in range (1,NumberOfTerminalNodes+1):
         # (versionNumber,derivativeNumber,userNodeNumber,componentNumber,value)
-        MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,
+        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,
             CMISS.FieldParameterSetTypes.VALUES,1,1,coupledNodeNumber[i],pVesselWallComponent,pVesselWall)
-        MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,
+        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,
             CMISS.FieldParameterSetTypes.VALUES,1,1,coupledNodeNumber[i],pExternalComponent,pExternal)
 
 #================================================================================================================================
@@ -1066,13 +1067,56 @@ SolverEquationsCharacteristic.BoundaryConditionsCreateFinish()
 # Note: CellML Parameters (e.g. resistance, capacitance) should be set within each CellML model file
   
 #================================================================================================================================
+#  Element Length
+#================================================================================================================================
+
+if (lengthFlag):
+    # Check the element length
+    elementNumber = [0]*(TotalNumberOfElements+1)
+    elementLength = [0]*(TotalNumberOfElements+1)
+    for i in range(1,TotalNumberOfElements+1):
+        Node1 = ElementNodes[i-1][0]
+        Node2 = ElementNodes[i-1][1]
+        Node3 = ElementNodes[i-1][2]
+        Length1 = (((xValues[Node1-1][0]-xValues[Node2-1][0])**2)
+                  +((yValues[Node1-1][0]-yValues[Node2-1][0])**2)
+                  +((zValues[Node1-1][0]-zValues[Node2-1][0])**2))**0.5
+        Length2 = (((xValues[Node2-1][0]-xValues[Node3-1][0])**2)
+                  +((yValues[Node2-1][0]-yValues[Node3-1][0])**2)
+                  +((zValues[Node2-1][0]-zValues[Node3-1][0])**2))**0.5
+        elementNumber[i] = i
+        elementLength[i] = Length1 + Length2
+        elementLength[0] = elementLength[i]
+        print "Element %1.0f" %elementNumber[i], 
+        print "Length: %1.1f" %elementLength[i],
+        print "Length1: %1.1f" %Length1,
+        print "Length2: %1.1f" %Length2
+    maxElementLength = max(elementLength)*Xs
+    minElementLength = min(elementLength)*Xs
+    print("Max Element Length: %1.3f" % maxElementLength)
+    print("Min Element Length: %1.3f" % minElementLength)
+               
+    # Check the timestep
+    for i in range(1,NumberOfNodesSpace+1):
+        lmbda[i] = (Q[0]*Qs/(A0_PARAM[i]))+(A0_PARAM[i]**(0.25))*((2.0*(Pi**(0.5))
+                   *E_PARAM[i]*H0_PARAM[i]/(3.0*A0_PARAM[i]*RHO_PARAM))**(0.5))
+        delta_t[i] = ((3.0**(0.5))/3.0)*minElementLength/lmbda[i]
+        delta_t[0] = delta_t[i]
+    minTimeStep = min(delta_t)
+    print("Min Time Step:      %3.5f" % minTimeStep )
+    
+#================================================================================================================================
 #  Run Solvers
 #================================================================================================================================
 
 # Solve the problem
 print "Solving problem..."
+start = time.time()
 Problem.Solve()
+end = time.time()
+elapsed = end - start
 print "Problem solved!"
+print elapsed
 print "#"
 
 #================================================================================================================================
@@ -1143,41 +1187,6 @@ if (analysisFlag):
     except ZeroDivisionError:
         # If condition number is infinte we effectively have a zero row
         print("Amplification condition number is infinte.")
-        
-if (lengthFlag):
-    # Check the element length
-    elementNumber = [0]*(TotalNumberOfElements+1)
-    elementLength = [0]*(TotalNumberOfElements+1)
-    for i in range(1,TotalNumberOfElements+1):
-        Node1 = ElementNodes[i-1][0]
-        Node2 = ElementNodes[i-1][1]
-        Node3 = ElementNodes[i-1][2]
-        Length1 = (((xValues[Node1-1][0]-xValues[Node2-1][0])**2)
-                  +((yValues[Node1-1][0]-yValues[Node2-1][0])**2)
-                  +((zValues[Node1-1][0]-zValues[Node2-1][0])**2))**0.5
-        Length2 = (((xValues[Node2-1][0]-xValues[Node3-1][0])**2)
-                  +((yValues[Node2-1][0]-yValues[Node3-1][0])**2)
-                  +((zValues[Node2-1][0]-zValues[Node3-1][0])**2))**0.5
-        elementNumber[i] = i
-        elementLength[i] = Length1 + Length2
-        elementLength[0] = elementLength[i]
-        print "Element %1.0f" %elementNumber[i], 
-        print "Length: %1.1f" %elementLength[i],
-        print "Length1: %1.1f" %Length1,
-        print "Length2: %1.1f" %Length2
-    maxElementLength = max(elementLength)*Xs
-    minElementLength = min(elementLength)*Xs
-    print("Max Element Length: %1.3f" % maxElementLength)
-    print("Min Element Length: %1.3f" % minElementLength)
-               
-    # Check the timestep
-    for i in range(1,NumberOfNodesSpace+1):
-        lmbda[i] = (Q[0]*Qs/(A0_PARAM[i]))+(A0_PARAM[i]**(0.25))*((2.0*(Pi**(0.5))
-                   *E_PARAM[i]*H0_PARAM[i]/(3.0*A0_PARAM[i]*RHO_PARAM))**(0.5))
-        delta_t[i] = ((3.0**(0.5))/3.0)*minElementLength/lmbda[i]
-        delta_t[0] = delta_t[i]
-    minTimeStep = min(delta_t)
-    print("Min Time Step:      %3.5f" % minTimeStep )
 
 #================================================================================================================================
 #  Finish Program
@@ -1185,4 +1194,15 @@ if (lengthFlag):
 
 print "#"
 print "Program successfully completed."
+# Finalize the problem
+CMISS.Finalise()
 
+#================================================================================================================================
+#  Remove temporary cellml directories
+#================================================================================================================================
+
+#dirslist=os.listdir("./")
+#for dirs in dirslist:
+#    if dirs[0:4]=='tmp.':
+#        shutil.rmtree(dirs)
+        

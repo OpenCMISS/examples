@@ -21,7 +21,7 @@
 
 <variable name="Qinterface" private_interface="out" public_interface="in" units="UnitQ"/>
 
-<variable name="t" private_interface="out" public_interface="in" units="UnitT"/></component>
+<variable name="t" private_interface="out" public_interface="in" units="second"/></component>
 
 <group>
 <relationship_ref relationship="encapsulation"/>
