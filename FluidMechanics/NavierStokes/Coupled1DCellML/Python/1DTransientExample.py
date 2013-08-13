@@ -703,7 +703,7 @@ if (cellmlFlag):
 #================================================================================================================================
 
 AnalyticFieldNavierStokes = CMISS.Field()
-EquationsSetNavierStokes.AnalyticCreateStart(CMISS.NavierStokesAnalyticFunctionTypes.FlowrateReymonds,AnalyticFieldUserNumber,AnalyticFieldNavierStokes)
+EquationsSetNavierStokes.AnalyticCreateStart(CMISS.NavierStokesAnalyticFunctionTypes.FlowrateOlufsen,AnalyticFieldUserNumber,AnalyticFieldNavierStokes)
 # Set the field label
 AnalyticFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'Analytic inlet flow rate')
 EquationsSetNavierStokes.AnalyticCreateFinish()
