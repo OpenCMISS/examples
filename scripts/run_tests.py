@@ -245,7 +245,7 @@ class Test(TestTreeNode):
   def check(self):
     cwd = os.getcwd()
     os.chdir(self.path)
-    logPath = "%s/nightly_check_%d_%s_%s" %(self.logDir,self.id,compilerVersion,str(date.today()))
+    logPath = "%s/nightly_check_%d_%s_%s.log" %(self.logDir,self.id,compilerVersion,str(date.today()))
     self.wrapWithPre(logPath,1)
     self.checkFail = 0
     ndiff = os.environ['OPENCMISS_ROOT']+"/cm/utils/ndiff"
