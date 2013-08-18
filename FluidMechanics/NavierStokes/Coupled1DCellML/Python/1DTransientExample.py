@@ -444,8 +444,8 @@ Mesh.CreateFinish()
 Decomposition = CMISS.Decomposition()
 Decomposition.CreateStart(DecompositionUserNumber,Mesh)
 # Set the decomposition to be a general decomposition with the specified number of domains
-Decomposition.TypeSet = CMISS.DecompositionTypes.CALCULATED
-Decomposition.NumberOfDomainsSet = DomainUserNumber
+Decomposition.type = CMISS.DecompositionTypes.CALCULATED
+Decomposition.numberOfDomains = DomainUserNumber
 # Finish the decomposition
 Decomposition.CreateFinish()
 
