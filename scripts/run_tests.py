@@ -211,7 +211,7 @@ class Test(TestTreeNode):
       f.close()
       command = "llsubmit -s nesi_%d.ll > %s 2>&1" %(self.id,logPath)
     else :
-      command = "%s/bin/%s-%s/%s/%s/%sExample%s %s > %s 2>&1" %(self.parent.path,arch,system,mpi,compilerVersion,self.exampleName,self.args,MODE_SUFFIX_MAP[mode],logPath)
+      command = "%s/bin/%s-%s/%s/%s/%sExample%s %s > %s 2>&1" %(self.parent.path,arch,system,mpi,compilerVersion,self.exampleName,MODE_SUFFIX_MAP[mode],self.args,logPath)
     self.runFail = os.system(command)
     self.wrapWithPre(logPath,0)
     self.runLog = "%s/nightly_run_%d_%s_%s.log" %(self.masterLogDir,self.id,compilerVersion,str(date.today()))
