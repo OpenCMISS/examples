@@ -13,8 +13,8 @@ for ($t=0; $t<=$tmax; $t+=$tinc){
 gfx read elem TIME_STEP_0000.exelem;
 gfx def faces egroup "OpenCMISS";
 
-gfx def field velocity component general.1 general.2;
-gfx def field pressure component general.3;
+gfx def field velocity component U.1 U.2;
+gfx def field pressure component U.3;
 gfx def field velmag magnitude field velocity;
 
 gfx modify g_element "OpenCMISS" node_points as node_spheres glyph arrow_solid general size "0.01*0.01*0.01" centre 0,0,0 font default orientation velocity scale_factors "0.05*0.05*0.05" select_on material default; 
