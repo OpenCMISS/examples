@@ -97,7 +97,7 @@ PROGRAM CoupledFluidSolidExample
   LOGICAL :: zeroCheckFlag=.FALSE.
   REAL(CMISSDP) :: zeroCheck=1.0_CMISSDP
   
-  REAL(CMISSDP) :: SolidDensity ! kg / cm^3
+  REAL(CMISSDP) :: SolidDensity
   REAL(CMISSDP), ALLOCATABLE :: Gravity(:)
   
   INTEGER(CMISSIntg) :: NumberOfFluidNodes
@@ -136,7 +136,7 @@ PROGRAM CoupledFluidSolidExample
     & InterfaceNodeNumbersForGeometry(:), &
     & NoDisplacementNodes(:),FixedNodes(:),FixedZNodes(:),MovedNodes(:),MovedYNodes(:),InletNodes(:),NoSlipNodes(:), &
     & OutletNodes(:),SlipNodes(:),InterfaceInterfaceNodeInformationNE(:,:),SolidInterfaceNodeInformationNE(:,:), &
-    & FluidInterfaceNodeInformationNE(:,:),LagrangeNodes(:)
+    & FluidInterfaceNodeInformationNE(:,:),LagrangeNodes(:),SlipNodesTop(:),SlipNodesRightLeft(:)
   
   REAL(CMISSDP), ALLOCATABLE :: SolidGeometryX(:),SolidGeometryY(:),SolidGeometryZ(:), &
     & FluidGeometryX(:),FluidGeometryY(:),FluidGeometryZ(:), &
@@ -274,6 +274,7 @@ PROGRAM CoupledFluidSolidExample
   REAL(CMISSDP) :: YoungsModulus
   REAL(CMISSDP) :: PoissonsRatio
   REAL(CMISSDP) :: ShearModulus
+  REAL(CMISSDP) :: BulkModulus
   REAL(CMISSDP) :: MooneyRivlin1
   REAL(CMISSDP) :: MooneyRivlin2
 
@@ -292,6 +293,10 @@ PROGRAM CoupledFluidSolidExample
   LOGICAL :: FileReadDiagnostics=.FALSE.
   LOGICAL :: ExampleFileProgressDiagnostics=.TRUE.
   LOGICAL :: GeometryCheck=.FALSE.
+  LOGICAL :: GravityFlag=.FALSE.
+  LOGICAL :: CheckWithoutInterfaceCondition=.FALSE.
+  LOGICAL :: CompressibleOption=.FALSE.
+  LOGICAL :: SetupOutput=.TRUE.
   
 
   !CMISS variables
@@ -687,9 +692,9 @@ PROGRAM CoupledFluidSolidExample
     !If KGtokT then KGtoT/KGtoG are set automatically
     !If .NOT.KGtokT .AND. KGtoT then KGtoG is set automatically
     !No scaling if KGtoG,KGtoT,KGtokT==.FALSE.
-    KGtoG=.TRUE.
-    KGtoT=.TRUE.
-    KGtokT=.TRUE.
+    KGtoG=.FALSE.
+    KGtoT=.FALSE.
+    KGtokT=.FALSE.
     KGtoMT=.FALSE.
     IF(KGtoMT) THEN
       KGtokT=.FALSE.
@@ -748,7 +753,7 @@ PROGRAM CoupledFluidSolidExample
     !Set time parameter
     StartTime=0.0_CMISSDP
     StopTime=5.0_CMISSDP
-    TimeStepSize=0.05_CMISSDP
+    TimeStepSize=0.01_CMISSDP
     DynamicSolver_Theta=1.0_CMISSDP
     
     !Fluid
@@ -763,6 +768,8 @@ PROGRAM CoupledFluidSolidExample
     PoissonsRatio=0.3 ! [.]
     !Homogenous, isotropic material G=E/(2*(1+poissonsRatio))
     ShearModulus=YoungsModulus/(2.0_CMISSDP*(1.0_CMISSDP+PoissonsRatio)) ! N / m^2
+    !K=E/(3*(1-2*poissonsRatio))
+    BulkModulus=YoungsModulus/(3.0_CMISSDP*(1.0_CMISSDP-2.0_CMISSDP*PoissonsRatio))
     !Neo-Hookean material: c1=G/2 c2=0
     MooneyRivlin1=0.5_CMISSDP*ShearModulus ! N / m^2
     MooneyRivlin2=0.0_CMISSDP !
@@ -774,15 +781,110 @@ PROGRAM CoupledFluidSolidExample
     
     
     
-   ! SolidDensity=SolidDensity*0.01_CMISSDP
-   ! MooneyRivlin1=MooneyRivlin1*0.01_CMISSDP
+    !Set solver parameters
+    RelativeTolerance=1.0E-4_CMISSDP !default: 1.0E-05_CMISSDP
+    AbsoluteTolerance=1.0E-4_CMISSDP !default: 1.0E-10_CMISSDP
+    DivergenceTolerance=1.0E5 !default: 1.0E5
+    MaximumIterations=100000000 !default: 100000
+    MaxFunctionEvaluations=100000
+    RestartValue=30 !default: 30
+    LinesearchAlpha=1.0_CMISSDP
+    MovingMeshParameterK=1.0
+    !Set time parameter
+    StartTime=0.0_CMISSDP
+    StopTime=5.0_CMISSDP
+    TimeStepSize=0.01_CMISSDP
+    DynamicSolver_Theta=1.0_CMISSDP
+    
+    !Fluid
+    FluidDynamicViscosity=0.1_CMISSDP! g / (mm s)
+    FluidDensity=1.0E-3_CMISSDP! g / mm^3
+    
+    !Solid
+    SolidDensity=1.0_CMISSDP!1.0_CMISSDP! g / mm^3
+    !Young's modulus E
+    YoungsModulus=7.0E4_CMISSDP! kN / m^2
+    !Poisson's ratio
+    PoissonsRatio=0.3 ! [.]
+    !Homogenous, isotropic material G=E/(2*(1+poissonsRatio))
+    ShearModulus=YoungsModulus/(2.0_CMISSDP*(1.0_CMISSDP+PoissonsRatio)) ! kN / m^2
+    !K=E/(3*(1-2*poissonsRatio))
+    BulkModulus=YoungsModulus/(3.0_CMISSDP*(1.0_CMISSDP-2.0_CMISSDP*PoissonsRatio))
+    !Neo-Hookean material: c1=G/2 c2=0
+    MooneyRivlin1=0.5_CMISSDP*ShearModulus ! kN / m^2
+    MooneyRivlin2=0.0_CMISSDP !
 
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+    !TODO )( above works in combination with mm/s velocity and mm lengths (well.. not convergent!)
+    !Set time parameter
+    StartTime=0.0_CMISSDP
+    StopTime=2.0_CMISSDP
+    TimeStepSize=1.0_CMISSDP
+    DynamicSolver_Theta=1.0_CMISSDP
     
+    !Fluid
+    FluidDynamicViscosity=0.1_CMISSDP! g / (mm s)
+    FluidDensity=1.0E-3_CMISSDP! g / mm^3
     
-    
+    !Solid
+    SolidDensity=1.0_CMISSDP!1.0_CMISSDP! g / mm^3
+    !Young's modulus E
+    YoungsModulus=7.0E4_CMISSDP! kN / m^2
+    !Poisson's ratio
+    PoissonsRatio=0.3 ! [.]
+    !Homogenous, isotropic material G=E/(2*(1+poissonsRatio))
+    ShearModulus=YoungsModulus/(2.0_CMISSDP*(1.0_CMISSDP+PoissonsRatio)) ! kN / m^2
+    !K=E/(3*(1-2*poissonsRatio))
+    BulkModulus=YoungsModulus/(3.0_CMISSDP*(1.0_CMISSDP-2.0_CMISSDP*PoissonsRatio))
+    !Neo-Hookean material: c1=G/2 c2=0
+    MooneyRivlin1=0.5_CMISSDP*ShearModulus ! kN / m^2
+    MooneyRivlin2=0.0_CMISSDP !
+    !TODO )( above does work but really slow.. so dunno if convergent or not.
+    !initial function norm: 14188780998.104866 decreases constantly but very slow
+    !iter274 function norm: 3975791328.5240316
     
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !TODO )( above is all with benchmark domain size, but thicker plate
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !Let's try a reduced 3D geometry now..
+    !j;lsjagklj;l
     
+    ! SI UNITS
+    StopTime=10.0_CMISSDP
+    FluidDynamicViscosity=0.1! kg / (m s)
+    FluidDensity=1.0E3_CMISSDP! kg / m^-3
+    SolidDensity=1.0E4_CMISSDP! kg / m^-3
+    YoungsModulus=7.0E4_CMISSDP! Pa
+    PoissonsRatio=0.3 ! [.]
+    !Homogenous, isotropic material G=E/(2*(1+poissonsRatio))
+    ShearModulus=YoungsModulus/(2.0_CMISSDP*(1.0_CMISSDP+PoissonsRatio)) ! N / m^2
+    !K=E/(3*(1-2*poissonsRatio))
+    BulkModulus=YoungsModulus/(3.0_CMISSDP*(1.0_CMISSDP-2.0_CMISSDP*PoissonsRatio))
+    !Neo-Hookean material: c1=G/2 c2=0
+    MooneyRivlin1=0.5_CMISSDP*ShearModulus ! N / m^2
+    MooneyRivlin2=0.0_CMISSDP                                            !works for 3D benchmark geometry; thickness 0.5m
+    
+    
+    
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Johan Lorentzon Master thesis test case TODO BC>
+    StartTime=0.0_CMISSDP
+    StopTime=20.0_CMISSDP
+    TimeStepSize=1.0_CMISSDP
+    FluidDynamicViscosity=0.05! kg / (m s)
+    FluidDensity=100! kg m^-3
+    SolidDensity=300! kg m^-3
+    YoungsModulus=2.0E4! Pa
+    PoissonsRatio=0.3! [.]
+    ShearModulus=YoungsModulus/(2.0_CMISSDP*(1.0_CMISSDP+PoissonsRatio)) ! N / m^2
+    BulkModulus=YoungsModulus/(3.0_CMISSDP*(1.0_CMISSDP-2.0_CMISSDP*PoissonsRatio))
+    MooneyRivlin1=0.5_CMISSDP*ShearModulus ! N / m^2
+    MooneyRivlin2=0.0_CMISSDP
+    
+    SetupOutput=.TRUE.
     
     
     !Set geometric dimension n gravity
@@ -790,11 +892,16 @@ PROGRAM CoupledFluidSolidExample
     CASE(Plate2D)
       NumberOfDimensions=2
       ALLOCATE(Gravity(NumberOfDimensions))
-      Gravity(:)=[0.0_CMISSDP,-9.81_CMISSDP] !in m s^-2
+      Gravity(:)=[0.0_CMISSDP,9.81_CMISSDP] !in m s^-2
     CASE(Plate3D)
       NumberOfDimensions=3
-      ALLOCATE(Gravity(NumberOfDimensions))
-      Gravity(:)=[0.0_CMISSDP,-9.81_CMISSDP,0.0_CMISSDP] !in m s^-2
+      CheckWithoutInterfaceCondition=.FALSE.!if set to true we remove all Lagrange field dofs by setting them as zero dirichlet BC
+      IF(CheckWithoutInterfaceCondition) THEN
+        CompressibleOption=.TRUE.
+        GravityFlag=.TRUE.
+        ALLOCATE(Gravity(NumberOfDimensions))
+        Gravity(:)=[0.0_CMISSDP,9.81_CMISSDP,0.0_CMISSDP] !in m s^-2
+      ENDIF
     END SELECT
     
     
@@ -1272,6 +1379,34 @@ PROGRAM CoupledFluidSolidExample
     
     SELECT CASE(MaterialSpecification)
     CASE(Plate2D)
+      OPEN (unit=1, file='Plate2DnoSlipBC.txt', status='old', action='read')
+    CASE(Plate3D)
+      OPEN (unit=1, file='Plate3DslipTop.txt', status='old', action='read')
+    ENDSELECT
+    READ(1, *), arraySize
+    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+    ALLOCATE(SlipNodesTop(arraySize))
+    READ(1,*) SlipNodesTop(:)
+    arraySize=0
+    CLOSE(1)
+    IF(FileReadDiagnostics) PRINT *, 'Slip nodes top: ',SlipNodesTop
+    
+    SELECT CASE(MaterialSpecification)
+    CASE(Plate2D)
+      OPEN (unit=1, file='Plate2DnoSlipBC.txt', status='old', action='read')
+    CASE(Plate3D)
+      OPEN (unit=1, file='Plate3DslipRightLeft.txt', status='old', action='read')
+    ENDSELECT
+    READ(1, *), arraySize
+    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+    ALLOCATE(SlipNodesRightLeft(arraySize))
+    READ(1,*) SlipNodesRightLeft(:)
+    arraySize=0
+    CLOSE(1)
+    IF(FileReadDiagnostics) PRINT *, 'Slip nodes r/l: ',SlipNodesRightLeft
+    
+    SELECT CASE(MaterialSpecification)
+    CASE(Plate2D)
       OPEN (unit=1, file='Plate2DpressureBC.txt', status='old', action='read')
     CASE(Plate3D)
       OPEN (unit=1, file='Plate3DpressureBC.txt', status='old', action='read')
@@ -1298,16 +1433,41 @@ PROGRAM CoupledFluidSolidExample
     CLOSE(1)
     IF(FileReadDiagnostics) PRINT *, 'Slip BC nodes: ',SlipNodes
     
-    !TODO LagrangeNodes (to remove from dof's)
-    
-    PRINT *, 'Finished reading geometry.'
-    
     NumberOfSolidNodes=SIZE(SolidNodeNumbers)
     NumberOfSolidElements=SIZE(SolidElementNodes(:,1))
     NumberOfFluidNodes=SIZE(FluidNodeNumbers)
     NumberOfFluidElements=SIZE(FluidElementNodes(:,1))
     NumberOfInterfaceNodes=SIZE(InterfaceNodeNumbersForGeometry)
     NumberOfInterfaceElements=SIZE(InterfaceElementNodes(:,1))
+    
+    PRINT *, "Finished reading geometry."
+    
+    IF(SetupOutput) THEN
+      PRINT *,"SUMMARY"
+      PRINT *," "
+      PRINT *,"Start time: ",StartTime
+      PRINT *,"Stop time: ",StopTime
+      PRINT *,"Time increment: ",TimeStepSize
+      PRINT *," "
+      PRINT *,"FLUID:"
+      PRINT *,"Dynamic viscosity: ",FluidDynamicViscosity," kg / (m s)"
+      PRINT *,"Density: ",FluidDensity," kg m^-3"
+      PRINT *,"Domain:",FluidGeometryX(NumberOfFluidNodes),"x",FluidGeometryY(NumberOfFluidNodes),"x", &
+        & FluidGeometryZ(NumberOfFluidNodes)," m^3"
+      PRINT *, "Number of nodes: ",NumberOfFluidNodes
+      PRINT *," "
+      PRINT *,"SOLID:"
+      PRINT *,"Density: ",SolidDensity," kg m^-3"
+      PRINT *,"Young's modulus: ",YoungsModulus," Pa"
+      PRINT *,"Poisson's ratio: ",PoissonsRatio
+      PRINT *,"Neo-Hookean constant: ",MooneyRivlin1
+      PRINT *,"Domain:",SolidGeometryX(NumberOfSolidNodes)-SolidGeometryX(1),"x", &
+        & SolidGeometryY(NumberOfSolidNodes)-SolidGeometryY(1),"x", &
+        & SolidGeometryZ(NumberOfSolidNodes)-SolidGeometryZ(1)," m^3"
+      PRINT *, "Number of nodes: ",NumberOfSolidNodes
+      PRINT *," "
+      PRINT *, "Number of interface nodes: ",NumberOfInterfaceNodes
+    ENDIF
     
   END SELECT
   
@@ -2083,9 +2243,16 @@ PROGRAM CoupledFluidSolidExample
   !Create the equations_set for FiniteElasticity MooneyRivlin
   CALL CMISSField_Initialise(EquationsSetField1,Err)
   CALL CMISSEquationsSet_Initialise(SolidEquationsSet,Err)
-  CALL CMISSEquationsSet_CreateStart(SolidEquationsSetUserNumber,Region1,GeometricField1,CMISS_EQUATIONS_SET_ELASTICITY_CLASS, &
-    & CMISS_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMISS_EQUATIONS_SET_MOONEY_RIVLIN_SUBTYPE,SolidEquationsSetFieldUserNumber, &
-    & EquationsSetField1,SolidEquationsSet,Err)
+  IF(CompressibleOption) THEN
+    CALL CMISSEquationsSet_CreateStart(SolidEquationsSetUserNumber,Region1,GeometricField1,CMISS_EQUATIONS_SET_ELASTICITY_CLASS, &
+      & CMISS_EQUATIONS_SET_FINITE_ELASTICITY_TYPE, &
+      & CMISS_EQUATIONS_SET_COMPRESSIBLE_FINITE_ELASTICITY_SUBTYPE,SolidEquationsSetFieldUserNumber, &
+      & EquationsSetField1,SolidEquationsSet,Err)
+  ELSE
+    CALL CMISSEquationsSet_CreateStart(SolidEquationsSetUserNumber,Region1,GeometricField1,CMISS_EQUATIONS_SET_ELASTICITY_CLASS, &
+      & CMISS_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMISS_EQUATIONS_SET_MOONEY_RIVLIN_SUBTYPE,SolidEquationsSetFieldUserNumber, &
+      & EquationsSetField1,SolidEquationsSet,Err)
+  ENDIF
   CALL CMISSEquationsSet_CreateFinish(SolidEquationsSet,Err)
 
   !Create the equations set for the fluid region
@@ -2169,24 +2336,31 @@ PROGRAM CoupledFluidSolidExample
     & MooneyRivlin1,Err)
   CALL CMISSField_ComponentValuesInitialise(MaterialField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2, &
     & MooneyRivlin2,Err)
-  CALL CMISSField_ComponentValuesInitialise(MaterialField1,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
-    & SolidDensity,Err)
+  IF(CompressibleOption) THEN
+    CALL CMISSField_ComponentValuesInitialise(MaterialField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3, &
+      & BulkModulus,Err)
+  ELSE
+    CALL CMISSField_ComponentValuesInitialise(MaterialField1,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
+      & SolidDensity,Err)
+  ENDIF
 
-  !IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> SOURCE FIELD - GRAVITY << == '
-  !!!Create the source field with the gravity vector
-  !CALL CMISSField_Initialise(SourceField1,Err)
-  !PRINT *, 'HERE'
-  !CALL CMISSEquationsSet_SourceCreateStart(SolidEquationsSet,SourceFieldUserNumber,SourceField1,Err)
-  !PRINT *, 'OR HERE'
-  !CALL CMISSField_ScalingTypeSet(SourceField1,CMISS_FIELD_NO_SCALING,Err)
-  !PRINT *, 'OR HERE'
-  !CALL CMISSEquationsSet_SourceCreateFinish(SolidEquationsSet,Err)
-  !PRINT *, 'OR HERE'
-  !DO component_idx=1,NumberOfDimensions
-  !  PRINT *, component_idx
-  !  CALL CMISSField_ComponentValuesInitialise(SourceField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-  !      & component_idx,Gravity(component_idx),Err)
-  !ENDDO
+  IF(GravityFlag) THEN
+    IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> SOURCE FIELD - GRAVITY << == '
+    !Create the source field with the gravity vector
+    CALL CMISSField_Initialise(SourceField1,Err)
+    !PRINT *, 'HERE'
+    CALL CMISSEquationsSet_SourceCreateStart(SolidEquationsSet,SourceFieldUserNumber,SourceField1,Err)
+    !PRINT *, 'OR HERE'
+    CALL CMISSField_ScalingTypeSet(SourceField1,CMISS_FIELD_NO_SCALING,Err)
+    !PRINT *, 'OR HERE'
+    CALL CMISSEquationsSet_SourceCreateFinish(SolidEquationsSet,Err)
+    !PRINT *, 'OR HERE'
+    DO component_idx=1,NumberOfDimensions
+    !  PRINT *, component_idx
+      CALL CMISSField_ComponentValuesInitialise(SourceField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+          & component_idx,Gravity(component_idx),Err)
+    ENDDO
+  ENDIF
   
   !=========================
 
@@ -2648,6 +2822,24 @@ PROGRAM CoupledFluidSolidExample
           & NodeNumber,NumberOfDimensions+1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
       ENDIF
     ENDDO
+    !Inlet velocity nodes, small starting velocity in 1st coordinate direction
+    DO S=1,SIZE(InletNodes)
+      NodeNumber=InletNodes(S)
+      CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
+      IF(NodeDomain==ComputationalNodeNumber) THEN
+        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
+          & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+          & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED_INLET,0.0_CMISSDP,Err)
+        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
+          & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+          & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED_INLET,0.01_CMISSDP,Err)
+        IF(NumberOfDimensions==3) THEN
+          CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
+            & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+            & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED_INLET,0.0_CMISSDP,Err)
+        ENDIF
+      ENDIF
+    ENDDO
     !Set no-slip BC
     DO S=1,SIZE(NoSlipNodes)
       NodeNumber=NoSlipNodes(S)
@@ -2667,16 +2859,32 @@ PROGRAM CoupledFluidSolidExample
       ENDIF
     ENDDO
     !Set slip BC
-    DO S=1,SIZE(SlipNodes)
-      NodeNumber=SlipNodes(S)
+ !   DO S=1,SIZE(SlipNodes)
+ !     NodeNumber=SlipNodes(S)
+ !     CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
+ !     IF(NodeDomain==ComputationalNodeNumber) THEN
+ !       IF(NumberOfDimensions==2) THEN
+ !         CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
+ !           & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+ !           & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+ !       ELSEIF(NumberOfDimensions==3) THEN
+ !         CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
+ !           & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+ !           & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+ !       ENDIF
+ !     ENDIF
+ !   ENDDO
+    !Set slip BC
+    DO S=1,SIZE(SlipNodesTop)
+      NodeNumber=SlipNodesTop(S)
       CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
       IF(NodeDomain==ComputationalNodeNumber) THEN
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
-          & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, & ! TODO TODO reference case has slip BC!
-          & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+     !   CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
+     !     & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+     !     & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+     !   CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, & ! TODO TODO reference case has slip BC!
+     !     & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+     !     & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
         IF(NumberOfDimensions==3) THEN
           CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, & ! TODO TODO reference case has slip BC!
             & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
@@ -2684,22 +2892,22 @@ PROGRAM CoupledFluidSolidExample
         ENDIF
       ENDIF
     ENDDO
-    !Inlet velocity nodes, small starting velocity in 1st coordinate direction
-    DO S=1,SIZE(InletNodes)
-      NodeNumber=InletNodes(S)
+    !Set slip BC
+    DO S=1,SIZE(SlipNodesRightLeft)
+      NodeNumber=SlipNodesRightLeft(S)
       CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
       IF(NodeDomain==ComputationalNodeNumber) THEN
         CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
           & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED_INLET,0.0_CMISSDP,Err)
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
-          & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED_INLET,0.1_CMISSDP,Err)
-        IF(NumberOfDimensions==3) THEN
-          CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
-            & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-            & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED_INLET,0.0_CMISSDP,Err)
-        ENDIF
+          & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+      !  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, & ! TODO TODO reference case has slip BC!
+      !    & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+      !    & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+      !  IF(NumberOfDimensions==3) THEN
+      !    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, & ! TODO TODO reference case has slip BC!
+      !      & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+      !      & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+      !  ENDIF
       ENDIF
     ENDDO
     IF(NumberOfDimensions==2) THEN
@@ -2717,21 +2925,39 @@ PROGRAM CoupledFluidSolidExample
         & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
         & NumberOfInterfaceNodes,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
     ELSE
-      DO S=1,SIZE(LagrangeNodes)
-        NodeNumber=LagrangeNodes(S)
-        CALL CMISSDecomposition_NodeDomainGet(InterfaceDecomposition,NodeNumber,1,NodeDomain,Err)
-        IF(NodeDomain==ComputationalNodeNumber) THEN
-          CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
-            & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-            & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-          CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
-            & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-            & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-          CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
-            & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-            & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-        ENDIF
-      ENDDO
+      IF(CheckWithoutInterfaceCondition) THEN
+        DO S=1,SIZE(InterfaceNodeNumbersForGeometry)
+          NodeNumber=InterfaceNodeNumbersForGeometry(S)
+          CALL CMISSDecomposition_NodeDomainGet(InterfaceDecomposition,NodeNumber,1,NodeDomain,Err)
+          IF(NodeDomain==ComputationalNodeNumber) THEN
+            CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
+              & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+              & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+            CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
+              & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+              & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+            CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
+              & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+              & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+          ENDIF
+        ENDDO
+      ELSE
+        DO S=1,SIZE(LagrangeNodes)
+          NodeNumber=LagrangeNodes(S)
+          CALL CMISSDecomposition_NodeDomainGet(InterfaceDecomposition,NodeNumber,1,NodeDomain,Err)
+          IF(NodeDomain==ComputationalNodeNumber) THEN
+            CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
+              & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+              & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+            CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
+              & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+              & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+            CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
+              & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+              & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+          ENDIF
+        ENDDO
+      ENDIF
     ENDIF
     !Finish equations set boundary conditions
     CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(CoupledSolverEquations,Err)
