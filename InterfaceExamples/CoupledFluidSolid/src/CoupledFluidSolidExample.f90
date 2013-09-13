@@ -136,7 +136,7 @@ PROGRAM CoupledFluidSolidExample
     & InterfaceNodeNumbersForGeometry(:), &
     & NoDisplacementNodes(:),FixedNodes(:),FixedZNodes(:),MovedNodes(:),MovedYNodes(:),InletNodes(:),NoSlipNodes(:), &
     & OutletNodes(:),SlipNodes(:),InterfaceInterfaceNodeInformationNE(:,:),SolidInterfaceNodeInformationNE(:,:), &
-    & FluidInterfaceNodeInformationNE(:,:),LagrangeNodes(:),SlipNodesTop(:),SlipNodesRightLeft(:)
+    & FluidInterfaceNodeInformationNE(:,:),LagrangeNodes(:),SlipNodesTop(:),SlipNodesRightLeft(:),Components(:)
   
   REAL(CMISSDP), ALLOCATABLE :: SolidGeometryX(:),SolidGeometryY(:),SolidGeometryZ(:), &
     & FluidGeometryX(:),FluidGeometryY(:),FluidGeometryZ(:), &
@@ -442,6 +442,8 @@ PROGRAM CoupledFluidSolidExample
   SELECT CASE(MaterialSpecification)
   CASE(Blood)
     
+    CALL HANDLE_ERROR("broken..")
+    
     NumberOfFluidNodes=73
     NumberOfFluidElements=13
     NumberOfSolidNodes=15
@@ -505,8 +507,8 @@ PROGRAM CoupledFluidSolidExample
     IF(zeroCheckFlag) zeroCheck=0.0_CMISSDP
     
     !Set solver parameters
-    RelativeTolerance=1.0E-12_CMISSDP !default: 1.0E-05_CMISSDP
-    AbsoluteTolerance=1.0E-12_CMISSDP !default: 1.0E-10_CMISSDP
+    RelativeTolerance=1.0E-4_CMISSDP !default: 1.0E-05_CMISSDP
+    AbsoluteTolerance=1.0E-5_CMISSDP !default: 1.0E-10_CMISSDP
     DivergenceTolerance=1.0E30 !default: 1.0E5
     MaximumIterations=100000000 !default: 100000
     MaxFunctionEvaluations=100000
@@ -520,11 +522,11 @@ PROGRAM CoupledFluidSolidExample
     DynamicSolver_Theta=1.0_CMISSDP
     !BLOOD
     FluidDynamicViscosity=4.0E-3_CMISSDP/unitMtoCM/unitMtoMM*unitKGtoG*unitKGtoT*unitKGtokT !kg/(cm s)
-    FluidDensity=1050.0_CMISSDP/(unitMtoCM*unitMtoCM*unitMtoCM)/(unitMtoMM*unitMtoMM*unitMtoMM)*unitKGtoG*unitKGtoT*unitKGtokT ! kg / cm^-3
+    FluidDensity=100.0_CMISSDP/(unitMtoCM*unitMtoCM*unitMtoCM)/(unitMtoMM*unitMtoMM*unitMtoMM)*unitKGtoG*unitKGtoT*unitKGtokT ! kg / cm^-3
     !ARTERIAL WALL
-    SolidDensity=1160.0_CMISSDP/(unitMtoCM*unitMtoCM*unitMtoCM)/(unitMtoMM*unitMtoMM*unitMtoMM)*unitKGtoG*unitKGtoT*unitKGtokT ! kg / cm^3
+    SolidDensity=300.0_CMISSDP/(unitMtoCM*unitMtoCM*unitMtoCM)/(unitMtoMM*unitMtoMM*unitMtoMM)*unitKGtoG*unitKGtoT*unitKGtokT ! kg / cm^3
     !Young's modulus E
-    YoungsModulus=3.0E6_CMISSDP/unitMtoCM/unitMtoMM*unitKGtoG*unitKGtoT*unitKGtokT ! 3.0E4_CMISSDP kg / (cm s^2)
+    YoungsModulus=3.0E4_CMISSDP/unitMtoCM/unitMtoMM*unitKGtoG*unitKGtoT*unitKGtokT ! 3.0E4_CMISSDP kg / (cm s^2)
     !Poisson's ratio
     PoissonsRatio=0.45
     !Homogenous, isotropic material G=E/(2*(1+poissonsRatio))
@@ -533,6 +535,26 @@ PROGRAM CoupledFluidSolidExample
     MooneyRivlin1=0.5_CMISSDP*ShearModulus ! kg / (cm s^2)
     MooneyRivlin2=0.0_CMISSDP !
     !==========================================================================
+    
+    
+    StartTime=0.0_CMISSDP
+    StopTime=20.0_CMISSDP
+    TimeStepSize=1.0_CMISSDP
+    FluidDynamicViscosity=0.05! kg / (m s)
+    FluidDensity=100! kg m^-3
+    SolidDensity=300! kg m^-3
+    YoungsModulus=2.0E4! Pa
+    PoissonsRatio=0.3! [.]
+    ShearModulus=YoungsModulus/(2.0_CMISSDP*(1.0_CMISSDP+PoissonsRatio)) ! N / m^2
+    BulkModulus=YoungsModulus/(3.0_CMISSDP*(1.0_CMISSDP-2.0_CMISSDP*PoissonsRatio))
+    MooneyRivlin1=0.5_CMISSDP*ShearModulus ! N / m^2
+    MooneyRivlin2=0.0_CMISSDP
+    
+    
+    
+    
+    
+    
     ElementIndices=(/1,2,3,4,5,6,7,8,9,10,11,12,13,14,15/)
     NodeIndices=(/1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28, &
       & 29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53, &
@@ -687,7 +709,7 @@ PROGRAM CoupledFluidSolidExample
     !===============================================================================================================================
   CASE(Plate2D,Plate3D)!NOTE: USE OF SI UNITS unless KGtokT, KGtoT or KGtoG is set to true
     
-    IF(MaterialSpecification==Plate2D) CALL HANDLE_ERROR("Check component numbers for geometry, BC, etc.")
+   ! IF(MaterialSpecification==Plate2D) CALL HANDLE_ERROR("Check component numbers for geometry, BC, etc.")
     
     !If KGtokT then KGtoT/KGtoG are set automatically
     !If .NOT.KGtokT .AND. KGtoT then KGtoG is set automatically
@@ -874,6 +896,10 @@ PROGRAM CoupledFluidSolidExample
     StartTime=0.0_CMISSDP
     StopTime=20.0_CMISSDP
     TimeStepSize=1.0_CMISSDP
+    IF(MaterialSpecification==Plate2D) THEN
+      StopTime=40.0_CMISSDP
+      TimeStepSize=0.125_CMISSDP
+    ENDIF
     FluidDynamicViscosity=0.05! kg / (m s)
     FluidDensity=100! kg m^-3
     SolidDensity=300! kg m^-3
@@ -1452,8 +1478,13 @@ PROGRAM CoupledFluidSolidExample
       PRINT *,"FLUID:"
       PRINT *,"Dynamic viscosity: ",FluidDynamicViscosity," kg / (m s)"
       PRINT *,"Density: ",FluidDensity," kg m^-3"
-      PRINT *,"Domain:",FluidGeometryX(NumberOfFluidNodes),"x",FluidGeometryY(NumberOfFluidNodes),"x", &
-        & FluidGeometryZ(NumberOfFluidNodes)," m^3"
+      IF(NumberOfDimensions==3) THEN
+        PRINT *,"Domain:",FluidGeometryX(NumberOfFluidNodes),"x",FluidGeometryY(NumberOfFluidNodes),"x", &
+          & FluidGeometryZ(NumberOfFluidNodes)," m^3"
+      ELSE
+        PRINT *,"Domain:",FluidGeometryY(NumberOfFluidNodes),"x", &
+          & FluidGeometryZ(NumberOfFluidNodes)," m^2"
+      ENDIF
       PRINT *, "Number of nodes: ",NumberOfFluidNodes
       PRINT *," "
       PRINT *,"SOLID:"
@@ -1461,9 +1492,14 @@ PROGRAM CoupledFluidSolidExample
       PRINT *,"Young's modulus: ",YoungsModulus," Pa"
       PRINT *,"Poisson's ratio: ",PoissonsRatio
       PRINT *,"Neo-Hookean constant: ",MooneyRivlin1
-      PRINT *,"Domain:",SolidGeometryX(NumberOfSolidNodes)-SolidGeometryX(1),"x", &
-        & SolidGeometryY(NumberOfSolidNodes)-SolidGeometryY(1),"x", &
-        & SolidGeometryZ(NumberOfSolidNodes)-SolidGeometryZ(1)," m^3"
+      IF(NumberOfDimensions==3) THEN
+        PRINT *,"Domain:",SolidGeometryX(NumberOfSolidNodes)-SolidGeometryX(1),"x", &
+          & SolidGeometryY(NumberOfSolidNodes)-SolidGeometryY(1),"x", &
+          & SolidGeometryZ(NumberOfSolidNodes)-SolidGeometryZ(1)," m^3"
+      ELSE
+        PRINT *,"Domain:",SolidGeometryY(NumberOfSolidNodes)-SolidGeometryY(1),"x", &
+          & SolidGeometryZ(NumberOfSolidNodes)-SolidGeometryZ(1)," m^2"
+      ENDIF
       PRINT *, "Number of nodes: ",NumberOfSolidNodes
       PRINT *," "
       PRINT *, "Number of interface nodes: ",NumberOfInterfaceNodes
@@ -2171,13 +2207,18 @@ PROGRAM CoupledFluidSolidExample
     DO NodeIndex=1,NumberOfSolidNodes
       CALL CMISSDecomposition_NodeDomainGet(SolidDecomposition,SolidNodeNumbers(NodeIndex),1,NodeDomain,Err)
       IF(NodeDomain==ComputationalNodeNumber) THEN
+        IF(NumberOfDimensions==3) THEN
+          Components=(/2,3,1/)
+        ELSE
+          Components=(/1,2,0/)
+        ENDIF
         CALL CMISSField_ParameterSetUpdateNode(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,SolidNodeNumbers(NodeIndex),2,SolidGeometryY(NodeIndex),Err)
+          & 1,CMISS_NO_GLOBAL_DERIV,SolidNodeNumbers(NodeIndex),Components(1),SolidGeometryY(NodeIndex),Err)
         CALL CMISSField_ParameterSetUpdateNode(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,SolidNodeNumbers(NodeIndex),3,SolidGeometryZ(NodeIndex),Err)
+          & 1,CMISS_NO_GLOBAL_DERIV,SolidNodeNumbers(NodeIndex),Components(2),SolidGeometryZ(NodeIndex),Err)
         IF(NumberOfDimensions==3) THEN
           CALL CMISSField_ParameterSetUpdateNode(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,SolidNodeNumbers(NodeIndex),1,SolidGeometryX(NodeIndex),Err)
+          & 1,CMISS_NO_GLOBAL_DERIV,SolidNodeNumbers(NodeIndex),Components(3),SolidGeometryX(NodeIndex),Err)
         ENDIF
       ENDIF
     ENDDO
@@ -2186,12 +2227,12 @@ PROGRAM CoupledFluidSolidExample
       CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,FluidNodeNumbers(NodeIndex),1,NodeDomain,Err)
       IF(NodeDomain==ComputationalNodeNumber) THEN
         CALL CMISSField_ParameterSetUpdateNode(GeometricField2,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,FluidNodeNumbers(NodeIndex),2,FluidGeometryY(NodeIndex),Err)
+          & 1,CMISS_NO_GLOBAL_DERIV,FluidNodeNumbers(NodeIndex),Components(1),FluidGeometryY(NodeIndex),Err)
         CALL CMISSField_ParameterSetUpdateNode(GeometricField2,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,FluidNodeNumbers(NodeIndex),3,FluidGeometryZ(NodeIndex),Err)
+          & 1,CMISS_NO_GLOBAL_DERIV,FluidNodeNumbers(NodeIndex),Components(2),FluidGeometryZ(NodeIndex),Err)
         IF(NumberOfDimensions==3) THEN
           CALL CMISSField_ParameterSetUpdateNode(GeometricField2,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,FluidNodeNumbers(NodeIndex),1,FluidGeometryX(NodeIndex),Err)
+          & 1,CMISS_NO_GLOBAL_DERIV,FluidNodeNumbers(NodeIndex),Components(3),FluidGeometryX(NodeIndex),Err)
         ENDIF
       ENDIF
     ENDDO
@@ -2200,12 +2241,12 @@ PROGRAM CoupledFluidSolidExample
       CALL CMISSDecomposition_NodeDomainGet(InterfaceDecomposition,InterfaceNodeNumbersForGeometry(NodeIndex),1,NodeDomain,Err)
       IF(NodeDomain==ComputationalNodeNumber) THEN
         CALL CMISSField_ParameterSetUpdateNode(InterfaceGeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,InterfaceNodeNumbersForGeometry(NodeIndex),2,InterfaceGeometryY(NodeIndex),Err)
+          & 1,CMISS_NO_GLOBAL_DERIV,InterfaceNodeNumbersForGeometry(NodeIndex),Components(1),InterfaceGeometryY(NodeIndex),Err)
         CALL CMISSField_ParameterSetUpdateNode(InterfaceGeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,InterfaceNodeNumbersForGeometry(NodeIndex),3,InterfaceGeometryZ(NodeIndex),Err)
+          & 1,CMISS_NO_GLOBAL_DERIV,InterfaceNodeNumbersForGeometry(NodeIndex),Components(2),InterfaceGeometryZ(NodeIndex),Err)
         IF(NumberOfDimensions==3) THEN
           CALL CMISSField_ParameterSetUpdateNode(InterfaceGeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,InterfaceNodeNumbersForGeometry(NodeIndex),1,InterfaceGeometryX(NodeIndex),Err)
+          & 1,CMISS_NO_GLOBAL_DERIV,InterfaceNodeNumbersForGeometry(NodeIndex),Components(3),InterfaceGeometryX(NodeIndex),Err)
         ENDIF
       ENDIF
     ENDDO
@@ -2832,7 +2873,7 @@ PROGRAM CoupledFluidSolidExample
           & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED_INLET,0.0_CMISSDP,Err)
         CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
           & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED_INLET,0.01_CMISSDP,Err)
+          & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED_INLET,0.0_CMISSDP,Err)
         IF(NumberOfDimensions==3) THEN
           CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
             & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
