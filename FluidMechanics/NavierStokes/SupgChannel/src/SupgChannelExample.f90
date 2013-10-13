@@ -73,30 +73,30 @@ PROGRAM SupgChannel
 
   IMPLICIT NONE
 
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(CMISSFieldType) :: EquationsSetField
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(cmfe_FieldType) :: EquationsSetField
 
 
   !Test program parameters
-  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=3
-  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=4
-  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
-  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=6
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=7
-  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumberNavierStokes=8
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberNavierStokes=9
-  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=10
+  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=3
+  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=4
+  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=5
+  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=6
+  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=7
+  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldUserNumberNavierStokes=8
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberNavierStokes=9
+  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=10
 
-  INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=2
-  INTEGER(CMISSIntg), PARAMETER :: SolverNavierStokesUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberMu=1
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberRho=2
+  INTEGER(CMFEIntg), PARAMETER :: DomainUserNumber=2
+  INTEGER(CMFEIntg), PARAMETER :: SolverNavierStokesUserNumber=1
+  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberMu=1
+  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberRho=2
 
-  INTEGER(CMISSIntg), PARAMETER :: basisNumberBiquadratic=1
-  INTEGER(CMISSIntg), PARAMETER :: basisNumberBilinear=2
-  INTEGER(CMISSIntg), PARAMETER :: gaussQuadrature(2) = [2,2]
+  INTEGER(CMFEIntg), PARAMETER :: basisNumberBiquadratic=1
+  INTEGER(CMFEIntg), PARAMETER :: basisNumberBilinear=2
+  INTEGER(CMFEIntg), PARAMETER :: gaussQuadrature(2) = [2,2]
 
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: inputFilename = "input/BlockChannel.xml"
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputDirectory = "output"
@@ -106,42 +106,42 @@ PROGRAM SupgChannel
 
   !Program variables
 
-  INTEGER(CMISSIntg) :: maximumIterations
-  INTEGER(CMISSIntg) :: restartValue
-  INTEGER(CMISSIntg) :: numberOfFixedWallNodes
-  INTEGER(CMISSIntg) :: numberOfInletNodes
+  INTEGER(CMFEIntg) :: maximumIterations
+  INTEGER(CMFEIntg) :: restartValue
+  INTEGER(CMFEIntg) :: numberOfFixedWallNodes
+  INTEGER(CMFEIntg) :: numberOfInletNodes
 
-  INTEGER(CMISSIntg) :: equationsOutputType
-  INTEGER(CMISSIntg) :: componentNumber
-  INTEGER(CMISSIntg) :: nodeNumber
-  INTEGER(CMISSIntg) :: i
-  INTEGER(CMISSIntg) :: condition
+  INTEGER(CMFEIntg) :: equationsOutputType
+  INTEGER(CMFEIntg) :: componentNumber
+  INTEGER(CMFEIntg) :: nodeNumber
+  INTEGER(CMFEIntg) :: i
+  INTEGER(CMFEIntg) :: condition
 
   INTEGER, ALLOCATABLE, DIMENSION(:):: fixedWallNodes
   INTEGER, ALLOCATABLE, DIMENSION(:):: inletNodes
 
-  INTEGER(CMISSIntg) :: dynamicSolverOutputFrequency
-  INTEGER(CMISSIntg) :: dynamicSolverOutputType
-  INTEGER(CMISSIntg) :: nonlinearSolverOutputType
-  INTEGER(CMISSIntg) :: linearSolverOutputType
+  INTEGER(CMFEIntg) :: dynamicSolverOutputFrequency
+  INTEGER(CMFEIntg) :: dynamicSolverOutputType
+  INTEGER(CMFEIntg) :: nonlinearSolverOutputType
+  INTEGER(CMFEIntg) :: linearSolverOutputType
 
-  INTEGER(CMISSIntg) :: EquationsSetSubtype
-  INTEGER(CMISSIntg) :: ProblemSubtype
+  INTEGER(CMFEIntg) :: EquationsSetSubtype
+  INTEGER(CMFEIntg) :: ProblemSubtype
 
-  REAL(CMISSDP) :: initialConditions(2)
-  REAL(CMISSDP) :: inletBoundaryConditions(2)
-  REAL(CMISSDP) :: divergenceTolerance
-  REAL(CMISSDP) :: relativeTolerance
-  REAL(CMISSDP) :: absoluteTolerance
-  REAL(CMISSDP) :: linesearchAlpha
-  REAL(CMISSDP) :: VALUE
-  REAL(CMISSDP) :: viscosity
-  REAL(CMISSDP) :: density
+  REAL(CMFEDP) :: initialConditions(2)
+  REAL(CMFEDP) :: inletBoundaryConditions(2)
+  REAL(CMFEDP) :: divergenceTolerance
+  REAL(CMFEDP) :: relativeTolerance
+  REAL(CMFEDP) :: absoluteTolerance
+  REAL(CMFEDP) :: linesearchAlpha
+  REAL(CMFEDP) :: VALUE
+  REAL(CMFEDP) :: viscosity
+  REAL(CMFEDP) :: density
 
-  REAL(CMISSDP) :: dynamicSolverStartTime
-  REAL(CMISSDP) :: dynamicSolverStopTime
-  REAL(CMISSDP) :: dynamicSolverTheta
-  REAL(CMISSDP) :: dynamicSolverTimeIncrement
+  REAL(CMFEDP) :: dynamicSolverStartTime
+  REAL(CMFEDP) :: dynamicSolverStopTime
+  REAL(CMFEDP) :: dynamicSolverTheta
+  REAL(CMFEDP) :: dynamicSolverTimeIncrement
 
   LOGICAL :: directLinearSolverFlag
   LOGICAL :: fixedWallNodesFlag
@@ -155,45 +155,45 @@ PROGRAM SupgChannel
   !CMISS variables
 
   !Regions
-  TYPE(CMISSRegionType) :: Region
-  TYPE(CMISSRegionType) :: WorldRegion
+  TYPE(cmfe_RegionType) :: Region
+  TYPE(cmfe_RegionType) :: WorldRegion
   !Coordinate systems
-  TYPE(CMISSCoordinateSystemType) :: CoordinateSystem
-  TYPE(CMISSCoordinateSystemType) :: WorldCoordinateSystem
+  TYPE(cmfe_CoordinateSystemType) :: CoordinateSystem
+  TYPE(cmfe_CoordinateSystemType) :: WorldCoordinateSystem
   !Nodes
-  TYPE(CMISSNodesType) :: Nodes
+  TYPE(cmfe_NodesType) :: Nodes
   !Meshes
-  TYPE(CMISSMeshType) :: Mesh
+  TYPE(cmfe_MeshType) :: Mesh
   !Decompositions
-  TYPE(CMISSDecompositionType) :: Decomposition
+  TYPE(cmfe_DecompositionType) :: Decomposition
   !Field types
-  TYPE(CMISSFieldType) :: GeometricField
-  TYPE(CMISSFieldType) :: DependentField
-  TYPE(CMISSFieldType) :: MaterialsField
+  TYPE(cmfe_FieldType) :: GeometricField
+  TYPE(cmfe_FieldType) :: DependentField
+  TYPE(cmfe_FieldType) :: MaterialsField
 
 
 
   !Boundary conditions
-  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsNavierStokes
+  TYPE(cmfe_BoundaryConditionsType) :: BoundaryConditionsNavierStokes
   !Equations sets
-  TYPE(CMISSEquationsSetType) :: EquationsSetNavierStokes
+  TYPE(cmfe_EquationsSetType) :: EquationsSetNavierStokes
   !Equations
-  TYPE(CMISSEquationsType) :: EquationsNavierStokes
+  TYPE(cmfe_EquationsType) :: EquationsNavierStokes
   !Problems
-  TYPE(CMISSProblemType) :: Problem
+  TYPE(cmfe_ProblemType) :: Problem
   !Control loops
-  TYPE(CMISSControlLoopType) :: ControlLoop
+  TYPE(cmfe_ControlLoopType) :: ControlLoop
   !Solvers
-  TYPE(CMISSSolverType) :: DynamicSolverNavierStokes
-  TYPE(CMISSSolverType) :: NonlinearSolverNavierStokes
-  TYPE(CMISSSolverType) :: LinearSolverNavierStokes
+  TYPE(cmfe_SolverType) :: DynamicSolverNavierStokes
+  TYPE(cmfe_SolverType) :: NonlinearSolverNavierStokes
+  TYPE(cmfe_SolverType) :: LinearSolverNavierStokes
   !Solver equations
-  TYPE(CMISSSolverEquationsType) :: SolverEquationsNavierStokes
+  TYPE(cmfe_SolverEquationsType) :: SolverEquationsNavierStokes
 
   !FieldML parsing variables
-  TYPE(CMISSFieldMLIOType) :: fieldmlInfo, outputInfo
-  INTEGER(CMISSIntg) :: typeHandle
-  INTEGER(CMISSIntg) :: coordinateCount
+  TYPE(cmfe_FieldMLIOType) :: fieldmlInfo, outputInfo
+  INTEGER(CMFEIntg) :: typeHandle
+  INTEGER(CMFEIntg) :: coordinateCount
 
 #ifdef WIN32
   !Quickwin type
@@ -203,9 +203,9 @@ PROGRAM SupgChannel
   
   !Generic CMISS variables
 
-  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber,BoundaryNodeDomain
-  INTEGER(CMISSIntg) :: EquationsSetIndex
-  INTEGER(CMISSIntg) :: Err
+  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber,BoundaryNodeDomain
+  INTEGER(CMFEIntg) :: EquationsSetIndex
+  INTEGER(CMFEIntg) :: Err
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -229,38 +229,38 @@ PROGRAM SupgChannel
   supgFlag=.TRUE.
 
   !Set initial values
-  initialConditions(1)=0.0_CMISSDP
-  initialConditions(2)=0.0_CMISSDP
+  initialConditions(1)=0.0_CMFEDP
+  initialConditions(2)=0.0_CMFEDP
   !Set default boundary conditions
-  inletBoundaryConditions(1)=1.0_CMISSDP
-  inletBoundaryConditions(2)=0.0_CMISSDP
+  inletBoundaryConditions(1)=1.0_CMFEDP
+  inletBoundaryConditions(2)=0.0_CMFEDP
   fixedWallNodesFlag=.FALSE.
   inletNodesFlag=.FALSE.
   !Initialize calc faces
   calculateFacesFlag=.FALSE.
   !Set material parameters
-  viscosity=0.01_CMISSDP
-  density=1.0_CMISSDP
+  viscosity=0.01_CMFEDP
+  density=1.0_CMFEDP
 
   !Set output types
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
-  dynamicSolverOutputType=CMISS_SOLVER_PROGRESS_OUTPUT
-  linearSolverOutputType=CMISS_SOLVER_NO_OUTPUT
-  nonlinearSolverOutputType=CMISS_SOLVER_PROGRESS_OUTPUT
+  dynamicSolverOutputType=CMFE_SOLVER_PROGRESS_OUTPUT
+  linearSolverOutputType=CMFE_SOLVER_NO_OUTPUT
+  nonlinearSolverOutputType=CMFE_SOLVER_PROGRESS_OUTPUT
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
-  equationsOutputType=CMISS_EQUATIONS_NO_OUTPUT
+  equationsOutputType=CMFE_EQUATIONS_NO_OUTPUT
 
   !Set dynamic solver parameters
-  dynamicSolverStartTime=0.0_CMISSDP
-  dynamicSolverStopTime=10.0001_CMISSDP 
-  dynamicSolverTimeIncrement=0.1_CMISSDP
-  dynamicSolverTheta=1.0_CMISSDP
+  dynamicSolverStartTime=0.0_CMFEDP
+  dynamicSolverStopTime=10.0001_CMFEDP 
+  dynamicSolverTimeIncrement=0.1_CMFEDP
+  dynamicSolverTheta=1.0_CMFEDP
   !Set result output parameter (e.g. 1 for every step, 5 for every 5 steps, etc)
   dynamicSolverOutputFrequency=10
   !Set solver parameters
   directLinearSolverFlag=.TRUE.
-  relativeTolerance=1.0E-5_CMISSDP !default: 1.0E-05_CMISSDP
-  absoluteTolerance=1.0E-6_CMISSDP !default: 1.0E-10_CMISSDP
+  relativeTolerance=1.0E-5_CMFEDP !default: 1.0E-05_CMFEDP
+  absoluteTolerance=1.0E-6_CMFEDP !default: 1.0E-10_CMFEDP
   divergenceTolerance=1.0E5 !default: 1.0E5
   maximumIterations=100000 !default: 100000
   restartValue=300 !default: 30
@@ -338,11 +338,11 @@ PROGRAM SupgChannel
   ENDIF
 
   IF(supgFlag) THEN
-    EquationsSetSubtype=CMISS_EQUATIONS_SET_TRANSIENT_SUPG_NAVIER_STOKES_SUBTYPE
-    ProblemSubtype=CMISS_PROBLEM_TRANSIENT_SUPG_NAVIER_STOKES_SUBTYPE
+    EquationsSetSubtype=CMFE_EQUATIONS_SET_TRANSIENT_SUPG_NAVIER_STOKES_SUBTYPE
+    ProblemSubtype=CMFE_PROBLEM_TRANSIENT_SUPG_NAVIER_STOKES_SUBTYPE
   ELSE
-    EquationsSetSubtype=CMISS_EQUATIONS_SET_TRANSIENT_NAVIER_STOKES_SUBTYPE
-    ProblemSubtype=CMISS_PROBLEM_TRANSIENT_NAVIER_STOKES_SUBTYPE
+    EquationsSetSubtype=CMFE_EQUATIONS_SET_TRANSIENT_NAVIER_STOKES_SUBTYPE
+    ProblemSubtype=CMFE_PROBLEM_TRANSIENT_NAVIER_STOKES_SUBTYPE
   ENDIF
 
   !
@@ -351,8 +351,8 @@ PROGRAM SupgChannel
 
   !INITIALISE OPENCMISS
 
-  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
-  CALL CMISSErrorHandlingModeSet(CMISS_ERRORS_TRAP_ERROR,Err)
+  CALL cmfe_Initialise(WorldCoordinateSystem,WorldRegion,Err)
+  CALL cmfe_ErrorHandlingModeSet(CMFE_ERRORS_TRAP_ERROR,Err)
 
   !
   !================================================================================================================================
@@ -361,8 +361,8 @@ PROGRAM SupgChannel
   !CHECK COMPUTATIONAL NODE
 
   !Get the computational nodes information
-  CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
-  CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
+  CALL cmfe_ComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
+  CALL cmfe_ComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
   !
   !================================================================================================================================
@@ -370,8 +370,8 @@ PROGRAM SupgChannel
 
   !INITIALISE FieldML
 
-  CALL CMISSFieldMLIO_Initialise( fieldmlInfo, err ) 
-  CALL CMISSFieldML_InputCreateFromFile( inputFilename, fieldmlInfo, err )
+  CALL cmfe_FieldMLIO_Initialise( fieldmlInfo, err ) 
+  CALL cmfe_FieldML_InputCreateFromFile( inputFilename, fieldmlInfo, err )
 
   !
   !================================================================================================================================
@@ -380,13 +380,13 @@ PROGRAM SupgChannel
   !COORDINATE SYSTEM
 
   !Start the creation of a new RC coordinate system
-  CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
-  CALL CMISSFieldML_InputCoordinateSystemCreateStart( fieldmlInfo, "BlockChannelMesh.coordinates", CoordinateSystem, &
+  CALL cmfe_CoordinateSystem_Initialise(CoordinateSystem,Err)
+  CALL cmfe_FieldML_InputCoordinateSystemCreateStart( fieldmlInfo, "BlockChannelMesh.coordinates", CoordinateSystem, &
     & CoordinateSystemUserNumber, err )
 
   !Finish the creation of the coordinate system
-  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
-  CALL CMISSCoordinateSystem_DimensionGet( CoordinateSystem, coordinateCount, err )
+  CALL cmfe_CoordinateSystem_CreateFinish(CoordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_DimensionGet( CoordinateSystem, coordinateCount, err )
 
   !
   !================================================================================================================================
@@ -395,51 +395,51 @@ PROGRAM SupgChannel
   !REGION
 
   !Start the creation of a new region
-  CALL CMISSRegion_Initialise(Region,Err)
-  CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  CALL cmfe_Region_Initialise(Region,Err)
+  CALL cmfe_Region_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
   !Set region label
-  CALL CMISSRegion_LabelSet(Region,"OpenCMISS",Err)
+  CALL cmfe_Region_LabelSet(Region,"OpenCMISS",Err)
   !Set the regions coordinate system as defined above
-  CALL CMISSRegion_CoordinateSystemSet(Region,CoordinateSystem,Err)
+  CALL cmfe_Region_CoordinateSystemSet(Region,CoordinateSystem,Err)
   !Finish the creation of the region
-  CALL CMISSRegion_CreateFinish(Region,Err)
+  CALL cmfe_Region_CreateFinish(Region,Err)
 
   !
   !================================================================================================================================
   !
 
   !NODES
-  CALL CMISSFieldML_InputNodesCreateStart( fieldmlInfo, "BlockChannelMesh.nodes.argument", Region, nodes, err )
-  CALL CMISSNodes_CreateFinish( Nodes, err )
+  CALL cmfe_FieldML_InputNodesCreateStart( fieldmlInfo, "BlockChannelMesh.nodes.argument", Region, nodes, err )
+  CALL cmfe_Nodes_CreateFinish( Nodes, err )
 
   !
   !================================================================================================================================
   !
 
   !BASES
-  CALL CMISSFieldML_InputBasisCreateStart( fieldmlInfo, "BlockChannelMesh.biquadratic_lagrange", basisNumberBiquadratic, err )
-  CALL CMISSBasis_QuadratureNumberOfGaussXiSet( basisNumberBiquadratic, gaussQuadrature, err )
-  CALL CMISSBasis_CreateFinish( basisNumberBiquadratic, err )
+  CALL cmfe_FieldML_InputBasisCreateStart( fieldmlInfo, "BlockChannelMesh.biquadratic_lagrange", basisNumberBiquadratic, err )
+  CALL cmfe_Basis_QuadratureNumberOfGaussXiSet( basisNumberBiquadratic, gaussQuadrature, err )
+  CALL cmfe_Basis_CreateFinish( basisNumberBiquadratic, err )
 
-  CALL CMISSFieldML_InputBasisCreateStart( fieldmlInfo, "BlockChannelMesh.bilinear_lagrange", basisNumberBilinear, err )
-  CALL CMISSBasis_QuadratureNumberOfGaussXiSet( basisNumberBilinear, gaussQuadrature, err )
-  CALL CMISSBasis_CreateFinish( basisNumberBilinear, err )
+  CALL cmfe_FieldML_InputBasisCreateStart( fieldmlInfo, "BlockChannelMesh.bilinear_lagrange", basisNumberBilinear, err )
+  CALL cmfe_Basis_QuadratureNumberOfGaussXiSet( basisNumberBilinear, gaussQuadrature, err )
+  CALL cmfe_Basis_CreateFinish( basisNumberBilinear, err )
 
   !
   !================================================================================================================================
   !
 
   !MESH
-  CALL CMISSFieldML_InputMeshCreateStart( fieldmlInfo, "BlockChannelMesh.mesh.argument", Mesh, MeshUserNumber, Region, err )
-  CALL CMISSMesh_NumberOfComponentsSet( Mesh, 2, err )
+  CALL cmfe_FieldML_InputMeshCreateStart( fieldmlInfo, "BlockChannelMesh.mesh.argument", Mesh, MeshUserNumber, Region, err )
+  CALL cmfe_Mesh_NumberOfComponentsSet( Mesh, 2, err )
 
-  CALL CMISSFieldML_InputCreateMeshComponent( fieldmlInfo, RegionUserNumber, MeshUserNumber, 1, &
+  CALL cmfe_FieldML_InputCreateMeshComponent( fieldmlInfo, RegionUserNumber, MeshUserNumber, 1, &
     & "BlockChannelMesh.template.biquadratic", err )
-  CALL CMISSFieldML_InputCreateMeshComponent( fieldmlInfo, RegionUserNumber, MeshUserNumber, 2, &
+  CALL cmfe_FieldML_InputCreateMeshComponent( fieldmlInfo, RegionUserNumber, MeshUserNumber, 2, &
     & "BlockChannelMesh.template.bilinear", err )
 
   !Finish the creation of the mesh
-  CALL CMISSMesh_CreateFinish(Mesh, err )
+  CALL cmfe_Mesh_CreateFinish(Mesh, err )
 
   !
   !================================================================================================================================
@@ -448,14 +448,14 @@ PROGRAM SupgChannel
   !Decomposition
 
   !Create a decomposition
-  CALL CMISSDecomposition_Initialise(Decomposition,Err)
-  CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
-  CALL CMISSDecomposition_TypeSet(Decomposition,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
-  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
-  CALL CMISSDecomposition_CalculateFacesSet(Decomposition,calculateFacesFlag,Err)
+  CALL cmfe_Decomposition_Initialise(Decomposition,Err)
+  CALL cmfe_Decomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
+  CALL cmfe_Decomposition_TypeSet(Decomposition,CMFE_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL cmfe_Decomposition_NumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
+  CALL cmfe_Decomposition_CalculateFacesSet(Decomposition,calculateFacesFlag,Err)
 
   !Finish the decomposition
-  CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
+  CALL cmfe_Decomposition_CreateFinish(Decomposition,Err)
 
   !
   !================================================================================================================================
@@ -463,20 +463,20 @@ PROGRAM SupgChannel
 
   !GEOMETRIC FIELD
 
-  CALL CMISSFieldML_InputFieldCreateStart( fieldmlInfo, Region, Decomposition, GeometricFieldUserNumber, GeometricField, &
-    & CMISS_FIELD_U_VARIABLE_TYPE, "BlockChannelMesh.coordinates", err )
-  CALL CMISSField_CreateFinish( RegionUserNumber, GeometricFieldUserNumber, err )
+  CALL cmfe_FieldML_InputFieldCreateStart( fieldmlInfo, Region, Decomposition, GeometricFieldUserNumber, GeometricField, &
+    & CMFE_FIELD_U_VARIABLE_TYPE, "BlockChannelMesh.coordinates", err )
+  CALL cmfe_Field_CreateFinish( RegionUserNumber, GeometricFieldUserNumber, err )
 
-  CALL CMISSFieldML_InputFieldParametersUpdate( fieldmlInfo, GeometricField, "BlockChannelMesh.node.coordinates", &
-    & CMISS_FIELD_U_VARIABLE_TYPE, CMISS_FIELD_VALUES_SET_TYPE, err )
-  CALL CMISSField_ParameterSetUpdateStart( GeometricField, CMISS_FIELD_U_VARIABLE_TYPE, CMISS_FIELD_VALUES_SET_TYPE, err )
-  CALL CMISSField_ParameterSetUpdateFinish( GeometricField, CMISS_FIELD_U_VARIABLE_TYPE, CMISS_FIELD_VALUES_SET_TYPE, err )
+  CALL cmfe_FieldML_InputFieldParametersUpdate( fieldmlInfo, GeometricField, "BlockChannelMesh.node.coordinates", &
+    & CMFE_FIELD_U_VARIABLE_TYPE, CMFE_FIELD_VALUES_SET_TYPE, err )
+  CALL cmfe_Field_ParameterSetUpdateStart( GeometricField, CMFE_FIELD_U_VARIABLE_TYPE, CMFE_FIELD_VALUES_SET_TYPE, err )
+  CALL cmfe_Field_ParameterSetUpdateFinish( GeometricField, CMFE_FIELD_U_VARIABLE_TYPE, CMFE_FIELD_VALUES_SET_TYPE, err )
 
   !
   !================================================================================================================================
   !
 
-  CALL CMISSFieldMLIO_Finalise( fieldmlInfo, err )
+  CALL cmfe_FieldMLIO_Finalise( fieldmlInfo, err )
 
   !
   !================================================================================================================================
@@ -484,13 +484,13 @@ PROGRAM SupgChannel
 
   !EQUATIONS SETS
 
-  CALL CMISSEquationsSet_Initialise(EquationsSetNavierStokes,Err)
-  CALL CMISSField_Initialise(EquationsSetField,Err)
-  CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField, &
-    & CMISS_EQUATIONS_SET_FLUID_MECHANICS_CLASS,CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TYPE, &
-    & EquationsSetSubtype,EquationsSetFieldUserNumber,EquationsSetField,EquationsSetNavierStokes,Err)
+  CALL cmfe_EquationsSet_Initialise(EquationsSetNavierStokes,Err)
+  CALL cmfe_Field_Initialise(EquationsSetField,Err)
+  CALL cmfe_EquationsSet_CreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField, &
+    & [CMFE_EQUATIONS_SET_FLUID_MECHANICS_CLASS,CMFE_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TYPE,EquationsSetSubtype], &
+    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSetNavierStokes,Err)
   !Finish creating the equations set
-  CALL CMISSEquationsSet_CreateFinish(EquationsSetNavierStokes,Err)
+  CALL cmfe_EquationsSet_CreateFinish(EquationsSetNavierStokes,Err)
 
   !
   !================================================================================================================================
@@ -499,24 +499,24 @@ PROGRAM SupgChannel
   !DEPENDENT FIELDS
 
   !Create the equations set dependent field variables for dynamic Navier-Stokes
-  CALL CMISSField_Initialise(DependentField,Err)
-  CALL CMISSEquationsSet_DependentCreateStart(EquationsSetNavierStokes,DependentFieldUserNumber,DependentField,Err)
+  CALL cmfe_Field_Initialise(DependentField,Err)
+  CALL cmfe_EquationsSet_DependentCreateStart(EquationsSetNavierStokes,DependentFieldUserNumber,DependentField,Err)
   !Set the mesh component to be used by the field components.
   !   Velocity components
   DO componentNumber=1,coordinateCount
-    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,componentNumber,1,Err)
-    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,componentNumber,1,Err)
+    CALL cmfe_Field_ComponentMeshComponentSet(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,componentNumber,1,Err)
+    CALL cmfe_Field_ComponentMeshComponentSet(DependentField,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,componentNumber,1,Err)
   ENDDO
   !   Pressure component
   componentNumber=coordinateCount+1
-  CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,componentNumber,2,Err)
-  CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,componentNumber,2,Err)
+  CALL cmfe_Field_ComponentMeshComponentSet(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,componentNumber,2,Err)
+  CALL cmfe_Field_ComponentMeshComponentSet(DependentField,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,componentNumber,2,Err)
   !Finish the equations set dependent field variables
-  CALL CMISSEquationsSet_DependentCreateFinish(EquationsSetNavierStokes,Err)
+  CALL cmfe_EquationsSet_DependentCreateFinish(EquationsSetNavierStokes,Err)
 
   !Initialise dependent field
   DO componentNumber=1,coordinateCount
-    CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
+    CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
       & componentNumber,initialConditions(componentNumber),Err)
   ENDDO
 
@@ -527,15 +527,15 @@ PROGRAM SupgChannel
   !MATERIALS FIELD
 
   !Create the equations set materials field variables for static Navier-Stokes
-  CALL CMISSField_Initialise(MaterialsField,Err)
-  CALL CMISSEquationsSet_MaterialsCreateStart(EquationsSetNavierStokes,MaterialsFieldUserNumber,MaterialsField,Err)
+  CALL cmfe_Field_Initialise(MaterialsField,Err)
+  CALL cmfe_EquationsSet_MaterialsCreateStart(EquationsSetNavierStokes,MaterialsFieldUserNumber,MaterialsField,Err)
   !Finish the equations set materials field variables
-  CALL CMISSEquationsSet_MaterialsCreateFinish(EquationsSetNavierStokes,Err)
+  CALL cmfe_EquationsSet_MaterialsCreateFinish(EquationsSetNavierStokes,Err)
 
   ! Materials parameters, viscosity and density
-  CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
     & MaterialsFieldUserNumberMu,viscosity,Err)
-  CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
     & MaterialsFieldUserNumberRho,density,Err)
 
   !
@@ -545,14 +545,14 @@ PROGRAM SupgChannel
   !EQUATIONS
 
   !Create the equations set equations
-  CALL CMISSEquations_Initialise(EquationsNavierStokes,Err)
-  CALL CMISSEquationsSet_EquationsCreateStart(EquationsSetNavierStokes,EquationsNavierStokes,Err)
+  CALL cmfe_Equations_Initialise(EquationsNavierStokes,Err)
+  CALL cmfe_EquationsSet_EquationsCreateStart(EquationsSetNavierStokes,EquationsNavierStokes,Err)
   !Set the equations matrices sparsity type
-  CALL CMISSEquations_SparsityTypeSet(EquationsNavierStokes,CMISS_EQUATIONS_SPARSE_MATRICES,Err)
+  CALL cmfe_Equations_SparsityTypeSet(EquationsNavierStokes,CMFE_EQUATIONS_SPARSE_MATRICES,Err)
   !Set the equations set output
-  CALL CMISSEquations_OutputTypeSet(EquationsNavierStokes,equationsOutputType,Err)
+  CALL cmfe_Equations_OutputTypeSet(EquationsNavierStokes,equationsOutputType,Err)
   !Finish the equations set equations
-  CALL CMISSEquationsSet_EquationsCreateFinish(EquationsSetNavierStokes,Err)
+  CALL cmfe_EquationsSet_EquationsCreateFinish(EquationsSetNavierStokes,Err)
 
   !
   !================================================================================================================================
@@ -561,25 +561,23 @@ PROGRAM SupgChannel
   !PROBLEMS
 
   !Start the creation of a problem.
-  CALL CMISSProblem_Initialise(Problem,Err)
-  CALL CMISSControlLoop_Initialise(ControlLoop,Err)
-  CALL CMISSProblem_CreateStart(ProblemUserNumber,Problem,Err)
-  !Set the problem to be a dynamic Navier-Stokes problem
-  CALL CMISSProblem_SpecificationSet(Problem,CMISS_PROBLEM_FLUID_MECHANICS_CLASS,CMISS_PROBLEM_NAVIER_STOKES_EQUATION_TYPE, &
-    & ProblemSubtype,Err)
+  CALL cmfe_Problem_Initialise(Problem,Err)
+  CALL cmfe_ControlLoop_Initialise(ControlLoop,Err)
+  CALL cmfe_Problem_CreateStart(ProblemUserNumber,[CMFE_PROBLEM_FLUID_MECHANICS_CLASS,CMFE_PROBLEM_NAVIER_STOKES_EQUATION_TYPE, &
+    & ProblemSubtype],Problem,Err)
   !Finish the creation of a problem.
-  CALL CMISSProblem_CreateFinish(Problem,Err)
+  CALL cmfe_Problem_CreateFinish(Problem,Err)
   !Start the creation of the problem control loop
-  CALL CMISSProblem_ControlLoopCreateStart(Problem,Err)
+  CALL cmfe_Problem_ControlLoopCreateStart(Problem,Err)
   !Get the control loop
-  CALL CMISSProblem_ControlLoopGet(Problem,CMISS_CONTROL_LOOP_NODE,ControlLoop,Err)
+  CALL cmfe_Problem_ControlLoopGet(Problem,CMFE_CONTROL_LOOP_NODE,ControlLoop,Err)
   !Set the times
-  CALL CMISSControlLoop_TimesSet(ControlLoop,dynamicSolverStartTime,dynamicSolverStopTime, & 
+  CALL cmfe_ControlLoop_TimesSet(ControlLoop,dynamicSolverStartTime,dynamicSolverStopTime, & 
     & dynamicSolverTimeIncrement,Err)
   !Set the output timing
-  CALL CMISSControlLoop_TimeOutputSet(ControlLoop,dynamicSolverOutputFrequency,Err)
+  CALL cmfe_ControlLoop_TimeOutputSet(ControlLoop,dynamicSolverOutputFrequency,Err)
   !Finish creating the problem control loop
-  CALL CMISSProblem_ControlLoopCreateFinish(Problem,Err)
+  CALL cmfe_Problem_ControlLoopCreateFinish(Problem,Err)
 
   !
   !================================================================================================================================
@@ -588,46 +586,46 @@ PROGRAM SupgChannel
   !SOLVERS
 
   !Start the creation of the problem solvers
-  CALL CMISSSolver_Initialise(DynamicSolverNavierStokes,Err)
-  CALL CMISSSolver_Initialise(NonlinearSolverNavierStokes,Err)
-  CALL CMISSSolver_Initialise(LinearSolverNavierStokes,Err)
-  CALL CMISSProblem_SolversCreateStart(Problem,Err)
+  CALL cmfe_Solver_Initialise(DynamicSolverNavierStokes,Err)
+  CALL cmfe_Solver_Initialise(NonlinearSolverNavierStokes,Err)
+  CALL cmfe_Solver_Initialise(LinearSolverNavierStokes,Err)
+  CALL cmfe_Problem_SolversCreateStart(Problem,Err)
   !Get the dynamic dymamic solver
-  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,SolverNavierStokesUserNumber,DynamicSolverNavierStokes,Err)
+  CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,SolverNavierStokesUserNumber,DynamicSolverNavierStokes,Err)
   !Set the output type
-  CALL CMISSSolver_OutputTypeSet(DynamicSolverNavierStokes,dynamicSolverOutputType,Err)
+  CALL cmfe_Solver_OutputTypeSet(DynamicSolverNavierStokes,dynamicSolverOutputType,Err)
   !Set theta
-  CALL CMISSSolver_DynamicThetaSet(DynamicSolverNavierStokes,dynamicSolverTheta,Err)
+  CALL cmfe_Solver_DynamicThetaSet(DynamicSolverNavierStokes,dynamicSolverTheta,Err)
   !Get the dynamic nonlinear solver
-  CALL CMISSSolver_DynamicNonlinearSolverGet(DynamicSolverNavierStokes,NonlinearSolverNavierStokes,Err)
+  CALL cmfe_Solver_DynamicNonlinearSolverGet(DynamicSolverNavierStokes,NonlinearSolverNavierStokes,Err)
   !Set the nonlinear Jacobian type
-  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes, &
-    & CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
+  CALL cmfe_Solver_NewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes, &
+    & CMFE_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
   !Set the nonlinear solver output type
-  CALL CMISSSolver_OutputTypeSet(NonlinearSolverNavierStokes,nonlinearSolverOutputType,Err)
+  CALL cmfe_Solver_OutputTypeSet(NonlinearSolverNavierStokes,nonlinearSolverOutputType,Err)
   !Set the solver settings
-  CALL CMISSSolver_NewtonAbsoluteToleranceSet(NonlinearSolverNavierStokes,absoluteTolerance,Err)
-  CALL CMISSSolver_NewtonRelativeToleranceSet(NonlinearSolverNavierStokes,relativeTolerance,Err)
-  CALL CMISSSolver_NewtonMaximumIterationsSet(NonlinearSolverNavierStokes,maximumIterations,Err)
+  CALL cmfe_Solver_NewtonAbsoluteToleranceSet(NonlinearSolverNavierStokes,absoluteTolerance,Err)
+  CALL cmfe_Solver_NewtonRelativeToleranceSet(NonlinearSolverNavierStokes,relativeTolerance,Err)
+  CALL cmfe_Solver_NewtonMaximumIterationsSet(NonlinearSolverNavierStokes,maximumIterations,Err)
   !Get the dynamic nonlinear linear solver
-  CALL CMISSSolver_NewtonLinearSolverGet(NonlinearSolverNavierStokes,LinearSolverNavierStokes,Err)
+  CALL cmfe_Solver_NewtonLinearSolverGet(NonlinearSolverNavierStokes,LinearSolverNavierStokes,Err)
   !Set the linear solver output type
-  CALL CMISSSolver_OutputTypeSet(LinearSolverNavierStokes,linearSolverOutputType,Err)
+  CALL cmfe_Solver_OutputTypeSet(LinearSolverNavierStokes,linearSolverOutputType,Err)
   !Set the solver settings
   IF(directLinearSolverFlag) THEN
-    CALL CMISSSolver_LinearTypeSet(LinearSolverNavierStokes,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
-    CALL CMISSSolver_LibraryTypeSet(LinearSolverNavierStokes,CMISS_SOLVER_MUMPS_LIBRARY,Err)
+    CALL cmfe_Solver_LinearTypeSet(LinearSolverNavierStokes,CMFE_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
+    CALL cmfe_Solver_LibraryTypeSet(LinearSolverNavierStokes,CMFE_SOLVER_MUMPS_LIBRARY,Err)
   ELSE
-    CALL CMISSSolver_LinearTypeSet(LinearSolverNavierStokes,CMISS_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
-    CALL CMISSSolver_LinearIterativeMaximumIterationsSet(LinearSolverNavierStokes,maximumIterations,Err)
-    CALL CMISSSolver_LinearIterativeDivergenceToleranceSet(LinearSolverNavierStokes,divergenceTolerance,Err)
-    CALL CMISSSolver_LinearIterativeRelativeToleranceSet(LinearSolverNavierStokes,relativeTolerance,Err)
-    CALL CMISSSolver_LinearIterativeAbsoluteToleranceSet(LinearSolverNavierStokes,absoluteTolerance,Err)
-    CALL CMISSSolver_LinearIterativeGMRESRestartSet(LinearSolverNavierStokes,restartValue,Err)
+    CALL cmfe_Solver_LinearTypeSet(LinearSolverNavierStokes,CMFE_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
+    CALL cmfe_Solver_LinearIterativeMaximumIterationsSet(LinearSolverNavierStokes,maximumIterations,Err)
+    CALL cmfe_Solver_LinearIterativeDivergenceToleranceSet(LinearSolverNavierStokes,divergenceTolerance,Err)
+    CALL cmfe_Solver_LinearIterativeRelativeToleranceSet(LinearSolverNavierStokes,relativeTolerance,Err)
+    CALL cmfe_Solver_LinearIterativeAbsoluteToleranceSet(LinearSolverNavierStokes,absoluteTolerance,Err)
+    CALL cmfe_Solver_LinearIterativeGMRESRestartSet(LinearSolverNavierStokes,restartValue,Err)
   ENDIF
 
   !Finish the creation of the problem solver
-  CALL CMISSProblem_SolversCreateFinish(Problem,Err)
+  CALL cmfe_Problem_SolversCreateFinish(Problem,Err)
 
   !
   !================================================================================================================================
@@ -636,18 +634,18 @@ PROGRAM SupgChannel
   !SOLVER EQUATIONS
 
   !Start the creation of the problem solver equations
-  CALL CMISSSolver_Initialise(DynamicSolverNavierStokes,Err)
-  CALL CMISSSolverEquations_Initialise(SolverEquationsNavierStokes,Err)
-  CALL CMISSProblem_SolverEquationsCreateStart(Problem,Err)
+  CALL cmfe_Solver_Initialise(DynamicSolverNavierStokes,Err)
+  CALL cmfe_SolverEquations_Initialise(SolverEquationsNavierStokes,Err)
+  CALL cmfe_Problem_SolverEquationsCreateStart(Problem,Err)
   !Get the dynamic solver equations
-  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,SolverNavierStokesUserNumber,DynamicSolverNavierStokes,Err)
-  CALL CMISSSolver_SolverEquationsGet(DynamicSolverNavierStokes,SolverEquationsNavierStokes,Err)
+  CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,SolverNavierStokesUserNumber,DynamicSolverNavierStokes,Err)
+  CALL cmfe_Solver_SolverEquationsGet(DynamicSolverNavierStokes,SolverEquationsNavierStokes,Err)
   !Set the solver equations sparsity
-  CALL CMISSSolverEquations_SparsityTypeSet(SolverEquationsNavierStokes,CMISS_SOLVER_SPARSE_MATRICES,Err)
+  CALL cmfe_SolverEquations_SparsityTypeSet(SolverEquationsNavierStokes,CMFE_SOLVER_SPARSE_MATRICES,Err)
   !Add in the equations set
-  CALL CMISSSolverEquations_EquationsSetAdd(SolverEquationsNavierStokes,EquationsSetNavierStokes,EquationsSetIndex,Err)
+  CALL cmfe_SolverEquations_EquationsSetAdd(SolverEquationsNavierStokes,EquationsSetNavierStokes,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
-  CALL CMISSProblem_SolverEquationsCreateFinish(Problem,Err)
+  CALL cmfe_Problem_SolverEquationsCreateFinish(Problem,Err)
 
   !
   !================================================================================================================================
@@ -656,19 +654,19 @@ PROGRAM SupgChannel
   !BOUNDARY CONDITIONS
 
   !Start the creation of the equations set boundary conditions for Stokes
-  CALL CMISSBoundaryConditions_Initialise(BoundaryConditionsNavierStokes,Err)
-  CALL CMISSSolverEquations_BoundaryConditionsCreateStart(SolverEquationsNavierStokes,BoundaryConditionsNavierStokes,Err)
+  CALL cmfe_BoundaryConditions_Initialise(BoundaryConditionsNavierStokes,Err)
+  CALL cmfe_SolverEquations_BoundaryConditionsCreateStart(SolverEquationsNavierStokes,BoundaryConditionsNavierStokes,Err)
   !Set fixed wall nodes
   IF(fixedWallNodesFlag) THEN
     DO i=1,numberOfFixedWallNodes
       nodeNumber=fixedWallNodes(i)
-      condition=CMISS_BOUNDARY_CONDITION_FIXED
-      CALL CMISSDecomposition_NodeDomainGet(Decomposition,nodeNumber,1,BoundaryNodeDomain,Err)
+      condition=CMFE_BOUNDARY_CONDITION_FIXED
+      CALL cmfe_Decomposition_NodeDomainGet(Decomposition,nodeNumber,1,BoundaryNodeDomain,Err)
       IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
         DO componentNumber=1,coordinateCount
-          VALUE=0.0_CMISSDP
-          CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsNavierStokes,DependentField, &
-            & CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_NO_GLOBAL_DERIV,nodeNumber,componentNumber,condition,VALUE,Err)
+          VALUE=0.0_CMFEDP
+          CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsNavierStokes,DependentField, &
+            & CMFE_FIELD_U_VARIABLE_TYPE,1,CMFE_NO_GLOBAL_DERIV,nodeNumber,componentNumber,condition,VALUE,Err)
         ENDDO
       ENDIF
     ENDDO
@@ -677,19 +675,19 @@ PROGRAM SupgChannel
   IF(inletNodesFlag) THEN
      DO i=1,numberOfInletNodes
       nodeNumber=inletNodes(i)
-      condition=CMISS_BOUNDARY_CONDITION_FIXED
-      CALL CMISSDecomposition_NodeDomainGet(Decomposition,nodeNumber,1,BoundaryNodeDomain,Err)
+      condition=CMFE_BOUNDARY_CONDITION_FIXED
+      CALL cmfe_Decomposition_NodeDomainGet(Decomposition,nodeNumber,1,BoundaryNodeDomain,Err)
       IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
         DO componentNumber=1,coordinateCount
           VALUE=inletBoundaryConditions(componentNumber)
-          CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsNavierStokes,DependentField, &
-            & CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_NO_GLOBAL_DERIV,nodeNumber,componentNumber,condition,VALUE,Err)
+          CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsNavierStokes,DependentField, &
+            & CMFE_FIELD_U_VARIABLE_TYPE,1,CMFE_NO_GLOBAL_DERIV,nodeNumber,componentNumber,condition,VALUE,Err)
         ENDDO
       ENDIF
     ENDDO
   ENDIF
   !Finish the creation of the equations set boundary conditions
-  CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquationsNavierStokes,Err)
+  CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquationsNavierStokes,Err)
 
 
   !
@@ -700,7 +698,7 @@ PROGRAM SupgChannel
 
   !Solve the problem
   WRITE(*,'(A)') "Solving problem..."
-  CALL CMISSProblem_Solve(Problem,Err)
+  CALL cmfe_Problem_Solve(Problem,Err)
   WRITE(*,'(A)') "Problem solved!"
 ! 
   !
@@ -710,23 +708,23 @@ PROGRAM SupgChannel
   !OUTPUT
 
   ! Export FieldML data
-  CALL CMISSFieldMLIO_Initialise( outputInfo, err )
+  CALL cmfe_FieldMLIO_Initialise( outputInfo, err )
 
-  CALL CMISSFieldML_OutputCreate( Mesh, outputDirectory, basename, dataFormat, outputInfo, err )
-  CALL CMISSFieldML_OutputAddImport( outputInfo, "coordinates.rc.2d", typeHandle, err )
-  CALL CMISSFieldML_OutputAddField( outputInfo, baseName//".geometric", dataFormat, GeometricField, &
-    & CMISS_FIELD_U_VARIABLE_TYPE, CMISS_FIELD_VALUES_SET_TYPE, err )
-  CALL CMISSFieldML_OutputAddFieldComponents( outputInfo, typeHandle, baseName//".velocity", dataFormat, &
-    & DependentField, [1,2], CMISS_FIELD_U_VARIABLE_TYPE, CMISS_FIELD_VALUES_SET_TYPE, err )
-  CALL CMISSFieldML_OutputAddImport( outputInfo, "real.1d", typeHandle, err )
-  CALL CMISSFieldML_OutputAddFieldComponents( outputInfo, typeHandle, baseName//".pressure", dataFormat, &
-    & DependentField, [3], CMISS_FIELD_U_VARIABLE_TYPE, CMISS_FIELD_VALUES_SET_TYPE, err )
-  CALL CMISSFieldML_OutputWrite( outputInfo, outputFilename, err )
+  CALL cmfe_FieldML_OutputCreate( Mesh, outputDirectory, basename, dataFormat, outputInfo, err )
+  CALL cmfe_FieldML_OutputAddImport( outputInfo, "coordinates.rc.2d", typeHandle, err )
+  CALL cmfe_FieldML_OutputAddField( outputInfo, baseName//".geometric", dataFormat, GeometricField, &
+    & CMFE_FIELD_U_VARIABLE_TYPE, CMFE_FIELD_VALUES_SET_TYPE, err )
+  CALL cmfe_FieldML_OutputAddFieldComponents( outputInfo, typeHandle, baseName//".velocity", dataFormat, &
+    & DependentField, [1,2], CMFE_FIELD_U_VARIABLE_TYPE, CMFE_FIELD_VALUES_SET_TYPE, err )
+  CALL cmfe_FieldML_OutputAddImport( outputInfo, "real.1d", typeHandle, err )
+  CALL cmfe_FieldML_OutputAddFieldComponents( outputInfo, typeHandle, baseName//".pressure", dataFormat, &
+    & DependentField, [3], CMFE_FIELD_U_VARIABLE_TYPE, CMFE_FIELD_VALUES_SET_TYPE, err )
+  CALL cmfe_FieldML_OutputWrite( outputInfo, outputFilename, err )
 
-  CALL CMISSFieldMLIO_Finalise( outputInfo, err )
+  CALL cmfe_FieldMLIO_Finalise( outputInfo, err )
 
   !Finialise CMISS
-  CALL CMISSFinalise(Err)
+  CALL cmfe_Finalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
   
