@@ -507,9 +507,11 @@ for i in range (1,NumberOfTrifurcations+1):
 EquationsSetNavierStokes = iron.EquationsSet()
 EquationsSetFieldNavierStokes = iron.Field()
 # Set the equations set to be a dynamic Navier-Stokes problem
+NavierStokesEquationsSetSpecification = [iron.EquationsSetClasses.FLUID_MECHANICS,
+    iron.EquationsSetTypes.NAVIER_STOKES_EQUATION,
+    EquationsSetSubtype]
 EquationsSetNavierStokes.CreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField,
-    iron.EquationsSetClasses.FLUID_MECHANICS,iron.EquationsSetTypes.NAVIER_STOKES_EQUATION,
-    EquationsSetSubtype,EquationsSetFieldUserNumberNavierStokes,EquationsSetFieldNavierStokes)
+    NavierStokesEquationsSetSpecification,EquationsSetFieldUserNumberNavierStokes,EquationsSetFieldNavierStokes)
 # Finish creating the equations set
 EquationsSetNavierStokes.CreateFinish()
 
@@ -517,9 +519,11 @@ EquationsSetNavierStokes.CreateFinish()
 EquationsSetCharacteristic = iron.EquationsSet()
 EquationsSetFieldCharacteristic = iron.Field()
 # Set the equations set to be a static Nonlinear problem
+CharacteristicEquationsSetSpecification = [iron.EquationsSetClasses.FLUID_MECHANICS,
+    iron.EquationsSetTypes.CHARACTERISTIC_EQUATION,
+    EquationsSetCharacteristicSubtype]
 EquationsSetCharacteristic.CreateStart(EquationsSetUserNumberCharacteristic,Region,GeometricField,
-    iron.EquationsSetClasses.FLUID_MECHANICS,iron.EquationsSetTypes.CHARACTERISTIC_EQUATION,
-    EquationsSetCharacteristicSubtype,EquationsSetFieldUserNumberCharacteristic,EquationsSetFieldCharacteristic)
+    CharacteristicEquationsSetSpecification,EquationsSetFieldUserNumberCharacteristic,EquationsSetFieldCharacteristic)
 # Finish creating the equations set
 EquationsSetCharacteristic.CreateFinish()
 
@@ -894,9 +898,9 @@ EquationsSetCharacteristic.EquationsCreateFinish()
 
 # Start the creation of a problem.
 Problem = iron.Problem()
-Problem.CreateStart(ProblemUserNumber)
 # Set the problem to be a dynamic Navier-Stokes problem
-Problem.SpecificationSet(iron.ProblemClasses.FLUID_MECHANICS,iron.ProblemTypes.NAVIER_STOKES_EQUATION,ProblemSubtype)    
+ProblemSpecification = [iron.ProblemClasses.FLUID_MECHANICS,iron.ProblemTypes.NAVIER_STOKES_EQUATION,ProblemSubtype]
+Problem.CreateStart(ProblemUserNumber, ProblemSpecification)
 # Finish the creation of a problem.
 Problem.CreateFinish()
 

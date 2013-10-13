@@ -157,11 +157,11 @@ generatedMesh.GeometricParametersCalculate(geometricField)
 # Create a dynamic Navier Stokes equations set
 equationsSetField = iron.Field()
 equationsSet = iron.EquationsSet()
-equationsSet.CreateStart(equationsSetUserNumber, region, geometricField,
-        iron.EquationsSetClasses.FLUID_MECHANICS,
+equationsSetSpecification = [iron.EquationsSetClasses.FLUID_MECHANICS,
         iron.EquationsSetTypes.NAVIER_STOKES_EQUATION,
-        iron.EquationsSetSubtypes.TRANSIENT_NAVIER_STOKES,
-        equationsSetFieldUserNumber, equationsSetField)
+        iron.EquationsSetSubtypes.TRANSIENT_NAVIER_STOKES]
+equationsSet.CreateStart(equationsSetUserNumber, region, geometricField,
+        equationsSetSpecification, equationsSetFieldUserNumber, equationsSetField)
 equationsSet.CreateFinish()
 
 # Create dependent field
@@ -213,11 +213,10 @@ equationsSet.EquationsCreateFinish()
 
 # Create dynamic Navier Stokes problem
 problem = iron.Problem()
-problem.CreateStart(problemUserNumber)
-problem.SpecificationSet(
-    iron.ProblemClasses.FLUID_MECHANICS,
+problemSpecification = [iron.ProblemClasses.FLUID_MECHANICS,
     iron.ProblemTypes.NAVIER_STOKES_EQUATION,
-    iron.ProblemSubTypes.TRANSIENT_NAVIER_STOKES)
+    iron.ProblemSubTypes.TRANSIENT_NAVIER_STOKES]
+problem.CreateStart(problemUserNumber, problemSpecification)
 problem.CreateFinish()
 
 # Create control loops and set the time parameters

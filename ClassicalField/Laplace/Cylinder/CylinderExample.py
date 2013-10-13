@@ -156,11 +156,11 @@ generatedMesh.GeometricParametersCalculate(geometricField)
 # Create standard Laplace equations set
 equationsSetField = iron.Field()
 equationsSet = iron.EquationsSet()
-equationsSet.CreateStart(equationsSetUserNumber, region, geometricField,
-        iron.EquationsSetClasses.CLASSICAL_FIELD,
+equationsSetSpecification = [iron.EquationsSetClasses.CLASSICAL_FIELD,
         iron.EquationsSetTypes.LAPLACE_EQUATION,
-        iron.EquationsSetSubtypes.STANDARD_LAPLACE,
-        equationsSetFieldUserNumber, equationsSetField)
+        iron.EquationsSetSubtypes.STANDARD_LAPLACE]
+equationsSet.CreateStart(equationsSetUserNumber, region, geometricField,
+        equationsSetSpecification, equationsSetFieldUserNumber, equationsSetField)
 equationsSet.CreateFinish()
 
 # Create dependent field
@@ -180,10 +180,10 @@ equationsSet.EquationsCreateFinish()
 
 # Create Laplace problem
 problem = iron.Problem()
-problem.CreateStart(problemUserNumber)
-problem.SpecificationSet(iron.ProblemClasses.CLASSICAL_FIELD,
+problemSpecification = [iron.ProblemClasses.CLASSICAL_FIELD,
         iron.ProblemTypes.LAPLACE_EQUATION,
-        iron.ProblemSubTypes.STANDARD_LAPLACE)
+        iron.ProblemSubTypes.STANDARD_LAPLACE]
+problem.CreateStart(problemUserNumber, problemSpecification)
 problem.CreateFinish()
 
 # Create control loops

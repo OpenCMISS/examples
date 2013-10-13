@@ -295,11 +295,11 @@ iron.Field.ComponentValuesInitialiseDP(
 # Create the equations_set
 equationsSetField = iron.Field()
 equationsSet = iron.EquationsSet()
-equationsSet.CreateStart(equationsSetUserNumber,region,fibreField,
-    iron.EquationsSetClasses.ELASTICITY,
+equationsSetSpecification = [iron.EquationsSetClasses.ELASTICITY,
     iron.EquationsSetTypes.FINITE_ELASTICITY,
-    iron.EquationsSetSubtypes.MOONEY_RIVLIN,
-    equationsSetFieldUserNumber, equationsSetField)
+    iron.EquationsSetSubtypes.MOONEY_RIVLIN]
+equationsSet.CreateStart(equationsSetUserNumber,region,fibreField,
+    equationsSetSpecification, equationsSetFieldUserNumber, equationsSetField)
 equationsSet.CreateFinish()
 
 equationsSet.MaterialsCreateStart(materialFieldUserNumber,materialField)
@@ -317,10 +317,10 @@ equationsSet.EquationsCreateFinish()
 
 # Define the problem
 problem = iron.Problem()
-problem.CreateStart(problemUserNumber)
-problem.SpecificationSet(iron.ProblemClasses.ELASTICITY,
+problemSpecification = [iron.ProblemClasses.ELASTICITY,
         iron.ProblemTypes.FINITE_ELASTICITY,
-        iron.ProblemSubTypes.NONE)
+        iron.ProblemSubTypes.NONE]
+problem.CreateStart(problemUserNumber, problemSpecification)
 problem.CreateFinish()
 
 # Create control loops
