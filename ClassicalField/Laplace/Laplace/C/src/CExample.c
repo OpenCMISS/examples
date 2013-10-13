@@ -112,6 +112,9 @@ int main()
   int ControlLoopIdentifier[1];
   double MeshExtent[MAX_COORDINATES];
 
+  int EquationsSetSpecification[3];
+  int ProblemSpecification[3];
+
   int Err;
 
   ControlLoopIdentifier[0]=CMFE_CONTROL_LOOP_NODE;
@@ -222,13 +225,13 @@ int main()
   /* Create the equations_set */
   Err = cmfe_EquationsSet_Initialise(&EquationsSet);
   Err = cmfe_Field_Initialise(&EquationsSetField);
-  Err = cmfe_EquationsSet_CreateStart(EQUATIONS_SET_USER_NUMBER,Region,GeometricField,CMFE_EQUATIONS_SET_CLASSICAL_FIELD_CLASS, \
-    CMFE_EQUATIONS_SET_LAPLACE_EQUATION_TYPE,CMFE_EQUATIONS_SET_STANDARD_LAPLACE_SUBTYPE,EQUATIONS_SET_FIELD_USER_NUMBER, \
+  EquationsSetSpecification[0] = CMFE_EQUATIONS_SET_CLASSICAL_FIELD_CLASS;
+  EquationsSetSpecification[1] = CMFE_EQUATIONS_SET_LAPLACE_EQUATION_TYPE;
+  EquationsSetSpecification[2] = CMFE_EQUATIONS_SET_STANDARD_LAPLACE_SUBTYPE;
+  Err = cmfe_EquationsSet_CreateStart(EQUATIONS_SET_USER_NUMBER,Region,GeometricField, \
+    3,EquationsSetSpecification,EQUATIONS_SET_FIELD_USER_NUMBER, \
     EquationsSetField,EquationsSet);
   CHECK_ERROR("Creating equations set");
-  /* Set the equations set to be a standard Laplace problem */
-  Err = cmfe_EquationsSet_SpecificationSet(EquationsSet,CMFE_EQUATIONS_SET_CLASSICAL_FIELD_CLASS, \
-    CMFE_EQUATIONS_SET_LAPLACE_EQUATION_TYPE,CMFE_EQUATIONS_SET_STANDARD_LAPLACE_SUBTYPE);
   /* Finish creating the equations set */
   Err = cmfe_EquationsSet_CreateFinish(EquationsSet);
 
@@ -251,12 +254,12 @@ int main()
   /* Finish the equations set equations */
   Err = cmfe_EquationsSet_EquationsCreateFinish(EquationsSet);
 
-  /* Start the creation of a problem. */
+  /* Start the creation of a problem, setting the problem to be a standard Laplace problem. */
   Err = cmfe_Problem_Initialise(&Problem);
-  Err = cmfe_Problem_CreateStart(PROBLEM_USER_NUMBER,Problem);
-  /* Set the problem to be a standard Laplace problem */
-  Err = cmfe_Problem_SpecificationSet(Problem,CMFE_PROBLEM_CLASSICAL_FIELD_CLASS,CMFE_PROBLEM_LAPLACE_EQUATION_TYPE, \
-    CMFE_PROBLEM_STANDARD_LAPLACE_SUBTYPE);
+  ProblemSpecification[0] = CMFE_PROBLEM_CLASSICAL_FIELD_CLASS;
+  ProblemSpecification[1] = CMFE_PROBLEM_LAPLACE_EQUATION_TYPE;
+  ProblemSpecification[2] = CMFE_PROBLEM_STANDARD_LAPLACE_SUBTYPE;
+  Err = cmfe_Problem_CreateStart(PROBLEM_USER_NUMBER,3,ProblemSpecification,Problem);
   /* Finish the creation of a problem. */
   Err = cmfe_Problem_CreateFinish(Problem);
 
