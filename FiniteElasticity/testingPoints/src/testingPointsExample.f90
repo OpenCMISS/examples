@@ -153,7 +153,7 @@ PROGRAM TESTINGPOINTSEXAMPLE
   INTEGER(CMFEIntg),ALLOCATABLE :: InnerSurfaceNodes(:)
   INTEGER(CMFEIntg),ALLOCATABLE :: OuterSurfaceNodes(:)
   INTEGER(CMFEIntg) :: TopNormalXi,BottomNormalXi,InnerNormalXi,OuterNormalXi
-  REAL(CMFEDP) :: xValue,yValue, InitialPressure,deformedHeight
+  REAL(CMFEDP) :: xValue,yValue,deformedHeight
 
 #ifdef WIN32
   !Quickwin type
@@ -391,7 +391,7 @@ PROGRAM TESTINGPOINTSEXAMPLE
   !Create the dependent field with 2 variables and 4 components (3 displacement, 1 pressure)
   CALL cmfe_Field_Initialise(DependentField,Err)
   CALL cmfe_Field_CreateStart(FieldDependentUserNumber,Region,DependentField,Err)
-  CALL cmfe_Field_TypeSet(DependentField,CMFE_FIELD_GENERAL_TYPE,Err)
+  CALL cmfe_Field_TypeSet(DependentField,CMFE_FIELD_GEOMETRIC_GENERAL_TYPE,Err)
   CALL cmfe_Field_MeshDecompositionSet(DependentField,Decomposition,Err)
   CALL cmfe_Field_GeometricFieldSet(DependentField,GeometricField,Err)
   CALL cmfe_Field_DependentTypeSet(DependentField,CMFE_FIELD_DEPENDENT_TYPE,Err)
@@ -490,14 +490,14 @@ PROGRAM TESTINGPOINTSEXAMPLE
   CALL cmfe_SolverEquations_EquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   CALL cmfe_Problem_SolverEquationsCreateFinish(Problem,Err)
 
-  !Set the bc using the analytic solution routine
+  CALL cmfe_BoundaryConditions_Initialise(BoundaryConditions,Err)
+  CALL cmfe_SolverEquations_BoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
   IF(TRIM(ARG_LEVEL)=="2".OR.TRIM(ARG_LEVEL)=="3") THEN
-    CALL cmfe_EquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
+    !Set the bc using the analytic solution routine
+    CALL cmfe_SolverEquations_BoundaryConditionsAnalytic(SolverEquations,Err)
   ELSE
     !Set BC manually
     !Prescribe boundary conditions (absolute nodal parameters)
-    CALL cmfe_BoundaryConditions_Initialise(BoundaryConditions,Err)
-    CALL cmfe_SolverEquations_BoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
 
     !Get surfaces - will fix two nodes on bottom face, pressure conditions inside
     CALL cmfe_GeneratedMesh_SurfaceGet(GeneratedMesh,CMFE_GENERATED_MESH_CYLINDER_TOP_SURFACE,TopSurfaceNodes,TopNormalXi,Err)
@@ -574,8 +574,8 @@ PROGRAM TESTINGPOINTSEXAMPLE
         STOP
       ENDIF
     ENDIF
-    CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
   ENDIF
+  CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve problem
   CALL cmfe_Problem_Solve(Problem,Err)
