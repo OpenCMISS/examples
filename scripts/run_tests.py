@@ -207,7 +207,7 @@ class Test(TestTreeNode):
     elif self.machine == "nesi" :
       self.command = "%s/bin/%s-%s/%s/%s/%sExample%s %s" %(self.parent.path,arch,system,mpi,compilerVersion,self.exampleName,MODE_SUFFIX_MAP[mode],self.args)
       f = open("nesi_%d.ll" %(self.id),"w")
-      f.write(nesiTemplate.render(test=self,compiler=compiler))
+      f.write(nesiTemplate.render(test=self,compiler=compiler,mpi=mpi))
       f.close()
       command = "llsubmit -s nesi_%d.ll > %s 2>&1" %(self.id,logPath)
     else :
