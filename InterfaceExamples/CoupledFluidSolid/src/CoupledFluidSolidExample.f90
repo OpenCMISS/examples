@@ -46,22 +46,6 @@
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/InterfaceExamples/Coupled-FiniteElasticity-ALENavierStokes/build-gnu'>Linux GNU Build</a>
 !<
 
-
-    !   2D case
-    !
-    !                    =>>=  =  =  =  =  =  =
-    !                    =>>=  =  =  =  =  =  =
-    !                    =>>=  =  =  =  =  =  =
-    !   HeightFluid=3    =>>=  =  =  =  =  =  =          FLUID     REGION(2)
-    !                    => =  =  =  =  =  =  =
-    !                    => =  =  =  =  =  =  =
-    !                    x == == == == == == ==
-    !                    x=====================
-    !   HeightSolid=1    x=====================          SOLID     REGION(1)
-    !
-    !                           Width=4 
-
-
 !> Main program
 PROGRAM CoupledFluidSolidExample
 
@@ -75,23 +59,9 @@ PROGRAM CoupledFluidSolidExample
 
   !Test program parameters==========================================================================================================
   !Material specification
-  INTEGER(CMISSIntg), PARAMETER :: Blood=1
   INTEGER(CMISSIntg), PARAMETER :: Plate2D=2
   INTEGER(CMISSIntg), PARAMETER :: Plate3D=3
   
-  !unit scaling
-  LOGICAL :: KGtoG=.FALSE.
-  LOGICAL :: KGtoT=.FALSE.
-  LOGICAL :: KGtokT=.FALSE.
-  LOGICAL :: KGtoMT=.FALSE.
-  REAL(CMISSDP) :: unitKGtoG=1.0_CMISSDP
-  REAL(CMISSDP) :: unitKGtoT=1.0_CMISSDP
-  REAL(CMISSDP) :: unitKGtokT=1.0_CMISSDP
-  REAL(CMISSDP) :: unitKGtoMT=1.0_CMISSDP
-  LOGICAL :: MtoCM=.FALSE.
-  LOGICAL :: MtoMM=.FALSE.
-  REAL(CMISSDP) :: unitMtoCM=1.0_CMISSDP
-  REAL(CMISSDP) :: unitMtoMM=1.0_CMISSDP
   
   !set no initial flow?
   LOGICAL :: zeroCheckFlag=.FALSE.
@@ -107,10 +77,10 @@ PROGRAM CoupledFluidSolidExample
   INTEGER(CMISSIntg) :: NumberOfInterfaceNodes
   INTEGER(CMISSIntg) :: NumberOfInterfaceElements
   
-  INTEGER(CMISSIntg), ALLOCATABLE :: ElementIndices(:),NodeIndices(:),NodeIndexFMappings(:),NodeIndexSMappings(:), &
+  INTEGER(CMISSIntg), ALLOCATABLE :: NodeIndices(:),NodeIndexFMappings(:),NodeIndexSMappings(:), &
     & SolidElements(:), &
     & SolidElementSDNodes(:),SolidElementHPNodes(:),SolidElementSDNodeMappings(:),SolidElementHPNodeMappings(:),FluidElements(:), &
-    & FluidElementSVNodes(:),FluidElementPNodes(:),FluidElementSVNodeMappings(:),FluidElementPNodeMappings(:), &
+    & FluidElementSVNodes(:),FluidElementSVNodeMappings(:), &
     & MovingMeshElements(:), &
     & MovingMeshElementNodes(:),MovingMeshBoundaryElementNodes(:),MovingMeshFixedNodes(:),MovingMeshMovingNodes(:), &
     & MovingMeshBoundaryElementNodeMappings(:),MovingMeshFixedNodeMappings(:),MovingMeshMovingNodeMappings(:), &
@@ -118,13 +88,13 @@ PROGRAM CoupledFluidSolidExample
     & SolidInterfaceElementNodeMappings(:),FluidInterfaceElements(:),FluidInterfaceElementNodes(:), &
     & FluidInterfaceElementNodeMappings(:), &
     & InterfaceNodeNumbers(:),SolidInterfaceNodeNumbers(:),FluidInterfaceNodeNumbers(:),SolidInterfaceNodeNumberMappings(:), &
-    & FluidInterfaceNodeNumberMappings(:),DisplacementBoundaryNodes(:),DisplacementBoundaryNodeMappings(:), &
+    & FluidInterfaceNodeNumberMappings(:), &
     & VelocityInletBoundaryNodes(:),VelocityInletBoundaryNodeMappings(:), &
     & VelocityBoundaryNodes(:),VelocityBoundaryNodeMappings(:),PressureBoundaryNodes(:), &
     & PressureBoundaryNodeMappings(:)
   
   REAL(CMISSDP), ALLOCATABLE :: SolidGeometry(:),FluidGeometry(:),InterfaceGeometry(:),InterfaceXiPosition(:), &
-    & SolidInterfaceXiPosition(:),FluidInterfaceXiPosition(:),DisplacementBoundaryCondition(:),VelocityBoundaryCondition(:), &
+    & SolidInterfaceXiPosition(:),FluidInterfaceXiPosition(:),VelocityBoundaryCondition(:), &
     & PressureBoundaryCondition(:)
     
     
@@ -220,17 +190,14 @@ PROGRAM CoupledFluidSolidExample
   INTEGER(CMISSIntg), PARAMETER :: LinearSolverMovingMeshEquationsUserNumber=122
   
   
-  
-  
   !Program types
   
   !Program variables
 
-  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_Length,STATUS
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,STATUS
   INTEGER(CMISSIntg) :: NumberGlobalElementsX, &
-    & NumberGlobalElementsZ,InterpolationTypeInterface,NumberOfGaussXi,NUMBER_OF_NODE_XI,NumberOfDimensions,component_idx, &
+    & InterpolationTypeInterface,NumberOfGaussXi,NUMBER_OF_NODE_XI,NumberOfDimensions,component_idx, &
     & NumberOfGaussXiSpace,NumberOfGaussXiVelocity,NumberOfGaussXiPressure,arraySize
-  CHARACTER(LEN=255) :: COMMAND_ARGUMENT
 
   INTEGER(CMISSIntg) :: SolidEquationsSetIndex=1
   INTEGER(CMISSIntg) :: FluidEquationsSetIndex=2
@@ -256,15 +223,8 @@ PROGRAM CoupledFluidSolidExample
     & Mesh1ComponentNumberSpace, &
     & NodeDomain,Mesh2ComponentNumberPressure,Mesh2ComponentNumberSpace,MeshNumberOfComponents,NumberGlobalElementsY
   
-  
-  
-  
-  
-  
   ! LOOP INTEGERS
-  INTEGER(CMISSIntg) :: NodeNumber,S,F,P,ElementIndex,NodeIndex,MM,MaterialSpecification,LocalNodeIndex
-  
-  
+  INTEGER(CMISSIntg) :: NodeNumber,S,P,ElementIndex,NodeIndex,MM,MaterialSpecification,LocalNodeIndex
   
   !check below for units
   REAL(CMISSDP) :: XI2(2),XI3(3)
@@ -295,12 +255,10 @@ PROGRAM CoupledFluidSolidExample
   LOGICAL :: GeometryCheck=.FALSE.
   LOGICAL :: GravityFlag=.FALSE.
   LOGICAL :: CheckWithoutInterfaceCondition=.FALSE.
-  LOGICAL :: CompressibleOption=.FALSE.
   LOGICAL :: SetupOutput=.TRUE.
   
 
   !CMISS variables
-  
   TYPE(CMISSBasisType) :: BasisSpaceSolid,BasisDisplacement,BasisHydrostaticPressure
   TYPE(CMISSBasisType) :: BasisSpaceFluid,BasisVelocity,BasisPressure
   TYPE(CMISSBasisType) :: InterfaceBasis1,InterfaceMappingBasis1
@@ -334,14 +292,10 @@ PROGRAM CoupledFluidSolidExample
   TYPE(CMISSSolverType) :: LinearSolver
   TYPE(CMISSSolverType) :: LinearSolverMovingMesh
   TYPE(CMISSSolverEquationsType) :: CoupledSolverEquations,LinearSolverMovingMeshEquations
-  
-  
-  
   !
   !=================================================================================================================================
   !
   !
-  
 #ifdef WIN32
   !Quickwin type
   LOGICAL :: QUICKWIN_STATUS=.FALSE.
@@ -349,7 +303,6 @@ PROGRAM CoupledFluidSolidExample
 #endif
   
   !Generic CMISS variables
-  
   INTEGER(CMISSIntg) :: Err
   
 #ifdef WIN32
@@ -364,37 +317,22 @@ PROGRAM CoupledFluidSolidExample
 #endif
 
   e=etime(t)
-  
   !
   !=================================================================================================================================
   !
   ! C O M M A N D L I N E _ A R G U M E N T S
   
   NUMBER_OF_ARGUMENTS = COMMAND_ARGUMENT_COUNT()
-  IF(NUMBER_OF_ARGUMENTS == 4) THEN
-    CALL GET_COMMAND_ARGUMENT(1,COMMAND_ARGUMENT,ARGUMENT_Length,STATUS)
-    IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 1.")
-    READ(COMMAND_ARGUMENT(1:ARGUMENT_Length),*) NumberGlobalElementsX
-    IF(NumberGlobalElementsX<=0) CALL HANDLE_ERROR("Invalid number of X elements.")
-    CALL GET_COMMAND_ARGUMENT(2,COMMAND_ARGUMENT,ARGUMENT_Length,STATUS)
-    IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 2.")
-    READ(COMMAND_ARGUMENT(1:ARGUMENT_Length),*) NumberGlobalElementsY
-    IF(NumberGlobalElementsY<=0) CALL HANDLE_ERROR("Invalid number of Y elements.")
-    CALL GET_COMMAND_ARGUMENT(3,COMMAND_ARGUMENT,ARGUMENT_Length,STATUS)
-    IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 3.")
-    READ(COMMAND_ARGUMENT(1:ARGUMENT_Length),*) NumberGlobalElementsZ
-    IF(NumberGlobalElementsY<0) CALL HANDLE_ERROR("Invalid number of Z elements.")
-    CALL GET_COMMAND_ARGUMENT(4,COMMAND_ARGUMENT,ARGUMENT_Length,STATUS)
-    IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 4.")
-    READ(COMMAND_ARGUMENT(1:ARGUMENT_Length),*) InterpolationTypeInterface
-    IF(InterpolationTypeInterface<=0.OR.InterpolationTypeInterface>4) CALL HANDLE_ERROR("Invalid Interpolation specification.")
-  ELSE IF(NUMBER_OF_ARGUMENTS == 0) THEN
-    NumberGlobalElementsZ=0 !TODO get rid of this variable
+  !Not used, read in specifics from files
+  IF(NUMBER_OF_ARGUMENTS == 0) THEN
+    !quadratic interpolation for fluid velocities, solid displacements
     InterpolationTypeDisplacement=2
     InterpolationTypeSpace=2
     InterpolationTypeVelocity=2
+    !linear interpolation for pressures
     InterpolationTypePressure=1
-    InterpolationTypeInterface=2
+    !Interpolation type on interface matches interpolation type for fluid velocities, solid displacements
+    InterpolationTypeInterface=InterpolationTypeDisplacement
   ELSE
     CALL HANDLE_ERROR("Invalid number of arguments.")
   ENDIF
@@ -405,17 +343,18 @@ PROGRAM CoupledFluidSolidExample
 
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
-
   !Set error handling mode
   CALL CMISSErrorHandlingModeSet(CMISS_ERRORS_TRAP_ERROR,Err)
- 
   !Set diganostics for testing
   !CALL CMISSDiagnosticsSetOn(CMISS_FROM_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["SOLVER_MAPPING_CALCULATE         ", &
   !  & "SOLVER_MATRIX_STRUCTURE_CALCULATE"],Err)
-  
   !Get the computational nodes information
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
+  !
+  !=================================================================================================================================
+  !
+  ! I N I T I A L _ V A L U E S _ & _ P R O B L E M _ C O N S T A N T S
   !Set initial values
   InitialFieldNavierStokes(1)=0.0_CMISSDP
   InitialFieldNavierStokes(2)=0.0_CMISSDP
@@ -423,7 +362,8 @@ PROGRAM CoupledFluidSolidExample
   InitialFieldMovingMesh(1)=0.0_CMISSDP
   InitialFieldMovingMesh(2)=0.0_CMISSDP
   InitialFieldMovingMesh(3)=0.0_CMISSDP
-  !Set output parameter
+  !Set output parameters
+  SetupOutput=.TRUE.
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
   LinearSolverMovingMesh_OutputType=CMISS_SOLVER_SOLVER_OUTPUT
   DynamicSolver_OutputType=CMISS_SOLVER_SOLVER_OUTPUT
@@ -434,1110 +374,742 @@ PROGRAM CoupledFluidSolidExample
   !Set result output parameter
   OutputFrequency=1
   
+  !Choose 2D or 3D case
+  MaterialSpecification=Plate2D
+  !Set solver parameters
+  RelativeTolerance=1.0E-4_CMISSDP !default: 1.0E-05_CMISSDP
+  AbsoluteTolerance=1.0E-4_CMISSDP !default: 1.0E-10_CMISSDP
+  DivergenceTolerance=1.0E5 !default: 1.0E5
+  MaximumIterations=100000000 !default: 100000
+  MaxFunctionEvaluations=100000
+  RestartValue=30 !default: 30
+  LinesearchAlpha=1.0_CMISSDP
+  MovingMeshParameterK=1.0!default
+  DynamicSolver_Theta=1.0_CMISSDP
+  StartTime=0.0_CMISSDP
+  StopTime=20.0_CMISSDP
+  TimeStepSize=1.0_CMISSDP
+  StopTime=2000.0_CMISSDP
+  TimeStepSize=1.0_CMISSDP
+  IF(MaterialSpecification==Plate2D) THEN
+    StopTime=100.0_CMISSDP
+    TimeStepSize=0.05_CMISSDP
+  ENDIF
+  
+  !Material properties
+  !NOTE: USE OF SI UNITS unless comment
+  !Low density fluid, rubber-like solid
+  FluidDynamicViscosity=0.05! kg / (m s)
+  FluidDensity=100! kg m^-3
+  SolidDensity=300! kg m^-3
+  YoungsModulus=2.3E4! Pa
+  PoissonsRatio=0.49! [.]
+  !Neo-Hookean material law
+  ShearModulus=YoungsModulus/(2.0_CMISSDP*(1.0_CMISSDP+PoissonsRatio)) ! N / m^2
+  BulkModulus=YoungsModulus/(3.0_CMISSDP*(1.0_CMISSDP-2.0_CMISSDP*PoissonsRatio))
+  MooneyRivlin1=0.5_CMISSDP*ShearModulus ! N / m^2
+  MooneyRivlin2=0.0_CMISSDP
   
   
-  
-  MaterialSpecification=Plate3D
+  !Set geometric dimension n gravity
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    NumberOfDimensions=2
+    ALLOCATE(Gravity(NumberOfDimensions))
+    Gravity(:)=[0.0_CMISSDP,9.81_CMISSDP] !in m s^-2
+  CASE(Plate3D)
+    NumberOfDimensions=3
+    CheckWithoutInterfaceCondition=.FALSE.!if set to true we remove all Lagrange field dofs by setting them as zero dirichlet BC
+    IF(CheckWithoutInterfaceCondition) THEN
+      GravityFlag=.TRUE.
+      ALLOCATE(Gravity(NumberOfDimensions))
+      Gravity(:)=[0.0_CMISSDP,9.81_CMISSDP,0.0_CMISSDP] !in m s^-2
+    ENDIF
+  END SELECT
+    
+  !Reading geometry from files
+  arraySize=0
+  PRINT *, 'Reading geometry from files..'
+  !Read node numbers
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, file='./Plate2DSolidNodes.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, file='./Plate3DSolidNodes.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(SolidNodeNumbers(arraySize))
+  DO S=1,arraySize
+    READ(1,*) SolidNodeNumbers(S)
+  ENDDO
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'Solid nodes: ',SolidNodeNumbers
   
   SELECT CASE(MaterialSpecification)
-  CASE(Blood)
-    
-    CALL HANDLE_ERROR("broken..")
-    
-    NumberOfFluidNodes=73
-    NumberOfFluidElements=13
-    NumberOfSolidNodes=15
-    NumberOfSolidElements=2
-    NumberOfInterfaceNodes=11
-    NumberOfInterfaceElements=5
-    
-    !If KGtokT then KGtoT/KGtoG are set automatically
-    !If .NOT.KGtokT .AND. KGtoT then KGtoG is set automatically
-    !No scaling if KGtoG,KGtoT,KGtokT==.FALSE.
-    KGtoG=.FALSE.
-    KGtoT=.FALSE.
-    KGtokT=.FALSE.
-    IF(KGtokT) THEN
-      KGtoG=.FALSE.
-      KGtoT=.FALSE.
-      unitKGtoG=1.0_CMISSDP
-      unitKGtoT=1.0_CMISSDP
-      unitKGtokT=1.0E-6_CMISSDP
-    ELSE
-      IF(KGtoT) THEN
-        KGtoG=.FALSE.
-        KGtokT=.FALSE.
-        unitKGtoG=1.0_CMISSDP
-        unitKGtoT=1.0E-3_CMISSDP
-        unitKGtokT=1.0_CMISSDP
-      ELSE
-        IF(KGtoG) THEN
-          unitKGtoG=1.0E3_CMISSDP
-          unitKGtoT=1.0_CMISSDP
-          unitKGtokT=1.0_CMISSDP
-        ELSE
-          !no scaling
-          unitKGtoG=1.0_CMISSDP
-          unitKGtoT=1.0_CMISSDP
-          unitKGtokT=1.0_CMISSDP
-        ENDIF
-      ENDIF
-    ENDIF
-    !Analogeously for length's
-    MtoMM=.FALSE.
-    MtoCM=.TRUE.
-    IF((MtoCM.EQV..FALSE.).AND.(MtoMM.EQV..TRUE.)) THEN
-      CALL HANDLE_ERROR("Need to modify CMISS??UpdateBoundaryConditionUpdateNodes accordingly!")
-    ENDIF
-    IF(MtoCM) THEN
-      MtoMM=.FALSE.
-      unitMtoCM=1.0E2_CMISSDP
-      unitMtoMM=1.0_CMISSDP
-    ELSE
-      IF(MtoMM) THEN
-        unitMtoCM=1.0_CMISSDP
-        unitMtoMM=1.0E3_CMISSDP
-      ELSE
-        unitMtoCM=1.0_CMISSDP
-        unitMtoMM=1.0_CMISSDP
-      ENDIF
-    ENDIF
-    
-    zeroCheckFlag=.TRUE.
-    IF(zeroCheckFlag) zeroCheck=0.0_CMISSDP
-    
-    !Set solver parameters
-    RelativeTolerance=1.0E-4_CMISSDP !default: 1.0E-05_CMISSDP
-    AbsoluteTolerance=1.0E-5_CMISSDP !default: 1.0E-10_CMISSDP
-    DivergenceTolerance=1.0E30 !default: 1.0E5
-    MaximumIterations=100000000 !default: 100000
-    MaxFunctionEvaluations=100000
-    RestartValue=30 !default: 30
-    LinesearchAlpha=1.0_CMISSDP
-    MovingMeshParameterK=1.0
-    !Set time parameter
-    StartTime=0.0_CMISSDP
-    StopTime=2.0_CMISSDP
-    TimeStepSize=0.125_CMISSDP
-    DynamicSolver_Theta=1.0_CMISSDP
-    !BLOOD
-    FluidDynamicViscosity=4.0E-3_CMISSDP/unitMtoCM/unitMtoMM*unitKGtoG*unitKGtoT*unitKGtokT !kg/(cm s)
-    FluidDensity=100.0_CMISSDP/(unitMtoCM*unitMtoCM*unitMtoCM)/(unitMtoMM*unitMtoMM*unitMtoMM)*unitKGtoG*unitKGtoT*unitKGtokT ! kg / cm^-3
-    !ARTERIAL WALL
-    SolidDensity=300.0_CMISSDP/(unitMtoCM*unitMtoCM*unitMtoCM)/(unitMtoMM*unitMtoMM*unitMtoMM)*unitKGtoG*unitKGtoT*unitKGtokT ! kg / cm^3
-    !Young's modulus E
-    YoungsModulus=3.0E4_CMISSDP/unitMtoCM/unitMtoMM*unitKGtoG*unitKGtoT*unitKGtokT ! 3.0E4_CMISSDP kg / (cm s^2)
-    !Poisson's ratio
-    PoissonsRatio=0.45
-    !Homogenous, isotropic material G=E/(2*(1+poissonsRatio))
-    ShearModulus=YoungsModulus/(2.0_CMISSDP*(1+PoissonsRatio)) ! kg / (cm s^2)
-    !Neo-Hookean material: c1=G/2 c2=0
-    MooneyRivlin1=0.5_CMISSDP*ShearModulus ! kg / (cm s^2)
-    MooneyRivlin2=0.0_CMISSDP !
-    !==========================================================================
-    
-    
-    StartTime=0.0_CMISSDP
-    StopTime=20.0_CMISSDP
-    TimeStepSize=1.0_CMISSDP
-    FluidDynamicViscosity=0.05! kg / (m s)
-    FluidDensity=100! kg m^-3
-    SolidDensity=300! kg m^-3
-    YoungsModulus=2.0E4! Pa
-    PoissonsRatio=0.3! [.]
-    ShearModulus=YoungsModulus/(2.0_CMISSDP*(1.0_CMISSDP+PoissonsRatio)) ! N / m^2
-    BulkModulus=YoungsModulus/(3.0_CMISSDP*(1.0_CMISSDP-2.0_CMISSDP*PoissonsRatio))
-    MooneyRivlin1=0.5_CMISSDP*ShearModulus ! N / m^2
-    MooneyRivlin2=0.0_CMISSDP
-    
-    
-    
-    
-    
-    
-    ElementIndices=(/1,2,3,4,5,6,7,8,9,10,11,12,13,14,15/)
-    NodeIndices=(/1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28, &
-      & 29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53, &
-      & 54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77/)
-                                                      
-    NodeIndexFMappings=(/1,25,2,26,3,4,27,5,28,6,29,30,31,32,33,34,35,36,37,38,7,39,8,40,9, &
-      & 10,41,11,42,12,43,44,45,46,47,48,49,50,51,52,13,53,14,54,15,55,16,56,17,57,18,58,59, &
-      & 60,61,62,63,64,65,66,67,68,19,69,20,70,21,71,22,72,23,73,24/)
-    NodeIndexSMappings=(/1,7,2,8,9,10,3,11,4,12,13,14,5,15,6/)
-    SolidElements=(/1,2/)
-    SolidElementSDNodes=(/1,2,3,4,5,6,7,8,9,7,8,9,10,11,12,13,14,15/)
-    SolidElementHPNodes=(/1,2,3,4,3,4,5,6/)
-    SolidElementSDNodeMappings=(/1,7,2,8,9,10,3,11,4,3,11,4,12,13,14,5,15,6/)
-    SolidElementHPNodeMappings=(/1,2,3,4,3,4,5,6/)
-    
-    FluidElements=(/1,2,3,4,5,6,7,8,9,10,11,12,13/)
-    FluidElementSVNodes=(/1,2,3,11,12,13,21,22,23, &
-                                                              & 3,4,5,13,14,15,23,24,25, &
-                                                              & 6,7,8,16,17,18,26,27,28, &
-                                                              & 8,9,10,18,19,20,28,29,30, &
-                                                              & 21,22,23,31,32,33,41,42,43, &
-                                                              & 23,24,25,33,34,35,43,44,45, &
-                                                              & 26,27,28,36,37,38,47,48,49, &
-                                                              & 28,29,30,38,39,40,49,50,51, &
-                                                              & 41,42,43,52,53,54,63,64,65, &
-                                                              & 43,44,45,54,55,56,65,66,67, &
-                                                              & 45,46,47,56,57,58,67,68,69, &
-                                                              & 47,48,49,58,59,60,69,70,71, &
-                                                              & 49,50,51,60,61,62,71,72,73/)
-    FluidElementPNodes=(/1,2,7,8,2,3,8,9,4,5,10,11,5,6,11,12,7,8,13,14,8,9,14,15,10,11,16,17, &
-      & 11,12,17,18,13,14,19,20,14,15,20,21,15,16,21,22,16,17,22,23,17,18,23,24/)
-    FluidElementSVNodeMappings=(/1,25,2,29,30,31,7,39,8,2,26,3,31,32,33,8,40,9, &
-      & 4,27,5,34,35,36,10,41,11,5,28,6,36,37,38,11,41,12,7,39,8,43,44,45,13,53,14,8,40,9,45,46,47,14,54,15, &
-      & 10,41,11,48,49,50,16,56,17,11,42,12,50,51,52,17,57,18,13,53,14,58,59,60,19,69,20,14,54,15,60,61,62,20,70,21, &
-      & 15,55,16,62,63,64,21,71,22,16,56,17,64,65,66,22,72,23,17,57,18,66,67,68,23,73,24/)
-    FluidElementPNodeMappings=(/1,2,7,8,2,3,8,9,4,5,10,11,5,6,11,12,7,8,13,14,8,9,14,15, &
-      & 10,11,16,17,11,12,17,18,13,14,19,20,14,15,20,21,15,16,21,22,16,17,22,23,17,18,23,24/)
-    MovingMeshElements=FluidElements(:)
-    MovingMeshElementNodes=FluidElementSVNodes(:)
-    MovingMeshBoundaryElementNodes=(/1,2,3,4,5,15,25,35,45,46,47,36,26,16,6,7,8,9,10,20,30, &
-      & 40,51,62,73,72,71,70,69,68,67,66,65,64,63,52,41,31,21,11/)
-    MovingMeshFixedNodes=(/1,2,3,4,5,6,7,8,9,10,20,30,40,51,62,73,72,71,70,69,68,67,66,65,64, &
-      & 63,52,41,31,21,11/)
-    MovingMeshMovingNodes=(/15,25,35,45,46,47,36,26,16/)
-    MovingMeshBoundaryElementNodeMappings=(/1,25,2,26,3,33,9,47,15,55,16,48,10,34, &
-      & 4,27,5,28,6,38,12,52,18,68,24,73,23,72,22,71,21,70,20,69,19,58,13,43,7,29/)
-    MovingMeshFixedNodeMappings=(/1,25,2,26,3,4,27,5,28,6,38,12,52,18,68,24,73,23,72,22,71,21, &
-      & 70,20,69,19,58,13,43,7,29/)
-    MovingMeshMovingNodeMappings=(/33,9,47,15,55,16,48,10,34/)
-    
-    InterfaceElements=(/1,2,3,4,5/)
-    InterfaceInterfaceElementNodes=(/1,2,3,3,4,5,5,6,7,7,8,9,9,10,11/)
-    SolidInterfaceElements=(/1,2,2,2,1/)
-    SolidInterfaceElementNodes=(/1,4,7,7,10,13,13,14,15,15,12,9,9,6,3/)
-    SolidInterfaceElementNodeMappings=(/1,8,3,3,12,5,5,15,6,6,14,4,4,10,2/)
-    FluidInterfaceElements=(/2,6,11,7,3/)
-    FluidInterfaceElementNodes=(/5,15,25,25,35,45,45,46,47,47,36,26,26,16,6/)
-    FluidInterfaceElementNodeMappings=(/3,33,9,9,47,15,15,55,16,16,48,10,10,34,4/)
-    
-    InterfaceNodeNumbers=(/1,2,3,4,5,6,7,8,9,10,11/)
-    SolidInterfaceNodeNumbers=(/1,4,7,10,13,14,15,12,9,6,3/)
-    FluidInterfaceNodeNumbers=(/5,15,25,35,45,46,47,36,26,16,6/)
-    SolidInterfaceNodeNumberMappings=(/1,8,3,12,5,15,6,14,4,10,2/)
-    FluidInterfaceNodeNumberMappings=(/3,33,9,47,15,55,16,48,10,34,4/)
-    
-    ! G E O M E T R I C _ P O S I T I O N S
-    SolidGeometry=(/2.0_CMISSDP,2.5_CMISSDP,3.0_CMISSDP,2.0_CMISSDP,2.5_CMISSDP,3.0_CMISSDP, &
-      & 2.0_CMISSDP,2.5_CMISSDP,3.0_CMISSDP,2.0_CMISSDP,2.5_CMISSDP,3.0_CMISSDP,2.0_CMISSDP,2.5_CMISSDP,3.0_CMISSDP, &
-      !2nd component
-      & 0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.5_CMISSDP,0.5_CMISSDP,0.5_CMISSDP,1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP,1.5_CMISSDP, &
-      & 1.5_CMISSDP,1.5_CMISSDP,2.0_CMISSDP,2.0_CMISSDP,2.0_CMISSDP/)
-    SolidGeometry=SolidGeometry*unitMtoCM*unitMtoMM/100.0_CMISSDP!*100 because values are in cm's already
-    FluidGeometry=(/0.0_CMISSDP,0.5_CMISSDP,1.0_CMISSDP,1.5_CMISSDP,2.0_CMISSDP,3.0_CMISSDP, &
-      & 3.5_CMISSDP,4.0_CMISSDP,4.5_CMISSDP,5.0_CMISSDP,0.0_CMISSDP,0.5_CMISSDP,1.0_CMISSDP,1.5_CMISSDP,2.0_CMISSDP,3.0_CMISSDP, &
-      & 3.5_CMISSDP,4.0_CMISSDP,4.5_CMISSDP,5.0_CMISSDP,0.0_CMISSDP,0.5_CMISSDP,1.0_CMISSDP,1.5_CMISSDP,2.0_CMISSDP,3.0_CMISSDP, &
-      & 3.5_CMISSDP,4.0_CMISSDP,4.5_CMISSDP,5.0_CMISSDP,0.0_CMISSDP,0.5_CMISSDP,1.0_CMISSDP,1.5_CMISSDP,2.0_CMISSDP,3.0_CMISSDP, &
-      & 3.5_CMISSDP,4.0_CMISSDP,4.5_CMISSDP,5.0_CMISSDP,0.0_CMISSDP,0.5_CMISSDP,1.0_CMISSDP,1.5_CMISSDP,2.0_CMISSDP,2.5_CMISSDP, &
-      & 3.0_CMISSDP,3.5_CMISSDP,4.0_CMISSDP,4.5_CMISSDP,5.0_CMISSDP,0.0_CMISSDP,0.5_CMISSDP,1.0_CMISSDP,1.5_CMISSDP,2.0_CMISSDP, &
-      & 2.5_CMISSDP,3.0_CMISSDP,3.5_CMISSDP,4.0_CMISSDP,4.5_CMISSDP,5.0_CMISSDP,0.0_CMISSDP,0.5_CMISSDP,1.0_CMISSDP,1.5_CMISSDP, &
-      & 2.0_CMISSDP,2.5_CMISSDP,3.0_CMISSDP,3.5_CMISSDP,4.0_CMISSDP,4.5_CMISSDP,5.0_CMISSDP, &
-      !2nd component
-      & 0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP, &
-      & 0.5_CMISSDP,0.5_CMISSDP,0.5_CMISSDP,0.5_CMISSDP,0.5_CMISSDP,0.5_CMISSDP,0.5_CMISSDP,0.5_CMISSDP,0.5_CMISSDP,0.5_CMISSDP, &
-      & 1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP, &
-      & 1.5_CMISSDP,1.5_CMISSDP,1.5_CMISSDP,1.5_CMISSDP,1.5_CMISSDP,1.5_CMISSDP,1.5_CMISSDP,1.5_CMISSDP,1.5_CMISSDP,1.5_CMISSDP, &
-      & 2.0_CMISSDP,2.0_CMISSDP,2.0_CMISSDP,2.0_CMISSDP,2.0_CMISSDP,2.0_CMISSDP,2.0_CMISSDP,2.0_CMISSDP,2.0_CMISSDP,2.0_CMISSDP, &
-      & 2.0_CMISSDP,2.5_CMISSDP,2.5_CMISSDP,2.5_CMISSDP,2.5_CMISSDP,2.5_CMISSDP,2.5_CMISSDP,2.5_CMISSDP,2.5_CMISSDP,2.5_CMISSDP, &
-      & 2.5_CMISSDP,2.5_CMISSDP,3.0_CMISSDP,3.0_CMISSDP,3.0_CMISSDP,3.0_CMISSDP,3.0_CMISSDP,3.0_CMISSDP,3.0_CMISSDP,3.0_CMISSDP, &
-      & 3.0_CMISSDP,3.0_CMISSDP,3.0_CMISSDP/)
-    FluidGeometry=FluidGeometry*unitMtoCM*unitMtoMM/100.0_CMISSDP!*100 because values are in cm's already
-    InterfaceGeometry=(/2.0_CMISSDP,2.0_CMISSDP,2.0_CMISSDP,2.0_CMISSDP,2.0_CMISSDP,2.5_CMISSDP, &
-      & 3.0_CMISSDP,3.0_CMISSDP,3.0_CMISSDP,3.0_CMISSDP,3.0_CMISSDP, &
-      !2nd component
-      & 0.0_CMISSDP,0.5_CMISSDP,1.0_CMISSDP,1.5_CMISSDP,2.0_CMISSDP,2.0_CMISSDP,2.0_CMISSDP,1.5_CMISSDP,1.0_CMISSDP,0.5_CMISSDP, &
-      & 0.0_CMISSDP/)
-    InterfaceGeometry=InterfaceGeometry*unitMtoCM*unitMtoMM/100.0_CMISSDP!*100 because values are in cm's already
-    
-    ! X I _ P O S I T I O N S for MeshConnectivity
-    InterfaceXiPosition=(/0.0_CMISSDP,0.5_CMISSDP,1.0_CMISSDP, &
-      & 0.0_CMISSDP,0.5_CMISSDP,1.0_CMISSDP, &
-      & 0.0_CMISSDP,0.5_CMISSDP,1.0_CMISSDP, &
-      & 0.0_CMISSDP,0.5_CMISSDP,1.0_CMISSDP, &
-      & 0.0_CMISSDP,0.5_CMISSDP,1.0_CMISSDP/)
-    SolidInterfaceXiPosition=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP, &
-      & 0.0_CMISSDP,0.0_CMISSDP,0.5_CMISSDP,1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP, &
-      !xi2
-      & 0.0_CMISSDP,0.5_CMISSDP,1.0_CMISSDP,0.0_CMISSDP,0.5_CMISSDP,1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP, &
-      & 0.5_CMISSDP,0.0_CMISSDP,1.0_CMISSDP,0.5_CMISSDP,0.0_CMISSDP/)
-    FluidInterfaceXiPosition=(/1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP, &
-      & 1.0_CMISSDP,0.0_CMISSDP,0.5_CMISSDP,1.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP, &
-      !xi2
-      & 0.0_CMISSDP,0.5_CMISSDP,1.0_CMISSDP,0.0_CMISSDP,0.5_CMISSDP,1.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,1.0_CMISSDP, &
-      & 0.5_CMISSDP,0.0_CMISSDP,1.0_CMISSDP,0.5_CMISSDP,0.0_CMISSDP/)
-    
-    ! B O U N D A R Y _ C O N D I T I O N S
-    DisplacementBoundaryNodes=(/1,2,3/)
-    DisplacementBoundaryNodeMappings=(/1,7,2/)
-    DisplacementBoundaryCondition=(/2.0_CMISSDP,2.5_CMISSDP,3.0_CMISSDP, &
-                                                                 & 0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)
-    DisplacementBoundaryCondition=DisplacementBoundaryCondition*unitMtoCM*unitMtoMM/100.0_CMISSDP!*100 because values are in cm's already
-    VelocityInletBoundaryNodes=(/11,21,31,41,52/)
-    VelocityInletBoundaryNodeMappings=(/29,7,43,13,58/)
-    VelocityBoundaryNodes=(/1,2,3,4,5,6,7,8,9,10,11,21,31,41,52, &
-                                                              & 63,64,65,66,67,68,69,70,71,72,73/)
-    VelocityBoundaryNodeMappings=(/1,25,2,26,3,4,27,5,28,6,29,7,43,13,58,19,69,20,70,21,71,22, &
-      & 72,23,73,24/)
-    VelocityBoundaryCondition=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP, &
-                                                            & 0.0_CMISSDP,0.0_CMISSDP, &
-                                                            & 0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,1.0_CMISSDP/30,2.0_CMISSDP/30, &
-                                                            & 3.0_CMISSDP/30, &
-                                                            & 4.0_CMISSDP/30,5.0_CMISSDP/30,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP, &
-                                                            & 0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP, &
-                                                            & 0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP, &
-                                                            !2nd component
-                                                            & 0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP, &
-                                                            & 0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP, &
-                                                            & 0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP, &
-                                                            & 0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP, &
-                                                            & 0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP, &
-                                                            & 0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)
-    VelocityBoundaryCondition=VelocityBoundaryCondition*unitMtoCM*unitMtoMM*zeroCheck/100.0_CMISSDP!*100 because values are in cm's already
-    PressureBoundaryNodes=(/12,18/)!VelocityBoundaryNodes(:)
-    PressureBoundaryNodeMappings=(/12,18/)!VelocityBoundaryNodes(:)
-    PressureBoundaryCondition=(/0.0_CMISSDP,0.0_CMISSDP/)
-    PressureBoundaryCondition=PressureBoundaryCondition/unitMtoCM/unitMtoMM*100.0_CMISSDP!*100 because values are in cm's already
-    NumberOfDimensions=2
-    
-    ALLOCATE(Gravity(NumberOfDimensions))
-    Gravity(:)=[0.0_CMISSDP,-9.81_CMISSDP] !in cm s^-2
-    Gravity=Gravity*unitMtoCM*unitMtoMM/100.0_CMISSDP!100 because values are in cm's already
-    
-    !===============================================================================================================================
-  CASE(Plate2D,Plate3D)!NOTE: USE OF SI UNITS unless KGtokT, KGtoT or KGtoG is set to true
-    
-   ! IF(MaterialSpecification==Plate2D) CALL HANDLE_ERROR("Check component numbers for geometry, BC, etc.")
-    
-    !If KGtokT then KGtoT/KGtoG are set automatically
-    !If .NOT.KGtokT .AND. KGtoT then KGtoG is set automatically
-    !No scaling if KGtoG,KGtoT,KGtokT==.FALSE.
-    KGtoG=.FALSE.
-    KGtoT=.FALSE.
-    KGtokT=.FALSE.
-    KGtoMT=.FALSE.
-    IF(KGtoMT) THEN
-      KGtokT=.FALSE.
-      KGtoT=.FALSE.
-      KGtoG=.FALSE.
-      unitKGtoG=1.0_CMISSDP
-      unitKGtoT=1.0_CMISSDP
-      unitKGtokT=1.0_CMISSDP
-      unitKGtoMT=1.0E-9_CMISSDP
-      PRINT *, '10E-9 kg'
-    ELSE
-      IF(KGtokT) THEN
-        KGtoG=.FALSE.
-        KGtoT=.FALSE.
-        unitKGtoG=1.0_CMISSDP
-        unitKGtoT=1.0_CMISSDP
-        unitKGtokT=1.0E-6_CMISSDP
-        unitKGtoMT=1.0_CMISSDP
-        PRINT *, '10E-6 kg'
-      ELSE
-        IF(KGtoT) THEN
-          KGtoG=.FALSE.
-          unitKGtoG=1.0_CMISSDP
-          unitKGtoT=1.0E-3_CMISSDP
-          unitKGtokT=1.0_CMISSDP
-          unitKGtoMT=1.0_CMISSDP
-          PRINT *, '10E-3 kg'
-        ELSE
-          IF(KGtoG) THEN
-            unitKGtoG=1.0E3_CMISSDP
-            unitKGtoT=1.0_CMISSDP
-            unitKGtokT=1.0_CMISSDP
-            unitKGtoMT=1.0_CMISSDP
-            PRINT *, '10E3 kg'
-          ELSE
-            !no scaling
-            unitKGtoG=1.0_CMISSDP
-            unitKGtoT=1.0_CMISSDP
-            unitKGtokT=1.0_CMISSDP
-            unitKGtoMT=1.0_CMISSDP
-            PRINT *, 'no unit conversion'
-          ENDIF
-        ENDIF
-      ENDIF
-    ENDIF
-    
-    !Set solver parameters
-    RelativeTolerance=1.0E-5_CMISSDP !default: 1.0E-05_CMISSDP
-    AbsoluteTolerance=1.0E-10_CMISSDP !default: 1.0E-10_CMISSDP
-    DivergenceTolerance=1.0E5 !default: 1.0E5
-    MaximumIterations=100000000 !default: 100000
-    MaxFunctionEvaluations=100000
-    RestartValue=30 !default: 30
-    LinesearchAlpha=1.0_CMISSDP
-    MovingMeshParameterK=1.0
-    !Set time parameter
-    StartTime=0.0_CMISSDP
-    StopTime=5.0_CMISSDP
-    TimeStepSize=0.01_CMISSDP
-    DynamicSolver_Theta=1.0_CMISSDP
-    
-    !Fluid
-    FluidDynamicViscosity=0.1_CMISSDP*unitKGtoG*unitKGtoT*unitKGtokT*unitKGtoMT !kg/(m s)
-    FluidDensity=1.0E3_CMISSDP*unitKGtoG*unitKGtoT*unitKGtokT*unitKGtoMT ! kg / m^-3
-    
-    !Solid
-    SolidDensity=1.0E6_CMISSDP*unitKGtoG*unitKGtoT*unitKGtokT*unitKGtoMT ! kg / m^3
-    !Young's modulus E
-    YoungsModulus=7.0E10_CMISSDP*unitKGtoG*unitKGtoT*unitKGtokT*unitKGtoMT ! N / m^2
-    !Poisson's ratio
-    PoissonsRatio=0.3 ! [.]
-    !Homogenous, isotropic material G=E/(2*(1+poissonsRatio))
-    ShearModulus=YoungsModulus/(2.0_CMISSDP*(1.0_CMISSDP+PoissonsRatio)) ! N / m^2
-    !K=E/(3*(1-2*poissonsRatio))
-    BulkModulus=YoungsModulus/(3.0_CMISSDP*(1.0_CMISSDP-2.0_CMISSDP*PoissonsRatio))
-    !Neo-Hookean material: c1=G/2 c2=0
-    MooneyRivlin1=0.5_CMISSDP*ShearModulus ! N / m^2
-    MooneyRivlin2=0.0_CMISSDP !
-    
-    
-    
-    
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    
-    
-    
-    !Set solver parameters
-    RelativeTolerance=1.0E-4_CMISSDP !default: 1.0E-05_CMISSDP
-    AbsoluteTolerance=1.0E-4_CMISSDP !default: 1.0E-10_CMISSDP
-    DivergenceTolerance=1.0E5 !default: 1.0E5
-    MaximumIterations=100000000 !default: 100000
-    MaxFunctionEvaluations=100000
-    RestartValue=30 !default: 30
-    LinesearchAlpha=1.0_CMISSDP
-    MovingMeshParameterK=1.0
-    !Set time parameter
-    StartTime=0.0_CMISSDP
-    StopTime=5.0_CMISSDP
-    TimeStepSize=0.01_CMISSDP
-    DynamicSolver_Theta=1.0_CMISSDP
-    
-    !Fluid
-    FluidDynamicViscosity=0.1_CMISSDP! g / (mm s)
-    FluidDensity=1.0E-3_CMISSDP! g / mm^3
-    
-    !Solid
-    SolidDensity=1.0_CMISSDP!1.0_CMISSDP! g / mm^3
-    !Young's modulus E
-    YoungsModulus=7.0E4_CMISSDP! kN / m^2
-    !Poisson's ratio
-    PoissonsRatio=0.3 ! [.]
-    !Homogenous, isotropic material G=E/(2*(1+poissonsRatio))
-    ShearModulus=YoungsModulus/(2.0_CMISSDP*(1.0_CMISSDP+PoissonsRatio)) ! kN / m^2
-    !K=E/(3*(1-2*poissonsRatio))
-    BulkModulus=YoungsModulus/(3.0_CMISSDP*(1.0_CMISSDP-2.0_CMISSDP*PoissonsRatio))
-    !Neo-Hookean material: c1=G/2 c2=0
-    MooneyRivlin1=0.5_CMISSDP*ShearModulus ! kN / m^2
-    MooneyRivlin2=0.0_CMISSDP !
-
-
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
-    !TODO )( above works in combination with mm/s velocity and mm lengths (well.. not convergent!)
-    !Set time parameter
-    StartTime=0.0_CMISSDP
-    StopTime=2.0_CMISSDP
-    TimeStepSize=1.0_CMISSDP
-    DynamicSolver_Theta=1.0_CMISSDP
-    
-    !Fluid
-    FluidDynamicViscosity=0.1_CMISSDP! g / (mm s)
-    FluidDensity=1.0E-3_CMISSDP! g / mm^3
-    
-    !Solid
-    SolidDensity=1.0_CMISSDP!1.0_CMISSDP! g / mm^3
-    !Young's modulus E
-    YoungsModulus=7.0E4_CMISSDP! kN / m^2
-    !Poisson's ratio
-    PoissonsRatio=0.3 ! [.]
-    !Homogenous, isotropic material G=E/(2*(1+poissonsRatio))
-    ShearModulus=YoungsModulus/(2.0_CMISSDP*(1.0_CMISSDP+PoissonsRatio)) ! kN / m^2
-    !K=E/(3*(1-2*poissonsRatio))
-    BulkModulus=YoungsModulus/(3.0_CMISSDP*(1.0_CMISSDP-2.0_CMISSDP*PoissonsRatio))
-    !Neo-Hookean material: c1=G/2 c2=0
-    MooneyRivlin1=0.5_CMISSDP*ShearModulus ! kN / m^2
-    MooneyRivlin2=0.0_CMISSDP !
-    !TODO )( above does work but really slow.. so dunno if convergent or not.
-    !initial function norm: 14188780998.104866 decreases constantly but very slow
-    !iter274 function norm: 3975791328.5240316
-    
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    !TODO )( above is all with benchmark domain size, but thicker plate
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    !Let's try a reduced 3D geometry now..
-    !j;lsjagklj;l
-    
-    ! SI UNITS
-    StopTime=10.0_CMISSDP
-    FluidDynamicViscosity=0.1! kg / (m s)
-    FluidDensity=1.0E3_CMISSDP! kg / m^-3
-    SolidDensity=1.0E4_CMISSDP! kg / m^-3
-    YoungsModulus=7.0E4_CMISSDP! Pa
-    PoissonsRatio=0.3 ! [.]
-    !Homogenous, isotropic material G=E/(2*(1+poissonsRatio))
-    ShearModulus=YoungsModulus/(2.0_CMISSDP*(1.0_CMISSDP+PoissonsRatio)) ! N / m^2
-    !K=E/(3*(1-2*poissonsRatio))
-    BulkModulus=YoungsModulus/(3.0_CMISSDP*(1.0_CMISSDP-2.0_CMISSDP*PoissonsRatio))
-    !Neo-Hookean material: c1=G/2 c2=0
-    MooneyRivlin1=0.5_CMISSDP*ShearModulus ! N / m^2
-    MooneyRivlin2=0.0_CMISSDP                                            !works for 3D benchmark geometry; thickness 0.5m
-    
-    
-    
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Johan Lorentzon Master thesis test case TODO BC>
-    StartTime=0.0_CMISSDP
-    StopTime=20.0_CMISSDP
-    TimeStepSize=1.0_CMISSDP
-    IF(MaterialSpecification==Plate2D) THEN
-      StopTime=40.0_CMISSDP
-      TimeStepSize=0.125_CMISSDP
-    ENDIF
-    FluidDynamicViscosity=0.05! kg / (m s)
-    FluidDensity=100! kg m^-3
-    SolidDensity=300! kg m^-3
-    YoungsModulus=2.0E4! Pa
-    PoissonsRatio=0.3! [.]
-    ShearModulus=YoungsModulus/(2.0_CMISSDP*(1.0_CMISSDP+PoissonsRatio)) ! N / m^2
-    BulkModulus=YoungsModulus/(3.0_CMISSDP*(1.0_CMISSDP-2.0_CMISSDP*PoissonsRatio))
-    MooneyRivlin1=0.5_CMISSDP*ShearModulus ! N / m^2
-    MooneyRivlin2=0.0_CMISSDP
-    
-    SetupOutput=.TRUE.
-    
-    
-    !Set geometric dimension n gravity
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      NumberOfDimensions=2
-      ALLOCATE(Gravity(NumberOfDimensions))
-      Gravity(:)=[0.0_CMISSDP,9.81_CMISSDP] !in m s^-2
-    CASE(Plate3D)
-      NumberOfDimensions=3
-      CheckWithoutInterfaceCondition=.FALSE.!if set to true we remove all Lagrange field dofs by setting them as zero dirichlet BC
-      IF(CheckWithoutInterfaceCondition) THEN
-        CompressibleOption=.TRUE.
-        GravityFlag=.TRUE.
-        ALLOCATE(Gravity(NumberOfDimensions))
-        Gravity(:)=[0.0_CMISSDP,9.81_CMISSDP,0.0_CMISSDP] !in m s^-2
-      ENDIF
-    END SELECT
-    
-    
-    arraySize=0
-    PRINT *, 'Reading geometry from files..'
-    !Read node numbers
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DSolidNodes.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DSolidNodes.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(SolidNodeNumbers(arraySize))
-    DO S=1,arraySize
-      READ(1,*) SolidNodeNumbers(S)
-    ENDDO
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'Solid nodes: ',SolidNodeNumbers
-    
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DFluidNodes.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DFluidNodes.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(FluidNodeNumbers(arraySize))
-    DO S=1,arraySize
-      READ(1,*) FluidNodeNumbers(S)
-    ENDDO
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'Fluid nodes: ',FluidNodeNumbers
-    
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DInterfaceNodes.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DInterfaceNodes.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(InterfaceNodeNumbersForGeometry(arraySize))                                   !TODO TODO TODO InterfaceNodeNumbers is 1:22 not mixed!!
-    DO S=1,arraySize
-      READ(1,*) InterfaceNodeNumbersForGeometry(S)
-    ENDDO
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'Interface nodes: ',InterfaceNodeNumbersForGeometry
-    
-    !Read geometry
-    IF(NumberOfDimensions==3) THEN
-      OPEN (unit=1, file='Plate3DSolidX.txt', status='old', action='read')
-      READ(1, *), arraySize
-      IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-      ALLOCATE(SolidGeometryX(arraySize))
-      DO S=1,arraySize
-        READ(1,*) SolidGeometryX(S)
-      ENDDO
-      arraySize=0
-      CLOSE(1)
-      IF(FileReadDiagnostics) PRINT *, 'Solid x coordinates: ',SolidGeometryX
-    ENDIF
-    
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DSolidY.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DSolidY.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(SolidGeometryY(arraySize))
-    DO S=1,arraySize
-      READ(1,*) SolidGeometryY(S)
-    ENDDO
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'Solid y coordinates: ',SolidGeometryY
-    
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DSolidZ.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DSolidZ.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(SolidGeometryZ(arraySize))
-    DO S=1,arraySize
-      READ(1,*) SolidGeometryZ(S)
-    ENDDO
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'Solid z coordinates: ',SolidGeometryZ
-    
-    IF(NumberOfDimensions==3) THEN
-      OPEN (unit=1, file='Plate3DFluidX.txt', status='old', action='read')
-      READ(1, *), arraySize
-      IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-      ALLOCATE(FluidGeometryX(arraySize))
-      DO S=1,arraySize
-        READ(1,*) FluidGeometryX(S)
-      ENDDO
-      arraySize=0
-      CLOSE(1)
-      IF(FileReadDiagnostics) PRINT *, 'Fluid x coordinates: ',FluidGeometryX
-    ENDIF
-    
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DFluidY.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DFluidY.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(FluidGeometryY(arraySize))
-    DO S=1,arraySize
-      READ(1,*) FluidGeometryY(S)
-    ENDDO
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'Fluid y coordinates: ',FluidGeometryY
-    
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DFluidZ.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DFluidZ.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(FluidGeometryZ(arraySize))
-    DO S=1,arraySize
-      READ(1,*) FluidGeometryZ(S)
-    ENDDO
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'Fluid z coordinates: ',FluidGeometryZ
-    
-    IF(NumberOfDimensions==3) THEN
-      OPEN (unit=1, file='Plate3DInterfaceX.txt', status='old', action='read')
-      READ(1, *), arraySize
-      IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-      ALLOCATE(InterfaceGeometryX(arraySize))
-      DO S=1,arraySize
-        READ(1,*) InterfaceGeometryX(S)
-      ENDDO
-      arraySize=0
-      CLOSE(1)
-      IF(FileReadDiagnostics) PRINT *, 'Interface x coordinates: ',InterfaceGeometryX
-    ENDIF
-    
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DInterfaceY.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DInterfaceY.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(InterfaceGeometryY(arraySize))
-    DO S=1,arraySize
-      READ(1,*) InterfaceGeometryY(S)
-    ENDDO
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'Interface y coordinates: ',InterfaceGeometryY
-    
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DInterfaceZ.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DInterfaceZ.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(InterfaceGeometryZ(arraySize))
-    DO S=1,arraySize
-      READ(1,*) InterfaceGeometryZ(S)
-    ENDDO
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'Interface z coordinates: ',InterfaceGeometryZ
-    
-    !Read element information
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DSolidElementNodeNumbers.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DSolidElementNodeNumbers.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(SolidElementNodes(arraySize,3**NumberOfDimensions))
-    DO S=1,arraySize
-      READ(1,*) SolidElementNodes(S,:)
-    ENDDO
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'Solid element node numbers: ',SolidElementNodes
-    
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DFluidElementNodeNumbers.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DFluidElementNodeNumbers.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(FluidElementNodes(arraySize,3**NumberOfDimensions))
-    DO S=1,arraySize
-      READ(1,*) FluidElementNodes(S,:)
-    ENDDO
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'Fluid element node numbers: ',FluidElementNodes
-    
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DInterfaceElementNodeNumbers.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DInterfaceElementNodeNumbers.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(InterfaceElementNodes(arraySize,3**(NumberOfDimensions-1)))
-    DO S=1,arraySize
-      READ(1,*) InterfaceElementNodes(S,:)
-    ENDDO
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'Interface element node numbers: ',InterfaceElementNodes
-    
-    !Read interface nodes for solid/fluid/interface
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      !Read xi position's
-      OPEN (unit=1, file='Plate2DSolidXi1.txt', status='old', action='read')
-      READ(1, *), arraySize
-      IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-      ALLOCATE(SolidXi2(arraySize,3))
-      DO S=1,arraySize
-        READ(1,*) SolidXi2(S,:)
-      ENDDO
-      arraySize=0
-      CLOSE(1)
-      IF(FileReadDiagnostics) PRINT *, 'Solid xi2: ',SolidXi2
-      
-      OPEN (unit=1, file='Plate2DSolidXi2.txt', status='old', action='read')
-      READ(1, *), arraySize
-      IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-      ALLOCATE(SolidXi3(arraySize,3))
-      DO S=1,arraySize
-        READ(1,*) SolidXi3(S,:)
-      ENDDO
-      arraySize=0
-      CLOSE(1)
-      IF(FileReadDiagnostics) PRINT *, 'Solid xi3: ',SolidXi3
-      
-      OPEN (unit=1, file='Plate2DFluidXi1.txt', status='old', action='read')
-      READ(1, *), arraySize
-      IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-      ALLOCATE(FluidXi2(arraySize,3))
-      DO S=1,arraySize
-        READ(1,*) FluidXi2(S,:)
-      ENDDO
-      arraySize=0
-      CLOSE(1)
-      IF(FileReadDiagnostics) PRINT *, 'Fluid xi2: ',FluidXi2
-      
-      OPEN (unit=1, file='Plate2DFluidXi2.txt', status='old', action='read')
-      READ(1, *), arraySize
-      IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-      ALLOCATE(FluidXi3(arraySize,3))
-      DO S=1,arraySize
-        READ(1,*) FluidXi3(S,:)
-      ENDDO
-      arraySize=0
-      CLOSE(1)
-      IF(FileReadDiagnostics) PRINT *, 'Fluid xi3: ',FluidXi3
-      
-      OPEN (unit=1, file='Plate2DInterfaceSolidElements.txt', status='old', action='read')
-      READ(1, *), arraySize
-      IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-      ALLOCATE(SolidInterfaceElements(arraySize))
-      READ(1,*) SolidInterfaceElements(:)
-      arraySize=0
-      CLOSE(1)
-      IF(FileReadDiagnostics) PRINT *, 'Solid interface element numbers: ',SolidInterfaceElements
-      
-      OPEN (unit=1, file='Plate2DInterfaceFluidElements.txt', status='old', action='read')
-      READ(1, *), arraySize
-      IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-      ALLOCATE(FluidInterfaceElements(arraySize))
-      READ(1,*) FluidInterfaceElements(:)
-      arraySize=0
-      CLOSE(1)
-      IF(FileReadDiagnostics) PRINT *, 'Fluid interface element numbers: ',FluidInterfaceElements
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DSolidInterfaceNodeInformationNodeElement.txt', status='old', action='read')
-      READ(1, *), arraySize
-      IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-      ALLOCATE(SolidInterfaceNodeInformationNE(arraySize,2))
-      DO S=1,arraySize
-        READ(1,*) SolidInterfaceNodeInformationNE(S,:)
-      ENDDO
-      arraySize=0
-      CLOSE(1)
-      OPEN (unit=1, file='Plate3DFluidInterfaceNodeInformationNodeElement.txt', status='old', action='read')
-      READ(1, *), arraySize
-      IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-      ALLOCATE(FluidInterfaceNodeInformationNE(arraySize,2))
-      DO S=1,arraySize
-        READ(1,*) FluidInterfaceNodeInformationNE(S,:)
-      ENDDO
-      arraySize=0
-      CLOSE(1)
-      OPEN (unit=1, file='Plate3DInterfaceInterfaceNodeInformationNodeElement.txt', status='old', action='read')
-      READ(1, *), arraySize
-      IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-      ALLOCATE(InterfaceInterfaceNodeInformationNE(arraySize,2))
-      DO S=1,arraySize
-        READ(1,*) InterfaceInterfaceNodeInformationNE(S,:)
-      ENDDO
-      arraySize=0
-      CLOSE(1)
-      OPEN (unit=1, file='Plate3DSolidInterfaceNodeInformationXi.txt', status='old', action='read')
-      READ(1, *), arraySize
-      IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-      ALLOCATE(SolidInterfaceNodeInformationXi(arraySize,3))
-      DO S=1,arraySize
-        READ(1,*) SolidInterfaceNodeInformationXi(S,:)
-      ENDDO
-      arraySize=0
-      CLOSE(1)
-      OPEN (unit=1, file='Plate3DFluidInterfaceNodeInformationXi.txt', status='old', action='read')
-      READ(1, *), arraySize
-      IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-      ALLOCATE(FluidInterfaceNodeInformationXi(arraySize,3))
-      DO S=1,arraySize
-        READ(1,*) FluidInterfaceNodeInformationXi(S,:)
-      ENDDO
-      arraySize=0
-      CLOSE(1)
-      OPEN (unit=1, file='Plate3DlagrangeNodes.txt', status='old', action='read')
-      READ(1, *), arraySize
-      IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-      ALLOCATE(LagrangeNodes(arraySize))
-      READ(1,*) LagrangeNodes(:)
-      arraySize=0
-      CLOSE(1)
-    ENDSELECT
-    
-    !Read connected solid/fluid nodes for sorted interface nodes
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DSortedInterfaceNodes.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DSortedInterfaceNodes.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(ConnectedInterfaceNodes(2,arraySize))
-    DO S=1,arraySize
-      READ(1,*) ConnectedInterfaceNodes(:,S)
-    ENDDO
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'Connected nodes: ',ConnectedInterfaceNodes
-    
-    !Read boundary conditions
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DdisplacementBC.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DdisplacementBC.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(NoDisplacementNodes(arraySize))
-    READ(1,*) NoDisplacementNodes(:)
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'Solid node numbers with no displacement: ',NoDisplacementNodes
-    
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DfixedNodesBC.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DfixedNodesBC.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(FixedNodes(arraySize))
-    READ(1,*) FixedNodes(:)
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'In both coordinates fixed mesh nodes: ',FixedNodes
-    
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DfixedZNodesBC.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DfixedZNodesBC.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(FixedZNodes(arraySize))
-    READ(1,*) FixedZNodes(:)
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'In 2nd coordinate fixed mesh nodes: ',FixedZNodes
-    
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DmovedNodesBC.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DmovedNodesBC.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(MovedNodes(arraySize))
-    READ(1,*) MovedNodes(:)
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'In both coordinates moving mesh nodes: ',MovedNodes
-    
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DmovedYNodesBC.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DmovedYNodesBC.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(MovedYNodes(arraySize))
-    READ(1,*) MovedYNodes(:)
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'In 1st coordinate moving mesh nodes: ',MovedYNodes
-    
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DinletBC.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DinletBC.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(InletNodes(arraySize))
-    READ(1,*) InletNodes(:)
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'Inlet nodes: ',InletNodes
-    
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DnoSlipBC.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DnoSlipBC.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(NoSlipNodes(arraySize))
-    READ(1,*) NoSlipNodes(:)
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'No-slip nodes: ',NoSlipNodes
-    
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DnoSlipBC.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DslipTop.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(SlipNodesTop(arraySize))
-    READ(1,*) SlipNodesTop(:)
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'Slip nodes top: ',SlipNodesTop
-    
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DnoSlipBC.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DslipRightLeft.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(SlipNodesRightLeft(arraySize))
-    READ(1,*) SlipNodesRightLeft(:)
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'Slip nodes r/l: ',SlipNodesRightLeft
-    
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DpressureBC.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DpressureBC.txt', status='old', action='read')
-    ENDSELECT
-    READ(1, *), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(OutletNodes(arraySize))
-    READ(1,*) OutletNodes(:)
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'Outlet nodes: ',OutletNodes
-    
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate2D)
-      OPEN (unit=1, file='Plate2DslipBC.txt', status='old', action='read')
-    CASE(Plate3D)
-      OPEN (unit=1, file='Plate3DslipBC.txt', status='old', action='read')
-    ENDSELECT
-    READ(1,*), arraySize
-    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
-    ALLOCATE(SlipNodes(arraySize))
-    READ(1,*) SlipNodes(:)
-    arraySize=0
-    CLOSE(1)
-    IF(FileReadDiagnostics) PRINT *, 'Slip BC nodes: ',SlipNodes
-    
-    NumberOfSolidNodes=SIZE(SolidNodeNumbers)
-    NumberOfSolidElements=SIZE(SolidElementNodes(:,1))
-    NumberOfFluidNodes=SIZE(FluidNodeNumbers)
-    NumberOfFluidElements=SIZE(FluidElementNodes(:,1))
-    NumberOfInterfaceNodes=SIZE(InterfaceNodeNumbersForGeometry)
-    NumberOfInterfaceElements=SIZE(InterfaceElementNodes(:,1))
-    
-    PRINT *, "Finished reading geometry."
-    
-    IF(SetupOutput) THEN
-      PRINT *,"SUMMARY"
-      PRINT *," "
-      PRINT *,"Start time: ",StartTime
-      PRINT *,"Stop time: ",StopTime
-      PRINT *,"Time increment: ",TimeStepSize
-      PRINT *," "
-      PRINT *,"FLUID:"
-      PRINT *,"Dynamic viscosity: ",FluidDynamicViscosity," kg / (m s)"
-      PRINT *,"Density: ",FluidDensity," kg m^-3"
-      IF(NumberOfDimensions==3) THEN
-        PRINT *,"Domain:",FluidGeometryX(NumberOfFluidNodes),"x",FluidGeometryY(NumberOfFluidNodes),"x", &
-          & FluidGeometryZ(NumberOfFluidNodes)," m^3"
-      ELSE
-        PRINT *,"Domain:",FluidGeometryY(NumberOfFluidNodes),"x", &
-          & FluidGeometryZ(NumberOfFluidNodes)," m^2"
-      ENDIF
-      PRINT *, "Number of nodes: ",NumberOfFluidNodes
-      PRINT *," "
-      PRINT *,"SOLID:"
-      PRINT *,"Density: ",SolidDensity," kg m^-3"
-      PRINT *,"Young's modulus: ",YoungsModulus," Pa"
-      PRINT *,"Poisson's ratio: ",PoissonsRatio
-      PRINT *,"Neo-Hookean constant: ",MooneyRivlin1
-      IF(NumberOfDimensions==3) THEN
-        PRINT *,"Domain:",SolidGeometryX(NumberOfSolidNodes)-SolidGeometryX(1),"x", &
-          & SolidGeometryY(NumberOfSolidNodes)-SolidGeometryY(1),"x", &
-          & SolidGeometryZ(NumberOfSolidNodes)-SolidGeometryZ(1)," m^3"
-      ELSE
-        PRINT *,"Domain:",SolidGeometryY(NumberOfSolidNodes)-SolidGeometryY(1),"x", &
-          & SolidGeometryZ(NumberOfSolidNodes)-SolidGeometryZ(1)," m^2"
-      ENDIF
-      PRINT *, "Number of nodes: ",NumberOfSolidNodes
-      PRINT *," "
-      PRINT *, "Number of interface nodes: ",NumberOfInterfaceNodes
-    ENDIF
-    
-  END SELECT
+  CASE(Plate2D)
+    OPEN (unit=1, file='./Plate2DFluidNodes.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, file='./Plate3DFluidNodes.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(FluidNodeNumbers(arraySize))
+  DO S=1,arraySize
+    READ(1,*) FluidNodeNumbers(S)
+  ENDDO
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'Fluid nodes: ',FluidNodeNumbers
   
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, file='./Plate2DInterfaceNodes.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, file='./Plate3DInterfaceNodes.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(InterfaceNodeNumbersForGeometry(arraySize))
+  DO S=1,arraySize
+    READ(1,*) InterfaceNodeNumbersForGeometry(S)
+  ENDDO
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'Interface nodes: ',InterfaceNodeNumbersForGeometry
+  
+  !Read geometry
+  IF(NumberOfDimensions==3) THEN
+    OPEN (unit=1, file='./Plate3DSolidX.txt', &
+      & status='old', action='read')
+    READ(1, *), arraySize
+    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+    ALLOCATE(SolidGeometryX(arraySize))
+    DO S=1,arraySize
+      READ(1,*) SolidGeometryX(S)
+    ENDDO
+    arraySize=0
+    CLOSE(1)
+    IF(FileReadDiagnostics) PRINT *, 'Solid x coordinates: ',SolidGeometryX
+  ENDIF
+  
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, file='./Plate2DSolidY.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, file='./Plate3DSolidY.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(SolidGeometryY(arraySize))
+  DO S=1,arraySize
+    READ(1,*) SolidGeometryY(S)
+  ENDDO
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'Solid y coordinates: ',SolidGeometryY
+  
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, file='./Plate2DSolidZ.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, file='./Plate3DSolidZ.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(SolidGeometryZ(arraySize))
+  DO S=1,arraySize
+    READ(1,*) SolidGeometryZ(S)
+  ENDDO
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'Solid z coordinates: ',SolidGeometryZ
+  
+  IF(NumberOfDimensions==3) THEN
+    OPEN (unit=1, file='./Plate3DFluidX.txt', &
+      & status='old', action='read')
+    READ(1, *), arraySize
+    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+    ALLOCATE(FluidGeometryX(arraySize))
+    DO S=1,arraySize
+      READ(1,*) FluidGeometryX(S)
+    ENDDO
+    arraySize=0
+    CLOSE(1)
+    IF(FileReadDiagnostics) PRINT *, 'Fluid x coordinates: ',FluidGeometryX
+  ENDIF
+  
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, file='./Plate2DFluidY.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, file='./Plate3DFluidY.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(FluidGeometryY(arraySize))
+  DO S=1,arraySize
+    READ(1,*) FluidGeometryY(S)
+  ENDDO
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'Fluid y coordinates: ',FluidGeometryY
+  
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, file='./Plate2DFluidZ.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, file='./Plate3DFluidZ.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(FluidGeometryZ(arraySize))
+  DO S=1,arraySize
+    READ(1,*) FluidGeometryZ(S)
+  ENDDO
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'Fluid z coordinates: ',FluidGeometryZ
+  
+  IF(NumberOfDimensions==3) THEN
+    OPEN (unit=1, file='./Plate3DInterfaceX.txt', &
+      & status='old', action='read')
+    READ(1, *), arraySize
+    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+    ALLOCATE(InterfaceGeometryX(arraySize))
+    DO S=1,arraySize
+      READ(1,*) InterfaceGeometryX(S)
+    ENDDO
+    arraySize=0
+    CLOSE(1)
+    IF(FileReadDiagnostics) PRINT *, 'Interface x coordinates: ',InterfaceGeometryX
+  ENDIF
+  
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, file='./Plate2DInterfaceY.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, file='./Plate3DInterfaceY.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(InterfaceGeometryY(arraySize))
+  DO S=1,arraySize
+    READ(1,*) InterfaceGeometryY(S)
+  ENDDO
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'Interface y coordinates: ',InterfaceGeometryY
+  
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, file='./Plate2DInterfaceZ.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, file='./Plate3DInterfaceZ.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(InterfaceGeometryZ(arraySize))
+  DO S=1,arraySize
+    READ(1,*) InterfaceGeometryZ(S)
+  ENDDO
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'Interface z coordinates: ',InterfaceGeometryZ
+  
+  !Read element information
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, &
+      & file='./Plate2DSolidElementNodeNumbers.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, &
+      & file='./Plate3DSolidElementNodeNumbers.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(SolidElementNodes(arraySize,3**NumberOfDimensions))
+  DO S=1,arraySize
+    READ(1,*) SolidElementNodes(S,:)
+  ENDDO
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'Solid element node numbers: ',SolidElementNodes
+  
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, &
+      & file='./Plate2DFluidElementNodeNumbers.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, &
+      & file='./Plate3DFluidElementNodeNumbers.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(FluidElementNodes(arraySize,3**NumberOfDimensions))
+  DO S=1,arraySize
+    READ(1,*) FluidElementNodes(S,:)
+  ENDDO
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'Fluid element node numbers: ',FluidElementNodes
+  
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, &
+      & file='./Plate2DInterfaceElementNodeNumbers.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, &
+      & file='./Plate3DInterfaceElementNodeNumbers.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(InterfaceElementNodes(arraySize,3**(NumberOfDimensions-1)))
+  DO S=1,arraySize
+    READ(1,*) InterfaceElementNodes(S,:)
+  ENDDO
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'Interface element node numbers: ',InterfaceElementNodes
+  
+  !Read interface nodes for solid/fluid/interface
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    !Read xi position's
+    OPEN (unit=1, file='./Plate2DSolidXi1.txt', &
+      & status='old', action='read')
+    READ(1, *), arraySize
+    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+    ALLOCATE(SolidXi2(arraySize,3))
+    DO S=1,arraySize
+      READ(1,*) SolidXi2(S,:)
+    ENDDO
+    arraySize=0
+    CLOSE(1)
+    IF(FileReadDiagnostics) PRINT *, 'Solid xi2: ',SolidXi2
+    
+    OPEN (unit=1, file='./Plate2DSolidXi2.txt', &
+      & status='old', action='read')
+    READ(1, *), arraySize
+    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+    ALLOCATE(SolidXi3(arraySize,3))
+    DO S=1,arraySize
+      READ(1,*) SolidXi3(S,:)
+    ENDDO
+    arraySize=0
+    CLOSE(1)
+    IF(FileReadDiagnostics) PRINT *, 'Solid xi3: ',SolidXi3
+    
+    OPEN (unit=1, file='./Plate2DFluidXi1.txt', &
+      & status='old', action='read')
+    READ(1, *), arraySize
+    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+    ALLOCATE(FluidXi2(arraySize,3))
+    DO S=1,arraySize
+      READ(1,*) FluidXi2(S,:)
+    ENDDO
+    arraySize=0
+    CLOSE(1)
+    IF(FileReadDiagnostics) PRINT *, 'Fluid xi2: ',FluidXi2
+    
+    OPEN (unit=1, file='./Plate2DFluidXi2.txt', &
+      & status='old', action='read')
+    READ(1, *), arraySize
+    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+    ALLOCATE(FluidXi3(arraySize,3))
+    DO S=1,arraySize
+      READ(1,*) FluidXi3(S,:)
+    ENDDO
+    arraySize=0
+    CLOSE(1)
+    IF(FileReadDiagnostics) PRINT *, 'Fluid xi3: ',FluidXi3
+    
+    OPEN (unit=1, &
+      & file='./Plate2DInterfaceSolidElements.txt', &
+      & status='old', action='read')
+    READ(1, *), arraySize
+    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+    ALLOCATE(SolidInterfaceElements(arraySize))
+    READ(1,*) SolidInterfaceElements(:)
+    arraySize=0
+    CLOSE(1)
+    IF(FileReadDiagnostics) PRINT *, 'Solid interface element numbers: ',SolidInterfaceElements
+    
+    OPEN (unit=1, &
+      & file='./Plate2DInterfaceFluidElements.txt', &
+      & status='old', action='read')
+    READ(1, *), arraySize
+    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+    ALLOCATE(FluidInterfaceElements(arraySize))
+    READ(1,*) FluidInterfaceElements(:)
+    arraySize=0
+    CLOSE(1)
+    IF(FileReadDiagnostics) PRINT *, 'Fluid interface element numbers: ',FluidInterfaceElements
+  CASE(Plate3D)
+    OPEN (unit=1, file=&
+ & './Plate3DSolidInterfaceNodeInformationNodeElement.txt',&
+      & status='old', action='read')
+    READ(1, *), arraySize
+    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+    ALLOCATE(SolidInterfaceNodeInformationNE(arraySize,2))
+    DO S=1,arraySize
+      READ(1,*) SolidInterfaceNodeInformationNE(S,:)
+    ENDDO
+    arraySize=0
+    CLOSE(1)
+    
+    OPEN (unit=1, file=&
+ & './Plate3DFluidInterfaceNodeInformationNodeElement.txt',&
+      & status='old', action='read')
+    READ(1, *), arraySize
+    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+    ALLOCATE(FluidInterfaceNodeInformationNE(arraySize,2))
+    DO S=1,arraySize
+      READ(1,*) FluidInterfaceNodeInformationNE(S,:)
+    ENDDO
+    arraySize=0
+    CLOSE(1)
+    
+    OPEN (unit=1, file=&
+      &'./Plate3DIInterfaceNodeInformationNodeElement.txt',&
+      & status='old', action='read')
+    READ(1, *), arraySize
+    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+    ALLOCATE(InterfaceInterfaceNodeInformationNE(arraySize,2))
+    DO S=1,arraySize
+      READ(1,*) InterfaceInterfaceNodeInformationNE(S,:)
+    ENDDO
+    arraySize=0
+    CLOSE(1)
+    
+    OPEN (unit=1, file=&
+      & './Plate3DSolidInterfaceNodeInformationXi.txt', &
+      & status='old', action='read')
+    READ(1, *), arraySize
+    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+    ALLOCATE(SolidInterfaceNodeInformationXi(arraySize,3))
+    DO S=1,arraySize
+      READ(1,*) SolidInterfaceNodeInformationXi(S,:)
+    ENDDO
+    arraySize=0
+    CLOSE(1)
+    
+    OPEN (unit=1, file= &
+      & './Plate3DFluidInterfaceNodeInformationXi.txt', &
+      & status='old', action='read')
+    READ(1, *), arraySize
+    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+    ALLOCATE(FluidInterfaceNodeInformationXi(arraySize,3))
+    DO S=1,arraySize
+      READ(1,*) FluidInterfaceNodeInformationXi(S,:)
+    ENDDO
+    arraySize=0
+    CLOSE(1)
+    
+    OPEN (unit=1, file='./Plate3DlagrangeNodes.txt', &
+      & status='old', action='read')
+    READ(1, *), arraySize
+    IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+    ALLOCATE(LagrangeNodes(arraySize))
+    READ(1,*) LagrangeNodes(:)
+    arraySize=0
+    CLOSE(1)
+  ENDSELECT
+  
+  !Read connected solid/fluid nodes for sorted interface nodes
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, &
+      & file='./Plate2DSortedInterfaceNodes.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, &
+      & file='./Plate3DSortedInterfaceNodes.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(ConnectedInterfaceNodes(2,arraySize))
+  DO S=1,arraySize
+    READ(1,*) ConnectedInterfaceNodes(:,S)
+  ENDDO
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'Connected nodes: ',ConnectedInterfaceNodes
+  
+  !Read boundary conditions
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, file='./Plate2DdisplacementBC.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, file='./Plate3DdisplacementBC.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(NoDisplacementNodes(arraySize))
+  READ(1,*) NoDisplacementNodes(:)
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'Solid node numbers with no displacement: ',NoDisplacementNodes
+  
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, file='./Plate2DfixedNodesBC.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, file='./Plate3DfixedNodesBC.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(FixedNodes(arraySize))
+  READ(1,*) FixedNodes(:)
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'In both coordinates fixed mesh nodes: ',FixedNodes
+  
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, file='./Plate2DfixedZNodesBC.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, file='./Plate3DfixedZNodesBC.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(FixedZNodes(arraySize))
+  READ(1,*) FixedZNodes(:)
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'In 2nd coordinate fixed mesh nodes: ',FixedZNodes
+  
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, file='./Plate2DmovedNodesBC.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, file='./Plate3DmovedNodesBC.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(MovedNodes(arraySize))
+  READ(1,*) MovedNodes(:)
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'In both coordinates moving mesh nodes: ',MovedNodes
+  
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, file='./Plate2DmovedYNodesBC.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, file='./Plate3DmovedYNodesBC.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(MovedYNodes(arraySize))
+  READ(1,*) MovedYNodes(:)
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'In 1st coordinate moving mesh nodes: ',MovedYNodes
+  
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, file='./Plate2DinletBC.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, file='./Plate3DinletBC.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(InletNodes(arraySize))
+  READ(1,*) InletNodes(:)
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'Inlet nodes: ',InletNodes
+  
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, file='./Plate2DnoSlipBC.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, file='./Plate3DnoSlipBC.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(NoSlipNodes(arraySize))
+  READ(1,*) NoSlipNodes(:)
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'No-slip nodes: ',NoSlipNodes
+  
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, file='./Plate2DslipBC.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, file='./Plate3DslipTop.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(SlipNodesTop(arraySize))
+  READ(1,*) SlipNodesTop(:)
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'Slip nodes top: ',SlipNodesTop
+  
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, file='./Plate2DslipBC.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, file='./Plate3DslipRightLeft.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(SlipNodesRightLeft(arraySize))
+  READ(1,*) SlipNodesRightLeft(:)
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'Slip nodes r/l: ',SlipNodesRightLeft
+  
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, file='./Plate2DpressureBC.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, file='./Plate3DpressureBC.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1, *), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(OutletNodes(arraySize))
+  READ(1,*) OutletNodes(:)
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'Outlet nodes: ',OutletNodes
+  
+  SELECT CASE(MaterialSpecification)
+  CASE(Plate2D)
+    OPEN (unit=1, file='./Plate2DslipBC.txt', &
+      & status='old', action='read')
+  CASE(Plate3D)
+    OPEN (unit=1, file='./Plate3DslipBC.txt', &
+      & status='old', action='read')
+  ENDSELECT
+  READ(1,*), arraySize
+  IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
+  ALLOCATE(SlipNodes(arraySize))
+  READ(1,*) SlipNodes(:)
+  arraySize=0
+  CLOSE(1)
+  IF(FileReadDiagnostics) PRINT *, 'Slip BC nodes: ',SlipNodes
+  
+  NumberOfSolidNodes=SIZE(SolidNodeNumbers)
+  NumberOfSolidElements=SIZE(SolidElementNodes(:,1))
+  NumberOfFluidNodes=SIZE(FluidNodeNumbers)
+  NumberOfFluidElements=SIZE(FluidElementNodes(:,1))
+  NumberOfInterfaceNodes=SIZE(InterfaceNodeNumbersForGeometry)
+  NumberOfInterfaceElements=SIZE(InterfaceElementNodes(:,1))
+  
+  PRINT *, "Finished reading geometry."
+  
+  IF(SetupOutput) THEN
+    PRINT *,"SUMMARY"
+    PRINT *," "
+    PRINT *,"Start time: ",StartTime
+    PRINT *,"Stop time: ",StopTime
+    PRINT *,"Time increment: ",TimeStepSize
+    PRINT *," "
+    PRINT *,"FLUID:"
+    PRINT *,"Dynamic viscosity: ",FluidDynamicViscosity," kg / (m s)"
+    PRINT *,"Density: ",FluidDensity," kg m^-3"
+    IF(NumberOfDimensions==3) THEN
+      PRINT *,"Domain:",FluidGeometryX(NumberOfFluidNodes),"x",FluidGeometryY(NumberOfFluidNodes),"x", &
+        & FluidGeometryZ(NumberOfFluidNodes)," m^3"
+    ELSE
+      PRINT *,"Domain:",FluidGeometryY(NumberOfFluidNodes),"x", &
+        & FluidGeometryZ(NumberOfFluidNodes)," m^2"
+    ENDIF
+    PRINT *, "Number of nodes: ",NumberOfFluidNodes
+    PRINT *," "
+    PRINT *,"SOLID:"
+    PRINT *,"Density: ",SolidDensity," kg m^-3"
+    PRINT *,"Young's modulus: ",YoungsModulus," Pa"
+    PRINT *,"Poisson's ratio: ",PoissonsRatio
+    PRINT *,"Neo-Hookean constant: ",MooneyRivlin1
+    IF(NumberOfDimensions==3) THEN
+      PRINT *,"Domain:",SolidGeometryX(NumberOfSolidNodes)-SolidGeometryX(1),"x", &
+        & SolidGeometryY(NumberOfSolidNodes)-SolidGeometryY(1),"x", &
+        & SolidGeometryZ(NumberOfSolidNodes)-SolidGeometryZ(1)," m^3"
+    ELSE
+      PRINT *,"Domain:",SolidGeometryY(NumberOfSolidNodes)-SolidGeometryY(1),"x", &
+        & SolidGeometryZ(NumberOfSolidNodes)-SolidGeometryZ(1)," m^2"
+    ENDIF
+    PRINT *, "Number of nodes: ",NumberOfSolidNodes
+    PRINT *," "
+    PRINT *, "Number of interface nodes: ",NumberOfInterfaceNodes
+  ENDIF
   !
   !=================================================================================================================================
   !
   ! C O O R D I N A T E _ S Y S T E M S
-  
   !Create a new RC coordinate system for the solid region
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> SOLID COORDINATE SYSTEM << == '
   CALL CMISSCoordinateSystem_Initialise(SolidCoordinateSystem,Err)
   CALL CMISSCoordinateSystem_CreateStart(SolidCoordinateSystemUserNumber,SolidCoordinateSystem,Err)
   CALL CMISSCoordinateSystem_DimensionSet(SolidCoordinateSystem,NumberOfDimensions,Err)
   CALL CMISSCoordinateSystem_CreateFinish(SolidCoordinateSystem,Err)
-
   !Create a new RC coordinate system for the fluid region
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> FLUID COORDINATE SYSTEM << == '
   CALL CMISSCoordinateSystem_Initialise(FluidCoordinateSystem,Err)
   CALL CMISSCoordinateSystem_CreateStart(FluidCoordinateSystemUserNumber,FluidCoordinateSystem,Err)
   CALL CMISSCoordinateSystem_DimensionSet(FluidCoordinateSystem,NumberOfDimensions,Err)
   CALL CMISSCoordinateSystem_CreateFinish(FluidCoordinateSystem,Err)
-  
   !Create a new RC coordinate system for the interface region
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> INTERFACE COORDINATE SYSTEM << == '
   CALL CMISSCoordinateSystem_Initialise(InterfaceCoordinateSystem,Err)
   CALL CMISSCoordinateSystem_CreateStart(InterfaceCoordinateSystemUserNumber,InterfaceCoordinateSystem,Err)
   CALL CMISSCoordinateSystem_DimensionSet(InterfaceCoordinateSystem,NumberOfDimensions,Err)
   CALL CMISSCoordinateSystem_CreateFinish(InterfaceCoordinateSystem,Err)
-  
   !
   !=================================================================================================================================
   !
   ! R E G I O N S
-  
   !Create the solid region and set the regions coordinate system to the RC coordinate system that we have created
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> SOLID REGION << == '
   CALL CMISSRegion_Initialise(Region1,Err)
@@ -1545,20 +1117,17 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSRegion_LabelSet(Region1,"SolidRegion",Err)
   CALL CMISSRegion_CoordinateSystemSet(Region1,SolidCoordinateSystem,Err)
   CALL CMISSRegion_CreateFinish(Region1,Err)
-
-  !Create the solid region and set the regions coordinate system to the RC coordinate system that we have created
+  !Create the fluid region and set the regions coordinate system to the RC coordinate system that we have created
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> FLUID REGION << == '
   CALL CMISSRegion_Initialise(Region2,Err)
   CALL CMISSRegion_CreateStart(FluidRegionUserNumber,WorldRegion,Region2,Err)
   CALL CMISSRegion_LabelSet(Region2,"FluidRegion",Err)
   CALL CMISSRegion_CoordinateSystemSet(Region2,FluidCoordinateSystem,Err)
   CALL CMISSRegion_CreateFinish(Region2,Err)
-  
   !
   !=================================================================================================================================
   !
   ! B A S I S _ S O L I D
-  
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> BASIS FOR SOLID: DISPLACEMENT, HYDROSTATIC PRESSURE << == '
   !Create a basis for the dependent field variable displacement
   CALL CMISSBasis_Initialise(BasisDisplacement,Err)
@@ -1624,12 +1193,10 @@ PROGRAM CoupledFluidSolidExample
     CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisHydrostaticPressure,[NumberOfGaussXi,NumberOfGaussXi,NumberOfGaussXi],Err)
   ENDIF
   CALL CMISSBasis_CreateFinish(BasisHydrostaticPressure,Err)
-  
   !
   !=================================================================================================================================
   !
   ! B A S I S _ F L U I D
-  
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> CREATING BASIS FOR FLUID: SPACE, VELOCITY, PRESSURE << == '
   !Create a basis for the fluid domain
   MeshNumberOfComponents=1
@@ -1659,7 +1226,6 @@ PROGRAM CoupledFluidSolidExample
       & (/NumberOfGaussXiSpace,NumberOfGaussXiSpace,NumberOfGaussXiSpace/),Err)
   ENDIF
   CALL CMISSBasis_CreateFinish(BasisSpaceFluid,Err)
-  
   !Create a basis for the dependent field variable velocity
   IF(InterpolationTypeVelocity==InterpolationTypeSpace) THEN
     BasisVelocity=BasisSpaceFluid
@@ -1681,7 +1247,6 @@ PROGRAM CoupledFluidSolidExample
     ENDIF
     CALL CMISSBasis_CreateFinish(BasisVelocity,Err)
   ENDIF
-  
   !Create a basis for the dependent field variable pressure
   IF(InterpolationTypePressure==InterpolationTypeSpace) THEN
     BasisPressure=BasisSpaceFluid
@@ -1705,23 +1270,19 @@ PROGRAM CoupledFluidSolidExample
     ENDIF
     CALL CMISSBasis_CreateFinish(BasisPressure,Err)
   ENDIF
-
   !
   !================================================================================================================================
   !
   ! M E S H E S
-  
   !Create the solid mesh
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> SOLID MESH << == '
   CALL CMISSNodes_Initialise(SolidNodes,Err)
   CALL CMISSMesh_Initialise(Mesh1,Err)
   CALL CMISSNodes_CreateStart(Region1,NumberOfSolidNodes,SolidNodes,Err)
   CALL CMISSNodes_CreateFinish(SolidNodes,Err)
-  
   CALL CMISSMesh_CreateStart(SolidMeshUserNumber,Region1,NumberOfDimensions,Mesh1,Err)
   CALL CMISSMesh_NumberOfElementsSet(Mesh1,NumberOfSolidElements,Err)
   CALL CMISSMesh_NumberOfComponentsSet(Mesh1,2,Err)
-  
   CALL CMISSMeshElements_Initialise(SolidMeshElementsSpace,Err)
   CALL CMISSMeshElements_Initialise(SolidMeshElementsDisplacement,Err)
   CALL CMISSMeshElements_Initialise(SolidMeshElementsHydrostaticPressure,Err)
@@ -1731,41 +1292,17 @@ PROGRAM CoupledFluidSolidExample
   Mesh1ComponentNumberHydrostaticPressure=1
   
   CALL CMISSMeshElements_CreateStart(Mesh1,Mesh1ComponentNumberSpace,BasisSpaceSolid,SolidMeshElementsSpace,Err)
-  SELECT CASE(MaterialSpecification)
-  CASE(Blood)
-    ALLOCATE(IndexArray(9))
-    IF(.NOT.ALLOCATED(IndexArray)) CALL HANDLE_ERROR('IndexArray not allocated.')
-    IndexArray(:)=(/1,2,3,4,5,6,7,8,9/)
-    DO ElementIndex=1,NumberOfSolidElements
-      CALL CMISSMeshElements_NodesSet(SolidMeshElementsSpace,SolidElements(ElementIndex), &
-        & SolidElementSDNodeMappings(IndexArray),Err)
-      IndexArray=IndexArray+9
-    ENDDO
-    IF(ALLOCATED(IndexArray)) DEALLOCATE(IndexArray)
-  CASE(Plate2D,Plate3D)
-    DO ElementIndex=1,NumberOfSolidElements
-      CALL CMISSMeshElements_NodesSet(SolidMeshElementsSpace,ElementIndex, &
-        & SolidElementNodes(ElementIndex,:),Err)
-    ENDDO
-  END SELECT
+  DO ElementIndex=1,NumberOfSolidElements
+    CALL CMISSMeshElements_NodesSet(SolidMeshElementsSpace,ElementIndex, &
+      & SolidElementNodes(ElementIndex,:),Err)
+  ENDDO
   CALL CMISSMeshElements_CreateFinish(SolidMeshElementsSpace,Err)
   
   SolidMeshElementsDisplacement=SolidMeshElementsSpace
-  
   Mesh1ComponentNumberHydrostaticPressure=Mesh1ComponentNumberDisplacement+1
   CALL CMISSMeshElements_CreateStart(Mesh1,Mesh1ComponentNumberHydrostaticPressure, &
     & BasisHydrostaticPressure,SolidMeshElementsHydrostaticPressure,Err)
   SELECT CASE(MaterialSpecification)
-  CASE(Blood)
-    ALLOCATE(IndexArray(4))
-    IF(.NOT.ALLOCATED(IndexArray)) CALL HANDLE_ERROR('IndexArray not allocated.')
-    IndexArray(:)=(/1,2,3,4/)
-    DO ElementIndex=1,NumberOfSolidElements
-      CALL CMISSMeshElements_NodesSet(SolidMeshElementsHydrostaticPressure,SolidElements(ElementIndex), &
-        & SolidElementHPNodeMappings(IndexArray),Err)
-      IndexArray=IndexArray+4
-    ENDDO
-    IF(ALLOCATED(IndexArray)) DEALLOCATE(IndexArray)
   CASE(Plate2D)
     DO ElementIndex=1,NumberOfSolidElements
       CALL CMISSMeshElements_NodesSet(SolidMeshElementsHydrostaticPressure,ElementIndex, &
@@ -1779,18 +1316,15 @@ PROGRAM CoupledFluidSolidExample
   END SELECT
   CALL CMISSMeshElements_CreateFinish(SolidMeshElementsHydrostaticPressure,Err)
   CALL CMISSMesh_CreateFinish(Mesh1,Err)
-  
   !Create fluid mesh
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> FLUID MESH << == '
   CALL CMISSNodes_Initialise(FluidNodes,Err)
   CALL CMISSMesh_Initialise(Mesh2,Err)
   CALL CMISSNodes_CreateStart(Region2,NumberOfFluidNodes,FluidNodes,Err)
   CALL CMISSNodes_CreateFinish(FluidNodes,Err)
-  
   CALL CMISSMesh_CreateStart(FluidMeshUserNumber,Region2,NumberOfDimensions,Mesh2,Err)
   CALL CMISSMesh_NumberOfElementsSet(Mesh2,NumberOfFluidElements,Err)
   CALL CMISSMesh_NumberOfComponentsSet(Mesh2,2,Err)
-  
   CALL CMISSMeshElements_Initialise(FluidMeshElementsSpace,Err)
   CALL CMISSMeshElements_Initialise(FluidMeshElementsVelocity,Err)
   CALL CMISSMeshElements_Initialise(FluidMeshElementsPressure,Err)
@@ -1800,41 +1334,17 @@ PROGRAM CoupledFluidSolidExample
   Mesh2ComponentNumberPressure=1
   
   CALL CMISSMeshElements_CreateStart(Mesh2,Mesh2ComponentNumberSpace,BasisSpaceFluid,FluidMeshElementsSpace,Err)
-  SELECT CASE(MaterialSpecification)
-  CASE(Blood)
-    ALLOCATE(IndexArray(9))
-    IF(.NOT.ALLOCATED(IndexArray)) CALL HANDLE_ERROR('IndexArray not allocated.')
-    IndexArray(:)=(/1,2,3,4,5,6,7,8,9/)
-    DO ElementIndex=1,NumberOfFluidElements
-      CALL CMISSMeshElements_NodesSet(FluidMeshElementsSpace,FluidElements(ElementIndex), &
-        & FluidElementSVNodeMappings(IndexArray),Err)
-      IndexArray=IndexArray+9
-    ENDDO
-    IF(ALLOCATED(IndexArray)) DEALLOCATE(IndexArray)
-  CASE(Plate2D,Plate3D)
-    DO ElementIndex=1,NumberOfFluidElements
-      CALL CMISSMeshElements_NodesSet(FluidMeshElementsSpace,ElementIndex, &
-        & FluidElementNodes(ElementIndex,:),Err)
-    ENDDO
-  END SELECT
+  DO ElementIndex=1,NumberOfFluidElements
+    CALL CMISSMeshElements_NodesSet(FluidMeshElementsSpace,ElementIndex, &
+      & FluidElementNodes(ElementIndex,:),Err)
+  ENDDO
   CALL CMISSMeshElements_CreateFinish(FluidMeshElementsSpace,Err)
   
   FluidMeshElementsVelocity=FluidMeshElementsSpace
-  
   Mesh2ComponentNumberPressure=FluidMeshComponentNumberVelocity+1
   CALL CMISSMeshElements_CreateStart(Mesh2,Mesh2ComponentNumberPressure, &
     & BasisPressure,FluidMeshElementsPressure,Err)
   SELECT CASE(MaterialSpecification)
-  CASE(Blood)
-    ALLOCATE(IndexArray(4))
-    IF(.NOT.ALLOCATED(IndexArray)) CALL HANDLE_ERROR('IndexArray not allocated.')
-    IndexArray(:)=(/1,2,3,4/)
-    DO ElementIndex=1,NumberOfFluidElements
-      CALL CMISSMeshElements_NodesSet(FluidMeshElementsPressure,FluidElements(ElementIndex), &
-        & FluidElementPNodeMappings(IndexArray),Err)
-      IndexArray=IndexArray+4
-    ENDDO
-    IF(ALLOCATED(IndexArray)) DEALLOCATE(IndexArray)
   CASE(Plate2D)
     DO ElementIndex=1,NumberOfFluidElements
       CALL CMISSMeshElements_NodesSet(FluidMeshElementsPressure,ElementIndex, &
@@ -1848,12 +1358,10 @@ PROGRAM CoupledFluidSolidExample
   END SELECT
   CALL CMISSMeshElements_CreateFinish(FluidMeshElementsPressure,Err)
   CALL CMISSMesh_CreateFinish(Mesh2,Err)
-  
   !
   !================================================================================================================================
   !
   ! I N T E R F A C E
-
   !Create an interface between the two meshes
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> INTERFACE << == '
   CALL CMISSInterface_Initialise(Interface1,Err)
@@ -1864,7 +1372,6 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSInterface_MeshAdd(Interface1,Mesh2,FluidMeshIndex,Err)
   CALL CMISSInterface_CoordinateSystemSet(Interface1,InterfaceCoordinateSystem,Err)
   CALL CMISSInterface_CreateFinish(Interface1,Err)
-
   !Create a (bi)-quadratic-Lagrange basis (3D: faces // 2D: lines)
   IF(ExampleFileProgressDiagnostics) PRINT *, '    >> INTERFACE BASIS << == '
   CALL CMISSBasis_Initialise(InterfaceBasis1,Err)
@@ -1877,7 +1384,6 @@ PROGRAM CoupledFluidSolidExample
       & [CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION,CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION],Err)
   ENDIF
   CALL CMISSBasis_CreateFinish(InterfaceBasis1,Err)
-
   !Create a (bi)-quadratic-Lagrange basis for the interface mapping (3D: faces // 2D: lines)
   IF(ExampleFileProgressDiagnostics) PRINT *, '    >> INTERFACE MAPPING BASIS << == '
   CALL CMISSBasis_Initialise(InterfaceMappingBasis1,Err)
@@ -1890,58 +1396,38 @@ PROGRAM CoupledFluidSolidExample
       & [CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION,CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION],Err)
   ENDIF
   CALL CMISSBasis_CreateFinish(InterfaceMappingBasis1,Err)
-  
   !
   !================================================================================================================================
   !
   ! I N T E R F A C E _ M E S H
-  
   !Create an interface mesh
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> INTERFACE MESH << == '
   CALL CMISSNodes_Initialise(InterfaceNodes,Err)
   CALL CMISSMesh_Initialise(InterfaceMesh1,Err)
   CALL CMISSNodes_CreateStart(Interface1,NumberOfInterfaceNodes,InterfaceNodes,Err)
   CALL CMISSNodes_CreateFinish(InterfaceNodes,Err)
-  
   CALL CMISSMesh_CreateStart(InterfaceMeshUserNumber,Interface1,NumberOfDimensions-1,InterfaceMesh1,Err)
   CALL CMISSMesh_NumberOfElementsSet(InterfaceMesh1,NumberOfInterfaceElements,Err)
   CALL CMISSMesh_NumberOfComponentsSet(InterfaceMesh1,1,Err)
-  
   CALL CMISSMeshElements_Initialise(InterfaceMeshElements,Err)
   InterfaceMeshComponentNumber=1
   CALL CMISSMeshElements_CreateStart(InterfaceMesh1,InterfaceMeshComponentNumber,InterfaceBasis1,InterfaceMeshElements,Err)
-  SELECT CASE(MaterialSpecification)
-  CASE(Blood)
-    ALLOCATE(IndexArray(3))
-    IF(.NOT.ALLOCATED(IndexArray)) CALL HANDLE_ERROR('IndexArray not allocated.')
-    IndexArray(:)=(/1,2,3/)
-    DO ElementIndex=1,NumberOfInterfaceElements
-      CALL CMISSMeshElements_NodesSet(InterfaceMeshElements,InterfaceElements(ElementIndex), &
-        & InterfaceInterfaceElementNodes(IndexArray),Err)
-      IndexArray=IndexArray+3
-    ENDDO
-    IF(ALLOCATED(IndexArray)) DEALLOCATE(IndexArray)
-  CASE(Plate2D,Plate3D)
-    DO ElementIndex=1,NumberOfInterfaceElements
-      CALL CMISSMeshElements_NodesSet(InterfaceMeshElements,ElementIndex, &
-        & InterfaceElementNodes(ElementIndex,:),Err)
-    ENDDO
-  END SELECT
+  DO ElementIndex=1,NumberOfInterfaceElements
+    CALL CMISSMeshElements_NodesSet(InterfaceMeshElements,ElementIndex, &
+      & InterfaceElementNodes(ElementIndex,:),Err)
+  ENDDO
   CALL CMISSMeshElements_CreateFinish(InterfaceMeshElements,Err)
   CALL CMISSMesh_CreateFinish(InterfaceMesh1,Err)
-
   !
   !================================================================================================================================
   !
   ! M E S H _ C O N N E C T I V I T Y
-
   !Couple the interface meshes
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> INTERFACE MESH CONNECTIVITY << == '
   IF (NumberOfComputationalNodes/=1) CALL HANDLE_ERROR("MeshConnectivity does not work in parallel yet!")
   CALL CMISSInterfaceMeshConnectivity_Initialise(InterfaceMeshConnectivity1,Err)
   CALL CMISSInterfaceMeshConnectivity_CreateStart(Interface1,InterfaceMesh1,InterfaceMeshConnectivity1,Err)
   CALL CMISSInterfaceMeshConnectivity_BasisSet(InterfaceMeshConnectivity1,InterfaceMappingBasis1,Err)
-  !TODO Modify to match interface (mapping) basis interpolation type
   SELECT CASE(InterpolationTypeInterface)
   CASE(1,4)
     NUMBER_OF_NODE_XI=2
@@ -1953,128 +1439,59 @@ PROGRAM CoupledFluidSolidExample
     CALL HANDLE_ERROR("Invalid interpolation type.")
   END SELECT
   IF(NumberOfDimensions==2) THEN
-    SELECT CASE(MaterialSpecification)
-    CASE(Blood)
-      DO ElementIndex=1,NumberOfInterfaceElements*NUMBER_OF_NODE_XI,NUMBER_OF_NODE_XI
-        !SUBROUTINE CMISSInterfaceMeshConnectivity_ElementXiSetObj(interfaceMeshConnectivity,interfaceElementNumber, &
-        !  & coupledMeshIndexNumber,coupledMeshElementNumber,interfaceMeshLocalNodeNumber,interfaceMeshComponentNodeNumber,xi,err)
-        
-        !Map the interface element to the elements in mesh 1
-        CALL CMISSInterfaceMeshConnectivity_ElementNumberSet(InterfaceMeshConnectivity1, &
-          & InterfaceElements((ElementIndex+NUMBER_OF_NODE_XI-1)/NUMBER_OF_NODE_XI),SolidMeshIndex, &
-          & SolidInterfaceElements((ElementIndex+NUMBER_OF_NODE_XI-1)/NUMBER_OF_NODE_XI),Err)
-        
-        XI2=[SolidInterfaceXiPosition(ElementIndex), &
-          & SolidInterfaceXiPosition(ElementIndex+NumberOfInterfaceElements*NUMBER_OF_NODE_XI)]
-        PRINT *, XI2
-        CALL CMISSInterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity1, &
-          & InterfaceElements((ElementIndex+NUMBER_OF_NODE_XI-1)/NUMBER_OF_NODE_XI),SolidMeshIndex, &
-          & SolidInterfaceElements((ElementIndex+NUMBER_OF_NODE_XI-1)/NUMBER_OF_NODE_XI),1,1,XI2,Err)
-        
-        XI2=[SolidInterfaceXiPosition(ElementIndex+1), &
-          & SolidInterfaceXiPosition(ElementIndex+1+NumberOfInterfaceElements*NUMBER_OF_NODE_XI)]
-        PRINT *, XI2
-        CALL CMISSInterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity1, &
-          & InterfaceElements((ElementIndex+NUMBER_OF_NODE_XI-1)/NUMBER_OF_NODE_XI),SolidMeshIndex, &
-          & SolidInterfaceElements((ElementIndex+NUMBER_OF_NODE_XI-1)/NUMBER_OF_NODE_XI),2,1,XI2,Err)
-        
-        XI2=[SolidInterfaceXiPosition(ElementIndex+2), &
-          & SolidInterfaceXiPosition(ElementIndex+2+NumberOfInterfaceElements*NUMBER_OF_NODE_XI)]
-        PRINT *, XI2
-        CALL CMISSInterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity1, &
-          & InterfaceElements((ElementIndex+NUMBER_OF_NODE_XI-1)/NUMBER_OF_NODE_XI),SolidMeshIndex, &
-          & SolidInterfaceElements((ElementIndex+NUMBER_OF_NODE_XI-1)/NUMBER_OF_NODE_XI),3,1,XI2,Err)
-        
-        !Map the interface element to the elements in mesh 2
-        CALL CMISSInterfaceMeshConnectivity_ElementNumberSet(InterfaceMeshConnectivity1, &
-          & InterfaceElements((ElementIndex+NUMBER_OF_NODE_XI-1)/NUMBER_OF_NODE_XI),FluidMeshIndex, &
-          & FluidInterfaceElements((ElementIndex+NUMBER_OF_NODE_XI-1)/NUMBER_OF_NODE_XI),Err)
-        
-        XI2=[FluidInterfaceXiPosition(ElementIndex), &
-          & FluidInterfaceXiPosition(ElementIndex+NumberOfInterfaceElements*NUMBER_OF_NODE_XI)]
-        CALL CMISSInterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity1, &
-          & InterfaceElements((ElementIndex+NUMBER_OF_NODE_XI-1)/NUMBER_OF_NODE_XI),FluidMeshIndex, &
-          & FluidInterfaceElements((ElementIndex+NUMBER_OF_NODE_XI-1)/NUMBER_OF_NODE_XI),1,1,XI2,Err)
-        
-        XI2=[FluidInterfaceXiPosition(ElementIndex+1), &
-          & FluidInterfaceXiPosition(ElementIndex+1+NumberOfInterfaceElements*NUMBER_OF_NODE_XI)]
-        CALL CMISSInterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity1, &
-          & InterfaceElements((ElementIndex+NUMBER_OF_NODE_XI-1)/NUMBER_OF_NODE_XI),FluidMeshIndex, &
-          & FluidInterfaceElements((ElementIndex+NUMBER_OF_NODE_XI-1)/NUMBER_OF_NODE_XI),2,1,XI2,Err)
-        
-        XI2=[FluidInterfaceXiPosition(ElementIndex+2), &
-          & FluidInterfaceXiPosition(ElementIndex+2+NumberOfInterfaceElements*NUMBER_OF_NODE_XI)]
-        CALL CMISSInterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity1, &
-          & InterfaceElements((ElementIndex+NUMBER_OF_NODE_XI-1)/NUMBER_OF_NODE_XI),FluidMeshIndex, &
-          & FluidInterfaceElements((ElementIndex+NUMBER_OF_NODE_XI-1)/NUMBER_OF_NODE_XI),3,1,XI2,Err)
-      ENDDO !ElementIndex
-      CALL CMISSInterfaceMeshConnectivity_NodeNumberSet(InterfaceMeshConnectivity1,InterfaceNodeNumbers, &
-        & SolidMeshIndex,SolidInterfaceNodeNumberMappings,FluidMeshIndex,FluidInterfaceNodeNumberMappings,Err)
-    CASE(Plate2D)
-      DO ElementIndex=1,NumberOfInterfaceElements
-        !Map the interface element to the elements in mesh 1
-        CALL CMISSInterfaceMeshConnectivity_ElementNumberSet(InterfaceMeshConnectivity1,ElementIndex,SolidMeshIndex, &
-          & SolidInterfaceElements(ElementIndex),Err)
-        DO LocalNodeIndex=1,3**(NumberOfDimensions-1)
-          XI2 = [SolidXi2(ElementIndex,LocalNodeIndex),SolidXi3(ElementIndex,LocalNodeIndex)]
-          CALL CMISSInterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity1,ElementIndex,SolidMeshIndex, &
-            & SolidInterfaceElements(ElementIndex),LocalNodeIndex,1,XI2,Err)
-        ENDDO
-        !Map the interface element to the elements in mesh 2
-        CALL CMISSInterfaceMeshConnectivity_ElementNumberSet(InterfaceMeshConnectivity1,ElementIndex,FluidMeshIndex, &
-          & FluidInterfaceElements(ElementIndex),Err)
-        DO LocalNodeIndex=1,3**(NumberOfDimensions-1)
-          XI2 = [FluidXi2(ElementIndex,LocalNodeIndex),FluidXi3(ElementIndex,LocalNodeIndex)]
-          CALL CMISSInterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity1,ElementIndex,FluidMeshIndex, &
-            & FluidInterfaceElements(ElementIndex),LocalNodeIndex,1,XI2,Err)
-        ENDDO
-      ENDDO !ElementIndex
-      CALL CMISSInterfaceMeshConnectivity_NodeNumberSet(InterfaceMeshConnectivity1,InterfaceNodeNumbersForGeometry, &
-        & SolidMeshIndex,ConnectedInterfaceNodes(1,:),FluidMeshIndex,ConnectedInterfaceNodes(2,:),Err)
-    CASE DEFAULT
-      CALL HANDLE_ERROR("Invalid material specification for mesh connectivity.")
-    END SELECT
+    DO ElementIndex=1,NumberOfInterfaceElements
+      !Map the interface element to the elements in mesh 1
+      CALL CMISSInterfaceMeshConnectivity_ElementNumberSet(InterfaceMeshConnectivity1,ElementIndex,SolidMeshIndex, &
+        & SolidInterfaceElements(ElementIndex),Err)
+      DO LocalNodeIndex=1,3**(NumberOfDimensions-1)
+        XI2 = [SolidXi2(ElementIndex,LocalNodeIndex),SolidXi3(ElementIndex,LocalNodeIndex)]
+        CALL CMISSInterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity1,ElementIndex,SolidMeshIndex, &
+          & SolidInterfaceElements(ElementIndex),LocalNodeIndex,1,XI2,Err)
+      ENDDO
+      !Map the interface element to the elements in mesh 2
+      CALL CMISSInterfaceMeshConnectivity_ElementNumberSet(InterfaceMeshConnectivity1,ElementIndex,FluidMeshIndex, &
+        & FluidInterfaceElements(ElementIndex),Err)
+      DO LocalNodeIndex=1,3**(NumberOfDimensions-1)
+        XI2 = [FluidXi2(ElementIndex,LocalNodeIndex),FluidXi3(ElementIndex,LocalNodeIndex)]
+        CALL CMISSInterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity1,ElementIndex,FluidMeshIndex, &
+          & FluidInterfaceElements(ElementIndex),LocalNodeIndex,1,XI2,Err)
+      ENDDO
+    ENDDO !ElementIndex
+    CALL CMISSInterfaceMeshConnectivity_NodeNumberSet(InterfaceMeshConnectivity1,InterfaceNodeNumbersForGeometry, &
+      & SolidMeshIndex,ConnectedInterfaceNodes(1,:),FluidMeshIndex,ConnectedInterfaceNodes(2,:),Err)
   ELSE
-  !  CALL HANDLE_ERROR("Only 2D Mesh Connectivity implemented in this example file yet.")
-    SELECT CASE(MaterialSpecification)
-    CASE(Plate3D)
-      LocalNodeIndex=0
-      DO ElementIndex=1,NumberOfInterfaceElements*9
-        LocalNodeIndex=LocalNodeIndex+1
-        !Map the interface element to the elements in the solid mesh
-        CALL CMISSInterfaceMeshConnectivity_ElementNumberSet(InterfaceMeshConnectivity1, &
-          & InterfaceInterfaceNodeInformationNE(ElementIndex,2),SolidMeshIndex,SolidInterfaceNodeInformationNE(ElementIndex,2),Err)
-        XI3 = [SolidInterfaceNodeInformationXi(ElementIndex,1),SolidInterfaceNodeInformationXi(ElementIndex,2), &
-          & SolidInterfaceNodeInformationXi(ElementIndex,3)]
-   !       SUBROUTINE CMISSInterfaceMeshConnectivity_ElementXiSetObj(interfaceMeshConnectivity,interfaceElementNumber, &
-   !       &  coupledMeshIndexNumber,coupledMeshElementNumber,interfaceMeshLocalNodeNumber,interfaceMeshComponentNodeNumber,xi,err)
-        CALL CMISSInterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity1, &
-          & InterfaceInterfaceNodeInformationNE(ElementIndex,2),SolidMeshIndex, &
-          & SolidInterfaceNodeInformationNE(ElementIndex,2),LocalNodeIndex,1,XI3,Err)
-        !Map the interface element to the elements in the fluid mesh
-        CALL CMISSInterfaceMeshConnectivity_ElementNumberSet(InterfaceMeshConnectivity1, &
-          & InterfaceInterfaceNodeInformationNE(ElementIndex,2),FluidMeshIndex, &
-          & FluidInterfaceNodeInformationNE(ElementIndex,2),Err)
-        XI3 = [FluidInterfaceNodeInformationXi(ElementIndex,1),FluidInterfaceNodeInformationXi(ElementIndex,2), &
-          & FluidInterfaceNodeInformationXi(ElementIndex,3)]
-        CALL CMISSInterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity1, &
-          & InterfaceInterfaceNodeInformationNE(ElementIndex,2),FluidMeshIndex, &
-          & FluidInterfaceNodeInformationNE(ElementIndex,2),LocalNodeIndex,1,XI3,Err)
-        IF(LocalNodeIndex==9) LocalNodeIndex=0
-      ENDDO !ElementIndex
-      CALL CMISSInterfaceMeshConnectivity_NodeNumberSet(InterfaceMeshConnectivity1,InterfaceNodeNumbersForGeometry, &
-        & SolidMeshIndex,ConnectedInterfaceNodes(1,:),FluidMeshIndex,ConnectedInterfaceNodes(2,:),Err)
-    CASE DEFAULT
-      CALL HANDLE_ERROR("Invalid material specification for mesh connectivity.")
-    END SELECT
+    LocalNodeIndex=0
+    DO ElementIndex=1,NumberOfInterfaceElements*9
+      LocalNodeIndex=LocalNodeIndex+1
+      !Map the interface element to the elements in the solid mesh
+      CALL CMISSInterfaceMeshConnectivity_ElementNumberSet(InterfaceMeshConnectivity1, &
+        & InterfaceInterfaceNodeInformationNE(ElementIndex,2),SolidMeshIndex,SolidInterfaceNodeInformationNE(ElementIndex,2),Err)
+      XI3 = [SolidInterfaceNodeInformationXi(ElementIndex,1),SolidInterfaceNodeInformationXi(ElementIndex,2), &
+        & SolidInterfaceNodeInformationXi(ElementIndex,3)]
+   !   SUBROUTINE CMISSInterfaceMeshConnectivity_ElementXiSetObj(interfaceMeshConnectivity,interfaceElementNumber, &
+   !     &  coupledMeshIndexNumber,coupledMeshElementNumber,interfaceMeshLocalNodeNumber,interfaceMeshComponentNodeNumber,xi,err)
+      CALL CMISSInterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity1, &
+        & InterfaceInterfaceNodeInformationNE(ElementIndex,2),SolidMeshIndex, &
+        & SolidInterfaceNodeInformationNE(ElementIndex,2),LocalNodeIndex,1,XI3,Err)
+      !Map the interface element to the elements in the fluid mesh
+      CALL CMISSInterfaceMeshConnectivity_ElementNumberSet(InterfaceMeshConnectivity1, &
+        & InterfaceInterfaceNodeInformationNE(ElementIndex,2),FluidMeshIndex, &
+        & FluidInterfaceNodeInformationNE(ElementIndex,2),Err)
+      XI3 = [FluidInterfaceNodeInformationXi(ElementIndex,1),FluidInterfaceNodeInformationXi(ElementIndex,2), &
+        & FluidInterfaceNodeInformationXi(ElementIndex,3)]
+      CALL CMISSInterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity1, &
+        & InterfaceInterfaceNodeInformationNE(ElementIndex,2),FluidMeshIndex, &
+        & FluidInterfaceNodeInformationNE(ElementIndex,2),LocalNodeIndex,1,XI3,Err)
+      IF(LocalNodeIndex==9) LocalNodeIndex=0
+    ENDDO !ElementIndex
+    CALL CMISSInterfaceMeshConnectivity_NodeNumberSet(InterfaceMeshConnectivity1,InterfaceNodeNumbersForGeometry, &
+      & SolidMeshIndex,ConnectedInterfaceNodes(1,:),FluidMeshIndex,ConnectedInterfaceNodes(2,:),Err)
   ENDIF
   CALL CMISSInterfaceMeshConnectivity_CreateFinish(InterfaceMeshConnectivity1,Err)
-
   !
   !================================================================================================================================
   !
   ! D E C O M P O S I T I O N
-
   !Create a decomposition for the solid mesh
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> SOLID MESH DECOMPOSITION << == '
   CALL CMISSDecomposition_Initialise(SolidDecomposition,Err)
@@ -2085,7 +1502,6 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSDecomposition_CalculateFacesSet(SolidDecomposition,.TRUE.,Err)
   !Finish the decomposition
   CALL CMISSDecomposition_CreateFinish(SolidDecomposition,Err)
-
   !Create a decomposition for the fluid mesh
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> FLUID MESH DECOMPOSITION << == '
   CALL CMISSDecomposition_Initialise(FluidDecomposition,Err)
@@ -2096,7 +1512,6 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSDecomposition_CalculateFacesSet(FluidDecomposition,.TRUE.,Err)
   !Finish the decomposition
   CALL CMISSDecomposition_CreateFinish(FluidDecomposition,Err)
-  
   !Create a decomposition for the interface mesh
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> INTERFACE DECOMPOSITION << == '
   CALL CMISSDecomposition_Initialise(InterfaceDecomposition,Err)
@@ -2106,12 +1521,10 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSDecomposition_NumberOfDomainsSet(InterfaceDecomposition,NumberOfComputationalNodes,Err)
   !Finish the decomposition
   CALL CMISSDecomposition_CreateFinish(InterfaceDecomposition,Err)
-
   !
   !================================================================================================================================
   !
   ! G E O M E T R I C _ F I E L D S
-
   !Start to create a default (geometric) field on the solid region
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> SOLID MESH GEOMETRIC FIELD << == '
   CALL CMISSField_Initialise(GeometricField1,Err)
@@ -2127,7 +1540,6 @@ PROGRAM CoupledFluidSolidExample
   IF(NumberOfDimensions==3) CALL CMISSField_ComponentMeshComponentSet(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,3,1,Err)
   !Finish creating the first field
   CALL CMISSField_CreateFinish(GeometricField1,Err)
-
   !Start to create a default (geometric) field on the fluid region
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> FLUID MESH GEOMETRIC FIELD << == '
   CALL CMISSField_Initialise(GeometricField2,Err)
@@ -2143,7 +1555,6 @@ PROGRAM CoupledFluidSolidExample
   IF(NumberOfDimensions==3) CALL CMISSField_ComponentMeshComponentSet(GeometricField2,CMISS_FIELD_U_VARIABLE_TYPE,3,1,Err)
   !Finish creating the second field
   CALL CMISSField_CreateFinish(GeometricField2,Err)
-
   !Start to create a default (geometric) field on the Interface
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> INTERFACE GEOMETRIC FIELD << == '
   CALL CMISSField_Initialise(InterfaceGeometricField1,Err)
@@ -2157,113 +1568,63 @@ PROGRAM CoupledFluidSolidExample
   IF(NumberOfDimensions==3) CALL CMISSField_ComponentMeshComponentSet(InterfaceGeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,3,1,Err)
   !Finish creating the first field
   CALL CMISSField_CreateFinish(InterfaceGeometricField1,Err)
-
-  SELECT CASE(MaterialSpecification)
-  CASE(Blood)
-    !Update the geometric field parameters (solid)
-    DO NodeIndex=1,NumberOfSolidNodes
-      CALL CMISSDecomposition_NodeDomainGet(SolidDecomposition,NodeIndexSMappings(NodeIndex),1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
-        CALL CMISSField_ParameterSetUpdateNode(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,NodeIndexSMappings(NodeIndex),1,SolidGeometry(NodeIndex),Err)
-        CALL CMISSField_ParameterSetUpdateNode(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,NodeIndexSMappings(NodeIndex),2,SolidGeometry(NodeIndex+NumberOfSolidNodes),Err)
-        IF(NumberGlobalElementsZ/=0) THEN
-          CALL CMISSField_ParameterSetUpdateNode(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,NodeIndexSMappings(NodeIndex),3,SolidGeometry(NodeIndex+NumberOfSolidNodes*2),Err)
-        ENDIF
+  !Update the geometric field parameters (solid)
+  DO NodeIndex=1,NumberOfSolidNodes
+    CALL CMISSDecomposition_NodeDomainGet(SolidDecomposition,SolidNodeNumbers(NodeIndex),1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      IF(NumberOfDimensions==3) THEN
+        Components=(/2,3,1/)
+      ELSE
+        Components=(/1,2,0/)
       ENDIF
-    ENDDO
-    !Update the geometric field parameters (fluid)
-    DO NodeIndex=1,NumberOfFluidNodes
-      CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeIndexFMappings(NodeIndex),1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
-        CALL CMISSField_ParameterSetUpdateNode(GeometricField2,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,NodeIndexFMappings(NodeIndex),1,FluidGeometry(NodeIndex),Err)
-        CALL CMISSField_ParameterSetUpdateNode(GeometricField2,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,NodeIndexFMappings(NodeIndex),2,FluidGeometry(NodeIndex+NumberOfFluidNodes),Err)
-        IF(NumberGlobalElementsZ/=0) THEN
-          CALL CMISSField_ParameterSetUpdateNode(GeometricField2,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,NodeIndexFMappings(NodeIndex),3,FluidGeometry(NodeIndex+NumberOfFluidNodes*2),Err)
-        ENDIF
-      ENDIF
-    ENDDO
-    !Update the geometric field parameters (interface)
-    DO NodeIndex=1,NumberOfInterfaceNodes
-      CALL CMISSDecomposition_NodeDomainGet(InterfaceDecomposition,NodeIndex,1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
-        CALL CMISSField_ParameterSetUpdateNode(InterfaceGeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,NodeIndex,1,InterfaceGeometry(NodeIndex),Err)
-        CALL CMISSField_ParameterSetUpdateNode(InterfaceGeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,NodeIndex,2,InterfaceGeometry(NodeIndex+NumberOfInterfaceNodes),Err)
-        IF(NumberGlobalElementsZ/=0) THEN
-          CALL CMISSField_ParameterSetUpdateNode(InterfaceGeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,NodeIndex,3,InterfaceGeometry(NodeIndex+2*NumberOfInterfaceNodes),Err)
-        ENDIF
-      ENDIF
-    ENDDO
-  CASE(Plate2D,Plate3D)
-    !Update the geometric field parameters (solid)
-    DO NodeIndex=1,NumberOfSolidNodes
-      CALL CMISSDecomposition_NodeDomainGet(SolidDecomposition,SolidNodeNumbers(NodeIndex),1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
-        IF(NumberOfDimensions==3) THEN
-          Components=(/2,3,1/)
-        ELSE
-          Components=(/1,2,0/)
-        ENDIF
+      CALL CMISSField_ParameterSetUpdateNode(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
+        & 1,CMISS_NO_GLOBAL_DERIV,SolidNodeNumbers(NodeIndex),Components(1),SolidGeometryY(NodeIndex),Err)
+      CALL CMISSField_ParameterSetUpdateNode(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
+        & 1,CMISS_NO_GLOBAL_DERIV,SolidNodeNumbers(NodeIndex),Components(2),SolidGeometryZ(NodeIndex),Err)
+      IF(NumberOfDimensions==3) THEN
         CALL CMISSField_ParameterSetUpdateNode(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,SolidNodeNumbers(NodeIndex),Components(1),SolidGeometryY(NodeIndex),Err)
-        CALL CMISSField_ParameterSetUpdateNode(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,SolidNodeNumbers(NodeIndex),Components(2),SolidGeometryZ(NodeIndex),Err)
-        IF(NumberOfDimensions==3) THEN
-          CALL CMISSField_ParameterSetUpdateNode(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
           & 1,CMISS_NO_GLOBAL_DERIV,SolidNodeNumbers(NodeIndex),Components(3),SolidGeometryX(NodeIndex),Err)
-        ENDIF
       ENDIF
-    ENDDO
-    !Update the geometric field parameters (fluid)
-    DO NodeIndex=1,NumberOfFluidNodes
-      CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,FluidNodeNumbers(NodeIndex),1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
+    ENDIF
+  ENDDO
+  !Update the geometric field parameters (fluid)
+  DO NodeIndex=1,NumberOfFluidNodes
+    CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,FluidNodeNumbers(NodeIndex),1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSField_ParameterSetUpdateNode(GeometricField2,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
+        & 1,CMISS_NO_GLOBAL_DERIV,FluidNodeNumbers(NodeIndex),Components(1),FluidGeometryY(NodeIndex),Err)
+      CALL CMISSField_ParameterSetUpdateNode(GeometricField2,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
+        & 1,CMISS_NO_GLOBAL_DERIV,FluidNodeNumbers(NodeIndex),Components(2),FluidGeometryZ(NodeIndex),Err)
+      IF(NumberOfDimensions==3) THEN
         CALL CMISSField_ParameterSetUpdateNode(GeometricField2,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,FluidNodeNumbers(NodeIndex),Components(1),FluidGeometryY(NodeIndex),Err)
-        CALL CMISSField_ParameterSetUpdateNode(GeometricField2,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,FluidNodeNumbers(NodeIndex),Components(2),FluidGeometryZ(NodeIndex),Err)
-        IF(NumberOfDimensions==3) THEN
-          CALL CMISSField_ParameterSetUpdateNode(GeometricField2,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
           & 1,CMISS_NO_GLOBAL_DERIV,FluidNodeNumbers(NodeIndex),Components(3),FluidGeometryX(NodeIndex),Err)
-        ENDIF
       ENDIF
-    ENDDO
-    !Update the geometric field parameters (interface)
-    DO NodeIndex=1,NumberOfInterfaceNodes
-      CALL CMISSDecomposition_NodeDomainGet(InterfaceDecomposition,InterfaceNodeNumbersForGeometry(NodeIndex),1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
+    ENDIF
+  ENDDO
+  !Update the geometric field parameters (interface)
+  DO NodeIndex=1,NumberOfInterfaceNodes
+    CALL CMISSDecomposition_NodeDomainGet(InterfaceDecomposition,InterfaceNodeNumbersForGeometry(NodeIndex),1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSField_ParameterSetUpdateNode(InterfaceGeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
+        & 1,CMISS_NO_GLOBAL_DERIV,InterfaceNodeNumbersForGeometry(NodeIndex),Components(1),InterfaceGeometryY(NodeIndex),Err)
+      CALL CMISSField_ParameterSetUpdateNode(InterfaceGeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
+        & 1,CMISS_NO_GLOBAL_DERIV,InterfaceNodeNumbersForGeometry(NodeIndex),Components(2),InterfaceGeometryZ(NodeIndex),Err)
+      IF(NumberOfDimensions==3) THEN
         CALL CMISSField_ParameterSetUpdateNode(InterfaceGeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,InterfaceNodeNumbersForGeometry(NodeIndex),Components(1),InterfaceGeometryY(NodeIndex),Err)
-        CALL CMISSField_ParameterSetUpdateNode(InterfaceGeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-          & 1,CMISS_NO_GLOBAL_DERIV,InterfaceNodeNumbersForGeometry(NodeIndex),Components(2),InterfaceGeometryZ(NodeIndex),Err)
-        IF(NumberOfDimensions==3) THEN
-          CALL CMISSField_ParameterSetUpdateNode(InterfaceGeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
           & 1,CMISS_NO_GLOBAL_DERIV,InterfaceNodeNumbersForGeometry(NodeIndex),Components(3),InterfaceGeometryX(NodeIndex),Err)
-        ENDIF
       ENDIF
-    ENDDO
-  END SELECT
-  
+    ENDIF
+  ENDDO
   CALL CMISSField_ParameterSetUpdateStart(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
   CALL CMISSField_ParameterSetUpdateFinish(GeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
   CALL CMISSField_ParameterSetUpdateStart(GeometricField2,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
   CALL CMISSField_ParameterSetUpdateFinish(GeometricField2,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
   CALL CMISSField_ParameterSetUpdateStart(InterfaceGeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
   CALL CMISSField_ParameterSetUpdateFinish(InterfaceGeometricField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
-  
   !
   !================================================================================================================================
   !
   ! F I B R E _ F I E L D _ S O L I D
-  
   !Create a fibre field and attach it to the geometric field 1
 !  CALL CMISSField_Initialise(FibreField,Err)
 !  CALL CMISSField_CreateStart(FibreFieldUserNumber,Region1,FibreField,Err)
@@ -2273,29 +1634,19 @@ PROGRAM CoupledFluidSolidExample
 !  CALL CMISSField_VariableLabelSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,"SolidFF",Err)
 !  CALL CMISSField_ScalingTypeSet(FibreField,CMISS_FIELD_NO_SCALING,Err)
 !  CALL CMISSField_CreateFinish(FibreField,Err)
-
   !
   !================================================================================================================================
   !
   ! E Q U A T I O N _ S E T S
-
   !Create the equations set for the solid region
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> SOLID EQUATION SET << == '
   !Create the equations_set for FiniteElasticity MooneyRivlin
   CALL CMISSField_Initialise(EquationsSetField1,Err)
   CALL CMISSEquationsSet_Initialise(SolidEquationsSet,Err)
-  IF(CompressibleOption) THEN
-    CALL CMISSEquationsSet_CreateStart(SolidEquationsSetUserNumber,Region1,GeometricField1,CMISS_EQUATIONS_SET_ELASTICITY_CLASS, &
-      & CMISS_EQUATIONS_SET_FINITE_ELASTICITY_TYPE, &
-      & CMISS_EQUATIONS_SET_COMPRESSIBLE_FINITE_ELASTICITY_SUBTYPE,SolidEquationsSetFieldUserNumber, &
-      & EquationsSetField1,SolidEquationsSet,Err)
-  ELSE
-    CALL CMISSEquationsSet_CreateStart(SolidEquationsSetUserNumber,Region1,GeometricField1,CMISS_EQUATIONS_SET_ELASTICITY_CLASS, &
-      & CMISS_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMISS_EQUATIONS_SET_MOONEY_RIVLIN_SUBTYPE,SolidEquationsSetFieldUserNumber, &
-      & EquationsSetField1,SolidEquationsSet,Err)
-  ENDIF
+  CALL CMISSEquationsSet_CreateStart(SolidEquationsSetUserNumber,Region1,GeometricField1,CMISS_EQUATIONS_SET_ELASTICITY_CLASS, &
+    & CMISS_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMISS_EQUATIONS_SET_MOONEY_RIVLIN_SUBTYPE,SolidEquationsSetFieldUserNumber, &
+    & EquationsSetField1,SolidEquationsSet,Err)
   CALL CMISSEquationsSet_CreateFinish(SolidEquationsSet,Err)
-
   !Create the equations set for the fluid region
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> FLUID EQUATION SET << == '
   !Create the equations set for ALE Navier-Stokes
@@ -2306,7 +1657,6 @@ PROGRAM CoupledFluidSolidExample
     & FluidEquationsSetFieldUserNumber,EquationsSetField2,FluidEquationsSet,Err)
   !Finish creating the equations set
   CALL CMISSEquationsSet_CreateFinish(FluidEquationsSet,Err)
-
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> MOVING MESH EQUATION SET << == '
   !Create the equations set for the moving mesh
   CALL CMISSEquationsSet_Initialise(MovingMeshEquationsSet,Err)
@@ -2316,12 +1666,10 @@ PROGRAM CoupledFluidSolidExample
     & CMISS_EQUATIONS_SET_MOVING_MESH_LAPLACE_SUBTYPE,EquationsSetFieldMovingMeshUserNumber,EquationsSetFieldMovingMesh, &
     & MovingMeshEquationsSet,Err)
   CALL CMISSEquationsSet_CreateFinish(MovingMeshEquationsSet,Err)
-
   !
   !================================================================================================================================
   !
   ! D E P E N D E N T _ F I E L D S
-
   !Create the equations set dependent field variables for the first equations set
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> SOLID DEPENDENT FIELD << == '
   !Create the dependent field
@@ -2371,48 +1719,31 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSField_VariableLabelSet(MaterialField1,CMISS_FIELD_U_VARIABLE_TYPE,"Material1",Err)
   CALL CMISSField_VariableLabelSet(MaterialField1,CMISS_FIELD_V_VARIABLE_TYPE,"SolidDensity",Err)
   CALL CMISSEquationsSet_MaterialsCreateFinish(SolidEquationsSet,Err)
-
   !Set Mooney-Rivlin constants c10 and c01 (default?2.0 and 6.0) respectively
   CALL CMISSField_ComponentValuesInitialise(MaterialField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
     & MooneyRivlin1,Err)
   CALL CMISSField_ComponentValuesInitialise(MaterialField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2, &
     & MooneyRivlin2,Err)
-  IF(CompressibleOption) THEN
-    CALL CMISSField_ComponentValuesInitialise(MaterialField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3, &
-      & BulkModulus,Err)
-  ELSE
-    CALL CMISSField_ComponentValuesInitialise(MaterialField1,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
-      & SolidDensity,Err)
-  ENDIF
-
+  CALL CMISSField_ComponentValuesInitialise(MaterialField1,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
+    & SolidDensity,Err)
   IF(GravityFlag) THEN
     IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> SOURCE FIELD - GRAVITY << == '
     !Create the source field with the gravity vector
     CALL CMISSField_Initialise(SourceField1,Err)
-    !PRINT *, 'HERE'
     CALL CMISSEquationsSet_SourceCreateStart(SolidEquationsSet,SourceFieldUserNumber,SourceField1,Err)
-    !PRINT *, 'OR HERE'
     CALL CMISSField_ScalingTypeSet(SourceField1,CMISS_FIELD_NO_SCALING,Err)
-    !PRINT *, 'OR HERE'
     CALL CMISSEquationsSet_SourceCreateFinish(SolidEquationsSet,Err)
-    !PRINT *, 'OR HERE'
     DO component_idx=1,NumberOfDimensions
-    !  PRINT *, component_idx
       CALL CMISSField_ComponentValuesInitialise(SourceField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
           & component_idx,Gravity(component_idx),Err)
     ENDDO
   ENDIF
-  
   !=========================
-
   !Create the equations set dependent field variables for dynamic Navier-Stokes
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> FLUID DEPENDENT FIELD << == '
   CALL CMISSField_Initialise(DependentField2,Err)
   CALL CMISSEquationsSet_DependentCreateStart(FluidEquationsSet,FluidDependentFieldUserNumber,DependentField2,Err)
   CALL CMISSField_VariableLabelSet(DependentField2,CMISS_FIELD_U_VARIABLE_TYPE,"FluidDF",Err)
-!  Mesh2ComponentNumberSpace=1
-!  FluidMeshComponentNumberVelocity=1
-!  Mesh2ComponentNumberPressure=2 ! TODO CHECK if this is correct
   !Set the mesh component to be used by the field components.
   DO ComponentNumber=1,NumberOfDimensions
     CALL CMISSField_ComponentMeshComponentSet(DependentField2,CMISS_FIELD_U_VARIABLE_TYPE,ComponentNumber,1,Err)
@@ -2432,7 +1763,7 @@ PROGRAM CoupledFluidSolidExample
   !Initialise pressure component
   CALL CMISSField_ComponentValuesInitialise(DependentField2,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
     & NumberOfDimensions+1,0.1_CMISSDP,Err)
-  
+  !=========================
   IF(ExampleFileProgressDiagnostics) PRINT *, '    >> MOVING MESH DEPENDENT FIELD << == '
   !Create the equations set dependent field variables for moving mesh
   CALL CMISSField_Initialise(DependentFieldMovingMesh,Err)
@@ -2453,7 +1784,6 @@ PROGRAM CoupledFluidSolidExample
     CALL CMISSField_ComponentValuesInitialise(DependentFieldMovingMesh,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
       & ComponentNumber,InitialFieldMovingMesh(ComponentNumber),Err)
   ENDDO
-  
   IF(ExampleFileProgressDiagnostics) PRINT *, '    >> FLUID MATERIAL FIELD << == '
   !Create the equations set materials field variables for dynamic Navier-Stokes
   CALL CMISSField_Initialise(MaterialField2,Err)
@@ -2464,7 +1794,6 @@ PROGRAM CoupledFluidSolidExample
     & FluidMaterialFieldComponentMu,FluidDynamicViscosity,Err)
   CALL CMISSField_ComponentValuesInitialise(MaterialField2,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
     & FluidMaterialFieldComponentRho,FluidDensity,Err)
-    
   IF(ExampleFileProgressDiagnostics) PRINT *, '    >> MATERIAL FIELD MOVING MESH << == '
   !Create the equations set materials field variables for moving mesh
   CALL CMISSField_Initialise(MaterialFieldMovingMesh,Err)
@@ -2474,12 +1803,10 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSEquationsSet_MaterialsCreateFinish(MovingMeshEquationsSet,Err)
   CALL CMISSField_ComponentValuesInitialise(MaterialFieldMovingMesh,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
     & MaterialFieldMovingMeshUserNumberK,MovingMeshParameterK,Err)
-    
   !
   !================================================================================================================================
   !
   ! I N D E P E N D E N T _ F I E L D // mesh velocity for fluid equations set && mesh stiffness for moving mesh equations set
-  
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> FLUID INDEPENDENT FIELD << == '
   !Create the equations set independent field variables for ALE Navier-Stokes
   CALL CMISSField_Initialise(IndependentField2,Err)
@@ -2492,7 +1819,6 @@ PROGRAM CoupledFluidSolidExample
   ENDDO
   !Finish the equations set independent field variables
   CALL CMISSEquationsSet_IndependentCreateFinish(FluidEquationsSet,Err)
-  
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> INDEPENDENT FIELD MOVING MESH << == '
   !Create the equations set independent field variables for moving mesh
   CALL CMISSField_Initialise(IndependentFieldMovingMesh,Err)
@@ -2506,7 +1832,6 @@ PROGRAM CoupledFluidSolidExample
   ENDDO
   !Finish the equations set independent field variables
   CALL CMISSEquationsSet_IndependentCreateFinish(MovingMeshEquationsSet,Err)
-  
   CALL CMISSField_ComponentValuesInitialise(IndependentFieldMovingMesh,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
     & IndependentFieldMovingMeshUserNumberK,MovingMeshParameterK,Err)
   !
@@ -2532,12 +1857,10 @@ PROGRAM CoupledFluidSolidExample
     CALL CMISSFields_Finalise(FieldsI,Err)
     IF(ExampleFileProgressDiagnostics) WRITE(*,'(A)') "Field exported!"
   ENDIF
-  
   !
   !================================================================================================================================
   !
   ! E Q U A T I O N S
-
   !Create the equations set equations for the first equations set
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> SOLID EQUATIONS << == '
   CALL CMISSEquations_Initialise(Equations1,Err)
@@ -2551,24 +1874,16 @@ PROGRAM CoupledFluidSolidExample
   !CALL CMISSEquations_OutputTypeSet(Equations1,CMISS_EQUATIONS_ELEMENT_MATRIX_OUTPUT,Err)
   !Finish the equations set equations
   CALL CMISSEquationsSet_EquationsCreateFinish(SolidEquationsSet,Err)
-
   !Create the equations set equations for the second equations set
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> FLUID EQUATIONS << == '
   CALL CMISSEquations_Initialise(Equations2,Err)
   CALL CMISSEquationsSet_EquationsCreateStart(FluidEquationsSet,Equations2,Err)
   !Set the equations matrices sparsity type
   CALL CMISSEquations_SparsityTypeSet(Equations2,CMISS_EQUATIONS_SPARSE_MATRICES,Err)
-  !Set the equations lumping type
-!  CALL CMISSEquations_LumpingTypeSet(Equations2,CMISS_EQUATIONS_UNLUMPED_MATRICES,Err)
-  !Set the equations set output
+  !Set the equations set output (NO_OUTPUT/TIMING_OUTPUT/MATRIX_OUTPUT/ELEMENT_MATRIX_OUTPUT)
   CALL CMISSEquations_OutputTypeSet(Equations2,CMISS_EQUATIONS_NO_OUTPUT,Err)
-  !CALL CMISSEquations_OutputTypeSet(Equations2,CMISS_EQUATIONS_TIMING_OUTPUT,Err)
-!  CALL CMISSEquations_OutputTypeSet(Equations2,CMISS_EQUATIONS_MATRIX_OUTPUT,Err)
-  !CALL CMISSEquations_OutputTypeSet(Equations2,CMISS_EQUATIONS_ELEMENT_MATRIX_OUTPUT,Err)
-  !CALL CMISSEquations_OutputTypeSet(Equations2,CMISS_EquationsNavierStokesOutput,Err)
   !Finish the equations set equations
   CALL CMISSEquationsSet_EquationsCreateFinish(FluidEquationsSet,Err)
-  
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> MOVING MESH EQUATIONS << == '
   !Create the equations set equations
   CALL CMISSEquations_Initialise(EquationsMovingMesh,Err)
@@ -2579,12 +1894,10 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSEquations_OutputTypeSet(EquationsMovingMesh,CMISS_EQUATIONS_NO_OUTPUT,Err)
   !Finish the equations set equations
   CALL CMISSEquationsSet_EquationsCreateFinish(MovingMeshEquationsSet,Err)
-
   !
   !================================================================================================================================
   !
   ! I N T E R F A C E _ C O N D I T I O N
-
   !Create an interface condition between the two meshes
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> INTERFACE CONDITIONS << == '
   CALL CMISSInterfaceCondition_Initialise(InterfaceCondition,Err)
@@ -2601,7 +1914,6 @@ PROGRAM CoupledFluidSolidExample
     & CMISS_FIELD_U_VARIABLE_TYPE,Err)
   !Finish creating the interface condition
   CALL CMISSInterfaceCondition_CreateFinish(InterfaceCondition,Err)
-
   !Create the Lagrange multipliers field
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> INTERFACE LAGRANGE FIELD << == '
   CALL CMISSField_Initialise(LagrangeField1,Err)
@@ -2615,7 +1927,6 @@ PROGRAM CoupledFluidSolidExample
   ENDDO
   CALL CMISSField_ParameterSetUpdateStart(LagrangeField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
   CALL CMISSField_ParameterSetUpdateFinish(LagrangeField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
-
   !Create the interface condition equations
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> INTERFACE EQUATIONS << == '
   CALL CMISSInterfaceEquations_Initialise(InterfaceEquations,Err)
@@ -2626,32 +1937,26 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSInterfaceEquations_OutputTypeSet(InterfaceEquations,CMISS_EQUATIONS_NO_OUTPUT,Err)
   !Finish creating the interface equations
   CALL CMISSInterfaceCondition_EquationsCreateFinish(InterfaceCondition,Err)
-
   !
   !================================================================================================================================
   !
   ! P R O B L E M
-  
-  !Start the creation of a coupled problem.
+  !Start the creation of a coupled problem
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> COUPLED PROBLEM << == '
   CALL CMISSProblem_Initialise(CoupledProblem,Err)
   CALL CMISSProblem_CreateStart(CoupledProblemUserNumber,CoupledProblem,Err)
   !Set the problem to be a MULTI PHYSICS class - FINITE ELASTICITY NAVIER STOKES type - FINITE ELASTICITY NAVIER STOKES ALE subtype  
   CALL CMISSProblem_SpecificationSet(CoupledProblem,CMISS_PROBLEM_MULTI_PHYSICS_CLASS, &
     & CMISS_PROBLEM_FINITE_ELASTICITY_NAVIER_STOKES_TYPE,CMISS_PROBLEM_FINITE_ELASTICITY_NAVIER_STOKES_ALE_SUBTYPE,Err)
-  
   !Finish the creation of a problem.
   CALL CMISSProblem_CreateFinish(CoupledProblem,Err)  
-  
   !
   !================================================================================================================================
   !
   ! C O N T R O L _ L O O P
-
   !Start the creation of the problem control loop for the coupled problem
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> PROBLEM CONTROL LOOP << == '
   CALL CMISSProblem_ControlLoopCreateStart(CoupledProblem,Err)
-  
   !Time loop (main loop)
   CALL CMISSControlLoop_Initialise(ControlLoop,Err)  
   CALL CMISSProblem_ControlLoopGet(CoupledProblem,CMISS_CONTROL_LOOP_NODE,ControlLoop,Err)
@@ -2659,26 +1964,20 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSControlLoop_TimesSet(ControlLoop,StartTime,StopTime,TimeStepSize,Err)
   CALL CMISSControlLoop_TimeInputSet(ControlLoop,MaterialSpecification,Err)
   CALL CMISSControlLoop_TimeOutputSet(ControlLoop,OutputFrequency,Err)
-  
   !Finish creating the problem control loop
   CALL CMISSProblem_ControlLoopCreateFinish(CoupledProblem,Err)
-  
   !
   !================================================================================================================================
   !
   ! S O L V E R S
-
   !Start the creation of the problem solver for the coupled problem
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> PROBLEM SOLVERS << == '
   CALL CMISSProblem_SolversCreateStart(CoupledProblem,Err)
-  
   !Linear solver for moving mesh
   CALL CMISSSolver_Initialise(LinearSolverMovingMesh,Err)
   CALL CMISSProblem_SolverGet(CoupledProblem,CMISS_CONTROL_LOOP_NODE, &
     & LinearSolverMovingMeshIndex,LinearSolverMovingMesh,Err)
   CALL CMISSSolver_OutputTypeSet(LinearSolverMovingMesh,LinearSolverMovingMesh_OutputType,Err)
-  !TODO Additional settings
-  
   !Solvers for coupled FiniteElasticity NavierStokes problem
   CALL CMISSSolver_Initialise(DynamicSolver,Err)
   CALL CMISSSolver_Initialise(NonlinearSolver,Err)
@@ -2701,6 +2000,7 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSSolver_NewtonLineSearchAlphaSet(NonlinearSolver,LinesearchAlpha,Err)
   !Get the dynamic nonlinear linear solver
   CALL CMISSSolver_NewtonLinearSolverGet(NonlinearSolver,LinearSolver,Err)
+  !Choose type of linear solver
   IF(.FALSE.) THEN
     CALL CMISSSolver_LinearTypeSet(LinearSolver,CMISS_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
     CALL CMISSSolver_LinearIterativeMaximumIterationsSet(LinearSolver,MaximumIterations,Err)
@@ -2711,17 +2011,13 @@ PROGRAM CoupledFluidSolidExample
     CALL CMISSSolver_LinearTypeSet(LinearSolver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
   ENDIF
   CALL CMISSSolver_OutputTypeSet(LinearSolver,LinearSolver_OutputType,Err)
-  
   !Finish the creation of the problem solver
   CALL CMISSProblem_SolversCreateFinish(CoupledProblem,Err)
-  
   !
   !================================================================================================================================
   !
   ! S O L V E R _ E Q U A T I O N S
-
   CALL CMISSProblem_SolverEquationsCreateStart(CoupledProblem,Err)
-
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> MOVING MESH SOLVER EQUATIONS << == '
   !Start the creation of the problem solver equations
   CALL CMISSSolver_Initialise(LinearSolverMovingMesh,Err)
@@ -2733,7 +2029,6 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSSolverEquations_SparsityTypeSet(LinearSolverMovingMeshEquations,CMISS_SOLVER_SPARSE_MATRICES,Err)
   CALL CMISSSolverEquations_EquationsSetAdd(LinearSolverMovingMeshEquations,MovingMeshEquationsSet, &
     & MovingMeshEquationsSetIndex,Err)
-    
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> SOLVER EQUATIONS << == '
   CALL CMISSSolver_Initialise(DynamicSolver,Err)
   CALL CMISSSolverEquations_Initialise(CoupledSolverEquations,Err)
@@ -2755,185 +2050,94 @@ PROGRAM CoupledFluidSolidExample
     & (/CMISS_INTERFACE_MATRIX_STATIC,CMISS_INTERFACE_MATRIX_STATIC/),Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblem_SolverEquationsCreateFinish(CoupledProblem,Err)
-
   !
   !================================================================================================================================
   !
   ! B O U N D A R Y _ C O N D I T I O N S
-
   !Start the creation of the equations set boundary conditions
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> BOUNDARY CONDITIONS << == '
-  
   !SUBROUTINE CMISSBoundaryConditions_SetNodeObj(boundaryConditions,field,variableType,versionNumber,derivativeNumber, &
   !  & nodeUserNumber,componentNumber,condition,value,err)
-  SELECT CASE(MaterialSpecification)
-  CASE(Blood)
-    CALL CMISSBoundaryConditions_Initialise(BoundaryConditions,Err)
-    CALL CMISSSolverEquations_BoundaryConditionsCreateStart(CoupledSolverEquations,BoundaryConditions,Err)
-    !No displacement boundary for solid
-    DO S=1,SIZE(DisplacementBoundaryNodeMappings)
-      NodeNumber=DisplacementBoundaryNodeMappings(S)
-      CALL CMISSDecomposition_NodeDomainGet(SolidDecomposition,NodeNumber,1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField1,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,DisplacementBoundaryCondition(S),Err)
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField1,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED,DisplacementBoundaryCondition(S+SIZE(DisplacementBoundaryNodeMappings)),Err)
+  IF(MaterialSpecification==Plate2D) THEN
+    PRINT *, 'Boundary conditions for 2D plate reference case.'
+  ELSE
+    PRINT *, 'Boundary conditions for 3D plate reference case.'
+  ENDIF
+  CALL CMISSBoundaryConditions_Initialise(BoundaryConditions,Err)
+  CALL CMISSSolverEquations_BoundaryConditionsCreateStart(CoupledSolverEquations,BoundaryConditions,Err)
+  !No displacement boundary for solid
+  DO S=1,SIZE(NoDisplacementNodes)
+    NodeNumber=NoDisplacementNodes(S)
+    CALL CMISSDecomposition_NodeDomainGet(SolidDecomposition,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField1,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+        & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+      CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField1,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+        & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+      IF(NumberOfDimensions==3) THEN
+        CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField1,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+          & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
       ENDIF
-    ENDDO
-    
-    !Linear inflow profile on left boundary  0 --> 1  (fluid)
-    DO F=1,SIZE(VelocityBoundaryNodeMappings)
-      NodeNumber=VelocityBoundaryNodeMappings(F)
-      CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
-        MMCondition=CMISS_BOUNDARY_CONDITION_FIXED
-        IF(ANY(VelocityInletBoundaryNodeMappings.EQ.NodeNumber)) MMCondition=CMISS_BOUNDARY_CONDITION_FIXED_INLET
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,1,MMCondition,0.0_CMISSDP,Err)!VelocityBoundaryCondition(F),Err)
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,2,MMCondition,VelocityBoundaryCondition(F+SIZE(VelocityBoundaryNodeMappings)),Err)
-      ENDIF
-    ENDDO
-    
-    !Zero pressure on outflow boundaries
-    DO P=1,SIZE(PressureBoundaryNodeMappings)
-      NodeNumber=PressureBoundaryNodeMappings(P)
-      CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,NumberOfDimensions+1,CMISS_BOUNDARY_CONDITION_FIXED,PressureBoundaryCondition(P),Err)
-      ENDIF
-    ENDDO
-    !Finish equations set boundary conditions
-    CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(CoupledSolverEquations,Err)
-    
-    !Start the creation of the moving mesh boundary conditions
-    CALL CMISSBoundaryConditions_Initialise(BoundaryConditionsMovingMesh,Err)
-    CALL CMISSSolverEquations_BoundaryConditionsCreateStart(LinearSolverMovingMeshEquations,BoundaryConditionsMovingMesh,Err)
-    !Set which wall nodes are moved and which have a fixed position in space
-    DO MM=1,SIZE(MovingMeshBoundaryElementNodeMappings)
-      NodeNumber=MovingMeshBoundaryElementNodeMappings(MM)
-      IF(COUNT(MovingMeshMovingNodeMappings==NodeNumber)/=0) THEN
-        MMCondition=CMISS_BOUNDARY_CONDITION_MOVED_WALL
-      ELSE
-        MMCondition=CMISS_BOUNDARY_CONDITION_FIXED_WALL
-      ENDIF
-      CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh,CMISS_FIELD_U_VARIABLE_TYPE, &
-          & 1, CMISS_NO_GLOBAL_DERIV,NodeNumber,1,MMCondition,0.0_CMISSDP,Err)
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh,CMISS_FIELD_U_VARIABLE_TYPE, &
-          & 1, CMISS_NO_GLOBAL_DERIV,NodeNumber,2,MMCondition,0.0_CMISSDP,Err)
-      ENDIF
-    ENDDO
-    !Finish moving mesh boundary conditions
-    CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(LinearSolverMovingMeshEquations,Err)
-  !=================================================================================================================================
-  CASE(Plate2D,Plate3D)
-    IF(MaterialSpecification==Plate2D) THEN
-      PRINT *, 'Boundary conditions for 2D plate reference case.'
-    ELSE
-      PRINT *, 'Boundary conditions for 3D plate reference case.'
     ENDIF
-    CALL CMISSBoundaryConditions_Initialise(BoundaryConditions,Err)
-    CALL CMISSSolverEquations_BoundaryConditionsCreateStart(CoupledSolverEquations,BoundaryConditions,Err)
-    !No displacement boundary for solid
-    DO S=1,SIZE(NoDisplacementNodes)
-      NodeNumber=NoDisplacementNodes(S)
-      CALL CMISSDecomposition_NodeDomainGet(SolidDecomposition,NodeNumber,1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
-        CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField1,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-        CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField1,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-        IF(NumberOfDimensions==3) THEN
-          CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField1,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-            & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-        ENDIF
-      ENDIF
-    ENDDO
-    !Set outlet (zero) pressure nodes
-    DO S=1,SIZE(OutletNodes)
-      NodeNumber=OutletNodes(S)
-      CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
+  ENDDO
+  !Set outlet (zero) pressure nodes
+  DO S=1,SIZE(OutletNodes)
+    NodeNumber=OutletNodes(S)
+    CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
+        & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+        & NodeNumber,NumberOfDimensions+1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+    ENDIF
+  ENDDO
+  !Inlet velocity nodes, small starting velocity in 1st coordinate direction
+  DO S=1,SIZE(InletNodes)
+    NodeNumber=InletNodes(S)
+    CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
+        & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+        & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED_INLET,0.0_CMISSDP,Err)
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
+        & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+        & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED_INLET,0.0_CMISSDP,Err)
+      IF(NumberOfDimensions==3) THEN
         CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
           & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,NumberOfDimensions+1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+          & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED_INLET,0.0_CMISSDP,Err)
       ENDIF
-    ENDDO
-    !Inlet velocity nodes, small starting velocity in 1st coordinate direction
-    DO S=1,SIZE(InletNodes)
-      NodeNumber=InletNodes(S)
-      CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
+    ENDIF
+  ENDDO
+  !Set no-slip BC
+  DO S=1,SIZE(NoSlipNodes)
+    NodeNumber=NoSlipNodes(S)
+    CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
+        & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+        & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
+        & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+        & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+      IF(NumberOfDimensions==3) THEN
         CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
           & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED_INLET,0.0_CMISSDP,Err)
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
-          & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED_INLET,0.0_CMISSDP,Err)
-        IF(NumberOfDimensions==3) THEN
-          CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
-            & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-            & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED_INLET,0.0_CMISSDP,Err)
-        ENDIF
+          & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
       ENDIF
-    ENDDO
-    !Set no-slip BC
-    DO S=1,SIZE(NoSlipNodes)
-      NodeNumber=NoSlipNodes(S)
-      CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
-          & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
-          & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-        IF(NumberOfDimensions==3) THEN
-          CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
-            & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-            & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-        ENDIF
-      ENDIF
-    ENDDO
-    !Set slip BC
- !   DO S=1,SIZE(SlipNodes)
- !     NodeNumber=SlipNodes(S)
- !     CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
- !     IF(NodeDomain==ComputationalNodeNumber) THEN
- !       IF(NumberOfDimensions==2) THEN
- !         CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
- !           & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
- !           & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
- !       ELSEIF(NumberOfDimensions==3) THEN
- !         CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
- !           & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
- !           & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
- !       ENDIF
- !     ENDIF
- !   ENDDO
-    !Set slip BC
-    DO S=1,SIZE(SlipNodesTop)
-      NodeNumber=SlipNodesTop(S)
-      CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
-     !   CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
-     !     & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-     !     & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-     !   CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, & ! TODO TODO reference case has slip BC!
-     !     & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-     !     & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-        IF(NumberOfDimensions==3) THEN
-          CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, & ! TODO TODO reference case has slip BC!
-            & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-            & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-        ENDIF
-      ENDIF
-    ENDDO
-    !Set slip BC
+    ENDIF
+  ENDDO
+  !Set slip BC
+  DO S=1,SIZE(SlipNodesTop)
+    NodeNumber=SlipNodesTop(S)
+    CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
+        & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+        & NodeNumber,NumberOfDimensions,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+    ENDIF
+  ENDDO
+  !Set slip BC
+  IF(NumberOfDimensions==3) THEN
     DO S=1,SIZE(SlipNodesRightLeft)
       NodeNumber=SlipNodesRightLeft(S)
       CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
@@ -2941,136 +2145,126 @@ PROGRAM CoupledFluidSolidExample
         CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
           & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
           & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-      !  CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, & ! TODO TODO reference case has slip BC!
-      !    & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      !    & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-      !  IF(NumberOfDimensions==3) THEN
-      !    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField2, & ! TODO TODO reference case has slip BC!
-      !      & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      !      & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-      !  ENDIF
       ENDIF
     ENDDO
-    IF(NumberOfDimensions==2) THEN
-      !Remove dof's at nodes where solid displacement and zero velocity is set (first n last interface node)
-      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
-        & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-        & 1,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
-        & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-        & 1,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
-        & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-        & NumberOfInterfaceNodes,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
-        & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-        & NumberOfInterfaceNodes,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+  ENDIF
+  IF(NumberOfDimensions==2) THEN
+    !Remove dof's at nodes where solid displacement and zero velocity is set (first n last interface node)
+    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
+      & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+      & 1,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
+      & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+      & 1,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
+      & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+      & NumberOfInterfaceNodes,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
+      & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+      & NumberOfInterfaceNodes,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+  ELSE
+    IF(CheckWithoutInterfaceCondition) THEN
+      DO S=1,SIZE(InterfaceNodeNumbersForGeometry)
+        NodeNumber=InterfaceNodeNumbersForGeometry(S)
+        CALL CMISSDecomposition_NodeDomainGet(InterfaceDecomposition,NodeNumber,1,NodeDomain,Err)
+        IF(NodeDomain==ComputationalNodeNumber) THEN
+          CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
+            & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+            & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+          CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
+            & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+            & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+          CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
+            & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+            & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+        ENDIF
+      ENDDO
     ELSE
-      IF(CheckWithoutInterfaceCondition) THEN
-        DO S=1,SIZE(InterfaceNodeNumbersForGeometry)
-          NodeNumber=InterfaceNodeNumbersForGeometry(S)
-          CALL CMISSDecomposition_NodeDomainGet(InterfaceDecomposition,NodeNumber,1,NodeDomain,Err)
-          IF(NodeDomain==ComputationalNodeNumber) THEN
-            CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
-              & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-              & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-            CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
-              & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-              & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-            CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
-              & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-              & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-          ENDIF
-        ENDDO
-      ELSE
-        DO S=1,SIZE(LagrangeNodes)
-          NodeNumber=LagrangeNodes(S)
-          CALL CMISSDecomposition_NodeDomainGet(InterfaceDecomposition,NodeNumber,1,NodeDomain,Err)
-          IF(NodeDomain==ComputationalNodeNumber) THEN
-            CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
-              & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-              & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-            CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
-              & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-              & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-            CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
-              & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-              & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-          ENDIF
-        ENDDO
+      DO S=1,SIZE(LagrangeNodes)
+        NodeNumber=LagrangeNodes(S)
+        CALL CMISSDecomposition_NodeDomainGet(InterfaceDecomposition,NodeNumber,1,NodeDomain,Err)
+        IF(NodeDomain==ComputationalNodeNumber) THEN
+          CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
+            & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+            & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+          CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
+            & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+            & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+          CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
+            & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+            & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+        ENDIF
+      ENDDO
+    ENDIF
+  ENDIF
+  !Finish equations set boundary conditions
+  CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(CoupledSolverEquations,Err)
+  
+  !Start the creation of the moving mesh boundary conditions
+  CALL CMISSBoundaryConditions_Initialise(BoundaryConditionsMovingMesh,Err)
+  CALL CMISSSolverEquations_BoundaryConditionsCreateStart(LinearSolverMovingMeshEquations,BoundaryConditionsMovingMesh,Err)
+  !Fixed boundary nodes. May be used to move nodes..
+  DO S=1,SIZE(MovedYNodes)
+    NodeNumber=MovedYNodes(S)
+    CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
+        & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+        & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMISSDP,Err)
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
+        & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+        & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMISSDP,Err)
+      IF(NumberOfDimensions==3) THEN
+        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
+          & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+          & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMISSDP,Err)
       ENDIF
     ENDIF
-    !Finish equations set boundary conditions
-    CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(CoupledSolverEquations,Err)
-    
-    !Start the creation of the moving mesh boundary conditions
-    CALL CMISSBoundaryConditions_Initialise(BoundaryConditionsMovingMesh,Err)
-    CALL CMISSSolverEquations_BoundaryConditionsCreateStart(LinearSolverMovingMeshEquations,BoundaryConditionsMovingMesh,Err)
-    !Mesh nodes that are moving in 1st coordinate direction; fixed in 2nd coordinate direction
-    DO S=1,SIZE(MovedYNodes)
-      NodeNumber=MovedYNodes(S)
-      CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
+  ENDDO
+  !Mesh nodes that are moving wall nodes
+  DO S=1,SIZE(MovedNodes)
+    NodeNumber=MovedNodes(S)
+    CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
+        & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+        & NodeNumber,1,CMISS_BOUNDARY_CONDITION_MOVED_WALL,0.0_CMISSDP,Err)
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
+        & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+        & NodeNumber,2,CMISS_BOUNDARY_CONDITION_MOVED_WALL,0.0_CMISSDP,Err)
+      IF(NumberOfDimensions==3) THEN
         CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
           & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMISSDP,Err)!TODO Maybe move nodes to have higher quality elements
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
-          & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMISSDP,Err)
-        IF(NumberOfDimensions==3) THEN
-          CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
-            & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-            & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMISSDP,Err)
-        ENDIF
+          & NodeNumber,3,CMISS_BOUNDARY_CONDITION_MOVED_WALL,0.0_CMISSDP,Err)
       ENDIF
-    ENDDO
-    !Mesh nodes that are moving wall nodes
-    DO S=1,SIZE(MovedNodes)
-      NodeNumber=MovedNodes(S)
-      CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
+    ENDIF
+  ENDDO
+  !Mesh nodes that are fixed in space
+  DO S=1,SIZE(FixedNodes)
+    NodeNumber=FixedNodes(S)
+    CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
+        & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+        & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMISSDP,Err)
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
+        & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
+        & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMISSDP,Err)
+      IF(NumberOfDimensions==3) THEN
         CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
           & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,1,CMISS_BOUNDARY_CONDITION_MOVED_WALL,0.0_CMISSDP,Err)
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
-          & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,2,CMISS_BOUNDARY_CONDITION_MOVED_WALL,0.0_CMISSDP,Err)
-        IF(NumberOfDimensions==3) THEN
-          CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
-            & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-            & NodeNumber,3,CMISS_BOUNDARY_CONDITION_MOVED_WALL,0.0_CMISSDP,Err)
-        ENDIF
+          & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMISSDP,Err)
       ENDIF
-    ENDDO
-    !Mesh nodes that are fixed in space
-    DO S=1,SIZE(FixedNodes)
-      NodeNumber=FixedNodes(S)
-      CALL CMISSDecomposition_NodeDomainGet(FluidDecomposition,NodeNumber,1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
-          & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMISSDP,Err)
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
-          & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,2,CMISS_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMISSDP,Err)
-        IF(NumberOfDimensions==3) THEN
-          CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
-            & CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-            & NodeNumber,3,CMISS_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMISSDP,Err)
-        ENDIF
-      ENDIF
-    ENDDO
-    !Finish moving mesh boundary conditions
-    CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(LinearSolverMovingMeshEquations,Err)
-  CASE DEFAULT
-    CALL HANDLE_ERROR("Invalid material specification for boundary conditions.")
-  END SELECT
+    ENDIF
+  ENDDO
+  !Finish moving mesh boundary conditions
+  CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(LinearSolverMovingMeshEquations,Err)
   
-
   !
   !================================================================================================================================
   !
   ! S O L V E
+  
   PRINT *, ' == >> SOLVING PROBLEM << == '
   CALL CMISSProblem_Solve(CoupledProblem,Err)
   
@@ -3078,20 +2272,19 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSFinalise(Err)
 
   e=etime(t)
-
   PRINT *, "Program successfully completed in ",e," seconds."
-
+  
   STOP
- 
+  
 CONTAINS
 
   SUBROUTINE HANDLE_ERROR(ERROR_STRING)
-
+    
     CHARACTER(LEN=*), INTENT(IN) :: ERROR_STRING
-
+    
     WRITE(*,'(">>ERROR: ",A)') ERROR_STRING(1:LEN_TRIM(ERROR_STRING))
     STOP
-
+    
   END SUBROUTINE HANDLE_ERROR
-     
+  
 END PROGRAM CoupledFluidSolidExample
