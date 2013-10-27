@@ -1,3 +1,7 @@
+% generates a 2D mesh for FSI problem: plate in a cross flow
+% author: Andreas Hessenthaler (C)
+%
+
 clear all
 close all
 
@@ -604,26 +608,3 @@ if (showMeshes == 1)
 elseif (showMeshes == 2)
     plot(SolidGeometryY, SolidGeometryZ, 'r*', FluidGeometryY, FluidGeometryZ, 'g+')
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
