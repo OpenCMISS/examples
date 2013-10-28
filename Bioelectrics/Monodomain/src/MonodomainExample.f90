@@ -88,9 +88,6 @@ PROGRAM MONODOMAINEXAMPLE
   !Program variables
 
   INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
-  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
-  
-  INTEGER(CMISSIntg) :: MPI_IERROR
 
   LOGICAL :: EXPORT_FIELD
 
@@ -129,12 +126,12 @@ PROGRAM MONODOMAINEXAMPLE
   TYPE(CMISSSolverType) :: Solver
   TYPE(CMISSSolverEquationsType) :: SolverEquations
 
-   !Generic CMISS variables
+  !Generic CMISS variables
   
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
   INTEGER(CMISSIntg) :: EquationsSetIndex,CellMLIndex
   INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
-  INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain
+  INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain,NodeDomain
   INTEGER(CMISSIntg) :: Err
 
   !Intialise OpenCMISS
@@ -147,20 +144,12 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
-  CALL CMISSOutputSetOn("Monodomain",Err)
+  !CALL CMISSOutputSetOn("Monodomain",Err)
     
   NUMBER_GLOBAL_X_ELEMENTS=NUMBER_OF_ELEMENTS
   NUMBER_GLOBAL_Y_ELEMENTS=NUMBER_OF_ELEMENTS
   NUMBER_GLOBAL_Z_ELEMENTS=0
-  NUMBER_OF_DOMAINS=NumberOfComputationalNodes
   
-  !Broadcast the number of elements in the X & Y directions and the number of partitions to the other computational nodes
-  CALL MPI_BCAST(NUMBER_GLOBAL_X_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_GLOBAL_Y_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_GLOBAL_Z_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_OF_DOMAINS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  !Read in the number of elements in the X & Y directions, and the number of partitions on the master node (number 0)
-
   !Start the creation of a new RC coordinate system
   CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
   CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
@@ -221,7 +210,7 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL CMISSDecomposition_TypeSet(Decomposition,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
-  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NUMBER_OF_DOMAINS,Err)
+  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
   !Finish the decomposition
   CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
   
@@ -367,10 +356,10 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSCellML_FieldComponentGet(CellML,n98ModelIndex,CMISS_CELLML_PARAMETERS_FIELD,"membrane/IStim",stimcomponent,Err)
   !Set the Stimulus at half the bottom nodes
   DO node_idx=1,NUMBER_OF_ELEMENTS/2
-    IF(FirstNodeDomain==ComputationalNodeNumber) THEN
+    CALL CMISSDecomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL CMISSField_ParameterSetUpdateNode(CellMLParametersField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
-        & node_idx, &
-        & stimcomponent,STIM_VALUE,Err)
+        & node_idx,stimcomponent,STIM_VALUE,Err)
     ENDIF
   ENDDO
   
@@ -378,16 +367,18 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSCellML_FieldComponentGet(CellML,n98ModelIndex,CMISS_CELLML_PARAMETERS_FIELD,"fast_sodium_current/g_Na", &
     & gNacomponent,Err)
   !Loop over the nodes
-  DO node_idx=1,(NUMBER_OF_ELEMENTS+1)*(NUMBER_OF_ELEMENTS+1)
-    CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,1, &
-      & X,Err)
-    CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,2, &
-      & Y,Err)
-    DISTANCE=SQRT(X**2+Y**2)/SQRT(2.0_CMISSDP)
-    gNa_VALUE=2.0_CMISSDP*(DISTANCE+0.5_CMISSDP)*385.5e-3_CMISSDP
-    CALL CMISSField_ParameterSetUpdateNode(CellMLParametersField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
-      & node_idx, &
-      & gNacomponent,gNa_VALUE,Err)
+  DO node_idx=1,LastNodeNumber
+    CALL CMISSDecomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,1, &
+        & X,Err)
+      CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,2, &
+        & Y,Err)
+      DISTANCE=SQRT(X**2+Y**2)/SQRT(2.0_CMISSDP)
+      gNa_VALUE=2.0_CMISSDP*(DISTANCE+0.5_CMISSDP)*385.5e-3_CMISSDP
+      CALL CMISSField_ParameterSetUpdateNode(CellMLParametersField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
+        & node_idx,gNacomponent,gNa_VALUE,Err)
+    ENDIF
   ENDDO
   
   !Start the creation of a problem.
@@ -471,14 +462,6 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSBoundaryConditions_Initialise(BoundaryConditions,Err)
   CALL CMISSSolverEquations_BoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
   !Set the first node to 0.0 and the last node to 1.0
-  FirstNodeNumber=1
-  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)
-  ELSE
-    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
-  ENDIF
-  CALL CMISSDecomposition_NodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
-  CALL CMISSDecomposition_NodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
   IF(FirstNodeDomain==ComputationalNodeNumber) THEN
     !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,FirstNodeNumber,1, &
     !  & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
@@ -496,7 +479,8 @@ PROGRAM MONODOMAINEXAMPLE
   !Now turn the stimulus off
   !Set the Stimulus at node 1
   DO node_idx=1,NUMBER_OF_ELEMENTS/2
-    IF(FirstNodeDomain==ComputationalNodeNumber) THEN
+    CALL CMISSDecomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL CMISSField_ParameterSetUpdateNode(CellMLParametersField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
         & node_idx,stimcomponent,0.0_CMISSDP,Err)
     ENDIF
