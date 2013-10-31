@@ -4,10 +4,14 @@ for $i (0..10000)
      $filename = sprintf("./output/MainTime_%01d.part0.exnode", $i);
      print "Reading $filename time $i\n";
      gfx read node "$filename" time $i;
+     $filename = sprintf("./output/MainTime_%01d.part1.exnode", $i);
+     print "Reading $filename time $i\n";
+     gfx read node "$filename" time $i;
   }
 
 #Read in the element description
 gfx read element ./output/MainTime_0.part0.exelem;
+gfx read element ./output/MainTime_0.part1.exelem;
 
 gfx define field Coordinates.x component Coordinates.x 
 gfx define field Coordinates.y component Coordinates.y
@@ -21,7 +25,6 @@ gfx def field flow component General.1
 gfx def field area component General.2
 
 gfx modify g_element OpenCMISS general circle_discretization 12 
-
 
 gfx define field vector_field coord rectangular_cartesian component General.1 General.2
 
