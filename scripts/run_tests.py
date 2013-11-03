@@ -9,6 +9,7 @@ env = Environment(loader=FileSystemLoader(globalExamplesDir))
 template = env.get_template('scripts/run_tests.template')
 nesiTemplate = env.get_template('scripts/nesi.template')
 size = os.environ.get("SIZE", "small")
+mode = "DEBUG" if (not 'MODE' in os.environ) else os.environ['MODE']
 testSets = ["nightlytest.json","weeklytest.json"] if (size == 'large') else ["nightlytest.json"]
 examplesDir = globalExamplesDir if (not 'DIR' in os.environ) else "%s/%s" %(globalExamplesDir,os.environ['DIR'])
 rootLogDir = "%s/%s" %(os.environ['OPENCMISS_ROOT'],"build/logs") 
@@ -19,6 +20,10 @@ compiler = os.environ.get("COMPILER", 'gnu')
 compilerVersion = os.environ.get("OPENCMISS_COMPILER_PATH", "gnu_4.6")
 system = os.uname()[0].lower()
 arch = os.uname()[4]
+MODE_SUFFIX_MAP = {
+    'OPT': '',
+    'DEBUG': '-debug'
+}
 
 class TestTreeNode:
 
@@ -145,8 +150,8 @@ class Example(TestTreeNode):
     os.chdir(self.path)
     logPath = "%s/nightly_build_%s_%s.log" %(self.logDir,compilerVersion,str(date.today()))
     self.wrapWithPre(logPath,1)
-    os.system("make clean  >> %s 2>&1" %(logPath))
-    command = "make >> %s 2>&1" %(logPath)
+    os.system("make %s=true clean  >> %s 2>&1" %(mode,logPath))
+    command = "make %s=true >> %s 2>&1" %(mode,logPath)
     self.buildFail = os.system(command)
     self.wrapWithPre(logPath,0)
     self.buildLog = "%s/nightly_build_%s_%s.log" %(self.masterLogDir,compilerVersion,str(date.today()))
@@ -200,13 +205,13 @@ class Test(TestTreeNode):
     if self.parent.language == "python" :
       command = "python %s %s > %s 2>&1" %(self.parent.script, self.args,logPath)
     elif self.machine == "nesi" :
-      self.command = "%s/bin/%s-%s/%s/%s/%sExample-debug %s" %(self.parent.path,arch,system,mpi,compilerVersion,self.exampleName,self.args)
+      self.command = "%s/bin/%s-%s/%s/%s/%sExample%s %s" %(self.parent.path,arch,system,mpi,compilerVersion,self.exampleName,MODE_SUFFIX_MAP[mode],self.args)
       f = open("nesi_%d.ll" %(self.id),"w")
       f.write(nesiTemplate.render(test=self))
       f.close()
       command = "llsubmit -s nesi_%d.ll > %s 2>&1" %(self.id,logPath)
     else :
-      command = "%s/bin/%s-%s/%s/%s/%sExample-debug %s > %s 2>&1" %(self.parent.path,arch,system,mpi,compilerVersion,self.exampleName,self.args,logPath)
+      command = "%s/bin/%s-%s/%s/%s/%sExample%s %s > %s 2>&1" %(self.parent.path,arch,system,mpi,compilerVersion,self.exampleName,MODE_SUFFIX_MAP[mode],self.args,logPath)
     self.runFail = os.system(command)
     self.wrapWithPre(logPath,0)
     self.runLog = "%s/nightly_run_%d_%s_%s.log" %(self.masterLogDir,self.id,compilerVersion,str(date.today()))
@@ -240,7 +245,7 @@ class Test(TestTreeNode):
   def check(self):
     cwd = os.getcwd()
     os.chdir(self.path)
-    logPath = "%s/nightly_check_%d_%s_%s" %(self.logDir,self.id,compilerVersion,str(date.today()))
+    logPath = "%s/nightly_check_%d_%s_%s.log" %(self.logDir,self.id,compilerVersion,str(date.today()))
     self.wrapWithPre(logPath,1)
     self.checkFail = 0
     ndiff = os.environ['OPENCMISS_ROOT']+"/cm/utils/ndiff"

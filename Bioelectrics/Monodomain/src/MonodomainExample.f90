@@ -59,10 +59,6 @@ PROGRAM MONODOMAINEXAMPLE
 
   IMPLICIT NONE
 
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(CMISSFieldType) :: EquationsSetField
-
-
   !Test program parameters
 
   REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
@@ -76,37 +72,32 @@ PROGRAM MONODOMAINEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=8
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=9
-  INTEGER(CMISSIntg), PARAMETER :: CellMLUserNumber=10
-  INTEGER(CMISSIntg), PARAMETER :: CellMLModelsFieldUserNumber=11
-  INTEGER(CMISSIntg), PARAMETER :: CellMLStateFieldUserNumber=12
-  INTEGER(CMISSIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=13
-  INTEGER(CMISSIntg), PARAMETER :: CellMLParametersFieldUserNumber=14
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=15
-  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=16
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: CellMLUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: CellMLModelsFieldUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: CellMLStateFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: CellMLParametersFieldUserNumber=15
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=16
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=17
 
   !Program types
   
   !Program variables
 
   INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
-  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
-  
-  INTEGER(CMISSIntg) :: MPI_IERROR
 
   LOGICAL :: EXPORT_FIELD
 
-  INTEGER(CMISSIntg) :: N,CELL_TYPE
+  INTEGER(CMISSIntg) :: n98ModelIndex
 
-  INTEGER(CMISSIntg) :: n98ModelIndex,JRWModelIndex,LRdModelIndex
+  INTEGER(CMISSIntg) :: gNacomponent,stimcomponent,node_idx
 
-  INTEGER(CMISSIntg) :: gK1component,gNacomponent,stimcomponent,node_idx
-
-  INTEGER(CMISSIntg), PARAMETER :: NUMBER_OF_ELEMENTS=25
-
-  REAL(CMISSDP) :: X,Y,DISTANCE,gK1_VALUE,gNa_VALUE
+  REAL(CMISSDP) :: X,Y,DISTANCE,gNa_VALUE
   
+  INTEGER(CMISSIntg), PARAMETER :: NUMBER_OF_ELEMENTS=25
   REAL(CMISSDP), PARAMETER :: STIM_VALUE = 100.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: STIM_STOP = 0.10_CMISSDP
   REAL(CMISSDP), PARAMETER :: TIME_STOP = 1.50_CMISSDP
@@ -125,7 +116,7 @@ PROGRAM MONODOMAINEXAMPLE
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField
+  TYPE(CMISSFieldType) :: GeometricField,EquationsSetField,DependentField,MaterialsField
   TYPE(CMISSFieldType) :: CellMLModelsField,CellMLStateField,CellMLIntermediateField,CellMLParametersField
   TYPE(CMISSFieldsType) :: Fields
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
@@ -135,30 +126,13 @@ PROGRAM MONODOMAINEXAMPLE
   TYPE(CMISSSolverType) :: Solver
   TYPE(CMISSSolverEquationsType) :: SolverEquations
 
-#ifdef WIN32
-  !Quickwin type
-  LOGICAL :: QUICKWIN_STATUS=.FALSE.
-  TYPE(WINDOWCONFIG) :: QUICKWIN_WINDOW_CONFIG
-#endif
-  
-   !Generic CMISS variables
+  !Generic CMISS variables
   
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
   INTEGER(CMISSIntg) :: EquationsSetIndex,CellMLIndex
   INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
-  INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain
+  INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain,NodeDomain
   INTEGER(CMISSIntg) :: Err
-
-#ifdef WIN32
-  !Initialise QuickWin
-  QUICKWIN_WINDOW_CONFIG%TITLE="General Output" !Window title
-  QUICKWIN_WINDOW_CONFIG%NUMTEXTROWS=-1 !Max possible number of rows
-  QUICKWIN_WINDOW_CONFIG%MODE=QWIN$SCROLLDOWN
-  !Set the window parameters
-  QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
-  !If attempt fails set with system estimated values
-  IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
-#endif
 
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
@@ -170,20 +144,12 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
-  CALL CMISSOutputSetOn("Monodomain",Err)
+  !CALL CMISSOutputSetOn("Monodomain",Err)
     
   NUMBER_GLOBAL_X_ELEMENTS=NUMBER_OF_ELEMENTS
   NUMBER_GLOBAL_Y_ELEMENTS=NUMBER_OF_ELEMENTS
   NUMBER_GLOBAL_Z_ELEMENTS=0
-  NUMBER_OF_DOMAINS=NumberOfComputationalNodes
   
-  !Broadcast the number of elements in the X & Y directions and the number of partitions to the other computational nodes
-  CALL MPI_BCAST(NUMBER_GLOBAL_X_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_GLOBAL_Y_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_GLOBAL_Z_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NUMBER_OF_DOMAINS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  !Read in the number of elements in the X & Y directions, and the number of partitions on the master node (number 0)
-
   !Start the creation of a new RC coordinate system
   CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
   CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
@@ -244,7 +210,7 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL CMISSDecomposition_TypeSet(Decomposition,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
-  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NUMBER_OF_DOMAINS,Err)
+  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
   !Finish the decomposition
   CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
   
@@ -290,16 +256,15 @@ PROGRAM MONODOMAINEXAMPLE
   
   !Set Am
   CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
-    & 193.6_CMISSDP, &
-    & Err)
+    & 193.6_CMISSDP,Err)
   !Set Cm
   CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2, &
     & 0.014651_CMISSDP,Err)
   !Set conductivity
-  CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3,CONDUCTIVITY, &
-    & Err)
-  CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4,CONDUCTIVITY, &
-    & Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3, &
+    & CONDUCTIVITY,Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4, &
+    & CONDUCTIVITY,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,5, &
       & CONDUCTIVITY,Err)
@@ -310,20 +275,8 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSCellML_CreateStart(CellMLUserNumber,Region,CellML,Err)
   !Import a Noble 1998 model from a file
   CALL CMISSCellML_ModelImport(CellML,"n98.xml",n98ModelIndex,Err)
-  ! and import JRW 1998 from a file
-  !CALL CMISSCellML_ModelImport(CellML,"jrw-1998.xml",JRWModelIndex,Err)
-  ! and import LRd from a file
-  !CALL CMISSCellML_ModelImport(CellML,"LRd.xml",LRdModelIndex,Err)
-!  CALL CMISSDiagnosticsSetOn(CMISS_IN_DIAG_TYPE,[1,2,3,4,5],"",["CELLML_CREATE_FIELD_TO_CELLML_MAP_C", &
-!    & "CELLML_CREATE_CELLML_TO_FIELD_MAP_C"],Err)
-  ! Now we have imported all the models we are able to specify which variables from the model we want:
-  !   - to set from this side
-  !CALL CMISSCellML_VariableSetAsKnown(CellML,n98ModelIndex,"time_independent_potassium_current/g_K1",Err)
   CALL CMISSCellML_VariableSetAsKnown(CellML,n98ModelIndex,"fast_sodium_current/g_Na ",Err)
   CALL CMISSCellML_VariableSetAsKnown(CellML,n98ModelIndex,"membrane/IStim",Err)
-  !CALL CMISSCellML_VariableSetAsKnown(CellML,JRWModelIndex,"L_type_Ca_channel/Ko",Err) ! this one should fail
-  !CALL CMISSCellML_VariableSetAsKnown(CellML,JRWModelIndex,"membrane/I_stim",Err)
-  !   - to get from the CellML side
   CALL CMISSCellML_VariableSetAsWanted(CellML,n98ModelIndex,"membrane/i_K1",Err)
   CALL CMISSCellML_VariableSetAsWanted(CellML,n98ModelIndex,"membrane/i_to",Err)
   CALL CMISSCellML_VariableSetAsWanted(CellML,n98ModelIndex,"membrane/i_K",Err)
@@ -335,26 +288,8 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSCellML_VariableSetAsWanted(CellML,n98ModelIndex,"membrane/i_b_Na",Err)
   CALL CMISSCellML_VariableSetAsWanted(CellML,n98ModelIndex,"membrane/i_Ca_L_Na",Err)
   CALL CMISSCellML_VariableSetAsWanted(CellML,n98ModelIndex,"membrane/i_NaCa",Err)
-  !CALL CMISSCellML_VariableSetAsWanted(CellML,n98ModelIndex,"membrane/IStimC",Err)
-  !CALL CMISSCellML_VariableSetAsWanted(CellML,JRWModelIndex,"membrane/i_K1",Err)
-  !CALL CMISSCellML_VariableSetAsWanted(CellML,JRWModelIndex,"membrane/i_Na",Err)
-  !CALL CMISSCellML_VariableSetAsWanted(CellML,JRWModelIndex,"membrane/i_Ca_L_Ca",Err)
-  !CALL CMISSCellML_VariableSetAsWanted(CellML,JRWModelIndex,"membrane/i_Ca_L_K",Err)
-  !CALL CMISSCellML_VariableSetAsWanted(CellML,JRWModelIndex,"membrane/i_K",Err)
-  !CALL CMISSCellML_VariableSetAsWanted(CellML,JRWModelIndex,"membrane/i_NaCa",Err)
-  !CALL CMISSCellML_VariableSetAsWanted(CellML,JRWModelIndex,"membrane/i_Kp",Err)
-  !CALL CMISSCellML_VariableSetAsWanted(CellML,JRWModelIndex,"membrane/i_p_Ca",Err)
-  !CALL CMISSCellML_VariableSetAsWanted(CellML,JRWModelIndex,"membrane/i_Na_b",Err)
-  !CALL CMISSCellML_VariableSetAsWanted(CellML,JRWModelIndex,"membrane/i_Ca_b",Err)
-  !CALL CMISSCellML_VariableSetAsWanted(CellML,JRWModelIndex,"membrane/IStimC",Err)
-  !   - and override constant parameters without needing to set up fields
-  !> \todo Need to allow parameter values to be overridden for the case when user has non-spatially varying parameter value.
-!  CALL CMISSDiagnosticsSetOff(Err)
   !Finish the CellML environment
   CALL CMISSCellML_CreateFinish(CellML,Err)
-
-!  CALL CMISSDiagnosticsSetOn(CMISS_IN_DIAG_TYPE,[1,2,3,4,5],"",["CELLML_CREATE_FIELD_TO_CELLML_MAP_C", &
-!    & "CELLML_CREATE_CELLML_TO_FIELD_MAP_C"],Err)
 
   !Start the creation of CellML <--> OpenCMISS field maps
   CALL CMISSCellML_FieldMapsCreateStart(CellML,Err)
@@ -362,39 +297,20 @@ PROGRAM MONODOMAINEXAMPLE
   !Map Vm
   CALL CMISSCellML_CreateFieldToCellMLMap(CellML,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_VALUES_SET_TYPE, &
     & n98ModelIndex,"membrane/V",CMISS_FIELD_VALUES_SET_TYPE,Err)
-  !CALL CMISSCellML_CreateFieldToCellMLMap(CellML,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_VALUES_SET_TYPE, &
-  !  & JRWModelIndex,"membrane/V",CMISS_FIELD_VALUES_SET_TYPE,Err)
   CALL CMISSCellML_CreateCellMLToFieldMap(CellML,n98ModelIndex,"membrane/V",CMISS_FIELD_VALUES_SET_TYPE, &
     & DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_VALUES_SET_TYPE,Err)
-  !CALL CMISSCellML_CreateCellMLToFieldMap(CellML,JRWModelIndex,"membrane/V",CMISS_FIELD_VALUES_SET_TYPE, &
-  !  & DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_VALUES_SET_TYPE,Err)
   !Finish the creation of CellML <--> OpenCMISS field maps
   CALL CMISSCellML_FieldMapsCreateFinish(CellML,Err)
 
   !todo - get vm initialial value.
   CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
-    & -92.5_CMISSDP, &
-    & Err)
+    & -92.5_CMISSDP,Err)
   
-!  CALL CMISSDiagnosticsSetOff(Err)
-
   !Start the creation of the CellML models field
   CALL CMISSField_Initialise(CellMLModelsField,Err)
   CALL CMISSCellML_ModelsFieldCreateStart(CellML,CellMLModelsFieldUserNumber,CellMLModelsField,Err)
   !Finish the creation of the CellML models field
   CALL CMISSCellML_ModelsFieldCreateFinish(CellML,Err)
-  !Set up the models field
-  !DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
-  !  IF(N < 5) THEN
-  !    CELL_TYPE = 1
-  !  ELSE
-  !    CELL_TYPE = 2
-  !  ENDIF
-  !  CALL CMISSField_ParameterSetUpdateNode(CellMLModelsField, CMISS_FIELD_U_VARIABLE_TYPE, CMISS_FIELD_VALUES_SET_TYPE,1,N,1,CELL_TYPE,Err)
-  !END DO
-  !CALL CMISSField_ParameterSetUpdateStart(CellMLModelsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
-  !CALL CMISSField_ParameterSetUpdateFinish(CellMLModelsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
-  !CALL CMISSField_ComponentValuesInitialise(CellMLModelsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,2_CMISSIntg,Err)
 
   !Start the creation of the CellML state field
   CALL CMISSField_Initialise(CellMLStateField,Err)
@@ -427,45 +343,42 @@ PROGRAM MONODOMAINEXAMPLE
   !Finish the equations set equations
   CALL CMISSEquationsSet_EquationsCreateFinish(EquationsSet,Err)
 
+  !Find the domains of the first and last nodes
+  FirstNodeNumber=1
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)
+  ELSE
+    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
+  ENDIF
+  CALL CMISSDecomposition_NodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
+  CALL CMISSDecomposition_NodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
+  
   CALL CMISSCellML_FieldComponentGet(CellML,n98ModelIndex,CMISS_CELLML_PARAMETERS_FIELD,"membrane/IStim",stimcomponent,Err)
   !Set the Stimulus at half the bottom nodes
   DO node_idx=1,NUMBER_OF_ELEMENTS/2
-    IF(FirstNodeDomain==ComputationalNodeNumber) THEN
+    CALL CMISSDecomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL CMISSField_ParameterSetUpdateNode(CellMLParametersField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
-        & node_idx, &
-        & stimcomponent,STIM_VALUE,Err)
+        & node_idx,stimcomponent,STIM_VALUE,Err)
     ENDIF
   ENDDO
-
-  !!Set up the g_K1 gradient
-  !CALL CMISSCellML_FieldComponentGet(CellML,n98ModelIndex,CMISS_CELLML_PARAMETERS_FIELD,"time_independent_potassium_current/g_K1", &
-  !  & gK1component,Err)
-  !!Loop over the nodes
-  !DO node_idx=1,(NUMBER_OF_ELEMENTS+1)*(NUMBER_OF_ELEMENTS+1)
-  !  CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,1, &
-  !    & X,Err)
-  !  CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,2, &
-  !    & Y,Err)
-  !  DISTANCE=SQRT(X**2+Y**2)/SQRT(2.0_CMISSDP)
-  !  gK1_VALUE=2.0_CMISSDP*(DISTANCE+0.5_CMISSDP)*77.11e-3_CMISSDP
-  !  CALL CMISSField_ParameterSetUpdateNode(CellMLParametersField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx, &
-  !    & gK1component,gK1_VALUE,Err)
-  !ENDDO
   
   !Set up the g_Na gradient
   CALL CMISSCellML_FieldComponentGet(CellML,n98ModelIndex,CMISS_CELLML_PARAMETERS_FIELD,"fast_sodium_current/g_Na", &
     & gNacomponent,Err)
   !Loop over the nodes
-  DO node_idx=1,(NUMBER_OF_ELEMENTS+1)*(NUMBER_OF_ELEMENTS+1)
-    CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,1, &
-      & X,Err)
-    CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,2, &
-      & Y,Err)
-    DISTANCE=SQRT(X**2+Y**2)/SQRT(2.0_CMISSDP)
-    gNa_VALUE=2.0_CMISSDP*(DISTANCE+0.5_CMISSDP)*385.5e-3_CMISSDP
-    CALL CMISSField_ParameterSetUpdateNode(CellMLParametersField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
-      & node_idx, &
-      & gNacomponent,gNa_VALUE,Err)
+  DO node_idx=1,LastNodeNumber
+    CALL CMISSDecomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,1, &
+        & X,Err)
+      CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,2, &
+        & Y,Err)
+      DISTANCE=SQRT(X**2+Y**2)/SQRT(2.0_CMISSDP)
+      gNa_VALUE=2.0_CMISSDP*(DISTANCE+0.5_CMISSDP)*385.5e-3_CMISSDP
+      CALL CMISSField_ParameterSetUpdateNode(CellMLParametersField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
+        & node_idx,gNacomponent,gNa_VALUE,Err)
+    ENDIF
   ENDDO
   
   !Start the creation of a problem.
@@ -487,6 +400,8 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSControlLoop_TimesSet(ControlLoop,0.0_CMISSDP,STIM_STOP,PDE_TIME_STEP,Err)
   !Set the output
   CALL CMISSControlLoop_OutputTypeSet(ControlLoop,CMISS_CONTROL_LOOP_TIMING_OUTPUT,Err)
+  !Set the output frequency (0 for no output, n for output every n time steps)
+  CALL CMISSControlLoop_TimeOutputSet(ControlLoop,1,Err)
   !Finish creating the problem control loop
   CALL CMISSProblem_ControlLoopCreateFinish(Problem,Err)
  
@@ -547,14 +462,6 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSBoundaryConditions_Initialise(BoundaryConditions,Err)
   CALL CMISSSolverEquations_BoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
   !Set the first node to 0.0 and the last node to 1.0
-  FirstNodeNumber=1
-  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)
-  ELSE
-    LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
-  ENDIF
-  CALL CMISSDecomposition_NodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
-  CALL CMISSDecomposition_NodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
   IF(FirstNodeDomain==ComputationalNodeNumber) THEN
     !CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,FirstNodeNumber,1, &
     !  & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
@@ -567,15 +474,15 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve the problem for the first STIM_STOP
-  !CALL CMISSProblem_Solve(Problem,Err)
+  CALL CMISSProblem_Solve(Problem,Err)
 
   !Now turn the stimulus off
   !Set the Stimulus at node 1
   DO node_idx=1,NUMBER_OF_ELEMENTS/2
-    IF(FirstNodeDomain==ComputationalNodeNumber) THEN
+    CALL CMISSDecomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL CMISSField_ParameterSetUpdateNode(CellMLParametersField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
-        & node_idx, &
-        & stimcomponent,0.0_CMISSDP,Err)
+        & node_idx,stimcomponent,0.0_CMISSDP,Err)
     ENDIF
   ENDDO !node_idx
 
@@ -583,7 +490,7 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSControlLoop_TimesSet(ControlLoop,STIM_STOP,TIME_STOP,PDE_TIME_STEP,Err)
   
   !Solve the problem for the next 900 ms
-  !CALL CMISSProblem_Solve(Problem,Err)
+  CALL CMISSProblem_Solve(Problem,Err)
   
   EXPORT_FIELD=.TRUE.
   IF(EXPORT_FIELD) THEN
