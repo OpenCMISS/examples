@@ -8,7 +8,7 @@ for($i=0; $i < 26; $i=$i+1)
 	 print "Reading $filename time $i\n";
 	 gfx read node "$filename" time $i;
   }
-for($i=50; $i < 2500; $i=$i+25)
+for($i=50; $i < 1500; $i=$i+25)
   {
 	 $filename = sprintf("./Solid%05d.part0.exnode", $i);
 	 print "Reading $filename time $i\n";
@@ -17,7 +17,7 @@ for($i=50; $i < 2500; $i=$i+25)
 	 print "Reading $filename time $i\n";
 	 gfx read node "$filename" time $i;
   }
-for($i=2500; $i < 2891; $i=$i+1)
+for($i=1500; $i < 2001; $i=$i+1)
   {
 	 $filename = sprintf("./Solid%05d.part0.exnode", $i);
 	 print "Reading $filename time $i\n";
