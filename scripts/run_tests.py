@@ -13,7 +13,7 @@ mode = "DEBUG" if (not 'MODE' in os.environ) else os.environ['MODE']
 testSets = ["nightlytest.json","weeklytest.json"] if (size == 'large') else ["nightlytest.json"]
 examplesDir = globalExamplesDir if (not 'DIR' in os.environ) else "%s/%s" %(globalExamplesDir,os.environ['DIR'])
 rootLogDir = "%s/%s" %(os.environ['OPENCMISS_ROOT'],"build/logs") 
-machine = os.environ.get("MACHINE", None)
+machine = os.environ.get("HOSTNAME", None)
 mpi = os.environ.get('OPENCMISS_MPI_PATH','mpich2')
 masterLogDir = "http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_%s" %(machine if machine != None else os.environ['archname'])
 compiler = os.environ.get("COMPILER", 'gnu')
