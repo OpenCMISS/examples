@@ -60,34 +60,36 @@ GeometricFieldUserNumber   = 5
 DependentFieldUserNumber   = 6
 DependentFieldUserNumber2  = 7
 MaterialsFieldUserNumber   = 8
-IndependentFieldUserNumber = 9
-EquationsSetUserNumberNavierStokes   = 10
-EquationsSetUserNumberCharacteristic = 11
-EquationsSetUserNumberAdvection = 12
-ProblemUserNumber = 13
-CellMLUserNumber  = 14
-CellMLModelsFieldUserNumber = 15
-CellMLStateFieldUserNumber  = 16
-CellMLIntermediateFieldUserNumber = 17
-CellMLParametersFieldUserNumber   = 18
-MaterialsFieldUserNumberCellML    = 19
-AnalyticFieldUserNumber = 20
+MaterialsFieldUserNumber2  = 9
+IndependentFieldUserNumber = 10
+EquationsSetUserNumberNavierStokes   = 11
+EquationsSetUserNumberCharacteristic = 12
+EquationsSetUserNumberAdvection = 13
+ProblemUserNumber = 14
+CellMLUserNumber  = 15
+CellMLModelsFieldUserNumber = 16
+CellMLStateFieldUserNumber  = 17
+CellMLIntermediateFieldUserNumber = 18
+CellMLParametersFieldUserNumber   = 19
+MaterialsFieldUserNumberCellML    = 20
+AnalyticFieldUserNumber = 21
 
 SolverDAEUserNumber = 1
 SolverCharacteristicUserNumber = 2
 SolverNavierStokesUserNumber   = 3
 SolverAdvectionUserNumber   = 4
 
-MaterialsFieldUserNumberMu  = 1
-MaterialsFieldUserNumberRho = 2
-MaterialsFieldUserNumberK   = 3
-MaterialsFieldUserNumberAs  = 4
-MaterialsFieldUserNumberRe  = 5
-MaterialsFieldUserNumberFr  = 6
-MaterialsFieldUserNumberSt  = 7
-MaterialsFieldUserNumberA0  = 1
-MaterialsFieldUserNumberE   = 2
-MaterialsFieldUserNumberH0  = 3
+MaterialsFieldUserNumberMu   = 1
+MaterialsFieldUserNumberRho  = 2
+MaterialsFieldUserNumberK    = 3
+MaterialsFieldUserNumberAs   = 4
+MaterialsFieldUserNumberRe   = 5
+MaterialsFieldUserNumberFr   = 6
+MaterialsFieldUserNumberSt   = 7
+MaterialsFieldUserNumberA0   = 1
+MaterialsFieldUserNumberE    = 2
+MaterialsFieldUserNumberH0   = 3
+MaterialsFieldUserNumberDiff = 1
 
 #================================================================================================================================
 #  Initialise OpenCMISS
@@ -228,6 +230,7 @@ for i in range(1,TotalNumberOfElements+1):
 # Set the material parameters
 RHO_PARAM = 1050.0                          # Rho        (kg/m3)
 MU_PARAM  = 0.004                           # Mu         (pa.s)
+Diff      = 1.0                             # Diffusivity(m2/s)
 A0_PARAM  = [0]*(NumberOfNodesSpace+1)      # Area       (m2)
 H0_PARAM  = [0]*(NumberOfNodesSpace+1)      # Thickness  (m)
 E_PARAM   = [0]*(NumberOfNodesSpace+1)      # Elasticity (pa)
@@ -552,8 +555,10 @@ EquationsSetCharacteristic.DependentCreateStart(DependentFieldUserNumber,Depende
 DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'General')
 DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.DELUDELN,'Derivatives')
 DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.V,'Characteristics')
-DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U1,'calculated pressure')
+DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U1,'Calculated Pressure')
 DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U2,'Pressure')
+DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U3,'Concentration')
+DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.DELU3DELN,'Deriv')
 # Set the mesh component to be used by the field components.
 # Flow
 DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,  
@@ -577,13 +582,23 @@ if (cellmlFlag):
 # Pressure
 DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U2,1,  
     MeshComponentNumberSpace)
+# Concentration
+DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U3,1,  
+    MeshComponentNumberConc)
+DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELU3DELN,1,  
+    MeshComponentNumberConc)
 # Finish the equations set dependent field variables
 EquationsSetCharacteristic.DependentCreateFinish()
 
-# Create the equations set dependent field variables for static nonlinear Characteristic solver
+# Create the equations set dependent field variables for static nonlinear Navier-Stokes solver
 EquationsSetNavierStokes.DependentCreateStart(DependentFieldUserNumber,DependentFieldNavierStokes)
 # Finish the equations set dependent field variables
 EquationsSetNavierStokes.DependentCreateFinish()
+
+# Create the equations set dependent field variables for static nonlinear Advection solver
+EquationsSetAdvection.DependentCreateStart(DependentFieldUserNumber,DependentFieldNavierStokes)
+# Finish the equations set dependent field variables
+EquationsSetAdvection.DependentCreateFinish()
 
 # Initialise the equations set dependent field variables
 for nodeIdx in range (1,NumberOfNodesSpace+1):
@@ -594,6 +609,8 @@ for nodeIdx in range (1,NumberOfNodesSpace+1):
             CMISS.FieldParameterSetTypes.VALUES,1,1,nodeIdx,1,Q[nodeIdx])
         DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
             CMISS.FieldParameterSetTypes.VALUES,1,1,nodeIdx,2,A[nodeIdx])
+        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U3,
+            CMISS.FieldParameterSetTypes.VALUES,1,1,1,1,Conc)
 # Bifurcation dependent field
 for i in range (1,NumberOfBifurcations+1):
     nodeDomain = Decomposition.NodeDomainGet(bifurcationNodeNumber[i],1)
@@ -625,32 +642,10 @@ for i in range (1,NumberOfTrifurcations+1):
 
 DependentFieldNavierStokes.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
 DependentFieldNavierStokes.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)   
-
 DependentFieldNavierStokes.ParameterSetUpdateStart(CMISS.FieldVariableTypes.V,CMISS.FieldParameterSetTypes.VALUES)
 DependentFieldNavierStokes.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.V,CMISS.FieldParameterSetTypes.VALUES) 
-
-# Create the equations set dependent field variables for Advection
-DependentFieldAdvection = CMISS.Field()
-# Create the equations set dependent field variables for dynamic linear Advection solver
-EquationsSetAdvection.DependentCreateStart(DependentFieldUserNumber2,DependentFieldAdvection)
-DependentFieldAdvection.VariableLabelSet(CMISS.FieldVariableTypes.U,'Concentration')
-DependentFieldAdvection.VariableLabelSet(CMISS.FieldVariableTypes.DELUDELN,'Derivative')
-# Concentration
-DependentFieldAdvection.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,  
-    MeshComponentNumberConc)
-DependentFieldAdvection.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,1,  
-    MeshComponentNumberConc)
-# Finish the equations set dependent field variables
-EquationsSetAdvection.DependentCreateFinish()
-
-# Initialise the equations set dependent field variables
-nodeDomain = Decomposition.NodeDomainGet(1,1)
-if nodeDomain == ComputationalNodeNumber:
-    DependentFieldAdvection.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-        CMISS.FieldParameterSetTypes.VALUES,1,1,1,1,Conc)
-
-DependentFieldAdvection.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
-DependentFieldAdvection.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES) 
+DependentFieldNavierStokes.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U3,CMISS.FieldParameterSetTypes.VALUES)
+DependentFieldNavierStokes.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U3,CMISS.FieldParameterSetTypes.VALUES) 
 
 #================================================================================================================================
 #  Materials Field
@@ -658,6 +653,7 @@ DependentFieldAdvection.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMIS
 
 # Create the equations set materials field variables for Characteristic
 MaterialsFieldNavierStokes = CMISS.Field()
+MaterialsFieldAdvection = CMISS.Field()
 EquationsSetNavierStokes.MaterialsCreateStart(MaterialsFieldUserNumber,MaterialsFieldNavierStokes)
 # Set the field label
 MaterialsFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'Materials Constants')
@@ -729,6 +725,15 @@ for i in range(1,NumberOfTrifurcations+1):
 MaterialsFieldNavierStokes.ParameterSetUpdateStart(CMISS.FieldVariableTypes.V,CMISS.FieldParameterSetTypes.VALUES)
 MaterialsFieldNavierStokes.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.V,CMISS.FieldParameterSetTypes.VALUES)
 
+# Create the equations set materials field variables for Advection
+EquationsSetAdvection.MaterialsCreateStart(MaterialsFieldUserNumber2,MaterialsFieldAdvection)
+# Finish the equations set materials field variables
+EquationsSetAdvection.MaterialsCreateFinish()
+
+# Initialise the equations set materials field variables
+MaterialsFieldAdvection.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,  
+    MaterialsFieldUserNumberDiff,Diff)
+
 #================================================================================================================================
 # Analytic Field - Fourier decomposed waveform from literature values
 #================================================================================================================================
@@ -752,13 +757,10 @@ IndependentFieldNavierStokes = CMISS.Field()
 EquationsSetCharacteristic.IndependentCreateStart(IndependentFieldUserNumber,IndependentFieldNavierStokes)
 IndependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'Normal Wave Direction')
 IndependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.V,'Input Boundary Condition')
-IndependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U1,'Advection Velocity')
 # Set the mesh component to be used by the field components.
 IndependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,MeshComponentNumberSpace)
 IndependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,2,MeshComponentNumberSpace)
 IndependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.V,1,MeshComponentNumberSpace)
-IndependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U1,1,MeshComponentNumberSpace)
-IndependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U1,2,MeshComponentNumberSpace)
 # Finish the equations set independent field variables
 EquationsSetCharacteristic.IndependentCreateFinish()
 
@@ -766,11 +768,6 @@ EquationsSetCharacteristic.IndependentCreateFinish()
 EquationsSetNavierStokes.IndependentCreateStart(IndependentFieldUserNumber,IndependentFieldNavierStokes)
 # Finish the equations set independent field variables
 EquationsSetNavierStokes.IndependentCreateFinish()
-
-# Advection Solver
-EquationsSetAdvection.IndependentCreateStart(IndependentFieldUserNumber,IndependentFieldNavierStokes)
-# Finish the equations set independent field variables
-EquationsSetAdvection.IndependentCreateFinish()
 
 # Normal Wave Direction for brifurcation
 for i in range (1,NumberOfBifurcations+1):
@@ -810,12 +807,6 @@ if (cellmlFlag):
             # Outgoing normals
             IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
                 1,1,nodeIdx,2,-1.0)
-# Diffusivity
-for i in range(1,NumberOfNodesSpace+1,1):
-    nodeDomain = Decomposition.NodeDomainGet(i,1)
-    if nodeDomain == ComputationalNodeNumber:
-        IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U1,CMISS.FieldParameterSetTypes.VALUES,
-            1,1,i,2,1.0)
 
 IndependentFieldNavierStokes.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
 IndependentFieldNavierStokes.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
