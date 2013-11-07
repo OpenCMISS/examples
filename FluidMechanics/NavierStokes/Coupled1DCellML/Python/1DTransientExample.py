@@ -263,7 +263,7 @@ Q = [0]*(NumberOfNodesSpace+1)
 A = [0]*(NumberOfNodesSpace+1)
 Conc = 1.0
 for i in range(1,NumberOfNodesSpace+1):
-    Q[i] = 1.0
+    Q[i] = 0.0
     A[i] = (A0_PARAM[i]/As)
 
 # Set the terminal nodes
@@ -561,32 +561,22 @@ DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U3,'Concent
 DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.DELU3DELN,'Deriv')
 # Set the mesh component to be used by the field components.
 # Flow
-DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,  
-    MeshComponentNumberSpace)
-DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,1,  
-    MeshComponentNumberSpace)
+DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,MeshComponentNumberSpace)
+DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,1,MeshComponentNumberSpace)
 # Area
-DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,2,  
-    MeshComponentNumberSpace)
-DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,2,  
-    MeshComponentNumberSpace)
+DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,2,MeshComponentNumberSpace)
+DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,2,MeshComponentNumberSpace)
 # W(Characteristics)
-DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.V,1,  
-    MeshComponentNumberSpace)
-DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.V,2,  
-    MeshComponentNumberSpace)
+DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.V,1,MeshComponentNumberSpace)
+DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.V,2,MeshComponentNumberSpace)
+# Pressure
+DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U2,1,MeshComponentNumberSpace)
+# Concentration
+DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U3,1,MeshComponentNumberConc)
+DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELU3DELN,1,MeshComponentNumberConc)
 # pCellML
 if (cellmlFlag):
-    DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U1,1,  
-        MeshComponentNumberSpace)
-# Pressure
-DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U2,1,  
-    MeshComponentNumberSpace)
-# Concentration
-DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U3,1,  
-    MeshComponentNumberConc)
-DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELU3DELN,1,  
-    MeshComponentNumberConc)
+    DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U1,1,MeshComponentNumberSpace)
 # Finish the equations set dependent field variables
 EquationsSetCharacteristic.DependentCreateFinish()
 
@@ -605,40 +595,43 @@ for nodeIdx in range (1,NumberOfNodesSpace+1):
     nodeDomain = Decomposition.NodeDomainGet(nodeIdx,1)
     if nodeDomain == ComputationalNodeNumber:
         # (versionNumber,derivativeNumber,userNodeNumber,componentNumber,value)
-        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-            CMISS.FieldParameterSetTypes.VALUES,1,1,nodeIdx,1,Q[nodeIdx])
-        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-            CMISS.FieldParameterSetTypes.VALUES,1,1,nodeIdx,2,A[nodeIdx])
-        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U3,
-            CMISS.FieldParameterSetTypes.VALUES,1,1,1,1,Conc)
+        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+            1,1,nodeIdx,1,Q[nodeIdx])
+        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+            1,1,nodeIdx,2,A[nodeIdx])
+nodeDomain = Decomposition.NodeDomainGet(1,1)
+if nodeDomain == ComputationalNodeNumber:
+    DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U3,CMISS.FieldParameterSetTypes.VALUES,
+        1,1,1,1,Conc)
+
 # Bifurcation dependent field
 for i in range (1,NumberOfBifurcations+1):
     nodeDomain = Decomposition.NodeDomainGet(bifurcationNodeNumber[i],1)
     if nodeDomain == ComputationalNodeNumber:
-        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-            CMISS.FieldParameterSetTypes.VALUES,2,1,bifurcationNodeNumber[i],2,A[bifurcationNodeNumber[i]+1])
-        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-            CMISS.FieldParameterSetTypes.VALUES,3,1,bifurcationNodeNumber[i],2,A[bifurcationNodeNumber[i]+3])
+        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+            2,1,bifurcationNodeNumber[i],2,A[bifurcationNodeNumber[i]+1])
+        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+            3,1,bifurcationNodeNumber[i],2,A[bifurcationNodeNumber[i]+3])
 for i in range (1,NumberOfBifurcations+1):
     nodeDomain = Decomposition.NodeDomainGet(bifurcationNodeNumber[i],1)
     if nodeDomain == ComputationalNodeNumber:
         for componentIdx in range(1,NumberOfComponents+1):
             for versionIdx in range(1,BifurcationNumberOfVersions+1):
-                DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,
-                    CMISS.FieldParameterSetTypes.VALUES,versionIdx,1,bifurcationNodeNumber[i],componentIdx,0.0)
+                DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,CMISS.FieldParameterSetTypes.VALUES,
+                    versionIdx,1,bifurcationNodeNumber[i],componentIdx,0.0)
 # Trifurcation dependent field
 for i in range (1,NumberOfTrifurcations+1):
-    DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-        CMISS.FieldParameterSetTypes.VALUES,2,1,trifurcationNodeNumber[i],2,A[trifurcationNodeNumber[i]+1])
-    DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-        CMISS.FieldParameterSetTypes.VALUES,3,1,trifurcationNodeNumber[i],2,A[trifurcationNodeNumber[i]+3])
-    DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-        CMISS.FieldParameterSetTypes.VALUES,4,1,trifurcationNodeNumber[i],2,A[trifurcationNodeNumber[i]+5])
+    DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+        2,1,trifurcationNodeNumber[i],2,A[trifurcationNodeNumber[i]+1])
+    DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+        3,1,trifurcationNodeNumber[i],2,A[trifurcationNodeNumber[i]+3])
+    DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+        4,1,trifurcationNodeNumber[i],2,A[trifurcationNodeNumber[i]+5])
 for i in range (1,NumberOfTrifurcations+1):
     for componentIdx in range(1,NumberOfComponents+1):
         for versionIdx in range(1,TrifurcationNumberOfVersions+1):
-            DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,
-                CMISS.FieldParameterSetTypes.VALUES,versionIdx,1,trifurcationNodeNumber[i],componentIdx,0.0)
+            DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,CMISS.FieldParameterSetTypes.VALUES,
+                versionIdx,1,trifurcationNodeNumber[i],componentIdx,0.0)
 
 DependentFieldNavierStokes.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
 DependentFieldNavierStokes.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)   
@@ -654,7 +647,8 @@ DependentFieldNavierStokes.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U3,
 # Create the equations set materials field variables for Characteristic
 MaterialsFieldNavierStokes = CMISS.Field()
 MaterialsFieldAdvection = CMISS.Field()
-EquationsSetNavierStokes.MaterialsCreateStart(MaterialsFieldUserNumber,MaterialsFieldNavierStokes)
+
+EquationsSetCharacteristic.MaterialsCreateStart(MaterialsFieldUserNumber,MaterialsFieldNavierStokes)
 # Set the field label
 MaterialsFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'Materials Constants')
 MaterialsFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.V,'Materials Variables')
@@ -662,12 +656,12 @@ MaterialsFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.V,'Material
 for ComponentNumber in range(1,4):
     MaterialsFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.V,ComponentNumber,MeshComponentNumberSpace)
 # Finish the equations set materials field variables
-EquationsSetNavierStokes.MaterialsCreateFinish()
+EquationsSetCharacteristic.MaterialsCreateFinish()
 
 # Create the equations set materials field variables for Navier-Stokes
-EquationsSetCharacteristic.MaterialsCreateStart(MaterialsFieldUserNumber,MaterialsFieldNavierStokes)
+EquationsSetNavierStokes.MaterialsCreateStart(MaterialsFieldUserNumber,MaterialsFieldNavierStokes)
 # Finish the equations set materials field variables
-EquationsSetCharacteristic.MaterialsCreateFinish()
+EquationsSetNavierStokes.MaterialsCreateFinish()
 
 # Initialise the equations set materials field variables
 MaterialsFieldNavierStokes.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,  
