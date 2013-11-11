@@ -1,0 +1,27 @@
+ CMISS Version 2.1  ipbase File Version 2
+ Heading:
+ 
+ Enter the number of types of basis function [1]: 1
+ 
+ For basis function type 1 the type of nodal interpolation is [1]:
+   (0) Auxiliary basis only
+   (1) Lagrange/Hermite tensor prod
+   (2) Simplex/Serendipity/Sector
+   (3) B-spline tensor product
+   (4) Fourier Series/Lagrange/Hermite tensor prod
+   (5) Boundary Element Lagrange/Hermite tensor pr.
+   (6) Boundary Element Simplex/Serendipity/Sector
+   (7) Extended Lagrange (multigrid collocation)
+    1
+ Enter the number of Xi-coordinates [1]: 1
+ 
+ The interpolant in the Xi(1) direction is [1]:
+   (1) Linear Lagrange
+   (2) Quadratic Lagrange
+   (3) Cubic Lagrange
+   (4) Quadratic Hermite
+   (5) Cubic Hermite
+    1
+ Enter the number of Gauss points in the Xi(1) direction [2]: 2
+ Enter the node position indices [12]: 1 2
+ Enter the number of auxiliary element parameters [0]: 0

@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<model xmlns="http://www.cellml.org/cellml/1.1#" xmlns:cmeta="http://www.cellml.org/metadata/1.0#" cmeta:id="WindkesselMain" name="WindkesselMain">
+
+<!-- Model description -->
+  <documentation xmlns="http://cellml.org/tmp-documentation">
+    <article>
+      <articleinfo>
+        <title>Windkessel (RCR) model for terminal vascular impedance</title>
+        <author>
+          <firstname>David</firstname>
+          <surname>Ladd</surname>
+          <affiliation>
+            <shortaffil>Auckland Bioengineering Institute</shortaffil>
+          </affiliation>
+        </author>
+      </articleinfo>
+      <section id="sec_status">
+        <title>Model Status</title>
+        <para>
+            This model describes a zero-dimensional 3-Element (RCR) Windkessel model that may be coupled to fluid mechanics simulations to approximate impedance to flow from downstream vascular beds. 
+          </para>
+
+      </section>
+      <sect1 id="sec_structure">
+        <title>Model Structure</title>
+        <para>
+The model contains both a resistance component and a lowpass filter (RC) component. the 3 element windkessel model is created by connecting these two components. Parameter values are stored in the ParameterValues.cellml file and Units in Units.cellml.   comprises three main parts: the heart, the systemic loop, and the pulmonary loop, as illustrated in Fig. 1.  The heart is modelled as a four-chambered pump with variable elastance and four heart valves to control the direction of blood flow. Systemic and pulmonary circulatory loops are sub-divided into a number of segments, namely: the aortic sinus/pulmonary artery sinus, artery, arteriole, capillary and vein segments. In each segment, individual components are modelled by representations of the local resistance to blood flow, vessel elasticity and the inertia of the blood. 
+</para>
+
+<informalfigure float="0" id="system_configuration">
+<mediaobject>
+  <imageobject>
+    <objectinfo>
+      <title>Schematic of the system configuration of the cardiovascular model
+</title>
+    </objectinfo>
+    <imagedata fileref="CSysBase.png"/>
+  </imageobject>
+</mediaobject>
+<caption>Schematic of the system configuration of the cardiovascular model</caption>
+</informalfigure>
+<para>
+For the CellML representation of the model, several template components are defined: namely, TempRLC, TempRC, TempR, TempCDv, TempCDa, EAtrium and EVentricle.  The first three of these provide zero dimensional representations of the linearised governing equations for pressure and flow in the vessel segments.  TempCDv and TempCDa define the variable elastances of the cardiac chambers together with the heart valve dynamics. EAtrium and EVentricle define the activation functions, which are used in the calculation of these variable elastances.  In addition to the templates, a further component, </para>
+      </sect1>
+    </article>
+  </documentation>
+
+
+<import xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="Units.cellml">
+<units name="UnitP" units_ref="UnitP"/>
+<units name="UnitQ" units_ref="UnitQ"/>
+<units name="UnitT" units_ref="UnitT"/></import>
+
+<import xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="Windkessel3Element.cellml">
+<component component_ref="Windkessel3Element" name="Circuit"/>
+</import>
+
+<component name="environment">
+<variable initial_value="0.0" name="t" public_interface="out" units="UnitT"/>
+</component>
+
+<connection>
+<map_components component_1="environment" component_2="Circuit"/>
+<map_variables variable_1="t" variable_2="t"/>
+</connection>
+
+<connection>
+<map_components component_1="interface" component_2="Circuit"/>
+<map_variables variable_1="Pressure" variable_2="Pinterface"/>
+<map_variables variable_1="FlowRate" variable_2="Qinterface"/>
+</connection>
+
+
+
+	
+<component name="interface"><variable name="Pressure" private_interface="out" public_interface="in" units="UnitP"/><variable initial_value="0.0" name="FlowRate" public_interface="out" units="UnitQ"/></component><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description rdf:nodeID="n1"><Family xmlns="http://www.w3.org/2001/vcard-rdf/3.0#" xml:lang="en">Ladd</Family><Given xmlns="http://www.w3.org/2001/vcard-rdf/3.0#" xml:lang="en">David</Given></rdf:Description><rdf:Description rdf:about=""><title xmlns="http://purl.org/dc/elements/1.1/" xml:lang="en">Windkessel (RCR) model for terminal vascular impedance</title><creator xmlns="http://purl.org/dc/elements/1.1/"><rdf:Description rdf:nodeID="n2"/></creator></rdf:Description><rdf:Description rdf:about="rdf:#$5.sa72"><maximumStepSize xmlns="http://www.cellml.org/metadata/simulation/1.0#" xml:lang="en">1</maximumStepSize><pointDensity xmlns="http://www.cellml.org/metadata/simulation/1.0#nonstandard-" xml:lang="en">10000</pointDensity><endingValue xmlns="http://www.cellml.org/metadata/simulation/1.0#" xml:lang="en">1</endingValue></rdf:Description><rdf:Description rdf:nodeID="n3"><subject xmlns="http://purl.org/dc/elements/1.1/"><rdf:Description rdf:nodeID="n4"/></subject></rdf:Description><rdf:Description rdf:nodeID="n4"><subject_type xmlns="http://www.cellml.org/bqs/1.0#" xml:lang="en">keyword</subject_type><rdf:value><rdf:Description rdf:nodeID="n5"/></rdf:value></rdf:Description><rdf:Description rdf:nodeID="n6"><Orgname xmlns="http://www.w3.org/2001/vcard-rdf/3.0#" xml:lang="en">The Auckland Bioengineering Institute</Orgname></rdf:Description><rdf:Description rdf:about="#WindkesselMain"><simulation xmlns="http://www.cellml.org/metadata/simulation/1.0#"><rdf:Description rdf:about="rdf:#$3.sa72"/></simulation><reference xmlns="http://www.cellml.org/bqs/1.0#"><rdf:Description rdf:nodeID="n3"/></reference></rdf:Description><rdf:Description rdf:about="rdf:#$4.sa72"><rdf:rest><rdf:Description rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/></rdf:rest><rdf:first><rdf:Description rdf:about="rdf:#$5.sa72"/></rdf:first></rdf:Description><rdf:Description rdf:nodeID="n2"><ORG xmlns="http://www.w3.org/2001/vcard-rdf/3.0#"><rdf:Description rdf:nodeID="n6"/></ORG><N xmlns="http://www.w3.org/2001/vcard-rdf/3.0#"><rdf:Description rdf:nodeID="n1"/></N></rdf:Description><rdf:Description rdf:about="rdf:#$3.sa72"><boundIntervals xmlns="http://www.cellml.org/metadata/simulation/1.0#"><rdf:Description rdf:about="rdf:#$4.sa72"/></boundIntervals></rdf:Description><rdf:Description rdf:nodeID="n5"><rdf:type><rdf:Description rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag"/></rdf:type><rdf:_1 xml:lang="en">cardiac</rdf:_1><rdf:_2 xml:lang="en">cardiovascular circulation</rdf:_2><rdf:_3 xml:lang="en">multiphysics</rdf:_3><rdf:_4 xml:lang="en">multiscale</rdf:_4><rdf:_5 xml:lang="en">OpenCMISS</rdf:_5></rdf:Description></rdf:RDF></model>

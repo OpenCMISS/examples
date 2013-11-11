@@ -214,7 +214,7 @@ CMISS.Field.ComponentValuesInitialiseDP(
 dependentField = CMISS.Field()
 dependentField.CreateStart(dependentFieldUserNumber,region)
 dependentField.VariableLabelSet(CMISS.FieldVariableTypes.U,"Dependent")
-dependentField.TypeSet(CMISS.FieldTypes.GENERAL)  
+dependentField.TypeSet(CMISS.FieldTypes.GEOMETRIC_GENERAL)  
 dependentField.MeshDecompositionSet(decomposition)
 dependentField.GeometricFieldSet(geometricField) 
 dependentField.DependentTypeSet(CMISS.FieldDependentTypes.DEPENDENT) 

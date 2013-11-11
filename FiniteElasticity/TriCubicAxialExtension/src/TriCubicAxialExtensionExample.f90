@@ -80,11 +80,9 @@ PROGRAM TRICUBICAXIALEXTENSIONEXAMPLE
 
   !Program variables
 
-  INTEGER(CMISSIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
   INTEGER(CMISSIntg) :: TotalNumberElements,TotalNumberNodes,NumberOfMeshDimensions
-  INTEGER(CMISSIntg) :: MPI_IERROR
   INTEGER(CMISSIntg) :: EquationsSetIndex
-  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
 
   !CMISS variables
   TYPE(CMISSBasisType) :: CubicBasis, LinearBasis
@@ -136,17 +134,6 @@ PROGRAM TRICUBICAXIALEXTENSIONEXAMPLE
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
-  NumberGlobalXElements=1
-  NumberGlobalYElements=1
-  NumberGlobalZElements=1
-  NumberOfDomains=1
-
-  !Broadcast the number of elements in the X,Y and Z directions and the number of partitions to the other computational nodes
-  CALL MPI_BCAST(NumberGlobalXElements,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NumberGlobalYElements,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NumberGlobalZElements,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-  CALL MPI_BCAST(NumberOfDomains,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
-
   !Create a 3D rectangular cartesian coordinate system
   CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
   CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
@@ -161,16 +148,14 @@ PROGRAM TRICUBICAXIALEXTENSIONEXAMPLE
   !Define basis functions - tri-linear Lagrange and tri-cubic Lagrange
   CALL CMISSBasis_Initialise(LinearBasis,Err)
   CALL CMISSBasis_CreateStart(LinearBasisUserNumber,LinearBasis,Err)
-  CALL CMISSBasis_QuadratureNumberOfGaussXiSet(LinearBasis, &
-    & [CMISS_BASIS_MID_QUADRATURE_SCHEME,CMISS_BASIS_MID_QUADRATURE_SCHEME,CMISS_BASIS_MID_QUADRATURE_SCHEME],Err)
+  CALL CMISSBasis_QuadratureNumberOfGaussXiSet(LinearBasis,[3,3,3],Err)
   CALL CMISSBasis_CreateFinish(LinearBasis,Err)
 
   CALL CMISSBasis_Initialise(CubicBasis,Err)
   CALL CMISSBasis_CreateStart(CubicBasisUserNumber,CubicBasis,Err)
   CALL CMISSBasis_InterpolationXiSet(CubicBasis,[CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION, &
     & CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION,CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION],Err)
-  CALL CMISSBasis_QuadratureNumberOfGaussXiSet(CubicBasis, &
-    & [CMISS_BASIS_MID_QUADRATURE_SCHEME,CMISS_BASIS_MID_QUADRATURE_SCHEME,CMISS_BASIS_MID_QUADRATURE_SCHEME],Err)
+  CALL CMISSBasis_QuadratureNumberOfGaussXiSet(CubicBasis,[3,3,3],Err)
   CALL CMISSBasis_QuadratureLocalFaceGaussEvaluateSet(CubicBasis,.TRUE.,Err)
   CALL CMISSBasis_CreateFinish(CubicBasis,Err)
 
@@ -204,7 +189,7 @@ PROGRAM TRICUBICAXIALEXTENSIONEXAMPLE
   CALL CMISSDecomposition_Initialise(Decomposition,Err)
   CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   CALL CMISSDecomposition_TypeSet(Decomposition,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
-  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
+  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
   CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
 
   !Create a field to put the geometry (defualt is geometry)
@@ -372,7 +357,7 @@ PROGRAM TRICUBICAXIALEXTENSIONEXAMPLE
   !Create the dependent field with 2 variables and 4 components (3 displacement, 1 pressure)
   CALL CMISSField_Initialise(DependentField,Err)
   CALL CMISSField_CreateStart(FieldDependentUserNumber,Region,DependentField,Err)
-  CALL CMISSField_TypeSet(DependentField,CMISS_FIELD_GENERAL_TYPE,Err)
+  CALL CMISSField_TypeSet(DependentField,CMISS_FIELD_GEOMETRIC_GENERAL_TYPE,Err)
   CALL CMISSField_MeshDecompositionSet(DependentField,Decomposition,Err)
   CALL CMISSField_GeometricFieldSet(DependentField,GeometricField,Err)
   CALL CMISSField_DependentTypeSet(DependentField,CMISS_FIELD_DEPENDENT_TYPE,Err)

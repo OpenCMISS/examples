@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<model xmlns="http://www.cellml.org/cellml/1.1#" xmlns:cmeta="http://www.cellml.org/metadata/1.0#" cmeta:id="ParameterValues" name="ParameterValues">
+
+<import xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="Units.cellml">
+<units name="UnitR" units_ref="UnitR"> </units>
+<units name="UnitC" units_ref="UnitC"> </units>
+<units name="UnitP" units_ref="UnitP"/>
+<units name="UnitQ" units_ref="UnitQ"/>
+</import>
+
+<component name="ParameterValues">
+<variable initial_value="0.0" name="ResistanceProximal" public_interface="out" units="UnitR"> </variable>
+<variable initial_value="0.01" name="ResistanceDistal" public_interface="out" units="UnitR"> </variable>
+<variable initial_value="0.0" name="Capacitance" public_interface="out" units="UnitC"> </variable>
+<variable initial_value="20.0" name="PressureTerminal" public_interface="out" units="UnitP"/>
+
+</component>
+
+</model>

@@ -1,0 +1,92 @@
+ Group name: Cell
+ Shape.  Dimension= 1
+ #Scale factor sets= 1
+ q.Lagrange, #Scale factors=           2
+ #Nodes= 2
+ #Fields= 3
+  1) coordinates,  coordinate, rectangular cartesian, #Components= 1
+    x.   q.Lagrange, no modify, standard node based.
+    #Nodes= 2
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:   1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:   2
+  2) dependent,  field,  rectangular cartesian, #Components= 1
+    1.   q.Lagrange, no modify, standard node based.
+    #Nodes= 2
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:   1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:   2
+  3) material,  field,  rectangular cartesian, #Components= 2
+    1.   q.Lagrange, no modify, standard node based.
+    #Nodes= 2
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:   1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:   2
+    2.   q.Lagrange, no modify, standard node based.
+    #Nodes= 2
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:   1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:   2
+ Element:                1  0  0
+    Nodes:
+               1           2
+    Scale factors:
+       1.0000000000000000        1.0000000000000000     
+ Element:                2  0  0
+    Nodes:
+               2           3
+    Scale factors:
+       1.0000000000000000        1.0000000000000000     
+ Element:                3  0  0
+    Nodes:
+               3           4
+    Scale factors:
+       1.0000000000000000        1.0000000000000000     
+ Element:                4  0  0
+    Nodes:
+               4           5
+    Scale factors:
+       1.0000000000000000        1.0000000000000000     
+ Element:                5  0  0
+    Nodes:
+               5           6
+    Scale factors:
+       1.0000000000000000        1.0000000000000000     
+ Element:                6  0  0
+    Nodes:
+               6           7
+    Scale factors:
+       1.0000000000000000        1.0000000000000000     
+ Element:                7  0  0
+    Nodes:
+               7           8
+    Scale factors:
+       1.0000000000000000        1.0000000000000000     
+ Element:                8  0  0
+    Nodes:
+               8           9
+    Scale factors:
+       1.0000000000000000        1.0000000000000000     
+ Element:                9  0  0
+    Nodes:
+               9          10
+    Scale factors:
+       1.0000000000000000        1.0000000000000000     
+ Element:               10  0  0
+    Nodes:
+              10          11
+    Scale factors:
+       1.0000000000000000        1.0000000000000000     
+  
