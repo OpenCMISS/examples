@@ -279,7 +279,7 @@ PROGRAM SupgChannel
       CASE('-directSolver')
         CALL GET_COMMAND_ARGUMENT(i+1,buffer)
         READ(buffer,*) directLinearSolverFlag
-      CASE('-outputFrequency')
+      CASE('-outFrequency')
         CALL GET_COMMAND_ARGUMENT(i+1,buffer)
         READ(buffer,*) dynamicSolverOutputFrequency
       CASE('-SUPG')
@@ -313,7 +313,7 @@ PROGRAM SupgChannel
   WRITE(*,*)'-startTime......  ', dynamicSolverStartTime
   WRITE(*,*)'-stopTime.......  ', dynamicSolverStopTime
   WRITE(*,*)'-timeIncrement..  ', dynamicSolverTimeIncrement
-  WRITE(*,*)'-outputFrequency..  ', dynamicSolverOutputFrequency
+  WRITE(*,*)'-outFrequency..  ', dynamicSolverOutputFrequency
   WRITE(*,*)'-directSolver...  ', directLinearSolverFlag
   WRITE(*,*)' '
   WRITE(*,*)' ************************************* '
