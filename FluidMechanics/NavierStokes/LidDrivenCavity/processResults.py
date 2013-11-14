@@ -250,18 +250,13 @@ def readExnodeFile(filename,info,nodeData,totalNumberOfNodes):
 # C o n t r o l   P a n e l
 #=================================================================
 
-ReynoldsNumbers = [5000]
-meshResolution = [10,10]
+ReynoldsNumbers = [100,400,1000,3200,5000]
+meshResolution = [200,200]#[100,100]#[40,40]#[20,20] # [10,10]
+totalNumberOfNodes =160801 #40401 # 6561 #1681 # 441
 compareSolutions = ['ghia.txt','erturk.txt','botella.txt']
-path = "./output/"
-vtuMesh = '/hpc/dlad004/velomap/extern/velomap_files/normal_aorta_1/aorta1IsoparamQuad.vtu'
-meshName = 'Aorta'
-resultFileRoot = meshName + '_t'
-numberOfProcessors = 4
-totalNumberOfNodes = 14494
-fieldOfInterest = 2
-componentsOfInterest = [i for i in range(3)]
-elementFile = "./../../../input/Aorta/mesh/aorta1Isoparam.M"
+compareMarkers = ['ro','gs','b^']
+compareNames = ['Ghia','Erturk','Botella']
+numberOfProcessors = 8
 
 #=================================================================
 #=================================================================
@@ -271,7 +266,7 @@ nodeData = numpy.zeros([0,0,0,0])
 numberOfRe = len(ReynoldsNumbers)
 
 field = fieldInfo()        
-filename = path + 'StaticSolution.part0.exnode'
+filename = './StaticNavierStokes.part0.exnode'
 try:
     with open(filename):
         firstFile = open(filename,"r")
@@ -289,20 +284,47 @@ for Re in ReynoldsNumbers:
     i+=1
     print('Reading data for Re ' + str(Re))
     for proc in range(numberOfProcessors):
-        path = "./output/Re" + str(Re) + ;'Dim' + str(meshResolution[0]) + 'x' + str(meshResolution[1])'/'
+        path = "./output/Re" + str(Re) + 'Dim' + str(meshResolution[0]) + 'x' + str(meshResolution[1]) + '/'
         filename = path + 'LidDrivenCavity.part' + str(proc) +'.exnode'
         importNodeData = numpy.zeros([totalNumberOfNodes,field.numberOfFields,max(field.numberOfFieldComponents)])
         readExnodeFile(filename,field,importNodeData,totalNumberOfNodes)
         nodeData[i,:,:,:] += importNodeData[:,:,:]
+        
+tolerance = 1e-8
+vlineCount = -1
+vLineY = numpy.zeros([numberOfRe,int(math.sqrt(totalNumberOfNodes))])
+vLineU = numpy.zeros([numberOfRe,int(math.sqrt(totalNumberOfNodes))])
+plotVLineU = numpy.zeros([numberOfRe,int(math.sqrt(totalNumberOfNodes))])
+for node in xrange(totalNumberOfNodes):
+    if nodeData[0,node,0,0] > (0.5 - tolerance) and nodeData[0,node,0,0] < (0.5 + tolerance):
+        vlineCount += 1
+        vLineY[:,vlineCount] = nodeData[:,node,0,1]
+        vLineU[:,vlineCount] = nodeData[:,node,1,0]
 
 nodeIds = []
 nodeIds = [i for i in range(totalNumberOfNodes)]
 
+#compareLocations=numpy.zeros((len(compareSolutions),100))
+#compareData=numpy.zeros((len(compareSolutions),len(ReynoldsNumbers),100))
+plotCompareData=numpy.zeros((len(compareSolutions),len(ReynoldsNumbers),100))
+
+
+compareLocations=[[] for i in range(len(compareSolutions))]
+#compareData=[[[] for i in range(len(compareSolutions))] for j in range(len(ReynoldsNumbers))]
+compareData=[[[] for i in range(len(ReynoldsNumbers))] for j in range(len(compareSolutions))]
+#compareData=[[] for i in range(len(compareSolutions))]
+
+
+
+k = -1
+foundResults = numpy.zeros((len(compareSolutions),len(ReynoldsNumbers)),dtype=numpy.int)
 for filename in compareSolutions:
+    k+=1
     with open(filename,"r") as f:
         line = f.readline()
         dataInfo = line.strip().split(' ')
         compareAll = numpy.loadtxt(f)
+        compareLocations[k].append(compareAll[:,0])
         i = -1
         for Re in ReynoldsNumbers:
             i+=1
@@ -310,43 +332,29 @@ for filename in compareSolutions:
             for refRe in dataInfo[1:]:
                 j+=1
                 if float(refRe) == Re:
-                    compareData[i,:,:] = compareAll[j]
-            
-            
-
-        for Re in dataInfo[1:]:
-            if float(Re) in ReynoldsNumbers:
-                compareData[Re,
-                
-                
-        
-        numpy.loadtxt(f)
-
-    
+                    foundResults[k,i] += 1
+                    # compareData[publication,Re,yLocation,uValue]
+           #         compareData[k,i,:] = compareAll[:,j]
+                    compareData[k][i].append(compareAll[:,j].tolist())
 
 plotData = True
 if plotData:
-    cycles = [i for i in range(numberOfFullCycles)]
-    #pylab.plot(cycles,rmsCycle)
-    pylab.bar(cycles,rmsCycle)
-    pylab.xlabel('cycle')
-    pylab.ylabel('RMS velocity component difference over cycle (cm/s)')
-    pylab.title('Cycle Convergence ')
-    pylab.grid(True)
-    pylab.savefig('cycleConvergence')
-    pylab.show()
+    reIndex =-1
+    for Re in ReynoldsNumbers:
+        reIndex +=1
+        for ref in range(len(compareSolutions)):
+            if foundResults[ref,reIndex]:
+#                plotCompareData = numpy.zeros((len(compareData[ref][reIndex])))
+                plotCompareData = numpy.zeros((len(compareData[ref][reIndex])))
+                #            plotCompareData = compareData[ref,reIndex,:] + 0.2*reIndex
+                plotCompareData = numpy.array(compareData[ref][reIndex]) - 0.5*reIndex
+                pylab.plot(plotCompareData,compareLocations[ref],compareMarkers[ref])
 
-    #times = [i*cmfeTimeIncrement for i in range(numberOfStepsInCycle)]
-    times = [i*cmfeTimeIncrement for i in range(numberOfTimesteps)]
-    pylab.plot(times,rmsPcv,'b-')
-    pylab.plot(times,rmsPcv/meanVelocity,'g-')
-    pylab.xlabel('Time')
-    #pylab.ylabel('Percent RMS Difference CFD vs. PCV (%)')
-    pylab.ylabel('RMS Difference CFD vs. PCV (cm/s)')
-    pylab.title('RMS PCV vs. CFD')
-    pylab.grid(True)
-    pylab.savefig('cfdVsPcv')
-    pylab.show()
+        plotVLineU[reIndex,:] = vLineU[reIndex,:] - 0.5*reIndex
+        pylab.plot(plotVLineU[reIndex,:],vLineY[reIndex,:],'-k')
 
+    pylab.grid(True)
+    pylab.savefig('ReAnalysis')
+    pylab.show()
 
     

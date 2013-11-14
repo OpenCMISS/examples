@@ -1,12 +1,18 @@
-$numProcs=0;
+$numProcs=7;
+$tmax=100;
+$tinc=1;
 
-for ($proc=$numProcs; $proc>=0; $proc=$proc-1){
-    $node = "LidDrivenCavity.part".$proc.".exnode";
-    gfx read node $node;
+for ($t=0; $t<=$tmax; $t+=$tinc){
+  for ($proc=$numProcs; $proc>=0; $proc=$proc-1){
+    $time =  sprintf("%04d", $t);
+    $node = "TIME_STEP_".$time.".part".$proc.".exnode";
+    gfx read node $node time $t;
+  }
 }
 
 for ($proc=$numProcs; $proc>=0; $proc=$proc-1){
-    $elem = "LidDrivenCavity.part".$proc.".exelem";
+    $time =  sprintf("%04d", $t);
+    $elem = "TIME_STEP_0000.part".$proc.".exelem";
     gfx read elem $elem;
 }
 

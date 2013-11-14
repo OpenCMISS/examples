@@ -51,82 +51,80 @@
 import sys, os
 sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
 
-# Intialise OpenCMISS
-from opencmiss import CMISS
 import numpy
 import gzip
 import pylab
 import time
 import matplotlib.pyplot as plt
 
+# Intialise OpenCMISS
+from opencmiss import CMISS
 
-#      Square Lid-Driven Cavity
-#
-#              v=1
-#           >>>>>>>>>>
-#          |          |
-#          |          |
-#     v=0  |          |  v=0
-#          |          |
-#          |          |
-#          ------------
-#              v=0
+# Get the computational nodes information
+numberOfComputationalNodes = CMISS.ComputationalNumberOfNodesGet()
+computationalNodeNumber = CMISS.ComputationalNodeNumberGet()
+
+(coordinateSystemUserNumber,
+ regionUserNumber,
+ linearBasisUserNumber,
+ quadraticBasisUserNumber,
+ generatedMeshUserNumber,
+ meshUserNumber,
+ decompositionUserNumber,
+ geometricFieldUserNumber,
+ equationsSetFieldUserNumber,
+ dependentFieldUserNumber,
+ materialsFieldUserNumber,
+ equationsSetUserNumber,
+ problemUserNumber) = range(1,14)
+
+# Creation a RC coordinate system
+coordinateSystem = CMISS.CoordinateSystem()
+coordinateSystem.CreateStart(coordinateSystemUserNumber)
+coordinateSystem.dimension = 2
+coordinateSystem.CreateFinish()
+
+# Create a region
+region = CMISS.Region()
+region.CreateStart(regionUserNumber,CMISS.WorldRegion)
+region.label = "Cavity"
+region.coordinateSystem = coordinateSystem
+region.CreateFinish()
+
+# Create a biquadratic lagrange basis
+quadraticBasis = CMISS.Basis()
+quadraticBasis.CreateStart(quadraticBasisUserNumber)
+quadraticBasis.type = CMISS.BasisTypes.LAGRANGE_HERMITE_TP
+quadraticBasis.numberOfXi = 2
+quadraticBasis.interpolationXi = [CMISS.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE]*2
+quadraticBasis.quadratureNumberOfGaussXi = [2]*2
+quadraticBasis.CreateFinish()
+
+# Create a bilinear lagrange basis
+linearBasis = CMISS.Basis()
+linearBasis.CreateStart(linearBasisUserNumber)
+linearBasis.type = CMISS.BasisTypes.LAGRANGE_HERMITE_TP
+linearBasis.numberOfXi = 2
+linearBasis.interpolationXi = [CMISS.BasisInterpolationSpecifications.LINEAR_LAGRANGE]*2
+linearBasis.quadratureNumberOfGaussXi = [2]*2
+linearBasis.CreateFinish()
 
 
-def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,outputFilename):
-    """ Sets up the lid driven cavity problem and 
-    solves with the provided parameter values"""
+def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,outputFilename,transient):
+    """ Sets up the lid driven cavity problem and solves with the provided parameter values
 
-    CMISS.DiagnosticsSetOn(CMISS.DiagnosticTypes.IN,[1,2,3,4,5],"Diagnostics",["DOMAIN_MAPPINGS_LOCAL_FROM_GLOBAL_CALCULATE"])
+          Square Lid-Driven Cavity
 
-    # Get the computational nodes information
-    numberOfComputationalNodes = CMISS.ComputationalNumberOfNodesGet()
-    computationalNodeNumber = CMISS.ComputationalNodeNumberGet()
-
-    (coordinateSystemUserNumber,
-     regionUserNumber,
-     linearBasisUserNumber,
-     quadraticBasisUserNumber,
-     generatedMeshUserNumber,
-     meshUserNumber,
-     decompositionUserNumber,
-     geometricFieldUserNumber,
-     equationsSetFieldUserNumber,
-     dependentFieldUserNumber,
-     materialsFieldUserNumber,
-     equationsSetUserNumber,
-     problemUserNumber) = range(1,14)
-
-    # Creation a RC coordinate system
-    coordinateSystem = CMISS.CoordinateSystem()
-    coordinateSystem.CreateStart(coordinateSystemUserNumber)
-    coordinateSystem.dimension = 2
-    coordinateSystem.CreateFinish()
-
-    # Create a region
-    region = CMISS.Region()
-    region.CreateStart(regionUserNumber,CMISS.WorldRegion)
-    region.label = "Cavity"
-    region.coordinateSystem = coordinateSystem
-    region.CreateFinish()
-
-    # Create a biquadratic lagrange basis
-    quadraticBasis = CMISS.Basis()
-    quadraticBasis.CreateStart(quadraticBasisUserNumber)
-    quadraticBasis.type = CMISS.BasisTypes.LAGRANGE_HERMITE_TP
-    quadraticBasis.numberOfXi = 2
-    quadraticBasis.interpolationXi = [CMISS.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE]*2
-    quadraticBasis.quadratureNumberOfGaussXi = [2]*2
-    quadraticBasis.CreateFinish()
-
-    # Create a bilinear lagrange basis
-    linearBasis = CMISS.Basis()
-    linearBasis.CreateStart(linearBasisUserNumber)
-    linearBasis.type = CMISS.BasisTypes.LAGRANGE_HERMITE_TP
-    linearBasis.numberOfXi = 2
-    linearBasis.interpolationXi = [CMISS.BasisInterpolationSpecifications.LINEAR_LAGRANGE]*2
-    linearBasis.quadratureNumberOfGaussXi = [2]*2
-    linearBasis.CreateFinish()
+                  v=1
+               >>>>>>>>>>
+             1|          |
+              |          |
+         v=0  |          |  v=0
+              |          |
+              |          |
+              ------------
+             0    v=0    1
+    """
 
     # Create a generated mesh
     generatedMesh = CMISS.GeneratedMesh()
@@ -160,11 +158,18 @@ def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,ou
     # Create standard Navier-Stokes equations set
     equationsSetField = CMISS.Field()
     equationsSet = CMISS.EquationsSet()
-    equationsSet.CreateStart(equationsSetUserNumber,region,geometricField,
-            CMISS.EquationsSetClasses.FLUID_MECHANICS,
-            CMISS.EquationsSetTypes.NAVIER_STOKES_EQUATION,
-            CMISS.EquationsSetSubtypes.STATIC_SUPG_NAVIER_STOKES,
-            equationsSetFieldUserNumber, equationsSetField)
+    if transient:
+        equationsSet.CreateStart(equationsSetUserNumber,region,geometricField,
+                CMISS.EquationsSetClasses.FLUID_MECHANICS,
+                CMISS.EquationsSetTypes.NAVIER_STOKES_EQUATION,
+                CMISS.EquationsSetSubtypes.TRANSIENT_SUPG_NAVIER_STOKES,
+                equationsSetFieldUserNumber, equationsSetField)
+    else:
+        equationsSet.CreateStart(equationsSetUserNumber,region,geometricField,
+                CMISS.EquationsSetClasses.FLUID_MECHANICS,
+                CMISS.EquationsSetTypes.NAVIER_STOKES_EQUATION,
+                CMISS.EquationsSetSubtypes.STATIC_SUPG_NAVIER_STOKES,
+                equationsSetFieldUserNumber, equationsSetField)
     equationsSet.CreateFinish()
 
     # Create dependent field
@@ -200,29 +205,63 @@ def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,ou
     # Create Navier-Stokes problem
     problem = CMISS.Problem()
     problem.CreateStart(problemUserNumber)
-    problem.SpecificationSet(CMISS.ProblemClasses.FLUID_MECHANICS,
-                             CMISS.ProblemTypes.NAVIER_STOKES_EQUATION,
-                             CMISS.ProblemSubTypes.STATIC_NAVIER_STOKES)
+    if transient:
+        problem.SpecificationSet(CMISS.ProblemClasses.FLUID_MECHANICS,
+                                 CMISS.ProblemTypes.NAVIER_STOKES_EQUATION,
+                                 CMISS.ProblemSubTypes.TRANSIENT_SUPG_NAVIER_STOKES)
+    else:
+        problem.SpecificationSet(CMISS.ProblemClasses.FLUID_MECHANICS,
+                                 CMISS.ProblemTypes.NAVIER_STOKES_EQUATION,
+                                 CMISS.ProblemSubTypes.STATIC_NAVIER_STOKES)
     problem.CreateFinish()
 
     # Create control loops
     problem.ControlLoopCreateStart()
+    if transient:
+        controlLoop = CMISS.ControlLoop()
+        problem.ControlLoopGet([CMISS.ControlLoopIdentifiers.NODE],controlLoop)
+        controlLoop.TimesSet(transient[0],transient[1],transient[2])
+        controlLoop.TimeOutputSet(transient[3])
     problem.ControlLoopCreateFinish()
 
     # Create problem solver
-    nonlinearSolver = CMISS.Solver()
-    linearSolver = CMISS.Solver()
-    problem.SolversCreateStart()
-    problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],1,nonlinearSolver)
-    nonlinearSolver.newtonJacobianCalculationType = CMISS.JacobianCalculationTypes.EQUATIONS
-    nonlinearSolver.outputType = CMISS.SolverOutputTypes.TIMING
-    nonlinearSolver.newtonAbsoluteTolerance = 1.0E-8
-    nonlinearSolver.newtonRelativeTolerance = 1.0E-8
-    nonlinearSolver.NewtonLinearSolverGet(linearSolver)
-    linearSolver.outputType = CMISS.SolverOutputTypes.NONE
-    linearSolver.linearType = CMISS.LinearSolverTypes.DIRECT
-    linearSolver.libraryType = CMISS.SolverLibraries.MUMPS
-    problem.SolversCreateFinish()
+    if transient:
+        dynamicSolver = CMISS.Solver()
+        problem.SolversCreateStart()
+        problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],1,dynamicSolver)
+        dynamicSolver.outputType = CMISS.SolverOutputTypes.TIMING
+        dynamicSolver.dynamicTheta = [1.0]
+        nonlinearSolver = CMISS.Solver()
+        dynamicSolver.DynamicNonlinearSolverGet(nonlinearSolver)
+        nonlinearSolver.newtonJacobianCalculationType = CMISS.JacobianCalculationTypes.EQUATIONS
+        nonlinearSolver.outputType = CMISS.SolverOutputTypes.PROGRESS
+        nonlinearSolver.newtonAbsoluteTolerance = 1.0E-6
+        nonlinearSolver.newtonRelativeTolerance = 1.0E-6
+        nonlinearSolver.newtonSolutionTolerance = 1.0E-6
+        nonlinearSolver.newtonMaximumFunctionEvaluations = 10000
+        linearSolver = CMISS.Solver()
+        nonlinearSolver.NewtonLinearSolverGet(linearSolver)
+        linearSolver.outputType = CMISS.SolverOutputTypes.NONE
+        linearSolver.linearType = CMISS.LinearSolverTypes.DIRECT
+        linearSolver.libraryType = CMISS.SolverLibraries.MUMPS
+        problem.SolversCreateFinish()
+    else:
+        nonlinearSolver = CMISS.Solver()
+        linearSolver = CMISS.Solver()
+        problem.SolversCreateStart()
+        problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],1,nonlinearSolver)
+        nonlinearSolver.newtonJacobianCalculationType = CMISS.JacobianCalculationTypes.EQUATIONS
+        nonlinearSolver.outputType = CMISS.SolverOutputTypes.TIMING
+        nonlinearSolver.newtonAbsoluteTolerance = 1.0E-6
+        nonlinearSolver.newtonRelativeTolerance = 1.0E-6
+        nonlinearSolver.newtonSolutionTolerance = 1.0E-6
+        nonlinearSolver.newtonMaximumFunctionEvaluations = 10000
+        nonlinearSolver.NewtonLinearSolverGet(linearSolver)
+        linearSolver.outputType = CMISS.SolverOutputTypes.NONE
+        linearSolver.linearType = CMISS.LinearSolverTypes.DIRECT
+        linearSolver.libraryType = CMISS.SolverLibraries.MUMPS
+        problem.SolversCreateFinish()
+
 
     # Create solver equations and add equations set to solver equations
     solver = CMISS.Solver()
@@ -241,6 +280,7 @@ def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,ou
     firstNodeNumber=1
     nodes = CMISS.Nodes()
     region.NodesGet(nodes)
+    print("Total # of nodes: " + str(nodes.numberOfNodes))
     boundaryTolerance = 1.0e-6
     # Currently issues with getting generated mesh surfaces through python so easier to just loop over all nodes
     for node in range(nodes.numberOfNodes):
@@ -262,8 +302,10 @@ def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,ou
                 boundaryConditions.SetNode(dependentField,CMISS.FieldVariableTypes.U,1,1,nodeNumber,2,CMISS.BoundaryConditionsTypes.FIXED,0.0)
             # lid (top) conditions: v=v
             elif (cavityDimensions[1]-yLocation < boundaryTolerance):
-                boundaryConditions.SetNode(dependentField,CMISS.FieldVariableTypes.U,1,1,nodeNumber,1,CMISS.BoundaryConditionsTypes.FIXED,lidVelocity[0])
-                boundaryConditions.SetNode(dependentField,CMISS.FieldVariableTypes.U,1,1,nodeNumber,2,CMISS.BoundaryConditionsTypes.FIXED,lidVelocity[1])
+                if not (xLocation < boundaryTolerance or 
+                        cavityDimensions[0]-xLocation < boundaryTolerance):
+                    boundaryConditions.SetNode(dependentField,CMISS.FieldVariableTypes.U,1,1,nodeNumber,1,CMISS.BoundaryConditionsTypes.FIXED,lidVelocity[0])
+                    boundaryConditions.SetNode(dependentField,CMISS.FieldVariableTypes.U,1,1,nodeNumber,2,CMISS.BoundaryConditionsTypes.FIXED,lidVelocity[1])
     solverEquations.BoundaryConditionsCreateFinish()
 
     # Solve the problem
@@ -277,16 +319,28 @@ def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,ou
     fields.ElementsExport(outputFilename,"FORTRAN")
     fields.Finalise()
 
-    CMISS.Finalise()
+    # Clear fields so can run in batch mode on this region
+    generatedMesh.Destroy()
+    nodes.Destroy()
+    mesh.Destroy()
+    geometricField.Destroy()
+    equationsSetField.Destroy()
+    dependentField.Destroy()
+    materialsField.Destroy()
+    equationsSet.Destroy()
+    problem.Destroy()
 
 
 # Problem defaults
 dimensions = [1.0,1.0]
-elementDimensions = [10,10]
-ReynoldsNumbers = [100] #[100,400,1000,3200,5000]
+elementDimensions = [50,50]
+ReynoldsNumbers = [5000]
 lidVelocity = [1.0,0.0]
 viscosity = 1.0
 density = 1.0
+
+# transient parameters: startTime,stopTime,timeIncrement,outputFrequency (for static, leave list empty)
+transient = [0.0,10.0,0.1,10]
 
 for Re in ReynoldsNumbers:
     viscosity = 1.0/Re
@@ -294,8 +348,10 @@ for Re in ReynoldsNumbers:
     if not os.path.exists(outputDirectory):
         os.makedirs(outputDirectory)
     outputFile = outputDirectory +"LidDrivenCavity"
-    LidDriven(elementDimensions,dimensions,lidVelocity,viscosity,density,outputFile)
+    LidDriven(elementDimensions,dimensions,lidVelocity,viscosity,density,outputFile,transient)
+    print('Finished solving Re ' + str(Re))
 
+CMISS.Finalise()
 
 
 
