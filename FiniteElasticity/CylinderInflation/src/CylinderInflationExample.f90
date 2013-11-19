@@ -415,6 +415,8 @@ PROGRAM CYLINDERINFLATIONEXAMPLE
   CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
   !CALL CMISSSolver_NewtonJacobianCalculationTypeSet(Solver,CMISS_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)  !Slower
   CALL CMISSSolver_NewtonJacobianCalculationTypeSet(Solver,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
+  CALL CMISSSolver_NewtonRelativeToleranceSet(Solver,1.0E-7_CMISSDP,Err)
+  CALL CMISSSolver_NewtonSolutionToleranceSet(Solver,1.0E-7_CMISSDP,Err)
   CALL CMISSSolver_NewtonLinearSolverGet(Solver,LinearSolver,Err)
   CALL CMISSSolver_LinearTypeSet(LinearSolver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
   CALL CMISSProblem_SolversCreateFinish(Problem,Err)
