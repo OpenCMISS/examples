@@ -121,10 +121,11 @@ class Example(TestTreeNode):
       self.script = None if ("script" not in dct) else dct["script"]
       test_dct = dct["test"]
       for test_entry in test_dct :
-        if "machine" in test_entry:
-          if machine == test_entry["machine"]:
-            self.addTest(Test(test_entry, self))
-        elif machine == None:
+        if machine == "build-sn-gpu-p" :
+          if "machine" in test_entry:
+            if machine == test_entry["machine"]:
+              self.addTest(Test(test_entry, self))
+        elif not ("machine" in test_entry):
           self.addTest(Test(test_entry, self))
 
   def ensureDir(self,path) :
