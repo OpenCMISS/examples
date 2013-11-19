@@ -204,7 +204,7 @@ class Test(TestTreeNode):
     self.wrapWithPre(logPath,1)
     if self.parent.language == "python" :
       command = "python %s %s > %s 2>&1" %(self.parent.script, self.args,logPath)
-    elif self.machine == "nesi" :
+    elif self.machine == "build-sn-gpu-p" :
       self.command = "%s/bin/%s-%s/%s/%s/%sExample%s %s" %(self.parent.path,arch,system,mpi,compilerVersion,self.exampleName,MODE_SUFFIX_MAP[mode],self.args)
       f = open("nesi_%d.ll" %(self.id),"w")
       f.write(nesiTemplate.render(test=self,compiler=compiler,mpi=mpi))
@@ -219,7 +219,7 @@ class Test(TestTreeNode):
     if self.runFail != 0 :
       self.fail = 1
       self.accumulateParentFail() 
-    elif self.machine == "nesi" :
+    elif self.machine == "build-sn-gpu-p" :
       # Find the output log and replace with the submission log
       size = os.stat(logPath).st_size
       f = open(logPath, "r")
