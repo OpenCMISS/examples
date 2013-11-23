@@ -1023,11 +1023,11 @@ Problem.SolversCreateStart()
 # 1st Solver - CellML Solver
 if (cellmlFlag):
     CellMLSolver = CMISS.Solver()
-    Problem.SolverGet([1,CMISS.ControlLoopIdentifiers.NODE],SolverDAEUserNumber,CellMLSolver)
+    Problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],SolverDAEUserNumber,CellMLSolver)
     CellMLSolver.OutputTypeSet(CMISS_SOLVER_OUTPUT_TYPE)
 
 # 2nd Solver - Get the static nonlinear solver
-Problem.SolverGet([1,CMISS.ControlLoopIdentifiers.NODE],SolverCharacteristicUserNumber,NonlinearSolverCharacteristic)
+Problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],SolverCharacteristicUserNumber,NonlinearSolverCharacteristic)
 # Set the nonlinear Jacobian type
 NonlinearSolverCharacteristic.NewtonJacobianCalculationTypeSet(CMISS.JacobianCalculationTypes.EQUATIONS) #(.FD)
 # Set the output type
@@ -1048,7 +1048,7 @@ LinearSolverCharacteristic.LinearIterativeAbsoluteToleranceSet(ABSOLUTE_TOLERANC
 LinearSolverCharacteristic.LinearIterativeGMRESRestartSet(RESTART_VALUE)
 
 # 3rd Solver - Get the dynamic dynamic solver
-Problem.SolverGet([1,CMISS.ControlLoopIdentifiers.NODE],SolverNavierStokesUserNumber,DynamicSolverNavierStokes)
+Problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],SolverNavierStokesUserNumber,DynamicSolverNavierStokes)
 # Set the output type
 DynamicSolverNavierStokes.OutputTypeSet(DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE)
 # Set the theta
@@ -1075,7 +1075,7 @@ LinearSolverNavierStokes.LinearIterativeAbsoluteToleranceSet(ABSOLUTE_TOLERANCE_
 LinearSolverNavierStokes.LinearIterativeGMRESRestartSet(RESTART_VALUE)
     
 # 4th Solver - Get the dynamic linear solver
-Problem.SolverGet([1,CMISS.ControlLoopIdentifiers.NODE],SolverAdvectionUserNumber,DynamicSolverAdvection)
+Problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],SolverAdvectionUserNumber,DynamicSolverAdvection)
 # Set the output type
 DynamicSolverAdvection.OutputTypeSet(DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE)
 # Get the dynamic linear solver
@@ -1105,7 +1105,7 @@ if (cellmlFlag):
     CellMLEquations = CMISS.CellMLEquations()
     Problem.CellMLEquationsCreateStart()
     # 3rd Solver - Get the CellML Solver equations
-    Problem.SolverGet([1,CMISS.ControlLoopIdentifiers.NODE],SolverDAEUserNumber,CellMLSolver)
+    Problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],SolverDAEUserNumber,CellMLSolver)
     CellMLSolver.CellMLEquationsGet(CellMLEquations)
     # Add in the equations set
     CellMLEquations.CellMLAdd(CellML)    
@@ -1113,7 +1113,7 @@ if (cellmlFlag):
     Problem.CellMLEquationsCreateFinish()
 
 # 2nd Solver - Get the static nonlinear solver equations
-Problem.SolverGet([1,CMISS.ControlLoopIdentifiers.NODE],SolverCharacteristicUserNumber,NonlinearSolverCharacteristic)
+Problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],SolverCharacteristicUserNumber,NonlinearSolverCharacteristic)
 NonlinearSolverCharacteristic.SolverEquationsGet(SolverEquationsCharacteristic)
 # Set the solver equations sparsity
 SolverEquationsCharacteristic.sparsityType = CMISS.SolverEquationsSparsityTypes.SPARSE
@@ -1121,7 +1121,7 @@ SolverEquationsCharacteristic.sparsityType = CMISS.SolverEquationsSparsityTypes.
 EquationsSetCharacteristic = SolverEquationsCharacteristic.EquationsSetAdd(EquationsSetCharacteristic)
 
 # 3rd Solver - Get the dynamic Navier-Stokes solver equations
-Problem.SolverGet([1,CMISS.ControlLoopIdentifiers.NODE],SolverNavierStokesUserNumber,DynamicSolverNavierStokes)
+Problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],SolverNavierStokesUserNumber,DynamicSolverNavierStokes)
 DynamicSolverNavierStokes.SolverEquationsGet(SolverEquationsNavierStokes)
 # Set the solver equations sparsity
 SolverEquationsNavierStokes.sparsityType = CMISS.SolverEquationsSparsityTypes.SPARSE
@@ -1129,7 +1129,7 @@ SolverEquationsNavierStokes.sparsityType = CMISS.SolverEquationsSparsityTypes.SP
 EquationsSetNavierStokes = SolverEquationsNavierStokes.EquationsSetAdd(EquationsSetNavierStokes)
 
 # 4th Solver - Get the dynamic linear solver equations
-Problem.SolverGet([1,CMISS.ControlLoopIdentifiers.NODE],SolverAdvectionUserNumber,DynamicSolverAdvection)
+Problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],SolverAdvectionUserNumber,DynamicSolverAdvection)
 DynamicSolverAdvection.SolverEquationsGet(SolverEquationsAdvection)
 # Set the solver equations sparsity
 SolverEquationsAdvection.sparsityType = CMISS.SolverEquationsSparsityTypes.SPARSE
