@@ -53,7 +53,7 @@ from numpy import linalg,mean,sqrt
 import pylab
 import time
 import matplotlib.pyplot as plt
-
+from collections import OrderedDict
 
 class fieldInfo(object):
     'base class for info about fields'
@@ -250,13 +250,13 @@ def readExnodeFile(filename,info,nodeData,totalNumberOfNodes):
 # C o n t r o l   P a n e l
 #=================================================================
 
-ReynoldsNumbers = [100,400,1000,3200,5000]
-meshResolution = [200,200]#[100,100]#[40,40]#[20,20] # [10,10]
-totalNumberOfNodes =160801 #40401 # 6561 #1681 # 441
+ReynoldsNumbers = [100,400,1000,2500,3200,5000]#[100,400,1000,3200,5000]#[100,400,1000,3200,5000]
+meshResolution = [60,60]#[40,40]#[80,80]#[20,20]#[50,50]#[200,200]#[100,100]#[40,40]#[20,20] # [10,10]
+totalNumberOfNodes =14641#6561#25921#1681#10201#160801 #40401 # 6561 #1681 # 441
 compareSolutions = ['ghia.txt','erturk.txt','botella.txt']
 compareMarkers = ['ro','gs','b^']
 compareNames = ['Ghia','Erturk','Botella']
-numberOfProcessors = 8
+numberOfProcessors = 16
 
 #=================================================================
 #=================================================================
@@ -266,7 +266,7 @@ nodeData = numpy.zeros([0,0,0,0])
 numberOfRe = len(ReynoldsNumbers)
 
 field = fieldInfo()        
-filename = './StaticNavierStokes.part0.exnode'
+filename = './StaticSolution.part0.exnode'
 try:
     with open(filename):
         firstFile = open(filename,"r")
@@ -338,23 +338,32 @@ for filename in compareSolutions:
                     compareData[k][i].append(compareAll[:,j].tolist())
 
 plotData = True
+labeled = [0]*len(compareNames)
+p = [0]*len(compareNames)
 if plotData:
     reIndex =-1
     for Re in ReynoldsNumbers:
         reIndex +=1
         for ref in range(len(compareSolutions)):
             if foundResults[ref,reIndex]:
-#                plotCompareData = numpy.zeros((len(compareData[ref][reIndex])))
                 plotCompareData = numpy.zeros((len(compareData[ref][reIndex])))
-                #            plotCompareData = compareData[ref,reIndex,:] + 0.2*reIndex
                 plotCompareData = numpy.array(compareData[ref][reIndex]) - 0.5*reIndex
+                #little hack to avoid repeating the symbols in the legend
+                if not labeled[ref]:
+                    pylab.plot(plotCompareData[0][0],compareLocations[ref][0][0],compareMarkers[ref],label=compareNames[ref])
+                    labeled[ref] = 1
                 pylab.plot(plotCompareData,compareLocations[ref],compareMarkers[ref])
 
         plotVLineU[reIndex,:] = vLineU[reIndex,:] - 0.5*reIndex
         pylab.plot(plotVLineU[reIndex,:],vLineY[reIndex,:],'-k')
 
+    ax = pylab.gca()
+    ax.xaxis.set_ticklabels([]) #set_visible(False)
+    pylab.legend(numpoints=1, shadow = True, loc = (0.85, 0.20))
+    pylab.xlabel('x-velocity (non-dimensional)')
+    pylab.ylabel('y-coordinate (non-dimensional)')
     pylab.grid(True)
-    pylab.savefig('ReAnalysis')
+    pylab.savefig('ReAnalysisMesh' + str(meshResolution[0]) + 'x' + str(meshResolution[1]) + 'Dofs' + str(totalNumberOfNodes))
     pylab.show()
 
     

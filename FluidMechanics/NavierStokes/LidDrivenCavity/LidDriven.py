@@ -229,15 +229,15 @@ def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,ou
         dynamicSolver = CMISS.Solver()
         problem.SolversCreateStart()
         problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],1,dynamicSolver)
-        dynamicSolver.outputType = CMISS.SolverOutputTypes.TIMING
+        dynamicSolver.outputType = CMISS.SolverOutputTypes.NONE
         dynamicSolver.dynamicTheta = [1.0]
         nonlinearSolver = CMISS.Solver()
         dynamicSolver.DynamicNonlinearSolverGet(nonlinearSolver)
         nonlinearSolver.newtonJacobianCalculationType = CMISS.JacobianCalculationTypes.EQUATIONS
         nonlinearSolver.outputType = CMISS.SolverOutputTypes.PROGRESS
-        nonlinearSolver.newtonAbsoluteTolerance = 1.0E-6
-        nonlinearSolver.newtonRelativeTolerance = 1.0E-6
-        nonlinearSolver.newtonSolutionTolerance = 1.0E-6
+        nonlinearSolver.newtonAbsoluteTolerance = 1.0E-7
+        nonlinearSolver.newtonRelativeTolerance = 1.0E-7
+        nonlinearSolver.newtonSolutionTolerance = 1.0E-7
         nonlinearSolver.newtonMaximumFunctionEvaluations = 10000
         linearSolver = CMISS.Solver()
         nonlinearSolver.NewtonLinearSolverGet(linearSolver)
@@ -251,10 +251,10 @@ def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,ou
         problem.SolversCreateStart()
         problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],1,nonlinearSolver)
         nonlinearSolver.newtonJacobianCalculationType = CMISS.JacobianCalculationTypes.EQUATIONS
-        nonlinearSolver.outputType = CMISS.SolverOutputTypes.TIMING
-        nonlinearSolver.newtonAbsoluteTolerance = 1.0E-6
-        nonlinearSolver.newtonRelativeTolerance = 1.0E-6
-        nonlinearSolver.newtonSolutionTolerance = 1.0E-6
+        nonlinearSolver.outputType = CMISS.SolverOutputTypes.NONE
+        nonlinearSolver.newtonAbsoluteTolerance = 1.0E-8
+        nonlinearSolver.newtonRelativeTolerance = 1.0E-8
+        nonlinearSolver.newtonSolutionTolerance = 1.0E-8
         nonlinearSolver.newtonMaximumFunctionEvaluations = 10000
         nonlinearSolver.NewtonLinearSolverGet(linearSolver)
         linearSolver.outputType = CMISS.SolverOutputTypes.NONE
@@ -333,20 +333,30 @@ def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,ou
 
 # Problem defaults
 dimensions = [1.0,1.0]
-elementDimensions = [50,50]
-ReynoldsNumbers = [5000]
+elementDimensions = [10,10]#[60,60]
+ReynoldsNumbers = [100]#[100,400,1000,2500,3200,5000]
 lidVelocity = [1.0,0.0]
 viscosity = 1.0
 density = 1.0
 
-# transient parameters: startTime,stopTime,timeIncrement,outputFrequency (for static, leave list empty)
-transient = [0.0,10.0,0.1,10]
-
 for Re in ReynoldsNumbers:
     viscosity = 1.0/Re
+
+    # High Re problems susceptible to mode switching using direct iteration- solve steady state using transient
+    # solver instead to dampen out instabilities.
+    if Re > 500:
+        # transient parameters: startTime,stopTime,timeIncrement,outputFrequency (for static, leave list empty)
+        transient = [0.0,300.0001,0.5,100]
+    else:
+        transient = []
+
     outputDirectory = "./output/Re" + str(Re) + "Dim" +str(elementDimensions[0])+"x" +str(elementDimensions[1]) + "/"
-    if not os.path.exists(outputDirectory):
+    try:
         os.makedirs(outputDirectory)
+    except OSError, e:
+        if e.errno != 17:
+            raise   
+
     outputFile = outputDirectory +"LidDrivenCavity"
     LidDriven(elementDimensions,dimensions,lidVelocity,viscosity,density,outputFile,transient)
     print('Finished solving Re ' + str(Re))
