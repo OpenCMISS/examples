@@ -278,7 +278,7 @@ def object_encode(name,parent,dct=None) :
 
 def fileInTestSets(f,path) :
   if f in testSets :
-    if machine == None :
+    if machine == None or machine == "hpc5" :
       return True
     else :
       linestring = open("%s/%s" %(path,f), 'r').read()
