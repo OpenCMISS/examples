@@ -132,11 +132,6 @@ bifurcationElementNumber  = []
 bifurcationNodeNumber.append('null')
 bifurcationElementNumber.append('null')
 
-# Set the flags
-cellmlFlag    = True
-lengthFlag    = False
-analysisFlag  = False
-
 # Set the user number
 derivIdx   = 1
 versionIdx = 1
@@ -312,6 +307,11 @@ while i<=NODE_FILE_SIZE:
 #  Initial Data & Default Values
 #================================================================================================================================
 
+# Set the flags
+cellmlFlag    = False
+lengthFlag    = False
+analysisFlag  = False
+
 # Set the material parameters
 Rho = 1050.0                      # Rho         (kg/m3)
 Mu  = 0.004                       # Mu          (pa.s)
@@ -324,7 +324,7 @@ eig = [0]*(numberOfNodesSpace+1)  # Eigenvalues
 
 # Set the reference values
 # OpenCMISS*Ref=Real
-K  = 4.0/3.0                      # Flow profile
+K  = 1.3                          # Flow profile
 Qs = 100.0e-6                     # Flow     (m3/s)  
 As = 100.0e-6                     # Area     (m2)
 Xs = 0.001                        # Length   (m)
@@ -339,7 +339,7 @@ with open('Input/Material.csv','rb') as csvfile:
     for row in reader:
         A0[int(row[0])] = float(row[1])
         E [int(row[0])] = float(row[2])
-        H[int(row[0])]  = float(row[3])
+        H [int(row[0])] = float(row[3])
         if row[4]:
             numberOfTerminalNodes = numberOfTerminalNodes+1
         if row[5]:
@@ -769,11 +769,9 @@ IndependentFieldAdvection    = CMISS.Field()
 # CHARACTERISTIC
 EquationsSetCharacteristic.IndependentCreateStart(IndependentFieldUserNumber,IndependentFieldNavierStokes)
 IndependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'Normal Wave Direction')
-IndependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.V,'Input Boundary Condition')
 # Set the mesh component to be used by the field components.
 IndependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,meshComponentNumberSpace)
 IndependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,2,meshComponentNumberSpace)
-IndependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.V,1,meshComponentNumberSpace)
 EquationsSetCharacteristic.IndependentCreateFinish()
 
 #------------------
@@ -1204,8 +1202,8 @@ Problem.Solve()
 end = time.time()
 elapsed = end - start
 print "Total Number of Elements = %d " %totalNumberOfElements
+print "Calculation Time = %3.4f" %elapsed
 print "Problem solved!"
-print elapsed
 print "#"
 
 #================================================================================================================================
@@ -1280,18 +1278,4 @@ if (analysisFlag):
 #================================================================================================================================
 #  Finish Program
 #================================================================================================================================
-
-print "#"
-print "Program successfully completed."
-# Finalize the problem
-CMISS.Finalise()
-
-#================================================================================================================================
-#  Remove temporary cellml directories
-#================================================================================================================================
-
-dirslist=os.listdir("./")
-for dirs in dirslist:
-    if dirs[0:4]=='tmp.':
-        shutil.rmtree(dirs)
         
