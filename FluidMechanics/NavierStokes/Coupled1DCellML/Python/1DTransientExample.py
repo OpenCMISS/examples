@@ -1184,7 +1184,7 @@ if (lengthFlag):
                
     # Check the timestep
     for i in range(1,numberOfNodesSpace+1):
-        eig[i] = (Q[0]*Qs/(A0[i]))+(A0[i]**(0.25))*((2.0*(Pi**(0.5))
+        eig[i] = (Q[0]*Qs/(A0[i]))+(A0[i]**(0.25))*((2.0*(math.pi**(0.5))
                    *E[i]*H[i]/(3.0*A0[i]*Rho))**(0.5))
         dt[i] = ((3.0**(0.5))/3.0)*minElementLength/eig[i]
         dt[0] = dt[i]
