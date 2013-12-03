@@ -821,6 +821,7 @@ EquationsSetAdvection.IndependentCreateFinish()
 #================================================================================================================================
 
 AnalyticFieldNavierStokes = CMISS.Field()
+# FlowrateReymonds,FlowrateOlufsen,FlowrateSheffield,FlowrateAorta
 EquationsSetNavierStokes.AnalyticCreateStart(CMISS.NavierStokesAnalyticFunctionTypes.FlowrateOlufsen,AnalyticFieldUserNumber,
  AnalyticFieldNavierStokes)
 AnalyticFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'Analytic inlet flow rate')
