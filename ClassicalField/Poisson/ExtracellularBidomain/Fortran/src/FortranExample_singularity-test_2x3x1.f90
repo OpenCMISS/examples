@@ -93,23 +93,20 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   !Program variables
 
   INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
-  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
-  INTEGER(CMISSIntg) :: NUMBER_BLOCKS_Y,NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE,NUMBER_GLOBAL_Y_ELEM_BLOCK
-  INTEGER(CMISSIntg) :: FAT_ELEM_START_B1,FAT_ELEM_END_B1,FAT_ELEM_START_B2,FAT_ELEM_END_B2,FAT_ELEM_START_B3,FAT_ELEM_END_B3
-  INTEGER(CMISSIntg) :: FAT_ELEM_START_INTER12,FAT_ELEM_END_INTER12,FAT_ELEM_START_INTER23,FAT_ELEM_END_INTER23
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE
   INTEGER(CMISSIntg) :: NumberOfMeshDimensions
-  INTEGER(CMISSIntg) :: TotalNumberOfElements,TotalNumberOfNodes
+  INTEGER(CMISSIntg) :: TotalNumberOfElements,TotalNumberOfNodes,TotalNumberOfElementsMuscle,TotalNumberOfNodesMuscle
   INTEGER(CMISSIntg) :: INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI
-  INTEGER(CMISSIntg) :: node_idx,component_idx,elem_idx,idx
+  INTEGER(CMISSIntg) :: node_idx,component_idx,elem_idx
   INTEGER(CMISSIntg) :: FibreFieldNumberOfComponents
 
-  REAL(CMISSDP) :: FibreFieldAngle(3),phi,sumphi,meanphi,Vm(23),condfatskin
-  INTEGER(CMISSIntg) :: time,dt,node_start
+  REAL(CMISSDP) :: FibreFieldAngle(3),phi,sumphi,meanphi
+  INTEGER(CMISSIntg) :: time,dt
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT,Filename
   CHARACTER(LEN=255) :: name_part1,name_part3,numberstring,exnodefile,filename_results
 
   INTEGER(CMISSIntg),DIMENSION(:,:),ALLOCATABLE :: ElemTopology
-  REAL(CMISSDP),DIMENSION(:,:),ALLOCATABLE :: NodeCoords
+  REAL(CMISSDP),DIMENSION(:,:),ALLOCATABLE :: NodeCoords!,NodeCoordsExtra
   
   INTEGER(CMISSIntg) :: clck_counts_beg, clck_counts_begloop, clck_counts_int1, clck_counts_int2, clck_counts_end, clck_rate
 
@@ -142,10 +139,12 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
   INTEGER(CMISSIntg) :: EquationsSetIndex
-  INTEGER(CMISSIntg) :: NodeDomain
+  INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber,NodeNumber
+  INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain,NodeDomain,xNodeDomain,yNodeDomain,zeroNodeDomain
   INTEGER(CMISSIntg) :: Err
   
   CALL SYSTEM_CLOCK (clck_counts_beg, clck_rate)
+  !WRITE(*,*) 'begin:', clck_counts_beg
 
 !--------------------------------------------------------------------------------------------------------------------------------
 #ifdef WIN32
@@ -185,40 +184,19 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
     IF(INTERPOLATION_TYPE<=0) CALL HANDLE_ERROR("Invalid Interpolation specification.")
   ELSE
     !If there are not enough arguments default the problem specification 
-    NUMBER_GLOBAL_X_ELEMENTS=144
-    NUMBER_GLOBAL_Y_ELEMENTS=29
-    NUMBER_GLOBAL_Z_ELEMENTS=14
-    
-    NUMBER_BLOCKS_Y=3
-    NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE=12
-    
-    NUMBER_GLOBAL_Y_ELEM_BLOCK=9
-    
-    FAT_ELEM_START_B1=NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE*NUMBER_GLOBAL_Y_ELEM_BLOCK*NUMBER_GLOBAL_X_ELEMENTS+1
-    FAT_ELEM_END_B1=NUMBER_GLOBAL_Z_ELEMENTS*NUMBER_GLOBAL_Y_ELEM_BLOCK*NUMBER_GLOBAL_X_ELEMENTS
-    
-    FAT_ELEM_START_B2=FAT_ELEM_END_B1+NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE*NUMBER_GLOBAL_Y_ELEM_BLOCK*NUMBER_GLOBAL_X_ELEMENTS+1
-    FAT_ELEM_END_B2=FAT_ELEM_END_B1+NUMBER_GLOBAL_Z_ELEMENTS*NUMBER_GLOBAL_Y_ELEM_BLOCK*NUMBER_GLOBAL_X_ELEMENTS
-    
-    FAT_ELEM_START_B3=FAT_ELEM_END_B2+NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE*NUMBER_GLOBAL_Y_ELEM_BLOCK*NUMBER_GLOBAL_X_ELEMENTS+1
-    FAT_ELEM_END_B3=FAT_ELEM_END_B2+NUMBER_GLOBAL_Z_ELEMENTS*NUMBER_GLOBAL_Y_ELEM_BLOCK*NUMBER_GLOBAL_X_ELEMENTS
-    
-    FAT_ELEM_START_INTER12=NUMBER_BLOCKS_Y*NUMBER_GLOBAL_Z_ELEMENTS*NUMBER_GLOBAL_Y_ELEM_BLOCK*NUMBER_GLOBAL_X_ELEMENTS &
-                           & + NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE*NUMBER_GLOBAL_X_ELEMENTS+1
-    FAT_ELEM_END_INTER12=NUMBER_BLOCKS_Y*NUMBER_GLOBAL_Z_ELEMENTS*NUMBER_GLOBAL_Y_ELEM_BLOCK*NUMBER_GLOBAL_X_ELEMENTS &
-                           & + NUMBER_GLOBAL_Z_ELEMENTS*NUMBER_GLOBAL_X_ELEMENTS
-    
-    FAT_ELEM_START_INTER23=FAT_ELEM_END_INTER12+NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE*NUMBER_GLOBAL_X_ELEMENTS+1
-    FAT_ELEM_END_INTER23=FAT_ELEM_END_INTER12+NUMBER_GLOBAL_Z_ELEMENTS*NUMBER_GLOBAL_X_ELEMENTS
-    
-    WRITE (*,*) 'B1', FAT_ELEM_START_B1, FAT_ELEM_END_B1
-    WRITE (*,*) 'B2', FAT_ELEM_START_B2, FAT_ELEM_END_B2
-    WRITE (*,*) 'B3', FAT_ELEM_START_B3, FAT_ELEM_END_B3
-    WRITE (*,*) 'I12', FAT_ELEM_START_INTER12, FAT_ELEM_END_INTER12
-    WRITE (*,*) 'I23', FAT_ELEM_START_INTER23, FAT_ELEM_END_INTER23       
+    NUMBER_GLOBAL_X_ELEMENTS=48
+    NUMBER_GLOBAL_Y_ELEMENTS=8
+    NUMBER_GLOBAL_Z_ELEMENTS=3
+
+    NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE=2
+    ! NOT needed if mesh is created by blocks, as top-layer elements are not the last elements
+    TotalNumberOfNodesMuscle=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE+1)
+    TotalNumberOfElementsMuscle=NUMBER_GLOBAL_X_ELEMENTS*NUMBER_GLOBAL_Y_ELEMENTS*NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE
+
+    !ALLOCATE(NodecoordsExtra(16,3))                          
     
     INTERPOLATION_TYPE=CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION
-
+!    INTERPOLATION_TYPE=CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION   
   ENDIF
 
 !-------------------------------------------------------------------------  
@@ -338,19 +316,24 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   CALL CMISSMesh_CreateStart(MeshUserNumber,Region,NumberOfMeshDimensions,Mesh,Err)
   CALL CMISSMesh_NumberOfComponentsSet(Mesh,NumberOfMeshComponents,Err) 
   CALL CMISSMesh_NumberOfElementsSet(Mesh,TotalNumberOfElements,Err)    
+!  CALL CMISSMesh_NumberOfElementsSet(Mesh,TotalNumberOfElements+4,Err)    
   
   !Define nodes for the mesh
   CALL CMISSNodes_Initialise(Nodes,Err)
   CALL CMISSNodes_CreateStart(Region,TotalNumberOfNodes,Nodes,Err)
+!  CALL CMISSNodes_CreateStart(Region,TotalNumberOfNodes+16,Nodes,Err)
   CALL CMISSNodes_CreateFinish(Nodes,Err)
 
   CALL CMISSMeshElements_Initialise(Elements,Err)
   CALL CMISSMeshElements_CreateStart(Mesh,MeshComponentNumber,Basis,Elements,Err)
   
   !read in information from existing exelem file for mesh generation 
-  OPEN(UNIT=2,FILE="./data/data_Vm_3/mesh.txt")
+  OPEN(UNIT=2,FILE="./data/singularity_test_elems_2x3x1/mesh.txt")
   CALL READ_ELEMENTNODES(2,TotalNumberOfElements,ElemTopology)
   CLOSE(2)
+
+!  !create the mesh by calling CREATE_MESH and thus storing the information in ElemTopology
+!  CALL CREATE_MESH(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,TotalNumberOfElements,ElemTopology)
   
   !Set the nodes belonging to each element
   DO elem_idx=1,TotalNumberOfElements
@@ -380,6 +363,19 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
       ENDIF !interpolation          
     ENDIF !dimension
   ENDDO
+  
+!  !! TODO: ADD 4 ELEMENTS AND THEIR NODES
+!  CALL CMISSMeshElements_NodesSet(Elements,TotalNumberOfElements+1,[TotalNumberOfNodes+1,TotalNumberOfNodes+2, &
+!    & TotalNumberOfNodes+3,TotalNumberOfNodes+4,1,2,NUMBER_GLOBAL_X_ELEMENTS+2,NUMBER_GLOBAL_X_ELEMENTS+3],Err)
+!  CALL CMISSMeshElements_NodesSet(Elements,TotalNumberOfElements+2,[TotalNumberOfNodes+5,TotalNumberOfNodes+6, &
+!    & TotalNumberOfNodes+7,TotalNumberOfNodes+8,TotalNumberOfNodes+1,TotalNumberOfNodes+2,TotalNumberOfNodes+3, &
+!    & TotalNumberOfNodes+4],Err)
+!  CALL CMISSMeshElements_NodesSet(Elements,TotalNumberOfElements+3,[TotalNumberOfNodes+9,TotalNumberOfNodes+10, &
+!    & TotalNumberOfNodes+11,TotalNumberOfNodes+12,TotalNumberOfNodes+5,TotalNumberOfNodes+6,TotalNumberOfNodes+7, &
+!    & TotalNumberOfNodes+8],Err)
+!  CALL CMISSMeshElements_NodesSet(Elements,TotalNumberOfElements+4,[TotalNumberOfNodes+13,TotalNumberOfNodes+14, &
+!    & TotalNumberOfNodes+15,TotalNumberOfNodes+16,TotalNumberOfNodes+9,TotalNumberOfNodes+10,TotalNumberOfNodes+11, &
+!    & TotalNumberOfNodes+12],Err)      
   
   CALL CMISSMeshElements_CreateFinish(Elements,Err)
 
@@ -424,7 +420,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   !of this file as for Thomas case, the nodal positions will also change with time and should be updated
   
   !due to more elements for fat/skin-layer read exnode file for all nodal coordinates (x,y,z)
-  OPEN(UNIT=4,FILE="./data/data_Vm_3/MainTime_M_2_0.part0.exnode")
+  OPEN(UNIT=4,FILE="./data/singularity_test_elems_2x3x1/MainTime_M_2_0.part0.exnode")
   CALL READ_EXNODE(4,TotalNumberOfNodes,NodeCoords)
   CLOSE(4)
     
@@ -450,6 +446,40 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
     ENDIF
   ENDDO      
 
+!  !! TODO: initialise the nodal coordinates of the new extra elements
+
+!  NodeCoordsExtra(1,:)=[0.0_CMISSDP,0.05_CMISSDP,1.85_CMISSDP]!-0.15_CMISSDP]
+!  NodeCoordsExtra(2,:)=[0.0416667_CMISSDP,0.05_CMISSDP,1.85_CMISSDP]!-0.15_CMISSDP]
+!  NodeCoordsExtra(3,:)=[0.0_CMISSDP,0.15_CMISSDP,1.85_CMISSDP]!-0.15_CMISSDP]
+!  NodeCoordsExtra(4,:)=[0.0416667_CMISSDP,0.15_CMISSDP,1.85_CMISSDP]!-0.15_CMISSDP]
+
+!  NodeCoordsExtra(5,:)=[0.0_CMISSDP,0.05_CMISSDP,2.25_CMISSDP]!-0.35_CMISSDP]
+!  NodeCoordsExtra(6,:)=[0.0416667_CMISSDP,0.05_CMISSDP,1.85_CMISSDP]!-0.35_CMISSDP]
+!  NodeCoordsExtra(7,:)=[0.0_CMISSDP,0.15_CMISSDP,2.25_CMISSDP]!-0.35_CMISSDP]
+!  NodeCoordsExtra(8,:)=[0.0416667_CMISSDP,0.15_CMISSDP,2.25_CMISSDP]!-0.35_CMISSDP]
+!  
+!  NodeCoordsExtra(9,:)=[0.0_CMISSDP,0.05_CMISSDP,2.65_CMISSDP]!-0.55_CMISSDP]
+!  NodeCoordsExtra(10,:)=[0.0416667_CMISSDP,0.05_CMISSDP,2.65_CMISSDP]!-0.55_CMISSDP]
+!  NodeCoordsExtra(11,:)=[0.0_CMISSDP,0.15_CMISSDP,2.65_CMISSDP]!-0.55_CMISSDP]
+!  NodeCoordsExtra(12,:)=[0.0416667_CMISSDP,0.15_CMISSDP,2.65_CMISSDP]!-0.55_CMISSDP]
+!  
+!  NodeCoordsExtra(13,:)=[0.0_CMISSDP,0.05_CMISSDP,3.05_CMISSDP]!-0.75_CMISSDP]
+!  NodeCoordsExtra(14,:)=[0.0416667_CMISSDP,0.05_CMISSDP,3.05_CMISSDP]!-0.75_CMISSDP]
+!  NodeCoordsExtra(15,:)=[0.0_CMISSDP,0.15_CMISSDP,3.05_CMISSDP]!-0.75_CMISSDP]
+!  NodeCoordsExtra(16,:)=[0.0416667_CMISSDP,0.15_CMISSDP,3.05_CMISSDP]!-0.75_CMISSDP]      
+!        
+!  DO node_idx=TotalNumberOfNodes+1,TotalNumberOfNodes+16
+!    CALL CMISSDecomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
+!    IF(NodeDomain==ComputationalNodeNumber) THEN
+!      CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
+!        & node_idx,1,NodeCoordsExtra(node_idx-TotalNumberOfNodes,1),Err) !x-positon
+!      CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
+!        & node_idx,2,NodeCoordsExtra(node_idx-TotalNumberOfNodes,2),Err) !y-position
+!      CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
+!        & node_idx,3,NodeCoordsExtra(node_idx-TotalNumberOfNodes,3),Err) !z-position
+!    ENDIF
+!  ENDDO      
+  
 !-------------------------------------------------------------------------
 !
 ! FIBRE  
@@ -613,10 +643,10 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   ENDIF
   
   !On fat/skin-layer elements, material parameters are changed 
+  ! TODO: for mesh created from blocks, these are NOT the last elements, but some inbetween
   !"sigma=sigma_i+sigma_e" => set sigma_i default to 0, thus sigma=sigma_e
-  condfatskin=6.5E-6_CMISSDP
-  !first block
-  DO elem_idx=FAT_ELEM_START_B1,FAT_ELEM_END_B1
+  ! first block
+  DO elem_idx=193,288
     !sigma_i --> set to 0          
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,1,0.0_CMISSDP,Err)
@@ -632,11 +662,11 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
       & elem_idx,6,0.0_CMISSDP,Err)
     !sigma_e=sigma, literature value for fat/skin: 0.4E-6 
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,7,condfatskin,Err)
+      & elem_idx,7,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,8,condfatskin,Err)
+      & elem_idx,8,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,9,condfatskin,Err)
+      & elem_idx,9,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,10,0.0_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
@@ -644,8 +674,8 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,12,0.0_CMISSDP,Err)            
   ENDDO !elem_idx
-  !second block
-  DO elem_idx=FAT_ELEM_START_B2,FAT_ELEM_END_B2
+  ! second block
+  DO elem_idx=481,576
     !sigma_i --> set to 0          
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,1,0.0_CMISSDP,Err)
@@ -661,20 +691,20 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
       & elem_idx,6,0.0_CMISSDP,Err)
     !sigma_e=sigma, literature value for fat/skin: 0.4E-6 
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,7,condfatskin,Err)
+      & elem_idx,7,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,8,condfatskin,Err)
+      & elem_idx,8,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,9,condfatskin,Err)
+      & elem_idx,9,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,10,0.0_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,11,0.0_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,12,0.0_CMISSDP,Err)            
-  ENDDO !elem_idx  
-  !third block
-  DO elem_idx=FAT_ELEM_START_B3,FAT_ELEM_END_B3
+  ENDDO !elem_idx
+  ! third block
+  DO elem_idx=769,864
     !sigma_i --> set to 0          
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,1,0.0_CMISSDP,Err)
@@ -690,20 +720,20 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
       & elem_idx,6,0.0_CMISSDP,Err)
     !sigma_e=sigma, literature value for fat/skin: 0.4E-6 
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,7,condfatskin,Err)
+      & elem_idx,7,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,8,condfatskin,Err)
+      & elem_idx,8,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,9,condfatskin,Err)
+      & elem_idx,9,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,10,0.0_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,11,0.0_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,12,0.0_CMISSDP,Err)            
-  ENDDO !elem_idx  
-  !intersection blocks 1-2
-  DO elem_idx=FAT_ELEM_START_INTER12,FAT_ELEM_END_INTER12
+  ENDDO !elem_idx
+  ! intersection first-second block
+  DO elem_idx=961,1008
     !sigma_i --> set to 0          
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,1,0.0_CMISSDP,Err)
@@ -719,11 +749,11 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
       & elem_idx,6,0.0_CMISSDP,Err)
     !sigma_e=sigma, literature value for fat/skin: 0.4E-6 
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,7,condfatskin,Err)
+      & elem_idx,7,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,8,condfatskin,Err)
+      & elem_idx,8,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,9,condfatskin,Err)
+      & elem_idx,9,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,10,0.0_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
@@ -731,8 +761,8 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,12,0.0_CMISSDP,Err)            
   ENDDO !elem_idx  
-  !intersection blocks 2-3
-  DO elem_idx=FAT_ELEM_START_INTER23,FAT_ELEM_END_INTER23
+  ! intersection second-third block
+  DO elem_idx=1105,1152
     !sigma_i --> set to 0          
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,1,0.0_CMISSDP,Err)
@@ -748,19 +778,19 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
       & elem_idx,6,0.0_CMISSDP,Err)
     !sigma_e=sigma, literature value for fat/skin: 0.4E-6 
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,7,condfatskin,Err)
+      & elem_idx,7,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,8,condfatskin,Err)
+      & elem_idx,8,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,9,condfatskin,Err)
+      & elem_idx,9,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,10,0.0_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,11,0.0_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,12,0.0_CMISSDP,Err)            
-  ENDDO !elem_idx  
-
+  ENDDO !elem_idx    
+  
 !-------------------------------------------------------------------------
 !
 ! SOURCE
@@ -865,12 +895,12 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   CALL CMISSEquations_Initialise(Equations,Err)
   CALL CMISSEquationsSet_EquationsCreateStart(EquationsSet,Equations,Err)
   !Set the equations matrices sparsity type
-  CALL CMISSEquations_SparsityTypeSet(Equations,CMISS_EQUATIONS_SPARSE_MATRICES,Err)
-  !CALL CMISSEquations_SparsityTypeSet(Equations,CMISS_EQUATIONS_FULL_MATRICES,Err)
+!  CALL CMISSEquations_SparsityTypeSet(Equations,CMISS_EQUATIONS_SPARSE_MATRICES,Err)
+  CALL CMISSEquations_SparsityTypeSet(Equations,CMISS_EQUATIONS_FULL_MATRICES,Err)
   !Set the equations set output
-  CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_NO_OUTPUT,Err)
+  !CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_NO_OUTPUT,Err)
   !CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_TIMING_OUTPUT,Err)
-  !CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_MATRIX_OUTPUT,Err)
+  CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_MATRIX_OUTPUT,Err)
   !CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_ELEMENT_MATRIX_OUTPUT,Err)
   !Finish the equations set equations
   CALL CMISSEquationsSet_EquationsCreateFinish(EquationsSet,Err)
@@ -906,9 +936,9 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
 !  CALL CMISSSolver_LinearTypeSet(Solver,CMISS_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
 !  CALL CMISSSolver_LinearIterativeAbsoluteToleranceSet(Solver,1.0E-12_CMISSDP,Err)
 !  CALL CMISSSolver_LinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMISSDP,Err)
-!  CALL CMISSSolver_LinearIterativeTypeSet(Solver,CMISS_SOLVER_ITERATIVE_BiCGSTAB,Err)
-!!  CALL CMISSSolver_LinearIterativeTypeSet(Solver,CMISS_SOLVER_ITERATIVE_CONJUGATE_GRADIENT,Err)
-!!  !CALL CMISSSolver_LinearIterativeTypeSet(Solver,CMISS_SOLVER_ITERATIVE_GMRES,Err)
+!!  CALL CMISSSolver_LinearIterativeTypeSet(Solver,CMISS_SOLVER_ITERATIVE_BiCGSTAB,Err)
+!  CALL CMISSSolver_LinearIterativeTypeSet(Solver,CMISS_SOLVER_ITERATIVE_CONJUGATE_GRADIENT,Err)
+!!  CALL CMISSSolver_LinearIterativeTypeSet(Solver,CMISS_SOLVER_ITERATIVE_GMRES,Err)
 !  CALL CMISSSolver_LinearIterativeMaximumIterationsSet(Solver,1000000000,Err)
   
   CALL CMISSSolver_LinearTypeSet(Solver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
@@ -935,7 +965,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   CALL CMISSSolver_SolverEquationsGet(Solver,SolverEquations,Err)
   !Set the solver equations sparsity
   CALL CMISSSolverEquations_SparsityTypeSet(SolverEquations,CMISS_SOLVER_SPARSE_MATRICES,Err)
-  !CALL CMISSSolverEquations_SparsityTypeSet(SolverEquations,CMISS_SOLVER_FULL_MATRICES,Err)  
+!  CALL CMISSSolverEquations_SparsityTypeSet(SolverEquations,CMISS_SOLVER_FULL_MATRICES,Err)  
   !Add in the equations set
   CALL CMISSSolverEquations_EquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
@@ -943,24 +973,58 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
 
 !-------------------------------------------------------------------------
   !Start the creation of the equations set BOUNDARY CONDITIONS
-  !instead of Dirichlet b.c. we use the zero-mean condition on the potential here
   
   CALL CMISSBoundaryConditions_Initialise(BoundaryConditions,Err)
   CALL CMISSSolverEquations_BoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+  
+!  !! TODO set the new "cornernode" to 0.0
+!  
+!  !Set the (first node and the) last node to 0.0
+!  FirstNodeNumber=1
+!  CALL CMISSNodes_Initialise(Nodes,Err)
+!  CALL CMISSRegion_NodesGet(Region,Nodes,Err)
+!  CALL CMISSNodes_NumberOfNodesGet(Nodes,LastNodeNumber,Err)
+!  CALL CMISSDecomposition_NodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
+!!  CALL CMISSDecomposition_NodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
+!!  CALL CMISSDecomposition_NodeDomainGet(Decomposition,65106,1,yNodeDomain,Err)
+!!  CALL CMISSDecomposition_NodeDomainGet(Decomposition,20301,1,zeroNodeDomain,Err)
+!!  CALL CMISSDecomposition_NodeDomainGet(Decomposition,20445,1,xNodeDomain,Err)
+!  IF(FirstNodeDomain==ComputationalNodeNumber) THEN
+!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,FirstNodeNumber,1, &
+!      & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+!  ENDIF
+!  IF(LastNodeDomain==ComputationalNodeNumber) THEN
+!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,LastNodeNumber,1, &
+!      & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+!!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,LastNodeNumber-3,1, &
+!!      & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+!  ENDIF
+!  IF(yNodeDomain==ComputationalNodeNumber) THEN
+!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,65106,1, &
+!      & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+!  ENDIF
+!  IF(zeroNodeDomain==ComputationalNodeNumber) THEN
+!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,20301,1, &
+!      & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+!  ENDIF
+!  IF(xNodeDomain==ComputationalNodeNumber) THEN
+!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,20445,1, &
+!      & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+!  ENDIF    
   
   !Finish the creation of the equations set boundary conditions
   CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
 
 !-------------------------------------------------------------------------
 
-  time=5
+  time=4
   dt=1
-  DO WHILE(time<=5)
+  DO WHILE(time<=4)
     
     CALL SYSTEM_CLOCK (clck_counts_begloop, clck_rate)
     WRITE (*,*) 'begloop-beg',  (clck_counts_begloop - clck_counts_beg) / REAL(clck_rate)
         
-    name_part1="./data/data_Vm_3/MainTime_M_2_"
+    name_part1="./data/singularity_test_elems_2x3x1/MainTime_M_2_"
     name_part3=".part0.exnode"
     WRITE(numberstring,*) time
     numberstring=ADJUSTL(numberstring)
@@ -968,10 +1032,10 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
     
     WRITE(*,*) exnodefile
     
-!    !in each time step, read in information from existing exnode file for nodal information (node,x,y,z,Vm)
-!    OPEN(UNIT=3,FILE=exnodefile)    
-!    CALL READ_EXNODE(3,TotalNumberOfNodes,NodeCoords)
-!    CLOSE(3)
+    !in each time step, read in information from existing exnode file for nodal information (node,x,y,z,Vm)
+    OPEN(UNIT=3,FILE=exnodefile)    
+    CALL READ_EXNODE(3,TotalNumberOfNodes,NodeCoords)
+    CLOSE(3)
     
 !    !update nodal coordinates, GEOMETRIC field (won't change in my case but later important for Thomas)
 !    !for each node, specify the position in space
@@ -996,61 +1060,69 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
 !      ENDIF
 !    ENDDO    
     
-!    !update the SOURCE field Vm
-!    !set source value on specific nodes  
-!    DO node_idx=1,TotalNumberOfNodes
-!      CALL CMISSDecomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
-!      IF(NodeDomain==ComputationalNodeNumber) THEN
-!        IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-!!          CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
-!!            & 1,NodeCoords(node_idx,1),1,NodeCoords(node_idx,4),Err)
-!          CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
-!            & 1,node_idx,1,NodeCoords(node_idx,3),Err)
-!        ELSE
-!!          CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
-!!            & 1,NodeCoords(node_idx,1),1,NodeCoords(node_idx,5),Err)
-!          CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
-!            & 1,node_idx,1,NodeCoords(node_idx,4),Err)
-!        ENDIF
-!      ENDIF
-!    ENDDO    
-    
-    ! TODO: CONDUCTIVITY analysis
-    ! update only one fibre in the middle of the block with the Vm, taken from step 5, fibre 2.
-    ! take different depth
-    Vm=[-7.0759407435666290E+01_CMISSDP,-1.6823247306843125E+01_CMISSDP,2.9956116352238759E+01_CMISSDP, &
-      & 2.6295955731608927E+01_CMISSDP,1.2228224357064173E+01_CMISSDP,-4.3256719766081844E+00_CMISSDP, &
-      & -1.9263360885282658E+01_CMISSDP,-3.0661977022744619E+01_CMISSDP,-3.8913665110594806E+01_CMISSDP, &
-      & -4.5012395435124745E+01_CMISSDP,-5.0143209151069435E+01_CMISSDP,-5.2906669048522794E+01_CMISSDP, &
-      & -5.0143219387210699E+01_CMISSDP,-4.5012399842014517E+01_CMISSDP,-3.8913672174838020E+01_CMISSDP, &
-      & -3.0661985663173922E+01_CMISSDP,-1.9263366881051070E+01_CMISSDP,-4.3256672191903887E+00_CMISSDP, &
-      & 1.2228235482648358E+01_CMISSDP,2.6296038022641081E+01_CMISSDP,2.9956072773684355E+01_CMISSDP, &
-      & -1.6824801581347035E+01_CMISSDP,-7.0759903617694718E+01_CMISSDP]    
-
-    !starting node:
-    ! 34076
-  
-    !starting node
-    node_start=34076
-    
-    idx=0  
-    DO node_idx=node_start+61,node_start+83
+    !update the SOURCE field Vm
+    ! TODO: for mesh from blocks, find the correct muscle nodes
+    !set source value on specific muscle nodes  
+    ! first block
+    DO node_idx=1,441
       CALL CMISSDecomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
       IF(NodeDomain==ComputationalNodeNumber) THEN
-        idx=idx+1    
-        CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
-          & 1,node_idx,1,Vm(idx),Err)
+        IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+!          CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
+!            & 1,NodeCoords(node_idx,1),1,NodeCoords(node_idx,4),Err)
+          CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
+            & 1,node_idx,1,NodeCoords(node_idx,3),Err)
+        ELSE
+!          CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
+!            & 1,NodeCoords(node_idx,1),1,NodeCoords(node_idx,5),Err)
+          CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
+            & 1,node_idx,1,NodeCoords(node_idx,4),Err)
+        ENDIF
       ENDIF
-    ENDDO
-
+    ENDDO    
+    ! second block
+    DO node_idx=589,1029
+      CALL CMISSDecomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
+      IF(NodeDomain==ComputationalNodeNumber) THEN
+        IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+!          CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
+!            & 1,NodeCoords(node_idx,1),1,NodeCoords(node_idx,4),Err)
+          CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
+            & 1,node_idx,1,NodeCoords(node_idx,3),Err)
+        ELSE
+!          CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
+!            & 1,NodeCoords(node_idx,1),1,NodeCoords(node_idx,5),Err)
+          CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
+            & 1,node_idx,1,NodeCoords(node_idx,4),Err)
+        ENDIF
+      ENDIF
+    ENDDO    
+    ! third block
+    DO node_idx=1177,1617
+      CALL CMISSDecomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
+      IF(NodeDomain==ComputationalNodeNumber) THEN
+        IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+!          CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
+!            & 1,NodeCoords(node_idx,1),1,NodeCoords(node_idx,4),Err)
+          CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
+            & 1,node_idx,1,NodeCoords(node_idx,3),Err)
+        ELSE
+!          CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
+!            & 1,NodeCoords(node_idx,1),1,NodeCoords(node_idx,5),Err)
+          CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
+            & 1,node_idx,1,NodeCoords(node_idx,4),Err)
+        ENDIF
+      ENDIF
+    ENDDO    
     
     CALL SYSTEM_CLOCK (clck_counts_int1, clck_rate)
+    !WRITE(*,*) 'int1:', clck_counts_int1
     WRITE (*,*) 'int1-begloop',  (clck_counts_int1 - clck_counts_begloop) / REAL(clck_rate)
     
     !Solve the problem
     CALL CMISSProblem_Solve(Problem,Err)
     
-    !TODO: calculate mean of solution and substract from each node (instead of dirichlet bc)
+!    !TODO: calculate mean of solution and substract from each node (instead of dirichlet bc)
 
     sumphi=0.0_CMISSDP
     DO node_idx=1,TotalNumberOfNodes
@@ -1069,10 +1141,10 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
     
     
     CALL SYSTEM_CLOCK (clck_counts_int2, clck_rate)
+    !WRITE(*,*) 'int2', clck_counts_int2
     WRITE (*,*) 'int2-int1', (clck_counts_int2 - clck_counts_int1) / REAL(clck_rate)
 
-    filename_results="ExtracellularBidomain_"//TRIM(numberstring)//"-34076_cond6p5"
-!    filename_results="ExtracellularBidomain_"//TRIM(numberstring)
+    filename_results="ExtracellularBidomain_"//TRIM(numberstring)
   
     WRITE(*,*) filename_results
       
@@ -1080,12 +1152,15 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
     CALL CMISSFields_Initialise(Fields,Err)
     CALL CMISSFields_Create(Region,Fields,Err)
     CALL CMISSFields_NodesExport(Fields,filename_results,"FORTRAN",Err)
-    !CALL CMISSFields_ElementsExport(Fields,filename_results,"FORTRAN",Err)    
+    CALL CMISSFields_ElementsExport(Fields,filename_results,"FORTRAN",Err)    
     
+!    CALL CMISSFields_NodesExport(Fields,"ExtracellularBidomain","FORTRAN",Err)
+!    CALL CMISSFields_ElementsExport(Fields,"ExtracellularBidomain","FORTRAN",Err)
+
     time=time+dt
     
     CALL SYSTEM_CLOCK (clck_counts_end, clck_rate)
-
+    !WRITE(*,*) 'end', clck_counts_end
     WRITE (*,*) 'end-int2', (clck_counts_end - clck_counts_int2) / REAL(clck_rate)
 
   ENDDO !time
@@ -1098,6 +1173,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
 
   DEALLOCATE(ElemTopology) 
   DEALLOCATE(NodeCoords)
+!  DEALLOCATE(NodeCoordsExtra)  
 
   WRITE(*,'(A)') "Program successfully completed."
   

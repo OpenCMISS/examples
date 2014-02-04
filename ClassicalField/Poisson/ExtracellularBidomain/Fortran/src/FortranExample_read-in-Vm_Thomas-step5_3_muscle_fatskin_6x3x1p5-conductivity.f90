@@ -1080,7 +1080,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
     CALL CMISSFields_Initialise(Fields,Err)
     CALL CMISSFields_Create(Region,Fields,Err)
     CALL CMISSFields_NodesExport(Fields,filename_results,"FORTRAN",Err)
-    !CALL CMISSFields_ElementsExport(Fields,filename_results,"FORTRAN",Err)    
+!    CALL CMISSFields_ElementsExport(Fields,filename_results,"FORTRAN",Err)    
     
     time=time+dt
     

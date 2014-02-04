@@ -100,10 +100,10 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   INTEGER(CMISSIntg) :: NumberOfMeshDimensions
   INTEGER(CMISSIntg) :: TotalNumberOfElements,TotalNumberOfNodes
   INTEGER(CMISSIntg) :: INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI
-  INTEGER(CMISSIntg) :: node_idx,component_idx,elem_idx,idx
+  INTEGER(CMISSIntg) :: node_idx,component_idx,elem_idx
   INTEGER(CMISSIntg) :: FibreFieldNumberOfComponents
 
-  REAL(CMISSDP) :: FibreFieldAngle(3),phi,sumphi,meanphi,Vm(23),condfatskin
+  REAL(CMISSDP) :: FibreFieldAngle(3),phi,sumphi,meanphi,Vm(23)
   INTEGER(CMISSIntg) :: time,dt,node_start
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT,Filename
   CHARACTER(LEN=255) :: name_part1,name_part3,numberstring,exnodefile,filename_results
@@ -614,7 +614,6 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   
   !On fat/skin-layer elements, material parameters are changed 
   !"sigma=sigma_i+sigma_e" => set sigma_i default to 0, thus sigma=sigma_e
-  condfatskin=6.5E-6_CMISSDP
   !first block
   DO elem_idx=FAT_ELEM_START_B1,FAT_ELEM_END_B1
     !sigma_i --> set to 0          
@@ -632,11 +631,11 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
       & elem_idx,6,0.0_CMISSDP,Err)
     !sigma_e=sigma, literature value for fat/skin: 0.4E-6 
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,7,condfatskin,Err)
+      & elem_idx,7,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,8,condfatskin,Err)
+      & elem_idx,8,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,9,condfatskin,Err)
+      & elem_idx,9,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,10,0.0_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
@@ -661,11 +660,11 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
       & elem_idx,6,0.0_CMISSDP,Err)
     !sigma_e=sigma, literature value for fat/skin: 0.4E-6 
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,7,condfatskin,Err)
+      & elem_idx,7,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,8,condfatskin,Err)
+      & elem_idx,8,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,9,condfatskin,Err)
+      & elem_idx,9,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,10,0.0_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
@@ -690,11 +689,11 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
       & elem_idx,6,0.0_CMISSDP,Err)
     !sigma_e=sigma, literature value for fat/skin: 0.4E-6 
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,7,condfatskin,Err)
+      & elem_idx,7,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,8,condfatskin,Err)
+      & elem_idx,8,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,9,condfatskin,Err)
+      & elem_idx,9,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,10,0.0_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
@@ -719,11 +718,11 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
       & elem_idx,6,0.0_CMISSDP,Err)
     !sigma_e=sigma, literature value for fat/skin: 0.4E-6 
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,7,condfatskin,Err)
+      & elem_idx,7,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,8,condfatskin,Err)
+      & elem_idx,8,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,9,condfatskin,Err)
+      & elem_idx,9,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,10,0.0_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
@@ -748,11 +747,11 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
       & elem_idx,6,0.0_CMISSDP,Err)
     !sigma_e=sigma, literature value for fat/skin: 0.4E-6 
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,7,condfatskin,Err)
+      & elem_idx,7,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,8,condfatskin,Err)
+      & elem_idx,8,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,9,condfatskin,Err)
+      & elem_idx,9,0.4E-6_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & elem_idx,10,0.0_CMISSDP,Err)
     CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
@@ -1015,7 +1014,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
 !      ENDIF
 !    ENDDO    
     
-    ! TODO: CONDUCTIVITY analysis
+    ! TODO: DEPTH analysis
     ! update only one fibre in the middle of the block with the Vm, taken from step 5, fibre 2.
     ! take different depth
     Vm=[-7.0759407435666290E+01_CMISSDP,-1.6823247306843125E+01_CMISSDP,2.9956116352238759E+01_CMISSDP, &
@@ -1027,11 +1026,11 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
       & 1.2228235482648358E+01_CMISSDP,2.6296038022641081E+01_CMISSDP,2.9956072773684355E+01_CMISSDP, &
       & -1.6824801581347035E+01_CMISSDP,-7.0759903617694718E+01_CMISSDP]    
 
-    !starting node:
-    ! 34076
+    !starting nodes:
+    ! 22476, 23926, 25376, 26826, 28276, 29726, 31176, 32626, 34076, 35526, 36976, 38426, 39876
   
     !starting node
-    node_start=34076
+    node_start=22476
     
     idx=0  
     DO node_idx=node_start+61,node_start+83
@@ -1071,8 +1070,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
     CALL SYSTEM_CLOCK (clck_counts_int2, clck_rate)
     WRITE (*,*) 'int2-int1', (clck_counts_int2 - clck_counts_int1) / REAL(clck_rate)
 
-    filename_results="ExtracellularBidomain_"//TRIM(numberstring)//"-34076_cond6p5"
-!    filename_results="ExtracellularBidomain_"//TRIM(numberstring)
+    filename_results="ExtracellularBidomain_"//TRIM(numberstring)
   
     WRITE(*,*) filename_results
       
@@ -1080,7 +1078,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
     CALL CMISSFields_Initialise(Fields,Err)
     CALL CMISSFields_Create(Region,Fields,Err)
     CALL CMISSFields_NodesExport(Fields,filename_results,"FORTRAN",Err)
-    !CALL CMISSFields_ElementsExport(Fields,filename_results,"FORTRAN",Err)    
+!    CALL CMISSFields_ElementsExport(Fields,filename_results,"FORTRAN",Err)    
     
     time=time+dt
     
