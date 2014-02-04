@@ -397,6 +397,8 @@ PROGRAM SupgChannel
   !Start the creation of a new region
   CALL CMISSRegion_Initialise(Region,Err)
   CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  !Set region label
+  CALL CMISSRegion_LabelSet(Region,"OpenCMISS",Err)
   !Set the regions coordinate system as defined above
   CALL CMISSRegion_CoordinateSystemSet(Region,CoordinateSystem,Err)
   !Finish the creation of the region
