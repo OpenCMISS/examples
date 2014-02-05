@@ -403,7 +403,8 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   !of this file as for Thomas case, the nodal positions will also change with time and should be updated
   
   !due to more elements for fat/skin-layer read exnode file for all nodal coordinates (x,y,z)
-  OPEN(UNIT=4,FILE="./data/data_Vm_2/simple_geometryExample_M.part0.exnode")
+!  OPEN(UNIT=4,FILE="./data/data_Vm_2/simple_geometryExample_M.part0.exnode")
+  OPEN(UNIT=4,FILE="../inputdata/data_Vm_2/simple_geometryExample_M.part0.exnode")
   CALL READ_EXNODE(4,TotalNumberOfNodes,NodeCoords)
   CLOSE(4)
     
@@ -793,7 +794,8 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   dt=1
   DO WHILE(time<=153)
         
-    name_part1="./data/data_Vm_2/MainTime_M_2_"
+!    name_part1="./data/data_Vm_2/MainTime_M_2_"
+    name_part1="../inputdata/data_Vm_2/MainTime_M_2_"
     name_part3=".part0.exnode"
     WRITE(numberstring,*) time
     numberstring=ADJUSTL(numberstring)

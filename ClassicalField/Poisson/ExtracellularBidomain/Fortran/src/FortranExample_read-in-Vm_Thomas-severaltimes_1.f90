@@ -757,7 +757,8 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
 !  TODO: make a loop around the solution process to solve for different Vm(t) - increment WHILE and dt needed?
   DO time=0,5
     
-    name_part1="./data/data_Vm_1/MainTime_M_2_"
+!    name_part1="./data/data_Vm_1/MainTime_M_2_"
+    name_part1="../inputdata/data_Vm_1/MainTime_M_2_"
     name_part3=".part0.exnode"
     WRITE(numberstring,*) time
     numberstring=ADJUSTL(numberstring)

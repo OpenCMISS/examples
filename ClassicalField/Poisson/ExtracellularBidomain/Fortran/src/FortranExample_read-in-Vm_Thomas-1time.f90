@@ -314,7 +314,8 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   CALL CMISSMeshElements_CreateStart(Mesh,MeshComponentNumber,Basis,Elements,Err)
   
   !read in information from existing exelem file for mesh generation 
-  OPEN(UNIT=2,FILE="./data/ELEMENTNODES.TXT")
+!  OPEN(UNIT=2,FILE="./data/ELEMENTNODES.TXT")
+  OPEN(UNIT=2,FILE="../inputdata/ELEMENTNODES.TXT")
   CALL READ_ELEMENTNODES(2,TotalNumberOfElements,ElemTopology)
   CLOSE(2)
   
@@ -751,7 +752,8 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   
   
     !in each time step, read in information from existing exnode file for nodal information (node,x,y,z,Vm)
-    OPEN(UNIT=3,FILE="./data/MainTime_M_2_50.part0.exnode")
+!    OPEN(UNIT=3,FILE="./data/MainTime_M_2_50.part0.exnode")
+    OPEN(UNIT=3,FILE="../inpudata/MainTime_M_2_50.part0.exnode")
     CALL READ_EXNODE(3,TotalNumberOfNodes,NodeCoords)
     CLOSE(3)
     

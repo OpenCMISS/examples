@@ -328,7 +328,8 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   CALL CMISSMeshElements_CreateStart(Mesh,MeshComponentNumber,Basis,Elements,Err)
   
   !read in information from existing exelem file for mesh generation 
-  OPEN(UNIT=2,FILE="./data/singularity_test_elems_2x3x1/mesh.txt")
+!  OPEN(UNIT=2,FILE="./data/singularity_test_elems_2x3x1/mesh.txt")
+  OPEN(UNIT=2,FILE="../inputdata/singularity_test_elems_2x3x1/mesh.txt")
   CALL READ_ELEMENTNODES(2,TotalNumberOfElements,ElemTopology)
   CLOSE(2)
 
@@ -420,7 +421,8 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   !of this file as for Thomas case, the nodal positions will also change with time and should be updated
   
   !due to more elements for fat/skin-layer read exnode file for all nodal coordinates (x,y,z)
-  OPEN(UNIT=4,FILE="./data/singularity_test_elems_2x3x1/MainTime_M_2_0.part0.exnode")
+!  OPEN(UNIT=4,FILE="./data/singularity_test_elems_2x3x1/MainTime_M_2_0.part0.exnode")
+  OPEN(UNIT=4,FILE="../inputdata/singularity_test_elems_2x3x1/MainTime_M_2_0.part0.exnode")
   CALL READ_EXNODE(4,TotalNumberOfNodes,NodeCoords)
   CLOSE(4)
     
@@ -1024,7 +1026,8 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
     CALL SYSTEM_CLOCK (clck_counts_begloop, clck_rate)
     WRITE (*,*) 'begloop-beg',  (clck_counts_begloop - clck_counts_beg) / REAL(clck_rate)
         
-    name_part1="./data/singularity_test_elems_2x3x1/MainTime_M_2_"
+!    name_part1="./data/singularity_test_elems_2x3x1/MainTime_M_2_"
+    name_part1="../inputdata/singularity_test_elems_2x3x1/MainTime_M_2_"
     name_part3=".part0.exnode"
     WRITE(numberstring,*) time
     numberstring=ADJUSTL(numberstring)

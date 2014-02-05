@@ -323,7 +323,8 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   CALL CMISSMeshElements_CreateStart(Mesh,MeshComponentNumber,Basis,Elements,Err)
   
   !read in information from existing exelem file for mesh generation 
-  OPEN(UNIT=2,FILE="./data/data_test_blocks/mesh_3.txt")
+!  OPEN(UNIT=2,FILE="./data/data_test_blocks/mesh_3.txt")
+  OPEN(UNIT=2,FILE="../inputdata/data_test_blocks/mesh_3.txt")
   CALL READ_ELEMENTNODES(2,TotalNumberOfElements,ElemTopology)
   CLOSE(2)
 
@@ -402,7 +403,8 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   !of this file as for Thomas case, the nodal positions will also change with time and should be updated
   
   !due to more elements for fat/skin-layer read exnode file for all nodal coordinates (x,y,z)
-  OPEN(UNIT=4,FILE="./data/data_test_blocks/data_domain_3/MainTime_M_2_1.part0.exnode")
+!  OPEN(UNIT=4,FILE="./data/data_test_blocks/data_domain_3/MainTime_M_2_1.part0.exnode")
+  OPEN(UNIT=4,FILE="../inputdata/data_test_blocks/data_domain_3/MainTime_M_2_1.part0.exnode")
   CALL READ_EXNODE(4,TotalNumberOfNodes,NodeCoords)
   CLOSE(4)
     
@@ -792,7 +794,8 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   dt=1
   DO WHILE(time<=1)
         
-    name_part1="./data/data_test_blocks/data_domain_3/MainTime_M_2_"
+!    name_part1="./data/data_test_blocks/data_domain_3/MainTime_M_2_"
+    name_part1="../inputdata/data_test_blocks/data_domain_3/MainTime_M_2_"
     name_part3=".part0.exnode"
     WRITE(numberstring,*) time
     numberstring=ADJUSTL(numberstring)
