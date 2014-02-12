@@ -53,17 +53,14 @@ sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','pytho
 
 import numpy
 import gzip
-import pylab
 import time
 import re
 import math
-import matplotlib.pyplot as plt
 import contextlib
-import WomersleyAnalytic
+import womersleyAnalytic
 
 # Intialise OpenCMISS
 from opencmiss import CMISS
-
 
 @contextlib.contextmanager
 def ChangeDirectory(path):
@@ -85,9 +82,10 @@ computationalNodeNumber = CMISS.ComputationalNodeNumberGet()
 #  Get the mesh information from FieldML data
 # -----------------------------------------------
 
-meshName = 'hexCylinder14'            
-inputDir = './input/hexCylinder14/'
-length = 10.
+# Read xml file
+meshName = 'hexCylinder12'            
+inputDir = './input/' + meshName +'/'
+length = 10.016782
 radius = 0.5
 axialComponent = 1
 fieldmlInput = inputDir + meshName + '.xml'
@@ -103,8 +101,9 @@ try:
         f.close()
 except IOError:
    print ('Could not open Wall boundary node file: ' + filename)
+
 #Inlet boundary nodes
-filename=inputDir + 'bc/inletVelocityNodes.dat'
+filename=inputDir + 'bc/inletNodes.dat'
 try:
     with open(filename):
         f = open(filename,"r")
@@ -113,6 +112,7 @@ try:
         f.close()
 except IOError:
    print ('Could not open Inlet boundary node file: ' + filename)
+
 #Outlet boundary nodes
 filename=inputDir + 'bc/outletNodes.dat'
 try:
@@ -124,14 +124,8 @@ try:
 except IOError:
    print ('Could not open Outlet boundary node file: ' + filename)
 
-print("Inlet Nodes:")
-print(inletNodes)
-
-print("outlet Nodes:")
-print(outletNodes)
-
 # -----------------------------------------------
-#  Set up problem
+#  Set up general problem
 # -----------------------------------------------
 
 (coordinateSystemUserNumber,
@@ -156,7 +150,6 @@ fieldmlInfo.InputCreateFromFile(fieldmlInput)
 # Creation a RC coordinate system
 coordinateSystem = CMISS.CoordinateSystem()
 fieldmlInfo.InputCoordinateSystemCreateStart("CylinderMesh.coordinates",coordinateSystem,coordinateSystemUserNumber)
-#fieldmlInfo.InputCoordinateSystemCreateStart("CylinderMesh.coordinates",coordinateSystemUserNumber)
 coordinateSystem.CreateFinish()
 numberOfDimensions = coordinateSystem.DimensionGet()
 
@@ -225,25 +218,10 @@ geometricField.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,
                                        CMISS.FieldParameterSetTypes.VALUES)
 fieldmlInfo.Finalise()
 
-# Export mesh geometry
-fields = CMISS.Fields()
-fields.CreateRegion(region)
-fields.NodesExport("Geometry","FORTRAN")
-fields.ElementsExport("Geometry","FORTRAN")
-fields.Finalise()
-print("Exported Geometric Mesh")
 
-# Create standard Navier-Stokes equations set
-equationsSetField = CMISS.Field()
-equationsSet = CMISS.EquationsSet()
-equationsSet.CreateStart(equationsSetUserNumber,region,geometricField,
-        CMISS.EquationsSetClasses.FLUID_MECHANICS,
-        CMISS.EquationsSetTypes.NAVIER_STOKES_EQUATION,
-        CMISS.EquationsSetSubtypes.TRANSIENT_SUPG_NAVIER_STOKES,
-        equationsSetFieldUserNumber, equationsSetField)
-equationsSet.CreateFinish()
-
-
+# -----------------------------------------------
+#  Solve problem with provided settings
+# -----------------------------------------------
 def solveProblem(transient,viscosity,density,offset,amplitude,period):
     """ Sets up the problem and solve with the provided parameter values
 
@@ -252,22 +230,31 @@ def solveProblem(transient,viscosity,density,offset,amplitude,period):
 
                                      u=0
                   ------------------------------------------- R = 0.5
-                                             \
-                                              \  
-        p = offset + A*sin(2*pi*(t/period))   | u(r,t)        p = 0
-                                              /
-                                             /
+                                             >
+                                             ->  
+        p = offset + A*cos(2*pi*(t/period))  --> u(r,t)        p = 0
+                                             ->
+                                             >
                   ------------------------------------------- L = 10
                                      u=0
     """
 
-    period = math.pi/2.0
     angularFrequency = 2.0*math.pi/period
-    Womersley = 0.5*math.sqrt(angularFrequency*density/viscosity)
+    womersley = radius*math.sqrt(angularFrequency*density/viscosity)
     if computationalNodeNumber == 0:
         print("-----------------------------------------------")
-        print("Setting up problem for Womersley number: " + str(Womersley))
+        print("Setting up problem for Womersley number: " + str(womersley))
         print("-----------------------------------------------")
+
+    # Create standard Navier-Stokes equations set
+    equationsSetField = CMISS.Field()
+    equationsSet = CMISS.EquationsSet()
+    equationsSet.CreateStart(equationsSetUserNumber,region,geometricField,
+            CMISS.EquationsSetClasses.FLUID_MECHANICS,
+            CMISS.EquationsSetTypes.NAVIER_STOKES_EQUATION,
+            CMISS.EquationsSetSubtypes.TRANSIENT_SUPG_NAVIER_STOKES,
+            equationsSetFieldUserNumber, equationsSetField)
+    equationsSet.CreateFinish()
 
     # Create dependent field
     dependentField = CMISS.Field()
@@ -288,7 +275,7 @@ def solveProblem(transient,viscosity,density,offset,amplitude,period):
         dependentField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.DELUDELN,CMISS.FieldParameterSetTypes.VALUES,component,0.0)
 
     # Initialise dependent field to analytic values
-    initialiseAnalytic = False
+    initialiseAnalytic = True
     if initialiseAnalytic:
         for node in range(1,numberOfNodes+1):
             sumPositionSq = 0.
@@ -296,17 +283,17 @@ def solveProblem(transient,viscosity,density,offset,amplitude,period):
             nodeDomain=decomposition.NodeDomainGet(nodeNumber,meshComponentQuadratic)
             if (nodeDomain == computationalNodeNumber):
                 for component in range(1,4):
-                    if component != axialComponent:
+                    if component != axialComponent+1:
                         value=geometricField.ParameterSetGetNodeDP(CMISS.FieldVariableTypes.U,
                                                                       CMISS.FieldParameterSetTypes.VALUES,
                                                                       1,CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,component)
                         sumPositionSq += value**2
                 radialNodePosition=math.sqrt(sumPositionSq)
                 for component in range(1,4):
-                    if component == axialComponent + 1:
-                        value = WomersleyAnalytic.WomersleyAxialVelocity(transient[0],offset,amplitude,radius,
+                    if component == axialComponent+1:
+                        value = womersleyAnalytic.womersleyAxialVelocity(transient[0],offset,amplitude,radius,
                                                                          radialNodePosition,period,viscosity,
-                                                                         Womersley,length)
+                                                                         womersley,length)
                     else:
                         value = 0.0
                     dependentField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
@@ -320,8 +307,8 @@ def solveProblem(transient,viscosity,density,offset,amplitude,period):
     materialsField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,viscosity)
     materialsField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,2,density)
 
-    # Create analytic field (allows for time-dependent calculation of sinusoid-based pressure waveform during solve)
-    analytic = False
+    # Create analytic field (allows for time-dependent calculation of sinusoidal pressure waveform during solve)
+    analytic = True
     if analytic:
         analyticField = CMISS.Field()
         equationsSet.AnalyticCreateStart(CMISS.NavierStokesAnalyticFunctionTypes.Sinusoid,analyticFieldUserNumber,analyticField)
@@ -402,8 +389,6 @@ def solveProblem(transient,viscosity,density,offset,amplitude,period):
                 boundaryConditions.SetNode(dependentField,CMISS.FieldVariableTypes.U,
                                            1,CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV,
                                            nodeNumber,componentId,CMISS.BoundaryConditionsTypes.FIXED,value)
-
-
     # Note: inlet/outlet nodes are pressure-based so only defined on linear nodes
     # outlet boundary nodes p = 0 
     value=0.0
@@ -412,29 +397,15 @@ def solveProblem(transient,viscosity,density,offset,amplitude,period):
         if (nodeDomain == computationalNodeNumber):
             boundaryConditions.SetNode(dependentField,CMISS.FieldVariableTypes.U,
                                        1,CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV,
-                                       nodeNumber,4,CMISS.BoundaryConditionsTypes.FIXED,value)
+                                       nodeNumber,4,CMISS.BoundaryConditionsTypes.FIXED_OUTLET,value)
     # inlet boundary nodes p = f(t) - will be updated in pre-solve
-    # value = 1.0
-    # for nodeNumber in inletNodes:
-    #     nodeDomain=decomposition.NodeDomainGet(nodeNumber,meshComponentQuadratic)
-    #     if (nodeDomain == computationalNodeNumber):
-    #         boundaryConditions.SetNode(dependentField,CMISS.FieldVariableTypes.U,
-    #                                    1,CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV,
-    #                                    nodeNumber,2,CMISS.BoundaryConditionsTypes.FIXED_INLET,value)
-    # solverEquations.BoundaryConditionsCreateFinish()
-
-    value = 1.0
+    value = 0.0
     for nodeNumber in inletNodes:
         nodeDomain=decomposition.NodeDomainGet(nodeNumber,meshComponentQuadratic)
         if (nodeDomain == computationalNodeNumber):
-            for component in range (1,4):
-                if component == 2:
-                    value = 1.0
-                else:
-                    value = 0.0
-                boundaryConditions.SetNode(dependentField,CMISS.FieldVariableTypes.U,
-                                           1,CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV,
-                                           nodeNumber,component,CMISS.BoundaryConditionsTypes.FIXED_INLET,value)
+            boundaryConditions.SetNode(dependentField,CMISS.FieldVariableTypes.U,
+                                       1,CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV,
+                                       nodeNumber,4,CMISS.BoundaryConditionsTypes.FIXED_INLET,value)
     solverEquations.BoundaryConditionsCreateFinish()
 
     # Solve the problem
@@ -443,10 +414,10 @@ def solveProblem(transient,viscosity,density,offset,amplitude,period):
 
     # Clear fields so can run in batch mode on this region
     materialsField.Destroy()
+    dependentField.Destroy()
     analyticField.Destroy()
     equationsSet.Destroy()
     problem.Destroy()
-
 
 
 #==========================================================
@@ -457,28 +428,29 @@ def solveProblem(transient,viscosity,density,offset,amplitude,period):
 offset = 0.0
 density = 1.0
 amplitude = 1.0
-period = math.pi/2
+period = math.pi/2.
+timeIncrements = [period/400.]
+womersleyNumbers = [10.0]
+startTime = 0.0
+stopTime = period + 0.0000001
+outputFrequency = 1
 
-# transient parameters: startTime,stopTime,timeIncrement,outputFrequency
-#transient = [3.0/4.0*period,7.0/4.0*period+0.00001,period/40,1]
-#transient = [0.0,period+0.00001,period/10,1]
-transient = [0.0,2.0001,1.0,1]
-
-WomersleyNumbers = [1.0]
-
-for Wo in WomersleyNumbers:
-    # determine Wo using viscosity:density ratio (fixed angular frequency and radius)
-    viscosity = density/(Wo**2.0)
-    # make a new output directory if necessary
-    outputDirectory = "./output/Wo" + str(Wo) + meshName + "/"
-    try:
-        os.makedirs(outputDirectory)
-    except OSError, e:
-        if e.errno != 17:
-            raise   
-    # change to new directory and solve problem (note will return to original directory on exit)
-    with ChangeDirectory(outputDirectory):
-        solveProblem(transient,viscosity,density,offset,amplitude,period)
+for timeIncrement in timeIncrements:
+    
+    transient = [startTime,stopTime,timeIncrement,outputFrequency]
+    for w in womersleyNumbers:
+        # determine w using viscosity:density ratio (fixed angular frequency and radius)
+        viscosity = density/(w**2.0)
+        # make a new output directory if necessary
+        outputDirectory = "./output/Wo" + str(w) + 'Dt' + str(timeIncrement) + meshName + "/"
+        try:
+            os.makedirs(outputDirectory)
+        except OSError, e:
+            if e.errno != 17:
+                raise   
+        # change to new directory and solve problem (note will return to original directory on exit)
+        with ChangeDirectory(outputDirectory):
+            solveProblem(transient,viscosity,density,offset,amplitude,period)
 
 CMISS.Finalise()
 
