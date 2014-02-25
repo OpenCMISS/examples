@@ -2,7 +2,7 @@
 #@ job_name = nesi
 #@ class = default
 #@ group = nesi
-#@ account_no = uoa
+#@ account_no = uoa00230
 #@ notification = never
 #@ wall_clock_limit = 1:00:00
 #@ resources = ConsumableMemory(1024mb) ConsumableVirtualMemory(1024mb)
