@@ -66,8 +66,8 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
 !  INTEGER(CMISSIntg), PARAMETER :: InterpolationType=CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION
   INTEGER(CMISSIntg), PARAMETER :: InterpolationType=CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION
   INTEGER(CMISSIntg), PARAMETER :: PressureInterpolationType=CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION
-!  LOGICAL, PARAMETER :: UsePressureBasis=.TRUE.
-  LOGICAL, PARAMETER :: UsePressureBasis=.FALSE.
+  LOGICAL, PARAMETER :: UsePressureBasis=.TRUE.
+!  LOGICAL, PARAMETER :: UsePressureBasis=.FALSE.
   INTEGER(CMISSIntg), PARAMETER :: NumberOfGaussXi=3
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -98,9 +98,6 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   INTEGER(CMISSIntg),ALLOCATABLE :: RightSurfaceNodes(:)
   INTEGER(CMISSIntg),ALLOCATABLE :: FrontSurfaceNodes(:)
   INTEGER(CMISSIntg) :: BottomNormalXi,LeftNormalXi,RightNormalXi,BackNormalXi
-
-  INTEGER(CMISSIntg), PARAMETER :: NUMBER_OF_COMPONENTS = 3 !nearly incompressible
-!  INTEGER(CMISSIntg), PARAMETER :: NUMBER_OF_COMPONENTS = 4 !fully incompressible
 
   !CMISS variables
   TYPE(CMISSBasisType) :: Basis, PressureBasis
@@ -270,16 +267,18 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSField_VariableLabelSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,"Fibre",Err)
   CALL CMISSField_CreateFinish(FibreField,Err)
 
+  !Create the equations_set
+  CALL CMISSField_Initialise(EquationsSetField,Err)
+  CALL CMISSEquationsSet_CreateStart(EquationSetUserNumber,Region,FibreField,CMISS_EQUATIONS_SET_ELASTICITY_CLASS, &
+    & CMISS_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMISS_EQUATIONS_SET_INCOMPRESSIBLE_MOONEY_RIVLIN_SUBTYPE, &
+!    & CMISS_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMISS_EQUATIONS_SET_MOONEY_RIVLIN_SUBTYPE, &
+    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSet,Err)
+  CALL CMISSEquationsSet_CreateFinish(EquationsSet,Err)
+
   !Create the dependent field
   CALL CMISSField_Initialise(DependentField,Err)
-  CALL CMISSField_CreateStart(FieldDependentUserNumber,Region,DependentField,Err)
-  CALL CMISSField_TypeSet(DependentField,CMISS_FIELD_GENERAL_TYPE,Err)
-  CALL CMISSField_MeshDecompositionSet(DependentField,Decomposition,Err)
-  CALL CMISSField_GeometricFieldSet(DependentField,GeometricField,Err)
-  CALL CMISSField_DependentTypeSet(DependentField,CMISS_FIELD_DEPENDENT_TYPE,Err)
-  CALL CMISSField_NumberOfVariablesSet(DependentField,2,Err)
+  CALL CMISSEquationsSet_DependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)
   CALL CMISSField_VariableLabelSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,"Dependent",Err)
-  CALL CMISSField_NumberOfComponentsSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,NUMBER_OF_COMPONENTS,Err)
   IF(UsePressureBasis) THEN
     !Set the pressure to be nodally based and use the second mesh component if required
     CALL CMISSField_ComponentInterpolationSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,4,CMISS_FIELD_NODE_BASED_INTERPOLATION,Err)
@@ -288,41 +287,17 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
     CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,4,2,Err)
     CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,4,2,Err)
   END IF
-  CALL CMISSField_CreateFinish(DependentField,Err)
+  CALL CMISSEquationsSet_DependentCreateFinish(EquationsSet,Err)
 
   !Create the material field
   CALL CMISSField_Initialise(MaterialField,Err)
-  CALL CMISSField_CreateStart(FieldMaterialUserNumber,Region,MaterialField,Err)
-  CALL CMISSField_TypeSet(MaterialField,CMISS_FIELD_MATERIAL_TYPE,Err)
-  CALL CMISSField_MeshDecompositionSet(MaterialField,Decomposition,Err)
-  CALL CMISSField_GeometricFieldSet(MaterialField,GeometricField,Err)
-  CALL CMISSField_NumberOfVariablesSet(MaterialField,1,Err)
-  CALL CMISSField_VariableLabelSet(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,"Material",Err)
-  CALL CMISSField_NumberOfComponentsSet(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,3,Err)
-  CALL CMISSField_CreateFinish(MaterialField,Err)
-
-  !Create the equations_set
-  CALL CMISSField_Initialise(EquationsSetField,Err)
-  CALL CMISSEquationsSet_CreateStart(EquationSetUserNumber,Region,FibreField,CMISS_EQUATIONS_SET_ELASTICITY_CLASS, &
-    & CMISS_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMISS_EQUATIONS_SET_NEARLY_INCOMPRESSIBLE_MOONEY_RIVLIN_SUBTYPE, &
-!    & CMISS_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMISS_EQUATIONS_SET_INCOMPRESSIBLE_MOONEY_RIVLIN_SUBTYPE, &
-!    & CMISS_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMISS_EQUATIONS_SET_MOONEY_RIVLIN_SUBTYPE, &
-    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSet,Err)
-  CALL CMISSEquationsSet_CreateFinish(EquationsSet,Err)
-
-  !Create the equations set dependent field
-  CALL CMISSEquationsSet_DependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)
-  CALL CMISSEquationsSet_DependentCreateFinish(EquationsSet,Err)
-
-  !Create the equations set material field 
   CALL CMISSEquationsSet_MaterialsCreateStart(EquationsSet,FieldMaterialUserNumber,MaterialField,Err)
+  CALL CMISSField_VariableLabelSet(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,"Material",Err)
   CALL CMISSEquationsSet_MaterialsCreateFinish(EquationsSet,Err)
 
-  !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively. Third value is kappa (bulk modulus ???)
+  !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively.
   CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,2.0_CMISSDP,Err)
   CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,6.0_CMISSDP,Err)
-  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 3,100000.0_CMISSDP,Err)
 
   !Create the equations set equations
   CALL CMISSEquations_Initialise(Equations,Err)
@@ -338,8 +313,8 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
     & 2,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,Err)
   CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
     & 3,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3,Err)
-!  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4,-8.0_CMISSDP, &
-!    & Err)
+  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4,-8.0_CMISSDP, &
+    & Err)
 
   !Define the problem
   CALL CMISSProblem_Initialise(Problem,Err)
@@ -353,7 +328,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSControlLoop_Initialise(ControlLoop,Err)
   CALL CMISSProblem_ControlLoopGet(Problem,CMISS_CONTROL_LOOP_NODE,ControlLoop,Err)
   CALL CMISSControlLoop_TypeSet(ControlLoop,CMISS_PROBLEM_CONTROL_LOAD_INCREMENT_LOOP_TYPE,Err)
-  CALL CMISSControlLoop_MaximumIterationsSet(ControlLoop,50,Err)
+  CALL CMISSControlLoop_MaximumIterationsSet(ControlLoop,10,Err)
   CALL CMISSControlLoop_WriteIntermediateResultsSet(ControlLoop,.TRUE.,Err)
   CALL CMISSProblem_ControlLoopCreateFinish(Problem,Err)
 
@@ -366,9 +341,8 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSSolver_NewtonJacobianCalculationTypeSet(Solver,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
   CALL CMISSSolver_NewtonLinearSolverGet(Solver,LinearSolver,Err)
   CALL CMISSSolver_LinearTypeSet(LinearSolver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
-  CALL CMISSSolver_NewtonRelativeToleranceSet(Solver,1.E-6_CMISSDP,Err)
-  CALL CMISSSolver_NewtonAbsoluteToleranceSet(Solver,1.E-6_CMISSDP,Err)
-  CALL CMISSSolver_NewtonMaximumIterationsSet(Solver,200,Err)
+  CALL CMISSSolver_NewtonRelativeToleranceSet(Solver,1.E-10_CMISSDP,Err)
+  CALL CMISSSolver_NewtonAbsoluteToleranceSet(Solver,1.E-10_CMISSDP,Err)
   CALL CMISSProblem_SolversCreateFinish(Problem,Err)
 
   !Create the problem solver equations

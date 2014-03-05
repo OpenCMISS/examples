@@ -39,15 +39,15 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example FiniteElasticity/LargeUniAxialExtension/src/LargeUniAxialExtensionExample.f90
+!> \example FiniteElasticity/SimpleShear/src/FortranExample.f90
 !! Example program to solve a finite elasticity equation using openCMISS calls.
 !! \par Latest Builds:
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/LargeUniAxialExtension/build-intel'>Linux Intel Build</a>
-!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/LargeUniAxialExtension/build-gnu'>Linux GNU Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/SimpleShear/build-intel'>Linux Intel Build</a>
+!! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/SimpleShear/build-gnu'>Linux GNU Build</a>
 !<
 
 !> Main program
-PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
+PROGRAM SIMPLESHEAREXAMPLE
 
   USE OPENCMISS
   USE MPI
@@ -58,13 +58,15 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
 
   IMPLICIT NONE
 
+  REAL(CMISSDP) :: VALUE
+
   !Test program parameters
 
   REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: WIDTH=1.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: LENGTH=1.0_CMISSDP
-!  INTEGER(CMISSIntg), PARAMETER :: InterpolationType=CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION
-  INTEGER(CMISSIntg), PARAMETER :: InterpolationType=CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION
+  INTEGER(CMISSIntg), PARAMETER :: InterpolationType=CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION
+!  INTEGER(CMISSIntg), PARAMETER :: InterpolationType=CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION
   INTEGER(CMISSIntg), PARAMETER :: PressureInterpolationType=CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION
 !  LOGICAL, PARAMETER :: UsePressureBasis=.TRUE.
   LOGICAL, PARAMETER :: UsePressureBasis=.FALSE.
@@ -93,14 +95,15 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   INTEGER(CMISSIntg) :: EquationsSetIndex
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
   INTEGER(CMISSIntg) :: NodeNumber,NodeDomain,node_idx
-  INTEGER(CMISSIntg),ALLOCATABLE :: BottomSurfaceNodes(:)
   INTEGER(CMISSIntg),ALLOCATABLE :: LeftSurfaceNodes(:)
   INTEGER(CMISSIntg),ALLOCATABLE :: RightSurfaceNodes(:)
   INTEGER(CMISSIntg),ALLOCATABLE :: FrontSurfaceNodes(:)
-  INTEGER(CMISSIntg) :: BottomNormalXi,LeftNormalXi,RightNormalXi,BackNormalXi
+  INTEGER(CMISSIntg),ALLOCATABLE :: BackSurfaceNodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE :: BottomSurfaceNodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE :: TopSurfaceNodes(:)
+  INTEGER(CMISSIntg) :: LeftNormalXi,RightNormalXi,FrontNormalXi,BackNormalXi,BottomNormalXi,TopNormalXi
 
   INTEGER(CMISSIntg), PARAMETER :: NUMBER_OF_COMPONENTS = 3 !nearly incompressible
-!  INTEGER(CMISSIntg), PARAMETER :: NUMBER_OF_COMPONENTS = 4 !fully incompressible
 
   !CMISS variables
   TYPE(CMISSBasisType) :: Basis, PressureBasis
@@ -117,8 +120,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   TYPE(CMISSRegionType) :: Region,WorldRegion
   TYPE(CMISSSolverType) :: Solver,LinearSolver
   TYPE(CMISSSolverEquationsType) :: SolverEquations
-  TYPE(CMISSControlLoopType) :: ControlLoop
-  
+
 #ifdef WIN32
   !Quickwin type
   LOGICAL :: QUICKWIN_STATUS=.FALSE.
@@ -147,13 +149,15 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   !Set all diganostic levels on for testing
   !CALL CMISSDiagnosticsSetOn(CMISS_FROM_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["PROBLEM_RESIDUAL_EVALUATE"],Err)
 
+  CALL CMISSOutputSetOn("SimpleShear",Err)
+  
   !Get the number of computational nodes and this computational node number
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
-  NumberGlobalXElements=5
-  NumberGlobalYElements=5
-  NumberGlobalZElements=5
+  NumberGlobalXElements=2
+  NumberGlobalYElements=2
+  NumberGlobalZElements=2
   NumberOfDomains=NumberOfComputationalNodes
 
   !Create a 3D rectangular cartesian coordinate system
@@ -250,7 +254,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
   CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
 
-  !Create a field to put the geometry (defualt is geometry)
+  !Create a field to put the geometry (default is geometry)
   CALL CMISSField_Initialise(GeometricField,Err)
   CALL CMISSField_CreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
   CALL CMISSField_MeshDecompositionSet(GeometricField,Decomposition,Err)
@@ -270,7 +274,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSField_VariableLabelSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,"Fibre",Err)
   CALL CMISSField_CreateFinish(FibreField,Err)
 
-  !Create the dependent field
+ !Create the dependent field
   CALL CMISSField_Initialise(DependentField,Err)
   CALL CMISSField_CreateStart(FieldDependentUserNumber,Region,DependentField,Err)
   CALL CMISSField_TypeSet(DependentField,CMISS_FIELD_GENERAL_TYPE,Err)
@@ -290,7 +294,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   END IF
   CALL CMISSField_CreateFinish(DependentField,Err)
 
-  !Create the material field
+!Create the material field
   CALL CMISSField_Initialise(MaterialField,Err)
   CALL CMISSField_CreateStart(FieldMaterialUserNumber,Region,MaterialField,Err)
   CALL CMISSField_TypeSet(MaterialField,CMISS_FIELD_MATERIAL_TYPE,Err)
@@ -301,7 +305,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSField_NumberOfComponentsSet(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,3,Err)
   CALL CMISSField_CreateFinish(MaterialField,Err)
 
-  !Create the equations_set
+!Create the equations_set
   CALL CMISSField_Initialise(EquationsSetField,Err)
   CALL CMISSEquationsSet_CreateStart(EquationSetUserNumber,Region,FibreField,CMISS_EQUATIONS_SET_ELASTICITY_CLASS, &
     & CMISS_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMISS_EQUATIONS_SET_NEARLY_INCOMPRESSIBLE_MOONEY_RIVLIN_SUBTYPE, &
@@ -310,7 +314,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
     & EquationsSetFieldUserNumber,EquationsSetField,EquationsSet,Err)
   CALL CMISSEquationsSet_CreateFinish(EquationsSet,Err)
 
-  !Create the equations set dependent field
+ !Create the equations set dependent field
   CALL CMISSEquationsSet_DependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)
   CALL CMISSEquationsSet_DependentCreateFinish(EquationsSet,Err)
 
@@ -318,28 +322,26 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSEquationsSet_MaterialsCreateStart(EquationsSet,FieldMaterialUserNumber,MaterialField,Err)
   CALL CMISSEquationsSet_MaterialsCreateFinish(EquationsSet,Err)
 
-  !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively. Third value is kappa (bulk modulus ???)
-  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,2.0_CMISSDP,Err)
-  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,6.0_CMISSDP,Err)
+  !Set Mooney-Rivlin constants c10 and c01 to 0.5 and 0.0 respectively. Third value is kappa (bulk modulus ???)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,0.5_CMISSDP,Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,0.0_CMISSDP,Err)
   CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 3,100000.0_CMISSDP,Err)
+    & 3,10000.0_CMISSDP,Err)
 
-  !Create the equations set equations
+!Create the equations set equations
   CALL CMISSEquations_Initialise(Equations,Err)
   CALL CMISSEquationsSet_EquationsCreateStart(EquationsSet,Equations,Err)
   CALL CMISSEquations_SparsityTypeSet(Equations,CMISS_EQUATIONS_SPARSE_MATRICES,Err)
   CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_NO_OUTPUT,Err)
   CALL CMISSEquationsSet_EquationsCreateFinish(EquationsSet,Err)
 
-  !Initialise dependent field from undeformed geometry and displacement bcs and set hydrostatic pressure
+ !Initialise dependent field from undeformed geometry and displacement bcs 
   CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
     & 1,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,Err)
   CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
     & 2,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,Err)
   CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
     & 3,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3,Err)
-!  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4,-8.0_CMISSDP, &
-!    & Err)
 
   !Define the problem
   CALL CMISSProblem_Initialise(Problem,Err)
@@ -350,11 +352,6 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
 
   !Create the problem control loop
   CALL CMISSProblem_ControlLoopCreateStart(Problem,Err)
-  CALL CMISSControlLoop_Initialise(ControlLoop,Err)
-  CALL CMISSProblem_ControlLoopGet(Problem,CMISS_CONTROL_LOOP_NODE,ControlLoop,Err)
-  CALL CMISSControlLoop_TypeSet(ControlLoop,CMISS_PROBLEM_CONTROL_LOAD_INCREMENT_LOOP_TYPE,Err)
-  CALL CMISSControlLoop_MaximumIterationsSet(ControlLoop,50,Err)
-  CALL CMISSControlLoop_WriteIntermediateResultsSet(ControlLoop,.TRUE.,Err)
   CALL CMISSProblem_ControlLoopCreateFinish(Problem,Err)
 
   !Create the problem solvers
@@ -362,13 +359,10 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSSolver_Initialise(LinearSolver,Err)
   CALL CMISSProblem_SolversCreateStart(Problem,Err)
   CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,Solver,Err)
-  CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
+  CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_MATRIX_OUTPUT,Err)
   CALL CMISSSolver_NewtonJacobianCalculationTypeSet(Solver,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
   CALL CMISSSolver_NewtonLinearSolverGet(Solver,LinearSolver,Err)
   CALL CMISSSolver_LinearTypeSet(LinearSolver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
-  CALL CMISSSolver_NewtonRelativeToleranceSet(Solver,1.E-6_CMISSDP,Err)
-  CALL CMISSSolver_NewtonAbsoluteToleranceSet(Solver,1.E-6_CMISSDP,Err)
-  CALL CMISSSolver_NewtonMaximumIterationsSet(Solver,200,Err)
   CALL CMISSProblem_SolversCreateFinish(Problem,Err)
 
   !Create the problem solver equations
@@ -384,85 +378,59 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSBoundaryConditions_Initialise(BoundaryConditions,Err)
   CALL CMISSSolverEquations_BoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
 
+  CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_TOP_SURFACE,TopSurfaceNodes,TopNormalXi,Err)
   CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_BOTTOM_SURFACE,BottomSurfaceNodes,BottomNormalXi, &
     & Err)
   CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_LEFT_SURFACE,LeftSurfaceNodes,LeftNormalXi,Err)
   CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_RIGHT_SURFACE,RightSurfaceNodes,RightNormalXi,Err)
-  CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_FRONT_SURFACE,FrontSurfaceNodes,BackNormalXi,Err)
+  CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_FRONT_SURFACE,FrontSurfaceNodes,FrontNormalXi,Err)
+  CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_BACK_SURFACE,BackSurfaceNodes,BackNormalXi,Err)
 
-  !Set x=0 nodes to no x displacment in x. Set x=WIDTH nodes to 10% x displacement
-  DO node_idx=1,SIZE(LeftSurfaceNodes,1)
-    NodeNumber=LeftSurfaceNodes(node_idx)
+  ! set z=WIDTH nodes to 10% x-displacement, no displacement in y- and z-direction
+  DO node_idx=1,SIZE(TopSurfaceNodes,1)
+    NodeNumber=TopSurfaceNodes(node_idx)
     CALL CMISSDecomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
+      ! x-direction
+      CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,1,&
+        & VALUE,Err)
       CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-        & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-    ENDIF
-  ENDDO
-
-  DO node_idx=1,SIZE(RightSurfaceNodes,1)
-    NodeNumber=RightSurfaceNodes(node_idx)
-    CALL CMISSDecomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-        & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED,1.5_CMISSDP*WIDTH,Err)
-!        & CMISS_BOUNDARY_CONDITION_FIXED,1.2_CMISSDP*WIDTH,Err)
-    ENDIF
-  ENDDO
-
-  !Set y=0 nodes to no y displacement
-  DO node_idx=1,SIZE(FrontSurfaceNodes,1)
-    NodeNumber=FrontSurfaceNodes(node_idx)
-    CALL CMISSDecomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
-    IF(NodeDomain==ComputationalNodeNumber) THEN
+        & CMISS_BOUNDARY_CONDITION_FIXED,VALUE+0.1_CMISSDP*WIDTH,Err)
+      ! y-direction
+      CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,2,&
+        & VALUE,Err)
       CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,2, &
-        & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+        & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+      ! z-direction
+      CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,3,&
+        & VALUE,Err)
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,3, &
+        & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
     ENDIF
   ENDDO
 
-  !Set z=0 nodes to no z displacement
+  ! set z=0 nodes to no displacement in x-, y- and z-direction
   DO node_idx=1,SIZE(BottomSurfaceNodes,1)
     NodeNumber=BottomSurfaceNodes(node_idx)
     CALL CMISSDecomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
+      ! x-direction
+      CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,1,&
+        & VALUE,Err)
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
+        & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+      ! y-direction
+      CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,2,&
+        & VALUE,Err)
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,2, &
+        & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+      ! z-direction
+      CALL CMISSField_ParameterSetGetNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,3,&
+        & VALUE,Err)
       CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,3, &
-        & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+        & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
     ENDIF
   ENDDO
-
-  IF(InterpolationType==CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION) THEN
-    !Fix x derivatives at x=0 and x=1 in xi2 and xi3
-    DO node_idx=1,SIZE(LeftSurfaceNodes,1)
-      NodeNumber=LeftSurfaceNodes(node_idx)
-      CALL CMISSDecomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1, &
-          & CMISS_GLOBAL_DERIV_S2, &
-          & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1, &
-          & CMISS_GLOBAL_DERIV_S3, &
-          & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1, &
-          & CMISS_GLOBAL_DERIV_S2_S3, &
-          & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-      ENDIF
-    ENDDO
-    DO node_idx=1,SIZE(RightSurfaceNodes,1)
-      NodeNumber=RightSurfaceNodes(node_idx)
-      CALL CMISSDecomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1, &
-          & CMISS_GLOBAL_DERIV_S2, &
-          & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1, &
-          & CMISS_GLOBAL_DERIV_S3, &
-          & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1, &
-          & CMISS_GLOBAL_DERIV_S2_S3, &
-          & NodeNumber,1,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-      ENDIF
-    ENDDO
-  ENDIF
 
   CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
 
@@ -472,8 +440,8 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   !Output solution
   CALL CMISSFields_Initialise(Fields,Err)
   CALL CMISSFields_Create(Region,Fields,Err)
-  CALL CMISSFields_NodesExport(Fields,"LargeUniaxialExtension","FORTRAN",Err)
-  CALL CMISSFields_ElementsExport(Fields,"LargeUniaxialExtension","FORTRAN",Err)
+  CALL CMISSFields_NodesExport(Fields,"SimpleShear","FORTRAN",Err)
+  CALL CMISSFields_ElementsExport(Fields,"SimpleShear","FORTRAN",Err)
   CALL CMISSFields_Finalise(Fields,Err)
 
   CALL CMISSFinalise(Err)
@@ -482,5 +450,5 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
 
   STOP
 
-END PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
+END PROGRAM SIMPLESHEAREXAMPLE
 
