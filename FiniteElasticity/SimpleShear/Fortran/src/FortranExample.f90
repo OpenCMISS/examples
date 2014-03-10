@@ -274,10 +274,10 @@ PROGRAM SIMPLESHEAREXAMPLE
   CALL CMISSField_VariableLabelSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,"Fibre",Err)
   CALL CMISSField_CreateFinish(FibreField,Err)
 
- !Create the dependent field
+  !Create the dependent field
   CALL CMISSField_Initialise(DependentField,Err)
   CALL CMISSField_CreateStart(FieldDependentUserNumber,Region,DependentField,Err)
-  CALL CMISSField_TypeSet(DependentField,CMISS_FIELD_GENERAL_TYPE,Err)
+  CALL CMISSField_TypeSet(DependentField,CMISS_FIELD_GEOMETRIC_GENERAL_TYPE,Err)
   CALL CMISSField_MeshDecompositionSet(DependentField,Decomposition,Err)
   CALL CMISSField_GeometricFieldSet(DependentField,GeometricField,Err)
   CALL CMISSField_DependentTypeSet(DependentField,CMISS_FIELD_DEPENDENT_TYPE,Err)
@@ -294,7 +294,7 @@ PROGRAM SIMPLESHEAREXAMPLE
   END IF
   CALL CMISSField_CreateFinish(DependentField,Err)
 
-!Create the material field
+  !Create the material field
   CALL CMISSField_Initialise(MaterialField,Err)
   CALL CMISSField_CreateStart(FieldMaterialUserNumber,Region,MaterialField,Err)
   CALL CMISSField_TypeSet(MaterialField,CMISS_FIELD_MATERIAL_TYPE,Err)
@@ -305,7 +305,7 @@ PROGRAM SIMPLESHEAREXAMPLE
   CALL CMISSField_NumberOfComponentsSet(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,3,Err)
   CALL CMISSField_CreateFinish(MaterialField,Err)
 
-!Create the equations_set
+  !Create the equations_set
   CALL CMISSField_Initialise(EquationsSetField,Err)
   CALL CMISSEquationsSet_CreateStart(EquationSetUserNumber,Region,FibreField,CMISS_EQUATIONS_SET_ELASTICITY_CLASS, &
     & CMISS_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMISS_EQUATIONS_SET_NEARLY_INCOMPRESSIBLE_MOONEY_RIVLIN_SUBTYPE, &
@@ -314,7 +314,7 @@ PROGRAM SIMPLESHEAREXAMPLE
     & EquationsSetFieldUserNumber,EquationsSetField,EquationsSet,Err)
   CALL CMISSEquationsSet_CreateFinish(EquationsSet,Err)
 
- !Create the equations set dependent field
+  !Create the equations set dependent field
   CALL CMISSEquationsSet_DependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)
   CALL CMISSEquationsSet_DependentCreateFinish(EquationsSet,Err)
 
@@ -328,14 +328,14 @@ PROGRAM SIMPLESHEAREXAMPLE
   CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
     & 3,10000.0_CMISSDP,Err)
 
-!Create the equations set equations
+  !Create the equations set equations
   CALL CMISSEquations_Initialise(Equations,Err)
   CALL CMISSEquationsSet_EquationsCreateStart(EquationsSet,Equations,Err)
   CALL CMISSEquations_SparsityTypeSet(Equations,CMISS_EQUATIONS_SPARSE_MATRICES,Err)
   CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_NO_OUTPUT,Err)
   CALL CMISSEquationsSet_EquationsCreateFinish(EquationsSet,Err)
 
- !Initialise dependent field from undeformed geometry and displacement bcs 
+  !Initialise dependent field from undeformed geometry and displacement bcs 
   CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
     & 1,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,Err)
   CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
