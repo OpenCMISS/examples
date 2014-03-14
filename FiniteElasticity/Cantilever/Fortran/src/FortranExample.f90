@@ -60,20 +60,17 @@ PROGRAM CANTILEVEREXAMPLE
 
   !Test program parameters
 
-  REAL(CMFEDP) :: Width
-  REAL(CMFEDP) :: Length
-  REAL(CMFEDP) :: Height
-  REAL(CMFEDP) :: YoungsModulus,PoissonsRatio,ShearModulus,MooneyRivlin1,MooneyRivlin2
+  REAL(CMFEDP), PARAMETER :: Width=60.0_CMFEDP
+  REAL(CMFEDP), PARAMETER :: Length=40.0_CMFEDP
+  REAL(CMFEDP), PARAMETER :: Height=40.0_CMFEDP
   INTEGER(CMFEIntg) :: DisplacementInterpolationType
   INTEGER(CMFEIntg) :: PressureInterpolationType
   INTEGER(CMFEIntg) :: PressureMeshComponent
-  INTEGER(CMFEIntg) :: NumberOfGaussXi,TopNormalXi
-  INTEGER(CMFEIntg) :: ScalingType,ForceNode
-  REAL(CMFEDP) :: Density
-  REAL(CMFEDP), PARAMETER :: Gravity(3)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP]
-  REAL(CMFEDP) :: ExternalForce,Load,EI,v,F_d,C_d,u_y
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfLoadIncrements=5
-  INTEGER(CMFEIntg), ALLOCATABLE :: TopNodes(:)
+  INTEGER(CMFEIntg) :: NumberOfGaussXi
+  INTEGER(CMFEIntg) :: ScalingType
+  REAL(CMFEDP), PARAMETER :: Density=9.0E-4_CMFEDP !in g mm^-3
+  REAL(CMFEDP), PARAMETER :: Gravity(3)=[0.0_CMFEDP,0.0_CMFEDP,-9.8_CMFEDP] !in m s^-2
+  INTEGER(CMFEIntg), PARAMETER :: NumberOfLoadIncrements=2
 
   INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=1
@@ -101,7 +98,6 @@ PROGRAM CANTILEVEREXAMPLE
   INTEGER(CMFEIntg) :: LeftNormalXi
   INTEGER(CMFEIntg) :: NumberOfArguments,ArgumentLength,ArgStatus
   CHARACTER(LEN=255) :: CommandArgument
-  LOGICAL :: SetupFlag=.FALSE.
 
   !CMISS variables
   TYPE(cmfe_BasisType) :: DisplacementBasis,PressureBasis
@@ -148,120 +144,8 @@ PROGRAM CANTILEVEREXAMPLE
   DisplacementInterpolationType=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
   NumberGlobalXElements=3
   NumberGlobalYElements=2
-  NumberGlobalZElements=1
+  NumberGlobalZElements=2
   ScalingType=CMFE_FIELD_ARITHMETIC_MEAN_SCALING
-  
-  !=================================================================================================================================
-  
-  
-  !Set solver parameters
-!    RelativeTolerance=1.0E-4_CMFEDP !default: 1.0E-05_CMFEDP
-!    AbsoluteTolerance=1.0E-4_CMFEDP !default: 1.0E-10_CMFEDP
-!    DivergenceTolerance=1.0E5 !default: 1.0E5
-!    MaximumIterations=100000000 !default: 100000
-!    MaxFunctionEvaluations=100000
-!    RestartValue=30 !default: 30
-!    LinesearchAlpha=1.0_CMFEDP
-    
-    
-  !=================================================================================================================================
-  
-  SetupFlag=.TRUE.
-  IF(SetupFlag) THEN
-    DisplacementInterpolationType=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
-    NumberGlobalXElements=2
-    NumberGlobalYElements=1
-    NumberGlobalZElements=1
-    ScalingType=CMFE_FIELD_ARITHMETIC_MEAN_SCALING
-    !===========================================================================================================================================
-    Width=2000.0_CMFEDP ! m
-    Length=200.0_CMFEDP ! m
-    Height=200.0_CMFEDP ! m
-    !Solid
-    Density=300.0E-6_CMFEDP ! kg / m^3
-    !Young's modulus E
-    YoungsModulus=2.0E1_CMFEDP ! N / m^2
-    !Poisson's ratio
-    PoissonsRatio=0.3 ! [.]
-    !Homogenous, isotropic material G=E/(2*(1+poissonsRatio))
-    ShearModulus=YoungsModulus/(2.0_CMFEDP*(1.0_CMFEDP+PoissonsRatio)) ! N / m^2
-    !Neo-Hookean material: c1=G/2 c2=0
-    MooneyRivlin1=0.5_CMFEDP*ShearModulus ! N / m^2
-    MooneyRivlin2=0.0_CMFEDP !
-    
-    EI=(YoungsModulus*(Height)**3.0_CMFEDP)/(12.0_CMFEDP*(1-PoissonsRatio)) ! Nm
-    C_d=1.05_CMFEDP
-    C_d=9.46_CMFEDP
-    C_d=3.26_CMFEDP
-    v=0.1_CMFEDP ! m / s
-    F_d=0.5_CMFEDP*C_d*(Width*Length/1000/1000)*100.0_CMFEDP*v*v ! N
-    u_y=-(F_d*(Width)**4)/(8.0_CMFEDP*EI*(Width*Length)) ! m
-    PRINT *,"Constant load, u_y = ",u_y," m"
-    
-    !+========
-    !point force
-    EI=YoungsModulus/12.0_CMFEDP*(Height)*(Length)**3.0_CMFEDP
-    u_y=-(F_d*(Width)**3.0_CMFEDP)/(3.0_CMFEDP*EI)
-    
-    ExternalForce=-F_d/(DisplacementInterpolationType+1)*1000!N
-    Load=ExternalForce/(Width*Length)
-    !===========================================================================================================================================
-    Width=2.0_CMFEDP ! m
-    Length=0.2_CMFEDP ! m
-    Height=0.2_CMFEDP ! m
-    !Solid
-    Density=300.0_CMFEDP ! kg / m^3
-    !Young's modulus E
-    YoungsModulus=2.0E4_CMFEDP ! N / m^2
-    !Poisson's ratio
-    PoissonsRatio=0.3 ! [.]
-    !Homogenous, isotropic material G=E/(2*(1+poissonsRatio))
-    ShearModulus=YoungsModulus/(2.0_CMFEDP*(1.0_CMFEDP+PoissonsRatio)) ! N / m^2
-    !Neo-Hookean material: c1=G/2 c2=0
-    MooneyRivlin1=0.5_CMFEDP*ShearModulus ! N / m^2
-    MooneyRivlin2=0.0_CMFEDP !
-    
-    EI=(YoungsModulus*(Height)**3.0_CMFEDP)/(12.0_CMFEDP*(1-PoissonsRatio**2)) ! Nm
-  !  C_d=1.05_CMFEDP
-  !  C_d=9.46_CMFEDP
-    C_d=3.26_CMFEDP
-    v=0.1_CMFEDP ! m / s
-    F_d=0.5_CMFEDP*C_d*(Width*Length)*100.0_CMFEDP*v*v ! N
-    u_y=-(F_d*(Width)**4)/(8.0_CMFEDP*EI*(Width*Length)) ! m
-    PRINT *,"Constant load, u_y = ",u_y," m"
-    
-    !+========
-    !point force
-    EI=YoungsModulus/12.0_CMFEDP*(Height)*(Length)**3.0_CMFEDP
-    u_y=-(F_d*(Width)**3.0_CMFEDP)/(3.0_CMFEDP*EI)
-    
-    ExternalForce=-F_d/(DisplacementInterpolationType+1)!N
-    Load=ExternalForce/(Width*Length)
-  ENDIF
-  
-  
-    
-
-  
-    PRINT *, "Width = ",Width," m"
-    PRINT *, "Length = ",Length," m"
-    PRINT *, "Height = ",Height," m"
-    PRINT *, "Rho: ",Density," kg m^-3"
-    PRINT *, "E = ",YoungsModulus," N/m^2"
-    PRINT *, "nu = ",PoissonsRatio
-    PRINT *, "c10 = ",MooneyRivlin1," N/m^2"
-    PRINT *, "c01 = ",MooneyRivlin2
-    PRINT *, "EI = ",EI," N"
-    PRINT *, "C_d  =",C_d
-    PRINT *, "v = ",v," m/s"
-    PRINT *, "F_d = ",F_d," N"
-    PRINT *, "ExternalForce = ",ExternalForce,' N (point force)'
-    PRINT *, "Point force, u_y = ",u_y," m"
-  
-  
-  
-  
-  !=================================================================================================================================
 
   NumberOfArguments = COMMAND_ARGUMENT_COUNT()
   IF(NumberOfArguments >= 1) THEN
@@ -463,10 +347,8 @@ PROGRAM CANTILEVEREXAMPLE
   CALL cmfe_EquationsSet_MaterialsCreateFinish(EquationsSet,Err)
 
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1, &
-    & MooneyRivlin1,Err)
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2, &
-    & MooneyRivlin2,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0_CMFEDP,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,6.0_CMFEDP,Err)
   CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,Density,Err)
 
   !Create the source field with the gravity vector
@@ -494,7 +376,7 @@ PROGRAM CANTILEVEREXAMPLE
   CALL cmfe_Field_ParametersToFieldParametersComponentCopy(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
     & 3,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,Err)
   CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4, &
-    & -MooneyRivlin1, &
+    & -14.0_CMFEDP, &
     & Err)
   CALL cmfe_Field_ParameterSetUpdateStart(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
   CALL cmfe_Field_ParameterSetUpdateFinish(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
@@ -519,13 +401,6 @@ PROGRAM CANTILEVEREXAMPLE
   CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,1,Solver,Err)
   CALL cmfe_Solver_OutputTypeSet(Solver,CMFE_SOLVER_PROGRESS_OUTPUT,Err)
   CALL cmfe_Solver_NewtonJacobianCalculationTypeSet(Solver,CMFE_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
-!  CALL cmfe_Solver_NewtonLineSearchTypeSet(Solver,CMFE_SOLVER_NEWTON_LINESEARCH_LINEAR,Err)
-  CALL cmfe_Solver_NewtonMaximumFunctionEvaluationsSet(Solver,100000,Err)
-!  CALL cmfe_Solver_OutputTypeSet(Solver,NonlinearSolver_OutputType,Err)
-  CALL cmfe_Solver_NewtonAbsoluteToleranceSet(Solver,1.0E-4_CMFEDP,Err)
-  CALL cmfe_Solver_NewtonRelativeToleranceSet(Solver,1.0E-5_CMFEDP,Err)
-  CALL cmfe_Solver_NewtonMaximumIterationsSet(Solver,100000,Err)
-!  CALL cmfe_Solver_NewtonLineSearchAlphaSet(Solver,LinesearchAlpha,Err)
   CALL cmfe_Solver_NewtonLinearSolverGet(Solver,LinearSolver,Err)
   CALL cmfe_Solver_LinearTypeSet(LinearSolver,CMFE_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
   CALL cmfe_Problem_SolversCreateFinish(Problem,Err)
@@ -564,94 +439,11 @@ PROGRAM CANTILEVEREXAMPLE
       ENDDO
     ENDIF
   ENDDO
-  CALL cmfe_GeneratedMesh_SurfaceGet(GeneratedMesh,CMFE_GENERATED_MESH_REGULAR_TOP_SURFACE,TopNodes,TopNormalXi,Err)
-  !DO node_idx=1,SIZE(TopNodes,1)
-  IF(.TRUE.) THEN
-    IF(SetupFlag) THEN
-      ForceNode=9
-      IF(DisplacementInterpolationType==CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION) ForceNode=35
-      CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,1,1, &
-        & ForceNode,3,CMFE_BOUNDARY_CONDITION_FIXED,ExternalForce,Err)
-      ForceNode=12
-      IF(DisplacementInterpolationType==CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION) ForceNode=40
-      CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,1,1, &
-        & ForceNode,3,CMFE_BOUNDARY_CONDITION_FIXED,ExternalForce,Err)
-      IF(DisplacementInterpolationType==CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION) THEN
-        ForceNode=45
-        CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,1,1, &
-        & ForceNode,3,CMFE_BOUNDARY_CONDITION_FIXED,ExternalForce,Err)
-      ENDIF
-    ELSE
-      ForceNode=TopNodes(1)+NumberGlobalXElements+(NumberGlobalXElements+1)*NumberGlobalYElements/2
-      CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,1,1, &
-        & ForceNode,3,CMFE_BOUNDARY_CONDITION_FIXED,ExternalForce,Err)
-    ENDIF
-  ELSE
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 8,1,CMFE_BOUNDARY_CONDITION_FIXED,0.00593_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 11,1,CMFE_BOUNDARY_CONDITION_FIXED,0.00593_CMFEDP,Err)
-  !  CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-  !    & 2,1,CMFE_BOUNDARY_CONDITION_FIXED,-0.028_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 5,1,CMFE_BOUNDARY_CONDITION_FIXED,-0.028_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 9,1,CMFE_BOUNDARY_CONDITION_FIXED,-0.00065_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 12,1,CMFE_BOUNDARY_CONDITION_FIXED,-0.00065_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 3,1,CMFE_BOUNDARY_CONDITION_FIXED,-0.036_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 6,1,CMFE_BOUNDARY_CONDITION_FIXED,-0.036_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 8,2,CMFE_BOUNDARY_CONDITION_FIXED,0.016_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 11,2,CMFE_BOUNDARY_CONDITION_FIXED,-0.016_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 2,2,CMFE_BOUNDARY_CONDITION_FIXED,-0.00016_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 5,2,CMFE_BOUNDARY_CONDITION_FIXED,0.00016_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 9,2,CMFE_BOUNDARY_CONDITION_FIXED,0.000043_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 12,2,CMFE_BOUNDARY_CONDITION_FIXED,-0.000043_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 3,2,CMFE_BOUNDARY_CONDITION_FIXED,-0.000031_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 6,2,CMFE_BOUNDARY_CONDITION_FIXED,0.000031_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 8,3,CMFE_BOUNDARY_CONDITION_FIXED,-0.164_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 11,3,CMFE_BOUNDARY_CONDITION_FIXED,-0.164_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 2,3,CMFE_BOUNDARY_CONDITION_FIXED,-0.161_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 5,3,CMFE_BOUNDARY_CONDITION_FIXED,-0.161_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 9,3,CMFE_BOUNDARY_CONDITION_FIXED,-0.2496_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 12,3,CMFE_BOUNDARY_CONDITION_FIXED,-0.2496_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 3,3,CMFE_BOUNDARY_CONDITION_FIXED,-0.2465_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 6,3,CMFE_BOUNDARY_CONDITION_FIXED,-0.2465_CMFEDP,Err)
-    CALL cmfe_BoundaryConditions_SetElement(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,4, &
-      & CMFE_BOUNDARY_CONDITION_FIXED,-3846.15_CMFEDP,err)
-    CALL cmfe_BoundaryConditions_SetElement(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,2,4, &
-      & CMFE_BOUNDARY_CONDITION_FIXED,-3846.15_CMFEDP,err)
-    ForceNode=12
-  ENDIF
-  !    & TopNodes(node_idx),3,CMFE_BOUNDARY_CONDITION_FIXED,ExternalForce,Err)
-  !ENDDO
+
   CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve problem
-!  PRINT *,"Top surface nodes: ",TopNodes
-!  PRINT *,"Point force applied to node number ",ForceNode
   CALL cmfe_Problem_Solve(Problem,Err)
-  CALL cmfe_Field_ParameterSetGetNode(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,ForceNode, &
-    & 3,u_y,err)
-  PRINT *,"Calculated u_y = ",u_y-Height,' m'
 
   !Output solution
   CALL cmfe_Fields_Initialise(Fields,Err)
