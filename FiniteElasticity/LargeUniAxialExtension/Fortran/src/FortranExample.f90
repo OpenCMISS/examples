@@ -63,12 +63,10 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   REAL(CMFEDP), PARAMETER :: HEIGHT=1.0_CMFEDP
   REAL(CMFEDP), PARAMETER :: WIDTH=1.0_CMFEDP
   REAL(CMFEDP), PARAMETER :: LENGTH=1.0_CMFEDP
-!  INTEGER(CMFEIntg), PARAMETER :: InterpolationType=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
-  INTEGER(CMFEIntg), PARAMETER :: InterpolationType=CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION
+  INTEGER(CMFEIntg), PARAMETER :: InterpolationType=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
   INTEGER(CMFEIntg), PARAMETER :: PressureInterpolationType=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
-!  LOGICAL, PARAMETER :: UsePressureBasis=.TRUE.
   LOGICAL, PARAMETER :: UsePressureBasis=.FALSE.
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfGaussXi=3
+  INTEGER(CMFEIntg), PARAMETER :: NumberOfGaussXi=2
 
   INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=1
@@ -99,9 +97,6 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   INTEGER(CMFEIntg),ALLOCATABLE :: FrontSurfaceNodes(:)
   INTEGER(CMFEIntg) :: BottomNormalXi,LeftNormalXi,RightNormalXi,BackNormalXi
 
-  INTEGER(CMFEIntg), PARAMETER :: NUMBER_OF_COMPONENTS = 3 !nearly incompressible
-!  INTEGER(CMFEIntg), PARAMETER :: NUMBER_OF_COMPONENTS = 4 !fully incompressible
-
   !CMISS variables
   TYPE(cmfe_BasisType) :: Basis, PressureBasis
   TYPE(cmfe_BoundaryConditionsType) :: BoundaryConditions
@@ -117,8 +112,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   TYPE(cmfe_RegionType) :: Region,WorldRegion
   TYPE(cmfe_SolverType) :: Solver,LinearSolver
   TYPE(cmfe_SolverEquationsType) :: SolverEquations
-  TYPE(cmfe_ControlLoopType) :: ControlLoop
-  
+
 #ifdef WIN32
   !Quickwin type
   LOGICAL :: QUICKWIN_STATUS=.FALSE.
@@ -270,16 +264,17 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL cmfe_Field_VariableLabelSet(FibreField,CMFE_FIELD_U_VARIABLE_TYPE,"Fibre",Err)
   CALL cmfe_Field_CreateFinish(FibreField,Err)
 
+  !Create the equations_set
+  CALL cmfe_Field_Initialise(EquationsSetField,Err)
+  CALL cmfe_EquationsSet_CreateStart(EquationSetUserNumber,Region,FibreField,[CMFE_EQUATIONS_SET_ELASTICITY_CLASS, &
+    & CMFE_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMFE_EQUATIONS_SET_MOONEY_RIVLIN_SUBTYPE],EquationsSetFieldUserNumber, &
+    & EquationsSetField,EquationsSet,Err)
+  CALL cmfe_EquationsSet_CreateFinish(EquationsSet,Err)
+
   !Create the dependent field
   CALL cmfe_Field_Initialise(DependentField,Err)
-  CALL cmfe_Field_CreateStart(FieldDependentUserNumber,Region,DependentField,Err)
-  CALL cmfe_Field_TypeSet(DependentField,CMFE_FIELD_GENERAL_TYPE,Err)
-  CALL cmfe_Field_MeshDecompositionSet(DependentField,Decomposition,Err)
-  CALL cmfe_Field_GeometricFieldSet(DependentField,GeometricField,Err)
-  CALL cmfe_Field_DependentTypeSet(DependentField,CMFE_FIELD_DEPENDENT_TYPE,Err)
-  CALL cmfe_Field_NumberOfVariablesSet(DependentField,2,Err)
+  CALL cmfe_EquationsSet_DependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)
   CALL cmfe_Field_VariableLabelSet(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,"Dependent",Err)
-  CALL cmfe_Field_NumberOfComponentsSet(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,NUMBER_OF_COMPONENTS,Err)
   IF(UsePressureBasis) THEN
     !Set the pressure to be nodally based and use the second mesh component if required
     CALL cmfe_Field_ComponentInterpolationSet(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,4,CMFE_FIELD_NODE_BASED_INTERPOLATION,Err)
@@ -288,41 +283,17 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
     CALL cmfe_Field_ComponentMeshComponentSet(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,4,2,Err)
     CALL cmfe_Field_ComponentMeshComponentSet(DependentField,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,4,2,Err)
   END IF
-  CALL cmfe_Field_CreateFinish(DependentField,Err)
+  CALL cmfe_EquationsSet_DependentCreateFinish(EquationsSet,Err)
 
   !Create the material field
   CALL cmfe_Field_Initialise(MaterialField,Err)
-  CALL cmfe_Field_CreateStart(FieldMaterialUserNumber,Region,MaterialField,Err)
-  CALL cmfe_Field_TypeSet(MaterialField,CMFE_FIELD_MATERIAL_TYPE,Err)
-  CALL cmfe_Field_MeshDecompositionSet(MaterialField,Decomposition,Err)
-  CALL cmfe_Field_GeometricFieldSet(MaterialField,GeometricField,Err)
-  CALL cmfe_Field_NumberOfVariablesSet(MaterialField,1,Err)
-  CALL cmfe_Field_VariableLabelSet(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,"Material",Err)
-  CALL cmfe_Field_NumberOfComponentsSet(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,3,Err)
-  CALL cmfe_Field_CreateFinish(MaterialField,Err)
-
-  !Create the equations_set
-  CALL cmfe_Field_Initialise(EquationsSetField,Err)
-  CALL cmfe_EquationsSet_CreateStart(EquationSetUserNumber,Region,FibreField,[CMFE_EQUATIONS_SET_ELASTICITY_CLASS, &
-    & CMFE_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMFE_EQUATIONS_SET_NEARLY_INCOMPRESSIBLE_MOONEY_RIVLIN_SUBTYPE], &
-!    & CMFE_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMFE_EQUATIONS_SET_INCOMPRESSIBLE_MOONEY_RIVLIN_SUBTYPE, &
-!    & CMFE_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMFE_EQUATIONS_SET_MOONEY_RIVLIN_SUBTYPE,EquationsSetFieldUserNumber, &
-    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSet,Err)
-  CALL cmfe_EquationsSet_CreateFinish(EquationsSet,Err)
-
-  !Create the equations set dependent field
-  CALL cmfe_EquationsSet_DependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)
-  CALL cmfe_EquationsSet_DependentCreateFinish(EquationsSet,Err)
-
-  !Create the equations set material field 
   CALL cmfe_EquationsSet_MaterialsCreateStart(EquationsSet,FieldMaterialUserNumber,MaterialField,Err)
+  CALL cmfe_Field_VariableLabelSet(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,"Material",Err)
   CALL cmfe_EquationsSet_MaterialsCreateFinish(EquationsSet,Err)
 
-  !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively. Third value is kappa (bulk modulus ???)
+  !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively.
   CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0_CMFEDP,Err)
   CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,6.0_CMFEDP,Err)
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 3,100000.0_CMFEDP,Err)
 
   !Create the equations set equations
   CALL cmfe_Equations_Initialise(Equations,Err)
@@ -338,8 +309,8 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
     & 2,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,Err)
   CALL cmfe_Field_ParametersToFieldParametersComponentCopy(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
     & 3,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,Err)
-!  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4,-8.0_CMFEDP, &
-!    & Err)
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4,-8.0_CMFEDP, &
+    & Err)
 
   !Define the problem
   CALL cmfe_Problem_Initialise(Problem,Err)
@@ -349,11 +320,6 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
 
   !Create the problem control loop
   CALL cmfe_Problem_ControlLoopCreateStart(Problem,Err)
-  CALL cmfe_ControlLoop_Initialise(ControlLoop,Err)
-  CALL cmfe_Problem_ControlLoopGet(Problem,CMFE_CONTROL_LOOP_NODE,ControlLoop,Err)
-  CALL cmfe_ControlLoop_TypeSet(ControlLoop,CMFE_PROBLEM_CONTROL_LOAD_INCREMENT_LOOP_TYPE,Err)
-  CALL cmfe_ControlLoop_MaximumIterationsSet(ControlLoop,50,Err)
-  CALL cmfe_ControlLoop_WriteIntermediateResultsSet(ControlLoop,.TRUE.,Err)
   CALL cmfe_Problem_ControlLoopCreateFinish(Problem,Err)
 
   !Create the problem solvers
@@ -365,9 +331,6 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL cmfe_Solver_NewtonJacobianCalculationTypeSet(Solver,CMFE_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
   CALL cmfe_Solver_NewtonLinearSolverGet(Solver,LinearSolver,Err)
   CALL cmfe_Solver_LinearTypeSet(LinearSolver,CMFE_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
-  CALL cmfe_Solver_NewtonRelativeToleranceSet(Solver,1.E-6_CMFEDP,Err)
-  CALL cmfe_Solver_NewtonAbsoluteToleranceSet(Solver,1.E-6_CMFEDP,Err)
-  CALL cmfe_Solver_NewtonMaximumIterationsSet(Solver,200,Err)
   CALL cmfe_Problem_SolversCreateFinish(Problem,Err)
 
   !Create the problem solver equations
@@ -404,8 +367,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-        & CMFE_BOUNDARY_CONDITION_FIXED_INCREMENTED,1.5_CMFEDP*WIDTH,Err)
-!        & CMFE_BOUNDARY_CONDITION_FIXED,1.2_CMFEDP*WIDTH,Err)
+        & CMFE_BOUNDARY_CONDITION_FIXED,1.1_CMFEDP*WIDTH,Err)
     ENDIF
   ENDDO
 
