@@ -182,7 +182,7 @@ equationsSet.EquationsCreateFinish()
 problem = iron.Problem()
 problemSpecification = [iron.ProblemClasses.CLASSICAL_FIELD,
         iron.ProblemTypes.LAPLACE_EQUATION,
-        iron.ProblemSubTypes.STANDARD_LAPLACE]
+        iron.ProblemSubtypes.STANDARD_LAPLACE]
 problem.CreateStart(problemUserNumber, problemSpecification)
 problem.CreateFinish()
 

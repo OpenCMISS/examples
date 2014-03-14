@@ -215,7 +215,7 @@ equationsSet.EquationsCreateFinish()
 problem = iron.Problem()
 problemSpecification = [iron.ProblemClasses.FLUID_MECHANICS,
     iron.ProblemTypes.NAVIER_STOKES_EQUATION,
-    iron.ProblemSubTypes.TRANSIENT_NAVIER_STOKES]
+    iron.ProblemSubtypes.TRANSIENT_NAVIER_STOKES]
 problem.CreateStart(problemUserNumber, problemSpecification)
 problem.CreateFinish()
 

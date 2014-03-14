@@ -319,7 +319,7 @@ equationsSet.EquationsCreateFinish()
 problem = iron.Problem()
 problemSpecification = [iron.ProblemClasses.ELASTICITY,
         iron.ProblemTypes.FINITE_ELASTICITY,
-        iron.ProblemSubTypes.NONE]
+        iron.ProblemSubtypes.NONE]
 problem.CreateStart(problemUserNumber, problemSpecification)
 problem.CreateFinish()
 

@@ -323,14 +323,14 @@ if (cellmlFlag):
     EquationsSetSubtype = iron.EquationsSetSubtypes.Coupled1D0D_NAVIER_STOKES
     # Characteristic (nodal/characteristic) solver remains the same
     EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.Coupled1D0D_CHARACTERISTIC
-    ProblemSubtype = iron.ProblemSubTypes.Coupled1dDae_NAVIER_STOKES
+    ProblemSubtype = iron.ProblemSubtypes.Coupled1dDae_NAVIER_STOKES
 else:
     # Order of solvers
     SolverCharacteristicUserNumber = 1
     SolverNavierStokesUserNumber = 2
     EquationsSetSubtype = iron.EquationsSetSubtypes.OneDTRANSIENT_NAVIER_STOKES
     EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.STATIC_CHARACTERISTIC
-    ProblemSubtype = iron.ProblemSubTypes.OneDTRANSIENT_NAVIER_STOKES
+    ProblemSubtype = iron.ProblemSubtypes.OneDTRANSIENT_NAVIER_STOKES
 
 #================================================================================================================================
 #  Coordinate System
