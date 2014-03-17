@@ -62,6 +62,12 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
 
 !--------------------------------------------------------------------------------------------------------------------------------
   !Test program parameters
+
+!  REAL(CMISSDP), PARAMETER :: WIDTH=6.0_CMISSDP   ! x-direction
+!  REAL(CMISSDP), PARAMETER :: HEIGHT=1.9_CMISSDP  ! y-direction
+!!  REAL(CMISSDP), PARAMETER :: LENGTH=1.8_CMISSDP  ! z-direction, muscle plus fat/skin
+!  REAL(CMISSDP), PARAMETER :: LENGTH=0.8_CMISSDP  ! z-direction, only muscle
+!   <-- not needed here (only for generated mesh)
   
   REAL(CMISSDP), PARAMETER :: PI=4.0_CMISSDP*DATAN(1.0_CMISSDP)
 
@@ -93,23 +99,20 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   !Program variables
 
   INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
-  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
-  INTEGER(CMISSIntg) :: NUMBER_BLOCKS_Y,NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE,NUMBER_GLOBAL_Y_ELEM_BLOCK
-  INTEGER(CMISSIntg) :: FAT_ELEM_START_B1,FAT_ELEM_END_B1,FAT_ELEM_START_B2,FAT_ELEM_END_B2,FAT_ELEM_START_B3,FAT_ELEM_END_B3
-  INTEGER(CMISSIntg) :: FAT_ELEM_START_INTER12,FAT_ELEM_END_INTER12,FAT_ELEM_START_INTER23,FAT_ELEM_END_INTER23
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE
   INTEGER(CMISSIntg) :: NumberOfMeshDimensions
-  INTEGER(CMISSIntg) :: TotalNumberOfElements,TotalNumberOfNodes
+  INTEGER(CMISSIntg) :: TotalNumberOfElements,TotalNumberOfNodes,TotalNumberOfElementsMuscle,TotalNumberOfNodesMuscle
   INTEGER(CMISSIntg) :: INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI
   INTEGER(CMISSIntg) :: node_idx,component_idx,elem_idx
   INTEGER(CMISSIntg) :: FibreFieldNumberOfComponents
 
-  REAL(CMISSDP) :: FibreFieldAngle(3),phi,sumphi,meanphi
+  REAL(CMISSDP) :: FibreFieldAngle(3)
   INTEGER(CMISSIntg) :: time,dt
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT,Filename
   CHARACTER(LEN=255) :: name_part1,name_part3,numberstring,exnodefile,filename_results
 
   INTEGER(CMISSIntg),DIMENSION(:,:),ALLOCATABLE :: ElemTopology
-  REAL(CMISSDP),DIMENSION(:,:),ALLOCATABLE :: NodeCoords
+  REAL(CMISSDP),DIMENSION(:,:),ALLOCATABLE :: NodeCoords,NodeCoordsMuscle
   
   INTEGER(CMISSIntg) :: clck_counts_beg, clck_counts_begloop, clck_counts_int1, clck_counts_int2, clck_counts_end, clck_rate
 
@@ -142,10 +145,12 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
   INTEGER(CMISSIntg) :: EquationsSetIndex
-  INTEGER(CMISSIntg) :: NodeDomain
+  INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber,NodeNumber
+  INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain,NodeDomain
   INTEGER(CMISSIntg) :: Err
   
   CALL SYSTEM_CLOCK (clck_counts_beg, clck_rate)
+  !WRITE(*,*) 'begin:', clck_counts_beg
 
 !--------------------------------------------------------------------------------------------------------------------------------
 #ifdef WIN32
@@ -185,40 +190,17 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
     IF(INTERPOLATION_TYPE<=0) CALL HANDLE_ERROR("Invalid Interpolation specification.")
   ELSE
     !If there are not enough arguments default the problem specification 
-    NUMBER_GLOBAL_X_ELEMENTS=144
-    NUMBER_GLOBAL_Y_ELEMENTS=29
-    NUMBER_GLOBAL_Z_ELEMENTS=14
-    
-    NUMBER_BLOCKS_Y=3
-    NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE=12
-    
-    NUMBER_GLOBAL_Y_ELEM_BLOCK=9
-    
-    FAT_ELEM_START_B1=NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE*NUMBER_GLOBAL_Y_ELEM_BLOCK*NUMBER_GLOBAL_X_ELEMENTS+1
-    FAT_ELEM_END_B1=NUMBER_GLOBAL_Z_ELEMENTS*NUMBER_GLOBAL_Y_ELEM_BLOCK*NUMBER_GLOBAL_X_ELEMENTS
-    
-    FAT_ELEM_START_B2=FAT_ELEM_END_B1+NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE*NUMBER_GLOBAL_Y_ELEM_BLOCK*NUMBER_GLOBAL_X_ELEMENTS+1
-    FAT_ELEM_END_B2=FAT_ELEM_END_B1+NUMBER_GLOBAL_Z_ELEMENTS*NUMBER_GLOBAL_Y_ELEM_BLOCK*NUMBER_GLOBAL_X_ELEMENTS
-    
-    FAT_ELEM_START_B3=FAT_ELEM_END_B2+NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE*NUMBER_GLOBAL_Y_ELEM_BLOCK*NUMBER_GLOBAL_X_ELEMENTS+1
-    FAT_ELEM_END_B3=FAT_ELEM_END_B2+NUMBER_GLOBAL_Z_ELEMENTS*NUMBER_GLOBAL_Y_ELEM_BLOCK*NUMBER_GLOBAL_X_ELEMENTS
-    
-    FAT_ELEM_START_INTER12=NUMBER_BLOCKS_Y*NUMBER_GLOBAL_Z_ELEMENTS*NUMBER_GLOBAL_Y_ELEM_BLOCK*NUMBER_GLOBAL_X_ELEMENTS &
-                           & + NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE*NUMBER_GLOBAL_X_ELEMENTS+1
-    FAT_ELEM_END_INTER12=NUMBER_BLOCKS_Y*NUMBER_GLOBAL_Z_ELEMENTS*NUMBER_GLOBAL_Y_ELEM_BLOCK*NUMBER_GLOBAL_X_ELEMENTS &
-                           & + NUMBER_GLOBAL_Z_ELEMENTS*NUMBER_GLOBAL_X_ELEMENTS
-    
-    FAT_ELEM_START_INTER23=FAT_ELEM_END_INTER12+NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE*NUMBER_GLOBAL_X_ELEMENTS+1
-    FAT_ELEM_END_INTER23=FAT_ELEM_END_INTER12+NUMBER_GLOBAL_Z_ELEMENTS*NUMBER_GLOBAL_X_ELEMENTS
-    
-    WRITE (*,*) 'B1', FAT_ELEM_START_B1, FAT_ELEM_END_B1
-    WRITE (*,*) 'B2', FAT_ELEM_START_B2, FAT_ELEM_END_B2
-    WRITE (*,*) 'B3', FAT_ELEM_START_B3, FAT_ELEM_END_B3
-    WRITE (*,*) 'I12', FAT_ELEM_START_INTER12, FAT_ELEM_END_INTER12
-    WRITE (*,*) 'I23', FAT_ELEM_START_INTER23, FAT_ELEM_END_INTER23       
+    NUMBER_GLOBAL_X_ELEMENTS=174
+    NUMBER_GLOBAL_Y_ELEMENTS=19
+    NUMBER_GLOBAL_Z_ELEMENTS=9
+
+    NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE=4
+    TotalNumberOfNodesMuscle=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE+1)
+    TotalNumberOfElementsMuscle=NUMBER_GLOBAL_X_ELEMENTS*NUMBER_GLOBAL_Y_ELEMENTS*NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE
+    ALLOCATE(NodecoordsMuscle(TotalNumberOfNodesMuscle,4))           
     
     INTERPOLATION_TYPE=CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION
-
+!    INTERPOLATION_TYPE=CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION   
   ENDIF
 
 !-------------------------------------------------------------------------  
@@ -347,11 +329,13 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   CALL CMISSMeshElements_Initialise(Elements,Err)
   CALL CMISSMeshElements_CreateStart(Mesh,MeshComponentNumber,Basis,Elements,Err)
   
-  !read in information from existing exelem file for mesh generation 
-!  OPEN(UNIT=2,FILE="./data/data_Vm_3/mesh.txt")
-  OPEN(UNIT=2,FILE="../inputdata/data_Vm_3/mesh.txt")
-  CALL READ_ELEMENTNODES(2,TotalNumberOfElements,ElemTopology)
-  CLOSE(2)
+!  !read in information from existing exelem file for mesh generation 
+!  OPEN(UNIT=2,FILE="./data/ELEMENTNODES.TXT")
+!  CALL READ_ELEMENTNODES(2,TotalNumberOfElements,ElemTopology)
+!  CLOSE(2)
+
+  !create the mesh by calling CREATE_MESH and thus storing the information in ElemTopology
+  CALL CREATE_MESH(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,TotalNumberOfElements,ElemTopology)
   
   !Set the nodes belonging to each element
   DO elem_idx=1,TotalNumberOfElements
@@ -425,8 +409,8 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   !of this file as for Thomas case, the nodal positions will also change with time and should be updated
   
   !due to more elements for fat/skin-layer read exnode file for all nodal coordinates (x,y,z)
-!  OPEN(UNIT=4,FILE="./data/data_Vm_3/MainTime_M_2_0.part0.exnode")
-  OPEN(UNIT=4,FILE="../inputdata/data_Vm_3/MainTime_M_2_0.part0.exnode")
+  OPEN(UNIT=4,FILE="./testinputdata/simple_geometryExample_M.part0.exnode")
+!  OPEN(UNIT=4,FILE="../inputdata/data_Vm_2/simple_geometryExample_M.part0.exnode")
   CALL READ_EXNODE(4,TotalNumberOfNodes,NodeCoords)
   CLOSE(4)
     
@@ -451,7 +435,8 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
       ENDIF
     ENDIF
   ENDDO      
-
+  
+  
 !-------------------------------------------------------------------------
 !
 ! FIBRE  
@@ -575,6 +560,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & 1,8.93E-6_CMISSDP,Err)  ! 11
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+!      & 2,8.93E-6_CMISSDP,Err)  ! 22
       & 2,0.893E-6_CMISSDP,Err)  ! 22  
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & 3,0.0_CMISSDP,Err)  ! 12=21
@@ -589,10 +575,15 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
     ! sigma_i 
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & 1,8.93E-6_CMISSDP,Err)  ! 11
+!      & 1,0.3E-6_CMISSDP,Err)  ! 11
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+!      & 2,8.93E-6_CMISSDP,Err)  ! 22
       & 2,0.893E-6_CMISSDP,Err)  ! 22
+!      & 2,0.0_CMISSDP,Err)  ! 22      
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+!      & 3,8.93E-6_CMISSDP,Err)  ! 33
       & 3,0.893E-6_CMISSDP,Err)  ! 33
+!      & 3,0.0E-6_CMISSDP,Err)  ! 33
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & 4,0.0_CMISSDP,Err)  ! 12=21
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
@@ -602,10 +593,13 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
     ! sigma_e 
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & 7,6.7E-6_CMISSDP,Err)  ! 11
+!      & 7,2.2E-6_CMISSDP,Err)  ! 11
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & 8,6.7E-6_CMISSDP,Err)  ! 22
+!      & 8,2.2E-6_CMISSDP,Err)  ! 22
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & 9,6.7E-6_CMISSDP,Err)  ! 33
+!      & 9,2.2E-6_CMISSDP,Err)  ! 33
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
       & 10,0.0_CMISSDP,Err)  ! 12=21
     CALL CMISSField_ComponentValuesInitialise(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
@@ -616,151 +610,51 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   
   !On fat/skin-layer elements, material parameters are changed 
   !"sigma=sigma_i+sigma_e" => set sigma_i default to 0, thus sigma=sigma_e
-  !first block
-  DO elem_idx=FAT_ELEM_START_B1,FAT_ELEM_END_B1
-    !sigma_i --> set to 0          
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,1,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,2,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,3,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,4,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,5,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,6,0.0_CMISSDP,Err)
-    !sigma_e=sigma, literature value for fat/skin: 0.4E-6 
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,7,0.4E-6_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,8,0.4E-6_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,9,0.4E-6_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,10,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,11,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,12,0.0_CMISSDP,Err)            
+  DO elem_idx=TotalNumberOfElementsMuscle+1,TotalNumberOfElements
+    IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+      !sigma_i --> set to 0          
+      CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+        & elem_idx,1,0.0_CMISSDP,Err)
+      CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+        & elem_idx,2,0.0_CMISSDP,Err)
+      CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+        & elem_idx,3,0.0_CMISSDP,Err)
+      !sigma_e=sigma, literature value for fat/skin:
+      CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+        & elem_idx,4,0.4E-6_CMISSDP,Err)
+      CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+        & elem_idx,5,0.4E-6_CMISSDP,Err)
+      CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+        & elem_idx,6,0.0_CMISSDP,Err)
+    ELSE
+      !sigma_i --> set to 0          
+      CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+        & elem_idx,1,0.0_CMISSDP,Err)
+      CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+        & elem_idx,2,0.0_CMISSDP,Err)
+      CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+        & elem_idx,3,0.0_CMISSDP,Err)
+      CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+        & elem_idx,4,0.0_CMISSDP,Err)
+      CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+        & elem_idx,5,0.0_CMISSDP,Err)
+      CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+        & elem_idx,6,0.0_CMISSDP,Err)
+      !sigma_e=sigma, literature value for fat/skin:
+      CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+        & elem_idx,7,0.4E-6_CMISSDP,Err)
+      CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+        & elem_idx,8,0.4E-6_CMISSDP,Err)
+      CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+        & elem_idx,9,0.4E-6_CMISSDP,Err)
+      CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+        & elem_idx,10,0.0_CMISSDP,Err)
+      CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+        & elem_idx,11,0.0_CMISSDP,Err)
+      CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+        & elem_idx,12,0.0_CMISSDP,Err)            
+    ENDIF
   ENDDO !elem_idx
-  !second block
-  DO elem_idx=FAT_ELEM_START_B2,FAT_ELEM_END_B2
-    !sigma_i --> set to 0          
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,1,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,2,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,3,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,4,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,5,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,6,0.0_CMISSDP,Err)
-    !sigma_e=sigma, literature value for fat/skin: 0.4E-6 
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,7,0.4E-6_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,8,0.4E-6_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,9,0.4E-6_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,10,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,11,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,12,0.0_CMISSDP,Err)            
-  ENDDO !elem_idx  
-  !third block
-  DO elem_idx=FAT_ELEM_START_B3,FAT_ELEM_END_B3
-    !sigma_i --> set to 0          
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,1,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,2,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,3,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,4,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,5,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,6,0.0_CMISSDP,Err)
-    !sigma_e=sigma, literature value for fat/skin: 0.4E-6 
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,7,0.4E-6_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,8,0.4E-6_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,9,0.4E-6_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,10,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,11,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,12,0.0_CMISSDP,Err)            
-  ENDDO !elem_idx  
-  !intersection blocks 1-2
-  DO elem_idx=FAT_ELEM_START_INTER12,FAT_ELEM_END_INTER12
-    !sigma_i --> set to 0          
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,1,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,2,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,3,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,4,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,5,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,6,0.0_CMISSDP,Err)
-    !sigma_e=sigma, literature value for fat/skin: 0.4E-6 
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,7,0.4E-6_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,8,0.4E-6_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,9,0.4E-6_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,10,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,11,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,12,0.0_CMISSDP,Err)            
-  ENDDO !elem_idx  
-  !intersection blocks 2-3
-  DO elem_idx=FAT_ELEM_START_INTER23,FAT_ELEM_END_INTER23
-    !sigma_i --> set to 0          
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,1,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,2,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,3,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,4,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,5,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,6,0.0_CMISSDP,Err)
-    !sigma_e=sigma, literature value for fat/skin: 0.4E-6 
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,7,0.4E-6_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,8,0.4E-6_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,9,0.4E-6_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,10,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,11,0.0_CMISSDP,Err)
-    CALL CMISSField_ParameterSetUpdateElement(MaterialsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-      & elem_idx,12,0.0_CMISSDP,Err)            
-  ENDDO !elem_idx  
 
 !-------------------------------------------------------------------------
 !
@@ -944,25 +838,40 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
 
 !-------------------------------------------------------------------------
   !Start the creation of the equations set BOUNDARY CONDITIONS
-  !instead of Dirichlet b.c. we use the zero-mean condition on the potential here
   
   CALL CMISSBoundaryConditions_Initialise(BoundaryConditions,Err)
   CALL CMISSSolverEquations_BoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+  
+  !Set the (first node and the) last node to 0.0
+  FirstNodeNumber=1
+  CALL CMISSNodes_Initialise(Nodes,Err)
+  CALL CMISSRegion_NodesGet(Region,Nodes,Err)
+  CALL CMISSNodes_NumberOfNodesGet(Nodes,LastNodeNumber,Err)
+  CALL CMISSDecomposition_NodeDomainGet(Decomposition,FirstNodeNumber,1,FirstNodeDomain,Err)
+  CALL CMISSDecomposition_NodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
+!  IF(FirstNodeDomain==ComputationalNodeNumber) THEN
+!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,FirstNodeNumber,1, &
+!      & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+!  ENDIF
+  IF(LastNodeDomain==ComputationalNodeNumber) THEN
+    CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,LastNodeNumber,1, &
+      & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+  ENDIF
   
   !Finish the creation of the equations set boundary conditions
   CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
 
 !-------------------------------------------------------------------------
 
-  time=5
-  dt=1
-  DO WHILE(time<=10)
+  time=24
+  dt=2
+  DO WHILE(time<=26)
     
     CALL SYSTEM_CLOCK (clck_counts_begloop, clck_rate)
     WRITE (*,*) 'begloop-beg',  (clck_counts_begloop - clck_counts_beg) / REAL(clck_rate)
-
-!    name_part1="./data/data_Vm_3/MainTime_M_2_"        
-    name_part1="../inputdata/data_Vm_3/MainTime_M_2_"
+        
+    name_part1="./testinputdata/MainTime_M_2_"
+!    name_part1="../inputdata/data_Vm_2/MainTime_M_2_"
     name_part3=".part0.exnode"
     WRITE(numberstring,*) time
     numberstring=ADJUSTL(numberstring)
@@ -972,76 +881,60 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
     
     !in each time step, read in information from existing exnode file for nodal information (node,x,y,z,Vm)
     OPEN(UNIT=3,FILE=exnodefile)    
-    CALL READ_EXNODE(3,TotalNumberOfNodes,NodeCoords)
+!    CALL READ_EXNODE(3,TotalNumberOfNodes,NodeCoords)
+    CALL READ_EXNODE(3,TotalNumberOfNodesMuscle,NodeCoordsMuscle)    
     CLOSE(3)
     
-    !update nodal coordinates, GEOMETRIC field (won't change in my case but later important for Thomas)
-    !for each node, specify the position in space
-    !COMMENT if no mechanics is wanted
-    DO node_idx=1,TotalNumberOfNodes
-      CALL CMISSDecomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
-      IF(NodeDomain==ComputationalNodeNumber) THEN
+!    !update nodal coordinates, GEOMETRIC field (won't change in my case but later important for Thomas)
+!    !for each node, specify the position in space
+!    DO node_idx=1,TotalNumberOfNodes
+!      CALL CMISSDecomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
+!      IF(NodeDomain==ComputationalNodeNumber) THEN
+!!        CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
+!!          & NodeCoords(node_idx,1),1,NodeCoords(node_idx,2),Err) !x-positon
 !        CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
-!          & NodeCoords(node_idx,1),1,NodeCoords(node_idx,2),Err) !x-positon
-        CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
-          & node_idx,1,NodeCoords(node_idx,1),Err) !x-positon
+!          & node_idx,1,NodeCoords(node_idx,1),Err) !x-positon
+!!        CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
+!!          & NodeCoords(node_idx,1),2,NodeCoords(node_idx,3),Err) !y-position
 !        CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
-!          & NodeCoords(node_idx,1),2,NodeCoords(node_idx,3),Err) !y-position
-        CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
-          & node_idx,2,NodeCoords(node_idx,2),Err) !y-position
-        IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
+!          & node_idx,2,NodeCoords(node_idx,2),Err) !y-position
+!        IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
+!!          CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
+!!          & NodeCoords(node_idx,1),3,NodeCoords(node_idx,4),Err) !z-position
 !          CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
-!          & NodeCoords(node_idx,1),3,NodeCoords(node_idx,4),Err) !z-position
-          CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1, &
-          & node_idx,3,NodeCoords(node_idx,3),Err) !z-position
-        ENDIF
-      ENDIF
-    ENDDO    
+!          & node_idx,3,NodeCoords(node_idx,3),Err) !z-position
+!        ENDIF
+!      ENDIF
+!    ENDDO    
     
     !update the SOURCE field Vm
     !set source value on specific nodes  
-    DO node_idx=1,TotalNumberOfNodes
+    DO node_idx=1,TotalNumberOfNodesMuscle
       CALL CMISSDecomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
       IF(NodeDomain==ComputationalNodeNumber) THEN
         IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
 !          CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
-!            & 1,NodeCoords(node_idx,1),1,NodeCoords(node_idx,4),Err)
+!            & 1,NodeCoordsMuscle(node_idx,1),1,NodeCoordsMuscle(node_idx,4),Err)
           CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
-            & 1,node_idx,1,NodeCoords(node_idx,3),Err)
+            & 1,node_idx,1,NodeCoordsMuscle(node_idx,3),Err)
         ELSE
 !          CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
-!            & 1,NodeCoords(node_idx,1),1,NodeCoords(node_idx,5),Err)
+!            & 1,NodeCoordsMuscle(node_idx,1),1,NodeCoordsMuscle(node_idx,5),Err)
           CALL CMISSField_ParameterSetUpdateNode(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
-            & 1,node_idx,1,NodeCoords(node_idx,4),Err)
+            & 1,node_idx,1,NodeCoordsMuscle(node_idx,4),Err)
         ENDIF
       ENDIF
     ENDDO    
     
     CALL SYSTEM_CLOCK (clck_counts_int1, clck_rate)
+    !WRITE(*,*) 'int1:', clck_counts_int1
     WRITE (*,*) 'int1-begloop',  (clck_counts_int1 - clck_counts_begloop) / REAL(clck_rate)
     
     !Solve the problem
     CALL CMISSProblem_Solve(Problem,Err)
     
-    !TODO: calculate mean of solution and substract from each node (instead of dirichlet bc)
-
-    sumphi=0.0_CMISSDP
-    DO node_idx=1,TotalNumberOfNodes
-      CALL CMISSField_ParameterSetGetNode(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,1,&
-        & phi,Err)
-      sumphi=sumphi+phi
-    ENDDO
-    
-    meanphi=sumphi/TotalNumberOfNodes
-    WRITE(*,*) meanphi
-    
-    DO node_idx=1,TotalNumberOfNodes    
-      CALL CMISSField_ParameterSetAddNode(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,node_idx,1, &
-        & -meanphi,Err)
-    ENDDO
-    
-    
     CALL SYSTEM_CLOCK (clck_counts_int2, clck_rate)
+    !WRITE(*,*) 'int2', clck_counts_int2
     WRITE (*,*) 'int2-int1', (clck_counts_int2 - clck_counts_int1) / REAL(clck_rate)
 
     filename_results="ExtracellularBidomain_"//TRIM(numberstring)
@@ -1054,10 +947,13 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
     CALL CMISSFields_NodesExport(Fields,filename_results,"FORTRAN",Err)
 !    CALL CMISSFields_ElementsExport(Fields,filename_results,"FORTRAN",Err)    
     
+!    CALL CMISSFields_NodesExport(Fields,"ExtracellularBidomain","FORTRAN",Err)
+!    CALL CMISSFields_ElementsExport(Fields,"ExtracellularBidomain","FORTRAN",Err)
+
     time=time+dt
     
     CALL SYSTEM_CLOCK (clck_counts_end, clck_rate)
-
+    !WRITE(*,*) 'end', clck_counts_end
     WRITE (*,*) 'end-int2', (clck_counts_end - clck_counts_int2) / REAL(clck_rate)
 
   ENDDO !time
@@ -1070,6 +966,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
 
   DEALLOCATE(ElemTopology) 
   DEALLOCATE(NodeCoords)
+  DEALLOCATE(NodeCoordsMuscle)  
 
   WRITE(*,'(A)') "Program successfully completed."
   
@@ -1088,78 +985,75 @@ CONTAINS
   END SUBROUTINE HANDLE_ERROR
   
   !--------------------------------------------------------------------------------------
-  !Subroutine to read in mesh information from mesh.txt (created by gen_elem.f90)
+  !Subroutine to read in mesh information from ELEMENTNODES.TXT (created by gen_elem.f90)
   !-------------------------------------------------------------------------------------- 
 
-  SUBROUTINE READ_ELEMENTNODES(fp,totalnumberofelements,elemtopology)
-    INTEGER(CMISSIntg), INTENT(IN)    :: fp  !< file 'pointer'
-    INTEGER(CMISSIntg), INTENT(IN)    :: totalnumberofelements !< total number of elements, needed for array size    
-    INTEGER(CMISSIntg), DIMENSION(:,:), ALLOCATABLE, INTENT(INOUT) :: elemtopology !< element topology, array with rows 
-                                                                      !that contain element number and corresponding nodes
-    INTEGER(CMISSIntg) :: total_num_elem,total_num_nodes
-    INTEGER(CMISSIntg) :: elemnr,n1,n2,n3,n4,n5,n6,n7,n8
-    INTEGER(CMISSIntg) :: k,j
-    
-    !select correct size of array depending on 2d/3d and linear/quadratic s.f.
-    !ALLOCATE(elemtopology(totalnumberofelements,5)) !2d,linear - 4
-    !ALLOCATE(elemtopology(totalnumberofelements,10)) !2d,quadratic - 9
-    ALLOCATE(elemtopology(totalnumberofelements,9)) !3d,linear - 8
-    !ALLOCATE(elemtopology(totalnumberofelements,28)) !3d,quadratic - 27
+!  SUBROUTINE READ_ELEMENTNODES(fp,totalnumberofelements,elemtopology)
+!    INTEGER(CMISSIntg), INTENT(IN)    :: fp  !< file 'pointer'
+!    INTEGER(CMISSIntg), INTENT(IN)    :: totalnumberofelements !< total number of elements, needed for array size    
+!    INTEGER(CMISSIntg), DIMENSION(:,:), ALLOCATABLE, INTENT(INOUT) :: elemtopology !< element topology, array with rows 
+!                                                                      !that contain element number and corresponding nodes
+!    INTEGER(CMISSIntg) :: elemnr,n1,n2,n3,n4,n5,n6,n7,n8
+!    INTEGER(CMISSIntg) :: k,j
+!    
+!    !select correct size of array depending on 2d/3d and linear/quadratic s.f.
+!    !ALLOCATE(elemtopology(totalnumberofelements,5)) !2d,linear - 4
+!    !ALLOCATE(elemtopology(totalnumberofelements,10)) !2d,quadratic - 9
+!    ALLOCATE(elemtopology(totalnumberofelements,9)) !3d,linear - 8
+!    !ALLOCATE(elemtopology(totalnumberofelements,28)) !3d,quadratic - 27
 
-    READ(fp,*) total_num_elem,total_num_nodes
-
-    DO k=1,totalnumberofelements
-      READ(fp,*) elemnr,n1,n2,n3,n4,n5,n6,n7,n8
-      !WRITE(*,*) elemnr,n1,n2,n3,n4,n5,n6,n7,n8
-      elemtopology(k,:)=[elemnr,n1,n2,n3,n4,n5,n6,n7,n8]
-    ENDDO
-
-    
-!    WRITE(*,*) "Values for Elements are:"
 !    DO k=1,totalnumberofelements
-!      DO j=1,9
-!        WRITE(*,*) elemtopology(k,j)
-!      ENDDO
+!      READ(fp,*) elemnr,n1,n2,n3,n4,n5,n6,n7,n8
+!      !WRITE(*,*) elemnr,n1,n2,n3,n4,n5,n6,n7,n8
+!      elemtopology(k,:)=[elemnr,n1,n2,n3,n4,n5,n6,n7,n8]
 !    ENDDO
 
-  END SUBROUTINE READ_ELEMENTNODES
+!    
+!!    WRITE(*,*) "Values for Elements are:"
+!!    DO k=1,totalnumberofelements
+!!      DO j=1,9
+!!        WRITE(*,*) elemtopology(k,j)
+!!      ENDDO
+!!    ENDDO
+
+!  END SUBROUTINE READ_ELEMENTNODES
 
   !--------------------------------------------------------------------------------------
   !Subroutine to create the mesh by the given geometry
   !-------------------------------------------------------------------------------------- 
 
-!  SUBROUTINE CREATE_MESH(n_elem_x,n_elem_y,n_elem_z,totalnumberofelements,elemtopology)
-!    INTEGER(CMISSIntg), INTENT(IN) :: n_elem_x,n_elem_y,n_elem_z    !< total number of elements in each direction
-!    INTEGER(CMISSIntg), INTENT(IN) :: totalnumberofelements     !< total number of elements    
-!    INTEGER(CMISSIntg), DIMENSION(:,:), ALLOCATABLE, INTENT(INOUT) :: elemtopology !< element topology, array with rows 
-!                                                                      !that contain element number and corresponding nodes
-!    INTEGER(CMISSIntg) :: n_nodes_x,n_fibres_y,n_fibres_z,idx_x,idx_y,idx_z                                                     
-!    INTEGER(CMISSIntg) :: elemnr=0,n1,n2,n3,n4,n5,n6,n7,n8
+  SUBROUTINE CREATE_MESH(n_elem_x,n_elem_y,n_elem_z,totalnumberofelements,elemtopology)
+    INTEGER(CMISSIntg), INTENT(IN) :: n_elem_x,n_elem_y,n_elem_z    !< total number of elements in each direction
+    INTEGER(CMISSIntg), INTENT(IN) :: totalnumberofelements     !< total number of elements    
+    INTEGER(CMISSIntg), DIMENSION(:,:), ALLOCATABLE, INTENT(INOUT) :: elemtopology !< element topology, array with rows 
+                                                                      !that contain element number and corresponding nodes
+    INTEGER(CMISSIntg) :: n_nodes_x,n_fibres_y,n_fibres_z,idx_x,idx_y,idx_z                                                     
+    INTEGER(CMISSIntg) :: elemnr=0,n1,n2,n3,n4,n5,n6,n7,n8
 
-!    ALLOCATE(elemtopology(totalnumberofelements,9)) !3d,linear - 8
-!  
-!    n_nodes_x=n_elem_x+1
-!    n_fibres_y=n_elem_y+1
-!    n_fibres_z=n_elem_z+1
-!  
-!    DO idx_z=1,n_elem_z
-!      DO idx_y=1,n_elem_y
-!        DO idx_x=1,n_elem_x
-!          elemnr=elemnr+1
-!          n1=idx_x+(idx_y-1)*n_nodes_x+(idx_z-1)*n_nodes_x*n_fibres_y
-!          n2=n1+1
-!          n3=n1+n_nodes_x
-!          n4=n3+1
-!          n5=n1+n_nodes_x*n_fibres_y
-!          n6=n5+1
-!          n7=n5+n_nodes_x
-!          n8=n7+1
-!          elemtopology(elemnr,:)=[elemnr,n1,n2,n3,n4,n5,n6,n7,n8]
-!        ENDDO !idx_x
-!      ENDDO !idx_y
-!    ENDDO !idx_z
-!    
-!  END SUBROUTINE CREATE_MESH
+    ALLOCATE(elemtopology(totalnumberofelements,9)) !3d,linear - 8
+  
+    n_nodes_x=n_elem_x+1
+    n_fibres_y=n_elem_y+1
+    n_fibres_z=n_elem_z+1
+  
+    DO idx_z=1,n_elem_z
+      DO idx_y=1,n_elem_y
+        DO idx_x=1,n_elem_x
+          elemnr=elemnr+1
+          n1=idx_x+(idx_y-1)*n_nodes_x+(idx_z-1)*n_nodes_x*n_fibres_y
+          n2=n1+1
+          n3=n1+n_nodes_x
+          n4=n3+1
+          n5=n1+n_nodes_x*n_fibres_y
+          n6=n5+1
+          n7=n5+n_nodes_x
+          n8=n7+1
+          elemtopology(elemnr,:)=[elemnr,n1,n2,n3,n4,n5,n6,n7,n8]
+        ENDDO !idx_x
+      ENDDO !idx_y
+    ENDDO !idx_z
+    
+  END SUBROUTINE CREATE_MESH
   
   !--------------------------------------------------------------------------------------
   !Subroutine to read in nodal information from Thomas . (created by gen_elem.f90)
