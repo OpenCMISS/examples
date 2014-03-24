@@ -98,15 +98,11 @@ MaterialsFieldUserNumberD   = 1
 #================================================================================================================================
 
 # Import the libraries (OpenCMISS,python,numpy,scipy)
-import numpy,math
+import numpy,math,pdb
 from scipy.sparse import linalg
-from scipy import linalg
 from opencmiss import CMISS
-import pdb
 import csv,time
-import shutil
 import sys,os
-import fem_topology
 sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
 
 # Diagnostics
@@ -140,182 +136,63 @@ versionIdx = 1
 #  Mesh Reading
 #================================================================================================================================
 
-# Reading geometry files
-IPELEM_FILE = open("Input/Geometry.ipelem")
-IPNODE_FILE = open("Input/Geometry.ipnode")
-IPELEM_LINE = IPELEM_FILE.readlines()
-IPNODE_LINE = IPNODE_FILE.readlines()
-ELEM_FILE_SIZE = len(IPELEM_LINE)-1
-NODE_FILE_SIZE = len(IPNODE_LINE)-1
-# Reading the elements file and associated nodes
-i = 0
-IPELEM_SPLIT = str.split(IPELEM_LINE[i])
-while "number of elements is" not in IPELEM_LINE[i].lower():
-    i+=1
-    IPELEM_SPLIT = str.split(IPELEM_LINE[i])
-    l = []
-for t in IPELEM_SPLIT:
-    try:
-        l.append(int(t))
-    except ValueError:
-        pass
-val_location = len(l)-1
-totalNumberOfElements = l[val_location]
-elemIdentifier = [0]*(totalNumberOfElements)    # In case nodes are not numbered 1...Max
-elementNodes  = [0]*(totalNumberOfElements)     # Stores the nodes in each element
-i = 0
-j = -1
-while i <= ELEM_FILE_SIZE:
-    IPELEM_SPLIT = str.split(IPELEM_LINE[i])
-    if "Element number" in IPELEM_LINE[i]:
-        j+=1
-        m = []
-        for t in IPELEM_SPLIT:
-            try:
-                m.append(int(t))
-            except ValueError:
-                pass
-        val_location = len(m)-1
-        elemIdentifier[j] = m[val_location]
-        i+=1
-        IPELEM_SPLIT = str.split(IPELEM_LINE[i])
-        while "global numbers for basis" not in IPELEM_LINE[i]:
+# Read the node file
+with open('Input/Node.csv','rb') as csvfile:
+    reader = csv.reader(csvfile, delimiter='\t')
+    for row in reader:
+        # Read the number of nodes
+        if row[5]:
+            numberOfNodesSpace = int(row[5])
+            totalNumberOfNodes = numberOfNodesSpace*3
+            xValues = numpy.zeros((numberOfNodesSpace+1,3),dtype = numpy.float)
+            yValues = numpy.zeros((numberOfNodesSpace+1,3),dtype = numpy.float)
+            zValues = numpy.zeros((numberOfNodesSpace+1,3),dtype = numpy.float)
+        # Initialise the coordinates
+        xValues[int(row[0])][0] = float(row[1])
+        yValues[int(row[0])][0] = float(row[2])
+        zValues[int(row[0])][0] = float(row[3])
+        # Read the bifurcation nodes
+        if row[4]:
+            numberOfBifurcations+=1
+            bifurcationNodeNumber.append(int(row[0]))
+            xValues[int(row[0])][1] = float(row[1])
+            yValues[int(row[0])][1] = float(row[2])
+            zValues[int(row[0])][1] = float(row[3])
+            xValues[int(row[0])][2] = float(row[1])
+            yValues[int(row[0])][2] = float(row[2])
+            zValues[int(row[0])][2] = float(row[3])
+
+# Read the element file
+with open('Input/Element.csv','rb') as csvfile:
+    reader = csv.reader(csvfile, delimiter='\t')
+    i = 0
+    for row in reader:
+        # Read the number of elements
+        if row[7]:
+            totalNumberOfElements = int(row[7])
+            elementNodes = (totalNumberOfElements+1)*[3*[0]]
+            bifurcationElements = (numberOfBifurcations+1)*[3*[0]]
+        # Read the elements
+        if row[0]:
+            elementNodes[int(row[0])] = [int(row[1]),int(row[2]),int(row[3])]
+        # Read the bifurcation elements
+        if row[4]:
             i+=1
-            IPELEM_SPLIT = str.split(IPELEM_LINE[i])
-            m = []                           # Stores integer values: number of basis nodes, and nodes in element
-            for t in IPELEM_SPLIT:
-                try:
-                    m.append(int(t))
-                except ValueError:
-                    pass
-            val_location = len(m)-1
-            numBasisNodes = m[0]	     # First number is number of nodes in element
-            for k in range(numBasisNodes):
-                elementNodes[j] = m[1:len(m)] 
-    i+=1
-# Finding the bifurcation nodes
-for i in range(0,totalNumberOfElements):
-    node_temp = elementNodes[i][numBasisNodes-1]
-    occurance = 0
-    for j in range(0,totalNumberOfElements):
-    	if elementNodes[j][0] == node_temp:
-            occurance = occurance + 1
-    if occurance == 2:              # If node occurs two times in the first column of elementNodes then it is a bifurcation
-        bifurcationNodeNumber.append(node_temp)
-        numberOfBifurcations = numberOfBifurcations + 1
-bifurcationElements  = numpy.zeros((numberOfBifurcations,3),dtype  = numpy.int)    # Stores the Elements belonging to a bifurcation
-# Finding bifurcation elements
-for i in range(1,numberOfBifurcations+1):
-    k = 0
-    for j in range(1,totalNumberOfElements+1):
-        if elementNodes[j-1][numBasisNodes-1] == bifurcationNodeNumber[i]:
-            bifurcationElementNumber.append(j)
-            bifurcationElements[i-1][k] = j
-            k = k + 1
-        elif elementNodes[j-1][0] == bifurcationNodeNumber[i]:
-            bifurcationElements[i-1][k] = j	
-            k = k + 1
-# Reading coordinates
-i = 0
-j = -1
-while i<=NODE_FILE_SIZE:
-    IPNODE_SPLIT = str.split(IPNODE_LINE[i])
-    if "number of nodes is" in IPNODE_LINE[i].lower():
-        l = []
-        for t in IPNODE_SPLIT:
-            try:
-                l.append(int(t))
-            except ValueError:
-                pass
-        val_location = len(l)-1
-        numberOfNodesSpace = l[val_location]
-        totalNumberOfNodes = numberOfNodesSpace*3
-        NodeIdentifier = [0]*(numberOfNodesSpace)  # In case nodes are not numbered 1..max
-        numVersions = [0]*(numberOfNodesSpace)     # Are there versions of the coordinates?
-        xValues = numpy.zeros((numberOfNodesSpace,3),dtype = numpy.float)
-        yValues = numpy.zeros((numberOfNodesSpace,3),dtype = numpy.float)
-        zValues = numpy.zeros((numberOfNodesSpace,3),dtype = numpy.float)
-    if "node number" in IPNODE_LINE[i].lower():
-        j+=1
-        l = []
-        for t in IPNODE_SPLIT:
-            try:
-                l.append(int(t))
-            except ValueError:
-                pass
-        val_location = len(l)-1
-        NodeIdentifier[j] = l[val_location]
-        i+=1
-        IPNODE_SPLIT = str.split(IPNODE_LINE[i])
-        # X Coordinate
-        if "number of versions" in IPNODE_LINE[i].lower():
-            numVersions[j] = int(IPNODE_SPLIT[8].split()[-1])
-            i+=1
-            IPNODE_SPLIT = str.split(IPNODE_LINE[i])
-        else:
-            numVersions[j] = 1
-        while "coordinate" not in IPNODE_LINE[i].lower():
-            i+=1
-            IPNODE_SPLIT = str.split(IPNODE_LINE[i])
-        l = []
-        for t in IPNODE_SPLIT:
-            try:
-                l.append(float(t))
-            except ValueError:
-                pass
-        val_location = len(l)-1
-        xValues[j][0] = l[val_location]
-        i+=numVersions[j]*2-1     
-        IPNODE_SPLIT = str.split(IPNODE_LINE[i])
-        # Y Coordinate
-        while "coordinate" not in IPNODE_LINE[i].lower():
-            i+=1
-            IPNODE_SPLIT = str.split(IPNODE_LINE[i])
-        l = []
-        for t in IPNODE_SPLIT:
-            try:
-                l.append(float(t))
-            except ValueError:
-                pass
-        val_location = len(l)-1
-        yValues[j][0] = l[val_location]
-        i+=numVersions[j]*2-1
-        IPNODE_SPLIT = str.split(IPNODE_LINE[i])
-        # Z Coordinate
-        while "coordinate" not in IPNODE_LINE[i].lower():
-            i+=1
-            IPNODE_SPLIT = str.split(IPNODE_LINE[i])
-        l = []
-        for t in IPNODE_SPLIT:
-            try:
-                l.append(float(t))
-            except ValueError:
-                pass
-        val_location = len(l)-1
-        zValues[j][0] = l[val_location]
-        i+=numVersions[j]*2-1
-        for k in range (1,numberOfBifurcations+1): 
-            if NodeIdentifier[j] == bifurcationNodeNumber[k]:  # If a bifurcation node, copy the coordinates into other versions
-                for m in range (1,3):
-                    xValues[j][m] = xValues[j][0]
-                    yValues[j][m] = yValues[j][0]
-                    zValues[j][m] = zValues[j][0]
-    # Back to start looking for next node
-    i+=1
+            bifurcationElements[i] = [int(row[4]),int(row[5]),int(row[6])]
 
 #================================================================================================================================
 #  Initial Data & Default Values
 #================================================================================================================================
 
 # Set the flags
-cellmlFlag    = False
+cellmlFlag    = True
 lengthFlag    = False
 analysisFlag  = False
 
 # Set the material parameters
 Rho = 1050.0                      # Rho         (kg/m3)
 Mu  = 0.004                       # Mu          (pa.s)
-D   = 0.01                        # Diffusivity (m2/s)
+D   = 1000.0                       # Diffusivity (m2/s)
 A0  = [0]*(numberOfNodesSpace+1)  # Area        (m2)
 H   = [0]*(numberOfNodesSpace+1)  # Thickness   (m)
 E   = [0]*(numberOfNodesSpace+1)  # Elasticity  (pa)
@@ -347,7 +224,7 @@ with open('Input/Material.csv','rb') as csvfile:
 # Set the initial conditions
 Q = [0]*(numberOfNodesSpace+1)
 A = [0]*(numberOfNodesSpace+1)
-Conc = 1.0
+Conc = 0.0
 for nodeIdx in range(1,numberOfNodesSpace+1):
     Q[nodeIdx] = 0.0
     A[nodeIdx] = (A0[nodeIdx]/As)
@@ -364,12 +241,13 @@ with open('Input/Material.csv', 'rb') as csvfile:
 
 # Set the input nodes
 inputNodeNumber  = [0]*(numberOfInputNodes+1)
+Qi = [0]*(numberOfInputNodes+1)
 with open('Input/Material.csv', 'rb') as csvfile:
     reader = csv.reader(csvfile, delimiter='\t')
     for row in reader:
         if row[5]:
             inputNodeNumber[int(row[0])] = int(row[5])
-            Q[int(row[0])] = 1.0
+            Qi[int(row[0])] = 0.1
 
 # Set the output parameters
 # (NONE/PROGRESS/TIMING/SOLVER/MATRIX)
@@ -382,9 +260,10 @@ DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY = 1
 
 # Set the time parameters
 DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME     = 0.0
-DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME      = 800.0
+DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME      = 700.0
 DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT = 1.0
 DYNAMIC_SOLVER_NAVIER_STOKES_THETA = [1.0]
+DYNAMIC_SOLVER_ADVECTION_THETA     = [0.5]
 
 # Set the solver parameters
 RELATIVE_TOLERANCE_D = 1.0E-5   # default: 1.0E-05
@@ -489,19 +368,19 @@ meshComponentNumberConc  = 2
 # Specify the SPACE mesh component
 MeshElementsSpace.CreateStart(Mesh,meshComponentNumberSpace,BasisSpace)
 for elemIdx in range(1,totalNumberOfElements+1):
-    MeshElementsSpace.NodesSet(elemIdx,elementNodes[elemIdx-1])
+    MeshElementsSpace.NodesSet(elemIdx,elementNodes[elemIdx])
 for bifIdx in range(1,numberOfBifurcations+1):
-    MeshElementsSpace.LocalElementNodeVersionSet(int(bifurcationElements[bifIdx-1][0]),1,1,numBasisNodes)
-    MeshElementsSpace.LocalElementNodeVersionSet(int(bifurcationElements[bifIdx-1][1]),2,1,1) 
-    MeshElementsSpace.LocalElementNodeVersionSet(int(bifurcationElements[bifIdx-1][2]),3,1,1) 
+    MeshElementsSpace.LocalElementNodeVersionSet(int(bifurcationElements[bifIdx][0]),1,1,3)
+    MeshElementsSpace.LocalElementNodeVersionSet(int(bifurcationElements[bifIdx][1]),2,1,1) 
+    MeshElementsSpace.LocalElementNodeVersionSet(int(bifurcationElements[bifIdx][2]),3,1,1) 
 MeshElementsSpace.CreateFinish()                        
 
 #------------------
 
 # Specify the CONCENTRATION mesh component
-MeshElementsConc.CreateStart(Mesh,meshComponentNumberConc,BasisConc)
+MeshElementsConc.CreateStart(Mesh,meshComponentNumberConc,BasisSpace)
 for elemIdx in range(1,totalNumberOfElements+1):
-    MeshElementsConc.NodesSet(elemIdx,[elementNodes[elemIdx-1][0],elementNodes[elemIdx-1][2]])
+    MeshElementsConc.NodesSet(elemIdx,elementNodes[elemIdx])
 MeshElementsConc.CreateFinish()  
 
 # Finish the creation of the mesh
@@ -540,11 +419,11 @@ for nodeIdx in range(1,numberOfNodesSpace+1):
     nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
     if nodeDomain == computationalNodeNumber:
         GeometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
-         versionIdx,derivIdx,nodeIdx,1,xValues[nodeIdx-1][0])
+         versionIdx,derivIdx,nodeIdx,1,xValues[nodeIdx][0])
         GeometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
-         versionIdx,derivIdx,nodeIdx,2,yValues[nodeIdx-1][0])
+         versionIdx,derivIdx,nodeIdx,2,yValues[nodeIdx][0])
         GeometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
-         versionIdx,derivIdx,nodeIdx,3,zValues[nodeIdx-1][0])
+         versionIdx,derivIdx,nodeIdx,3,zValues[nodeIdx][0])
 # Set the geometric field for bifurcation
 for bifIdx in range (1,numberOfBifurcations+1):
     nodeIdx = bifurcationNodeNumber[bifIdx]
@@ -552,11 +431,11 @@ for bifIdx in range (1,numberOfBifurcations+1):
     if nodeDomain == computationalNodeNumber:
         for versionNumber in range(2,4):
             GeometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
-             versionNumber,derivIdx,nodeIdx,1,xValues[nodeIdx-1][versionNumber-1])
+             versionNumber,derivIdx,nodeIdx,1,xValues[nodeIdx][versionNumber-1])
             GeometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
-             versionNumber,derivIdx,nodeIdx,2,yValues[nodeIdx-1][versionNumber-1])
+             versionNumber,derivIdx,nodeIdx,2,yValues[nodeIdx][versionNumber-1])
             GeometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
-             versionNumber,derivIdx,nodeIdx,3,zValues[nodeIdx-1][versionNumber-1])
+             versionNumber,derivIdx,nodeIdx,3,zValues[nodeIdx][versionNumber-1])
 
 # Finish the parameter update
 GeometricField.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
@@ -624,9 +503,11 @@ DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.V,
 DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.V,2,meshComponentNumberSpace)
 # Pressure
 DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U2,1,meshComponentNumberSpace)
+DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U2,2,meshComponentNumberSpace)
 # pCellML
-if (cellmlFlag):
+if cellmlFlag:
     DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U1,1,meshComponentNumberSpace)
+    DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U1,2,meshComponentNumberSpace)
 EquationsSetCharacteristic.DependentCreateFinish()
 
 #------------------
@@ -821,7 +702,8 @@ EquationsSetAdvection.IndependentCreateFinish()
 #================================================================================================================================
 
 AnalyticFieldNavierStokes = CMISS.Field()
-EquationsSetNavierStokes.AnalyticCreateStart(CMISS.NavierStokesAnalyticFunctionTypes.FlowrateOlufsen,AnalyticFieldUserNumber,
+# FlowrateReymonds,FlowrateOlufsen,FlowrateSheffield,FlowrateAorta
+EquationsSetNavierStokes.AnalyticCreateStart(CMISS.NavierStokesAnalyticFunctionTypes.FlowrateAorta,AnalyticFieldUserNumber,
  AnalyticFieldNavierStokes)
 AnalyticFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'Analytic inlet flow rate')
 EquationsSetNavierStokes.AnalyticCreateFinish()
@@ -840,12 +722,13 @@ if (cellmlFlag):
     # point of the 1D model. This is iteratively coupled with the the 1D solver. In the case of a simple resistance
     # model, P=RQ, which is analogous to Ohm's law: V=IR. A variable map copies the guess for the FlowRate, Q at 
     # the boundary from the OpenCMISS Dependent Field to the CellML equation, which then returns presssure, P.
-    # The initial guess value for Q is taken from the previous time step or is 0 for t=0.  In OpenCMISS this P value is 
+    # The initial guess value for Q is taken from the previous time step or is 0 for t=0. In OpenCMISS this P value is 
     # then used to compute a new Area value based on the P-A relationship and the Riemann variable W_2, which gives a
     # new value for Q until the values for Q and P converge within tolerance of the previous value.
     #----------------------------------------------------------------------------------------------------------------------------
 
     pCellMLComponent = 1
+    qCellMLComponent = 2
 
     # Create the CellML environment
     CellML = CMISS.CellML()
@@ -855,11 +738,27 @@ if (cellmlFlag):
 
     # Windkessel Model
     for terminalIdx in range (1,numberOfTerminalNodes+1):
-        CellMLModelIndex[terminalIdx] = CellML.ModelImport("./Input/CellMLModels/"+str(terminalIdx)+"/WindkesselMain.cellml")
-        # known (to OpenCMISS) variables
-        CellML.VariableSetAsKnown(CellMLModelIndex[terminalIdx],"interface/FlowRate")
-        # to get from the CellML side 
-        CellML.VariableSetAsWanted(CellMLModelIndex[terminalIdx],"interface/Pressure")
+        nodeIdx = coupledNodeNumber[terminalIdx]
+        # Veins output
+        if (nodeIdx%2 == 0):
+            nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+            if nodeDomain == computationalNodeNumber:
+                CellMLModelIndex[terminalIdx] = CellML.ModelImport("./Input/CellMLModels/"+str(terminalIdx)+"/ModelHeart.cellml")
+                # known (to OpenCMISS) variables
+                CellML.VariableSetAsKnown(CellMLModelIndex[terminalIdx],"Heart/Po")
+                CellML.VariableSetAsKnown(CellMLModelIndex[terminalIdx],"Heart/Qi")
+                # to get from the CellML side 
+                CellML.VariableSetAsWanted(CellMLModelIndex[terminalIdx],"Heart/Qo")
+                CellML.VariableSetAsWanted(CellMLModelIndex[terminalIdx],"Heart/Pi")
+        # Arteries output
+        else:
+            nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+            if nodeDomain == computationalNodeNumber:
+                CellMLModelIndex[terminalIdx] = CellML.ModelImport("./Input/CellMLModels/"+str(terminalIdx)+"/WindkesselMain.cellml")
+                # known (to OpenCMISS) variables
+                CellML.VariableSetAsKnown(CellMLModelIndex[terminalIdx],"interface/FlowRate")
+                # to get from the CellML side 
+                CellML.VariableSetAsWanted(CellMLModelIndex[terminalIdx],"interface/Pressure")
     CellML.CreateFinish()
 
     # Start the creation of CellML <--> OpenCMISS field maps
@@ -867,15 +766,37 @@ if (cellmlFlag):
     
     # ModelIndex
     for terminalIdx in range (1,numberOfTerminalNodes+1):
-        # Now we can set up the field variable component <--> CellML model variable mappings.
-        # Map the OpenCMISS boundary flow rate values --> CellML
-        # Q is component 1 of the DependentField
-        CellML.CreateFieldToCellMLMap(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,1,
-         CMISS.FieldParameterSetTypes.VALUES,CellMLModelIndex[terminalIdx],"interface/FlowRate",CMISS.FieldParameterSetTypes.VALUES)
-        # Map the returned pressure values from CellML --> CMISS
-        # pCellML is component 2 of the Dependent field U1 variable
-        CellML.CreateCellMLToFieldMap(CellMLModelIndex[terminalIdx],"interface/Pressure",CMISS.FieldParameterSetTypes.VALUES,
-         DependentFieldNavierStokes,CMISS.FieldVariableTypes.U1,pCellMLComponent,CMISS.FieldParameterSetTypes.VALUES)
+        nodeIdx = coupledNodeNumber[terminalIdx]
+        # Veins output
+        if (nodeIdx%2 == 0):
+            nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+            if nodeDomain == computationalNodeNumber:
+                # Now we can set up the field variable component <--> CellML model variable mappings.
+                # Map the OpenCMISS boundary flow rate values --> CellML
+                # Q is component 1 of the DependentField
+                CellML.CreateFieldToCellMLMap(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,1,
+                 CMISS.FieldParameterSetTypes.VALUES,CellMLModelIndex[terminalIdx],"Heart/Qi",CMISS.FieldParameterSetTypes.VALUES)
+                CellML.CreateFieldToCellMLMap(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,2,
+                 CMISS.FieldParameterSetTypes.VALUES,CellMLModelIndex[terminalIdx],"Heart/Po",CMISS.FieldParameterSetTypes.VALUES)
+                # Map the returned pressure values from CellML --> CMISS
+                # pCellML is component 2 of the Dependent field U1 variable
+                CellML.CreateCellMLToFieldMap(CellMLModelIndex[terminalIdx],"Heart/Qo",CMISS.FieldParameterSetTypes.VALUES,
+                 DependentFieldNavierStokes,CMISS.FieldVariableTypes.U1,qCellMLComponent,CMISS.FieldParameterSetTypes.VALUES)
+                CellML.CreateCellMLToFieldMap(CellMLModelIndex[terminalIdx],"Heart/Pi",CMISS.FieldParameterSetTypes.VALUES,
+                 DependentFieldNavierStokes,CMISS.FieldVariableTypes.U1,pCellMLComponent,CMISS.FieldParameterSetTypes.VALUES)
+        # Arteries output
+        else:
+            nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+            if nodeDomain == computationalNodeNumber:
+                # Now we can set up the field variable component <--> CellML model variable mappings.
+                # Map the OpenCMISS boundary flow rate values --> CellML
+                # Q is component 1 of the DependentField
+                CellML.CreateFieldToCellMLMap(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,1,
+                 CMISS.FieldParameterSetTypes.VALUES,CellMLModelIndex[terminalIdx],"interface/FlowRate",CMISS.FieldParameterSetTypes.VALUES)
+                # Map the returned pressure values from CellML --> CMISS
+                # pCellML is component 1 of the Dependent field U1 variable
+                CellML.CreateCellMLToFieldMap(CellMLModelIndex[terminalIdx],"interface/Pressure",CMISS.FieldParameterSetTypes.VALUES,
+                 DependentFieldNavierStokes,CMISS.FieldVariableTypes.U1,pCellMLComponent,CMISS.FieldParameterSetTypes.VALUES)
 
     # Finish the creation of CellML <--> OpenCMISS field maps
     CellML.FieldMapsCreateFinish()
@@ -1049,6 +970,7 @@ LinearSolverNavierStokes.LinearIterativeGMRESRestartSet(RESTART_VALUE)
 # 4th Solver - ADVECTION
 Problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],SolverAdvectionUserNumber,DynamicSolverAdvection)
 DynamicSolverAdvection.OutputTypeSet(DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE)
+DynamicSolverAdvection.DynamicThetaSet(DYNAMIC_SOLVER_ADVECTION_THETA)
 # Get the dynamic linear solver
 DynamicSolverAdvection.DynamicLinearSolverGet(LinearSolverAdvection)
 
@@ -1129,18 +1051,18 @@ SolverEquationsNavierStokes.BoundaryConditionsCreateStart(BoundaryConditionsNavi
 
 # Flow-inlet
 for inputIdx in range (1,numberOfInputNodes+1):
-    nodeIdx = inputNodeNumber[inputIdx]
-    nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+    nodeNumber = inputNodeNumber[inputIdx]
+    nodeDomain = Decomposition.NodeDomainGet(nodeNumber,meshComponentNumberSpace)
     if nodeDomain == computationalNodeNumber:
         BoundaryConditionsNavierStokes.SetNode(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,
-         versionIdx,derivIdx,nodeIdx,1,CMISS.BoundaryConditionsTypes.FIXED_INLET,Q[inputIdx])
+         versionIdx,derivIdx,nodeNumber,1,CMISS.BoundaryConditionsTypes.FIXED_INLET,Qi[inputIdx])
 # Area-outlet
 for terminalIdx in range (1,numberOfTerminalNodes+1):
-    nodeIdx = coupledNodeNumber[terminalIdx]
-    nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+    nodeNumber = coupledNodeNumber[terminalIdx]
+    nodeDomain = Decomposition.NodeDomainGet(nodeNumber,meshComponentNumberSpace)
     if nodeDomain == computationalNodeNumber:
         BoundaryConditionsNavierStokes.SetNode(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,
-         versionIdx,derivIdx,nodeIdx,2,CMISS.BoundaryConditionsTypes.FIXED_OUTLET,Ae[terminalIdx])
+         versionIdx,derivIdx,nodeNumber,2,CMISS.BoundaryConditionsTypes.FIXED_OUTLET,Ae[terminalIdx])
 
 # Finish the creation of boundary conditions
 SolverEquationsNavierStokes.BoundaryConditionsCreateFinish()
@@ -1150,6 +1072,12 @@ SolverEquationsNavierStokes.BoundaryConditionsCreateFinish()
 # ADVECTION
 BoundaryConditionsAdvection = CMISS.BoundaryConditions()
 SolverEquationsAdvection.BoundaryConditionsCreateStart(BoundaryConditionsAdvection)
+for inputIdx in range (1,numberOfInputNodes+1):
+    nodeNumber = inputNodeNumber[inputIdx]
+    nodeDomain = Decomposition.NodeDomainGet(nodeNumber,meshComponentNumberConc)
+    if nodeDomain == computationalNodeNumber:
+        BoundaryConditionsAdvection.SetNode(DependentFieldAdvection,CMISS.FieldVariableTypes.U,
+         versionIdx,derivIdx,nodeNumber,1,CMISS.BoundaryConditionsTypes.FIXED,0.0)
 SolverEquationsAdvection.BoundaryConditionsCreateFinish()
   
 #================================================================================================================================
@@ -1161,15 +1089,15 @@ if (lengthFlag):
     elementNumber = [0]*(totalNumberOfElements+1)
     elementLength = [0]*(totalNumberOfElements+1)
     for i in range(1,totalNumberOfElements+1):
-        Node1 = elementNodes[i-1][0]
-        Node2 = elementNodes[i-1][1]
-        Node3 = elementNodes[i-1][2]
-        Length1 = (((xValues[Node1-1][0]-xValues[Node2-1][0])**2)
-                  +((yValues[Node1-1][0]-yValues[Node2-1][0])**2)
-                  +((zValues[Node1-1][0]-zValues[Node2-1][0])**2))**0.5
-        Length2 = (((xValues[Node2-1][0]-xValues[Node3-1][0])**2)
-                  +((yValues[Node2-1][0]-yValues[Node3-1][0])**2)
-                  +((zValues[Node2-1][0]-zValues[Node3-1][0])**2))**0.5
+        Node1 = elementNodes[i][0]
+        Node2 = elementNodes[i][1]
+        Node3 = elementNodes[i][2]
+        Length1 = (((xValues[Node1][0]-xValues[Node2][0])**2)
+                  +((yValues[Node1][0]-yValues[Node2][0])**2)
+                  +((zValues[Node1][0]-zValues[Node2][0])**2))**0.5
+        Length2 = (((xValues[Node2][0]-xValues[Node3][0])**2)
+                  +((yValues[Node2][0]-yValues[Node3][0])**2)
+                  +((zValues[Node2][0]-zValues[Node3][0])**2))**0.5
         elementNumber[i] = i
         elementLength[i] = Length1 + Length2
         elementLength[0] = elementLength[i]
@@ -1184,7 +1112,7 @@ if (lengthFlag):
                
     # Check the timestep
     for i in range(1,numberOfNodesSpace+1):
-        eig[i] = (Q[0]*Qs/(A0[i]))+(A0[i]**(0.25))*((2.0*(Pi**(0.5))
+        eig[i] = (Q[0]*Qs/(A0[i]))+(A0[i]**(0.25))*((2.0*(math.pi**(0.5))
                    *E[i]*H[i]/(3.0*A0[i]*Rho))**(0.5))
         dt[i] = ((3.0**(0.5))/3.0)*minElementLength/eig[i]
         dt[0] = dt[i]

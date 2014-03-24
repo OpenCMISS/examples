@@ -12,7 +12,7 @@
 <variable initial_value="10.0" name="ResistanceProximal" public_interface="out" units="UnitR"> </variable>
 <variable initial_value="0.01" name="ResistanceDistal" public_interface="out" units="UnitR"> </variable>
 <variable initial_value="0.01" name="Capacitance" public_interface="out" units="UnitC"> </variable>
-<variable initial_value="20.0" name="PressureTerminal" public_interface="out" units="UnitP"/>
+<variable initial_value="10.0" name="PressureTerminal" public_interface="out" units="UnitP"/>
 
 </component>
 

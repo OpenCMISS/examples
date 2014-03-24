@@ -4,14 +4,14 @@ for $i (0..10000)
      $filename = sprintf("./output/MainTime_%01d.part0.exnode", $i);
      print "Reading $filename time $i\n";
      gfx read node "$filename" time $i;
-     $filename = sprintf("./output/MainTime_%01d.part1.exnode", $i);
-     print "Reading $filename time $i\n";
-     gfx read node "$filename" time $i;
+#     $filename = sprintf("./output/MainTime_%01d.part1.exnode", $i);
+#     print "Reading $filename time $i\n";
+#     gfx read node "$filename" time $i;
   }
 
 #Read in the element description
 gfx read element ./output/MainTime_0.part0.exelem;
-gfx read element ./output/MainTime_0.part1.exelem;
+#gfx read element ./output/MainTime_0.part1.exelem;
 
 gfx define field Coordinates.x component Coordinates.x 
 gfx define field Coordinates.y component Coordinates.y
@@ -32,6 +32,8 @@ gfx cre spectrum Flow
 gfx modify spectrum Flow linear reverse range -0.1 1.5 extend_above extend_below rainbow colour_range 0 1 component 1;
 gfx cre spectrum Pressure
 gfx modify spectrum Pressure linear reverse range 0.0 30.0 extend_above extend_below rainbow colour_range 0 1 component 1;
+gfx cre spectrum Conc
+gfx modify spectrum Conc linear reverse range 0.0 1.0 extend_above extend_below rainbow colour_range 0 1 component 1;
 
 gfx modify g_element OpenCMISS cylinders constant_radius 1.0 data flow spectrum Flow radius_scalar area  scale_factor 1
 gfx modify g_element OpenCMISS node_points label cmiss_number

@@ -13,7 +13,7 @@ def Post(nodes):
     counter   = 1
 
     # Set the time parameters
-    DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME      = 800.0
+    DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME      = 700.0
     DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT = 1.0
 
     # Node number for data extraction
@@ -46,5 +46,5 @@ print "."
 print "."
 print "Processing Completed!"
 
-Popen(['gnuplot','Plot.p'])
+Popen(['gnuplot','PlotNode.p'])
 
