@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<model xmlns="http://www.cellml.org/cellml/1.1#" xmlns:cmeta="http://www.cellml.org/metadata/1.0#" cmeta:id="TempCDv" name="TempCDv">
+
+<import xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="Units.cellml">
+<units name="UnitP" units_ref="UnitP"/>
+<units name="UnitQ" units_ref="UnitQ"/>
+<units name="UnitCV" units_ref="UnitCV"/>
+<units name="UnitE" units_ref="UnitE"/>
+<units name="UnitV" units_ref="UnitV"/>
+</import>
+
+<component name="TempCDv">
+<variable name="Pi" public_interface="out" units="UnitP"/>
+<variable name="Po" public_interface="in" units="UnitP"/>
+<variable name="Qi" public_interface="in" units="UnitQ"/>
+<variable name="Qo" public_interface="out" units="UnitQ"/>
+<variable name="CV" public_interface="in" units="UnitCV"/>
+<variable name="E" public_interface="in" units="UnitE"/>
+<variable name="t" public_interface="in" units="second"/>
+<variable initial_value="V0" name="V" units="UnitV"/>
+<variable name="Pini" public_interface="in" units="UnitP"/>
+<variable name="Vini" public_interface="in" units="UnitV"/>
+<variable name="Tao" units="dimensionless"/>
+<variable name="V0" public_interface="in" units="UnitV"/>
+
+<math xmlns="http://www.w3.org/1998/Math/MathML">
+<apply id="ValveV: Tao"><eq/><ci>Tao</ci><piecewise><piece><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" cellml:units="dimensionless">1</cn><apply><geq/><ci>Pi</ci><ci>Po</ci></apply></piece><piece><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" cellml:units="dimensionless">0</cn><apply><lt/><ci>Pi</ci><ci>Po</ci></apply></piece></piecewise></apply>
+<apply id="Ventricle: Qo"><eq/><ci>Qo</ci><piecewise><piece><apply><times/><ci>CV</ci><ci>Tao</ci><apply><power/><apply><abs/><apply><minus/><ci>Pi</ci><ci>Po</ci></apply></apply><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" cellml:units="dimensionless">0.5</cn></apply></apply><apply><geq/><ci>Pi</ci><ci>Po</ci></apply></piece><piece><apply><times/><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" cellml:units="dimensionless">-1</cn><ci>CV</ci><ci>Tao</ci><apply><power/><apply><abs/><apply><minus/><ci>Po</ci><ci>Pi</ci></apply></apply><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" cellml:units="dimensionless">0.5</cn></apply></apply><apply><lt/><ci>Pi</ci><ci>Po</ci></apply></piece></piecewise></apply>
+<apply id="Ventricle: V"><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>V</ci></apply><apply><minus/><ci>Qi</ci><ci>Qo</ci></apply></apply>
+<apply id="Ventricle: Pi"><eq/><ci>Pi</ci><apply><plus/><ci>Pini</ci><apply><times/><ci>E</ci><apply><minus/><ci>V</ci><ci>Vini</ci></apply></apply></apply></apply>
+</math>
+
+</component>
+
+</model>

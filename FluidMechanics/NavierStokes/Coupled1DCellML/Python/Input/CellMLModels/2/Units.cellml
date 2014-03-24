@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<model xmlns="http://www.cellml.org/cellml/1.1#" xmlns:cmeta="http://www.cellml.org/metadata/1.0#" cmeta:id="Units" name="Units">
+
+<units name="UnitP">
+<unit multiplier="133" units="pascal"/>
+</units>
+
+<units name="UnitQ">
+<unit units="UnitV"/>
+<unit exponent="-1" units="second"/>
+</units>
+
+<units name="UnitR">
+<unit units="UnitP"/>
+<unit exponent="-1" units="UnitQ"/>
+</units>
+
+<units name="UnitC">
+<unit exponent="-1" units="UnitP"/>
+<unit units="UnitV"/>
+</units>
+
+<units name="UnitCV">
+<unit units="UnitQ"/>
+<unit exponent="-0.5" units="UnitP"/>
+</units>
+
+<units name="UnitL">
+<unit units="UnitP"/>
+<unit exponent="-1" units="UnitQ"/>
+<unit units="second"/></units>
+
+<units name="UnitE">
+<unit units="UnitP"/>
+<unit exponent="-1" units="UnitV"/>
+</units>
+
+<units name="UnitV">
+<unit multiplier="0.001" units="litre"/>
+</units>
+
+</model>

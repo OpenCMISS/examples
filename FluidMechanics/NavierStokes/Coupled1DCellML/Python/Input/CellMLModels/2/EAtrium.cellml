@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<model xmlns="http://www.cellml.org/cellml/1.1#" xmlns:cmeta="http://www.cellml.org/metadata/1.0#" cmeta:id="EAtrium" name="EAtrium">
+
+<import xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="Units.cellml">
+<units name="UnitE" units_ref="UnitE"/>
+</import>
+
+<component name="EAtrium">
+<variable name="Emax" public_interface="in" units="UnitE"/>
+<variable name="Emin" public_interface="in" units="UnitE"/>
+<variable name="T" public_interface="in" units="second"/>
+<variable name="Tpwb" public_interface="in" units="dimensionless"/>
+<variable name="Tpww" public_interface="in" units="dimensionless"/>
+<variable name="E" public_interface="out" units="UnitE"/>
+<variable name="t" public_interface="in" units="second"/>
+<variable name="mt" units="second"/><variable name="et" units="dimensionless"/>
+
+<math xmlns="http://www.w3.org/1998/Math/MathML">
+<apply><eq/><ci>mt</ci>
+<apply><minus/><ci>t</ci><apply><times/><ci>T</ci><apply><floor/><apply><divide/><ci>t</ci><ci>T</ci></apply></apply></apply></apply></apply>
+
+<apply><eq/><ci>et</ci><piecewise><piece><apply><minus/><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" cellml:units="dimensionless">1</cn><apply><cos/><apply><divide/><apply><times/><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" cellml:units="dimensionless">2</cn><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" cellml:units="dimensionless">3.14159</cn><apply><minus/><ci>mt</ci><apply><times/><apply><minus/><ci>Tpwb</ci><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" cellml:units="dimensionless">1</cn></apply><ci>T</ci></apply></apply></apply><apply><times/><ci>Tpww</ci><ci>T</ci></apply></apply></apply></apply><apply><and/><apply><geq/><ci>mt</ci><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" cellml:units="second">0</cn></apply><apply><leq/><ci>mt</ci><apply><times/><apply><minus/><apply><plus/><ci>Tpwb</ci><ci>Tpww</ci></apply><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" cellml:units="dimensionless">1</cn></apply><ci>T</ci></apply></apply></apply></piece><piece><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" cellml:units="dimensionless">0</cn><apply><and/><apply><gt/><ci>mt</ci><apply><times/><apply><minus/><apply><plus/><ci>Tpwb</ci><ci>Tpww</ci></apply><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" cellml:units="dimensionless">1</cn></apply><ci>T</ci></apply></apply><apply><leq/><ci>mt</ci><apply><times/><ci>Tpwb</ci><ci>T</ci></apply></apply></apply></piece><piece><apply><minus/><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" cellml:units="dimensionless">1</cn><apply><cos/><apply><divide/><apply><times/><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" cellml:units="dimensionless">2</cn><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" cellml:units="dimensionless">3.14159</cn><apply><minus/><ci>mt</ci><apply><times/><ci>Tpwb</ci><ci>T</ci></apply></apply></apply><apply><times/><ci>Tpww</ci><ci>T</ci></apply></apply></apply></apply><apply><and/><apply><gt/><ci>mt</ci><apply><times/><ci>Tpwb</ci><ci>T</ci></apply></apply><apply><leq/><ci>mt</ci><ci>T</ci></apply></apply></piece></piecewise></apply>
+
+<apply><eq/><ci>E</ci><apply><plus/><ci>Emin</ci><apply><divide/><apply><times/><ci>et</ci><apply><minus/><ci>Emax</ci><ci>Emin</ci></apply></apply><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" cellml:units="dimensionless">2</cn></apply></apply></apply>
+</math>
+
+</component>
+
+</model>
