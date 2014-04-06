@@ -250,12 +250,17 @@ class Test(TestTreeNode):
     self.wrapWithPre(logPath,1)
     self.checkFail = 0
     ndiff = os.environ['OPENCMISS_ROOT']+"/cm/utils/ndiff"
-    for outputFile in os.listdir(self.expectedPath) :
-      if outputFile!='.svn' :
-        command = "%s --tolerance=%e %s/%s %s/%s >> %s 2>&1" %(ndiff,self.tolerance,self.expectedPath,outputFile,self.outputPath,outputFile,logPath)
-        checkFail = os.system(command)
-        if checkFail!=0 :
+    try :
+      for outputFile in os.listdir(self.expectedPath) :
+        if outputFile!='.svn' :
+          command = "%s --tolerance=%e %s/%s %s/%s >> %s 2>&1" %(ndiff,self.tolerance,self.expectedPath,outputFile,self.outputPath,outputFile,logPath)
+          checkFail = os.system(command)
+          if checkFail!=0 :
+            self.checkFail = 1
+    except OSError:
           self.checkFail = 1
+          command = "echo 'No such file or directory: %s' >> %s 2>&1" %(self.expectedPath,logPath)
+          os.system(command)
     self.wrapWithPre(logPath,0)
     self.checkLog = "%s/nightly_check_%d_%s_%s_%s.log" %(self.masterLogDir,self.id,compilerVersion,mpi,str(date.today()))
     self.checkHistoryLog = "%s/nightly_check_history_%d_%s_%s.log" %(self.masterLogDir,self.id,compilerVersion,mpi)
