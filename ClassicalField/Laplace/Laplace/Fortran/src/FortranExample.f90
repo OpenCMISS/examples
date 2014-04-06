@@ -39,7 +39,7 @@
 !> the terms of any one of the MPL, the GPL or the LGPL.
 !>
 
-!> \example ClassicalField/Laplace/Laplace/src/LaplaceExample.f90
+!> \example ClassicalField/Laplace/Laplace/Fortran/src/LaplaceExample.f90
 !! Example program to solve a Laplace equation using OpenCMISS calls.
 !! \htmlinclude ClassicalField/Laplace/Laplace/history.html
 !!
@@ -61,8 +61,8 @@ PROGRAM LAPLACEEXAMPLE
   !Test program parameters
 
   REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: WIDTH=2.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: WIDTH=1.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: LENGTH=1.0_CMISSDP
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
@@ -150,10 +150,15 @@ PROGRAM LAPLACEEXAMPLE
     IF(INTERPOLATION_TYPE<=0) CALL HANDLE_ERROR("Invalid Interpolation specification.")
   ELSE
     !If there are not enough arguments default the problem specification 
-    NUMBER_GLOBAL_X_ELEMENTS=2
-    NUMBER_GLOBAL_Y_ELEMENTS=2
-    NUMBER_GLOBAL_Z_ELEMENTS=0
-    INTERPOLATION_TYPE=1
+    NUMBER_GLOBAL_X_ELEMENTS=1
+    NUMBER_GLOBAL_Y_ELEMENTS=3
+    NUMBER_GLOBAL_Z_ELEMENTS=1
+!    INTERPOLATION_TYPE=1
+    
+    INTERPOLATION_TYPE=CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION
+!    INTERPOLATION_TYPE=CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION
+!    INTERPOLATION_TYPE=CMISS_BASIS_CUBIC_LAGRANGE_INTERPOLATION    
+    
   ENDIF
   
   !Intialise OpenCMISS
@@ -316,7 +321,7 @@ PROGRAM LAPLACEEXAMPLE
   CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_NO_OUTPUT,Err)
   !CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_TIMING_OUTPUT,Err)
   !CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_MATRIX_OUTPUT,Err)
-  CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_ELEMENT_MATRIX_OUTPUT,Err)
+  !CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_ELEMENT_MATRIX_OUTPUT,Err)
   !Finish the equations set equations
   CALL CMISSEquationsSet_EquationsCreateFinish(EquationsSet,Err)
   
@@ -338,14 +343,18 @@ PROGRAM LAPLACEEXAMPLE
   CALL CMISSSolver_Initialise(Solver,Err)
   CALL CMISSProblem_SolversCreateStart(Problem,Err)
   CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,Solver,Err)
-  !CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_NO_OUTPUT,Err)
+  CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_NO_OUTPUT,Err)
   !CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
   !CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_TIMING_OUTPUT,Err)
-  CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_SOLVER_OUTPUT,Err)
+  !CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_SOLVER_OUTPUT,Err)
   !CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_MATRIX_OUTPUT,Err)
-  CALL CMISSSolver_LinearTypeSet(Solver,CMISS_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
-  CALL CMISSSolver_LinearIterativeAbsoluteToleranceSet(Solver,1.0E-12_CMISSDP,Err)
-  CALL CMISSSolver_LinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMISSDP,Err)
+  
+!  CALL CMISSSolver_LinearTypeSet(Solver,CMISS_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
+!  CALL CMISSSolver_LinearIterativeAbsoluteToleranceSet(Solver,1.0E-12_CMISSDP,Err)
+!  CALL CMISSSolver_LinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMISSDP,Err)
+
+  CALL CMISSSolver_LinearTypeSet(Solver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
+  
   !CALL CMISSSolver_LinearTypeSet(Solver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
   !CALL CMISSSolver_LibraryTypeSet(Solver,CMISS_SOLVER_MUMPS_LIBRARY,Err)
   !CALL CMISSSolver_LibraryTypeSet(Solver,CMISS_SOLVER_LAPACK_LIBRARY,Err)

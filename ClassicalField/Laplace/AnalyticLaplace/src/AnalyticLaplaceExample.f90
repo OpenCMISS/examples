@@ -243,7 +243,7 @@ CONTAINS
 
     CALL TEST_FRAMEWORK_ASSERT_EQUALS(2.0_CMISSDP,VALUE,0.5_CMISSDP,ERR)
     
-    WRITE(*,'(A)') "Analytic Laplace Example Testcase1 - bilinear Simplex is successfully completed."
+    WRITE(*,'(A)') "Analytic Laplace Example Testcase 1 - bilinear Simplex has successfully completed."
     
   END SUBROUTINE ANALYTICLAPLACE_TESTCASE_BILINEAR_SIMPLEX_CONVERGENCE
   
@@ -270,7 +270,7 @@ CONTAINS
 
     CALL TEST_FRAMEWORK_ASSERT_EQUALS(2.0_CMISSDP,VALUE,0.5_CMISSDP,ERR)
     
-    WRITE(*,'(A)') "Analytic Laplace Example Testcase2 - bilinear lagrange is successfully completed."
+    WRITE(*,'(A)') "Analytic Laplace Example Testcase 2 - bilinear Lagrange has successfully completed."
     
   END SUBROUTINE ANALYTICLAPLACE_TESTCASE_BILINEAR_LAGRANGE_CONVERGENCE
   
@@ -294,14 +294,15 @@ CONTAINS
     CALL ANALYTICLAPLACE_GENERIC_CONVERGENCE(NUMBER_OF_ELEMENTS_XI_START,NUMBER_OF_ELEMENTS_XI_END, &
       & NUMBER_OF_ELEMENTS_XI_INTERVAL,4,X_VALUES,Y_VALUES)
     
-   CALL TEST_FRAMEWORK_GRADIENT_VALUE_GET(X_VALUES,Y_VALUES,VALUE)
-   CALL TEST_FRAMEWORK_ASSERT_EQUALS(4.0_CMISSDP,VALUE,1.0_CMISSDP,Err)
-   IF (Err/=0) THEN
-     WRITE(*,'(A,F6.3)') "Analytic Laplace Example Testcase3 - bicubic Hermite failure: Convergence should be around 4.0" &
-       & //", but it was ", VALUE
-   ENDIF
-   WRITE(*,'(A)') "Analytic Laplace Example Testcase3 - bicubic Hermite is successfully completed."
-
+    CALL TEST_FRAMEWORK_GRADIENT_VALUE_GET(X_VALUES,Y_VALUES,VALUE)
+    !This test is superconvergent so look for a slope of 5 rather than 4. Should really test >= 4
+    CALL TEST_FRAMEWORK_ASSERT_EQUALS(5.0_CMISSDP,VALUE,1.0_CMISSDP,Err)
+    IF (Err/=0) THEN
+      WRITE(*,'(A,F6.3)') "Analytic Laplace Example Testcase 3 - bicubic Hermite failure: Convergence should be around 4.0" &
+        & //", but it was ", VALUE
+    ENDIF
+    WRITE(*,'(A)') "Analytic Laplace Example Testcase 3 - bicubic Hermite has successfully completed."
+    
   END SUBROUTINE ANALYTICLAPLACE_TESTCASE_BICUBIC_HERMITE_CONVERGENCE
   
   !
@@ -428,6 +429,10 @@ CONTAINS
       CALL CMISSBasis_NumberOfXiSet(Basis,3,Err)
       CALL CMISSBasis_InterpolationXiSet(Basis,[INTERPOLATION_SPECIFICATIONS,INTERPOLATION_SPECIFICATIONS, &
           & INTERPOLATION_SPECIFICATIONS],Err)
+    ENDIF
+    !Set the number of Gauss points
+    IF(INTERPOLATION_SPECIFICATIONS==CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION) THEN
+      CALL CMISSBasis_QuadratureNumberOfGaussXiSet(Basis,[3,3],Err)
     ENDIF
     !Finish the creation of the basis
     CALL CMISSBasis_CreateFinish(Basis,Err)
