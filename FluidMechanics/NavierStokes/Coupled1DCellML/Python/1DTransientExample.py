@@ -90,7 +90,7 @@ MaterialsFieldUserNumberFr  = 6
 MaterialsFieldUserNumberSt  = 7
 MaterialsFieldUserNumberA0  = 1
 MaterialsFieldUserNumberE   = 2
-MaterialsFieldUserNumberH0  = 3
+MaterialsFieldUserNumberH   = 3
 MaterialsFieldUserNumberD   = 1
 
 #================================================================================================================================
@@ -98,7 +98,7 @@ MaterialsFieldUserNumberD   = 1
 #================================================================================================================================
 
 # Import the libraries (OpenCMISS,python,numpy,scipy)
-import numpy,math,pdb
+import numpy,math
 from scipy.sparse import linalg
 from opencmiss import CMISS
 import csv,time
@@ -185,14 +185,14 @@ with open('Input/Element.csv','rb') as csvfile:
 #================================================================================================================================
 
 # Set the flags
-cellmlFlag    = True
-lengthFlag    = False
-analysisFlag  = False
+RCRFlag      = True
+elemFlag     = False
+analysisFlag = False
 
 # Set the material parameters
 Rho = 1050.0                      # Rho         (kg/m3)
 Mu  = 0.004                       # Mu          (pa.s)
-D   = 1000.0                       # Diffusivity (m2/s)
+D   = 1000.0                      # Diffusivity (m2/s)
 A0  = [0]*(numberOfNodesSpace+1)  # Area        (m2)
 H   = [0]*(numberOfNodesSpace+1)  # Thickness   (m)
 E   = [0]*(numberOfNodesSpace+1)  # Elasticity  (pa)
@@ -221,6 +221,7 @@ with open('Input/Material.csv','rb') as csvfile:
             numberOfTerminalNodes = numberOfTerminalNodes+1
         if row[5]:
             numberOfInputNodes = numberOfInputNodes+1
+
 # Set the initial conditions
 Q = [0]*(numberOfNodesSpace+1)
 A = [0]*(numberOfNodesSpace+1)
@@ -275,7 +276,7 @@ MAXIMUM_ITERATIONS   = 100000   # default: 100000
 RESTART_VALUE        = 3000     # default: 30
 
 # Check the CellML flag
-if (cellmlFlag):
+if (RCRFlag):
    # Navier-Stokes solver
    EquationsSetSubtype = CMISS.EquationsSetSubtypes.Coupled1D0D_NAVIER_STOKES
    # Characteristic solver
@@ -492,22 +493,23 @@ DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.V,'Characte
 DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U1,'pCellML')
 DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U2,'Pressure')
 # Set the mesh component to be used by the field components.
-# Flow
+# Flow & Area
 DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,meshComponentNumberSpace)
-DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,1,meshComponentNumberSpace)
-# Area
 DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,2,meshComponentNumberSpace)
+# Derivatives
+DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,1,meshComponentNumberSpace)
 DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,2,meshComponentNumberSpace)
-# W
+# Riemann
 DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.V,1,meshComponentNumberSpace)
 DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.V,2,meshComponentNumberSpace)
+# qCellML & pCellml
+if RCRFlag:
+    DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U1,1,meshComponentNumberSpace)
+    DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U1,2,meshComponentNumberSpace)
 # Pressure
 DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U2,1,meshComponentNumberSpace)
 DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U2,2,meshComponentNumberSpace)
-# pCellML
-if cellmlFlag:
-    DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U1,1,meshComponentNumberSpace)
-    DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U1,2,meshComponentNumberSpace)
+
 EquationsSetCharacteristic.DependentCreateFinish()
 
 #------------------
@@ -537,8 +539,6 @@ for bifIdx in range (1,numberOfBifurcations+1):
 # Finish the parameter update
 DependentFieldNavierStokes.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
 DependentFieldNavierStokes.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)   
-DependentFieldNavierStokes.ParameterSetUpdateStart(CMISS.FieldVariableTypes.V,CMISS.FieldParameterSetTypes.VALUES)
-DependentFieldNavierStokes.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.V,CMISS.FieldParameterSetTypes.VALUES) 
 
 #------------------
 
@@ -602,7 +602,7 @@ MaterialsFieldNavierStokes.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.
 MaterialsFieldNavierStokes.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
  MaterialsFieldUserNumberSt,St)
 
-# Initialise the materials field variables (A0,E,H0)
+# Initialise the materials field variables (A0,E,H)
 for nodeIdx in range(1,numberOfNodesSpace+1,1):
     nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
     if nodeDomain == computationalNodeNumber:
@@ -611,7 +611,7 @@ for nodeIdx in range(1,numberOfNodesSpace+1,1):
         MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,CMISS.FieldParameterSetTypes.VALUES,
          versionIdx,derivIdx,nodeIdx,MaterialsFieldUserNumberE,E[nodeIdx])
         MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,CMISS.FieldParameterSetTypes.VALUES,
-         versionIdx,derivIdx,nodeIdx,MaterialsFieldUserNumberH0,H[nodeIdx])
+         versionIdx,derivIdx,nodeIdx,MaterialsFieldUserNumberH,H[nodeIdx])
 # Initialise the materials field variables for bifurcation
 for bifIdx in range(1,numberOfBifurcations+1):
     nodeIdx = bifurcationNodeNumber[bifIdx]
@@ -623,7 +623,7 @@ for bifIdx in range(1,numberOfBifurcations+1):
             MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,CMISS.FieldParameterSetTypes.VALUES,
              versionNumber,derivIdx,nodeIdx,MaterialsFieldUserNumberE,E[nodeIdx+2*versionNumber-2])
             MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,CMISS.FieldParameterSetTypes.VALUES,
-             versionNumber,derivIdx,nodeIdx,MaterialsFieldUserNumberH0,H[nodeIdx+2*versionNumber-2])
+             versionNumber,derivIdx,nodeIdx,MaterialsFieldUserNumberH,H[nodeIdx+2*versionNumber-2])
 
 # Finish the parameter update
 MaterialsFieldNavierStokes.ParameterSetUpdateStart(CMISS.FieldVariableTypes.V,CMISS.FieldParameterSetTypes.VALUES)
@@ -675,7 +675,7 @@ for bifIdx in range (1,numberOfBifurcations+1):
         IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,  
          3,derivIdx,nodeIdx,2,-1.0)
 # Set the normal wave direction for terminal
-if (cellmlFlag):
+if (RCRFlag):
     for terminalIdx in range (1,numberOfTerminalNodes+1):
         nodeIdx = coupledNodeNumber[terminalIdx]
         nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
@@ -713,7 +713,7 @@ AnalyticFieldNavierStokes.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U
 #  CellML Model Maps
 #================================================================================================================================
 
-if (cellmlFlag):
+if (RCRFlag):
 
     #----------------------------------------------------------------------------------------------------------------------------
     # Description
@@ -727,8 +727,8 @@ if (cellmlFlag):
     # new value for Q until the values for Q and P converge within tolerance of the previous value.
     #----------------------------------------------------------------------------------------------------------------------------
 
-    pCellMLComponent = 1
-    qCellMLComponent = 2
+    qCellMLComponent = 1
+    pCellMLComponent = 2
 
     # Create the CellML environment
     CellML = CMISS.CellML()
@@ -745,8 +745,8 @@ if (cellmlFlag):
             if nodeDomain == computationalNodeNumber:
                 CellMLModelIndex[terminalIdx] = CellML.ModelImport("./Input/CellMLModels/"+str(terminalIdx)+"/ModelHeart.cellml")
                 # known (to OpenCMISS) variables
-                CellML.VariableSetAsKnown(CellMLModelIndex[terminalIdx],"Heart/Po")
                 CellML.VariableSetAsKnown(CellMLModelIndex[terminalIdx],"Heart/Qi")
+                CellML.VariableSetAsKnown(CellMLModelIndex[terminalIdx],"Heart/Po")
                 # to get from the CellML side 
                 CellML.VariableSetAsWanted(CellMLModelIndex[terminalIdx],"Heart/Qo")
                 CellML.VariableSetAsWanted(CellMLModelIndex[terminalIdx],"Heart/Pi")
@@ -754,11 +754,11 @@ if (cellmlFlag):
         else:
             nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
             if nodeDomain == computationalNodeNumber:
-                CellMLModelIndex[terminalIdx] = CellML.ModelImport("./Input/CellMLModels/"+str(terminalIdx)+"/WindkesselMain.cellml")
+                CellMLModelIndex[terminalIdx] = CellML.ModelImport("./Input/CellMLModels/"+str(terminalIdx)+"/ModelRCR.cellml")
                 # known (to OpenCMISS) variables
-                CellML.VariableSetAsKnown(CellMLModelIndex[terminalIdx],"interface/FlowRate")
+                CellML.VariableSetAsKnown(CellMLModelIndex[terminalIdx],"Circuit/Qin")
                 # to get from the CellML side 
-                CellML.VariableSetAsWanted(CellMLModelIndex[terminalIdx],"interface/Pressure")
+                CellML.VariableSetAsWanted(CellMLModelIndex[terminalIdx],"Circuit/Pout")
     CellML.CreateFinish()
 
     # Start the creation of CellML <--> OpenCMISS field maps
@@ -776,7 +776,7 @@ if (cellmlFlag):
                 # Q is component 1 of the DependentField
                 CellML.CreateFieldToCellMLMap(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,1,
                  CMISS.FieldParameterSetTypes.VALUES,CellMLModelIndex[terminalIdx],"Heart/Qi",CMISS.FieldParameterSetTypes.VALUES)
-                CellML.CreateFieldToCellMLMap(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,2,
+                CellML.CreateFieldToCellMLMap(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U2,1,
                  CMISS.FieldParameterSetTypes.VALUES,CellMLModelIndex[terminalIdx],"Heart/Po",CMISS.FieldParameterSetTypes.VALUES)
                 # Map the returned pressure values from CellML --> CMISS
                 # pCellML is component 2 of the Dependent field U1 variable
@@ -792,10 +792,10 @@ if (cellmlFlag):
                 # Map the OpenCMISS boundary flow rate values --> CellML
                 # Q is component 1 of the DependentField
                 CellML.CreateFieldToCellMLMap(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,1,
-                 CMISS.FieldParameterSetTypes.VALUES,CellMLModelIndex[terminalIdx],"interface/FlowRate",CMISS.FieldParameterSetTypes.VALUES)
+                 CMISS.FieldParameterSetTypes.VALUES,CellMLModelIndex[terminalIdx],"Circuit/Qin",CMISS.FieldParameterSetTypes.VALUES)
                 # Map the returned pressure values from CellML --> CMISS
                 # pCellML is component 1 of the Dependent field U1 variable
-                CellML.CreateCellMLToFieldMap(CellMLModelIndex[terminalIdx],"interface/Pressure",CMISS.FieldParameterSetTypes.VALUES,
+                CellML.CreateCellMLToFieldMap(CellMLModelIndex[terminalIdx],"Circuit/Pout",CMISS.FieldParameterSetTypes.VALUES,
                  DependentFieldNavierStokes,CMISS.FieldVariableTypes.U1,pCellMLComponent,CMISS.FieldParameterSetTypes.VALUES)
 
     # Finish the creation of CellML <--> OpenCMISS field maps
@@ -811,7 +811,7 @@ if (cellmlFlag):
         nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
         if nodeDomain == computationalNodeNumber:
             CellMLModelsField.ParameterSetUpdateNode(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
-             versionIdx,derivIdx,nodeIdx,pCellMLComponent,CellMLModelIndex[terminalIdx])
+             versionIdx,derivIdx,nodeIdx,1,CellMLModelIndex[terminalIdx])
 
     CellMLStateField = CMISS.Field()
     CellML.StateFieldCreateStart(CellMLStateFieldUserNumber,CellMLStateField)
@@ -825,18 +825,7 @@ if (cellmlFlag):
     CellML.IntermediateFieldCreateStart(CellMLIntermediateFieldUserNumber,CellMLIntermediateField)
     CellML.IntermediateFieldCreateFinish()
 
-    # Initialise pCellML
-    pCellML = [0.0]*(numberOfTerminalNodes+1)
-    for terminalIdx in range (1,numberOfTerminalNodes+1):
-        nodeIdx = coupledNodeNumber[terminalIdx]
-        nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
-        if nodeDomain == computationalNodeNumber:
-            DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U1,CMISS.FieldParameterSetTypes.VALUES,
-             versionIdx,derivIdx,nodeIdx,pCellMLComponent,pCellML[terminalIdx])
-
     # Finish the parameter update
-    DependentFieldNavierStokes.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
-    DependentFieldNavierStokes.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
     DependentFieldNavierStokes.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U1,CMISS.FieldParameterSetTypes.VALUES)
     DependentFieldNavierStokes.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U1,CMISS.FieldParameterSetTypes.VALUES)
 
@@ -914,7 +903,7 @@ Problem.SolversCreateStart()
 #------------------
 
 # 1st Solver - CellML
-if (cellmlFlag):
+if (RCRFlag):
     CellMLSolver = CMISS.Solver()
     Problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],SolverDAEUserNumber,CellMLSolver)
     CellMLSolver.OutputTypeSet(CMISS_SOLVER_OUTPUT_TYPE)
@@ -994,7 +983,7 @@ Problem.SolverEquationsCreateStart()
 #------------------
 
 # 1st Solver - CellML
-if (cellmlFlag):
+if (RCRFlag):
     CellMLSolver = CMISS.Solver()
     CellMLEquations = CMISS.CellMLEquations()
     Problem.CellMLEquationsCreateStart()
@@ -1084,7 +1073,7 @@ SolverEquationsAdvection.BoundaryConditionsCreateFinish()
 #  Element Length
 #================================================================================================================================
 
-if (lengthFlag):
+if (elemFlag):
     # Check the element length
     elementNumber = [0]*(totalNumberOfElements+1)
     elementLength = [0]*(totalNumberOfElements+1)

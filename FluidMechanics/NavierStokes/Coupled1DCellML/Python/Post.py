@@ -28,8 +28,8 @@ def Post(nodes):
                 if outputLINE[i].split() == ['Node:', str(node)]:
                     # Extract the variables from output files
                     Flow = float(''.join(outputLINE[i+4].split()))
-                    Conc = float(''.join(outputLINE[i+12].split()))
-                    Pressure = float(''.join(outputLINE[i+11].split()))
+                    Conc = float(''.join(outputLINE[i+14].split()))
+                    Pressure = float(''.join(outputLINE[i+12].split()))
                     Time = x*Ts*DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT
                     Flow = Flow*Qs*1000000.0
                     # Write in the Result file
