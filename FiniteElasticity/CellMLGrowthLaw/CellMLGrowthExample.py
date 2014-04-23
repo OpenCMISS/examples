@@ -222,13 +222,17 @@ CMISS.Field.ComponentValuesInitialiseDP(
 # Create the dependent field
 dependentField = CMISS.Field()
 dependentField.CreateStart(dependentFieldUserNumber,region)
-dependentField.VariableLabelSet(CMISS.FieldVariableTypes.U,"Dependent")
 dependentField.TypeSet(CMISS.FieldTypes.GEOMETRIC_GENERAL)  
 dependentField.MeshDecompositionSet(decomposition)
 dependentField.GeometricFieldSet(geometricField) 
 dependentField.DependentTypeSet(CMISS.FieldDependentTypes.DEPENDENT) 
 dependentField.NumberOfVariablesSet(5)
 dependentField.VariableTypesSet([CMISS.FieldVariableTypes.U,CMISS.FieldVariableTypes.DELUDELN,CMISS.FieldVariableTypes.U1,CMISS.FieldVariableTypes.U2,CMISS.FieldVariableTypes.U3])
+dependentField.VariableLabelSet(CMISS.FieldVariableTypes.U,"Dependent")
+dependentField.VariableLabelSet(CMISS.FieldVariableTypes.DELUDELN,"del U/del n")
+dependentField.VariableLabelSet(CMISS.FieldVariableTypes.U1,"Strain")
+dependentField.VariableLabelSet(CMISS.FieldVariableTypes.U2,"Stress")
+dependentField.VariableLabelSet(CMISS.FieldVariableTypes.U3,"Growth")
 dependentField.NumberOfComponentsSet(CMISS.FieldVariableTypes.U,3)
 dependentField.NumberOfComponentsSet(CMISS.FieldVariableTypes.DELUDELN,3)
 dependentField.NumberOfComponentsSet(CMISS.FieldVariableTypes.U1,6)
@@ -311,16 +315,19 @@ growthCellML.FieldMapsCreateFinish()
 # Create the CELL models field
 growthCellMLModelsField = CMISS.Field()
 growthCellML.ModelsFieldCreateStart(growthCellMLModelsFieldUserNumber,growthCellMLModelsField)
+growthCellMLModelsField.VariableLabelSet(CMISS.FieldVariableTypes.U,"GrowthModelMap")
 growthCellML.ModelsFieldCreateFinish()
 
 # Create the CELL parameters field
 growthCellMLParametersField = CMISS.Field()
 growthCellML.ParametersFieldCreateStart(growthCellMLParametersFieldUserNumber,growthCellMLParametersField)
+growthCellMLParametersField.VariableLabelSet(CMISS.FieldVariableTypes.U,"GrowthParameters")
 growthCellML.ParametersFieldCreateFinish()
 
 # Create the CELL state field
 growthCellMLStateField = CMISS.Field()
 growthCellML.StateFieldCreateStart(growthCellMLStateFieldUserNumber,growthCellMLStateField)
+growthCellMLStateField.VariableLabelSet(CMISS.FieldVariableTypes.U,"GrowthState")
 growthCellML.StateFieldCreateFinish()
 
 # Create the CellML environment for the consitutative law
@@ -374,16 +381,19 @@ constituativeCellML.FieldMapsCreateFinish()
 # Create the CELL models field
 constituativeCellMLModelsField = CMISS.Field()
 constituativeCellML.ModelsFieldCreateStart(constituativeCellMLModelsFieldUserNumber,constituativeCellMLModelsField)
+constituativeCellMLModelsField.VariableLabelSet(CMISS.FieldVariableTypes.U,"ConstituativeModelMap")
 constituativeCellML.ModelsFieldCreateFinish()
 
 # Create the CELL parameters field
 constituativeCellMLParametersField = CMISS.Field()
 constituativeCellML.ParametersFieldCreateStart(constituativeCellMLParametersFieldUserNumber,constituativeCellMLParametersField)
+constituativeCellMLParametersField.VariableLabelSet(CMISS.FieldVariableTypes.U,"ConstituativeParameters")
 constituativeCellML.ParametersFieldCreateFinish()
 
 # Create the CELL intermediate field
 constituativeCellMLIntermediateField = CMISS.Field()
 constituativeCellML.IntermediateFieldCreateStart(constituativeCellMLIntermediateFieldUserNumber,constituativeCellMLIntermediateField)
+constituativeCellMLIntermediateField.VariableLabelSet(CMISS.FieldVariableTypes.U,"ConstituativeIntermediate")
 constituativeCellML.IntermediateFieldCreateFinish()
 
 # Create equations
