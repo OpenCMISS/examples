@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os, mmap, re, sys
 from jinja2 import Environment, FileSystemLoader
 from datetime import date	
@@ -144,7 +145,7 @@ class Example(TestTreeNode):
         test.run()
         if test.runFail == 0 and hasattr(test, 'expectedPath'):
           test.check()
-    print "%s tests completed. Result: %s" %(self.path[len(globalExamplesDir)+1:], "success" if self.fail == 0 else "fail")
+    print("%s tests completed. Result: %s" %(self.path[len(globalExamplesDir)+1:], "success" if self.fail == 0 else "fail"))
 
   def build(self) :
     cwd = os.getcwd()
@@ -293,7 +294,7 @@ def fileInTestSets(f,path) :
 
 root = TestTreeNode(name="examples", path=examplesDir)
 if "html" in sys.argv :
-  print '<div style="display:none">'
+  print('<div style="display:none">')
 for path, subFolders, files in os.walk(top=root.path,topdown=True) :
   if path.find(".svn")==-1 :	
     for f in files :
@@ -316,10 +317,10 @@ for path, subFolders, files in os.walk(top=root.path,topdown=True) :
           example = Example(name=path[path.rfind('/')+1:],parent=parent,dct=None)
           example.invalidConfig()
 if "html" in sys.argv :
-  print '</div>'
+  print('</div>')
 os.chdir(globalExamplesDir)
 
 if "html" in sys.argv :
-  print template.render(examples=root)
+  print(template.render(examples=root))
 if root.fail != 0 :
   exit("ERROR: At least one examples failed")
