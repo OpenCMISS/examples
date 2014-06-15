@@ -284,12 +284,12 @@ def object_encode(name,parent,dct=None) :
 
 def fileInTestSets(f,path) :
   if f in testSets :
-    if machine == None or machine == "hpc5" :
-      return True
-    else :
+    if machine == "build-sn-gpu-p" :
       linestring = open("%s/%s" %(path,f), 'r').read()
       if linestring.find(machine)!=-1:
         return True
+    else :
+      return True
   return False
 
 root = TestTreeNode(name="examples", path=examplesDir)
