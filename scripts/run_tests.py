@@ -147,11 +147,17 @@ class Example(TestTreeNode):
           test.check()
     print("%s tests completed. Result: %s" %(self.path[len(globalExamplesDir)+1:], "success" if self.fail == 0 else "fail"))
 
+  def cleanLogs(self) :
+    for examplePath, subFolders, files in os.walk(self.logDir) :
+      for f in files :
+        os.remove(examplePath+"/"+f)
+
   def build(self) :
     cwd = os.getcwd()
     os.chdir(self.path)
     logPath = "%s/nightly_build_%s_%s_%s_%s.log" %(self.logDir,compilerVersion,mpi,mode,str(date.today()))
     self.wrapWithPre(logPath,1)
+    self.cleanLogs()
     os.system("make %s=true clean  >> %s 2>&1" %(mode,logPath))
     command = "make %s=true >> %s 2>&1" %(mode,logPath)
     self.buildFail = os.system(command)
