@@ -150,7 +150,8 @@ class Example(TestTreeNode):
   def cleanLogs(self) :
     for examplePath, subFolders, files in os.walk(self.logDir) :
       for f in files :
-        os.remove(examplePath+"/"+f)
+        if f.startswith("nightly_") and (not "history" in f) :
+          os.remove(examplePath+"/"+f)
 
   def build(self) :
     cwd = os.getcwd()
