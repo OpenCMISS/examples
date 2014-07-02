@@ -76,7 +76,7 @@ Search: <input id="exampleF" type="text" name="example">&nbsp;
         {% if subclass.children %}
           {{ loop(subclass.children) }}     
         {% else %}
-          <% if subclass.language != "python" %>
+          {% if subclass.language != "python" %}
           <li class="liBullet">&nbsp;Building the example:&nbsp;
           {% if subclass.buildFail==0 %}
             <a class="success" href="{{subclass.buildLog}}">PASS</a>
@@ -89,7 +89,7 @@ Search: <input id="exampleF" type="text" name="example">&nbsp;
           {{subclass.buildHistory}}
           </span></span>
           </li>
-          <% endif %>
+          {% endif %}
           {% if subclass.buildFail==0 %}
             {%for test in subclass.tests %}
               <li class="liBullet">&nbsp;Executing test #{{test.id}}:&nbsp;
