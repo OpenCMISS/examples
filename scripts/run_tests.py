@@ -147,18 +147,25 @@ class Example(TestTreeNode):
           test.check()
     print("%s tests completed. Result: %s" %(self.path[len(globalExamplesDir)+1:], "success" if self.fail == 0 else "fail"))
 
+  def cleanLogs(self) :
+    for examplePath, subFolders, files in os.walk(self.logDir) :
+      for f in files :
+        if f.startswith("nightly_") and (not "history" in f) :
+          os.remove(examplePath+"/"+f)
+
   def build(self) :
     cwd = os.getcwd()
     os.chdir(self.path)
-    logPath = "%s/nightly_build_%s_%s_%s.log" %(self.logDir,compilerVersion,mpi,str(date.today()))
+    logPath = "%s/nightly_build_%s_%s_%s_%s.log" %(self.logDir,compilerVersion,mpi,mode,str(date.today()))
     self.wrapWithPre(logPath,1)
+    self.cleanLogs()
     os.system("make %s=true clean  >> %s 2>&1" %(mode,logPath))
     command = "make %s=true >> %s 2>&1" %(mode,logPath)
     self.buildFail = os.system(command)
     self.wrapWithPre(logPath,0)
-    self.buildLog = "%s/nightly_build_%s_%s_%s.log" %(self.masterLogDir,compilerVersion,mpi,str(date.today()))
-    self.buildHistoryLog = "%s/nightly_build_history_%s_%s.log" %(self.masterLogDir,compilerVersion,mpi)
-    self.buildHistory = self.add_history("%s/nightly_build_history_%s_%s.log" %(self.logDir,compilerVersion,mpi),self.buildFail)   
+    self.buildLog = "%s/nightly_build_%s_%s_%s_%s.log" %(self.masterLogDir,compilerVersion,mpi,mode,str(date.today()))
+    self.buildHistoryLog = "%s/nightly_build_history_%s_%s_%s.log" %(self.masterLogDir,compilerVersion,mpi,mode)
+    self.buildHistory = self.add_history("%s/nightly_build_history_%s_%s_%s.log" %(self.logDir,compilerVersion,mpi,mode),self.buildFail)   
     if self.buildFail != 0 :
       self.fail = 1
       self.accumulateParentFail()
@@ -167,13 +174,13 @@ class Example(TestTreeNode):
 
   def invalidConfig(self) :
     self.buildFail = 1
-    logPath = "%s/nightly_build_%s_%s_%s.log" %(self.logDir,compilerVersion,mpi,str(date.today()))
+    logPath = "%s/nightly_build_%s_%s_%s_%s.log" %(self.logDir,compilerVersion,mpi,mode,str(date.today()))
     f1 = open(logPath,"w")
     f1.write("Invalid JSON configuration.")
     f1.close()
-    self.buildLog = "%s/nightly_build_%s_%s_%s.log" %(self.masterLogDir,compilerVersion,mpi,str(date.today()))
-    self.buildHistoryLog = "%s/nightly_build_history_%s_%s.log" %(self.masterLogDir,compilerVersion,mpi)
-    self.buildHistory = self.add_history("%s/nightly_build_history_%s_%s.log" %(self.logDir,compilerVersion,mpi),self.buildFail)   
+    self.buildLog = "%s/nightly_build_%s_%s_%s_%s.log" %(self.masterLogDir,compilerVersion,mpi,mode,str(date.today()))
+    self.buildHistoryLog = "%s/nightly_build_history_%s_%s_%s.log" %(self.masterLogDir,compilerVersion,mpi,mode)
+    self.buildHistory = self.add_history("%s/nightly_build_history_%s_%s_%s.log" %(self.logDir,compilerVersion,mpi,mode),self.buildFail)   
     if self.buildFail != 0 :
       self.fail = 1
       self.accumulateParentFail()
@@ -202,7 +209,7 @@ class Test(TestTreeNode):
   def run(self) :
     cwd = os.getcwd()
     os.chdir(self.path)
-    logPath = "%s/nightly_run_%d_%s_%s_%s.log" %(self.logDir,self.id,compilerVersion,mpi,str(date.today()))
+    logPath = "%s/nightly_run_%d_%s_%s_%s_%s.log" %(self.logDir,self.id,compilerVersion,mpi,mode,str(date.today()))
     self.wrapWithPre(logPath,1)
     if self.parent.language == "python" :
       command = "python %s %s > %s 2>&1" %(self.parent.script, self.args,logPath)
@@ -216,8 +223,8 @@ class Test(TestTreeNode):
       command = "%s/bin/%s-%s/%s/%s/%sExample%s %s > %s 2>&1" %(self.parent.path,arch,system,mpi,compilerVersion,self.exampleName,MODE_SUFFIX_MAP[mode],self.args,logPath)
     self.runFail = os.system(command)
     self.wrapWithPre(logPath,0)
-    self.runLog = "%s/nightly_run_%d_%s_%s_%s.log" %(self.masterLogDir,self.id,compilerVersion,mpi,str(date.today()))
-    self.runHistoryLog = "%s/nightly_run_history_%d_%s_%s.log" %(self.masterLogDir,self.id,compilerVersion,mpi)  
+    self.runLog = "%s/nightly_run_%d_%s_%s_%s_%s.log" %(self.masterLogDir,self.id,compilerVersion,mpi,mode,str(date.today()))
+    self.runHistoryLog = "%s/nightly_run_history_%d_%s_%s_%s.log" %(self.masterLogDir,self.id,compilerVersion,mpi,mode)  
     if self.runFail != 0 :
       self.fail = 1
       self.accumulateParentFail() 
@@ -240,14 +247,14 @@ class Test(TestTreeNode):
       f.write(output)
       f.close()
       self.wrapWithPre(logPath,0)
-    self.runHistory = self.add_history("%s/nightly_run_history_%d_%s_%s.log" %(self.logDir,self.id,compilerVersion,mpi),self.runFail)  
+    self.runHistory = self.add_history("%s/nightly_run_history_%d_%s_%s_%s.log" %(self.logDir,self.id,compilerVersion,mpi,mode),self.runFail)  
     os.chdir(cwd)
 
 
   def check(self):
     cwd = os.getcwd()
     os.chdir(self.path)
-    logPath = "%s/nightly_check_%d_%s_%s_%s.log" %(self.logDir,self.id,compilerVersion,mpi,str(date.today()))
+    logPath = "%s/nightly_check_%d_%s_%s_%s_%s.log" %(self.logDir,self.id,compilerVersion,mpi,mode,str(date.today()))
     self.wrapWithPre(logPath,1)
     self.checkFail = 0
     ndiff = os.environ['OPENCMISS_ROOT']+"/cm/utils/ndiff"
@@ -263,9 +270,9 @@ class Test(TestTreeNode):
           command = "echo 'No such file or directory: %s' >> %s 2>&1" %(self.expectedPath,logPath)
           os.system(command)
     self.wrapWithPre(logPath,0)
-    self.checkLog = "%s/nightly_check_%d_%s_%s_%s.log" %(self.masterLogDir,self.id,compilerVersion,mpi,str(date.today()))
-    self.checkHistoryLog = "%s/nightly_check_history_%d_%s_%s.log" %(self.masterLogDir,self.id,compilerVersion,mpi)
-    self.checkHistory = self.add_history("%s/nightly_check_history_%d_%s_%s.log" %(self.logDir,self.id,compilerVersion,mpi),self.checkFail)  
+    self.checkLog = "%s/nightly_check_%d_%s_%s_%s_%s.log" %(self.masterLogDir,self.id,compilerVersion,mpi,mode,str(date.today()))
+    self.checkHistoryLog = "%s/nightly_check_history_%d_%s_%s_%s.log" %(self.masterLogDir,self.id,compilerVersion,mpi,mode)
+    self.checkHistory = self.add_history("%s/nightly_check_history_%d_%s_%s_%s.log" %(self.logDir,self.id,compilerVersion,mpi,mode),self.checkFail)  
     if self.checkFail!=0 :
       self.fail = 1
       self.accumulateParentFail()
@@ -284,12 +291,12 @@ def object_encode(name,parent,dct=None) :
 
 def fileInTestSets(f,path) :
   if f in testSets :
-    if machine == None or machine == "hpc5" :
-      return True
-    else :
+    if machine == "build-sn-gpu-p" :
       linestring = open("%s/%s" %(path,f), 'r').read()
       if linestring.find(machine)!=-1:
         return True
+    else :
+      return True
   return False
 
 root = TestTreeNode(name="examples", path=examplesDir)
