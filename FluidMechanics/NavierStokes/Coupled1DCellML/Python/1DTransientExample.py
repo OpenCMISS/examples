@@ -88,6 +88,8 @@ MaterialsFieldUserNumberAs  = 4
 MaterialsFieldUserNumberRe  = 5
 MaterialsFieldUserNumberFr  = 6
 MaterialsFieldUserNumberSt  = 7
+MaterialsFieldUserNumberXs  = 8
+MaterialsFieldUserNumberTs  = 9
 MaterialsFieldUserNumberA0  = 1
 MaterialsFieldUserNumberE   = 2
 MaterialsFieldUserNumberH   = 3
@@ -100,9 +102,12 @@ MaterialsFieldUserNumberD   = 1
 # Import the libraries (OpenCMISS,python,numpy,scipy)
 import numpy,math
 from scipy.sparse import linalg
+from scipy.linalg import inv
+from scipy.linalg import eig
 from opencmiss import CMISS
 import csv,time
 import sys,os
+import re
 sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
 
 # Diagnostics
@@ -113,6 +118,80 @@ sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','pytho
 # Get the computational nodes info
 numberOfComputationalNodes = CMISS.ComputationalNumberOfNodesGet()
 computationalNodeNumber    = CMISS.ComputationalNodeNumberGet()
+
+#================================================================================================================================
+#  Utilities
+#================================================================================================================================
+
+def findBetween( s, first, last ):
+    try:
+        start = s.index( first ) + len( first )
+        end = s.index( last, start )
+        return s[start:end]
+    except ValueError:
+        return ""
+
+def readExnodeHeader(f,fieldComponents):
+    #Read header info
+    line=f.readline()
+    s = re.findall(r'\d+', line)
+    numberOfVersions = 1
+    numberOfFields = int(s[0])
+    for field in range(numberOfFields):
+        line=f.readline()
+        fieldName = findBetween(line, str(field + 1) + ') ', ',')
+        numberOfComponents = int(findBetween(line, '#Components=', '\n'))
+        fieldComponents.append(numberOfComponents)
+        for skip in range(numberOfComponents):
+            line=f.readline()
+            if ('#Versions' in line):
+                numberOfVersions = int(findBetween(line, '#Versions=', '\n'))
+    return(numberOfVersions)
+
+def readExnodeFile(filename,numberOfNodes):
+    # Read data from an exnode file
+    try:
+        with open(filename):
+            f = open(filename,"r")
+            #Read header
+            line=f.readline()
+            groupName=findBetween(line, ' Group name: ', '\n')
+            fieldComponents = []
+            numberOfVersions = readExnodeHeader(f,fieldComponents)
+            numberOfFields = len(fieldComponents)
+            nodeData = numpy.zeros([numberOfNodes,numberOfFields,3,3])
+
+            #Read node data
+            endOfFile = False
+            while endOfFile == False:
+                previousPosition = f.tell()
+                line=f.readline()
+                line = line.strip()
+                if line:
+                    if 'Node:' in line:
+                        s = re.findall(r'\d+', line)
+                        node = int(s[0]) - 1
+                        for field in range(numberOfFields):
+                            for component in range(fieldComponents[field]):
+                                line=f.readline()
+                                line = line.strip()
+                                values = map(float, line.split('  '))
+                                for version in range(numberOfVersions):
+                                    nodeData[node,field,component,version] = values[version]
+                    elif 'Fields' in line:
+                        f.seek(previousPosition)
+                        fieldComponents = []
+                        numberOfFields = 0
+                        numberOfVersions = readExnodeHeader(f,fieldComponents)
+                        numberOfFields = len(fieldComponents)
+                else:
+                    endOfFile = True
+                    f.close()
+            return(nodeData);
+
+
+    except IOError:
+       print ('Could not open file: ' + filename)
 
 #================================================================================================================================
 #  Problem Control Panel
@@ -186,9 +265,12 @@ with open('Input/Element.csv','rb') as csvfile:
 
 # Set the flags
 RCRFlag      = False
-advectionFlag      = False
+nonReflecting = True
+advectionFlag = False
+analyticFlag = True
 elemFlag     = True
-analysisFlag = False
+analysisFlag = True
+initialiseFlag = False
 
 # Set the material parameters
 Rho = 1050.0                      # Rho         (kg/m3)
@@ -200,16 +282,19 @@ E   = [0]*(numberOfNodesSpace+1)  # Elasticity  (pa)
 dt  = [0]*(numberOfNodesSpace+1)  # TimeStep    (s)
 eig = [0]*(numberOfNodesSpace+1)  # Eigenvalues
 
-# Set the reference values
-# OpenCMISS*Ref=Real
-K  = 1.3                          # Flow profile
-Qs = 100.0e-6                     # Flow     (m3/s)  
-As = 100.0e-6                     # Area     (m2)
-Xs = 0.001                        # Length   (m)
-Ts = 0.001                        # Time     (s)
-Re = 8.0*math.pi*Mu*Xs/(Rho*Qs)   # Reynolds
-Fr = (As**2.5/Qs**2.0)/(2.0*Rho)  # Froude 
-St = (As*Xs)/(Ts*Qs)              # Strouhal
+Xs = 1000.0                        # Length   (m -> mm)
+Ts = 1000.0                       # Time     (s -> ms)
+Ms = 1000.0                       # Mass     (kg -> g)
+
+K  = 1.3                         # Flow profile
+Qs = (Xs**3.0)/Ts                 # Flow     (m3/s)  
+As = Xs**2.0                     # Area     (m2)
+Hs = Xs                          # vessel thickness (m)
+Es = Ms/(Xs*Ts**2.0)             # Elasticity (kg/(ms2))
+Rhos = Ms/(Xs**3.0)              # Density (kg/m3)
+Mus = Ms/(Xs*Ts)                 # Viscosity (kg/(ms))
+Fr = (As**2.5/Qs**2.0)/(2.0*Rho)  # Froude
+St = 1.0
 
 # Read the MATERIAL file
 with open('Input/Material.csv','rb') as csvfile:
@@ -223,13 +308,36 @@ with open('Input/Material.csv','rb') as csvfile:
         if row[5]:
             numberOfInputNodes = numberOfInputNodes+1
 
-# Set the initial conditions
-Q = [0]*(numberOfNodesSpace+1)
-A = [0]*(numberOfNodesSpace+1)
-Conc = 0.0
-for nodeIdx in range(1,numberOfNodesSpace+1):
-    Q[nodeIdx] = 0.0
-    A[nodeIdx] = (A0[nodeIdx]/As)
+Rho = Rho*Rhos
+Mu = Mu*Mus
+A0 = [i*As for i in A0]
+E = [i*Es for i in E]
+H = [i*Hs for i in H]
+Re = 8.0*math.pi*(Mu/Rho)
+
+Q = numpy.zeros([numberOfNodesSpace,3])
+A = numpy.zeros([numberOfNodesSpace,3])
+dQ = numpy.zeros([numberOfNodesSpace,3])
+dA = numpy.zeros([numberOfNodesSpace,3])
+
+if (initialiseFlag):
+    # Import initial data from file
+    # initialData[node,field,component,version]
+    initialData = readExnodeFile('./Input/Initialise/Initial.exnode',numberOfNodesSpace)
+    Q = initialData[:,1,0,:]
+    A = initialData[:,1,1,:]
+    dQ = initialData[:,2,0,:]
+    dA = initialData[:,2,1,:]
+else:
+    # Start with Q=0, A=A0 state
+    A[:,0] = numpy.array(A0[1:])
+    for bifIdx in range(1,numberOfBifurcations+1):
+        nodeIdx = bifurcationNodeNumber[bifIdx]
+        for versionIdx in range(2,4):
+            A[nodeIdx-1,versionIdx-1] = A0[nodeIdx+2*versionIdx-2]
+    print(A)
+versionIdx = 1
+
 
 # Set the terminal nodes
 coupledNodeNumber  = [0]*(numberOfTerminalNodes+1)
@@ -239,7 +347,10 @@ with open('Input/Material.csv', 'rb') as csvfile:
     for row in reader:
         if row[4]:
             coupledNodeNumber[int(row[0])] = int(row[4])
-            Ae[int(row[0])] = A0[coupledNodeNumber[int(row[0])]]/As
+            if (initialiseFlag):
+                Ae[int(row[0])] = A[coupledNodeNumber[int(row[0])]-1,0]
+            else:
+                Ae[int(row[0])] = A0[coupledNodeNumber[int(row[0])]]
 
 # Set the input nodes
 inputNodeNumber  = [0]*(numberOfInputNodes+1)
@@ -249,12 +360,14 @@ with open('Input/Material.csv', 'rb') as csvfile:
     for row in reader:
         if row[5]:
             inputNodeNumber[int(row[0])] = int(row[5])
-            Qi[int(row[0])] = 0.1
+            Qi[int(row[0])] = 0.178943 #0.000178943 #0.00398
 
 # Set the output parameters
 # (NONE/PROGRESS/TIMING/SOLVER/MATRIX)
-DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE   = CMISS.SolverOutputTypes.NONE
-NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE = CMISS.SolverOutputTypes.NONE
+DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE   = CMISS.SolverOutputTypes.PROGRESS
+NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE = CMISS.SolverOutputTypes.PROGRESS
+NONLINEAR_SOLVER_CHARACTERISTIC_OUTPUT_TYPE = CMISS.SolverOutputTypes.SOLVER
+LINEAR_SOLVER_CHARACTERISTIC_OUTPUT_TYPE = CMISS.SolverOutputTypes.NONE
 LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE    = CMISS.SolverOutputTypes.NONE
 # (NONE/TIMING/SOLVER/MATRIX)
 CMISS_SOLVER_OUTPUT_TYPE = CMISS.SolverOutputTypes.NONE
@@ -262,19 +375,35 @@ DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY = 1
 
 # Set the time parameters
 DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME     = 0.0
-DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME      = 1000.00001
+DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME      = 4000.0001 #2900.0001 #995.0001 #1000.00001
 DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT = 1.0
 DYNAMIC_SOLVER_NAVIER_STOKES_THETA = [1.0]
 DYNAMIC_SOLVER_ADVECTION_THETA     = [0.5]
 
 # Set the solver parameters
-RELATIVE_TOLERANCE_D = 1.0E-05   # default: 1.0E-05
-ABSOLUTE_TOLERANCE_D = 1.0E-10   # default: 1.0E-10
-RELATIVE_TOLERANCE_S = 1.0E-05  # default: 1.0E-05
-ABSOLUTE_TOLERANCE_S = 1.0E-10  # default: 1.0E-10
+relativeToleranceNonlinearNavierStokes = 1.0E-05   # default: 1.0E-05
+absoluteToleranceNonlinearNavierStokes = 1.0E-10   # default: 1.0E-10
+solutionToleranceNonlinearNavierStokes = 1.0E-05  # default: 1.0E-05
+relativeToleranceLinearNavierStokes = 1.0E-05   # default: 1.0E-05
+absoluteToleranceLinearNavierStokes = 1.0E-10  # default: 1.0E-10
+
+relativeToleranceNonlinearCharacteristic = 1.0E-05 # default: 1.0E-05
+absoluteToleranceNonlinearCharacteristic = 1.0E-10  # default: 1.0E-10
+solutionToleranceNonlinearCharacteristic = 1.0E-05  # default: 1.0E-05
+relativeToleranceLinearCharacteristic = 1.0E-05  # default: 1.0E-05
+absoluteToleranceLinearCharacteristic = 1.0E-10  # default: 1.0E-10
+
 DIVERGENCE_TOLERANCE = 1.0E+10  # default: 1.0E+05
 MAXIMUM_ITERATIONS   = 100000   # default: 100000
 RESTART_VALUE        = 3000     # default: 30
+
+# Branch solver penalty coefficient- increase if mass/momentum not conserved across junction
+branchPenaltyCoefficient = 1.0 #DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME
+characteristicEquationsSetParam = 0.0#50000.0
+# 1D-0D coupling tolerance
+couplingTolerance = 0.001
+couplingTolerance2 = 1.0e6
+
 
 # Check the CellML flag
 if (RCRFlag):
@@ -460,14 +589,20 @@ GeometricField.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMISS.FieldPa
 # Create the equations set for CHARACTERISTIC
 EquationsSetCharacteristic = CMISS.EquationsSet()
 EquationsSetFieldCharacteristic = CMISS.Field()
+
+
 # Set the equations set to be a static nonlinear problem
 EquationsSetCharacteristic.CreateStart(EquationsSetUserNumberCharacteristic,Region,GeometricField,
     CMISS.EquationsSetClasses.FLUID_MECHANICS,CMISS.EquationsSetTypes.CHARACTERISTIC_EQUATION,
      EquationsSetCharacteristicSubtype,EquationsSetFieldUserNumberCharacteristic,EquationsSetFieldCharacteristic)
 EquationsSetCharacteristic.CreateFinish()
 
-#------------------
+# # Set up user-defined equations set field
+EquationsSetFieldCharacteristic.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,
+                                                            CMISS.FieldParameterSetTypes.VALUES, 
+                                                             1,characteristicEquationsSetParam)
 
+#------------------
 # Create the equations set for NAVIER-STOKES
 EquationsSetNavierStokes = CMISS.EquationsSet()
 EquationsSetFieldNavierStokes = CMISS.Field()
@@ -476,6 +611,9 @@ EquationsSetNavierStokes.CreateStart(EquationsSetUserNumberNavierStokes,Region,G
     CMISS.EquationsSetClasses.FLUID_MECHANICS,CMISS.EquationsSetTypes.NAVIER_STOKES_EQUATION,
      EquationsSetSubtype,EquationsSetFieldUserNumberNavierStokes,EquationsSetFieldNavierStokes)
 EquationsSetNavierStokes.CreateFinish()
+EquationsSetFieldNavierStokes.ParameterSetUpdateConstantDP(CMISS.FieldVariableTypes.U,
+                                                           CMISS.FieldParameterSetTypes.VALUES, 
+                                                           1, branchPenaltyCoefficient)
 
 #------------------
 if (advectionFlag):
@@ -501,7 +639,8 @@ EquationsSetCharacteristic.DependentCreateStart(DependentFieldUserNumber,Depende
 DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'General')
 DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.DELUDELN,'Derivatives')
 DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.V,'Characteristics')
-DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U1,'pCellML')
+if RCRFlag:
+    DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U1,'pCellML')
 DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U2,'Pressure')
 # Set the mesh component to be used by the field components.
 # Flow & Area
@@ -535,25 +674,42 @@ DependentFieldNavierStokes.ParameterSetCreate(CMISS.FieldVariableTypes.U,CMISS.F
 for nodeIdx in range (1,numberOfNodesSpace+1):
     nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
     if nodeDomain == computationalNodeNumber:
+        # U variables
         DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
-         versionIdx,derivIdx,nodeIdx,1,Q[nodeIdx])
+         versionIdx,derivIdx,nodeIdx,1,Q[nodeIdx-1,0])
         DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
-         versionIdx,derivIdx,nodeIdx,2,A[nodeIdx])
+         versionIdx,derivIdx,nodeIdx,2,A[nodeIdx-1,0])
         DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.PREVIOUS_VALUES,
-         versionIdx,derivIdx,nodeIdx,2,A[nodeIdx])
+         versionIdx,derivIdx,nodeIdx,1,Q[nodeIdx-1,0])
+        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.PREVIOUS_VALUES,
+         versionIdx,derivIdx,nodeIdx,2,A[nodeIdx-1,0])
+        # delUdelN variables
+        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.DELUDELN,CMISS.FieldParameterSetTypes.VALUES,
+         versionIdx,derivIdx,nodeIdx,1,dQ[nodeIdx-1,0])
+        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.DELUDELN,CMISS.FieldParameterSetTypes.VALUES,
+         versionIdx,derivIdx,nodeIdx,2,dA[nodeIdx-1,0])
 # Initialise the dependent field variables for bifurcations
 for bifIdx in range (1,numberOfBifurcations+1):
     nodeIdx = bifurcationNodeNumber[bifIdx]
     nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
     if nodeDomain == computationalNodeNumber:
-        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
-         2,derivIdx,nodeIdx,2,A[nodeIdx+1])
-        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
-         3,derivIdx,nodeIdx,2,A[nodeIdx+3])
-        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.PREVIOUS_VALUES,
-         2,derivIdx,nodeIdx,2,A[nodeIdx+1])
-        DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.PREVIOUS_VALUES,
-         3,derivIdx,nodeIdx,2,A[nodeIdx+3])
+        for versionIdx in range(2,4):
+            # U variables
+            DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+                                                                versionIdx,derivIdx,nodeIdx,1,Q[nodeIdx-1,versionIdx-1])
+            DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+                                                                versionIdx,derivIdx,nodeIdx,2,A[nodeIdx-1,versionIdx-1])
+            DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.PREVIOUS_VALUES,
+                                                                versionIdx,derivIdx,nodeIdx,1,Q[nodeIdx-1,versionIdx-1])
+            DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.PREVIOUS_VALUES,
+                                                                versionIdx,derivIdx,nodeIdx,2,A[nodeIdx-1,versionIdx-1])
+            # delUdelN variables
+            DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.DELUDELN,CMISS.FieldParameterSetTypes.VALUES,
+                                                                versionIdx,derivIdx,nodeIdx,1,Q[nodeIdx-1,versionIdx-1])
+            DependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.DELUDELN,CMISS.FieldParameterSetTypes.VALUES,
+                                                                versionIdx,derivIdx,nodeIdx,2,A[nodeIdx-1,versionIdx-1])
+# revert default version to 1
+versionIdx = 1
 
 # Finish the parameter update
 DependentFieldNavierStokes.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
@@ -592,8 +748,8 @@ MaterialsFieldAdvection    = CMISS.Field()
 
 # CHARACTERISTIC
 EquationsSetCharacteristic.MaterialsCreateStart(MaterialsFieldUserNumber,MaterialsFieldNavierStokes)
-MaterialsFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'Materials Constants')
-MaterialsFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.V,'Materials Variables')
+MaterialsFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'MaterialsConstants')
+MaterialsFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.V,'MaterialsVariables')
 # Set the mesh component to be used by the field components.
 for componentNumber in range(1,4):
     MaterialsFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.V,componentNumber,meshComponentNumberSpace)
@@ -620,17 +776,21 @@ MaterialsFieldNavierStokes.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.
  MaterialsFieldUserNumberFr,Fr)
 MaterialsFieldNavierStokes.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
  MaterialsFieldUserNumberSt,St)
+MaterialsFieldNavierStokes.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,  
+ MaterialsFieldUserNumberXs,Xs)
+MaterialsFieldNavierStokes.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+ MaterialsFieldUserNumberTs,Ts)
 
 # Initialise the materials field variables (A0,E,H)
 for nodeIdx in range(1,numberOfNodesSpace+1,1):
     nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
     if nodeDomain == computationalNodeNumber:
         MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,CMISS.FieldParameterSetTypes.VALUES,
-         versionIdx,derivIdx,nodeIdx,MaterialsFieldUserNumberA0,A0[nodeIdx])
+                                                            versionIdx,derivIdx,nodeIdx,MaterialsFieldUserNumberA0,A0[nodeIdx])
         MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,CMISS.FieldParameterSetTypes.VALUES,
-         versionIdx,derivIdx,nodeIdx,MaterialsFieldUserNumberE,E[nodeIdx])
+                                                            versionIdx,derivIdx,nodeIdx,MaterialsFieldUserNumberE,E[nodeIdx])
         MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.V,CMISS.FieldParameterSetTypes.VALUES,
-         versionIdx,derivIdx,nodeIdx,MaterialsFieldUserNumberH,H[nodeIdx])
+                                                            versionIdx,derivIdx,nodeIdx,MaterialsFieldUserNumberH,H[nodeIdx])
 # Initialise the materials field variables for bifurcation
 for bifIdx in range(1,numberOfBifurcations+1):
     nodeIdx = bifurcationNodeNumber[bifIdx]
@@ -693,8 +853,11 @@ for bifIdx in range (1,numberOfBifurcations+1):
          2,derivIdx,nodeIdx,2,-1.0)
         IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,  
          3,derivIdx,nodeIdx,2,-1.0)
+
+
+
 # Set the normal wave direction for terminal
-if (RCRFlag):
+if (RCRFlag or nonReflecting):
     for terminalIdx in range (1,numberOfTerminalNodes+1):
         nodeIdx = coupledNodeNumber[terminalIdx]
         nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
@@ -702,9 +865,6 @@ if (RCRFlag):
             # Incoming
             IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
              versionIdx,derivIdx,nodeIdx,1,1.0)
-            # # Outgoing
-            # IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
-            #  versionIdx,derivIdx,nodeIdx,2,-1.0)
 
 # Finish the parameter update
 IndependentFieldNavierStokes.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
@@ -720,16 +880,17 @@ if (advectionFlag):
 # Analytic Field
 #================================================================================================================================
 
-AnalyticFieldNavierStokes = CMISS.Field()
-# FlowrateReymonds,FlowrateOlufsen,FlowrateSheffield,FlowrateAorta
-#EquationsSetNavierStokes.AnalyticCreateStart(CMISS.NavierStokesAnalyticFunctionTypes.FlowrateOlufsen,AnalyticFieldUserNumber,
-# AnalyticFieldNavierStokes)
-EquationsSetNavierStokes.AnalyticCreateStart(CMISS.NavierStokesAnalyticFunctionTypes.SplintFromFile,AnalyticFieldUserNumber,
-                                             AnalyticFieldNavierStokes)
-AnalyticFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'Spline interpolated flow rate')
-#AnalyticFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'Analytic inlet flow rate')
-EquationsSetNavierStokes.AnalyticCreateFinish()
-AnalyticFieldNavierStokes.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1000.0)
+if (analyticFlag):
+    AnalyticFieldNavierStokes = CMISS.Field()
+    # FlowrateReymonds,FlowrateOlufsen,FlowrateSheffield,FlowrateAorta
+    #EquationsSetNavierStokes.AnalyticCreateStart(CMISS.NavierStokesAnalyticFunctionTypes.FlowrateOlufsen,AnalyticFieldUserNumber,
+    # AnalyticFieldNavierStokes)
+    EquationsSetNavierStokes.AnalyticCreateStart(CMISS.NavierStokesAnalyticFunctionTypes.SplintFromFile,AnalyticFieldUserNumber,
+                                                 AnalyticFieldNavierStokes)
+    AnalyticFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'Spline interpolated flow rate')
+    #AnalyticFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'Analytic inlet flow rate')
+    EquationsSetNavierStokes.AnalyticCreateFinish()
+    AnalyticFieldNavierStokes.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1000.0)
 
 #================================================================================================================================
 #  CellML Model Maps
@@ -832,6 +993,7 @@ if (RCRFlag):
         nodeIdx = coupledNodeNumber[terminalIdx]
         nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
         if nodeDomain == computationalNodeNumber:
+            print("Terminal node: " + str(nodeIdx))
             CellMLModelsField.ParameterSetUpdateNode(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
              versionIdx,derivIdx,nodeIdx,1,CellMLModelIndex[terminalIdx])
 
@@ -902,11 +1064,12 @@ Problem.CreateFinish()
 
 1D0D
 ------
+                   L1                                 L2                        L3
 
-                                                      | 1) Simple subloop               | 1) 0D/CellML Solver
+                                                      | 1) 0D Simple subloop    | 1) 0D/CellML Solver
                                                       |                              
-    Time Loop, L0  | 1) 1D-0D Iterative Coupling, L1  | 2) 1D subloop: branch value     | 1) CharacteristicSolver
-                   |    Convergence Loop (while loop) |   convergence loop (while loop) | 2) 1DNavierStokesSolver
+    Time Loop, L0  | 1) 1D-0D Iterative Coupling, L1  | 2) 1D simple subloop:   | 1) CharacteristicSolver
+                   |    Convergence Loop (while loop) |                         | 2) 1DNavierStokesSolver
                    |
                    | 2) (optional) Simple subloop     | 1) Advection Solver
 
@@ -915,8 +1078,8 @@ Problem.CreateFinish()
 ------
 
 
-    Time Loop, L0  | 1) 1D subloop: branch dependent  | 1) CharacteristicSolver
-                   | convergence loop (while loop)    | 2) 1DNavierStokesSolver
+    Time Loop, L0  | 1) 1D subloop: simple loop  | 1) CharacteristicSolver
+                   |                             | 2) 1DNavierStokesSolver
                    |
                    | 2) (optional) Simple subloop     | 1) Advection Solver
 
@@ -949,19 +1112,16 @@ TimeLoop.TimeOutputSet(DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY)
 
 # Set tolerances for iterative convergence loops
 if(RCRFlag):
-    couplingTolerance = 0.01
     Iterative1D0DCouplingLoop = CMISS.ControlLoop()
     Problem.ControlLoopGet([Iterative1d0dControlLoopNumber,CMISS.ControlLoopIdentifiers.NODE],Iterative1D0DCouplingLoop)
     Iterative1D0DCouplingLoop.AbsoluteToleranceSet(couplingTolerance)
-    couplingTolerance = 10.0
     Iterative1DCouplingLoop = CMISS.ControlLoop()
     Problem.ControlLoopGet([Iterative1d0dControlLoopNumber,Iterative1dControlLoopNumber,CMISS.ControlLoopIdentifiers.NODE],Iterative1DCouplingLoop)
-    Iterative1DCouplingLoop.AbsoluteToleranceSet(couplingTolerance)
+    Iterative1DCouplingLoop.AbsoluteToleranceSet(couplingTolerance2)
 else:
-    couplingTolerance = 10.0
     Iterative1DCouplingLoop = CMISS.ControlLoop()
     Problem.ControlLoopGet([Iterative1dControlLoopNumber,CMISS.ControlLoopIdentifiers.NODE],Iterative1DCouplingLoop)
-    Iterative1DCouplingLoop.AbsoluteToleranceSet(couplingTolerance)
+    Iterative1DCouplingLoop.AbsoluteToleranceSet(couplingTolerance2)
 
 Problem.ControlLoopCreateFinish()
 
@@ -999,20 +1159,21 @@ else:
     Problem.SolverGet([Iterative1dControlLoopNumber,CMISS.ControlLoopIdentifiers.NODE],
                       SolverCharacteristicUserNumber,NonlinearSolverCharacteristic)
 # Set the nonlinear Jacobian type
-NonlinearSolverCharacteristic.NewtonJacobianCalculationTypeSet(CMISS.JacobianCalculationTypes.EQUATIONS) #(.FD)
-NonlinearSolverCharacteristic.OutputTypeSet(NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE)
+NonlinearSolverCharacteristic.NewtonJacobianCalculationTypeSet(CMISS.JacobianCalculationTypes.EQUATIONS) #(.FD/EQUATIONS)
+NonlinearSolverCharacteristic.OutputTypeSet(NONLINEAR_SOLVER_CHARACTERISTIC_OUTPUT_TYPE)
 # Set the solver settings
-NonlinearSolverCharacteristic.NewtonAbsoluteToleranceSet(ABSOLUTE_TOLERANCE_S)
-NonlinearSolverCharacteristic.NewtonRelativeToleranceSet(RELATIVE_TOLERANCE_S)
+NonlinearSolverCharacteristic.NewtonAbsoluteToleranceSet(absoluteToleranceNonlinearCharacteristic)
+NonlinearSolverCharacteristic.NewtonSolutionToleranceSet(solutionToleranceNonlinearCharacteristic)
+NonlinearSolverCharacteristic.NewtonRelativeToleranceSet(relativeToleranceNonlinearCharacteristic)
 # Get the nonlinear linear solver
 NonlinearSolverCharacteristic.NewtonLinearSolverGet(LinearSolverCharacteristic)
-LinearSolverCharacteristic.OutputTypeSet(LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE)
+LinearSolverCharacteristic.OutputTypeSet(LINEAR_SOLVER_CHARACTERISTIC_OUTPUT_TYPE)
 # Set the solver settings
 LinearSolverCharacteristic.LinearTypeSet(CMISS.LinearSolverTypes.ITERATIVE)
 LinearSolverCharacteristic.LinearIterativeMaximumIterationsSet(MAXIMUM_ITERATIONS)
 LinearSolverCharacteristic.LinearIterativeDivergenceToleranceSet(DIVERGENCE_TOLERANCE)
-LinearSolverCharacteristic.LinearIterativeRelativeToleranceSet(RELATIVE_TOLERANCE_S)
-LinearSolverCharacteristic.LinearIterativeAbsoluteToleranceSet(ABSOLUTE_TOLERANCE_S)
+LinearSolverCharacteristic.LinearIterativeRelativeToleranceSet(relativeToleranceLinearCharacteristic)
+LinearSolverCharacteristic.LinearIterativeAbsoluteToleranceSet(absoluteToleranceLinearCharacteristic)
 LinearSolverCharacteristic.LinearIterativeGMRESRestartSet(RESTART_VALUE)
 
 #------------------
@@ -1029,11 +1190,13 @@ DynamicSolverNavierStokes.DynamicThetaSet(DYNAMIC_SOLVER_NAVIER_STOKES_THETA)
 # Get the dynamic nonlinear solver
 DynamicSolverNavierStokes.DynamicNonlinearSolverGet(NonlinearSolverNavierStokes)
 # Set the nonlinear Jacobian type
-NonlinearSolverNavierStokes.NewtonJacobianCalculationTypeSet(CMISS.JacobianCalculationTypes.EQUATIONS) #(.FD)
+NonlinearSolverNavierStokes.NewtonJacobianCalculationTypeSet(CMISS.JacobianCalculationTypes.EQUATIONS) #(.FD/EQUATIONS)
 NonlinearSolverNavierStokes.OutputTypeSet(NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE)
+NonlinearSolverNavierStokes.NewtonConvergenceTestTypeSet(CMISS.NewtonConvergenceTypes.PETSC_DEFAULT) #PETSC_DEFAULT/ENERGY_NORM/DIFFERENTIATED_RATIO
 # Set the solver settings
-NonlinearSolverNavierStokes.NewtonAbsoluteToleranceSet(ABSOLUTE_TOLERANCE_D)
-NonlinearSolverNavierStokes.NewtonRelativeToleranceSet(RELATIVE_TOLERANCE_D)
+NonlinearSolverNavierStokes.NewtonAbsoluteToleranceSet(absoluteToleranceNonlinearNavierStokes)
+NonlinearSolverNavierStokes.NewtonSolutionToleranceSet(solutionToleranceNonlinearNavierStokes)
+NonlinearSolverNavierStokes.NewtonRelativeToleranceSet(relativeToleranceNonlinearNavierStokes)
 # Get the dynamic nonlinear linear solver
 NonlinearSolverNavierStokes.NewtonLinearSolverGet(LinearSolverNavierStokes)
 LinearSolverNavierStokes.OutputTypeSet(LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE)
@@ -1041,8 +1204,8 @@ LinearSolverNavierStokes.OutputTypeSet(LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE)
 LinearSolverNavierStokes.LinearTypeSet(CMISS.LinearSolverTypes.ITERATIVE)
 LinearSolverNavierStokes.LinearIterativeMaximumIterationsSet(MAXIMUM_ITERATIONS)
 LinearSolverNavierStokes.LinearIterativeDivergenceToleranceSet(DIVERGENCE_TOLERANCE)
-LinearSolverNavierStokes.LinearIterativeRelativeToleranceSet(RELATIVE_TOLERANCE_D)
-LinearSolverNavierStokes.LinearIterativeAbsoluteToleranceSet(ABSOLUTE_TOLERANCE_D)
+LinearSolverNavierStokes.LinearIterativeRelativeToleranceSet(relativeToleranceLinearNavierStokes)
+LinearSolverNavierStokes.LinearIterativeAbsoluteToleranceSet(absoluteToleranceLinearNavierStokes)
 LinearSolverNavierStokes.LinearIterativeGMRESRestartSet(RESTART_VALUE)
     
 #------------------
@@ -1140,6 +1303,20 @@ Problem.SolverEquationsCreateFinish()
 # CHARACTERISTIC
 BoundaryConditionsCharacteristic = CMISS.BoundaryConditions()
 SolverEquationsCharacteristic.BoundaryConditionsCreateStart(BoundaryConditionsCharacteristic)
+
+# Area-outlet
+
+for terminalIdx in range (1,numberOfTerminalNodes+1):
+    nodeNumber = coupledNodeNumber[terminalIdx]
+    nodeDomain = Decomposition.NodeDomainGet(nodeNumber,meshComponentNumberSpace)
+    if nodeDomain == computationalNodeNumber:
+        if (nonReflecting):
+            BoundaryConditionsCharacteristic.SetNode(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,
+                                                     versionIdx,derivIdx,nodeNumber,2,CMISS.BoundaryConditionsTypes.FixedNonreflecting,Ae[terminalIdx])
+        elif (RCRFlag):
+            BoundaryConditionsCharacteristic.SetNode(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,
+                                                     versionIdx,derivIdx,nodeNumber,2,CMISS.BoundaryConditionsTypes.FixedCellml,Ae[terminalIdx])
+
 SolverEquationsCharacteristic.BoundaryConditionsCreateFinish()
 
 #------------------
@@ -1157,12 +1334,20 @@ for inputIdx in range (1,numberOfInputNodes+1):
          versionIdx,derivIdx,nodeNumber,1,CMISS.BoundaryConditionsTypes.FixedFitted,Qi[inputIdx])
 #         versionIdx,derivIdx,nodeNumber,1,CMISS.BoundaryConditionsTypes.FIXED_INLET,Qi[inputIdx])
 # Area-outlet
+
 for terminalIdx in range (1,numberOfTerminalNodes+1):
     nodeNumber = coupledNodeNumber[terminalIdx]
     nodeDomain = Decomposition.NodeDomainGet(nodeNumber,meshComponentNumberSpace)
     if nodeDomain == computationalNodeNumber:
-        BoundaryConditionsNavierStokes.SetNode(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,
-         versionIdx,derivIdx,nodeNumber,2,CMISS.BoundaryConditionsTypes.FIXED_OUTLET,Ae[terminalIdx])
+        if (nonReflecting):
+            BoundaryConditionsNavierStokes.SetNode(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,
+                                                   versionIdx,derivIdx,nodeNumber,2,CMISS.BoundaryConditionsTypes.FixedNonreflecting,Ae[terminalIdx])
+        elif (RCRFlag):
+            BoundaryConditionsNavierStokes.SetNode(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,
+                                                   versionIdx,derivIdx,nodeNumber,2,CMISS.BoundaryConditionsTypes.FixedCellml,Ae[terminalIdx])
+        else:
+            BoundaryConditionsNavierStokes.SetNode(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,
+                                                   versionIdx,derivIdx,nodeNumber,2,CMISS.BoundaryConditionsTypes.FIXED_OUTLET,Ae[terminalIdx])
 
 # Finish the creation of boundary conditions
 SolverEquationsNavierStokes.BoundaryConditionsCreateFinish()
@@ -1205,14 +1390,14 @@ if (elemFlag):
         print "Length: %1.1f" %elementLength[i],
         print "Length1: %1.1f" %Length1,
         print "Length2: %1.1f" %Length2
-    maxElementLength = max(elementLength)*Xs
-    minElementLength = min(elementLength)*Xs
+    maxElementLength = max(elementLength)
+    minElementLength = min(elementLength)
     print("Max Element Length: %1.3f" % maxElementLength)
     print("Min Element Length: %1.3f" % minElementLength)
                
     # Check the timestep
     for i in range(1,numberOfNodesSpace+1):
-        eig[i] = (Q[0]*Qs/(A0[i]))+(A0[i]**(0.25))*((2.0*(math.pi**(0.5))
+        eig[i] = (140.0/(A0[i]))+(A0[i]**(0.25))*((2.0*(math.pi**(0.5))
                    *E[i]*H[i]/(3.0*A0[i]*Rho))**(0.5))
         dt[i] = ((3.0**(0.5))/3.0)*minElementLength/eig[i]
         dt[0] = dt[i]
@@ -1226,7 +1411,9 @@ if (elemFlag):
 # Solve the problem
 print "Solving problem..."
 start = time.time()
+
 Problem.Solve()
+
 end = time.time()
 elapsed = end - start
 print "Total Number of Elements = %d " %totalNumberOfElements
@@ -1300,10 +1487,9 @@ if (analysisFlag):
         cond = maxEig / minEig
         print("Amplification condition number: %f" % cond)
     except ZeroDivisionError:
-        # If condition number is infinte we effectively have a zero row
+        # If condition number is infinty we effectively have a zero row
         print("Amplification condition number is infinte.")
 
 #================================================================================================================================
 #  Finish Program
 #================================================================================================================================
-        
