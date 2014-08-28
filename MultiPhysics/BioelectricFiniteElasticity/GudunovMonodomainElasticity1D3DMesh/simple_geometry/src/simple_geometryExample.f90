@@ -48,7 +48,7 @@
 !<
 
 !> Main program
-PROGRAM simple_geometryEXAMPLE
+PROGRAM SIMPLE_GEOMETRYEXAMPLE
 
   USE OPENCMISS
   USE MPI
@@ -62,21 +62,26 @@ PROGRAM simple_geometryEXAMPLE
   !--------------------------------------------------------------------------------------------------------------------------------
   !Test program parameters
 !  real etime          ! Declare the type of etime()
-  real elapsed(2)     ! For receiving user and system time
-  real total 
+  real :: elapsed(2)     ! For receiving user and system time
+  real :: total 
+
+  REAL(CMISSDP), PARAMETER :: P_max=2.7_CMISSDP ! N/cm^2
+!  REAL(CMISSDP), PARAMETER :: P_max=27.0_CMISSDP ! N/cm^2
+
 
   REAL(CMISSDP), PARAMETER :: tol=1.0E-8_CMISSDP
-
+  
   LOGICAL :: independent_field_auto_create=.FALSE.
 
-  INTEGER(CMISSIntg), PARAMETER :: NumberOfElementsFE=8
+  INTEGER(CMISSIntg) :: NumberOfElementsFE
 
   INTEGER(CMISSIntg) :: NumberOfElementsM
   INTEGER(CMISSIntg) :: NumberOfNodesM
   INTEGER(CMISSIntg) :: NumberOfNodesPerFibre
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfInSeriesFibres=1
 
   integer(CMISSIntg) :: stat
-  character(len=256) :: filename
+  character(len=256) :: filename,filename2
 
   INTEGER(CMISSIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
   INTEGER(CMISSIntg) :: mu_nr,Ftype,fibre_nr,NearestGP,InElement
@@ -87,21 +92,30 @@ PROGRAM simple_geometryEXAMPLE
   !--------------------------------------------------------------------------------------------------------------------------------
 
   !all lengths in [cm]
-  REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP ! X-direction
-  REAL(CMISSDP), PARAMETER :: WIDTH= 3.0_CMISSDP ! Y-direction
-  REAL(CMISSDP), PARAMETER :: HEIGHT=3.0_CMISSDP ! Z-direction
+  REAL(CMISSDP), PARAMETER :: LENGTH=2.0_CMISSDP ! X-direction
+  REAL(CMISSDP), PARAMETER :: WIDTH= 1.0_CMISSDP ! Y-direction
+  REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP ! Z-direction
   
   !all times in [ms]
-  REAL(CMISSDP), PARAMETER :: STIM_STOP=0.1_CMISSDP
-!  REAL(CMISSDP) :: time !=10.00_CMISSDP 
+  REAL(CMISSDP) :: time !=10.00_CMISSDP 
+!  REAL(CMISSDP), PARAMETER :: PERIODD=10.00_CMISSDP
   REAL(CMISSDP), PARAMETER :: PERIODD=10.00_CMISSDP
-  REAL(CMISSDP), PARAMETER :: TIME_STOP=30.0_CMISSDP !10.0_CMISSDP !30.0_CMISSDP
+!  REAL(CMISSDP), PARAMETER :: TIME_STOP=300.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: TIME_STOP=300.0_CMISSDP
 
-  REAL(CMISSDP), PARAMETER :: ODE_TIME_STEP=0.00001_CMISSDP
+!  REAL(CMISSDP), PARAMETER :: ODE_TIME_STEP=0.00001_CMISSDP
+  REAL(CMISSDP), PARAMETER :: ODE_TIME_STEP=0.0001_CMISSDP
   REAL(CMISSDP), PARAMETER :: PDE_TIME_STEP=0.0005_CMISSDP
-  REAL(CMISSDP), PARAMETER :: ELASTICITY_TIME_STEP=0.05_CMISSDP
+  REAL(CMISSDP), PARAMETER :: ELASTICITY_TIME_STEP=0.10000000001_CMISSDP!0.5_CMISSDP!0.05_CMISSDP!0.8_CMISSDP
+!tomo keep ELASTICITY_TIME_STEP and STIM_STOP at the same values
+  REAL(CMISSDP), PARAMETER :: STIM_STOP=0.1_CMISSDP!ELASTICITY_TIME_STEP
 
-  INTEGER(CMISSIntg), PARAMETER :: OUTPUT_FREQUENCY=5
+! these time steps work with     STIM_VALUE=8000.0_CMISSDP
+!  REAL(CMISSDP), PARAMETER :: ELASTICITY_TIME_STEP=0.010000000001_CMISSDP!0.5_CMISSDP!0.05_CMISSDP!0.8_CMISSDP
+!  REAL(CMISSDP), PARAMETER :: STIM_STOP=0.01_CMISSDP!ELASTICITY_TIME_STEP
+
+
+  INTEGER(CMISSIntg), PARAMETER :: OUTPUT_FREQUENCY=1
   
   !--------------------------------------------------------------------------------------------------------------------------------
   !stimulation current in [uA/cm^2]
@@ -114,7 +128,24 @@ PROGRAM simple_geometryEXAMPLE
   REAL(CMISSDP), PARAMETER :: Am=500.0_CMISSDP
 
   !membrane capacitance in [uF/cm^2]
-  REAL(CMISSDP), PARAMETER :: Cm=1.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: Cm_fast=1.0_CMISSDP 
+  REAL(CMISSDP), PARAMETER :: Cm_slow=0.58_CMISSDP
+  
+
+  !maximum contraction velocity in [cm/ms]
+!  REAL(CMISSDP), PARAMETER :: Vmax=-0.02_CMISSDP ! =0.2 m/s, rat GM    ! this is how it was!!!
+  REAL(CMISSDP), PARAMETER :: Vmax=-0.2_CMISSDP !this value is 10 times too large, but gives good results, i.e., the contraction velo at the cell level is 1/10 of the max contraction velo (which is what I wanted)
+  
+  !CAUTION - what are the units???
+  REAL(CMISSDP), PARAMETER, DIMENSION(4) :: MAT_FE= &
+!    & [-0.006904519351291_CMISSDP,0.0286165087536_CMISSDP,0.914983651640659_CMISSDP,9.443328279782643_CMISSDP] !original values EKIN
+!    & [-6.904519351291_CMISSDP,28.6165087536_CMISSDP,914.983651640659_CMISSDP,9.443328279782643_CMISSDP]
+!    & [-0.048010319216141_CMISSDP,0.067407738257482_CMISSDP,0.917752338185330_CMISSDP,9.438822344231113_CMISSDP] !original values TOMO [N/cm^2]
+!    & [-0.356463872119506_CMISSDP,3.859558638795475_CMISSDP,0.000035686432282_CMISSDP,42.620401658342743_CMISSDP] !new values TOMO [kPa]
+!    & [-0.0356463872119506_CMISSDP,0.3859558638795475_CMISSDP,0.0000035686432282_CMISSDP,42.620401658342743_CMISSDP] !new values TOMO [N/cm^2]
+    & [0.0000000000635201_CMISSDP,0.3626712895523322_CMISSDP,0.0000027562837093_CMISSDP,43.372873938671383_CMISSDP] !new values TOMO [N/cm^2]
+
+  REAL(CMISSDP) :: INIT_PRESSURE
 
   !--------------------------------------------------------------------------------------------------------------------------------
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumberFE=1
@@ -158,7 +189,7 @@ PROGRAM simple_geometryEXAMPLE
 
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumberFE=5
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfVariablesFE=2
-  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfComponentsFE1=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfComponentsFE1=5
   INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfComponentsFE2=1
 
   INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumberM=6
@@ -174,7 +205,7 @@ PROGRAM simple_geometryEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: FieldIndependentNumberOfComponentsFE=1
 
   INTEGER(CMISSIntg), PARAMETER :: FieldIndependentUserNumberM=9
-  INTEGER(CMISSIntg), PARAMETER :: FieldIndependentNumberOfVariablesM=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldIndependentNumberOfVariablesM=4
   INTEGER(CMISSIntg), PARAMETER :: FieldIndependentNumberOfComponentsM1=1
   INTEGER(CMISSIntg), PARAMETER :: FieldIndependentNumberOfComponentsM2=5
 
@@ -220,7 +251,7 @@ PROGRAM simple_geometryEXAMPLE
 
   LOGICAL :: EXPORT_FIELD
 
-  INTEGER(CMISSIntg) :: shortenModelIndex
+  INTEGER(CMISSIntg) :: shortenModelIndex!,shortenModelIndex2
   INTEGER(CMISSIntg) :: stimcomponent
 
 !  REAL(CMISSDP) :: YVALUE
@@ -286,35 +317,57 @@ PROGRAM simple_geometryEXAMPLE
 !##################################################################################################################################
 
   NumberGlobalXElements=2
-  NumberGlobalYElements=2
-  NumberGlobalZElements=2
+  NumberGlobalYElements=1
+  NumberGlobalZElements=1
+  NumberOfElementsFE=NumberGlobalXElements*NumberGlobalYElements*NumberGlobalZElements
 
 !##################################################################################################################################
   less_info = .false.!.true.!
   if(less_info) then
+    !note that the NumberOfNodesInXi1 only applies to elements in which fibres begin. Otherwise it's NumberOfNodesInXi1-1
     NumberOfNodesInXi1=50!500!240
     NumberOfNodesInXi2=2
     NumberOfNodesInXi3=1
   else
-    NumberOfNodesInXi1=50!500
-    NumberOfNodesInXi2=4
-    NumberOfNodesInXi3=4
+    if(NumberGlobalXElements*NumberGlobalYElements*NumberGlobalZElements==1) then
+      NumberOfNodesInXi1=59
+    else
+      NumberOfNodesInXi1=30!500
+    endif
+    NumberOfNodesInXi2=3
+    NumberOfNodesInXi3=3
   endif
-  NumberOfElementsM=NumberGlobalYElements*NumberGlobalZElements*NumberOfNodesInXi2*NumberOfNodesInXi3* &
-   & ((NumberOfNodesInXi1-1)+(NumberGlobalXElements-1)*NumberOfNodesInXi1)
-  NumberOfNodesM=NumberOfNodesInXi1*NumberOfNodesInXi2*NumberOfNodesInXi3*NumberOfElementsFE
-  NumberOfNodesPerFibre=NumberOfNodesInXi1*NumberGlobalXElements
+!  NumberOfNodesPerFibre=(NumberOfNodesInXi1-1)*NumberGlobalXElements+1
+!  NumberOfNodesM=NumberOfNodesPerFibre*NumberGlobalYElements*NumberGlobalZElements*NumberOfNodesInXi2*NumberOfNodesInXi3
+!  NumberOfElementsM=(NumberOfNodesPerFibre-1)*NumberGlobalYElements*NumberGlobalZElements*NumberOfNodesInXi2*NumberOfNodesInXi3
+
+!  NumberOfNodesPerFibre=NumberOfNodesInXi1
+!  NumberOfNodesM=NumberOfNodesPerFibre*NumberGlobalYElements*NumberGlobalZElements*NumberOfNodesInXi2*NumberOfNodesInXi3* &
+!    & NumberGlobalXElements
+!  NumberOfElementsM=(NumberOfNodesPerFibre-1)*NumberGlobalYElements*NumberGlobalZElements*NumberOfNodesInXi2*NumberOfNodesInXi3* &
+!    & NumberGlobalXElements
+
+  NumberOfNodesPerFibre=(NumberOfNodesInXi1-1)*NumberGlobalXElements/NumberOfInSeriesFibres+1
+  NumberOfNodesM=NumberOfNodesPerFibre*NumberOfInSeriesFibres*NumberGlobalYElements*NumberGlobalZElements*NumberOfNodesInXi2* &
+    & NumberOfNodesInXi3
+  NumberOfElementsM=(NumberOfNodesPerFibre-1)*NumberOfInSeriesFibres*NumberGlobalYElements*NumberGlobalZElements* &
+    & NumberOfNodesInXi2*NumberOfNodesInXi3
+
 !##################################################################################################################################
-  fast_twitch=.true.
-  if(fast_twitch) then
+!  fast_twitch=.true.
+!  if(fast_twitch) then
     filename= &
-   &"/home/heidlauf/OpenCMISS/opencmiss/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/shorten_mod_2011_07_04.xml"
-    STIM_VALUE=8000.0_CMISSDP
-  else !slow twitch
-    filename= &
-   &"/home/heidlauf/OpenCMISS/opencmiss/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/slow_twitch_2012_01_27.xml"
-    STIM_VALUE=2000.0_CMISSDP
-  endif
+   &"/home/heidlauf/OpenCMISS/OpenCMISS/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/fast_2012_07_23.xml"
+!   &"/home/heidlauf/OpenCMISS/opencmiss/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/shorten_mod_2011_07_04.xml"
+    STIM_VALUE=1200.0_CMISSDP
+!    STIM_VALUE=8000.0_CMISSDP
+!  else !slow twitch
+!    filename2= &
+!  &"/home/heidlauf/OpenCMISS/opencmiss/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/fast_stim_2012_07_23.xml"
+!  &"/home/heidlauf/OpenCMISS/opencmiss/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/slow_2012_07_23.xml_0.401"
+!  &"/home/heidlauf/OpenCMISS/opencmiss/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/slow_twitch_2012_01_27.xml"
+!    STIM_VALUE=2000.0_CMISSDP
+!  endif
 !##################################################################################################################################
 
 
@@ -492,7 +545,8 @@ PROGRAM simple_geometryEXAMPLE
     CALL CMISSDecomposition_TypeSet(DecompositionM,CMISS_DECOMPOSITION_USER_DEFINED_TYPE,Err)
     elem_idx2=0
     DO domain_idx=0,NumberOfDomains-1
-      DO elem_idx=1,NumberOfElementsFE/NumberOfDomains/2
+!      DO elem_idx=1,NumberOfElementsFE/NumberOfDomains/2
+      DO elem_idx=1,NumberOfElementsFE/NumberOfDomains/NumberOfInSeriesFibres !???
         DO i=1,NumberOfNodesInXi3
           DO j=1,NumberOfNodesInXi2
             DO k=1,NumberOfNodesPerFibre-1
@@ -565,19 +619,24 @@ PROGRAM simple_geometryEXAMPLE
   CALL CMISSField_VariableTypesSet(MaterialFieldFE,[CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_V_VARIABLE_TYPE],Err)
   CALL CMISSField_NumberOfComponentsSet(MaterialFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,FieldMaterialNumberOfComponentsFE1,Err)
   CALL CMISSField_NumberOfComponentsSet(MaterialFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,FieldMaterialNumberOfComponentsFE2,Err)
-! default is CMISS_FIELD_NODE_BASED_INTERPOLATION
-  CALL CMISSField_ComponentMeshComponentSet(MaterialFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,QuadraticMeshComponentNumber,Err)
-  CALL CMISSField_ComponentMeshComponentSet(MaterialFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,2,QuadraticMeshComponentNumber,Err)
-  CALL CMISSField_ComponentMeshComponentSet(MaterialFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,1,QuadraticMeshComponentNumber,Err)
+  CALL CMISSField_ComponentInterpolationSet(MaterialFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
+  CALL CMISSField_ComponentInterpolationSet(MaterialFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,2,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
+  CALL CMISSField_ComponentInterpolationSet(MaterialFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,3,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
+  CALL CMISSField_ComponentInterpolationSet(MaterialFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,4,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
+  CALL CMISSField_ComponentInterpolationSet(MaterialFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,5,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
+  CALL CMISSField_ComponentInterpolationSet(MaterialFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,1,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
   CALL CMISSField_VariableLabelSet(MaterialFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,"MaterialFE",Err)
   CALL CMISSField_VariableLabelSet(MaterialFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,"Gravity",Err)
   CALL CMISSField_CreateFinish(MaterialFieldFE,Err)
-  !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively.
-  CALL CMISSField_ComponentValuesInitialise(MaterialFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
-   & 2.0_CMISSDP,Err)
-  CALL CMISSField_ComponentValuesInitialise(MaterialFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2, &
-   & 6.0_CMISSDP,Err)
+  !Set Mooney-Rivlin constants c10 and c01.
+  CALL CMISSField_ComponentValuesInitialise(MaterialFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,MAT_FE(1),Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,MAT_FE(2),Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3,MAT_FE(3),Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4,MAT_FE(4),Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,5,0.0_CMISSDP, &
+   & Err)
 !  CALL CMISSField_ComponentValuesInitialise(MaterialFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,0.0_CMISSDP,Err)
+
 
   !Create the dependent field for FE with 2 variables and * components 
   !  3-d: 3 displacement (quad interpol), 1 pressure (lin interpol) --> * = 4
@@ -585,7 +644,7 @@ PROGRAM simple_geometryEXAMPLE
   !  1-d: 1 displacement (quad interpol), 1 pressure (lin interpol) --> * = 2
   CALL CMISSField_Initialise(DependentFieldFE,Err)
   CALL CMISSField_CreateStart(FieldDependentUserNumberFE,RegionFE,DependentFieldFE,Err)
-  CALL CMISSField_TypeSet(DependentFieldFE,CMISS_FIELD_GENERAL_TYPE,Err)
+  CALL CMISSField_TypeSet(DependentFieldFE,CMISS_FIELD_GEOMETRIC_GENERAL_TYPE,Err)
   CALL CMISSField_MeshDecompositionSet(DependentFieldFE,DecompositionFE,Err)
   CALL CMISSField_GeometricFieldSet(DependentFieldFE,GeometricFieldFE,Err)
   CALL CMISSField_DependentTypeSet(DependentFieldFE,CMISS_FIELD_DEPENDENT_TYPE,Err)
@@ -667,16 +726,15 @@ PROGRAM simple_geometryEXAMPLE
   CALL CMISSField_GeometricFieldSet(MaterialFieldM,GeometricFieldM,Err)
   CALL CMISSField_NumberOfVariablesSet(MaterialFieldM,FieldMaterialNumberOfVariablesM,Err)
   CALL CMISSField_NumberOfComponentsSet(MaterialFieldM,CMISS_FIELD_U_VARIABLE_TYPE,FieldMaterialNumberOfComponentsM,Err)
-! default is CMISS_FIELD_NODE_BASED_INTERPOLATION
   CALL CMISSField_ComponentInterpolationSet(MaterialFieldM,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
-  CALL CMISSField_ComponentInterpolationSet(MaterialFieldM,CMISS_FIELD_U_VARIABLE_TYPE,2,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
+  CALL CMISSField_ComponentInterpolationSet(MaterialFieldM,CMISS_FIELD_U_VARIABLE_TYPE,2,CMISS_FIELD_NODE_BASED_INTERPOLATION,Err)
   CALL CMISSField_ComponentInterpolationSet(MaterialFieldM,CMISS_FIELD_U_VARIABLE_TYPE,3,CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
   CALL CMISSField_VariableLabelSet(MaterialFieldM,CMISS_FIELD_U_VARIABLE_TYPE,"MaterialM",Err)
   CALL CMISSField_CreateFinish(MaterialFieldM,Err)
   !Set Am
   CALL CMISSField_ComponentValuesInitialise(MaterialFieldM,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,Am,Err)
   !Set Cm
-  CALL CMISSField_ComponentValuesInitialise(MaterialFieldM,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,Cm,Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialFieldM,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,Cm_fast,Err)
   !Set Conductivity
   CALL CMISSField_ComponentValuesInitialise(MaterialFieldM,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3, &
    & CONDUCTIVITY,Err)
@@ -717,14 +775,14 @@ PROGRAM simple_geometryEXAMPLE
     CALL CMISSField_MeshDecompositionSet(IndependentFieldM,DecompositionM,Err)
     CALL CMISSField_GeometricFieldSet(IndependentFieldM,GeometricFieldM,Err)
     CALL CMISSField_DependentTypeSet(IndependentFieldM,CMISS_FIELD_INDEPENDENT_TYPE,Err)
-    CALL CMISSField_NumberOfVariablesSet(IndependentFieldM,FieldIndependentNumberOfVariablesM,Err) !3
+    CALL CMISSField_NumberOfVariablesSet(IndependentFieldM,FieldIndependentNumberOfVariablesM,Err) !4
     CALL CMISSField_VariableTypesSet(IndependentFieldM,[CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_V_VARIABLE_TYPE, &
-     & CMISS_FIELD_U1_VARIABLE_TYPE],Err)
+     & CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_U2_VARIABLE_TYPE],Err)
     
-    !first variable:   CMISS_FIELD_U_VARIABLE_TYPE -- active stress
+    !first variable:   CMISS_FIELD_U_VARIABLE_TYPE -- 1) active stress
     CALL CMISSField_DataTypeSet(IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_DP_TYPE,Err)
     CALL CMISSField_DimensionSet(IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_SCALAR_DIMENSION_TYPE,Err)
-    CALL CMISSField_NumberOfComponentsSet(IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,FieldIndependentNumberOfComponentsM1,Err)
+    CALL CMISSField_NumberOfComponentsSet(IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,1,Err)
     CALL CMISSField_ComponentInterpolationSet(IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,1, &
      & CMISS_FIELD_NODE_BASED_INTERPOLATION,Err)
     CALL CMISSField_VariableLabelSet(IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,"Active_Stress_M",Err)
@@ -754,6 +812,17 @@ PROGRAM simple_geometryEXAMPLE
     CALL CMISSField_ComponentInterpolationSet(IndependentFieldM,CMISS_FIELD_U1_VARIABLE_TYPE,3, &
      & CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
     CALL CMISSField_VariableLabelSet(IndependentFieldM,CMISS_FIELD_U1_VARIABLE_TYPE,"sarcomere_half_length",Err)
+
+    !fourth variable:   FIELD_U2_VARIABLE_TYPE -- 1) old node distance   2) maximum contraction velocity   3) relative contraction velocity
+    CALL CMISSField_DataTypeSet(IndependentFieldM,CMISS_FIELD_U2_VARIABLE_TYPE,CMISS_FIELD_DP_TYPE,Err)
+    CALL CMISSField_NumberOfComponentsSet(IndependentFieldM,CMISS_FIELD_U2_VARIABLE_TYPE,3,Err)
+    CALL CMISSField_ComponentInterpolationSet(IndependentFieldM,CMISS_FIELD_U2_VARIABLE_TYPE,1, &
+     & CMISS_FIELD_NODE_BASED_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(IndependentFieldM,CMISS_FIELD_U2_VARIABLE_TYPE,2, &
+     & CMISS_FIELD_CONSTANT_INTERPOLATION,Err)
+    CALL CMISSField_ComponentInterpolationSet(IndependentFieldM,CMISS_FIELD_U2_VARIABLE_TYPE,3, &
+     & CMISS_FIELD_NODE_BASED_INTERPOLATION,Err)
+    CALL CMISSField_VariableLabelSet(IndependentFieldM,CMISS_FIELD_U2_VARIABLE_TYPE,"contraction_velocity",Err)
 
     CALL CMISSField_CreateFinish(IndependentFieldM,Err)
   ENDIF
@@ -835,9 +904,20 @@ PROGRAM simple_geometryEXAMPLE
   !    2) initial sarcomere half length
   !    3) initial node distance
   CALL CMISSField_ComponentValuesInitialise(IndependentFieldM,CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2, &
-   & 1.1_CMISSDP,Err)
+   & 1.0_CMISSDP,Err)
   CALL CMISSField_ComponentValuesInitialise(IndependentFieldM,CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3, &
-   & LENGTH/NumberOfNodesPerFibre,Err)
+   & LENGTH/(NumberOfInSeriesFibres*NumberOfNodesPerFibre-1),Err)
+  !fourth variable:
+  !  components:
+  !    1) old node distance
+  !    2) maximum contraction velocity
+  !    3) relative contraction velocity
+  CALL CMISSField_ComponentValuesInitialise(IndependentFieldM,CMISS_FIELD_U2_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
+   & LENGTH/(NumberOfInSeriesFibres*NumberOfNodesPerFibre-1),Err)
+  CALL CMISSField_ComponentValuesInitialise(IndependentFieldM,CMISS_FIELD_U2_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2, &
+   & Vmax/(NumberOfInSeriesFibres*NumberOfNodesPerFibre-1),Err)
+  CALL CMISSField_ComponentValuesInitialise(IndependentFieldM,CMISS_FIELD_U2_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3, &
+   & 0.0_CMISSDP,Err)
 
 
   !UPDATE THE INDEPENDENT FIELD IndependentFieldFE
@@ -848,23 +928,57 @@ PROGRAM simple_geometryEXAMPLE
   !    3) number of nodes in Xi(3) direction per element
   !    4) beginning of fibres in this FE element??? 1=yes, 0=no
   !
+  !initialise as if the fibres would not start in any element, and adjust below
   CALL CMISSField_ComponentValuesInitialise(IndependentFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
-   & NumberOfNodesInXi1,Err)
+   & NumberOfNodesInXi1-1,Err)
   CALL CMISSField_ComponentValuesInitialise(IndependentFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2, &
    & NumberOfNodesInXi2,Err)
   CALL CMISSField_ComponentValuesInitialise(IndependentFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3, &
    & NumberOfNodesInXi3,Err)
+  CALL CMISSField_ComponentValuesInitialise(IndependentFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4, &
+   & 0,Err)
 
-  CALL CMISSField_ComponentValuesInitialise(IndependentFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4,0,Err)
-
-  !fibres are starting in elements 1,3,5, and 7
-  DO elem_idx=1,NumberOfElementsFE,2
+  !fibres are starting in elements 1,4,7,10,...
+  DO elem_idx=1,NumberOfElementsFE,NumberGlobalXElements/NumberOfInSeriesFibres
     CALL CMISSDecomposition_ElementDomainGet(DecompositionFE,elem_idx,ElementDomain,Err)
     IF(ElementDomain==ComputationalNodeNumber) THEN
+      !fibres begin in this element
       CALL CMISSField_ParameterSetUpdateElement(IndependentFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-       & elem_idx,4,1,Err) !fibres begin in this element
+       & elem_idx,4,1,Err) 
+      CALL CMISSField_ParameterSetUpdateElement(IndependentFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+       & elem_idx,1,NumberOfNodesInXi1,Err)
     ENDIF
   ENDDO
+
+!!  CALL CMISSField_ComponentValuesInitialise(IndependentFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4,0,Err)
+!  !fibres start in all elements
+!  CALL CMISSField_ComponentValuesInitialise(IndependentFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4,1,Err)
+!  !adjust numer of nodes in each element in Xi1 direction
+!  CALL CMISSField_ComponentValuesInitialise(IndependentFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
+!   & NumberOfNodesInXi1,Err)
+
+!  !fibres are starting only in element 1
+!  elem_idx=1
+!  CALL CMISSDecomposition_ElementDomainGet(DecompositionFE,elem_idx,ElementDomain,Err)
+!  IF(ElementDomain==ComputationalNodeNumber) THEN
+!    !fibres begin in this element
+!    CALL CMISSField_ParameterSetUpdateElement(IndependentFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+!     & elem_idx,4,1,Err) 
+!    CALL CMISSField_ParameterSetUpdateElement(IndependentFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+!     & elem_idx,1,NumberOfNodesInXi1,Err)
+!  ENDIF
+
+!  !fibres are starting in elements 1,3,5, and 7
+!  DO elem_idx=1,NumberOfElementsFE,2
+!    CALL CMISSDecomposition_ElementDomainGet(DecompositionFE,elem_idx,ElementDomain,Err)
+!    IF(ElementDomain==ComputationalNodeNumber) THEN
+!      !fibres begin in this element
+!      CALL CMISSField_ParameterSetUpdateElement(IndependentFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+!       & elem_idx,4,1,Err) 
+!      CALL CMISSField_ParameterSetUpdateElement(IndependentFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+!       & elem_idx,1,NumberOfNodesInXi1,Err)
+!    ENDIF
+!  ENDDO
 
 !  !fibres are not starting in elements 2,4,6, and 8
 !  DO elem_idx=2,NumberOfElementsFE,2
@@ -900,10 +1014,16 @@ PROGRAM simple_geometryEXAMPLE
   CALL CMISSCellML_CreateStart(CellMLUserNumber,RegionM,CellML,Err)
   !Import the Shorten et al. 2007 model from a file
   CALL CMISSCellML_ModelImport(CellML,filename,shortenModelIndex,Err)
+!  CALL CMISSCellML_ModelImport(CellML,filename2,shortenModelIndex2,Err)
   ! Now we have imported all the models we are able to specify which variables from the model we want:
   !,- to set from this side
   CALL CMISSCellML_VariableSetAsKnown(CellML,shortenModelIndex,"wal_environment/I_HH",Err)
   CALL CMISSCellML_VariableSetAsKnown(CellML,shortenModelIndex,"razumova/L_S",Err)
+  CALL CMISSCellML_VariableSetAsKnown(CellML,shortenModelIndex,"razumova/rel_velo",Err)
+!
+!  CALL CMISSCellML_VariableSetAsKnown(CellML,shortenModelIndex2,"wal_environment/I_HH",Err)
+!  CALL CMISSCellML_VariableSetAsKnown(CellML,shortenModelIndex2,"razumova/L_S",Err)
+!  CALL CMISSCellML_VariableSetAsKnown(CellML,shortenModelIndex2,"razumova/rel_velo",Err)
   !,- to get from the CellML side
 !  CALL CMISSCellML_VariableSetAsWanted(CellML,shortenModelIndex,"wal_environment/I_T",Err)
 !  CALL CMISSCellML_VariableSetAsWanted(CellML,shortenModelIndex,"wal_environment/I_ionic_s",Err)
@@ -913,6 +1033,7 @@ PROGRAM simple_geometryEXAMPLE
   !,  --> set "razumova/stress" as wanted!
   !,  --> no need to set "wal_environment/vS" since all STATE variables are automatically set as wanted! 
   CALL CMISSCellML_VariableSetAsWanted(CellML,shortenModelIndex,"razumova/stress",Err)
+!  CALL CMISSCellML_VariableSetAsWanted(CellML,shortenModelIndex2,"razumova/stress",Err)
   !,- and override constant parameters without needing to set up fields
   !> \todo Need to allow parameter values to be overridden for the case when user has non-spatially varying parameter value.
   !Finish the CellML environment
@@ -924,6 +1045,9 @@ PROGRAM simple_geometryEXAMPLE
   !Map the sarcomere half length L_S
   CALL CMISSCellML_CreateFieldToCellMLMap(CellML,IndependentFieldM,CMISS_FIELD_U1_VARIABLE_TYPE,1,CMISS_FIELD_VALUES_SET_TYPE, &
    & shortenModelIndex,"razumova/L_S",CMISS_FIELD_VALUES_SET_TYPE,Err)
+  !Map the sarcomere relative contraction velocity
+  CALL CMISSCellML_CreateFieldToCellMLMap(CellML,IndependentFieldM,CMISS_FIELD_U2_VARIABLE_TYPE,3,CMISS_FIELD_VALUES_SET_TYPE, &
+   & shortenModelIndex,"razumova/rel_velo",CMISS_FIELD_VALUES_SET_TYPE,Err)
   !Map the transmembrane voltage V_m
   CALL CMISSCellML_CreateFieldToCellMLMap(CellML,DependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_VALUES_SET_TYPE, &
    & shortenModelIndex,"wal_environment/vS",CMISS_FIELD_VALUES_SET_TYPE,Err)
@@ -932,6 +1056,21 @@ PROGRAM simple_geometryEXAMPLE
   !Map the active stress
   CALL CMISSCellML_CreateCellMLToFieldMap(CellML,shortenModelIndex,"razumova/stress",CMISS_FIELD_VALUES_SET_TYPE, &
    & IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_VALUES_SET_TYPE,Err)
+
+!  CALL CMISSCellML_CreateFieldToCellMLMap(CellML,IndependentFieldM,CMISS_FIELD_U1_VARIABLE_TYPE,1,CMISS_FIELD_VALUES_SET_TYPE, &
+!   & shortenModelIndex2,"razumova/L_S",CMISS_FIELD_VALUES_SET_TYPE,Err)
+!  !Map the sarcomere relative contraction velocity
+!  CALL CMISSCellML_CreateFieldToCellMLMap(CellML,IndependentFieldM,CMISS_FIELD_U2_VARIABLE_TYPE,3,CMISS_FIELD_VALUES_SET_TYPE, &
+!   & shortenModelIndex2,"razumova/rel_velo",CMISS_FIELD_VALUES_SET_TYPE,Err)
+!  !Map the transmembrane voltage V_m
+!  CALL CMISSCellML_CreateFieldToCellMLMap(CellML,DependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_VALUES_SET_TYPE, &
+!   & shortenModelIndex2,"wal_environment/vS",CMISS_FIELD_VALUES_SET_TYPE,Err)
+!  CALL CMISSCellML_CreateCellMLToFieldMap(CellML,shortenModelIndex2,"wal_environment/vS",CMISS_FIELD_VALUES_SET_TYPE, &
+!   & DependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_VALUES_SET_TYPE,Err)
+!  !Map the active stress
+!  CALL CMISSCellML_CreateCellMLToFieldMap(CellML,shortenModelIndex2,"razumova/stress",CMISS_FIELD_VALUES_SET_TYPE, &
+!   & IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_VALUES_SET_TYPE,Err)
+
   CALL CMISSCellML_FieldMapsCreateFinish(CellML,Err)
   
   !--------------------------------------------------------------------------------------------------------------------------------
@@ -947,14 +1086,37 @@ PROGRAM simple_geometryEXAMPLE
    & CMISS_FIELD_VALUES_SET_TYPE,2,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,Err)
   CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE, &
    & CMISS_FIELD_VALUES_SET_TYPE,3,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3,Err)
+  INIT_PRESSURE=-2.0_CMISSDP*MAT_FE(2)-MAT_FE(1)
   CALL CMISSField_ComponentValuesInitialise(DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4, & 
-   & -8.0_CMISSDP,Err)
+   & INIT_PRESSURE,Err)
+!   & -8.0_CMISSDP,Err)
 
   !--------------------------------------------------------------------------------------------------------------------------------
   !Create the CellML models field
   CALL CMISSField_Initialise(CellMLModelsField,Err)
   CALL CMISSCellML_ModelsFieldCreateStart(CellML,CellMLModelsFieldUserNumber,CellMLModelsField,Err)
   CALL CMISSCellML_ModelsFieldCreateFinish(CellML,Err)
+
+  !Set up the models field
+  CALL CMISSField_ComponentValuesInitialise(CellMLModelsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
+   & shortenModelIndex,Err)
+
+!  DO NodeNumber=NumberOfNodesPerFibre/2,NumberOfNodesM,NumberOfNodesPerFibre
+!    CALL CMISSDecomposition_NodeDomainGet(DecompositionM,NodeNumber,1,NodeDomain,Err)
+!    IF(NodeDomain==ComputationalNodeNumber) THEN
+!      CALL CMISSField_ParameterSetUpdateNode(CellMLModelsField,CMISS_FIELD_U_VARIABLE_TYPE, &
+!        & CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,1,shortenModelIndex2,Err)
+!    ENDIF
+!  ENDDO
+
+!  CALL CMISSField_ParameterSetUpdateStart(CellMLModelsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
+!  CALL CMISSField_ParameterSetUpdateFinish(CellMLModelsField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
+
+
+
+
+
+
 
   !Create the CellML state field
   CALL CMISSField_Initialise(CellMLStateField,Err)
@@ -988,7 +1150,7 @@ PROGRAM simple_geometryEXAMPLE
   CALL CMISSProblem_ControlLoopGet(Problem,CMISS_CONTROL_LOOP_NODE,ControlLoopMain,Err)
   CALL CMISSControlLoop_LabelSet(ControlLoopMain,'MAIN_TIME_LOOP',Err)
   !Loop in time for STIM_STOP with the Stimulus applied.
-  CALL CMISSControlLoop_TimesSet(ControlLoopMain,0.0_CMISSDP,STIM_STOP,ELASTICITY_TIME_STEP,Err)
+  CALL CMISSControlLoop_TimesSet(ControlLoopMain,0.0_CMISSDP,ELASTICITY_TIME_STEP,ELASTICITY_TIME_STEP,Err)
   CALL CMISSControlLoop_TimeOutputSet(ControlLoopMain,OUTPUT_FREQUENCY,Err)
   CALL CMISSControlLoop_OutputTypeSet(ControlLoopMain,CMISS_CONTROL_LOOP_TIMING_OUTPUT,Err) !DO NOT CHANGE!!!
 
@@ -1002,6 +1164,8 @@ PROGRAM simple_geometryEXAMPLE
   !set the finite elasticity loop (simple type)
   CALL CMISSControlLoop_Initialise(ControlLoopFE,Err)
   CALL CMISSProblem_ControlLoopGet(Problem,[ControlLoopElasticityNumber,CMISS_CONTROL_LOOP_NODE],ControlLoopFE,Err)
+  CALL CMISSControlLoop_TypeSet(ControlLoopFE,CMISS_PROBLEM_CONTROL_LOAD_INCREMENT_LOOP_TYPE,Err)
+  CALL CMISSControlLoop_MaximumIterationsSet(ControlLoopFE,20,Err)
   CALL CMISSControlLoop_LabelSet(ControlLoopFE,'ELASTICITY_LOOP',Err)
 
   CALL CMISSProblem_ControlLoopCreateFinish(Problem,Err)
@@ -1039,15 +1203,18 @@ PROGRAM simple_geometryEXAMPLE
   CALL CMISSSolver_Initialise(LinearSolverFE,Err)
   CALL CMISSProblem_SolverGet(Problem,[ControlLoopElasticityNumber,CMISS_CONTROL_LOOP_NODE], &
    & SolverFEIndex,SolverFE,Err)
-  CALL CMISSSolver_OutputTypeSet(SolverFE,CMISS_SOLVER_NO_OUTPUT,Err)
-  !CALL CMISSSolver_OutputTypeSet(SolverFE,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
+  !CALL CMISSSolver_OutputTypeSet(SolverFE,CMISS_SOLVER_NO_OUTPUT,Err)
+  CALL CMISSSolver_OutputTypeSet(SolverFE,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
   !CALL CMISSSolver_OutputTypeSet(SolverFE,CMISS_SOLVER_TIMING_OUTPUT,Err)
   !CALL CMISSSolver_OutputTypeSet(SolverFE,CMISS_SOLVER_SOLVER_OUTPUT,Err)
   !CALL CMISSSolver_OutputTypeSet(SolverFE,CMISS_SOLVER_MATRIX_OUTPUT,Err)
   CALL CMISSSolver_NewtonJacobianCalculationTypeSet(SolverFE,CMISS_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)
-  CALL CMISSSolver_NewtonMaximumIterationsSet(SolverFE,200,Err)
+  CALL CMISSSolver_NewtonMaximumIterationsSet(SolverFE,500,Err)
+  CALL CMISSSolver_NewtonAbsoluteToleranceSet(SolverFE,1.E-6_CMISSDP,Err) !6
+  CALL CMISSSolver_NewtonSolutionToleranceSet(SolverFE,2.E-6_CMISSDP,Err)
   CALL CMISSSolver_NewtonLinearSolverGet(SolverFE,LinearSolverFE,Err)
-  CALL CMISSSolver_LinearTypeSet(LinearSolverFE,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
+!  CALL CMISSSolver_LinearTypeSet(LinearSolverFE,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
+  CALL CMISSSolver_LinearTypeSet(LinearSolverFE,CMISS_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
 
   CALL CMISSProblem_SolversCreateFinish(Problem,Err)
 
@@ -1057,8 +1224,7 @@ PROGRAM simple_geometryEXAMPLE
 
   CALL CMISSSolver_Initialise(SolverDAE,Err)
   CALL CMISSCellMLEquations_Initialise(CellMLEquations,Err)
-  CALL CMISSProblem_SolverGet(Problem,[ControlLoopMonodomainNumber,CMISS_CONTROL_LOOP_NODE], &
-   & SolverDAEIndex,SolverDAE,Err)
+  CALL CMISSProblem_SolverGet(Problem,[ControlLoopMonodomainNumber,CMISS_CONTROL_LOOP_NODE],SolverDAEIndex,SolverDAE,Err)
   CALL CMISSSolver_CellMLEquationsGet(SolverDAE,CellMLEquations,Err)
   CALL CMISSCellMLEquations_CellMLAdd(CellMLEquations,CellML,CellMLIndex,Err)
 
@@ -1081,8 +1247,7 @@ PROGRAM simple_geometryEXAMPLE
   !Create the problem solver Finite Elasticity equations
   CALL CMISSSolver_Initialise(SolverFE,Err)
   CALL CMISSSolverEquations_Initialise(SolverEquationsFE,Err)
-  CALL CMISSProblem_SolverGet(Problem,[ControlLoopElasticityNumber,CMISS_CONTROL_LOOP_NODE], &
-   & SolverFEIndex,SolverFE,Err)
+  CALL CMISSProblem_SolverGet(Problem,[ControlLoopElasticityNumber,CMISS_CONTROL_LOOP_NODE],SolverFEIndex,SolverFE,Err)
   CALL CMISSSolver_SolverEquationsGet(SolverFE,SolverEquationsFE,Err)
   CALL CMISSSolverEquations_SparsityTypeSet(SolverEquationsFE,CMISS_SOLVER_SPARSE_MATRICES,Err)
   !CALL CMISSSolverEquations_SparsityTypeSet(SolverEquationsFE,CMISS_SOLVER_FULL_MATRICES,Err)  
@@ -1102,74 +1267,151 @@ PROGRAM simple_geometryEXAMPLE
   CALL CMISSBoundaryConditions_Initialise(BoundaryConditionsFE,Err)
   CALL CMISSSolverEquations_BoundaryConditionsCreateStart(SolverEquationsFE,BoundaryConditionsFE,Err)
 
-  !fix node 1 in all directions
-  NodeNumber=1
-  CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
-  IF(NodeDomain==ComputationalNodeNumber) THEN
-    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,&
-     & 1,VALUE,Err)
-    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
-    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,& 
-     & 2,VALUE,Err)
-    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,2, &
-     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
-    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,&
-     & 3,VALUE,Err)
-    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,3, &
-     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
-  ENDIF
-  !fix node 5 in directions y and z
-  NodeNumber=5
-  CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
-  IF(NodeDomain==ComputationalNodeNumber) THEN
-!    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,&
-!     & 1,VALUE,Err)
-!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-!     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
-    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,& 
-     & 2,VALUE,Err)
-    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,2, &
-     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
-    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,&
-     & 3,VALUE,Err)
-    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,3, &
-     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
-  ENDIF
-  !fix node 21 in directions in x and z
-  NodeNumber=21
-  CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
-  IF(NodeDomain==ComputationalNodeNumber) THEN
-    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,&
-     & 1,VALUE,Err)
-    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+  CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_BOTTOM_SURFACE,BottomSurfaceNodes,BottomNormalXi, &
+    & Err)
+  CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_LEFT_SURFACE,LeftSurfaceNodes,LeftNormalXi,Err)
+  CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_RIGHT_SURFACE,RightSurfaceNodes,RightNormalXi,Err)
+  CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_FRONT_SURFACE,FrontSurfaceNodes,FrontNormalXi,Err)
+
+  !Set x=0 nodes to no x displacment in x. Set x=WIDTH nodes to 100% x displacement
+  DO node_idx=1,SIZE(LeftSurfaceNodes,1)
+    NodeNumber=LeftSurfaceNodes(node_idx)
+    CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
+!        & CMISS_BOUNDARY_CONDITION_FIXED_USER_CONTROLLED,0.0_CMISSDP,Err)
+        & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+    ENDIF
+  ENDDO
+
+  DO node_idx=1,SIZE(RightSurfaceNodes,1)
+    NodeNumber=RightSurfaceNodes(node_idx)
+    CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
+        & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED,LENGTH*1.2_CMISSDP,Err)
+    ENDIF
+  ENDDO
+
+  !Set y=0 nodes to no y displacement
+  DO node_idx=1,SIZE(FrontSurfaceNodes,1)
+    NodeNumber=FrontSurfaceNodes(node_idx)
+    CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,2, &
+        & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+    ENDIF
+  ENDDO
+
+  !Set z=0 nodes to no z displacement
+  DO node_idx=1,SIZE(BottomSurfaceNodes,1)
+    NodeNumber=BottomSurfaceNodes(node_idx)
+    CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,3, &
+        & CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+    ENDIF
+  ENDDO
+
+!  !fix node 1 in all directions
+!  NodeNumber=1
+!  CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
+!  IF(NodeDomain==ComputationalNodeNumber) THEN
 !    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,& 
 !     & 2,VALUE,Err)
 !    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,2, &
 !     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
-    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,&
-     & 3,VALUE,Err)
-    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,3, &
-     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
-  ENDIF
-  !fix node 101 in directions in x and y
-  NodeNumber=101
-  CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
-  IF(NodeDomain==ComputationalNodeNumber) THEN
-    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,&
-     & 1,VALUE,Err)
-    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
-    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,& 
-     & 2,VALUE,Err)
-    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,2, &
-     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 !    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,&
 !     & 3,VALUE,Err)
 !    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,3, &
 !     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
-  ENDIF
+!  ENDIF
+
+!  !fix nodes 26 and 51 in direction z
+!  NodeNumber=(2*NumberGlobalXElements+1)+1
+!  CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
+!  IF(NodeDomain==ComputationalNodeNumber) THEN
+!    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,& 
+!     & 3,VALUE,Err)
+!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,3, &
+!     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+!  ENDIF
+!  NodeNumber=2*(2*NumberGlobalXElements+1)+1
+!  CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
+!  IF(NodeDomain==ComputationalNodeNumber) THEN
+!    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,& 
+!     & 3,VALUE,Err)
+!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,3, &
+!     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+!  ENDIF
+
+!  !fix nodes 76 and 151 in direction y
+!  NodeNumber=3*(2*NumberGlobalXElements+1)+1
+!  CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
+!  IF(NodeDomain==ComputationalNodeNumber) THEN
+!    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,& 
+!     & 2,VALUE,Err)
+!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,2, &
+!     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+!  ENDIF
+!  NodeNumber=6*(2*NumberGlobalXElements+1)+1
+!  CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
+!  IF(NodeDomain==ComputationalNodeNumber) THEN
+!    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,& 
+!     & 2,VALUE,Err)
+!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,2, &
+!     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+!  ENDIF
+
+!  !fix node 25 in all directions
+!  NodeNumber=(2*NumberGlobalXElements+1)
+!  CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
+!  IF(NodeDomain==ComputationalNodeNumber) THEN
+!    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,& 
+!     & 2,VALUE,Err)
+!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,2, &
+!     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+!    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,&
+!     & 3,VALUE,Err)
+!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,3, &
+!     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+!  ENDIF
+
+!  !fix nodes 50 and 75 in direction z
+!  NodeNumber=2*(2*NumberGlobalXElements+1)
+!  CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
+!  IF(NodeDomain==ComputationalNodeNumber) THEN
+!    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,& 
+!     & 3,VALUE,Err)
+!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,3, &
+!     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+!  ENDIF
+!  NodeNumber=3*(2*NumberGlobalXElements+1)
+!  CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
+!  IF(NodeDomain==ComputationalNodeNumber) THEN
+!    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,& 
+!     & 3,VALUE,Err)
+!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,3, &
+!     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+!  ENDIF
+
+!  !fix nodes 100 and 175 in direction y
+!  NodeNumber=4*(2*NumberGlobalXElements+1)
+!  CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
+!  IF(NodeDomain==ComputationalNodeNumber) THEN
+!    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,& 
+!     & 2,VALUE,Err)
+!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,2, &
+!     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+!  ENDIF
+!  NodeNumber=7*(2*NumberGlobalXElements+1)
+!  CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
+!  IF(NodeDomain==ComputationalNodeNumber) THEN
+!    CALL CMISSField_ParameterSetGetNode(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,& 
+!     & 2,VALUE,Err)
+!    CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,2, &
+!     & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+!  ENDIF
 
   CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquationsFE,Err)
 
@@ -1179,47 +1421,114 @@ PROGRAM simple_geometryEXAMPLE
   CALL CMISSProblem_ControlLoopGet(Problem,[ControlLoopMonodomainNumber,CMISS_CONTROL_LOOP_NODE],ControlLoopM,Err)
   CALL CMISSBioelectricsFiniteElasticity_UpdateGeometricField(ControlLoopM,.TRUE.,Err)
 
-!  EXPORT_FIELD=.TRUE.
-!  IF(EXPORT_FIELD) THEN
-!    CALL CMISSFields_Initialise(Fields,Err)
-!    CALL CMISSFields_Create(RegionM,Fields,Err)
-!    CALL CMISSFields_NodesExport(Fields,"simple_geometryExample_M","FORTRAN",Err)
-!    CALL CMISSFields_ElementsExport(Fields,"simple_geometryExample_M","FORTRAN",Err)
-!    CALL CMISSFields_Finalise(Fields,Err)
+  !reset the relative contraction velocity to 0
+  CALL CMISSField_ComponentValuesInitialise(IndependentFieldM,CMISS_FIELD_U2_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3, &
+   & 0.0_CMISSDP,Err)
 
-!    CALL CMISSFields_Initialise(Fields,Err)
-!    CALL CMISSFields_Create(RegionFE,Fields,Err)
-!    CALL CMISSFields_NodesExport(Fields,"simple_geometryExample_FE","FORTRAN",Err)
-!    CALL CMISSFields_ElementsExport(Fields,"simple_geometryExample_FE","FORTRAN",Err)
-!    CALL CMISSFields_Finalise(Fields,Err)
-!  ENDIF
+  EXPORT_FIELD=.TRUE.
+  IF(EXPORT_FIELD) THEN
+    CALL CMISSFields_Initialise(Fields,Err)
+    CALL CMISSFields_Create(RegionM,Fields,Err)
+    CALL CMISSFields_NodesExport(Fields,"simple_geometryExample_M","FORTRAN",Err)
+    CALL CMISSFields_ElementsExport(Fields,"simple_geometryExample_M","FORTRAN",Err)
+    CALL CMISSFields_Finalise(Fields,Err)
+
+    CALL CMISSFields_Initialise(Fields,Err)
+    CALL CMISSFields_Create(RegionFE,Fields,Err)
+    CALL CMISSFields_NodesExport(Fields,"simple_geometryExample_FE","FORTRAN",Err)
+    CALL CMISSFields_ElementsExport(Fields,"simple_geometryExample_FE","FORTRAN",Err)
+    CALL CMISSFields_Finalise(Fields,Err)
+  ENDIF
+
 
 
   !--------------------------------------------------------------------------------------------------------------------------------
   !Solve the problem
-!  time = 0.0_CMISSDP 
-!  do while(time <= TIME_STOP)
 
-  !Set the Stimulus for monodomain at the middle of the fibres in the first two 3-d elements
+
+  !Solve the problem -- bring to new length before applying the stimulus
+  WRITE(*,'(A)') "Start solve before stimulation"
+  CALL CMISSProblem_Solve(Problem,Err)
+
+  !reset the relative contraction velocity to 0
+  CALL CMISSField_ComponentValuesInitialise(IndependentFieldM,CMISS_FIELD_U2_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3, &
+   & 0.0_CMISSDP,Err)
+
+  CALL CMISSControlLoop_Initialise(ControlLoopFE,Err)
+  CALL CMISSProblem_ControlLoopGet(Problem,[ControlLoopElasticityNumber,CMISS_CONTROL_LOOP_NODE],ControlLoopFE,Err)
+  CALL CMISSControlLoop_MaximumIterationsSet(ControlLoopFE,1,Err)
+
+  CALL CMISSField_ParameterSetUpdateConstant(MaterialFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,5, &
+   & P_max,Err)
+
+
+! no change for BCs -- fix at this length!!!
+
+
+
+
+  !Set the Stimulus for monodomain at the middle of the fibres
   CALL CMISSCellML_FieldComponentGet(CellML,shortenModelIndex,CMISS_CELLML_PARAMETERS_FIELD, &
    & "wal_environment/I_HH",stimcomponent,Err)
 
-  NodeNumber=NumberOfNodesPerFibre/2
+
+
+  !--------------------------------------------------------------------------------------------------------------------------------
+  !--------------------------------------------------------------------------------------------------------------------------------
+  k = -1
+  VALUE = 0.0_CMISSDP 
+  time = 0.0_CMISSDP 
+  do while(time <= TIME_STOP)
+
+  k = k+1
+
+
+!  VALUE = VALUE-ABS(Vmax)/20.0_CMISSDP*STIM_STOP
+!!  VALUE = VALUE+ABS(Vmax)/10.0_CMISSDP*STIM_STOP
+!  CALL CMISSControlLoop_BoundaryConditionUpdate(ControlLoopFE,1,1,VALUE,Err)
+  DO node_idx=1,SIZE(LeftSurfaceNodes,1)
+    NodeNumber=LeftSurfaceNodes(node_idx)
+    CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
+    IF(NodeDomain==ComputationalNodeNumber) THEN
+      CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
+        & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+    ENDIF
+  ENDDO
+
+
+  NodeNumber=(NumberOfNodesPerFibre+1)/2
   DO WHILE(NodeNumber<NumberOfNodesM)
     CALL CMISSDecomposition_NodeDomainGet(DecompositionM,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) CALL CMISSField_ParameterSetUpdateNode(CellMLParametersField, &
      & CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,stimcomponent,STIM_VALUE,Err)
     NodeNumber=NodeNumber+NumberOfNodesPerFibre
   ENDDO
+  
+!!  !stimulate the fibers one after another
+!  NodeNumber=(NumberOfNodesPerFibre+1)/2+k*NumberOfNodesPerFibre
+!  DO WHILE(NodeNumber>NumberOfNodesM)
+!    NodeNumber = NodeNumber-NumberOfNodesM
+!  ENDDO
+!  
+!  WRITE(*,*) NodeNumber
+!  
+!  CALL CMISSDecomposition_NodeDomainGet(DecompositionM,NodeNumber,1,NodeDomain,Err)
+!  IF(NodeDomain==ComputationalNodeNumber) CALL CMISSField_ParameterSetUpdateNode(CellMLParametersField, &
+!   & CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,stimcomponent,STIM_VALUE,Err)
+
+
+  CALL CMISSControlLoop_TimesSet(ControlLoopMain,time,time+STIM_STOP,ELASTICITY_TIME_STEP,Err)
 
   !Solve the problem for the stimulation time
   WRITE(*,'(A)') "Start solve with stimulation"
   CALL CMISSProblem_Solve(Problem,Err)
 
+  time = time+STIM_STOP
+
 
   !--------------------------------------------------------------------------------------------------------------------------------
   !Now turn the stimulus off
-  NodeNumber=NumberOfNodesPerFibre/2
+  NodeNumber=(NumberOfNodesPerFibre+1)/2
   DO WHILE(NodeNumber<NumberOfNodesM)
     CALL CMISSDecomposition_NodeDomainGet(DecompositionM,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) CALL CMISSField_ParameterSetUpdateNode(CellMLParametersField, &
@@ -1228,19 +1537,41 @@ PROGRAM simple_geometryEXAMPLE
   ENDDO
 
 
-  CALL CMISSControlLoop_TimesSet(ControlLoopMain,STIM_STOP,TIME_STOP,ELASTICITY_TIME_STEP,Err)
 
-  !Solve the problem for the rest of the period
   WRITE(*,'(A)') "Start solve without stimulation"
-  CALL CMISSProblem_Solve(Problem,Err)
 
+  do while(time <= (k+1)*PERIODD)
+
+!    VALUE = VALUE-ABS(Vmax)/20.0_CMISSDP*STIM_STOP
+!!    VALUE = VALUE+ABS(Vmax)/10.0_CMISSDP*STIM_STOP
+!    CALL CMISSControlLoop_BoundaryConditionUpdate(ControlLoopFE,1,1,VALUE,Err)
+    DO node_idx=1,SIZE(LeftSurfaceNodes,1)
+      NodeNumber=LeftSurfaceNodes(node_idx)
+      CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
+      IF(NodeDomain==ComputationalNodeNumber) THEN
+        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
+          & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+      ENDIF
+    ENDDO
+    
+    CALL CMISSControlLoop_TimesSet(ControlLoopMain,time,time+STIM_STOP,ELASTICITY_TIME_STEP,Err)
+
+    !Solve the problem for the rest of the period
+    CALL CMISSProblem_Solve(Problem,Err)
+  
+    time = time+STIM_STOP
+    
+  end do !time <= PERIODD
+
+!  time = time+PERIODD
+  end do !time <= TIME_STOP
   !--------------------------------------------------------------------------------------------------------------------------------
-!  time = time + PERIODD
+  !--------------------------------------------------------------------------------------------------------------------------------
 
-!  end do
+
   
   !--------------------------------------------------------------------------------------------------------------------------------
-  EXPORT_FIELD=.TRUE.
+!  EXPORT_FIELD=.TRUE.
   IF(EXPORT_FIELD) THEN
     CALL CMISSFields_Initialise(Fields,Err)
     CALL CMISSFields_Create(RegionM,Fields,Err)
@@ -1281,4 +1612,4 @@ PROGRAM simple_geometryEXAMPLE
   
   STOP
   
-END PROGRAM simple_geometryEXAMPLE
+END PROGRAM SIMPLE_GEOMETRYEXAMPLE
