@@ -11,6 +11,11 @@
      "args": "4 2 1 1",
      "tolerance": 1e-6,
      "expectedPath": "expected_results/cubic_2x1x1"
-    }
+    },
+    {
+      "id": 3,
+      "machine": "build-sn-gpu-p",
+      "processors": 2
+     }
   ]
 }}

@@ -7,5 +7,9 @@
     {
       "id": 2,
       "args": "4 4 0 2",
-      "processors": 2 }]
+      "processors": 2 },
+    {
+      "id": 3,
+      "machine": "build-sn-gpu-p",
+      "processors": 2}]
 }}
