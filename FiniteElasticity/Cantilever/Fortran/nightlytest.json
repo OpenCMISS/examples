@@ -14,7 +14,7 @@
     },
     {
       "id": 3,
-      "machine": "nesi",
+      "machine": "build-sn-gpu-p",
       "processors": 2
      }
   ]
