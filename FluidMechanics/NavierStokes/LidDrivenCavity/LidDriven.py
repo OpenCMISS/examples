@@ -333,7 +333,7 @@ def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,ou
 
 # Problem defaults
 dimensions = [1.0,1.0]
-elementDimensions = [10,10]#[60,60]
+elementResolution = [10,10]#[60,60]
 ReynoldsNumbers = [100]#[100,400,1000,2500,3200,5000]
 lidVelocity = [1.0,0.0]
 viscosity = 1.0
@@ -350,7 +350,7 @@ for Re in ReynoldsNumbers:
     else:
         transient = []
 
-    outputDirectory = "./output/Re" + str(Re) + "Dim" +str(elementDimensions[0])+"x" +str(elementDimensions[1]) + "/"
+    outputDirectory = "./output/Re" + str(Re) + "Elem" +str(elementResolution[0])+"x" +str(elementResolution[1]) + "/"
     try:
         os.makedirs(outputDirectory)
     except OSError, e:
@@ -358,8 +358,11 @@ for Re in ReynoldsNumbers:
             raise   
 
     outputFile = outputDirectory +"LidDrivenCavity"
-    LidDriven(elementDimensions,dimensions,lidVelocity,viscosity,density,outputFile,transient)
+    LidDriven(elementResolution,dimensions,lidVelocity,viscosity,density,outputFile,transient)
     print('Finished solving Re ' + str(Re))
+
+
+
 
 CMISS.Finalise()
 
