@@ -83,7 +83,7 @@ computationalNodeNumber = CMISS.ComputationalNodeNumberGet()
 # -----------------------------------------------
 
 # Read xml file
-meshName = 'hexCylinder12'            
+meshName = 'hexCylinder140'            
 inputDir = './input/' + meshName +'/'
 length = 10.016782
 radius = 0.5
@@ -226,19 +226,19 @@ def solveProblem(transient,viscosity,density,offset,amplitude,period):
     """ Sets up the problem and solve with the provided parameter values
 
 
-          Oscillatory flow through a rigid cylinder
+        Oscillatory flow through a rigid cylinder
 
                                      u=0
                   ------------------------------------------- R = 0.5
                                              >
                                              ->  
-        p = offset + A*cos(2*pi*(t/period))  --> u(r,t)        p = 0
+        p = offset + A*sin(2*pi*(t/period))  --> u(r,t)        p = 0
                                              ->
                                              >
                   ------------------------------------------- L = 10
                                      u=0
     """
-
+    startTime = time.time()
     angularFrequency = 2.0*math.pi/period
     womersley = radius*math.sqrt(angularFrequency*density/viscosity)
     if computationalNodeNumber == 0:
@@ -311,7 +311,7 @@ def solveProblem(transient,viscosity,density,offset,amplitude,period):
     analytic = True
     if analytic:
         analyticField = CMISS.Field()
-        equationsSet.AnalyticCreateStart(CMISS.NavierStokesAnalyticFunctionTypes.Sinusoid,analyticFieldUserNumber,analyticField)
+        equationsSet.AnalyticCreateStart(CMISS.NavierStokesAnalyticFunctionTypes.FlowrateSinusoid,analyticFieldUserNumber,analyticField)
         equationsSet.AnalyticCreateFinish()
         # Initialise analytic field parameters: (1-4) Dependent params, 5 amplitude, 6 offset, 7 period
         analyticField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,0.0)
@@ -321,6 +321,7 @@ def solveProblem(transient,viscosity,density,offset,amplitude,period):
         analyticField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,5,amplitude)
         analyticField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,6,offset)
         analyticField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,7,period)
+
 
     # Create equations
     equations = CMISS.Equations()
@@ -411,6 +412,7 @@ def solveProblem(transient,viscosity,density,offset,amplitude,period):
     # Solve the problem
     print("solving problem...")
     problem.Solve()
+    print("Finished. Time to solve (seconds): " + str(time.time()-startTime))    
 
     # Clear fields so can run in batch mode on this region
     materialsField.Destroy()
@@ -424,15 +426,15 @@ def solveProblem(transient,viscosity,density,offset,amplitude,period):
 # P r o b l e m     C o n t r o l
 #==========================================================
 
-# Problem defaults
+# Problem parameters
 offset = 0.0
 density = 1.0
 amplitude = 1.0
 period = math.pi/2.
-timeIncrements = [period/400.]
-womersleyNumbers = [10.0]
+timeIncrements = [period/20.]
+womersleyNumbers = [1.0]
 startTime = 0.0
-stopTime = period + 0.0000001
+stopTime = period + 0.000001
 outputFrequency = 1
 
 for timeIncrement in timeIncrements:
@@ -442,7 +444,7 @@ for timeIncrement in timeIncrements:
         # determine w using viscosity:density ratio (fixed angular frequency and radius)
         viscosity = density/(w**2.0)
         # make a new output directory if necessary
-        outputDirectory = "./output/Wo" + str(w) + 'Dt' + str(timeIncrement) + meshName + "/"
+        outputDirectory = "./output/Wom" + str(w) + 'Dt' + str(round(timeIncrement,5)) + meshName + "/"
         try:
             os.makedirs(outputDirectory)
         except OSError, e:
