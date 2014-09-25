@@ -430,14 +430,13 @@ PROGRAM POROELASTICITYEXAMPLE
   CALL CMISSProblem_SolversCreateStart(Problem,Err)
   CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,Solver,Err)
   CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
-  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(Solver,CMISS_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)
+  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(Solver,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
   CALL CMISSSolver_NewtonMaximumIterationsSet(Solver,200,Err)
   CALL CMISSSolver_NewtonMaximumFunctionEvaluationsSet(Solver,10000,Err)
   CALL CMISSSolver_NewtonAbsoluteToleranceSet(Solver,1.0E-10_CMISSDP,Err)
   CALL CMISSSolver_NewtonRelativeToleranceSet(Solver,1.0E-9_CMISSDP,Err)
   CALL CMISSSolver_NewtonLinearSolverGet(Solver,LinearSolver,Err)
-  CALL CMISSSolver_LinearTypeSet(LinearSolver,CMISS_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
-  CALL CMISSSolver_LinearIterativeMaximumIterationsSet(LinearSolver,1000,Err)
+  CALL CMISSSolver_LinearTypeSet(LinearSolver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
   CALL CMISSProblem_SolversCreateFinish(Problem,Err)
 
   !Create the problem solver equations

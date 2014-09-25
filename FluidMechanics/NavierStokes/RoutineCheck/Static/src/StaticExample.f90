@@ -537,8 +537,8 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
 
   !Create the equations set for static Navier-Stokes
   CALL CMISSEquationsSet_Initialise(EquationsSetNavierStokes,Err)
-    CALL CMISSField_Initialise(EquationsSetField,Err)
-CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField, &
+  CALL CMISSField_Initialise(EquationsSetField,Err)
+  CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField, &
     & CMISS_EQUATIONS_SET_FLUID_MECHANICS_CLASS,CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TYPE, &
       & CMISS_EQUATIONS_SET_STATIC_NAVIER_STOKES_SUBTYPE, &
     & EquationsSetFieldUserNumber,EquationsSetField,EquationsSetNavierStokes,Err)
