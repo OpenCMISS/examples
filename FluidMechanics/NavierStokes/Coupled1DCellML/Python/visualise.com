@@ -1,7 +1,7 @@
-for $i (0..1000)
+for $i (0..160)
 #Read in the sequence of nodal positions.
   {
-     $filename = sprintf("./output/MainTime_%01d.part0.exnode", $i*1);
+     $filename = sprintf("./output/MainTime_%01d.part0.exnode", $i*10);
      print "Reading $filename time $i\n";
      gfx read node "$filename" time $i;
 #     $filename = sprintf("./output/MainTime_%01d.part1.exnode", $i);
@@ -31,20 +31,23 @@ gfx def field ADifference add fields A negA0
 
 gfx def field flow component General.1
 gfx def field area component General.2
+gfx def field velocity divide_components fields flow area
 
 gfx modify g_element OpenCMISS general circle_discretization 12 
 
 gfx define field vector_field coord rectangular_cartesian component General.1 General.2
 
 gfx cre spectrum Flow
-gfx modify spectrum Flow linear reverse range -0.02 0.1 extend_above extend_below rainbow colour_range 0 1 component 1;
+gfx modify spectrum Flow linear reverse range -20.0 100.0 extend_above extend_below rainbow colour_range 0 1 component 1;
 gfx cre spectrum Pressure
 gfx modify spectrum Pressure linear reverse range 0.0 30.0 extend_above extend_below rainbow colour_range 0 1 component 1;
+gfx cre spectrum Velocity
+gfx modify spectrum Velocity linear reverse range -0.25 1.25 extend_above extend_below rainbow colour_range 0 1 component 1;
 gfx cre spectrum Conc
 gfx modify spectrum Conc linear reverse range 0.0 1.0 extend_above extend_below rainbow colour_range 0 1 component 1;
 
 #gfx modify g_element OpenCMISS cylinders constant_radius 0.0001 data flow spectrum Flow radius_scalar area  scale_factor 100000
-gfx modify g_element OpenCMISS cylinders constant_radius 0.0001 data flow spectrum Flow radius_scalar area  scale_factor 0.2
+gfx modify g_element OpenCMISS cylinders constant_radius 1.0 data flow spectrum Flow radius_scalar area  scale_factor 0.05
 gfx modify g_element OpenCMISS node_points label cmiss_number
 
 gfx edit scene
