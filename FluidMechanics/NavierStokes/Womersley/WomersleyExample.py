@@ -83,7 +83,7 @@ computationalNodeNumber = CMISS.ComputationalNodeNumberGet()
 # -----------------------------------------------
 
 # Read xml file
-meshName = 'hexCylinder140'            
+meshName = 'hexCylinder140'#'hexCylinder12'            
 inputDir = './input/' + meshName +'/'
 length = 10.016782
 radius = 0.5
@@ -255,6 +255,10 @@ def solveProblem(transient,viscosity,density,offset,amplitude,period):
             CMISS.EquationsSetSubtypes.TRANSIENT_SUPG_NAVIER_STOKES,
             equationsSetFieldUserNumber, equationsSetField)
     equationsSet.CreateFinish()
+    # Set boundary retrograde flow stabilisation scaling factor (default 0.2)
+    equationsSetField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.V,
+                                                  CMISS.FieldParameterSetTypes.VALUES, 
+                                                  1,0.2)
 
     # Create dependent field
     dependentField = CMISS.Field()
@@ -431,8 +435,8 @@ offset = 0.0
 density = 1.0
 amplitude = 1.0
 period = math.pi/2.
-timeIncrements = [period/20.]
-womersleyNumbers = [1.0]
+timeIncrements = [period/20.0]#[period/400.]
+womersleyNumbers = [1.0]#[10.0]
 startTime = 0.0
 stopTime = period + 0.000001
 outputFrequency = 1
