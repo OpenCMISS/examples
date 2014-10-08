@@ -1,6 +1,7 @@
 # Built files
 object/
 bin/
+_build/
 
 # OpenCMISS output
 *.diag
