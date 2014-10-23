@@ -103,13 +103,15 @@ PROGRAM CELLMLFORTRANEXAMPLE
   !CMISS variables
 
   TYPE(CMISSBasisType) :: Basis
-  TYPE(CMISSCellMLType) :: CellML
   TYPE(CMISSCoordinateSystemType) :: CoordinateSystem,WorldCoordinateSystem
   TYPE(CMISSDecompositionType) :: Decomposition
   TYPE(CMISSEquationsType) :: Equations
   TYPE(CMISSEquationsSetType) :: EquationsSet
   TYPE(CMISSFieldType) :: GeometricField,DependentField,MaterialsField
+  !DOC-START cellml type declarations
+  TYPE(CMISSCellMLType) :: CellML
   TYPE(CMISSFieldType) :: CellMLModelsField,CellMLStateField,CellMLIntermediateField,CellMLParametersField
+  !DOC-END cellml type declarations
   TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
   TYPE(CMISSMeshType) :: Mesh
   TYPE(CMISSRegionType) :: Region,WorldRegion
