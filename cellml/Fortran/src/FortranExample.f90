@@ -276,6 +276,7 @@ PROGRAM CELLMLFORTRANEXAMPLE
       & CONDUCTIVITY,Err)
   ENDIF
 
+  !DOC-START cellml setup environment
   !Create the CellML environment
   CALL CMISSCellML_Initialise(CellML,Err)
   CALL CMISSCellML_CreateStart(CellMLUserNumber,Region,CellML,Err)
@@ -302,7 +303,9 @@ PROGRAM CELLMLFORTRANEXAMPLE
 !  CALL CMISSDiagnosticsSetOff(Err)
   !Finish the CellML environment
   CALL CMISSCellML_CreateFinish(CellML,Err)
+  !DOC-END cellml setup environment
 
+  !DOC-START cellml define field maps
   !Start the creation of CellML <--> OpenCMISS field maps
   CALL CMISSCellML_FieldMapsCreateStart(CellML,Err)
   !Now we can set up the field variable component <--> CellML model variable mappings.
@@ -314,6 +317,7 @@ PROGRAM CELLMLFORTRANEXAMPLE
     & DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_VALUES_SET_TYPE,Err)
   !Finish the creation of CellML <--> OpenCMISS field maps
   CALL CMISSCellML_FieldMapsCreateFinish(CellML,Err)
+  !DOC-END cellml define field maps
 
   !todo - get vm initial value.
   CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
