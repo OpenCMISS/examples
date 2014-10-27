@@ -17,7 +17,9 @@ OpenCMISS-Iron makes use of the `CellML <http://cellml.org>`_ format to enable u
    :maxdepth: 2
    
    cellml/README
+   FiniteElasticity/HomogeneousPipeAxialExtension/README
    FiniteElasticity/MooneyRivlinInCellML/README
+   
 
 
 Indices and tables
