@@ -147,7 +147,7 @@ geometricField.CreateFinish()
 geometricField.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
 
 #Set the geometric information from the exregion file
-#Here we will record special nodes of interest, specifially boundary nodes where we wish to specify boundary values
+#Here we will record special nodes of interest, specifically boundary nodes where we wish to specify boundary values
 left_boundary_nodes = []
 right_boundary_nodes = []
 # Read the geometric field 
@@ -289,7 +289,7 @@ equationsSet.DependentCreateStart(dependentFieldUserNumber, dependentField)
 equationsSet.DependentCreateFinish()
 
 
-
+#DOC-START create cellml environment
 # Create the CellML environment
 CellML = CMISS.CellML()
 CellML.CreateStart(CellMLUserNumber, region)
@@ -311,8 +311,8 @@ CellML.VariableSetAsWanted(MooneyRivlinModel, "equations/Tdev22")
 CellML.VariableSetAsWanted(MooneyRivlinModel, "equations/Tdev23")
 CellML.VariableSetAsWanted(MooneyRivlinModel, "equations/Tdev33")
 
-
 CellML.CreateFinish()
+#DOC-END create cellml environment
 
 
 
