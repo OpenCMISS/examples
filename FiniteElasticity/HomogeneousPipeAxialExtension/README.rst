@@ -3,8 +3,8 @@
 Axial extension in a homogeneous pipe
 -------------------------------------
 
-Example created by: `Jagir Hussan <https://unidirectory.auckland.ac.nz/profile/rjag008>`_.
-Documentation by: `David Nickerson <http://about.me/david.nickerson/>`_.
+| Example created by: `Jagir Hussan <https://unidirectory.auckland.ac.nz/profile/rjag008>`_.
+| Documentation by: `David Nickerson <http://about.me/david.nickerson/>`_.
 
 This example demonstrates the application of an mechanical extension to a homogeneous pipe model along the axis of the pipe. The Mooney-Rivlin constitutive law is used via CellML and PyZinc is used to load the geometric model.
 
