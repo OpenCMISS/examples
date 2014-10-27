@@ -6,8 +6,10 @@ import sys, os, exfile
 sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
 #DOC-END imports
 
+#DOC-START load exfile
 #Load the mesh information in the form of exregion format
 exregion = exfile.Exregion("hetrogenouscylinder.exregion")
+#DOC-END load exfile
 
 #Additional information regading the mesh should be provided, the rudimentary exfile object does not provide these details
 #The mesh is composed of quad with tri-quadratic basis

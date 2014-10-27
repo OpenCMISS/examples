@@ -17,8 +17,15 @@ Example description
 In a slight twist on the usual Iron Python scripts, in this example we also make use of PyZinc to load the model so we require the ``exfile`` class from PyZinc as well as the standard Iron Python bindings:
 
 .. literalinclude:: HomogeneousPipeAxialExtension.py
+   :language: python
    :linenos:
    :start-after: #DOC-START imports
    :end-before: #DOC-END imports
 
-As shown on line 1, we assume PyZinc is available to your Python environment. Whereas on line 3 we are specifically searching for the Iron Python bindings using the :envvar:`OPENCMISS_ROOT` environment variable.
+As shown on line 1, we assume PyZinc is available to your Python environment. Whereas on line 3 we are specifically searching for the Iron Python bindings using the :envvar:`OPENCMISS_ROOT` environment variable. Using the PyZinc ``exfile`` module we are able to load the finite element model geometry from the ``EXREGION`` file: :download:`hetrogenouscylinder.exregion`, as shown below:
+
+.. literalinclude:: HomogeneousPipeAxialExtension.py
+   :language: python
+   :linenos:
+   :start-after: #DOC-START load exfile
+   :end-before: #DOC-END load exfile
