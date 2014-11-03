@@ -40,3 +40,13 @@ Throughout the remainder of the Python script you can see the data from the now 
    :end-before: #DOC-END create cellml environment
 
 In the above code, we use the standard Iron methods to create the :term:`CellML environment` (line 1) and import the CellML model defining the Mooney-Rivlin constitutive law. Lines 8-13 then set the variables from the model that are :term:`known` and lines 15-20 are the :term:`wanted` variables from the CellML model.
+
+Results
++++++++
+
+.. figure:: doc/results.png
+   :align: center
+   :width: 40%
+   :figwidth: 80%
+   
+   **Figure:** Results from running this pipe extension simulation. The gold lines show the original, undeformed, cylinder geometry. The coloured lines show the deformed geometry, with the colour varying to show the difference in strain through the wall of the cylinder. The cones represent the three normalised principal strains at material points throughout the tissue volume (red for compression and blue for extension).
