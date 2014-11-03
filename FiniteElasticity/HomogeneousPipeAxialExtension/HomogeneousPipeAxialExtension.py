@@ -150,6 +150,7 @@ geometricField.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldPar
 #Here we will record special nodes of interest, specifically boundary nodes where we wish to specify boundary values
 left_boundary_nodes = []
 right_boundary_nodes = []
+# DOC-START define node coordinates
 # Read the geometric field 
 for node_num in exregion.nodeids:
     version = 1
@@ -171,6 +172,7 @@ for node_num in exregion.nodeids:
            
 
 geometricField.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
+# DOC-END define node coordinates
 
 # Create a fibre field and attach it to the geometric field
 fibreField = CMISS.Field()
