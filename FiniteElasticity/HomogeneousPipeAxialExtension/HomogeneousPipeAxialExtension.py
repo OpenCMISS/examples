@@ -321,6 +321,7 @@ CellML.CreateFinish()
 # Start the creation of CellML <--> OpenCMISS field maps
 CellML.FieldMapsCreateStart()
 #Now we can set up the field variable component <--> CellML model variable mappings.
+#DOC-START map strain components
 #Map the strain components
 CellML.CreateFieldToCellMLMap(dependentField,CMISS.FieldVariableTypes.U1,1, CMISS.FieldParameterSetTypes.VALUES,MooneyRivlinModel,"equations/E11", CMISS.FieldParameterSetTypes.VALUES)
 CellML.CreateFieldToCellMLMap(dependentField,CMISS.FieldVariableTypes.U1,2, CMISS.FieldParameterSetTypes.VALUES,MooneyRivlinModel,"equations/E12", CMISS.FieldParameterSetTypes.VALUES)
@@ -328,8 +329,9 @@ CellML.CreateFieldToCellMLMap(dependentField,CMISS.FieldVariableTypes.U1,3, CMIS
 CellML.CreateFieldToCellMLMap(dependentField,CMISS.FieldVariableTypes.U1,4, CMISS.FieldParameterSetTypes.VALUES,MooneyRivlinModel,"equations/E22", CMISS.FieldParameterSetTypes.VALUES)
 CellML.CreateFieldToCellMLMap(dependentField,CMISS.FieldVariableTypes.U1,5, CMISS.FieldParameterSetTypes.VALUES,MooneyRivlinModel,"equations/E23", CMISS.FieldParameterSetTypes.VALUES)
 CellML.CreateFieldToCellMLMap(dependentField,CMISS.FieldVariableTypes.U1,6, CMISS.FieldParameterSetTypes.VALUES,MooneyRivlinModel,"equations/E33", CMISS.FieldParameterSetTypes.VALUES)
-   
+#DOC-END map strain components
     
+#DOC-START map stress components
 #Map the stress components
 CellML.CreateCellMLToFieldMap(MooneyRivlinModel,"equations/Tdev11", CMISS.FieldParameterSetTypes.VALUES,dependentField,CMISS.FieldVariableTypes.U2,1,CMISS.FieldParameterSetTypes.VALUES)
 CellML.CreateCellMLToFieldMap(MooneyRivlinModel,"equations/Tdev12", CMISS.FieldParameterSetTypes.VALUES,dependentField,CMISS.FieldVariableTypes.U2,2,CMISS.FieldParameterSetTypes.VALUES)
@@ -337,6 +339,7 @@ CellML.CreateCellMLToFieldMap(MooneyRivlinModel,"equations/Tdev13", CMISS.FieldP
 CellML.CreateCellMLToFieldMap(MooneyRivlinModel,"equations/Tdev22", CMISS.FieldParameterSetTypes.VALUES,dependentField,CMISS.FieldVariableTypes.U2,4,CMISS.FieldParameterSetTypes.VALUES)
 CellML.CreateCellMLToFieldMap(MooneyRivlinModel,"equations/Tdev23", CMISS.FieldParameterSetTypes.VALUES,dependentField,CMISS.FieldVariableTypes.U2,5,CMISS.FieldParameterSetTypes.VALUES)
 CellML.CreateCellMLToFieldMap(MooneyRivlinModel,"equations/Tdev33", CMISS.FieldParameterSetTypes.VALUES,dependentField,CMISS.FieldVariableTypes.U2,6,CMISS.FieldParameterSetTypes.VALUES)
+#DOC-END map stress components
 
 #Finish the creation of CellML <--> OpenCMISS field maps
 CellML.FieldMapsCreateFinish()

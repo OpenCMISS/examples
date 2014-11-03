@@ -45,6 +45,7 @@ we set the nodal coordinates and derivatives in the models geometric field. Ther
 
 CellML
 ******
+As mentioned above, this example uses the Mooney-Rivlin mechanical constitutive law. In this section we briefly describe how this is achieved.
 
 .. literalinclude:: HomogeneousPipeAxialExtension.py
    :language: python
@@ -52,7 +53,27 @@ CellML
    :start-after: #DOC-START create cellml environment 
    :end-before: #DOC-END create cellml environment
 
-In the above code, we use the standard Iron methods to create the :term:`CellML environment` (line 1) and import the CellML model defining the Mooney-Rivlin constitutive law. Lines 8-13 then set the variables from the model that are :term:`known` and lines 15-20 are the :term:`wanted` variables from the CellML model.
+In the above code, we use the standard Iron methods to create the :term:`CellML environment` (line 1) and import the CellML model defining the Mooney-Rivlin constitutive law. Lines 8-13 then set the variables from the model that are :term:`known` and lines 15-20 are the :term:`wanted` variables from the CellML model. These are the variables from the CellML models that we will want to associate with field variables in the Iron model.
+
+Having flagged the variables we require from the CellML model, we can map them to Iron fields. First we map the strain tensor from the finite elasticity model to variables in the CellML model.
+
+.. literalinclude:: HomogeneousPipeAxialExtension.py
+   :language: python
+   :linenos:
+   :start-after: #DOC-START map strain components 
+   :end-before: #DOC-END map strain components
+
+In the CellML model, each component of the strain tensor has a variable: ``equations/E11``, ``equations/E12``, etc.; following the :term:`CellML variable name` convention. In the finite elasticity model, the strain tensor is found in the dependent field as the ``U1`` field variable. These mappings are defined using the :py:meth:`CellML.CreateFieldToCellMLMap` method as the value of these variables in the CellML model is *known* in the finite elasticity model and will be set by Iron when evaluating the CellML model.
+
+In a similar manner we define equivalent mappings for the stress tensor (the ``U2`` field variable in the dependent field).
+ 
+.. literalinclude:: HomogeneousPipeAxialExtension.py
+   :language: python
+   :linenos:
+   :start-after: #DOC-START map stress components 
+   :end-before: #DOC-END map stress components
+
+In this case we use the :py:meth:`CellML.CreateCellMLToFieldMap` method as it is the CellML model which defines the calculation of stress for a given strain state (i.e., the stress tensor components are *wanted* variables from the CellML model). Defining these field mappings informs Iron that when the CellML model is evaluated *known* variables should have their values updated to the current state of the corresponding field variable components and following an evaluation the field variable components mapped to *wanted* variables should be updated to reflect the newly computed value of the variables in the CellML model.
 
 Results
 +++++++
