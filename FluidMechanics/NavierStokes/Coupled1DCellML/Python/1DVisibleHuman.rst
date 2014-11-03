@@ -21,22 +21,25 @@ This involves coupling together of dependent fields (\ie pressure and velocity/f
 In the following example, a 1D network of 24 major arteries has been constructed from the male Visible Human dataset, as shown in Figure 1.
 The resulting mesh contains 135 nodes on 67 quadratic line elements, as shown in Figure 2.
 
-.. figure:: doc/1DVessels.pdf
+.. figure:: doc/1DVessels.png
    :align: left
    :width: 40%
+
    **Figure:** 1D Arteries
 
 .. figure:: doc/1DVHMesh.png
    :align: left
    :width: 40%
+
    **Figure:** 1D Mesh
 
 Simple 0D/lumped parameter RCR Windkessel models are coupled to the 1D model at the outlet boundaries.
 These models use the fluid-electric analog to provide an basic approximation of resistance to flow due to perfusing vascular beds (the R1 and R2 components) and downstream vessel compliance (the C component).
 
-.. figure:: doc/RCR.pdf
+.. figure:: doc/RCR.png
    :align: center
    :width: 30%
+
    **Figure:** The 3-element RCR Windkessel model
 
 
@@ -53,28 +56,32 @@ OpenCMISS/CellML field mapping capabilities allow for the coupling of the 1D (Op
    :linenos:
    :start-after: !DOC-START cellml define field maps
    :end-before: !DOC-END cellml define field maps
-   **Snippet:** The OpenCMISS-Iron/CellML field mappings
+
+   **Snippet:** OpenCMISS-Iron/CellML field mappings
 
 Flow rate (Q) from the 1D Navier-Stokes/Characteristic solver provides the forcing term for the 0D ODE circuit solver.
 Pressure (P) is returned from the CellML solver to provide constraints on the Riemann invariants of the 1D system, which translate to area boundary conditions for the 1D FEM solver.
 At each timestep, the 1D and 0D systems are iteratively coupled until the boundary values converge within a user-specified tolerance at the 1D-0D interfaces.
 This procedure is outlined in Figure 3.
 
-.. figure:: doc/1D0DSolver.pdf}
+.. figure:: doc/1D0DSolver.png}
    :align: center
    :width: 75%
+
    **Figure:** Overview of the coupled 1D-0D solution process.
 
 
 Results
 =======
 
-.. figure:: doc/1D0DFlowrate.pdf}
+.. figure:: doc/1D0DVHFlowrates.png}
    :align: center
    :width: 75%
+
    **Figure:** Flow rates from the 1D-0D solution. Vessels shown at peak systole
 
-.. figure:: doc/1D0DPressure.pdf}
+.. figure:: doc/1D0DVHPressures.png}
    :align: center
    :width: 75%
+
    **Figure:** Pressure from the 1D-0D solution. Vessels shown at peak systole
