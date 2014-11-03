@@ -2,8 +2,8 @@
 
 #DOC-START imports
 import sys, os, exfile
-
-sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
+# Make sure $OPENCMISS_ROOT/cm/bindings/python is first in our PYTHONPATH.
+sys.path.insert(1, os.path.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
 #DOC-END imports
 
 #DOC-START load exfile
