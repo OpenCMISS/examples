@@ -35,7 +35,7 @@ These models use the fluid-electric analog to provide an basic approximation of 
 
 .. figure:: doc/RCR.png
    :align: center
-   :width: 30%
+   :width: 50%
 
    **Figure:** The 3-element RCR Windkessel model
 

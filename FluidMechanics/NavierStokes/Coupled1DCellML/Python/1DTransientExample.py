@@ -837,7 +837,6 @@ if (splineInterpolatedFlowrate):
 
 
 # DOC-START cellml define field maps
-
 #================================================================================================================================
 #  CellML Model Maps
 #================================================================================================================================
@@ -958,7 +957,6 @@ if (RCRBoundaries):
     # Finish the parameter update
     DependentFieldNavierStokes.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U1,CMISS.FieldParameterSetTypes.VALUES)
     DependentFieldNavierStokes.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U1,CMISS.FieldParameterSetTypes.VALUES)
-
 # DOC-END cellml define field maps
 
 #================================================================================================================================
