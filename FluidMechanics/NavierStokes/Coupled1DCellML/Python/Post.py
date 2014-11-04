@@ -13,7 +13,7 @@ def Post(nodes):
     counter   = 1
 
     # Set the time parameters
-    DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME      = 900.0
+    DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME      = 700.0
     DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT = 1.0
 
     # Node number for data extraction
@@ -28,12 +28,13 @@ def Post(nodes):
                 if outputLINE[i].split() == ['Node:', str(node)]:
                     # Extract the variables from output files
                     Flow = float(''.join(outputLINE[i+4].split()))
-                    Pressure = float(''.join(outputLINE[i+11].split()))
+                    Conc = float(''.join(outputLINE[i+14].split()))
+                    Pressure = float(''.join(outputLINE[i+12].split()))
                     Time = x*Ts*DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT
                     Flow = Flow*Qs*1000000.0
                     # Write in the Result file
                     Result = open("Results/node_"+str(counter),'a+')
-                    print >> Result,"%.4f"%Time,Flow,Pressure
+                    print >> Result,"%.4f"%Time,Flow,Pressure,Conc
         counter = counter+1
     return
 
@@ -45,5 +46,5 @@ print "."
 print "."
 print "Processing Completed!"
 
-Popen(['gnuplot','Plot.p'])
+Popen(['gnuplot','PlotNode.p'])
 
