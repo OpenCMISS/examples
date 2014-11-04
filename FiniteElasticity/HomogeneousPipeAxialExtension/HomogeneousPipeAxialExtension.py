@@ -348,7 +348,7 @@ CellML.CreateCellMLToFieldMap(MooneyRivlinModel,"equations/Tdev33", CMISS.FieldP
 #Finish the creation of CellML <--> OpenCMISS field maps
 CellML.FieldMapsCreateFinish()
 
-
+#DOC-START define CellML models field
 #Create the CellML models field
 CellMLModelsField = CMISS.Field()
 CellML.ModelsFieldCreateStart(CellMLModelsFieldUserNumber,CellMLModelsField)
@@ -375,7 +375,7 @@ for elem in exregion.elements:
                                                                ctr,
                                                                1,
                                                                MooneyRivlinModel)
-
+#DOC-END define CellML models field
 
 
 #Create the CellML parameters field --- the strain field

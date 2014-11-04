@@ -22,3 +22,6 @@ Glossary
    CellML variable ID
    CellML variable name
       In order to uniquely identify variables from CellML models using a text string, OpenCMISS-Iron methods use identifiers of the form: ``component_name/variable_name``. Where ``component_name`` is the value of the name attribute of the component in which the desired variable is located and the ``variable_name`` is the value of that variable's name attribute. Variables in the CellML model which are connected can be addressed by any of the relevant CellML variable ID's.
+      
+   CellML models field
+      The field which associates CellML models within a given :term:`CellML environment` to finite element models in OpenCMISS.

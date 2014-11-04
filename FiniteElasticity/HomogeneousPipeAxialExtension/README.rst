@@ -92,6 +92,16 @@ Now that we have imported the CellML model that we wish to use in our simulation
 
 Finishing the CellML environment creation will now trigger the OpenCMISS to instantiate the CellML model(s) in that environment as executable code. No further changes to that code are possible.
 
+We now need to define the :term:`CellML models field` for our finite elasticity model. First (lines 2-4 below) we create a default OpenCMISS field and set it as the CellML environment's models field. We then iterate over all elements in our finite element model and set each Gauss point in all elements to be associated with the Money-Rivlin model we imported into our CellML environment above.
+
+.. literalinclude:: HomogeneousPipeAxialExtension.py
+   :language: python
+   :linenos:
+   :start-after: #DOC-START define CellML models field
+   :end-before: #DOC-END define CellML models field
+   
+
+
 Results
 +++++++
 
