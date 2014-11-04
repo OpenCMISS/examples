@@ -297,7 +297,9 @@ CellML = CMISS.CellML()
 CellML.CreateStart(CellMLUserNumber, region)
 # Import a Mooney-Rivlin material law from a file
 MooneyRivlinModel = CellML.ModelImport("mooney_rivlin.xml")
+#DOC-END create cellml environment
 
+#DOC-START flag variables
 # Now we have imported the model we are able to specify which variables from the model we want to set from openCMISS
 CellML.VariableSetAsKnown(MooneyRivlinModel, "equations/E11")
 CellML.VariableSetAsKnown(MooneyRivlinModel, "equations/E12")
@@ -312,9 +314,11 @@ CellML.VariableSetAsWanted(MooneyRivlinModel, "equations/Tdev13")
 CellML.VariableSetAsWanted(MooneyRivlinModel, "equations/Tdev22")
 CellML.VariableSetAsWanted(MooneyRivlinModel, "equations/Tdev23")
 CellML.VariableSetAsWanted(MooneyRivlinModel, "equations/Tdev33")
+#DOC-END flag variables
 
+#DOC-START create cellml finish
 CellML.CreateFinish()
-#DOC-END create cellml environment
+#DOC-END create cellml finish
 
 
 
