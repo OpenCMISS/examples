@@ -3,8 +3,8 @@
 Axial extension in a homogeneous pipe
 -------------------------------------
 
-| **Example created by:** `Jagir Hussan <https://unidirectory.auckland.ac.nz/profile/rjag008>`_
-| **Documentation by:** `David Nickerson <http://about.me/david.nickerson/>`_
+.. sectionauthor:: Jagir Hussan <https://unidirectory.auckland.ac.nz/profile/rjag008>, 
+                   David Nickerson <http://about.me/david.nickerson/>
 
 This example demonstrates the application of an mechanical extension to a homogeneous tissue cylinder model along the axis of the cylinder. The Mooney-Rivlin constitutive law is used via CellML.
 
