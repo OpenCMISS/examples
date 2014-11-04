@@ -215,10 +215,10 @@ class Test(TestTreeNode):
       command = "python %s %s > %s 2>&1" %(self.parent.script, self.args,logPath)
     elif self.machine == "build-sn-gpu-p" :
       self.command = "%s/bin/%s-%s/%s/%s/%sExample%s %s" %(self.parent.path,arch,system,mpi,compilerVersion,self.exampleName,MODE_SUFFIX_MAP[mode],self.args)
-      f = open("nesi_%d.ll" %(self.id),"w")
+      f = open("nesi_%d.sl" %(self.id),"w")
       f.write(nesiTemplate.render(test=self,compiler=compiler,mpi=mpi))
       f.close()
-      command = "llsubmit -s nesi_%d.ll > %s 2>&1" %(self.id,logPath)
+      command = "sbatch -s nesi_%d.sl > %s 2>&1" %(self.id,logPath)
     else :
       command = "%s/bin/%s-%s/%s/%s/%sExample%s %s > %s 2>&1" %(self.parent.path,arch,system,mpi,compilerVersion,self.exampleName,MODE_SUFFIX_MAP[mode],self.args,logPath)
     self.runFail = os.system(command)
