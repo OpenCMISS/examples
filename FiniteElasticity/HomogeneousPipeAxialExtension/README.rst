@@ -92,7 +92,7 @@ Now that we have imported the CellML model that we wish to use in our simulation
 
 Finishing the CellML environment creation will now trigger the OpenCMISS to instantiate the CellML model(s) in that environment as executable code. No further changes to that code are possible.
 
-We now need to define the :term:`CellML models field` for our finite elasticity model. First (lines 2-4 below) we create a default OpenCMISS field and set it as the CellML environment's models field. We then iterate over all elements in our finite element model and set each Gauss point in all elements to be associated with the Money-Rivlin model we imported into our CellML environment above.
+We now need to define the :term:`CellML models field` for our finite elasticity model. First (lines 2-4 below) we create a default OpenCMISS field and set it as the CellML environment's models field. We then iterate over all elements in our finite element model and set each Gauss point in all elements to be associated with the Mooney-Rivlin model we imported into our CellML environment above.
 
 .. literalinclude:: HomogeneousPipeAxialExtension.py
    :language: python
@@ -100,7 +100,33 @@ We now need to define the :term:`CellML models field` for our finite elasticity 
    :start-after: #DOC-START define CellML models field
    :end-before: #DOC-END define CellML models field
    
+The :term:`CellML parameters field` and :term:`CellML intermediate field` are simply created with standard default OpenCMISS fields, as shown below.
 
+.. literalinclude:: HomogeneousPipeAxialExtension.py
+   :language: python
+   :linenos:
+   :start-after: #DOC-START define CellML parameters and intermediate fields
+   :end-before: #DOC-END define CellML parameters and intermediate fields
+
+The CellML environment is now set-up and ready to use with the single Mooney-Rivlin model that we have imported. When defining the finite elasticity problem in OpenCMISS it is important that the CellML subtype is specified to ensure that the CellML constitutive law is used:
+
+.. literalinclude:: HomogeneousPipeAxialExtension.py
+   :language: python
+   :linenos:
+   :start-after: #DOC-START define CellML finite elasticity problem
+   :end-before: #DOC-END define CellML finite elasticity problem
+
+And then we need to define the numerical solver to use for the CellML constitutive law that we are using:
+
+.. literalinclude:: HomogeneousPipeAxialExtension.py
+   :language: python
+   :linenos:
+   :start-after: #DOC-START define CellML solver
+   :end-before: #DOC-END define CellML solver
+   
+In line 2 we create a new default solver and then initialise it as the CellML solver from the general non-linear solver that we are using for the finite elasticity model (line 4). Lines 5 and 6 show the creation of the CellML equations and initialising them from the CellML solver. Finally, in line 7 we add the :term:`CellML environment` containing our constitutive model to the CellML equations.
+
+The CellML constitutive law is now defined as part of the general finite elasticity model and the simulation can be performed following assignment of the required boundary conditions, etc.
 
 Results
 +++++++

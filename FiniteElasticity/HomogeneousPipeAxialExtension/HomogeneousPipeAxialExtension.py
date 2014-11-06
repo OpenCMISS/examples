@@ -377,18 +377,17 @@ for elem in exregion.elements:
                                                                MooneyRivlinModel)
 #DOC-END define CellML models field
 
-
+#DOC-START define CellML parameters and intermediate fields
 #Create the CellML parameters field --- the strain field
 CellMLParametersField = CMISS.Field()
 CellML.ParametersFieldCreateStart(CellMLParametersFieldUserNumber,CellMLParametersField)
 CellML.ParametersFieldCreateFinish()
 
 #  Create the CellML intermediate field --- the stress field
-
 CellMLIntermediateField = CMISS.Field()
 CellML.IntermediateFieldCreateStart(CellMLIntermediateFieldUserNumber,CellMLIntermediateField)
 CellML.IntermediateFieldCreateFinish()
-
+#DOC-END define CellML parameters and intermediate fields
 
 # Create equations
 equations = CMISS.Equations()
@@ -397,6 +396,7 @@ equations.sparsityType = CMISS.EquationsSparsityTypes.SPARSE
 equations.outputType = CMISS.EquationsOutputTypes.NONE
 equationsSet.EquationsCreateFinish()
 
+#DOC-START define CellML finite elasticity problem
 #Define the problem
 problem = CMISS.Problem()
 problem.CreateStart(problemUserNumber)
@@ -404,6 +404,7 @@ problem.SpecificationSet(CMISS.ProblemClasses.ELASTICITY,
     CMISS.ProblemTypes.FINITE_ELASTICITY,
     CMISS.ProblemSubTypes.FINITE_ELASTICITY_CELLML)
 problem.CreateFinish()
+#DOC-END define CellML finite elasticity problem
 
 #Create the problem control loop
 problem.ControlLoopCreateStart()
@@ -429,6 +430,7 @@ linearSolver.LinearTypeSet(CMISS.LinearSolverTypes.DIRECT)
 #linearSolver.LibraryTypeSet(CMISS.SolverLibraries.SUPERLU)
 problem.SolversCreateFinish()
 
+#DOC-START define CellML solver
 #Create the problem solver CellML equations
 CellMLSolver = CMISS.Solver()
 problem.CellMLEquationsCreateStart()
@@ -437,6 +439,7 @@ CellMLEquations = CMISS.CellMLEquations()
 CellMLSolver.CellMLEquationsGet(CellMLEquations)
 CellMLEquations.CellMLAdd(CellML)
 problem.CellMLEquationsCreateFinish()
+#DOC-END define CellML solver
 
 #Create the problem solver equations
 solver = CMISS.Solver()

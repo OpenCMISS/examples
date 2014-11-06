@@ -25,3 +25,9 @@ Glossary
       
    CellML models field
       The field which associates CellML models within a given :term:`CellML environment` to finite element models in OpenCMISS.
+      
+   CellML parameters field
+      The OpenCMISS field which is used to define spatially varying :term:`known` parameters in the CellML models for a given :term:`CellML environment`.
+      
+   CellML intermediate field
+      The OpenCMISS field which is used to contain the intermediate variables for the CellML models for a given :term:`CellML environment`, these are :term:`wanted` variables which are not state variables in the CellML model(s).
