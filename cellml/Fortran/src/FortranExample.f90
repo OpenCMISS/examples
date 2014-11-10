@@ -122,6 +122,7 @@ PROGRAM CELLMLFORTRANEXAMPLE
   INTEGER(CMISSIntg) :: nodeDomain
   INTEGER(CMISSIntg) :: Err
 
+  !DOC-START get cellml model URL
   ! we want to get the CellML model from the command line
   NUMBER_OF_ARGUMENTS = COMMAND_ARGUMENT_COUNT()
   IF(NUMBER_OF_ARGUMENTS >= 1) THEN
@@ -130,6 +131,7 @@ PROGRAM CELLMLFORTRANEXAMPLE
   ELSE
     ModelUrl="n98.xml"
   ENDIF
+  !DOC-END get cellml model URL
 
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
@@ -324,6 +326,7 @@ PROGRAM CELLMLFORTRANEXAMPLE
     & -92.5_CMISSDP, &
     & Err)
   
+  !DOC-START create CellML fields
   !Start the creation of the CellML models field
   CALL CMISSField_Initialise(CellMLModelsField,Err)
   CALL CMISSCellML_ModelsFieldCreateStart(CellML,CellMLModelsFieldUserNumber,CellMLModelsField,Err)
@@ -347,6 +350,7 @@ PROGRAM CELLMLFORTRANEXAMPLE
   CALL CMISSCellML_ParametersFieldCreateStart(CellML,CellMLParametersFieldUserNumber,CellMLParametersField,Err)
   !Finish the creation of CellML parameters
   CALL CMISSCellML_ParametersFieldCreateFinish(CellML,Err)
+  !DOC-END create CellML fields
   
   !Create the equations set equations
   CALL CMISSEquations_Initialise(Equations,Err)
@@ -358,6 +362,7 @@ PROGRAM CELLMLFORTRANEXAMPLE
   !Finish the equations set equations
   CALL CMISSEquationsSet_EquationsCreateFinish(EquationsSet,Err)
 
+  !DOC-START define CellML stimulus current
   CALL CMISSCellML_FieldComponentGet(CellML,modelIndex,CMISS_CELLML_PARAMETERS_FIELD,"membrane/IStim",stimcomponent,Err)
   !Set the Stimulus at half the bottom nodes
   DO node_idx=1,NUMBER_OF_ELEMENTS/2
@@ -368,7 +373,9 @@ PROGRAM CELLMLFORTRANEXAMPLE
         & stimcomponent,STIM_VALUE,Err)
     ENDIF
   ENDDO
+  !DOC-END define CellML stimulus current
 
+  !DOC-START define CellML g_Na
   !Set up the g_Na gradient
   CALL CMISSCellML_FieldComponentGet(CellML,modelIndex,CMISS_CELLML_PARAMETERS_FIELD,"fast_sodium_current/g_Na", &
     & gNacomponent,Err)
@@ -384,6 +391,7 @@ PROGRAM CELLMLFORTRANEXAMPLE
       & node_idx, &
       & gNacomponent,gNa_VALUE,Err)
   ENDDO
+  !DOC-END define CellML g_Na
     
   !Finalise CMISS
   CALL CMISSFinalise(Err)
