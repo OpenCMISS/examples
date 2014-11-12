@@ -24,7 +24,7 @@ This example starts, like all python examples with importing modules. In additio
    :start-after: #DOC-START imports
    :end-before: #DOC-END imports
 
-The exact setup of the problem is controlled by a number of parameters in the python script, as shown below. The example solves the monodomain equations on a 2D domain of dimensions width by height. It is discretised with bilinear Lagrange finite elements with numberOfXElements in the X direction and numberOfYElements in the Y direction. The domain is isotropic with a conductivity given by the conductivity parameter. To start the simulation a stimulation is applied to the left half of the bottom row of nodes. This stimulation lasts from time zero until time stimStop. The magnitude of the stimulus is given by stimValue parameter. After time stimStop the stimulation is turned of and the simulation is continued until time timeStop. The time step for the spatial PDE problem is given by the pdeTimeStep parameter and the time step for the ODE integration is given by the odeTimeStep parameter. The final parameter, outputFrequency, controls how many time steps pass before the solution is output to file.
+The exact setup of the problem is controlled by a number of parameters in the python script, as shown below. The example solves the monodomain equations on a 2D domain of dimensions width by height. It is discretised with bilinear Lagrange finite elements with numberOfXElements in the X direction and numberOfYElements in the Y direction. The material parameters for the domain are controlled with the Am parameter for the cell membrane area, Cm for the membrane capacitance and conductivity for continuum conducticity. To start the simulation a stimulation is applied to the left half of the bottom row of nodes. This stimulation lasts from time zero until time stimStop. The magnitude of the stimulus is given by stimValue parameter. After time stimStop the stimulation is turned of and the simulation is continued until time timeStop. The time step for the spatial PDE problem is given by the pdeTimeStep parameter and the time step for the ODE integration is given by the odeTimeStep parameter. The final parameter, outputFrequency, controls how many time steps pass before the solution is output to file.
 
 .. literalinclude:: Monodomain2DSquare.py
    :language: python
@@ -49,14 +49,60 @@ The first step in our example will be to initialise OpenCMISS an to set up a reg
    :end-before: #DOC-END initialisation
 
 
-In this example we will use the generated mesh capabilities of OpenCMISS to generate our 2D mesh. 
+In this example we will use the generated mesh capabilities of OpenCMISS to generate our 2D mesh. The first thing we need to do is create a basis function for the mesh. We will define a bilinear Lagrange basis.
+
+.. literalinclude:: Monodomain2DSquare.py
+   :language: python
+   :linenos:
+   :start-after: #DOC-START basis
+   :end-before: #DOC-END basis
+
+We can now create a generated mesh. We will create a regular mesh of size width x height and divide the mesh into numberOfXElements in the X direction and numberOfYElements in the Y direction. Note that when we finish generating the mesh we have a mesh object returned to us. This mesh object is just the same as if we had manually created the regular mesh.
+
+.. literalinclude:: Monodomain2DSquare.py
+   :language: python
+   :linenos:
+   :start-after: #DOC-START generated mesh
+   :end-before: #DOC-END generated mesh
+
+Once the mesh has been created we can decompose it into a number of domains in order to allow for parallelism. We choose the options to let OpenCMISS calculate the best way to break up the mesh. We also set the number of domains to be equal to the number of computational nodes this example is running on.
+
+.. literalinclude:: Monodomain2DSquare.py
+   :language: python
+   :linenos:
+   :start-after: #DOC-START decomposition
+   :end-before: #DOC-END decomposition
+
+Now that the mesh has been decomposed we are in a position to create fields. The first field we need to create is the geometry field. Here we create a field and set the field's mesh decomposition to the decomposed mesh that we have just created. We can choose exact how each component of the field is interpolated by setting component mesh component to be the mesh components that we created for the mesh. For this example we only have one mesh component. Once we have finished creating the field we can change the field DOFs to give us our geometry. Since this mesh has been generated we can use the generated mesh object to calculate the geometric parameters of the regular mesh.
+
+.. literalinclude:: Monodomain2DSquare.py
+   :language: python
+   :linenos:
+   :start-after: #DOC-START geometry
+   :end-before: #DOC-END geometry
+
+We are now in a position to define the type of physics that we wish to solve. This is done by creating an equations set which is a contianer object for all the parameters we need to describe the physics. Here we create an bioelectrics class equation of type monodomain.
+
+.. literalinclude:: Monodomain2DSquare.py
+   :language: python
+   :linenos:
+   :start-after: #DOC-START equations set
+   :end-before: #DOC-END equations set
+
+Next we create the fields for the equations set. For the monodomain equation we need a dependent field (our solution) and a materials field (to descibe the physical material constant. Here we do not define a field before the create starts and so we let OpenCMISS create an appropriate dependent and materials field for the monodomain equations being described. Once the fields have been created we can set the field DOF values. In this example the domain is isotropic and so we set the four components of the materials field to be the Am, Cm and conductivity that we defined in the parameters section.
+
+.. literalinclude:: Monodomain2DSquare.py
+   :language: python
+   :linenos:
+   :start-after: #DOC-START equations set fields
+   :end-before: #DOC-END equations set fields
 
 CellML
 ******
 
 As mentioned above, this example uses the Noble 98 guinea-pig electrophysiology model defined in CellML. The guinea-pig ventricular cell model, originally developed by Noble et al in 1991, has been greatly extended to include accumulation and depletion of calcium in a diadic space between the sarcolemma and the sarcoplasmic reticulum where, according to contempory understanding, the majority of calcium-induced calcium release is triggered. A schematic of the model is shown below
 
-. figure:: doc/noble_1998a.png
+.. figure:: doc/noble_1998a.png
    :align: center
    :width: 40%
    :figwidth: 80%
@@ -81,71 +127,39 @@ With the CellML model imported, we are now able to flag the variables from the m
 
 The transmembrane voltage is a variable that is used by both the continuum pde model and the CellML model. The variable is thus mapped as both known and wanted. This means that the continuum value of V is copied to the CellML model before evaluation and the CellML value of V is copied from the CellML model to the continuum pde model once the CellML model has finished being integrated. The other variables that we required to be flagged are the stimulus current and the transmembrane currents. The stimulus current is flagged as known as it will be controled by the pde model. The 
 
-Having flagged the variables we require from the CellML model, we can map them to fields, more specifically, the components of field variables. First we map the strain tensor from the finite elasticity model to variables in the CellML model:
+Having flagged the variables we require from the CellML model, we can map them to fields, more specifically, the components of field variables. We map the transmembrane voltage to variables in the CellML model. Here Vm is needs to be passed from the OpenCMISS fields to the CellML fields before the CellML model is evaluated and then passed out from CellML to OpenCMISS after it is evaluated.
 
-.. literalinclude:: HomogeneousPipeAxialExtension.py
+.. literalinclude:: Monodomain2DSquare.py
    :language: python
    :linenos:
-   :start-after: #DOC-START map strain components 
-   :end-before: #DOC-END map strain components
+   :start-after: #DOC-START map Vm components 
+   :end-before: #DOC-END map Vm components
 
-In the CellML model, each component of the strain tensor has a variable: ``equations/E11``, ``equations/E12``, etc.; following the :term:`CellML variable name` convention. In the finite elasticity model, the strain tensor is found in the dependent field as the ``U1`` field variable. These mappings are defined using the :py:meth:`CellML.CreateFieldToCellMLMap` method as the value of these variables in the CellML model is *known* in the finite elasticity model and will be set by OpenCMISS when evaluating the CellML model.
+Note that we have initialised the OpenCMISS field for the transmembrane voltage to be the resting transmembrane voltage. We have set the wanted flag on the transmembrane current variables in the CellML model. These variables will be stored in the intermediates field that we create below. As these variables do not affect any other OpenCMISS field we do not need to map them.
 
-In a similar manner we define equivalent mappings for the stress tensor (the ``U2`` field variable in the dependent field):
- 
-.. literalinclude:: HomogeneousPipeAxialExtension.py
-   :language: python
-   :linenos:
-   :start-after: #DOC-START map stress components 
-   :end-before: #DOC-END map stress components
+We now need to create the CellML fields. We do this by creating the models field
 
-In this case we use the :py:meth:`CellML.CreateCellMLToFieldMap` method as it is the CellML model which defines the calculation of stress for a given strain state (i.e., the stress tensor components are *wanted* variables from the CellML model). Defining these field mappings informs OpenCMISS that when the CellML model is evaluated *known* variables should have their values updated to the current state of the corresponding field variable components and following an evaluation the field variable components mapped to *wanted* variables should be updated to reflect the newly computed value of the variables in the CellML model.
-
-Now that we have imported the CellML model that we wish to use in our simulation and appropriately flagged the relevant variables, we can finish the creation of our :term:`CellML environment`:
-
-.. literalinclude:: HomogeneousPipeAxialExtension.py
-   :language: python
-   :linenos:
-   :start-after: #DOC-START create cellml finish 
-   :end-before: #DOC-END create cellml finish
-
-Finishing the CellML environment creation will now trigger the OpenCMISS to instantiate the CellML model(s) in that environment as executable code. No further changes to that code are possible.
-
-We now need to define the :term:`CellML models field` for our finite elasticity model. First (lines 2-4 below) we create a default OpenCMISS field and set it as the CellML environment's models field. We then iterate over all elements in our finite element model and set each Gauss point in all elements to be associated with the Mooney-Rivlin model we imported into our CellML environment above.
-
-.. literalinclude:: HomogeneousPipeAxialExtension.py
+.. literalinclude:: Monodomain2DSquare.py
    :language: python
    :linenos:
    :start-after: #DOC-START define CellML models field
    :end-before: #DOC-END define CellML models field
-   
-The :term:`CellML parameters field` and :term:`CellML intermediate field` are simply created with standard default OpenCMISS fields, as shown below.
 
-.. literalinclude:: HomogeneousPipeAxialExtension.py
+the state field
+
+.. literalinclude:: Monodomain2DSquare.py
    :language: python
    :linenos:
-   :start-after: #DOC-START define CellML parameters and intermediate fields
-   :end-before: #DOC-END define CellML parameters and intermediate fields
+   :start-after: #DOC-START define CellML state field
+   :end-before: #DOC-END define CellML state field
 
-The CellML environment is now set-up and ready to use with the single Mooney-Rivlin model that we have imported. When defining the finite elasticity problem in OpenCMISS it is important that the CellML subtype is specified to ensure that the CellML constitutive law is used:
+and the parameters and intermediates field
 
-.. literalinclude:: HomogeneousPipeAxialExtension.py
+.. literalinclude:: Monodomain2DSquare.py
    :language: python
    :linenos:
-   :start-after: #DOC-START define CellML finite elasticity problem
-   :end-before: #DOC-END define CellML finite elasticity problem
-
-And then we need to define the numerical solver to use for the CellML constitutive law that we are using:
-
-.. literalinclude:: HomogeneousPipeAxialExtension.py
-   :language: python
-   :linenos:
-   :start-after: #DOC-START define CellML solver
-   :end-before: #DOC-END define CellML solver
-   
-In line 2 we create a new default solver and then initialise it as the CellML solver from the general non-linear solver that we are using for the finite elasticity model (line 4). Lines 5 and 6 show the creation of the CellML equations and initialising them from the CellML solver. Finally, in line 7 we add the :term:`CellML environment` containing our constitutive model to the CellML equations.
-
-The CellML constitutive law is now defined as part of the general finite elasticity model and the simulation can be performed following assignment of the required boundary conditions, etc.
+   :start-after: #DOC-START define CellML parameters and intermediate field
+   :end-before: #DOC-END define CellML parameters and intermediate field
 
 Results
 +++++++
