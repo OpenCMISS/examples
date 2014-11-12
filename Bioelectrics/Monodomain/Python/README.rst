@@ -3,7 +3,7 @@
 Monodomain on a 2D domain with Noble 98 cellular model
 ------------------------------------------------------
 
-.. sectionauthor:: Chris Bradley
+.. sectionauthor:: Chris Bradley (c.bradley@auckland.ac.nz)
 
 This example demonstrates a monodomain solution in a 2D domain using a Noble 98 cellular model. The Noble 98 model is used via `CellML <http://cellml.org>`_.
 
@@ -16,31 +16,40 @@ The example is encoded in :download:`Monodomain2DSquare.py`. Below we describe s
 Example description
 +++++++++++++++++++
 
-In this example the The Python script :download:`exfile.py` is used to load the geometry from a file in the Zinc `EX format <http://www.cmiss.org/cmgui/wiki/TheCmguiEXFormatGuideExnodeAndExelemFiles>`_.
+This example starts, like all python examples with importing modules. In addition to sys, os and the CMISS module, math is imported as we will be using the math.sqrt function later on.
 
-.. literalinclude:: HomogeneousPipeAxialExtension.py
+.. literalinclude:: Monodomain2DSquare.py
    :language: python
    :linenos:
    :start-after: #DOC-START imports
    :end-before: #DOC-END imports
 
-The :file:`exfile.py` script in needs to be in the current folder or available in your Python environment for the ``import`` on line 1 to succeed. Whereas on line 3 we are specifically adding the location we expect to find the OpenCMISS Python bindings using the :envvar:`OPENCMISS_ROOT` environment variable. Using the ``exfile`` module we are able to load the finite element model geometry from the ``EXREGION`` file: :download:`hetrogenouscylinder.exregion`, as shown below:
+The exact setup of the problem is controlled by a number of parameters in the python script, as shown below. The example solves the monodomain equations on a 2D domain of dimensions width by height. It is discretised with bilinear Lagrange finite elements with numberOfXElements in the X direction and numberOfYElements in the Y direction. The domain is isotropic with a conductivity given by the conductivity parameter. To start the simulation a stimulation is applied to the left half of the bottom row of nodes. This stimulation lasts from time zero until time stimStop. The magnitude of the stimulus is given by stimValue parameter. After time stimStop the stimulation is turned of and the simulation is continued until time timeStop. The time step for the spatial PDE problem is given by the pdeTimeStep parameter and the time step for the ODE integration is given by the odeTimeStep parameter. The final parameter, outputFrequency, controls how many time steps pass before the solution is output to file.
 
-.. literalinclude:: HomogeneousPipeAxialExtension.py
+.. literalinclude:: Monodomain2DSquare.py
    :language: python
    :linenos:
-   :start-after: #DOC-START load exfile
-   :end-before: #DOC-END load exfile
+   :start-after: #DOC-START parameters
+   :end-before: #DOC-END parameters
 
-Throughout the remainder of the Python script you can see the data from the now defined ``exregion`` object used to create the geometric mesh via the standard OpenCMISS methods. For example, in this code:
+This example is designed to by run in parallel using MPI. OpenCMISS provides access to useful information about the parallel runtime environment via the calls below. numberOfComputationalNodes gives the total number of computational nodes the example is being run on. These nodes are numbered from 0 to (numberOfComputationalNodes - 1). computationalNodeNumber gives the node number that this particular process  is running on.
 
-.. literalinclude:: HomogeneousPipeAxialExtension.py
+.. literalinclude:: Monodomain2DSquare.py
    :language: python
    :linenos:
-   :start-after: # DOC-START define node coordinates
-   :end-before: # DOC-END define node coordinates
-   
-we set the nodal coordinates and derivatives in the models geometric field. There is also code to keep track of nodes located at either end of the vessel, which will be used later when defining boundary conditions.
+   :start-after: #DOC-START parallel information
+   :end-before: #DOC-END parallel information
+
+The first step in our example will be to initialise OpenCMISS an to set up a region and coordinate system for our 2D mesh. This is achieved with the following calls
+
+.. literalinclude:: Monodomain2DSquare.py
+   :language: python
+   :linenos:
+   :start-after: #DOC-START initialisation
+   :end-before: #DOC-END initialisation
+
+
+In this example we will use the generated mesh capabilities of OpenCMISS to generate our 2D mesh. 
 
 CellML
 ******
@@ -141,21 +150,21 @@ The CellML constitutive law is now defined as part of the general finite elastic
 Results
 +++++++
 
-.. figure:: doc/start.jpg
+.. figure:: doc/start.png
    :align: center
    :width: 40%
    :figwidth: 80%
    
    **Figure:** Transmembrane voltage field immediately after the start of the simulation. A stimulus current has been applied to the first half of the bottom row of nodes.
 
-.. figure:: doc/normal.jpg
+.. figure:: doc/normal.png
    :align: center
    :width: 40%
    :figwidth: 80%
    
    **Figure:** Transmembrane voltage field after a fixed period of the simulation with a uniform gNa distribution at its normal value. The transmembrane voltage varies from -95 mV (blue) to +50 mV (red).
 
-.. figure:: doc/gNaDistribution.jpg
+.. figure:: doc/gNaDistribution.png
    :align: center
    :width: 40%
    :figwidth: 80%
@@ -163,7 +172,7 @@ Results
    **Figure:** Plot of gNa with a radial variation. gNa varies from its normal value of 3.855 x 10^-5 mS mm^-2 at the bottom left node (blue) to 300% of its normal value at the top right node (red).
 
 
-.. figure:: doc/gNa.jpg
+.. figure:: doc/gNa.png
    :align: center
    :width: 40%
    :figwidth: 80%
