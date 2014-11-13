@@ -17,9 +17,13 @@ width = 1.0
 numberOfXElements = 25
 numberOfYElements = 25
 
+# Materials parameters
+Am = 193.6
+Cm = 0.014651
+conductivity = 0.1
+
 # Simulation parameters
 stimValue = 100.0
-conductivity = 0.1
 stimStop = 0.1
 timeStop = 1.5
 odeTimeStep = 0.00001
@@ -96,14 +100,14 @@ mesh = CMISS.Mesh()
 generatedMesh.CreateFinish(meshUserNumber,mesh)
 #DOC-END generated mesh
 
-#DOC-START generated mesh
+#DOC-START decomposition
 # Create a decomposition for the mesh
 decomposition = CMISS.Decomposition()
 decomposition.CreateStart(decompositionUserNumber,mesh)
 decomposition.type = CMISS.DecompositionTypes.CALCULATED
 decomposition.numberOfDomains = numberOfComputationalNodes
 decomposition.CreateFinish()
-#DOC-END generated mesh
+#DOC-END decomposition
 
 #DOC-START geometry
 # Create a field for the geometry
@@ -120,6 +124,7 @@ geometricField.CreateFinish()
 generatedMesh.GeometricParametersCalculate(geometricField)
 #DOC-END geometry
 
+#DOC-START equations set
 # Create the equations_set
 equationsSetField = CMISS.Field()
 equationsSet = CMISS.EquationsSet()
@@ -129,7 +134,9 @@ equationsSet.CreateStart(equationsSetUserNumber, region, geometricField,
         CMISS.EquationsSetSubtypes.NONE,
         equationsSetFieldUserNumber, equationsSetField)
 equationsSet.CreateFinish()
+#DOC-END equations set
 
+#DOC-START equations set fields
 # Create the dependent Field
 dependentField = CMISS.Field()
 equationsSet.DependentCreateStart(dependentFieldUserNumber, dependentField)
@@ -142,12 +149,13 @@ equationsSet.MaterialsCreateFinish()
 
 # Set the materials values
 # Set Am
-materialsField.ComponentValuesInitialise(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,193.6)
+materialsField.ComponentValuesInitialise(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,Am)
 # Set Cm
-materialsField.ComponentValuesInitialise(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,2,0.014651)
+materialsField.ComponentValuesInitialise(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,2,Cm)
 # Set conductivity
 materialsField.ComponentValuesInitialise(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,3,conductivity)
 materialsField.ComponentValuesInitialise(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,4,conductivity)
+#DOC-END equations set fields
 
 #DOC-START create cellml environment
 # Create the CellML environment
@@ -179,21 +187,20 @@ cellML.VariableSetAsWanted(noble98Model, "membrane/i_NaCa")
 cellML.CreateFinish()
 #DOC-END create cellml finish
 
-
+#DOC-START map Vm components
 # Start the creation of CellML <--> OpenCMISS field maps
 cellML.FieldMapsCreateStart()
 #Now we can set up the field variable component <--> CellML model variable mappings.
-#DOC-START map Vm components
 #Map Vm
 cellML.CreateFieldToCellMLMap(dependentField,CMISS.FieldVariableTypes.U,1, CMISS.FieldParameterSetTypes.VALUES,noble98Model,"membrane/V", CMISS.FieldParameterSetTypes.VALUES)
 cellML.CreateCellMLToFieldMap(noble98Model,"membrane/V", CMISS.FieldParameterSetTypes.VALUES,dependentField,CMISS.FieldVariableTypes.U,1,CMISS.FieldParameterSetTypes.VALUES)
-#DOC-END map Vm components
 
 #Finish the creation of CellML <--> OpenCMISS field maps
 cellML.FieldMapsCreateFinish()
 
 # Set the initial Vm values
 dependentField.ComponentValuesInitialise(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1,-92.5)
+#DOC-END map Vm components
 
 #DOC-START define CellML models field
 #Create the CellML models field
