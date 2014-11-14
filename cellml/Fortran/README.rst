@@ -1,11 +1,11 @@
 .. _examples-cellml-fortran:
 
-Fortran introduction to CellML in OpenCMISS-Iron
-------------------------------------------------
+Fortran introduction to CellML in OpenCMISS
+-------------------------------------------
 
-This example provides an entry level demonstration of creating fields in OpenCMISS-Iron to be defined using CellML models. This demonstration uses Fortran, see :ref:`examples-cellml-python` for the corresponding Python example. The source code for this example is available here: :download:`src/FortranExample.f90`.
+This example provides an entry level demonstration of creating fields in OpenCMISS to be defined using CellML models. This demonstration uses Fortran, see :ref:`examples-cellml-python` for the corresponding Python example. The source code for this example is available here: :download:`src/FortranExample.f90`.
 
-Following the usual Iron practices, you first need to declare the objects to be used in you application. For CellML, we would normally declare:
+Following the usual OpenCMISS practices, you first need to declare the objects to be used in you application. For CellML, we would normally declare:
 
 .. literalinclude:: src/FortranExample.f90
    :language: fortran
@@ -29,7 +29,7 @@ We then create our :term:`CellML environment` and import the model defined above
    :start-after: !DOC-START cellml setup environment
    :end-before: !DOC-END cellml setup environment
 
-Having flagged the desired variables, we finish the creation of the CellML environment. This triggers the instantion of the CellML model into a computable black box for use by solvers in OpenCMISS-Iron control loops.
+Having flagged the desired variables, we finish the creation of the CellML environment. This triggers the instantion of the CellML model into a computable black box for use by solvers in OpenCMISS control loops.
 
 We are then able to specify the actual field mapping, in this case assuming that we are going to perform an electrophysiology simulation with the CellML model so needing to map the membrane potential variable from the model to the OpenCMISS dependent field.
 

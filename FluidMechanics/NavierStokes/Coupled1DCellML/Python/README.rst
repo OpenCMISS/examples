@@ -47,7 +47,7 @@ Methods
 A flow waveform from published data is applied at the aortic root of the model and interpolated in time from tabulated data using cubic splines.
 Outlet boundary conditions are provided by the 0D solution.
 
-OpenCMISS/CellML field mapping capabilities allow for the coupling of the 1D (OpenCMISS-Iron) and 0D (CellML) solvers:
+OpenCMISS/CellML field mapping capabilities allow for the coupling of the 1D (OpenCMISS) and 0D (CellML) solvers:
 
 .. literalinclude:: 1DTransientExample.py
    :language: python
@@ -55,7 +55,7 @@ OpenCMISS/CellML field mapping capabilities allow for the coupling of the 1D (Op
    :start-after: # DOC-START cellml define field maps
    :end-before: # DOC-END cellml define field maps
 
-**Snippet:** OpenCMISS-Iron/CellML field mappings
+**Snippet:** OpenCMISS/CellML field mappings
 
 Flow rate (Q) from the 1D Navier-Stokes/Characteristic solver provides the forcing term for the 0D ODE circuit solver.
 Pressure (P) is returned from the CellML solver to provide constraints on the Riemann invariants of the 1D system, which translate to area boundary conditions for the 1D FEM solver.

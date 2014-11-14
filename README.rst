@@ -11,14 +11,13 @@ The purpose of this effort is to document some of the OpenCMISS examples as demo
 Runtime definition of mathematical models
 -----------------------------------------
 
-OpenCMISS-Iron makes use of the `CellML <http://cellml.org>`_ format to enable users to define computational fields in their model(s) to be defined based on mathematical models that are specified at the time at which a simulation is executed. Such fields may be used in many different applications and the demonstrations below highlight some of the most useful.
+OpenCMISS makes use of the `CellML <http://cellml.org>`_ format to enable users to define computational fields in their model(s) to be defined based on mathematical models that are specified at the time at which a simulation is executed. Such fields may be used in many different applications and the demonstrations below highlight some of the current examples.
 
 .. toctree::
    :maxdepth: 2
    
    cellml/README
    FiniteElasticity/HomogeneousPipeAxialExtension/README
-   FiniteElasticity/MooneyRivlinInCellML/README
    FluidMechanics/NavierStokes/Coupled1DCellML/Python/README
    Bioelectrics/Monodomain/Python/README
    glossary
