@@ -16,5 +16,4 @@ module load HDF5/1.8.9-ictce-5.4.0
 module load PETSc/3.4.2-ictce-5.4.0-Python-2.7.3
 
 
-srun /projects/uoa00230/OpenCMISS/examples/ClassicalField/Laplace/Laplace/Fortran/bin/x86_64-linux/intel/intel/FortranExample
-
+srun /projects/uoa00230/OpenCMISS/examples/ClassicalField/Laplace/Laplace/Fortran/bin/x86_64-linux/intel/intel/FortranExample {{test.args}}
