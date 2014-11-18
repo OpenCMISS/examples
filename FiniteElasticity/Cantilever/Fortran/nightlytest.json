@@ -15,6 +15,7 @@
     {
       "id": 3,
       "machine": "build-sn-gpu-p",
+      "args": "10 10 10 2",
       "processors": 2
      }
   ]

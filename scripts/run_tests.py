@@ -229,7 +229,7 @@ class Test(TestTreeNode):
       self.fail = 1
       self.accumulateParentFail() 
     elif self.machine == "build-sn-gpu-p" :
-      command = ". %s/checkJobsFinished.sh %s" %(globalExamplesDir,os.environ.get("LOGNAME"))
+      command = ". %s/scripts/checkJobsFinished.sh %s" %(globalExamplesDir,os.environ.get("LOGNAME"))
       self.runFail = os.system(command)
       # Find the output log and replace with the submission log
       size = os.stat(logPath).st_size
