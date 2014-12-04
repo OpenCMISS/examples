@@ -26,7 +26,7 @@ set key on
 set ylabel "Flow (ml/s)"
 set xlabel "Distance (mm)"
 #set yrange [-0.2:1.0]
-plot 'Results/time_1'  using 1:2 title 'inlet' with lines ls 1,\
+plot 'Results/time_1'  using 1:2 title 'inlet' with linespoint ls 1,\
      'Results/time_2'  using 1:2 title 'outlet-1' with lines ls 3,\
      'Results/time_3'  using 1:2 title 'outlet-2' with lines ls 5,\
      'Results/time_4'  using 1:2 title 'femoral' with lines ls 7,\
@@ -39,7 +39,7 @@ plot 'Results/time_1'  using 1:2 title 'inlet' with lines ls 1,\
 set ylabel "Pressure (mmHg)"
 #set yrange [-0.2:1.0]
 #set yrange [-0.2:1.0]
-plot 'Results/time_1'  using 1:3 title 'inlet' with lines ls 1,\
+plot 'Results/time_1'  using 1:3 title 'inlet' with linespoint ls 1,\
      'Results/time_2'  using 1:3 title 'outlet-1' with lines ls 3,\
      'Results/time_3'  using 1:3 title 'outlet-2' with lines ls 5,\
      'Results/time_4'  using 1:3 title 'ext iliac' with lines ls 7,\
@@ -50,7 +50,7 @@ plot 'Results/time_1'  using 1:3 title 'inlet' with lines ls 1,\
      
 #set title "Conc-Distance"
 set ylabel "Conc (mMol)"
-set yrange [0.0:1.0]
+#set yrange [0.0:1.0]
 #set yrange [-0.2:1.0]
 plot 'Results/time_1'  using 1:4 title 'Normal' with lines ls 1,\
      'Results/time_2'  using 1:4 title 'Stenosis' with lines ls 3,\

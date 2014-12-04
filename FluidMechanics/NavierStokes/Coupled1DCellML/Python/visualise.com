@@ -1,3 +1,11 @@
+$w=490;                        # width of the graphical window
+$h=945;                        # height of the graphical window
+
+# --------------- Reading the arteries of the upper body --------------
+
+gfx create material a_colour ambient 1 0.1 0.1 diffuse 1 0.1 0.1;
+gfx create material v_colour ambient 0.1 0.1 1 diffuse 0.1 0.1 1;
+
 #Read in the sequence of nodal positions.
 for $i (0..10000)
   {
@@ -29,18 +37,20 @@ gfx modify g_element OpenCMISS general circle_discretization 12
 gfx define field vector_field coord rectangular_cartesian component General.1 General.2
 
 gfx cre spectrum Flow
-gfx modify spectrum Flow linear reverse range -0.1 1.5 extend_above extend_below rainbow colour_range 0 1 component 1;
+gfx modify spectrum Flow linear reverse range 0.0 1.5 extend_above extend_below rainbow colour_range 0 1 component 1;
 gfx cre spectrum Pressure
 gfx modify spectrum Pressure linear reverse range 0.0 30.0 extend_above extend_below rainbow colour_range 0 1 component 1;
 gfx cre spectrum Conc
 gfx modify spectrum Conc linear reverse range 0.0 1.0 extend_above extend_below rainbow colour_range 0 1 component 1;
 
-gfx modify g_element OpenCMISS cylinders constant_radius 1.0 data flow spectrum Flow radius_scalar area  scale_factor 1
-gfx modify g_element OpenCMISS node_points label cmiss_number
+gfx modify g_element OpenCMISS lines data flow spectrum Flow circle_extrusion line_base_size 5;
+gfx modify g_element OpenCMISS node_points;
 
 gfx edit scene
 #gfx edit spectrum
-gfx cre win
+gfx create window 1;
+
+# ---------- Creation of timekeeper window  ----------------------------
 
 #Set the timekeeper playing
 gfx timekeeper default set 1.0;
