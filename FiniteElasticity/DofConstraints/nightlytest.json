@@ -1,0 +1,7 @@
+{"example": {
+"language": "python",
+"script": "DofConstraintsExample.py",
+"test": [
+{
+"id": 1}]
+}}

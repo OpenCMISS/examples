@@ -1,37 +1,19 @@
-#@ shell = /bin/sh
-#@ job_name = nesi
-#@ class = default
-#@ group = nesi
-#@ account_no = uoa00230
-#@ notification = never
-#@ wall_clock_limit = 1:00:00
-#@ resources = ConsumableMemory(1024mb) ConsumableVirtualMemory(1024mb)
-#@ job_type = MPICH
-#@ total_tasks = {{test.processors}}
-#@ blocking=unlimited
-#@ initialdir = {{test.path}}
-#@ output = $(job_name).$(jobid).out
-#@ error = $(job_name).$(jobid).out
-#@ queue
+#!/bin/bash
+#SBATCH -J MPI_JOB
+#SBATCH -A uoa00230         # Project Account
+#SBATCH --time=01:00:00     # Walltime
+#SBATCH --ntasks={{test.processors}}          # number of tasks
+#SBATCH --mem-per-cpu=1024  # memory/cpu (in MB)
+#SBATCH -o nesi.%j.out
+#SBATCH -e nesi.%j.out
+#SBATCH --workdir={{test.path}}
 
 ulimit -m 1048576 -v 1048576
 
-{% if compiler=="intel" %}
-  {% if mpi == "openmpi"%}
-module load openmpi/1.6.5_intel-2013-sandybridge-static
-  {% elif mpi == "intel" %}
-module load intel/ics-2013
-module load zlib/1.2.5_intel-2013-sandybridge
-module load hdf5/1.8.11_intel-2013-mpi-sandybridge
-module load petsc/3.4.2_intel-2013-sandybridge
-  {% endif %}
-{% elif compiler=="gnu" %}
-module load gcc/4.7.3
-module load openmpi/1.6.5_gcc-4.7.3-sandybridge-static
-{% endif %}
+module load intel/ics-2013.SP1
+module load zlib/1.2.8-ictce-5.4.0
+module load HDF5/1.8.9-ictce-5.4.0
+module load PETSc/3.4.2-ictce-5.4.0-Python-2.7.3
 
-{% if mpi == "intel" %}
-MPIRUN  {{test.command}}
-{% else %}
-mpirun  {{test.command}}
-{% endif %}
+
+srun /projects/uoa00230/OpenCMISS/examples/ClassicalField/Laplace/Laplace/Fortran/bin/x86_64-linux/intel/intel/FortranExample {{test.args}}
