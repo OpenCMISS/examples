@@ -2,6 +2,7 @@
 #
 # For use with GNU make.
 #
+# $Id: Makefile 1902 2011-01-23 04:58:45Z chrispbradley $
 #
 #----------------------------------------------------------------------------------------------------------------------------------
 # Makefile for compiling openCMISS examples
@@ -62,12 +63,9 @@ endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-USEFIELDML = true
-FIELDML_LIB_PATH= ${GLOBAL_FIELDML_ROOT}/x86_64-linux-debug/gnu_4.6/lib/
+EXAMPLE_PATH=FluidMechanics/NavierStokes/Poiseuille/2DChannel/
 
-EXAMPLE_PATH=FluidMechanics/NavierStokes/
-
-EXAMPLE_NAME = Static_FieldML
+EXAMPLE_NAME = Static
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 
@@ -78,10 +76,6 @@ preliminaries: $(OBJECT_DIR) $(EXE_DIR)
 	cp $(MAIN_OBJECT_DIR)/fluid_mechanics_io_routines.mod $(OBJECT_DIR)
 
 info:
-	@echo "FIELDML_LIB_PATH:"
-	@echo $(FIELDML_LIB_PATH)
-	@echo "USEFIELDML:"
-	@echo $(USEFIELDML)
 	@echo "OBJECTS:"
 	@echo $(OBJECTS)
 	@echo "OBJECT_DIR:"
