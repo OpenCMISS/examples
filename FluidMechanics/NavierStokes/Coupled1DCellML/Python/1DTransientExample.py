@@ -112,9 +112,8 @@ from scipy.fftpack import fft,ifft
 from scipy.sparse  import linalg
 from scipy.linalg  import inv,eig
 from scipy.special import jn
-from opencmiss     import CMISS
-
 sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
+from opencmiss import CMISS
 
 # Diagnostics
 #CMISS.DiagnosticsSetOn(CMISS.DiagnosticTypes.ALL,[1,2,3,4,5],"Diagnostics",[""])
@@ -135,12 +134,14 @@ numberOfBifurcations  = 0
 numberOfTrifurcations = 0
 numberOfTerminalNodes = 0
 numberOfInputNodes    = 0
+inputNodeNumber       = [0]
+coupledNodeNumber     = [0]
 bifurcationNodeNumber     = []
 bifurcationElementNumber  = []
+trifurcationNodeNumber    = []
+trifurcationElementNumber = []
 bifurcationNodeNumber.append('null')
 bifurcationElementNumber.append('null')
-trifurcationNodeNumber     = []
-trifurcationElementNumber  = []
 trifurcationNodeNumber.append('null')
 trifurcationElementNumber.append('null')
 
@@ -149,9 +150,8 @@ derivIdx   = 1
 versionIdx = 1
 
 # Set the flags
-branch         = False
 RCRFlag        = False
-streeFlag      = False
+streeFlag      = True
 nonReflectFlag = False
 advectionFlag  = False
 timestepFlag   = False
@@ -159,69 +159,90 @@ timestepFlag   = False
 #================================================================================================================================
 #  Mesh Reading
 #================================================================================================================================
-
+            
 # Read the node file
 with open('Input/Node.csv','rb') as csvfile:
-    reader = csv.reader(csvfile, delimiter='\t')
+    reader = csv.reader(csvfile, delimiter=',')
+    rownum = 0
     for row in reader:
-        # Read the number of nodes
-        if (int(row[0]) == 1):
-            numberOfNodesSpace = int(row[6])
-            totalNumberOfNodes = numberOfNodesSpace*3
-            xValues = numpy.zeros((numberOfNodesSpace+1,4),dtype = numpy.float)
-            yValues = numpy.zeros((numberOfNodesSpace+1,4),dtype = numpy.float)
-            zValues = numpy.zeros((numberOfNodesSpace+1,4),dtype = numpy.float)            
-        # Initialise the coordinates
-        xValues[int(row[0])][0] = float(row[1])
-        yValues[int(row[0])][0] = float(row[2])
-        zValues[int(row[0])][0] = float(row[3])
-        # Read the bifurcation nodes
-        if (row[4] == 'bif'):
-            numberOfBifurcations+=1
-            bifurcationNodeNumber.append(int(row[0]))
-            xValues[int(row[0])][1] = float(row[1])
-            yValues[int(row[0])][1] = float(row[2])
-            zValues[int(row[0])][1] = float(row[3])
-            xValues[int(row[0])][2] = float(row[1])
-            yValues[int(row[0])][2] = float(row[2])
-            zValues[int(row[0])][2] = float(row[3])
-        # Read the trifurcation nodes
-        elif (row[5] == 'trif'):
-            numberOfTrifurcations+=1
-            trifurcationNodeNumber.append(int(row[0]))
-            xValues[int(row[0])][1] = float(row[1])
-            yValues[int(row[0])][1] = float(row[2])
-            zValues[int(row[0])][1] = float(row[3])
-            xValues[int(row[0])][2] = float(row[1])
-            yValues[int(row[0])][2] = float(row[2])
-            zValues[int(row[0])][2] = float(row[3])
-            xValues[int(row[0])][3] = float(row[1])
-            yValues[int(row[0])][3] = float(row[2])
-            zValues[int(row[0])][3] = float(row[3])
-
+        if (rownum == 0):
+            # Read the header row
+            header = row
+        else:
+            # Read the number of nodes
+            if (rownum == 1):
+                numberOfNodesSpace = int(row[5])
+                totalNumberOfNodes = numberOfNodesSpace*3
+                xValues = numpy.zeros((numberOfNodesSpace+1,4),dtype = numpy.float)
+                yValues = numpy.zeros((numberOfNodesSpace+1,4),dtype = numpy.float)
+                zValues = numpy.zeros((numberOfNodesSpace+1,4),dtype = numpy.float)
+            # Initialise the coordinates
+            xValues[rownum][0] = float(row[1])
+            yValues[rownum][0] = float(row[2])
+            zValues[rownum][0] = float(row[3])
+            # Read the input nodes
+            if (row[4] == 'input'):
+                inputNodeNumber.append(rownum)
+                numberOfInputNodes = numberOfInputNodes+1
+            # Read the bifurcation nodes
+            elif (row[4] == 'bifurcation'):
+                numberOfBifurcations+=1
+                bifurcationNodeNumber.append(rownum)
+                xValues[rownum][1] = float(row[1])
+                yValues[rownum][1] = float(row[2])
+                zValues[rownum][1] = float(row[3])
+                xValues[rownum][2] = float(row[1])
+                yValues[rownum][2] = float(row[2])
+                zValues[rownum][2] = float(row[3])
+            # Read the trifurcation nodes
+            elif (row[4] == 'trifurcation'):
+                numberOfTrifurcations+=1
+                trifurcationNodeNumber.append(rownum)
+                xValues[rownum][1] = float(row[1])
+                yValues[rownum][1] = float(row[2])
+                zValues[rownum][1] = float(row[3])
+                xValues[rownum][2] = float(row[1])
+                yValues[rownum][2] = float(row[2])
+                zValues[rownum][2] = float(row[3])
+                xValues[rownum][3] = float(row[1])
+                yValues[rownum][3] = float(row[2])
+                zValues[rownum][3] = float(row[3])
+            # Read the terminal nodes
+            elif (row[4] == 'terminal'):
+                coupledNodeNumber.append(rownum)
+                numberOfTerminalNodes = numberOfTerminalNodes+1
+        # Next line
+        rownum+=1      
 # Read the element file
 with open('Input/Element.csv','rb') as csvfile:
-    reader = csv.reader(csvfile, delimiter='\t')
+    reader = csv.reader(csvfile, delimiter=',')
+    rownum = 0
     i = 0
     k = 0
     for row in reader:
-        # Read the number of elements
-        if (int(row[0]) == 1):
-            totalNumberOfElements = int(row[len(row)-1])
-            elementNodes = (totalNumberOfElements+1)*[3*[0]]
-            bifurcationElements = (numberOfBifurcations+1)*[3*[0]]
-            trifurcationElements = (numberOfTrifurcations+1)*[4*[0]]
-        # Read the element nodes
-        elementNodes[int(row[0])] = [int(row[1]),int(row[2]),int(row[3])]
-        # Read the bifurcation elements
-        if (row[4]):
-            i+=1
-            bifurcationElements[i] = [int(row[4]),int(row[5]),int(row[6])]
-        # Read the trifurcation elements
-        elif (row[7]):
-            k+=1
-            trifurcationElements[k] = [int(row[7]),int(row[8]),int(row[9]),int(row[10])]
-
+        if (rownum == 0):
+            # Read the header row
+            header = row
+        else:
+            # Read the number of elements
+            if (rownum == 1):
+                totalNumberOfElements = int(row[11])
+                elementNodes          = (totalNumberOfElements+1)*[3*[0]]
+                bifurcationElements   = (numberOfBifurcations+1)*[3*[0]]
+                trifurcationElements  = (numberOfTrifurcations+1)*[4*[0]]
+            # Read the element nodes
+            elementNodes[rownum] = [int(row[1]),int(row[2]),int(row[3])]
+            # Read the bifurcation elements
+            if (row[4]):
+                i+=1
+                bifurcationElements[i] = [int(row[4]),int(row[5]),int(row[6])]
+            # Read the trifurcation elements
+            elif (row[7]):
+                k+=1
+                trifurcationElements[k] = [int(row[7]),int(row[8]),int(row[9]),int(row[10])]
+        # Next line
+        rownum+=1
+        
 #================================================================================================================================
 #  Initial Data & Default Values
 #================================================================================================================================
@@ -230,8 +251,8 @@ with open('Input/Element.csv','rb') as csvfile:
 Rho  = 1050.0                                 # Rho         (kg/m3)
 Mu   = 0.004                                  # Mu          (Pa.s)
 D    = 100.0                                  # Diffusivity (m2/s)
-Pext = 0.0      #6000.0                       # External pressure (Pa)
-Pv   = 1333.0   #20.0 mmHg                    # Venous pressure (Pa)
+Pext = 0.0                                    # External pressure (Pa)
+Pv   = 2667.0                                 # Venous pressure = 20.0 mmHg (Pa)
 dt   = [0]*(numberOfNodesSpace+1)             # TimeStep    (s)
 eig  = [0]*(numberOfNodesSpace+1)             # Eigenvalues
 A0   = numpy.zeros((numberOfNodesSpace+1,4))  # Area        (m2)
@@ -255,24 +276,23 @@ Ds    = (Ls**2.0)/Ts     # Diffusivity      (m2/s)
 Zs    = Ps/Qs            # Impedance        (pa/(m3/s))
 
 # Read the MATERIAL file
-inputNodeNumber   = [0]
-coupledNodeNumber = [0]
 with open('Input/Material.csv','rb') as csvfile:
-    reader = csv.reader(csvfile, delimiter='\t')
+    reader = csv.reader(csvfile, delimiter=',')
+    rownum = 0
     for row in reader:
-        A0[int(row[0])][0] = float(row[1])
-        E [int(row[0])][0] = float(row[2])
-        H [int(row[0])][0] = float(row[3])
-        if (row[4]):
-            coupledNodeNumber.append(int(row[4]))
-            numberOfTerminalNodes = numberOfTerminalNodes+1
-        if (row[5]):
-            inputNodeNumber.append(int(row[5]))
-            numberOfInputNodes = numberOfInputNodes+1
-
+        if (rownum == 0):
+            # Read the header row
+            header = row
+        else:
+            A0[rownum][0] = float(row[1])
+            E [rownum][0] = float(row[2])
+            H [rownum][0] = float(row[3])
+        # Next line
+        rownum+=1
+        
 Rho = Rho*Rhos
 Mu  = Mu*Mus
-Ps  = Pext*Ps
+P   = Pext*Ps
 A0  = A0*As
 E   = E*Es
 H   = H*Hs
@@ -288,14 +308,14 @@ for bifIdx in range(1,numberOfBifurcations+1):
     nodeIdx = bifurcationNodeNumber[bifIdx]
     for versionIdx in range(1,3):
         A0[nodeIdx][versionIdx] = A0[elementNodes[bifurcationElements[bifIdx][versionIdx]][1]][0]
-        E[nodeIdx][versionIdx]  = E[elementNodes[bifurcationElements[bifIdx][versionIdx]][1]][0]
-        H[nodeIdx][versionIdx]  = H[elementNodes[bifurcationElements[bifIdx][versionIdx]][1]][0]
+        E [nodeIdx][versionIdx] = E [elementNodes[bifurcationElements[bifIdx][versionIdx]][1]][0]
+        H [nodeIdx][versionIdx] = H [elementNodes[bifurcationElements[bifIdx][versionIdx]][1]][0]
 for trifIdx in range(1,numberOfTrifurcations+1):
     nodeIdx = trifurcationNodeNumber[trifIdx]
     for versionIdx in range(1,4):
         A0[nodeIdx][versionIdx] = A0[elementNodes[trifurcationElements[trifIdx][versionIdx]][1]][0]
-        E[nodeIdx][versionIdx]  = E[elementNodes[trifurcationElements[trifIdx][versionIdx]][1]][0]
-        H[nodeIdx][versionIdx]  = H[elementNodes[trifurcationElements[trifIdx][versionIdx]][1]][0]
+        E [nodeIdx][versionIdx] = E [elementNodes[trifurcationElements[trifIdx][versionIdx]][1]][0]
+        H [nodeIdx][versionIdx] = H [elementNodes[trifurcationElements[trifIdx][versionIdx]][1]][0]
 
 # Start with Q=0, A=A0 state
 A = A0
@@ -309,7 +329,7 @@ LINEAR_SOLVER_CHARACTERISTIC_OUTPUT_TYPE    = CMISS.SolverOutputTypes.NONE
 LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE     = CMISS.SolverOutputTypes.NONE
 # (NONE/TIMING/SOLVER/MATRIX)
 CMISS_SOLVER_OUTPUT_TYPE = CMISS.SolverOutputTypes.NONE
-DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY = 1
+DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY = 10
 
 # Set the time parameters
 numberOfPeriods = 1.0
@@ -515,6 +535,7 @@ Mesh.CreateFinish()
 #------------------
 
 if (streeFlag):
+    
     # Start the creation of TIME mesh
     MeshTime = CMISS.Mesh()
     MeshTime.CreateStart(MeshUserNumber2,RegionStree,numberOfDimensions)
@@ -528,7 +549,7 @@ if (streeFlag):
         MeshElementsTime.NodesSet(elemIdx,[elemIdx,elemIdx+1])
     MeshElementsTime.CreateFinish()                        
     MeshTime.CreateFinish()
-
+    
 #================================================================================================================================
 #  Decomposition
 #================================================================================================================================
@@ -626,7 +647,7 @@ if (streeFlag):
         GeometricFieldTime.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,
          componentNumber,meshComponentNumberTime)
     GeometricFieldTime.CreateFinish()
-
+    
 #================================================================================================================================
 #  Equations Sets
 #================================================================================================================================
@@ -1495,10 +1516,10 @@ if (timestepFlag):
                
     # Check the timestep
     for i in range(1,numberOfNodesSpace+1):
-        beta = (3.0*math.sqrt(math.pi)*H[i,0]*E[i,0])/(4.0*A0[i,0])
+        beta   = (3.0*math.sqrt(math.pi)*H[i,0]*E[i,0])/(4.0*A0[i,0])
         eig[i] = QMax/A0[i,0] + (A0[i,0]**0.25)*(math.sqrt(beta/(2.0*Rho)))
-        dt[i] = ((3.0**(0.5))/3.0)*minElementLength/eig[i]
-        dt[0] = dt[i]
+        dt[i]  = ((3.0**(0.5))/3.0)*minElementLength/eig[i]
+        dt[0]  = dt[i]
     minTimeStep = min(dt)
     print("Max allowable timestep:      %3.5f" % minTimeStep )
 
@@ -1506,56 +1527,125 @@ if (timestepFlag):
 #  Transmission Line Theory
 #================================================================================================================================
 
-if (streeFlag):
-        Ng  = 0            # Number of generations
-        L   = 10.0e-3      # Length
-        E   = 0.4e+6       # Elasticity
-        h   = 0.5e-3       # Thickness
-        A0  = 2.0e-6      # Area at rest
-        Qin = 6.5e-6       # Input flow
-        T = timePeriod/Ts  # Time period
-        z0 = [0]*(timePeriod+1)                         # Impedance
-        Cp = (3.0*A0*(A0/math.pi)**0.5)/(2.0*E*h)  # Vessel wall compliance
+'''
+terminal 1 ----- brain ----------- right vertebral artery
+terminal 2 ----- right hand ------ right radial artery
+terminal 3 ----- right hand ------ right ulnar artery
+terminal 4 ----- brain ----------- right external carotid artery
+terminal 5 ----- brain ----------- right internal carotid artery
+terminal 6 ----- brain ----------- left  external carotid artery
+terminal 7 ----- brain ----------- left  internal carotid artery
+terminal 8 ----- brain ----------- left  vertebral artery
+terminal 9 ----- left hand ------- left  ulnar artery
+terminal 10 ---- left hand ------- left  radial artery
+terminal 11 ---- spleen ---------- splenic artery
+terminal 12 ---- liver ----------- hepatic artery
+terminal 13 ---- stomach --------- gastric artery
+terminal 14 ---- intestines ------ superior mesenteric artery
+terminal 15 ---- left kidney ----- left  renal artery
+terminal 16 ---- right kidney ---- right renal artery
+terminal 17 ---- right leg ------- right internal iliac artery
+terminal 18 ---- right leg ------- right deep femoral artery
+terminal 19 ---- right foot ------ right anterior femoral artery
+terminal 20 ---- right foot ------ right posterior tibial artery
+terminal 21 ---- right leg ------- right fibular artery
+terminal 22 ---- left leg -------- left  internal iliac artery
+terminal 23 ---- left leg -------- left  deep femoral artery
+terminal 24 ---- left foot ------- left  anterior tibial artery
+terminal 25 ---- left foot ------- left  posterior tibial artery
+terminal 26 ---- left leg -------- left  fibular artery
+terminal 27 ---- intestines ------ inferior mesenteric artery
+'''
 
-        # Zero frequency condition
-        # Terminal load
-        if (branch):
-            zL = z01[0]*z02[0]/(z01[0]+z02[0])
-        else:
-            zL = (Pv/Qin)*(2.0**Ng)
-        # Transfer function
-        z0[0] = 8.0*(Mu/Mus)*L/((A0**2.0)/math.pi)+zL
-  
-        # Non-zero frequency condition
-        for k in range(1,timePeriod+1):
-            # Frequency
-            freq = 2.0*math.pi*k/T                         
-            # Womersley number
-            w = (A0*freq*(Rho/Rhos)/((Mu/Mus)*math.pi))**0.5    
-            w0 = ((1j)**1.5)*w
-            # Bessel function zeroth-order
-            J0 = jn(0,w0)
-            # Bessel function first-order
-            J1 = jn(1,w0)
-            # Bessel function
-            Fj = (2.0*J1)/(w0*J0)
-            # Wave propagation velocity
-            c = cmath.sqrt(A0*(1.0-Fj)/((Rho/Rhos)*Cp))
-            g = c*Cp
-            # Terminal load
-            if (branch):
-                zL = z01[k]*z02[k]/(z01[k]+z02[k])
-            else:
-                zL = 1.0/(c*Cp)
-            # Transfer function
-            z0[k] = ((1j)*cmath.sin(freq*L/c)/g+zL*cmath.cos(freq*L/c))/(cmath.cos(freq*L/c)+(1j)*g*zL*cmath.sin(freq*L/c))
+if (streeFlag):
+    numberOfTerminalNodes = 27
+    # Loop through the terminal nodes
+    for terminalIdx in range (1,numberOfTerminalNodes+1):
+        # Read the organ node file
+        with open('Input/stree/'+str(terminalIdx)+'.csv','rb') as csvfile:
+            reader = csv.reader(csvfile, delimiter=',')
+            rownum = 0
+            for row in reader:
+                if (rownum == 0):
+                    # Read the header row
+                    header = row
+                else:
+                    # Read number of nodes
+                    if (rownum == 1):
+                        numberOfSegments = int(row[6])
+                        stree = numpy.zeros((numberOfSegments+1,7,timePeriod+1),dtype = numpy.float)
+                    stree[rownum][0] = float(row[0])/Ls  # Length of segment
+                    stree[rownum][1] = float(row[1])     # Radius of segment
+                    stree[rownum][2] = float(row[2])     # Terminal segment
+                    stree[rownum][3] = float(row[3])     # Number of parent segment
+                    if (row[4]):
+                        stree[rownum][4] = float(row[4]) # Number of daughter segments
+                        stree[rownum][5] = float(row[5])
+                # Next line
+                rownum+=1
+
+        # Loop through the segments to calculate each segment impedance
+        for idx in range(1,numberOfSegments+1):
+            n = numberOfSegments+1-idx                    # Start from last segment
+            L = stree[n][0][0]                            # Length of segment
+            r = stree[n][1][0]                            # Radius of segment
+            term = stree[n][2][0]                         # Terminal segment
+            if (term == 0):
+                # Calculate daughter segment impedance
+                zin1=stree[stree[n][4][0]][6][0]
+                zin2=stree[stree[n][5][0]][6][0]
+    
+            Ng  = 8                                       # Number of generations
+            h   = 0.35*r                                  # Thickness
+            E   = 0.4e+6                                  # Elasticity
+            A0  = math.pi*(r**2.0)                        # Area at rest
+            Qin = 6.5e-6                                  # Input flow
+            T   = timePeriod/Ts                           # Time period
+            zin = [0]*(timePeriod+1)                      # Impedance
+            Cp  = (3.0*A0*(A0/math.pi)**0.5)/(2.0*E*h)    # Vessel wall compliance
+
+            # Non-zero frequency condition
+            for k in range(0,timePeriod+1):
+                if (k == 0):
+                    # Zero frequency condition
+                    # Terminal load
+                    if (term == 0):
+                        zL = zin1*zin2/(zin1+zin2)
+                    else:
+                        zL = (Pv/Qin)*(2.0**Ng)
+                    # Transfer function
+                    zin[k] = 8.0*(Mu/Mus)*L/((A0**2.0)/math.pi)+zL
+                else:
+                    # Frequency
+                    freq = 2.0*math.pi*k/T                         
+                    # Womersley number
+                    w = (A0*freq*(Rho/Rhos)/((Mu/Mus)*math.pi))**0.5    
+                    w0 = ((1j)**1.5)*w
+                    # Bessel function zeroth-order
+                    J0 = jn(0,w0)
+                    # Bessel function first-order
+                    J1 = jn(1,w0)
+                    # Bessel function
+                    Fj = (2.0*J1)/(w0*J0)
+                    # Wave propagation velocity
+                    c = cmath.sqrt(A0*(1.0-Fj)/((Rho/Rhos)*Cp))
+                    g = c*Cp
+                    # Terminal load
+                    if (term == 1):
+                        zL = 1.0/(c*Cp)
+                    else:
+                        zL = zin1*zin2/(zin1+zin2)
+                    # Transfer function
+                    zin[k] = ((1j)*cmath.sin(freq*L/c)/g+zL*cmath.cos(freq*L/c))/(cmath.cos(freq*L/c)+(1j)*g*zL*cmath.sin(freq*L/c))
+                #Saving the line's characteristics
+                stree[n][6][k] = zin[k]
         # Invrese fourier transform
-        zt = Zs*ifft(z0)
+        zt = ifft(stree[1][6])*Zs
         # Set the impedance
         for k in range(0,timePeriod+1):
             MaterialsFieldStree.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,
-             CMISS.FieldParameterSetTypes.VALUES,1,1,k+1,1,zt[k].real)
-
+             CMISS.FieldParameterSetTypes.VALUES,1,1,k+1,terminalIdx,zt[k].real)
+         
 #================================================================================================================================
 #  Run Solvers
 #================================================================================================================================
@@ -1574,4 +1664,3 @@ print "#"
 #================================================================================================================================
 #  Finish Program
 #================================================================================================================================
-

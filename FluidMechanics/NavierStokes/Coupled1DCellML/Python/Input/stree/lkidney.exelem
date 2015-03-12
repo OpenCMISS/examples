@@ -1,0 +1,3111 @@
+Group name: lkidney
+Shape. Dimension=1, line
+#Scale factor sets=1
+l.Lagrange, #Scale factors=2
+#Nodes=2
+#Fields=2
+1) Coordinates, coordinate, rectangular cartesian, #Components=3
+x. l.Lagrange, no modify, standard node based.
+#Nodes=2
+1. #Values=1
+Value indices: 1
+Scale factor indices: 1
+2. #Values=1
+Value indices: 1
+Scale factor indices: 2
+y. l.Lagrange, no modify, standard node based.
+#Nodes=2
+1. #Values=1
+Value indices: 1
+Scale factor indices: 1
+2. #Values=1
+Value indices: 1
+Scale factor indices: 2
+z. l.Lagrange, no modify, standard node based.
+#Nodes=2
+1. #Values=1
+Value indices: 1
+Scale factor indices: 1
+2. #Values=1
+Value indices: 1
+Scale factor indices: 2
+2) radius, field, rectangular cartesian, #Components=1
+radius.  l.Lagrange, no modify, standard node based.
+#Nodes=2
+1. #Values=1
+Value indices: 1
+Scale factor indices: 1
+2. #Values=1
+Value indices: 1
+Scale factor indices: 2
+Element: 20000 0 0
+Nodes:
+20001 20002
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20001 0 0
+Nodes:
+20003 20004
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20002 0 0
+Nodes:
+20005 20006
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20003 0 0
+Nodes:
+20007 20008
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20004 0 0
+Nodes:
+20009 20010
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20005 0 0
+Nodes:
+20011 20012
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20006 0 0
+Nodes:
+20013 20014
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20007 0 0
+Nodes:
+20015 20016
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20008 0 0
+Nodes:
+20017 20018
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20009 0 0
+Nodes:
+20019 20020
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20010 0 0
+Nodes:
+20021 20022
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20011 0 0
+Nodes:
+20023 20024
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20012 0 0
+Nodes:
+20025 20026
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20013 0 0
+Nodes:
+20027 20028
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20014 0 0
+Nodes:
+20029 20030
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20015 0 0
+Nodes:
+20031 20032
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20016 0 0
+Nodes:
+20033 20034
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20017 0 0
+Nodes:
+20035 20036
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20018 0 0
+Nodes:
+20037 20038
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20019 0 0
+Nodes:
+20039 20040
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20020 0 0
+Nodes:
+20041 20042
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20021 0 0
+Nodes:
+20043 20044
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20022 0 0
+Nodes:
+20045 20046
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20023 0 0
+Nodes:
+20047 20048
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20024 0 0
+Nodes:
+20049 20050
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20025 0 0
+Nodes:
+20051 20052
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20026 0 0
+Nodes:
+20053 20054
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20027 0 0
+Nodes:
+20055 20056
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20028 0 0
+Nodes:
+20057 20058
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20029 0 0
+Nodes:
+20059 20060
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20030 0 0
+Nodes:
+20061 20062
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20031 0 0
+Nodes:
+20063 20064
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20032 0 0
+Nodes:
+20065 20066
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20033 0 0
+Nodes:
+20067 20068
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20034 0 0
+Nodes:
+20069 20070
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20035 0 0
+Nodes:
+20071 20072
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20036 0 0
+Nodes:
+20073 20074
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20037 0 0
+Nodes:
+20075 20076
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20038 0 0
+Nodes:
+20077 20078
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20039 0 0
+Nodes:
+20079 20080
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20040 0 0
+Nodes:
+20081 20082
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20041 0 0
+Nodes:
+20083 20084
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20042 0 0
+Nodes:
+20085 20086
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20043 0 0
+Nodes:
+20087 20088
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20044 0 0
+Nodes:
+20089 20090
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20045 0 0
+Nodes:
+20091 20092
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20046 0 0
+Nodes:
+20093 20094
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20047 0 0
+Nodes:
+20095 20096
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20048 0 0
+Nodes:
+20097 20098
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20049 0 0
+Nodes:
+20099 20100
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20050 0 0
+Nodes:
+20101 20102
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20051 0 0
+Nodes:
+20103 20104
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20052 0 0
+Nodes:
+20105 20106
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20053 0 0
+Nodes:
+20107 20108
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20054 0 0
+Nodes:
+20109 20110
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20055 0 0
+Nodes:
+20111 20112
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20056 0 0
+Nodes:
+20113 20114
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20057 0 0
+Nodes:
+20115 20116
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20058 0 0
+Nodes:
+20117 20118
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20059 0 0
+Nodes:
+20119 20120
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20060 0 0
+Nodes:
+20121 20122
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20061 0 0
+Nodes:
+20123 20124
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20062 0 0
+Nodes:
+20125 20126
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20063 0 0
+Nodes:
+20127 20128
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20064 0 0
+Nodes:
+20129 20130
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20065 0 0
+Nodes:
+20131 20132
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20066 0 0
+Nodes:
+20133 20134
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20067 0 0
+Nodes:
+20135 20136
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20068 0 0
+Nodes:
+20137 20138
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20069 0 0
+Nodes:
+20139 20140
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20070 0 0
+Nodes:
+20141 20142
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20071 0 0
+Nodes:
+20143 20144
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20072 0 0
+Nodes:
+20145 20146
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20073 0 0
+Nodes:
+20147 20148
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20074 0 0
+Nodes:
+20149 20150
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20075 0 0
+Nodes:
+20151 20152
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20076 0 0
+Nodes:
+20153 20154
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20077 0 0
+Nodes:
+20155 20156
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20078 0 0
+Nodes:
+20157 20158
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20079 0 0
+Nodes:
+20159 20160
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20080 0 0
+Nodes:
+20161 20162
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20081 0 0
+Nodes:
+20163 20164
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20082 0 0
+Nodes:
+20165 20166
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20083 0 0
+Nodes:
+20167 20168
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20084 0 0
+Nodes:
+20169 20170
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20085 0 0
+Nodes:
+20171 20172
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20086 0 0
+Nodes:
+20173 20174
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20087 0 0
+Nodes:
+20175 20176
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20088 0 0
+Nodes:
+20177 20178
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20089 0 0
+Nodes:
+20179 20180
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20090 0 0
+Nodes:
+20181 20182
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20091 0 0
+Nodes:
+20183 20184
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20092 0 0
+Nodes:
+20185 20186
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20093 0 0
+Nodes:
+20187 20188
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20094 0 0
+Nodes:
+20189 20190
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20095 0 0
+Nodes:
+20191 20192
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20096 0 0
+Nodes:
+20193 20194
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20097 0 0
+Nodes:
+20195 20196
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20098 0 0
+Nodes:
+20197 20198
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20099 0 0
+Nodes:
+20199 20200
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20100 0 0
+Nodes:
+20201 20202
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20101 0 0
+Nodes:
+20203 20204
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20102 0 0
+Nodes:
+20205 20206
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20103 0 0
+Nodes:
+20207 20208
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20104 0 0
+Nodes:
+20209 20210
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20105 0 0
+Nodes:
+20211 20212
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20106 0 0
+Nodes:
+20213 20214
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20107 0 0
+Nodes:
+20215 20216
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20108 0 0
+Nodes:
+20217 20218
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20109 0 0
+Nodes:
+20219 20220
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20110 0 0
+Nodes:
+20221 20222
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20111 0 0
+Nodes:
+20223 20224
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20112 0 0
+Nodes:
+20225 20226
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20113 0 0
+Nodes:
+20227 20228
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20114 0 0
+Nodes:
+20229 20230
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20115 0 0
+Nodes:
+20231 20232
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20116 0 0
+Nodes:
+20233 20234
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20117 0 0
+Nodes:
+20235 20236
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20118 0 0
+Nodes:
+20237 20238
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20119 0 0
+Nodes:
+20239 20240
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20120 0 0
+Nodes:
+20241 20242
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20121 0 0
+Nodes:
+20243 20244
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20122 0 0
+Nodes:
+20245 20246
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20123 0 0
+Nodes:
+20247 20248
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20124 0 0
+Nodes:
+20249 20250
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20125 0 0
+Nodes:
+20251 20252
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20126 0 0
+Nodes:
+20253 20254
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20127 0 0
+Nodes:
+20255 20256
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20128 0 0
+Nodes:
+20257 20258
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20129 0 0
+Nodes:
+20259 20260
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20130 0 0
+Nodes:
+20261 20262
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20131 0 0
+Nodes:
+20263 20264
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20132 0 0
+Nodes:
+20265 20266
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20133 0 0
+Nodes:
+20267 20268
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20134 0 0
+Nodes:
+20269 20270
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20135 0 0
+Nodes:
+20271 20272
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20136 0 0
+Nodes:
+20273 20274
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20137 0 0
+Nodes:
+20275 20276
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20138 0 0
+Nodes:
+20277 20278
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20139 0 0
+Nodes:
+20279 20280
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20140 0 0
+Nodes:
+20281 20282
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20141 0 0
+Nodes:
+20283 20284
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20142 0 0
+Nodes:
+20285 20286
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20143 0 0
+Nodes:
+20287 20288
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20144 0 0
+Nodes:
+20289 20290
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20145 0 0
+Nodes:
+20291 20292
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20146 0 0
+Nodes:
+20293 20294
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20147 0 0
+Nodes:
+20295 20296
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20148 0 0
+Nodes:
+20297 20298
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20149 0 0
+Nodes:
+20299 20300
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20150 0 0
+Nodes:
+20301 20302
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20151 0 0
+Nodes:
+20303 20304
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20152 0 0
+Nodes:
+20305 20306
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20153 0 0
+Nodes:
+20307 20308
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20154 0 0
+Nodes:
+20309 20310
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20155 0 0
+Nodes:
+20311 20312
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20156 0 0
+Nodes:
+20313 20314
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20157 0 0
+Nodes:
+20315 20316
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20158 0 0
+Nodes:
+20317 20318
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20159 0 0
+Nodes:
+20319 20320
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20160 0 0
+Nodes:
+20321 20322
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20161 0 0
+Nodes:
+20323 20324
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20162 0 0
+Nodes:
+20325 20326
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20163 0 0
+Nodes:
+20327 20328
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20164 0 0
+Nodes:
+20329 20330
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20165 0 0
+Nodes:
+20331 20332
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20166 0 0
+Nodes:
+20333 20334
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20167 0 0
+Nodes:
+20335 20336
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20168 0 0
+Nodes:
+20337 20338
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20169 0 0
+Nodes:
+20339 20340
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20170 0 0
+Nodes:
+20341 20342
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20171 0 0
+Nodes:
+20343 20344
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20172 0 0
+Nodes:
+20345 20346
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20173 0 0
+Nodes:
+20347 20348
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20174 0 0
+Nodes:
+20349 20350
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20175 0 0
+Nodes:
+20351 20352
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20176 0 0
+Nodes:
+20353 20354
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20177 0 0
+Nodes:
+20355 20356
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20178 0 0
+Nodes:
+20357 20358
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20179 0 0
+Nodes:
+20359 20360
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20180 0 0
+Nodes:
+20361 20362
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20181 0 0
+Nodes:
+20363 20364
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20182 0 0
+Nodes:
+20365 20366
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20183 0 0
+Nodes:
+20367 20368
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20184 0 0
+Nodes:
+20369 20370
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20185 0 0
+Nodes:
+20371 20372
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20186 0 0
+Nodes:
+20373 20374
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20187 0 0
+Nodes:
+20375 20376
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20188 0 0
+Nodes:
+20377 20378
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20189 0 0
+Nodes:
+20379 20380
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20190 0 0
+Nodes:
+20381 20382
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20191 0 0
+Nodes:
+20383 20384
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20192 0 0
+Nodes:
+20385 20386
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20193 0 0
+Nodes:
+20387 20388
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20194 0 0
+Nodes:
+20389 20390
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20195 0 0
+Nodes:
+20391 20392
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20196 0 0
+Nodes:
+20393 20394
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20197 0 0
+Nodes:
+20395 20396
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20198 0 0
+Nodes:
+20397 20398
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20199 0 0
+Nodes:
+20399 20400
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20200 0 0
+Nodes:
+20401 20402
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20201 0 0
+Nodes:
+20403 20404
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20202 0 0
+Nodes:
+20405 20406
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20203 0 0
+Nodes:
+20407 20408
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20204 0 0
+Nodes:
+20409 20410
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20205 0 0
+Nodes:
+20411 20412
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20206 0 0
+Nodes:
+20413 20414
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20207 0 0
+Nodes:
+20415 20416
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20208 0 0
+Nodes:
+20417 20418
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20209 0 0
+Nodes:
+20419 20420
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20210 0 0
+Nodes:
+20421 20422
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20211 0 0
+Nodes:
+20423 20424
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20212 0 0
+Nodes:
+20425 20426
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20213 0 0
+Nodes:
+20427 20428
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20214 0 0
+Nodes:
+20429 20430
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20215 0 0
+Nodes:
+20431 20432
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20216 0 0
+Nodes:
+20433 20434
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20217 0 0
+Nodes:
+20435 20436
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20218 0 0
+Nodes:
+20437 20438
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20219 0 0
+Nodes:
+20439 20440
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20220 0 0
+Nodes:
+20441 20442
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20221 0 0
+Nodes:
+20443 20444
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20222 0 0
+Nodes:
+20445 20446
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20223 0 0
+Nodes:
+20447 20448
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20224 0 0
+Nodes:
+20449 20450
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20225 0 0
+Nodes:
+20451 20452
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20226 0 0
+Nodes:
+20453 20454
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20227 0 0
+Nodes:
+20455 20456
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20228 0 0
+Nodes:
+20457 20458
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20229 0 0
+Nodes:
+20459 20460
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20230 0 0
+Nodes:
+20461 20462
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20231 0 0
+Nodes:
+20463 20464
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20232 0 0
+Nodes:
+20465 20466
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20233 0 0
+Nodes:
+20467 20468
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20234 0 0
+Nodes:
+20469 20470
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20235 0 0
+Nodes:
+20471 20472
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20236 0 0
+Nodes:
+20473 20474
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20237 0 0
+Nodes:
+20475 20476
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20238 0 0
+Nodes:
+20477 20478
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20239 0 0
+Nodes:
+20479 20480
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20240 0 0
+Nodes:
+20481 20482
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20241 0 0
+Nodes:
+20483 20484
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20242 0 0
+Nodes:
+20485 20486
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20243 0 0
+Nodes:
+20487 20488
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20244 0 0
+Nodes:
+20489 20490
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20245 0 0
+Nodes:
+20491 20492
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20246 0 0
+Nodes:
+20493 20494
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20247 0 0
+Nodes:
+20495 20496
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20248 0 0
+Nodes:
+20497 20498
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20249 0 0
+Nodes:
+20499 20500
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20250 0 0
+Nodes:
+20501 20502
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20251 0 0
+Nodes:
+20503 20504
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20252 0 0
+Nodes:
+20505 20506
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20253 0 0
+Nodes:
+20507 20508
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20254 0 0
+Nodes:
+20509 20510
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20255 0 0
+Nodes:
+20511 20512
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20256 0 0
+Nodes:
+20513 20514
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20257 0 0
+Nodes:
+20515 20516
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20258 0 0
+Nodes:
+20517 20518
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20259 0 0
+Nodes:
+20519 20520
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20260 0 0
+Nodes:
+20521 20522
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20261 0 0
+Nodes:
+20523 20524
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20262 0 0
+Nodes:
+20525 20526
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20263 0 0
+Nodes:
+20527 20528
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20264 0 0
+Nodes:
+20529 20530
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20265 0 0
+Nodes:
+20531 20532
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20266 0 0
+Nodes:
+20533 20534
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20267 0 0
+Nodes:
+20535 20536
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20268 0 0
+Nodes:
+20537 20538
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20269 0 0
+Nodes:
+20539 20540
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20270 0 0
+Nodes:
+20541 20542
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20271 0 0
+Nodes:
+20543 20544
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20272 0 0
+Nodes:
+20545 20546
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20273 0 0
+Nodes:
+20547 20548
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20274 0 0
+Nodes:
+20549 20550
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20275 0 0
+Nodes:
+20551 20552
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20276 0 0
+Nodes:
+20553 20554
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20277 0 0
+Nodes:
+20555 20556
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20278 0 0
+Nodes:
+20557 20558
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20279 0 0
+Nodes:
+20559 20560
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20280 0 0
+Nodes:
+20561 20562
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20281 0 0
+Nodes:
+20563 20564
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20282 0 0
+Nodes:
+20565 20566
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20283 0 0
+Nodes:
+20567 20568
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20284 0 0
+Nodes:
+20569 20570
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20285 0 0
+Nodes:
+20571 20572
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20286 0 0
+Nodes:
+20573 20574
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20287 0 0
+Nodes:
+20575 20576
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20288 0 0
+Nodes:
+20577 20578
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20289 0 0
+Nodes:
+20579 20580
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20290 0 0
+Nodes:
+20581 20582
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20291 0 0
+Nodes:
+20583 20584
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20292 0 0
+Nodes:
+20585 20586
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20293 0 0
+Nodes:
+20587 20588
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20294 0 0
+Nodes:
+20589 20590
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20295 0 0
+Nodes:
+20591 20592
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20296 0 0
+Nodes:
+20593 20594
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20297 0 0
+Nodes:
+20595 20596
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20298 0 0
+Nodes:
+20597 20598
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20299 0 0
+Nodes:
+20599 20600
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20300 0 0
+Nodes:
+20601 20602
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20301 0 0
+Nodes:
+20603 20604
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20302 0 0
+Nodes:
+20605 20606
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20303 0 0
+Nodes:
+20607 20608
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20304 0 0
+Nodes:
+20609 20610
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20305 0 0
+Nodes:
+20611 20612
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20306 0 0
+Nodes:
+20613 20614
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20307 0 0
+Nodes:
+20615 20616
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20308 0 0
+Nodes:
+20617 20618
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20309 0 0
+Nodes:
+20619 20620
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20310 0 0
+Nodes:
+20621 20622
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20311 0 0
+Nodes:
+20623 20624
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20312 0 0
+Nodes:
+20625 20626
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20313 0 0
+Nodes:
+20627 20628
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20314 0 0
+Nodes:
+20629 20630
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20315 0 0
+Nodes:
+20631 20632
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20316 0 0
+Nodes:
+20633 20634
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20317 0 0
+Nodes:
+20635 20636
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20318 0 0
+Nodes:
+20637 20638
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20319 0 0
+Nodes:
+20639 20640
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20320 0 0
+Nodes:
+20641 20642
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20321 0 0
+Nodes:
+20643 20644
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20322 0 0
+Nodes:
+20645 20646
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20323 0 0
+Nodes:
+20647 20648
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20324 0 0
+Nodes:
+20649 20650
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20325 0 0
+Nodes:
+20651 20652
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20326 0 0
+Nodes:
+20653 20654
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20327 0 0
+Nodes:
+20655 20656
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20328 0 0
+Nodes:
+20657 20658
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20329 0 0
+Nodes:
+20659 20660
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20330 0 0
+Nodes:
+20661 20662
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20331 0 0
+Nodes:
+20663 20664
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20332 0 0
+Nodes:
+20665 20666
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20333 0 0
+Nodes:
+20667 20668
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20334 0 0
+Nodes:
+20669 20670
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20335 0 0
+Nodes:
+20671 20672
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20336 0 0
+Nodes:
+20673 20674
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20337 0 0
+Nodes:
+20675 20676
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20338 0 0
+Nodes:
+20677 20678
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20339 0 0
+Nodes:
+20679 20680
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20340 0 0
+Nodes:
+20681 20682
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20341 0 0
+Nodes:
+20683 20684
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20342 0 0
+Nodes:
+20685 20686
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20343 0 0
+Nodes:
+20687 20688
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20344 0 0
+Nodes:
+20689 20690
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20345 0 0
+Nodes:
+20691 20692
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20346 0 0
+Nodes:
+20693 20694
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20347 0 0
+Nodes:
+20695 20696
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20348 0 0
+Nodes:
+20697 20698
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20349 0 0
+Nodes:
+20699 20700
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20350 0 0
+Nodes:
+20701 20702
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20351 0 0
+Nodes:
+20703 20704
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20352 0 0
+Nodes:
+20705 20706
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20353 0 0
+Nodes:
+20707 20708
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20354 0 0
+Nodes:
+20709 20710
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20355 0 0
+Nodes:
+20711 20712
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20356 0 0
+Nodes:
+20713 20714
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20357 0 0
+Nodes:
+20715 20716
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20358 0 0
+Nodes:
+20717 20718
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20359 0 0
+Nodes:
+20719 20720
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20360 0 0
+Nodes:
+20721 20722
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20361 0 0
+Nodes:
+20723 20724
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20362 0 0
+Nodes:
+20725 20726
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20363 0 0
+Nodes:
+20727 20728
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20364 0 0
+Nodes:
+20729 20730
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20365 0 0
+Nodes:
+20731 20732
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20366 0 0
+Nodes:
+20733 20734
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20367 0 0
+Nodes:
+20735 20736
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20368 0 0
+Nodes:
+20737 20738
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20369 0 0
+Nodes:
+20739 20740
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20370 0 0
+Nodes:
+20741 20742
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20371 0 0
+Nodes:
+20743 20744
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20372 0 0
+Nodes:
+20745 20746
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20373 0 0
+Nodes:
+20747 20748
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20374 0 0
+Nodes:
+20749 20750
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20375 0 0
+Nodes:
+20751 20752
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20376 0 0
+Nodes:
+20753 20754
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20377 0 0
+Nodes:
+20755 20756
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20378 0 0
+Nodes:
+20757 20758
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20379 0 0
+Nodes:
+20759 20760
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20380 0 0
+Nodes:
+20761 20762
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20381 0 0
+Nodes:
+20763 20764
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20382 0 0
+Nodes:
+20765 20766
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20383 0 0
+Nodes:
+20767 20768
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20384 0 0
+Nodes:
+20769 20770
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20385 0 0
+Nodes:
+20771 20772
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20386 0 0
+Nodes:
+20773 20774
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20387 0 0
+Nodes:
+20775 20776
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20388 0 0
+Nodes:
+20777 20778
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20389 0 0
+Nodes:
+20779 20780
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20390 0 0
+Nodes:
+20781 20782
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20391 0 0
+Nodes:
+20783 20784
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20392 0 0
+Nodes:
+20785 20786
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20393 0 0
+Nodes:
+20787 20788
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20394 0 0
+Nodes:
+20789 20790
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20395 0 0
+Nodes:
+20791 20792
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20396 0 0
+Nodes:
+20793 20794
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20397 0 0
+Nodes:
+20795 20796
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20398 0 0
+Nodes:
+20797 20798
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20399 0 0
+Nodes:
+20799 20800
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20400 0 0
+Nodes:
+20801 20802
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20401 0 0
+Nodes:
+20803 20804
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20402 0 0
+Nodes:
+20805 20806
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20403 0 0
+Nodes:
+20807 20808
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20404 0 0
+Nodes:
+20809 20810
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20405 0 0
+Nodes:
+20811 20812
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20406 0 0
+Nodes:
+20813 20814
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20407 0 0
+Nodes:
+20815 20816
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20408 0 0
+Nodes:
+20817 20818
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20409 0 0
+Nodes:
+20819 20820
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20410 0 0
+Nodes:
+20821 20822
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20411 0 0
+Nodes:
+20823 20824
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20412 0 0
+Nodes:
+20825 20826
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20413 0 0
+Nodes:
+20827 20828
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20414 0 0
+Nodes:
+20829 20830
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20415 0 0
+Nodes:
+20831 20832
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20416 0 0
+Nodes:
+20833 20834
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20417 0 0
+Nodes:
+20835 20836
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20418 0 0
+Nodes:
+20837 20838
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20419 0 0
+Nodes:
+20839 20840
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20420 0 0
+Nodes:
+20841 20842
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20421 0 0
+Nodes:
+20843 20844
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20422 0 0
+Nodes:
+20845 20846
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20423 0 0
+Nodes:
+20847 20848
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20424 0 0
+Nodes:
+20849 20850
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20425 0 0
+Nodes:
+20851 20852
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20426 0 0
+Nodes:
+20853 20854
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20427 0 0
+Nodes:
+20855 20856
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20428 0 0
+Nodes:
+20857 20858
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20429 0 0
+Nodes:
+20859 20860
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20430 0 0
+Nodes:
+20861 20862
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20431 0 0
+Nodes:
+20863 20864
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20432 0 0
+Nodes:
+20865 20866
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20433 0 0
+Nodes:
+20867 20868
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20434 0 0
+Nodes:
+20869 20870
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20435 0 0
+Nodes:
+20871 20872
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20436 0 0
+Nodes:
+20873 20874
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20437 0 0
+Nodes:
+20875 20876
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20438 0 0
+Nodes:
+20877 20878
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20439 0 0
+Nodes:
+20879 20880
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20440 0 0
+Nodes:
+20881 20882
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20441 0 0
+Nodes:
+20883 20884
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20442 0 0
+Nodes:
+20885 20886
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20443 0 0
+Nodes:
+20887 20888
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20444 0 0
+Nodes:
+20889 20890
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20445 0 0
+Nodes:
+20891 20892
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20446 0 0
+Nodes:
+20893 20894
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20447 0 0
+Nodes:
+20895 20896
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20448 0 0
+Nodes:
+20897 20898
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20449 0 0
+Nodes:
+20899 20900
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20450 0 0
+Nodes:
+20901 20902
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20451 0 0
+Nodes:
+20903 20904
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20452 0 0
+Nodes:
+20905 20906
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20453 0 0
+Nodes:
+20907 20908
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20454 0 0
+Nodes:
+20909 20910
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20455 0 0
+Nodes:
+20911 20912
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20456 0 0
+Nodes:
+20913 20914
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20457 0 0
+Nodes:
+20915 20916
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20458 0 0
+Nodes:
+20917 20918
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20459 0 0
+Nodes:
+20919 20920
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20460 0 0
+Nodes:
+20921 20922
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20461 0 0
+Nodes:
+20923 20924
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20462 0 0
+Nodes:
+20925 20926
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20463 0 0
+Nodes:
+20927 20928
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20464 0 0
+Nodes:
+20929 20930
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20465 0 0
+Nodes:
+20931 20932
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20466 0 0
+Nodes:
+20933 20934
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20467 0 0
+Nodes:
+20935 20936
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20468 0 0
+Nodes:
+20937 20938
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20469 0 0
+Nodes:
+20939 20940
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20470 0 0
+Nodes:
+20941 20942
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20471 0 0
+Nodes:
+20943 20944
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20472 0 0
+Nodes:
+20945 20946
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20473 0 0
+Nodes:
+20947 20948
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20474 0 0
+Nodes:
+20949 20950
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20475 0 0
+Nodes:
+20951 20952
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20476 0 0
+Nodes:
+20953 20954
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20477 0 0
+Nodes:
+20955 20956
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20478 0 0
+Nodes:
+20957 20958
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20479 0 0
+Nodes:
+20959 20960
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20480 0 0
+Nodes:
+20961 20962
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20481 0 0
+Nodes:
+20963 20964
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20482 0 0
+Nodes:
+20965 20966
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20483 0 0
+Nodes:
+20967 20968
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20484 0 0
+Nodes:
+20969 20970
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20485 0 0
+Nodes:
+20971 20972
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20486 0 0
+Nodes:
+20973 20974
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20487 0 0
+Nodes:
+20975 20976
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20488 0 0
+Nodes:
+20977 20978
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20489 0 0
+Nodes:
+20979 20980
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20490 0 0
+Nodes:
+20981 20982
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20491 0 0
+Nodes:
+20983 20984
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20492 0 0
+Nodes:
+20985 20986
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20493 0 0
+Nodes:
+20987 20988
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20494 0 0
+Nodes:
+20989 20990
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20495 0 0
+Nodes:
+20991 20992
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20496 0 0
+Nodes:
+20993 20994
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20497 0 0
+Nodes:
+20995 20996
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20498 0 0
+Nodes:
+20997 20998
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20499 0 0
+Nodes:
+20999 21000
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20500 0 0
+Nodes:
+21001 21002
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20501 0 0
+Nodes:
+21003 21004
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20502 0 0
+Nodes:
+21005 21006
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20503 0 0
+Nodes:
+21007 21008
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20504 0 0
+Nodes:
+21009 21010
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20505 0 0
+Nodes:
+21011 21012
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20506 0 0
+Nodes:
+21013 21014
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20507 0 0
+Nodes:
+21015 21016
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20508 0 0
+Nodes:
+21017 21018
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20509 0 0
+Nodes:
+21019 21020
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 20510 0 0
+Nodes:
+21021 21022
+Scale factors:
+1.000000e+000 1.000000e+000
+Group name: tree
+Shape. Dimension=1, line
+#Scale factor sets=0
+#Nodes=0
+#Fields=0
+Element: 20000 0 0
+Element: 20001 0 0
+Element: 20002 0 0
+Element: 20003 0 0
+Element: 20004 0 0
+Element: 20005 0 0
+Element: 20006 0 0
+Element: 20007 0 0
+Element: 20008 0 0
+Element: 20009 0 0
+Element: 20010 0 0
+Element: 20011 0 0
+Element: 20012 0 0
+Element: 20013 0 0
+Element: 20014 0 0
+Element: 20015 0 0
+Element: 20016 0 0
+Element: 20017 0 0
+Element: 20018 0 0
+Element: 20019 0 0
+Element: 20020 0 0
+Element: 20021 0 0
+Element: 20022 0 0
+Element: 20023 0 0
+Element: 20024 0 0
+Element: 20025 0 0
+Element: 20026 0 0
+Element: 20027 0 0
+Element: 20028 0 0
+Element: 20029 0 0
+Element: 20030 0 0
+Element: 20031 0 0
+Element: 20032 0 0
+Element: 20033 0 0
+Element: 20034 0 0
+Element: 20035 0 0
+Element: 20036 0 0
+Element: 20037 0 0
+Element: 20038 0 0
+Element: 20039 0 0
+Element: 20040 0 0
+Element: 20041 0 0
+Element: 20042 0 0
+Element: 20043 0 0
+Element: 20044 0 0
+Element: 20045 0 0
+Element: 20046 0 0
+Element: 20047 0 0
+Element: 20048 0 0
+Element: 20049 0 0
+Element: 20050 0 0
+Element: 20051 0 0
+Element: 20052 0 0
+Element: 20053 0 0
+Element: 20054 0 0
+Element: 20055 0 0
+Element: 20056 0 0
+Element: 20057 0 0
+Element: 20058 0 0
+Element: 20059 0 0
+Element: 20060 0 0
+Element: 20061 0 0
+Element: 20062 0 0
+Element: 20063 0 0
+Element: 20064 0 0
+Element: 20065 0 0
+Element: 20066 0 0
+Element: 20067 0 0
+Element: 20068 0 0
+Element: 20069 0 0
+Element: 20070 0 0
+Element: 20071 0 0
+Element: 20072 0 0
+Element: 20073 0 0
+Element: 20074 0 0
+Element: 20075 0 0
+Element: 20076 0 0
+Element: 20077 0 0
+Element: 20078 0 0
+Element: 20079 0 0
+Element: 20080 0 0
+Element: 20081 0 0
+Element: 20082 0 0
+Element: 20083 0 0
+Element: 20084 0 0
+Element: 20085 0 0
+Element: 20086 0 0
+Element: 20087 0 0
+Element: 20088 0 0
+Element: 20089 0 0
+Element: 20090 0 0
+Element: 20091 0 0
+Element: 20092 0 0
+Element: 20093 0 0
+Element: 20094 0 0
+Element: 20095 0 0
+Element: 20096 0 0
+Element: 20097 0 0
+Element: 20098 0 0
+Element: 20099 0 0
+Element: 20100 0 0
+Element: 20101 0 0
+Element: 20102 0 0
+Element: 20103 0 0
+Element: 20104 0 0
+Element: 20105 0 0
+Element: 20106 0 0
+Element: 20107 0 0
+Element: 20108 0 0
+Element: 20109 0 0
+Element: 20110 0 0
+Element: 20111 0 0
+Element: 20112 0 0
+Element: 20113 0 0
+Element: 20114 0 0
+Element: 20115 0 0
+Element: 20116 0 0
+Element: 20117 0 0
+Element: 20118 0 0
+Element: 20119 0 0
+Element: 20120 0 0
+Element: 20121 0 0
+Element: 20122 0 0
+Element: 20123 0 0
+Element: 20124 0 0
+Element: 20125 0 0
+Element: 20126 0 0
+Element: 20127 0 0
+Element: 20128 0 0
+Element: 20129 0 0
+Element: 20130 0 0
+Element: 20131 0 0
+Element: 20132 0 0
+Element: 20133 0 0
+Element: 20134 0 0
+Element: 20135 0 0
+Element: 20136 0 0
+Element: 20137 0 0
+Element: 20138 0 0
+Element: 20139 0 0
+Element: 20140 0 0
+Element: 20141 0 0
+Element: 20142 0 0
+Element: 20143 0 0
+Element: 20144 0 0
+Element: 20145 0 0
+Element: 20146 0 0
+Element: 20147 0 0
+Element: 20148 0 0
+Element: 20149 0 0
+Element: 20150 0 0
+Element: 20151 0 0
+Element: 20152 0 0
+Element: 20153 0 0
+Element: 20154 0 0
+Element: 20155 0 0
+Element: 20156 0 0
+Element: 20157 0 0
+Element: 20158 0 0
+Element: 20159 0 0
+Element: 20160 0 0
+Element: 20161 0 0
+Element: 20162 0 0
+Element: 20163 0 0
+Element: 20164 0 0
+Element: 20165 0 0
+Element: 20166 0 0
+Element: 20167 0 0
+Element: 20168 0 0
+Element: 20169 0 0
+Element: 20170 0 0
+Element: 20171 0 0
+Element: 20172 0 0
+Element: 20173 0 0
+Element: 20174 0 0
+Element: 20175 0 0
+Element: 20176 0 0
+Element: 20177 0 0
+Element: 20178 0 0
+Element: 20179 0 0
+Element: 20180 0 0
+Element: 20181 0 0
+Element: 20182 0 0
+Element: 20183 0 0
+Element: 20184 0 0
+Element: 20185 0 0
+Element: 20186 0 0
+Element: 20187 0 0
+Element: 20188 0 0
+Element: 20189 0 0
+Element: 20190 0 0
+Element: 20191 0 0
+Element: 20192 0 0
+Element: 20193 0 0
+Element: 20194 0 0
+Element: 20195 0 0
+Element: 20196 0 0
+Element: 20197 0 0
+Element: 20198 0 0
+Element: 20199 0 0
+Element: 20200 0 0
+Element: 20201 0 0
+Element: 20202 0 0
+Element: 20203 0 0
+Element: 20204 0 0
+Element: 20205 0 0
+Element: 20206 0 0
+Element: 20207 0 0
+Element: 20208 0 0
+Element: 20209 0 0
+Element: 20210 0 0
+Element: 20211 0 0
+Element: 20212 0 0
+Element: 20213 0 0
+Element: 20214 0 0
+Element: 20215 0 0
+Element: 20216 0 0
+Element: 20217 0 0
+Element: 20218 0 0
+Element: 20219 0 0
+Element: 20220 0 0
+Element: 20221 0 0
+Element: 20222 0 0
+Element: 20223 0 0
+Element: 20224 0 0
+Element: 20225 0 0
+Element: 20226 0 0
+Element: 20227 0 0
+Element: 20228 0 0
+Element: 20229 0 0
+Element: 20230 0 0
+Element: 20231 0 0
+Element: 20232 0 0
+Element: 20233 0 0
+Element: 20234 0 0
+Element: 20235 0 0
+Element: 20236 0 0
+Element: 20237 0 0
+Element: 20238 0 0
+Element: 20239 0 0
+Element: 20240 0 0
+Element: 20241 0 0
+Element: 20242 0 0
+Element: 20243 0 0
+Element: 20244 0 0
+Element: 20245 0 0
+Element: 20246 0 0
+Element: 20247 0 0
+Element: 20248 0 0
+Element: 20249 0 0
+Element: 20250 0 0
+Element: 20251 0 0
+Element: 20252 0 0
+Element: 20253 0 0
+Element: 20254 0 0
+Element: 20255 0 0
+Element: 20256 0 0
+Element: 20257 0 0
+Element: 20258 0 0
+Element: 20259 0 0
+Element: 20260 0 0
+Element: 20261 0 0
+Element: 20262 0 0
+Element: 20263 0 0
+Element: 20264 0 0
+Element: 20265 0 0
+Element: 20266 0 0
+Element: 20267 0 0
+Element: 20268 0 0
+Element: 20269 0 0
+Element: 20270 0 0
+Element: 20271 0 0
+Element: 20272 0 0
+Element: 20273 0 0
+Element: 20274 0 0
+Element: 20275 0 0
+Element: 20276 0 0
+Element: 20277 0 0
+Element: 20278 0 0
+Element: 20279 0 0
+Element: 20280 0 0
+Element: 20281 0 0
+Element: 20282 0 0
+Element: 20283 0 0
+Element: 20284 0 0
+Element: 20285 0 0
+Element: 20286 0 0
+Element: 20287 0 0
+Element: 20288 0 0
+Element: 20289 0 0
+Element: 20290 0 0
+Element: 20291 0 0
+Element: 20292 0 0
+Element: 20293 0 0
+Element: 20294 0 0
+Element: 20295 0 0
+Element: 20296 0 0
+Element: 20297 0 0
+Element: 20298 0 0
+Element: 20299 0 0
+Element: 20300 0 0
+Element: 20301 0 0
+Element: 20302 0 0
+Element: 20303 0 0
+Element: 20304 0 0
+Element: 20305 0 0
+Element: 20306 0 0
+Element: 20307 0 0
+Element: 20308 0 0
+Element: 20309 0 0
+Element: 20310 0 0
+Element: 20311 0 0
+Element: 20312 0 0
+Element: 20313 0 0
+Element: 20314 0 0
+Element: 20315 0 0
+Element: 20316 0 0
+Element: 20317 0 0
+Element: 20318 0 0
+Element: 20319 0 0
+Element: 20320 0 0
+Element: 20321 0 0
+Element: 20322 0 0
+Element: 20323 0 0
+Element: 20324 0 0
+Element: 20325 0 0
+Element: 20326 0 0
+Element: 20327 0 0
+Element: 20328 0 0
+Element: 20329 0 0
+Element: 20330 0 0
+Element: 20331 0 0
+Element: 20332 0 0
+Element: 20333 0 0
+Element: 20334 0 0
+Element: 20335 0 0
+Element: 20336 0 0
+Element: 20337 0 0
+Element: 20338 0 0
+Element: 20339 0 0
+Element: 20340 0 0
+Element: 20341 0 0
+Element: 20342 0 0
+Element: 20343 0 0
+Element: 20344 0 0
+Element: 20345 0 0
+Element: 20346 0 0
+Element: 20347 0 0
+Element: 20348 0 0
+Element: 20349 0 0
+Element: 20350 0 0
+Element: 20351 0 0
+Element: 20352 0 0
+Element: 20353 0 0
+Element: 20354 0 0
+Element: 20355 0 0
+Element: 20356 0 0
+Element: 20357 0 0
+Element: 20358 0 0
+Element: 20359 0 0
+Element: 20360 0 0
+Element: 20361 0 0
+Element: 20362 0 0
+Element: 20363 0 0
+Element: 20364 0 0
+Element: 20365 0 0
+Element: 20366 0 0
+Element: 20367 0 0
+Element: 20368 0 0
+Element: 20369 0 0
+Element: 20370 0 0
+Element: 20371 0 0
+Element: 20372 0 0
+Element: 20373 0 0
+Element: 20374 0 0
+Element: 20375 0 0
+Element: 20376 0 0
+Element: 20377 0 0
+Element: 20378 0 0
+Element: 20379 0 0
+Element: 20380 0 0
+Element: 20381 0 0
+Element: 20382 0 0
+Element: 20383 0 0
+Element: 20384 0 0
+Element: 20385 0 0
+Element: 20386 0 0
+Element: 20387 0 0
+Element: 20388 0 0
+Element: 20389 0 0
+Element: 20390 0 0
+Element: 20391 0 0
+Element: 20392 0 0
+Element: 20393 0 0
+Element: 20394 0 0
+Element: 20395 0 0
+Element: 20396 0 0
+Element: 20397 0 0
+Element: 20398 0 0
+Element: 20399 0 0
+Element: 20400 0 0
+Element: 20401 0 0
+Element: 20402 0 0
+Element: 20403 0 0
+Element: 20404 0 0
+Element: 20405 0 0
+Element: 20406 0 0
+Element: 20407 0 0
+Element: 20408 0 0
+Element: 20409 0 0
+Element: 20410 0 0
+Element: 20411 0 0
+Element: 20412 0 0
+Element: 20413 0 0
+Element: 20414 0 0
+Element: 20415 0 0
+Element: 20416 0 0
+Element: 20417 0 0
+Element: 20418 0 0
+Element: 20419 0 0
+Element: 20420 0 0
+Element: 20421 0 0
+Element: 20422 0 0
+Element: 20423 0 0
+Element: 20424 0 0
+Element: 20425 0 0
+Element: 20426 0 0
+Element: 20427 0 0
+Element: 20428 0 0
+Element: 20429 0 0
+Element: 20430 0 0
+Element: 20431 0 0
+Element: 20432 0 0
+Element: 20433 0 0
+Element: 20434 0 0
+Element: 20435 0 0
+Element: 20436 0 0
+Element: 20437 0 0
+Element: 20438 0 0
+Element: 20439 0 0
+Element: 20440 0 0
+Element: 20441 0 0
+Element: 20442 0 0
+Element: 20443 0 0
+Element: 20444 0 0
+Element: 20445 0 0
+Element: 20446 0 0
+Element: 20447 0 0
+Element: 20448 0 0
+Element: 20449 0 0
+Element: 20450 0 0
+Element: 20451 0 0
+Element: 20452 0 0
+Element: 20453 0 0
+Element: 20454 0 0
+Element: 20455 0 0
+Element: 20456 0 0
+Element: 20457 0 0
+Element: 20458 0 0
+Element: 20459 0 0
+Element: 20460 0 0
+Element: 20461 0 0
+Element: 20462 0 0
+Element: 20463 0 0
+Element: 20464 0 0
+Element: 20465 0 0
+Element: 20466 0 0
+Element: 20467 0 0
+Element: 20468 0 0
+Element: 20469 0 0
+Element: 20470 0 0
+Element: 20471 0 0
+Element: 20472 0 0
+Element: 20473 0 0
+Element: 20474 0 0
+Element: 20475 0 0
+Element: 20476 0 0
+Element: 20477 0 0
+Element: 20478 0 0
+Element: 20479 0 0
+Element: 20480 0 0
+Element: 20481 0 0
+Element: 20482 0 0
+Element: 20483 0 0
+Element: 20484 0 0
+Element: 20485 0 0
+Element: 20486 0 0
+Element: 20487 0 0
+Element: 20488 0 0
+Element: 20489 0 0
+Element: 20490 0 0
+Element: 20491 0 0
+Element: 20492 0 0
+Element: 20493 0 0
+Element: 20494 0 0
+Element: 20495 0 0
+Element: 20496 0 0
+Element: 20497 0 0
+Element: 20498 0 0
+Element: 20499 0 0
+Element: 20500 0 0
+Element: 20501 0 0
+Element: 20502 0 0
+Element: 20503 0 0
+Element: 20504 0 0
+Element: 20505 0 0
+Element: 20506 0 0
+Element: 20507 0 0
+Element: 20508 0 0
+Element: 20509 0 0
+Element: 20510 0 0

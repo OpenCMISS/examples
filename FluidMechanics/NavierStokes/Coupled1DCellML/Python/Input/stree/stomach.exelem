@@ -1,0 +1,3111 @@
+Group name: stomach
+Shape. Dimension=1, line
+#Scale factor sets=1
+l.Lagrange, #Scale factors=2
+#Nodes=2
+#Fields=2
+1) Coordinates, coordinate, rectangular cartesian, #Components=3
+x. l.Lagrange, no modify, standard node based.
+#Nodes=2
+1. #Values=1
+Value indices: 1
+Scale factor indices: 1
+2. #Values=1
+Value indices: 1
+Scale factor indices: 2
+y. l.Lagrange, no modify, standard node based.
+#Nodes=2
+1. #Values=1
+Value indices: 1
+Scale factor indices: 1
+2. #Values=1
+Value indices: 1
+Scale factor indices: 2
+z. l.Lagrange, no modify, standard node based.
+#Nodes=2
+1. #Values=1
+Value indices: 1
+Scale factor indices: 1
+2. #Values=1
+Value indices: 1
+Scale factor indices: 2
+2) radius, field, rectangular cartesian, #Components=1
+radius.  l.Lagrange, no modify, standard node based.
+#Nodes=2
+1. #Values=1
+Value indices: 1
+Scale factor indices: 1
+2. #Values=1
+Value indices: 1
+Scale factor indices: 2
+Element: 80000 0 0
+Nodes:
+80001 80002
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80001 0 0
+Nodes:
+80003 80004
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80002 0 0
+Nodes:
+80005 80006
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80003 0 0
+Nodes:
+80007 80008
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80004 0 0
+Nodes:
+80009 80010
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80005 0 0
+Nodes:
+80011 80012
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80006 0 0
+Nodes:
+80013 80014
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80007 0 0
+Nodes:
+80015 80016
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80008 0 0
+Nodes:
+80017 80018
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80009 0 0
+Nodes:
+80019 80020
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80010 0 0
+Nodes:
+80021 80022
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80011 0 0
+Nodes:
+80023 80024
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80012 0 0
+Nodes:
+80025 80026
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80013 0 0
+Nodes:
+80027 80028
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80014 0 0
+Nodes:
+80029 80030
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80015 0 0
+Nodes:
+80031 80032
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80016 0 0
+Nodes:
+80033 80034
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80017 0 0
+Nodes:
+80035 80036
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80018 0 0
+Nodes:
+80037 80038
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80019 0 0
+Nodes:
+80039 80040
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80020 0 0
+Nodes:
+80041 80042
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80021 0 0
+Nodes:
+80043 80044
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80022 0 0
+Nodes:
+80045 80046
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80023 0 0
+Nodes:
+80047 80048
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80024 0 0
+Nodes:
+80049 80050
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80025 0 0
+Nodes:
+80051 80052
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80026 0 0
+Nodes:
+80053 80054
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80027 0 0
+Nodes:
+80055 80056
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80028 0 0
+Nodes:
+80057 80058
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80029 0 0
+Nodes:
+80059 80060
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80030 0 0
+Nodes:
+80061 80062
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80031 0 0
+Nodes:
+80063 80064
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80032 0 0
+Nodes:
+80065 80066
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80033 0 0
+Nodes:
+80067 80068
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80034 0 0
+Nodes:
+80069 80070
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80035 0 0
+Nodes:
+80071 80072
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80036 0 0
+Nodes:
+80073 80074
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80037 0 0
+Nodes:
+80075 80076
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80038 0 0
+Nodes:
+80077 80078
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80039 0 0
+Nodes:
+80079 80080
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80040 0 0
+Nodes:
+80081 80082
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80041 0 0
+Nodes:
+80083 80084
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80042 0 0
+Nodes:
+80085 80086
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80043 0 0
+Nodes:
+80087 80088
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80044 0 0
+Nodes:
+80089 80090
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80045 0 0
+Nodes:
+80091 80092
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80046 0 0
+Nodes:
+80093 80094
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80047 0 0
+Nodes:
+80095 80096
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80048 0 0
+Nodes:
+80097 80098
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80049 0 0
+Nodes:
+80099 80100
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80050 0 0
+Nodes:
+80101 80102
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80051 0 0
+Nodes:
+80103 80104
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80052 0 0
+Nodes:
+80105 80106
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80053 0 0
+Nodes:
+80107 80108
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80054 0 0
+Nodes:
+80109 80110
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80055 0 0
+Nodes:
+80111 80112
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80056 0 0
+Nodes:
+80113 80114
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80057 0 0
+Nodes:
+80115 80116
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80058 0 0
+Nodes:
+80117 80118
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80059 0 0
+Nodes:
+80119 80120
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80060 0 0
+Nodes:
+80121 80122
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80061 0 0
+Nodes:
+80123 80124
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80062 0 0
+Nodes:
+80125 80126
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80063 0 0
+Nodes:
+80127 80128
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80064 0 0
+Nodes:
+80129 80130
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80065 0 0
+Nodes:
+80131 80132
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80066 0 0
+Nodes:
+80133 80134
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80067 0 0
+Nodes:
+80135 80136
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80068 0 0
+Nodes:
+80137 80138
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80069 0 0
+Nodes:
+80139 80140
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80070 0 0
+Nodes:
+80141 80142
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80071 0 0
+Nodes:
+80143 80144
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80072 0 0
+Nodes:
+80145 80146
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80073 0 0
+Nodes:
+80147 80148
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80074 0 0
+Nodes:
+80149 80150
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80075 0 0
+Nodes:
+80151 80152
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80076 0 0
+Nodes:
+80153 80154
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80077 0 0
+Nodes:
+80155 80156
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80078 0 0
+Nodes:
+80157 80158
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80079 0 0
+Nodes:
+80159 80160
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80080 0 0
+Nodes:
+80161 80162
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80081 0 0
+Nodes:
+80163 80164
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80082 0 0
+Nodes:
+80165 80166
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80083 0 0
+Nodes:
+80167 80168
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80084 0 0
+Nodes:
+80169 80170
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80085 0 0
+Nodes:
+80171 80172
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80086 0 0
+Nodes:
+80173 80174
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80087 0 0
+Nodes:
+80175 80176
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80088 0 0
+Nodes:
+80177 80178
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80089 0 0
+Nodes:
+80179 80180
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80090 0 0
+Nodes:
+80181 80182
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80091 0 0
+Nodes:
+80183 80184
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80092 0 0
+Nodes:
+80185 80186
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80093 0 0
+Nodes:
+80187 80188
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80094 0 0
+Nodes:
+80189 80190
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80095 0 0
+Nodes:
+80191 80192
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80096 0 0
+Nodes:
+80193 80194
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80097 0 0
+Nodes:
+80195 80196
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80098 0 0
+Nodes:
+80197 80198
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80099 0 0
+Nodes:
+80199 80200
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80100 0 0
+Nodes:
+80201 80202
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80101 0 0
+Nodes:
+80203 80204
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80102 0 0
+Nodes:
+80205 80206
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80103 0 0
+Nodes:
+80207 80208
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80104 0 0
+Nodes:
+80209 80210
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80105 0 0
+Nodes:
+80211 80212
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80106 0 0
+Nodes:
+80213 80214
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80107 0 0
+Nodes:
+80215 80216
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80108 0 0
+Nodes:
+80217 80218
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80109 0 0
+Nodes:
+80219 80220
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80110 0 0
+Nodes:
+80221 80222
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80111 0 0
+Nodes:
+80223 80224
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80112 0 0
+Nodes:
+80225 80226
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80113 0 0
+Nodes:
+80227 80228
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80114 0 0
+Nodes:
+80229 80230
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80115 0 0
+Nodes:
+80231 80232
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80116 0 0
+Nodes:
+80233 80234
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80117 0 0
+Nodes:
+80235 80236
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80118 0 0
+Nodes:
+80237 80238
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80119 0 0
+Nodes:
+80239 80240
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80120 0 0
+Nodes:
+80241 80242
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80121 0 0
+Nodes:
+80243 80244
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80122 0 0
+Nodes:
+80245 80246
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80123 0 0
+Nodes:
+80247 80248
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80124 0 0
+Nodes:
+80249 80250
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80125 0 0
+Nodes:
+80251 80252
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80126 0 0
+Nodes:
+80253 80254
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80127 0 0
+Nodes:
+80255 80256
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80128 0 0
+Nodes:
+80257 80258
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80129 0 0
+Nodes:
+80259 80260
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80130 0 0
+Nodes:
+80261 80262
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80131 0 0
+Nodes:
+80263 80264
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80132 0 0
+Nodes:
+80265 80266
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80133 0 0
+Nodes:
+80267 80268
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80134 0 0
+Nodes:
+80269 80270
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80135 0 0
+Nodes:
+80271 80272
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80136 0 0
+Nodes:
+80273 80274
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80137 0 0
+Nodes:
+80275 80276
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80138 0 0
+Nodes:
+80277 80278
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80139 0 0
+Nodes:
+80279 80280
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80140 0 0
+Nodes:
+80281 80282
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80141 0 0
+Nodes:
+80283 80284
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80142 0 0
+Nodes:
+80285 80286
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80143 0 0
+Nodes:
+80287 80288
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80144 0 0
+Nodes:
+80289 80290
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80145 0 0
+Nodes:
+80291 80292
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80146 0 0
+Nodes:
+80293 80294
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80147 0 0
+Nodes:
+80295 80296
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80148 0 0
+Nodes:
+80297 80298
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80149 0 0
+Nodes:
+80299 80300
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80150 0 0
+Nodes:
+80301 80302
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80151 0 0
+Nodes:
+80303 80304
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80152 0 0
+Nodes:
+80305 80306
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80153 0 0
+Nodes:
+80307 80308
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80154 0 0
+Nodes:
+80309 80310
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80155 0 0
+Nodes:
+80311 80312
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80156 0 0
+Nodes:
+80313 80314
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80157 0 0
+Nodes:
+80315 80316
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80158 0 0
+Nodes:
+80317 80318
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80159 0 0
+Nodes:
+80319 80320
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80160 0 0
+Nodes:
+80321 80322
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80161 0 0
+Nodes:
+80323 80324
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80162 0 0
+Nodes:
+80325 80326
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80163 0 0
+Nodes:
+80327 80328
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80164 0 0
+Nodes:
+80329 80330
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80165 0 0
+Nodes:
+80331 80332
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80166 0 0
+Nodes:
+80333 80334
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80167 0 0
+Nodes:
+80335 80336
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80168 0 0
+Nodes:
+80337 80338
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80169 0 0
+Nodes:
+80339 80340
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80170 0 0
+Nodes:
+80341 80342
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80171 0 0
+Nodes:
+80343 80344
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80172 0 0
+Nodes:
+80345 80346
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80173 0 0
+Nodes:
+80347 80348
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80174 0 0
+Nodes:
+80349 80350
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80175 0 0
+Nodes:
+80351 80352
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80176 0 0
+Nodes:
+80353 80354
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80177 0 0
+Nodes:
+80355 80356
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80178 0 0
+Nodes:
+80357 80358
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80179 0 0
+Nodes:
+80359 80360
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80180 0 0
+Nodes:
+80361 80362
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80181 0 0
+Nodes:
+80363 80364
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80182 0 0
+Nodes:
+80365 80366
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80183 0 0
+Nodes:
+80367 80368
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80184 0 0
+Nodes:
+80369 80370
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80185 0 0
+Nodes:
+80371 80372
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80186 0 0
+Nodes:
+80373 80374
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80187 0 0
+Nodes:
+80375 80376
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80188 0 0
+Nodes:
+80377 80378
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80189 0 0
+Nodes:
+80379 80380
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80190 0 0
+Nodes:
+80381 80382
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80191 0 0
+Nodes:
+80383 80384
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80192 0 0
+Nodes:
+80385 80386
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80193 0 0
+Nodes:
+80387 80388
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80194 0 0
+Nodes:
+80389 80390
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80195 0 0
+Nodes:
+80391 80392
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80196 0 0
+Nodes:
+80393 80394
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80197 0 0
+Nodes:
+80395 80396
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80198 0 0
+Nodes:
+80397 80398
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80199 0 0
+Nodes:
+80399 80400
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80200 0 0
+Nodes:
+80401 80402
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80201 0 0
+Nodes:
+80403 80404
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80202 0 0
+Nodes:
+80405 80406
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80203 0 0
+Nodes:
+80407 80408
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80204 0 0
+Nodes:
+80409 80410
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80205 0 0
+Nodes:
+80411 80412
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80206 0 0
+Nodes:
+80413 80414
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80207 0 0
+Nodes:
+80415 80416
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80208 0 0
+Nodes:
+80417 80418
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80209 0 0
+Nodes:
+80419 80420
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80210 0 0
+Nodes:
+80421 80422
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80211 0 0
+Nodes:
+80423 80424
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80212 0 0
+Nodes:
+80425 80426
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80213 0 0
+Nodes:
+80427 80428
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80214 0 0
+Nodes:
+80429 80430
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80215 0 0
+Nodes:
+80431 80432
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80216 0 0
+Nodes:
+80433 80434
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80217 0 0
+Nodes:
+80435 80436
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80218 0 0
+Nodes:
+80437 80438
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80219 0 0
+Nodes:
+80439 80440
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80220 0 0
+Nodes:
+80441 80442
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80221 0 0
+Nodes:
+80443 80444
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80222 0 0
+Nodes:
+80445 80446
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80223 0 0
+Nodes:
+80447 80448
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80224 0 0
+Nodes:
+80449 80450
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80225 0 0
+Nodes:
+80451 80452
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80226 0 0
+Nodes:
+80453 80454
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80227 0 0
+Nodes:
+80455 80456
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80228 0 0
+Nodes:
+80457 80458
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80229 0 0
+Nodes:
+80459 80460
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80230 0 0
+Nodes:
+80461 80462
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80231 0 0
+Nodes:
+80463 80464
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80232 0 0
+Nodes:
+80465 80466
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80233 0 0
+Nodes:
+80467 80468
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80234 0 0
+Nodes:
+80469 80470
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80235 0 0
+Nodes:
+80471 80472
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80236 0 0
+Nodes:
+80473 80474
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80237 0 0
+Nodes:
+80475 80476
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80238 0 0
+Nodes:
+80477 80478
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80239 0 0
+Nodes:
+80479 80480
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80240 0 0
+Nodes:
+80481 80482
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80241 0 0
+Nodes:
+80483 80484
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80242 0 0
+Nodes:
+80485 80486
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80243 0 0
+Nodes:
+80487 80488
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80244 0 0
+Nodes:
+80489 80490
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80245 0 0
+Nodes:
+80491 80492
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80246 0 0
+Nodes:
+80493 80494
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80247 0 0
+Nodes:
+80495 80496
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80248 0 0
+Nodes:
+80497 80498
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80249 0 0
+Nodes:
+80499 80500
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80250 0 0
+Nodes:
+80501 80502
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80251 0 0
+Nodes:
+80503 80504
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80252 0 0
+Nodes:
+80505 80506
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80253 0 0
+Nodes:
+80507 80508
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80254 0 0
+Nodes:
+80509 80510
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80255 0 0
+Nodes:
+80511 80512
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80256 0 0
+Nodes:
+80513 80514
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80257 0 0
+Nodes:
+80515 80516
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80258 0 0
+Nodes:
+80517 80518
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80259 0 0
+Nodes:
+80519 80520
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80260 0 0
+Nodes:
+80521 80522
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80261 0 0
+Nodes:
+80523 80524
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80262 0 0
+Nodes:
+80525 80526
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80263 0 0
+Nodes:
+80527 80528
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80264 0 0
+Nodes:
+80529 80530
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80265 0 0
+Nodes:
+80531 80532
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80266 0 0
+Nodes:
+80533 80534
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80267 0 0
+Nodes:
+80535 80536
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80268 0 0
+Nodes:
+80537 80538
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80269 0 0
+Nodes:
+80539 80540
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80270 0 0
+Nodes:
+80541 80542
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80271 0 0
+Nodes:
+80543 80544
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80272 0 0
+Nodes:
+80545 80546
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80273 0 0
+Nodes:
+80547 80548
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80274 0 0
+Nodes:
+80549 80550
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80275 0 0
+Nodes:
+80551 80552
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80276 0 0
+Nodes:
+80553 80554
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80277 0 0
+Nodes:
+80555 80556
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80278 0 0
+Nodes:
+80557 80558
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80279 0 0
+Nodes:
+80559 80560
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80280 0 0
+Nodes:
+80561 80562
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80281 0 0
+Nodes:
+80563 80564
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80282 0 0
+Nodes:
+80565 80566
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80283 0 0
+Nodes:
+80567 80568
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80284 0 0
+Nodes:
+80569 80570
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80285 0 0
+Nodes:
+80571 80572
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80286 0 0
+Nodes:
+80573 80574
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80287 0 0
+Nodes:
+80575 80576
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80288 0 0
+Nodes:
+80577 80578
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80289 0 0
+Nodes:
+80579 80580
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80290 0 0
+Nodes:
+80581 80582
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80291 0 0
+Nodes:
+80583 80584
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80292 0 0
+Nodes:
+80585 80586
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80293 0 0
+Nodes:
+80587 80588
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80294 0 0
+Nodes:
+80589 80590
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80295 0 0
+Nodes:
+80591 80592
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80296 0 0
+Nodes:
+80593 80594
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80297 0 0
+Nodes:
+80595 80596
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80298 0 0
+Nodes:
+80597 80598
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80299 0 0
+Nodes:
+80599 80600
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80300 0 0
+Nodes:
+80601 80602
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80301 0 0
+Nodes:
+80603 80604
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80302 0 0
+Nodes:
+80605 80606
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80303 0 0
+Nodes:
+80607 80608
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80304 0 0
+Nodes:
+80609 80610
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80305 0 0
+Nodes:
+80611 80612
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80306 0 0
+Nodes:
+80613 80614
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80307 0 0
+Nodes:
+80615 80616
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80308 0 0
+Nodes:
+80617 80618
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80309 0 0
+Nodes:
+80619 80620
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80310 0 0
+Nodes:
+80621 80622
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80311 0 0
+Nodes:
+80623 80624
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80312 0 0
+Nodes:
+80625 80626
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80313 0 0
+Nodes:
+80627 80628
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80314 0 0
+Nodes:
+80629 80630
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80315 0 0
+Nodes:
+80631 80632
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80316 0 0
+Nodes:
+80633 80634
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80317 0 0
+Nodes:
+80635 80636
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80318 0 0
+Nodes:
+80637 80638
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80319 0 0
+Nodes:
+80639 80640
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80320 0 0
+Nodes:
+80641 80642
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80321 0 0
+Nodes:
+80643 80644
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80322 0 0
+Nodes:
+80645 80646
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80323 0 0
+Nodes:
+80647 80648
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80324 0 0
+Nodes:
+80649 80650
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80325 0 0
+Nodes:
+80651 80652
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80326 0 0
+Nodes:
+80653 80654
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80327 0 0
+Nodes:
+80655 80656
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80328 0 0
+Nodes:
+80657 80658
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80329 0 0
+Nodes:
+80659 80660
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80330 0 0
+Nodes:
+80661 80662
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80331 0 0
+Nodes:
+80663 80664
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80332 0 0
+Nodes:
+80665 80666
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80333 0 0
+Nodes:
+80667 80668
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80334 0 0
+Nodes:
+80669 80670
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80335 0 0
+Nodes:
+80671 80672
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80336 0 0
+Nodes:
+80673 80674
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80337 0 0
+Nodes:
+80675 80676
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80338 0 0
+Nodes:
+80677 80678
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80339 0 0
+Nodes:
+80679 80680
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80340 0 0
+Nodes:
+80681 80682
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80341 0 0
+Nodes:
+80683 80684
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80342 0 0
+Nodes:
+80685 80686
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80343 0 0
+Nodes:
+80687 80688
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80344 0 0
+Nodes:
+80689 80690
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80345 0 0
+Nodes:
+80691 80692
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80346 0 0
+Nodes:
+80693 80694
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80347 0 0
+Nodes:
+80695 80696
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80348 0 0
+Nodes:
+80697 80698
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80349 0 0
+Nodes:
+80699 80700
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80350 0 0
+Nodes:
+80701 80702
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80351 0 0
+Nodes:
+80703 80704
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80352 0 0
+Nodes:
+80705 80706
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80353 0 0
+Nodes:
+80707 80708
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80354 0 0
+Nodes:
+80709 80710
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80355 0 0
+Nodes:
+80711 80712
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80356 0 0
+Nodes:
+80713 80714
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80357 0 0
+Nodes:
+80715 80716
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80358 0 0
+Nodes:
+80717 80718
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80359 0 0
+Nodes:
+80719 80720
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80360 0 0
+Nodes:
+80721 80722
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80361 0 0
+Nodes:
+80723 80724
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80362 0 0
+Nodes:
+80725 80726
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80363 0 0
+Nodes:
+80727 80728
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80364 0 0
+Nodes:
+80729 80730
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80365 0 0
+Nodes:
+80731 80732
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80366 0 0
+Nodes:
+80733 80734
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80367 0 0
+Nodes:
+80735 80736
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80368 0 0
+Nodes:
+80737 80738
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80369 0 0
+Nodes:
+80739 80740
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80370 0 0
+Nodes:
+80741 80742
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80371 0 0
+Nodes:
+80743 80744
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80372 0 0
+Nodes:
+80745 80746
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80373 0 0
+Nodes:
+80747 80748
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80374 0 0
+Nodes:
+80749 80750
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80375 0 0
+Nodes:
+80751 80752
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80376 0 0
+Nodes:
+80753 80754
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80377 0 0
+Nodes:
+80755 80756
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80378 0 0
+Nodes:
+80757 80758
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80379 0 0
+Nodes:
+80759 80760
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80380 0 0
+Nodes:
+80761 80762
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80381 0 0
+Nodes:
+80763 80764
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80382 0 0
+Nodes:
+80765 80766
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80383 0 0
+Nodes:
+80767 80768
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80384 0 0
+Nodes:
+80769 80770
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80385 0 0
+Nodes:
+80771 80772
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80386 0 0
+Nodes:
+80773 80774
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80387 0 0
+Nodes:
+80775 80776
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80388 0 0
+Nodes:
+80777 80778
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80389 0 0
+Nodes:
+80779 80780
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80390 0 0
+Nodes:
+80781 80782
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80391 0 0
+Nodes:
+80783 80784
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80392 0 0
+Nodes:
+80785 80786
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80393 0 0
+Nodes:
+80787 80788
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80394 0 0
+Nodes:
+80789 80790
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80395 0 0
+Nodes:
+80791 80792
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80396 0 0
+Nodes:
+80793 80794
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80397 0 0
+Nodes:
+80795 80796
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80398 0 0
+Nodes:
+80797 80798
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80399 0 0
+Nodes:
+80799 80800
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80400 0 0
+Nodes:
+80801 80802
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80401 0 0
+Nodes:
+80803 80804
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80402 0 0
+Nodes:
+80805 80806
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80403 0 0
+Nodes:
+80807 80808
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80404 0 0
+Nodes:
+80809 80810
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80405 0 0
+Nodes:
+80811 80812
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80406 0 0
+Nodes:
+80813 80814
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80407 0 0
+Nodes:
+80815 80816
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80408 0 0
+Nodes:
+80817 80818
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80409 0 0
+Nodes:
+80819 80820
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80410 0 0
+Nodes:
+80821 80822
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80411 0 0
+Nodes:
+80823 80824
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80412 0 0
+Nodes:
+80825 80826
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80413 0 0
+Nodes:
+80827 80828
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80414 0 0
+Nodes:
+80829 80830
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80415 0 0
+Nodes:
+80831 80832
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80416 0 0
+Nodes:
+80833 80834
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80417 0 0
+Nodes:
+80835 80836
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80418 0 0
+Nodes:
+80837 80838
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80419 0 0
+Nodes:
+80839 80840
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80420 0 0
+Nodes:
+80841 80842
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80421 0 0
+Nodes:
+80843 80844
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80422 0 0
+Nodes:
+80845 80846
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80423 0 0
+Nodes:
+80847 80848
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80424 0 0
+Nodes:
+80849 80850
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80425 0 0
+Nodes:
+80851 80852
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80426 0 0
+Nodes:
+80853 80854
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80427 0 0
+Nodes:
+80855 80856
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80428 0 0
+Nodes:
+80857 80858
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80429 0 0
+Nodes:
+80859 80860
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80430 0 0
+Nodes:
+80861 80862
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80431 0 0
+Nodes:
+80863 80864
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80432 0 0
+Nodes:
+80865 80866
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80433 0 0
+Nodes:
+80867 80868
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80434 0 0
+Nodes:
+80869 80870
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80435 0 0
+Nodes:
+80871 80872
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80436 0 0
+Nodes:
+80873 80874
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80437 0 0
+Nodes:
+80875 80876
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80438 0 0
+Nodes:
+80877 80878
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80439 0 0
+Nodes:
+80879 80880
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80440 0 0
+Nodes:
+80881 80882
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80441 0 0
+Nodes:
+80883 80884
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80442 0 0
+Nodes:
+80885 80886
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80443 0 0
+Nodes:
+80887 80888
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80444 0 0
+Nodes:
+80889 80890
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80445 0 0
+Nodes:
+80891 80892
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80446 0 0
+Nodes:
+80893 80894
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80447 0 0
+Nodes:
+80895 80896
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80448 0 0
+Nodes:
+80897 80898
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80449 0 0
+Nodes:
+80899 80900
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80450 0 0
+Nodes:
+80901 80902
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80451 0 0
+Nodes:
+80903 80904
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80452 0 0
+Nodes:
+80905 80906
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80453 0 0
+Nodes:
+80907 80908
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80454 0 0
+Nodes:
+80909 80910
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80455 0 0
+Nodes:
+80911 80912
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80456 0 0
+Nodes:
+80913 80914
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80457 0 0
+Nodes:
+80915 80916
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80458 0 0
+Nodes:
+80917 80918
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80459 0 0
+Nodes:
+80919 80920
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80460 0 0
+Nodes:
+80921 80922
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80461 0 0
+Nodes:
+80923 80924
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80462 0 0
+Nodes:
+80925 80926
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80463 0 0
+Nodes:
+80927 80928
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80464 0 0
+Nodes:
+80929 80930
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80465 0 0
+Nodes:
+80931 80932
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80466 0 0
+Nodes:
+80933 80934
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80467 0 0
+Nodes:
+80935 80936
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80468 0 0
+Nodes:
+80937 80938
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80469 0 0
+Nodes:
+80939 80940
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80470 0 0
+Nodes:
+80941 80942
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80471 0 0
+Nodes:
+80943 80944
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80472 0 0
+Nodes:
+80945 80946
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80473 0 0
+Nodes:
+80947 80948
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80474 0 0
+Nodes:
+80949 80950
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80475 0 0
+Nodes:
+80951 80952
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80476 0 0
+Nodes:
+80953 80954
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80477 0 0
+Nodes:
+80955 80956
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80478 0 0
+Nodes:
+80957 80958
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80479 0 0
+Nodes:
+80959 80960
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80480 0 0
+Nodes:
+80961 80962
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80481 0 0
+Nodes:
+80963 80964
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80482 0 0
+Nodes:
+80965 80966
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80483 0 0
+Nodes:
+80967 80968
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80484 0 0
+Nodes:
+80969 80970
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80485 0 0
+Nodes:
+80971 80972
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80486 0 0
+Nodes:
+80973 80974
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80487 0 0
+Nodes:
+80975 80976
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80488 0 0
+Nodes:
+80977 80978
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80489 0 0
+Nodes:
+80979 80980
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80490 0 0
+Nodes:
+80981 80982
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80491 0 0
+Nodes:
+80983 80984
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80492 0 0
+Nodes:
+80985 80986
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80493 0 0
+Nodes:
+80987 80988
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80494 0 0
+Nodes:
+80989 80990
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80495 0 0
+Nodes:
+80991 80992
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80496 0 0
+Nodes:
+80993 80994
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80497 0 0
+Nodes:
+80995 80996
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80498 0 0
+Nodes:
+80997 80998
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80499 0 0
+Nodes:
+80999 81000
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80500 0 0
+Nodes:
+81001 81002
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80501 0 0
+Nodes:
+81003 81004
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80502 0 0
+Nodes:
+81005 81006
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80503 0 0
+Nodes:
+81007 81008
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80504 0 0
+Nodes:
+81009 81010
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80505 0 0
+Nodes:
+81011 81012
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80506 0 0
+Nodes:
+81013 81014
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80507 0 0
+Nodes:
+81015 81016
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80508 0 0
+Nodes:
+81017 81018
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80509 0 0
+Nodes:
+81019 81020
+Scale factors:
+1.000000e+000 1.000000e+000
+Element: 80510 0 0
+Nodes:
+81021 81022
+Scale factors:
+1.000000e+000 1.000000e+000
+Group name: tree
+Shape. Dimension=1, line
+#Scale factor sets=0
+#Nodes=0
+#Fields=0
+Element: 80000 0 0
+Element: 80001 0 0
+Element: 80002 0 0
+Element: 80003 0 0
+Element: 80004 0 0
+Element: 80005 0 0
+Element: 80006 0 0
+Element: 80007 0 0
+Element: 80008 0 0
+Element: 80009 0 0
+Element: 80010 0 0
+Element: 80011 0 0
+Element: 80012 0 0
+Element: 80013 0 0
+Element: 80014 0 0
+Element: 80015 0 0
+Element: 80016 0 0
+Element: 80017 0 0
+Element: 80018 0 0
+Element: 80019 0 0
+Element: 80020 0 0
+Element: 80021 0 0
+Element: 80022 0 0
+Element: 80023 0 0
+Element: 80024 0 0
+Element: 80025 0 0
+Element: 80026 0 0
+Element: 80027 0 0
+Element: 80028 0 0
+Element: 80029 0 0
+Element: 80030 0 0
+Element: 80031 0 0
+Element: 80032 0 0
+Element: 80033 0 0
+Element: 80034 0 0
+Element: 80035 0 0
+Element: 80036 0 0
+Element: 80037 0 0
+Element: 80038 0 0
+Element: 80039 0 0
+Element: 80040 0 0
+Element: 80041 0 0
+Element: 80042 0 0
+Element: 80043 0 0
+Element: 80044 0 0
+Element: 80045 0 0
+Element: 80046 0 0
+Element: 80047 0 0
+Element: 80048 0 0
+Element: 80049 0 0
+Element: 80050 0 0
+Element: 80051 0 0
+Element: 80052 0 0
+Element: 80053 0 0
+Element: 80054 0 0
+Element: 80055 0 0
+Element: 80056 0 0
+Element: 80057 0 0
+Element: 80058 0 0
+Element: 80059 0 0
+Element: 80060 0 0
+Element: 80061 0 0
+Element: 80062 0 0
+Element: 80063 0 0
+Element: 80064 0 0
+Element: 80065 0 0
+Element: 80066 0 0
+Element: 80067 0 0
+Element: 80068 0 0
+Element: 80069 0 0
+Element: 80070 0 0
+Element: 80071 0 0
+Element: 80072 0 0
+Element: 80073 0 0
+Element: 80074 0 0
+Element: 80075 0 0
+Element: 80076 0 0
+Element: 80077 0 0
+Element: 80078 0 0
+Element: 80079 0 0
+Element: 80080 0 0
+Element: 80081 0 0
+Element: 80082 0 0
+Element: 80083 0 0
+Element: 80084 0 0
+Element: 80085 0 0
+Element: 80086 0 0
+Element: 80087 0 0
+Element: 80088 0 0
+Element: 80089 0 0
+Element: 80090 0 0
+Element: 80091 0 0
+Element: 80092 0 0
+Element: 80093 0 0
+Element: 80094 0 0
+Element: 80095 0 0
+Element: 80096 0 0
+Element: 80097 0 0
+Element: 80098 0 0
+Element: 80099 0 0
+Element: 80100 0 0
+Element: 80101 0 0
+Element: 80102 0 0
+Element: 80103 0 0
+Element: 80104 0 0
+Element: 80105 0 0
+Element: 80106 0 0
+Element: 80107 0 0
+Element: 80108 0 0
+Element: 80109 0 0
+Element: 80110 0 0
+Element: 80111 0 0
+Element: 80112 0 0
+Element: 80113 0 0
+Element: 80114 0 0
+Element: 80115 0 0
+Element: 80116 0 0
+Element: 80117 0 0
+Element: 80118 0 0
+Element: 80119 0 0
+Element: 80120 0 0
+Element: 80121 0 0
+Element: 80122 0 0
+Element: 80123 0 0
+Element: 80124 0 0
+Element: 80125 0 0
+Element: 80126 0 0
+Element: 80127 0 0
+Element: 80128 0 0
+Element: 80129 0 0
+Element: 80130 0 0
+Element: 80131 0 0
+Element: 80132 0 0
+Element: 80133 0 0
+Element: 80134 0 0
+Element: 80135 0 0
+Element: 80136 0 0
+Element: 80137 0 0
+Element: 80138 0 0
+Element: 80139 0 0
+Element: 80140 0 0
+Element: 80141 0 0
+Element: 80142 0 0
+Element: 80143 0 0
+Element: 80144 0 0
+Element: 80145 0 0
+Element: 80146 0 0
+Element: 80147 0 0
+Element: 80148 0 0
+Element: 80149 0 0
+Element: 80150 0 0
+Element: 80151 0 0
+Element: 80152 0 0
+Element: 80153 0 0
+Element: 80154 0 0
+Element: 80155 0 0
+Element: 80156 0 0
+Element: 80157 0 0
+Element: 80158 0 0
+Element: 80159 0 0
+Element: 80160 0 0
+Element: 80161 0 0
+Element: 80162 0 0
+Element: 80163 0 0
+Element: 80164 0 0
+Element: 80165 0 0
+Element: 80166 0 0
+Element: 80167 0 0
+Element: 80168 0 0
+Element: 80169 0 0
+Element: 80170 0 0
+Element: 80171 0 0
+Element: 80172 0 0
+Element: 80173 0 0
+Element: 80174 0 0
+Element: 80175 0 0
+Element: 80176 0 0
+Element: 80177 0 0
+Element: 80178 0 0
+Element: 80179 0 0
+Element: 80180 0 0
+Element: 80181 0 0
+Element: 80182 0 0
+Element: 80183 0 0
+Element: 80184 0 0
+Element: 80185 0 0
+Element: 80186 0 0
+Element: 80187 0 0
+Element: 80188 0 0
+Element: 80189 0 0
+Element: 80190 0 0
+Element: 80191 0 0
+Element: 80192 0 0
+Element: 80193 0 0
+Element: 80194 0 0
+Element: 80195 0 0
+Element: 80196 0 0
+Element: 80197 0 0
+Element: 80198 0 0
+Element: 80199 0 0
+Element: 80200 0 0
+Element: 80201 0 0
+Element: 80202 0 0
+Element: 80203 0 0
+Element: 80204 0 0
+Element: 80205 0 0
+Element: 80206 0 0
+Element: 80207 0 0
+Element: 80208 0 0
+Element: 80209 0 0
+Element: 80210 0 0
+Element: 80211 0 0
+Element: 80212 0 0
+Element: 80213 0 0
+Element: 80214 0 0
+Element: 80215 0 0
+Element: 80216 0 0
+Element: 80217 0 0
+Element: 80218 0 0
+Element: 80219 0 0
+Element: 80220 0 0
+Element: 80221 0 0
+Element: 80222 0 0
+Element: 80223 0 0
+Element: 80224 0 0
+Element: 80225 0 0
+Element: 80226 0 0
+Element: 80227 0 0
+Element: 80228 0 0
+Element: 80229 0 0
+Element: 80230 0 0
+Element: 80231 0 0
+Element: 80232 0 0
+Element: 80233 0 0
+Element: 80234 0 0
+Element: 80235 0 0
+Element: 80236 0 0
+Element: 80237 0 0
+Element: 80238 0 0
+Element: 80239 0 0
+Element: 80240 0 0
+Element: 80241 0 0
+Element: 80242 0 0
+Element: 80243 0 0
+Element: 80244 0 0
+Element: 80245 0 0
+Element: 80246 0 0
+Element: 80247 0 0
+Element: 80248 0 0
+Element: 80249 0 0
+Element: 80250 0 0
+Element: 80251 0 0
+Element: 80252 0 0
+Element: 80253 0 0
+Element: 80254 0 0
+Element: 80255 0 0
+Element: 80256 0 0
+Element: 80257 0 0
+Element: 80258 0 0
+Element: 80259 0 0
+Element: 80260 0 0
+Element: 80261 0 0
+Element: 80262 0 0
+Element: 80263 0 0
+Element: 80264 0 0
+Element: 80265 0 0
+Element: 80266 0 0
+Element: 80267 0 0
+Element: 80268 0 0
+Element: 80269 0 0
+Element: 80270 0 0
+Element: 80271 0 0
+Element: 80272 0 0
+Element: 80273 0 0
+Element: 80274 0 0
+Element: 80275 0 0
+Element: 80276 0 0
+Element: 80277 0 0
+Element: 80278 0 0
+Element: 80279 0 0
+Element: 80280 0 0
+Element: 80281 0 0
+Element: 80282 0 0
+Element: 80283 0 0
+Element: 80284 0 0
+Element: 80285 0 0
+Element: 80286 0 0
+Element: 80287 0 0
+Element: 80288 0 0
+Element: 80289 0 0
+Element: 80290 0 0
+Element: 80291 0 0
+Element: 80292 0 0
+Element: 80293 0 0
+Element: 80294 0 0
+Element: 80295 0 0
+Element: 80296 0 0
+Element: 80297 0 0
+Element: 80298 0 0
+Element: 80299 0 0
+Element: 80300 0 0
+Element: 80301 0 0
+Element: 80302 0 0
+Element: 80303 0 0
+Element: 80304 0 0
+Element: 80305 0 0
+Element: 80306 0 0
+Element: 80307 0 0
+Element: 80308 0 0
+Element: 80309 0 0
+Element: 80310 0 0
+Element: 80311 0 0
+Element: 80312 0 0
+Element: 80313 0 0
+Element: 80314 0 0
+Element: 80315 0 0
+Element: 80316 0 0
+Element: 80317 0 0
+Element: 80318 0 0
+Element: 80319 0 0
+Element: 80320 0 0
+Element: 80321 0 0
+Element: 80322 0 0
+Element: 80323 0 0
+Element: 80324 0 0
+Element: 80325 0 0
+Element: 80326 0 0
+Element: 80327 0 0
+Element: 80328 0 0
+Element: 80329 0 0
+Element: 80330 0 0
+Element: 80331 0 0
+Element: 80332 0 0
+Element: 80333 0 0
+Element: 80334 0 0
+Element: 80335 0 0
+Element: 80336 0 0
+Element: 80337 0 0
+Element: 80338 0 0
+Element: 80339 0 0
+Element: 80340 0 0
+Element: 80341 0 0
+Element: 80342 0 0
+Element: 80343 0 0
+Element: 80344 0 0
+Element: 80345 0 0
+Element: 80346 0 0
+Element: 80347 0 0
+Element: 80348 0 0
+Element: 80349 0 0
+Element: 80350 0 0
+Element: 80351 0 0
+Element: 80352 0 0
+Element: 80353 0 0
+Element: 80354 0 0
+Element: 80355 0 0
+Element: 80356 0 0
+Element: 80357 0 0
+Element: 80358 0 0
+Element: 80359 0 0
+Element: 80360 0 0
+Element: 80361 0 0
+Element: 80362 0 0
+Element: 80363 0 0
+Element: 80364 0 0
+Element: 80365 0 0
+Element: 80366 0 0
+Element: 80367 0 0
+Element: 80368 0 0
+Element: 80369 0 0
+Element: 80370 0 0
+Element: 80371 0 0
+Element: 80372 0 0
+Element: 80373 0 0
+Element: 80374 0 0
+Element: 80375 0 0
+Element: 80376 0 0
+Element: 80377 0 0
+Element: 80378 0 0
+Element: 80379 0 0
+Element: 80380 0 0
+Element: 80381 0 0
+Element: 80382 0 0
+Element: 80383 0 0
+Element: 80384 0 0
+Element: 80385 0 0
+Element: 80386 0 0
+Element: 80387 0 0
+Element: 80388 0 0
+Element: 80389 0 0
+Element: 80390 0 0
+Element: 80391 0 0
+Element: 80392 0 0
+Element: 80393 0 0
+Element: 80394 0 0
+Element: 80395 0 0
+Element: 80396 0 0
+Element: 80397 0 0
+Element: 80398 0 0
+Element: 80399 0 0
+Element: 80400 0 0
+Element: 80401 0 0
+Element: 80402 0 0
+Element: 80403 0 0
+Element: 80404 0 0
+Element: 80405 0 0
+Element: 80406 0 0
+Element: 80407 0 0
+Element: 80408 0 0
+Element: 80409 0 0
+Element: 80410 0 0
+Element: 80411 0 0
+Element: 80412 0 0
+Element: 80413 0 0
+Element: 80414 0 0
+Element: 80415 0 0
+Element: 80416 0 0
+Element: 80417 0 0
+Element: 80418 0 0
+Element: 80419 0 0
+Element: 80420 0 0
+Element: 80421 0 0
+Element: 80422 0 0
+Element: 80423 0 0
+Element: 80424 0 0
+Element: 80425 0 0
+Element: 80426 0 0
+Element: 80427 0 0
+Element: 80428 0 0
+Element: 80429 0 0
+Element: 80430 0 0
+Element: 80431 0 0
+Element: 80432 0 0
+Element: 80433 0 0
+Element: 80434 0 0
+Element: 80435 0 0
+Element: 80436 0 0
+Element: 80437 0 0
+Element: 80438 0 0
+Element: 80439 0 0
+Element: 80440 0 0
+Element: 80441 0 0
+Element: 80442 0 0
+Element: 80443 0 0
+Element: 80444 0 0
+Element: 80445 0 0
+Element: 80446 0 0
+Element: 80447 0 0
+Element: 80448 0 0
+Element: 80449 0 0
+Element: 80450 0 0
+Element: 80451 0 0
+Element: 80452 0 0
+Element: 80453 0 0
+Element: 80454 0 0
+Element: 80455 0 0
+Element: 80456 0 0
+Element: 80457 0 0
+Element: 80458 0 0
+Element: 80459 0 0
+Element: 80460 0 0
+Element: 80461 0 0
+Element: 80462 0 0
+Element: 80463 0 0
+Element: 80464 0 0
+Element: 80465 0 0
+Element: 80466 0 0
+Element: 80467 0 0
+Element: 80468 0 0
+Element: 80469 0 0
+Element: 80470 0 0
+Element: 80471 0 0
+Element: 80472 0 0
+Element: 80473 0 0
+Element: 80474 0 0
+Element: 80475 0 0
+Element: 80476 0 0
+Element: 80477 0 0
+Element: 80478 0 0
+Element: 80479 0 0
+Element: 80480 0 0
+Element: 80481 0 0
+Element: 80482 0 0
+Element: 80483 0 0
+Element: 80484 0 0
+Element: 80485 0 0
+Element: 80486 0 0
+Element: 80487 0 0
+Element: 80488 0 0
+Element: 80489 0 0
+Element: 80490 0 0
+Element: 80491 0 0
+Element: 80492 0 0
+Element: 80493 0 0
+Element: 80494 0 0
+Element: 80495 0 0
+Element: 80496 0 0
+Element: 80497 0 0
+Element: 80498 0 0
+Element: 80499 0 0
+Element: 80500 0 0
+Element: 80501 0 0
+Element: 80502 0 0
+Element: 80503 0 0
+Element: 80504 0 0
+Element: 80505 0 0
+Element: 80506 0 0
+Element: 80507 0 0
+Element: 80508 0 0
+Element: 80509 0 0
+Element: 80510 0 0

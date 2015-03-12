@@ -62,11 +62,6 @@ PROGRAM CoupledFluidSolidExample
   INTEGER(CMISSIntg), PARAMETER :: Plate2D=2
   INTEGER(CMISSIntg), PARAMETER :: Plate3D=3
   
-  
-  !set no initial flow?
-  LOGICAL :: zeroCheckFlag=.FALSE.
-  REAL(CMISSDP) :: zeroCheck=1.0_CMISSDP
-  
   REAL(CMISSDP) :: SolidDensity
   REAL(CMISSDP), ALLOCATABLE :: Gravity(:)
   
@@ -77,49 +72,23 @@ PROGRAM CoupledFluidSolidExample
   INTEGER(CMISSIntg) :: NumberOfInterfaceNodes
   INTEGER(CMISSIntg) :: NumberOfInterfaceElements
   
-  INTEGER(CMISSIntg), ALLOCATABLE :: NodeIndices(:),NodeIndexFMappings(:),NodeIndexSMappings(:), &
-    & SolidElements(:), &
-    & SolidElementSDNodes(:),SolidElementHPNodes(:),SolidElementSDNodeMappings(:),SolidElementHPNodeMappings(:),FluidElements(:), &
-    & FluidElementSVNodes(:),FluidElementSVNodeMappings(:), &
-    & MovingMeshElements(:), &
-    & MovingMeshElementNodes(:),MovingMeshBoundaryElementNodes(:),MovingMeshFixedNodes(:),MovingMeshMovingNodes(:), &
-    & MovingMeshBoundaryElementNodeMappings(:),MovingMeshFixedNodeMappings(:),MovingMeshMovingNodeMappings(:), &
-    & InterfaceElements(:),InterfaceInterfaceElementNodes(:),SolidInterfaceElements(:),SolidInterfaceElementNodes(:), &
-    & SolidInterfaceElementNodeMappings(:),FluidInterfaceElements(:),FluidInterfaceElementNodes(:), &
-    & FluidInterfaceElementNodeMappings(:), &
-    & InterfaceNodeNumbers(:),SolidInterfaceNodeNumbers(:),FluidInterfaceNodeNumbers(:),SolidInterfaceNodeNumberMappings(:), &
-    & FluidInterfaceNodeNumberMappings(:), &
-    & VelocityInletBoundaryNodes(:),VelocityInletBoundaryNodeMappings(:), &
-    & VelocityBoundaryNodes(:),VelocityBoundaryNodeMappings(:),PressureBoundaryNodes(:), &
-    & PressureBoundaryNodeMappings(:)
-  
-  REAL(CMISSDP), ALLOCATABLE :: SolidGeometry(:),FluidGeometry(:),InterfaceGeometry(:),InterfaceXiPosition(:), &
-    & SolidInterfaceXiPosition(:),FluidInterfaceXiPosition(:),VelocityBoundaryCondition(:), &
-    & PressureBoundaryCondition(:)
-    
-    
-    
-    
+  INTEGER(CMISSIntg), ALLOCATABLE :: SolidInterfaceElements(:),FluidInterfaceElements(:)
+
   ! 2D plate variables TODO Share variables for different geometries
   INTEGER(CMISSIntg), ALLOCATABLE :: SolidNodeNumbers(:),FluidNodeNumbers(:),SolidElementNodes(:,:),FluidElementNodes(:,:), &
     & InterfaceElementNodes(:,:),ConnectedInterfaceNodes(:,:), &
     & InterfaceNodeNumbersForGeometry(:), &
     & NoDisplacementNodes(:),FixedNodes(:),FixedZNodes(:),MovedNodes(:),MovedYNodes(:),InletNodes(:),NoSlipNodes(:), &
     & OutletNodes(:),SlipNodes(:),InterfaceInterfaceNodeInformationNE(:,:),SolidInterfaceNodeInformationNE(:,:), &
-    & FluidInterfaceNodeInformationNE(:,:),LagrangeNodes(:),SlipNodesTop(:),SlipNodesRightLeft(:),Components(:)
-  
+    & FluidInterfaceNodeInformationNE(:,:),LagrangeNodes(:),SlipNodesTop(:),SlipNodesRightLeft(:)
+
   REAL(CMISSDP), ALLOCATABLE :: SolidGeometryX(:),SolidGeometryY(:),SolidGeometryZ(:), &
     & FluidGeometryX(:),FluidGeometryY(:),FluidGeometryZ(:), &
     & InterfaceGeometryX(:),InterfaceGeometryY(:),InterfaceGeometryZ(:), &
     & SolidXi2(:,:),SolidXi3(:,:),FluidXi2(:,:),FluidXi3(:,:), &
     & SolidInterfaceNodeInformationXi(:,:),FluidInterfaceNodeInformationXi(:,:)
-  
-  
-                                                          
-  INTEGER(CMISSIntg), ALLOCATABLE :: IndexArray(:)
-  
+
   !variables for timing
-  REAL :: t(2)=(/0.0,0.0/)
   REAL :: e
   
   INTEGER(CMISSIntg), PARAMETER :: SolidCoordinateSystemUserNumber=1
@@ -194,9 +163,8 @@ PROGRAM CoupledFluidSolidExample
   
   !Program variables
 
-  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,STATUS
-  INTEGER(CMISSIntg) :: NumberGlobalElementsX, &
-    & InterpolationTypeInterface,NumberOfGaussXi,NUMBER_OF_NODE_XI,NumberOfDimensions,component_idx, &
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS
+  INTEGER(CMISSIntg) :: InterpolationTypeInterface,NumberOfGaussXi,NUMBER_OF_NODE_XI,NumberOfDimensions,component_idx, &
     & NumberOfGaussXiSpace,NumberOfGaussXiVelocity,NumberOfGaussXiPressure,arraySize
 
   INTEGER(CMISSIntg) :: SolidEquationsSetIndex=1
@@ -215,16 +183,15 @@ PROGRAM CoupledFluidSolidExample
   INTEGER(CMISSIntg) :: LinearSolverMovingMesh_OutputType
   INTEGER(CMISSIntg) :: MaximumIterations,MaxFunctionEvaluations
   INTEGER(CMISSIntg) :: RestartValue
-  INTEGER(CMISSIntg) :: MMCondition=0
   
   INTEGER(CMISSIntg) :: EquationsNavierStokesOutput,InterfaceMeshComponentNumber,InterpolationTypeDisplacement, &
     & InterpolationTypeHydrostaticPressure,InterpolationTypePressure,InterpolationTypeSpace,InterpolationTypeVelocity, &
     & MovingMeshEquationsSetIndex,Mesh1ComponentNumberDisplacement,Mesh1ComponentNumberHydrostaticPressure, &
-    & Mesh1ComponentNumberSpace, &
-    & NodeDomain,Mesh2ComponentNumberPressure,Mesh2ComponentNumberSpace,MeshNumberOfComponents,NumberGlobalElementsY
+    & Mesh1ComponentNumberSpace,Components(3), &
+    & NodeDomain,Mesh2ComponentNumberPressure,Mesh2ComponentNumberSpace,MeshNumberOfComponents
   
   ! LOOP INTEGERS
-  INTEGER(CMISSIntg) :: NodeNumber,S,P,ElementIndex,NodeIndex,MM,MaterialSpecification,LocalNodeIndex
+  INTEGER(CMISSIntg) :: NodeNumber,S,ElementIndex,NodeIndex,MaterialSpecification,LocalNodeIndex
   
   !check below for units
   REAL(CMISSDP) :: XI2(2),XI3(3)
@@ -316,7 +283,7 @@ PROGRAM CoupledFluidSolidExample
   IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
 #endif
 
-  e=etime(t)
+  !e=etime(t)
   !
   !=================================================================================================================================
   !
@@ -2271,7 +2238,7 @@ PROGRAM CoupledFluidSolidExample
   !Finialise CMISS
   CALL CMISSFinalise(Err)
 
-  e=etime(t)
+!  e=etime(t)
   PRINT *, "Program successfully completed in ",e," seconds."
   
   STOP
