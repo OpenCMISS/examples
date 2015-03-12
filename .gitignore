@@ -1,6 +1,7 @@
 # Built files
 object/
 bin/
+_build/
 
 # OpenCMISS output
 *.diag
@@ -9,6 +10,8 @@ bin/
 # Editor files
 *.swp
 *~
+.project
+.cproject
 
 # Files created when running tests
 *.pyc

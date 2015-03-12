@@ -87,6 +87,10 @@ PROGRAM MONODOMAINEXAMPLE
   
   !Program variables
 
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
+  CHARACTER(LEN=255) :: COMMAND_ARGUMENT,CellmlFile
+  LOGICAL :: fileExist
+
   INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
 
   LOGICAL :: EXPORT_FIELD
@@ -98,11 +102,12 @@ PROGRAM MONODOMAINEXAMPLE
   REAL(CMISSDP) :: X,Y,DISTANCE,gNa_VALUE
   
   INTEGER(CMISSIntg), PARAMETER :: NUMBER_OF_ELEMENTS=25
+  INTEGER(CMISSIntg) :: OUTPUT_FREQUENCY = 1
   REAL(CMISSDP), PARAMETER :: STIM_VALUE = 100.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: STIM_STOP = 0.10_CMISSDP
-  REAL(CMISSDP), PARAMETER :: TIME_STOP = 1.50_CMISSDP
+  REAL(CMISSDP) :: TIME_STOP = 1.50_CMISSDP
   REAL(CMISSDP), PARAMETER :: ODE_TIME_STEP = 0.00001_CMISSDP
-  REAL(CMISSDP), PARAMETER :: PDE_TIME_STEP = 0.001_CMISSDP
+  REAL(CMISSDP) :: PDE_TIME_STEP = 0.001_CMISSDP
   REAL(CMISSDP), PARAMETER :: CONDUCTIVITY = 0.1_CMISSDP
 
   !CMISS variables
@@ -133,6 +138,35 @@ PROGRAM MONODOMAINEXAMPLE
   INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
   INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain,NodeDomain
   INTEGER(CMISSIntg) :: Err
+
+
+  ! process command line arguments before getting started.
+  NUMBER_OF_ARGUMENTS = COMMAND_ARGUMENT_COUNT()
+  IF(NUMBER_OF_ARGUMENTS >= 3) THEN
+    CALL GET_COMMAND_ARGUMENT(1,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
+    !IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 1.")
+    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*) PDE_TIME_STEP
+    WRITE(*, '("PDE Step Size: ", E14.7)') PDE_TIME_STEP
+    CALL GET_COMMAND_ARGUMENT(2,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
+    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*) TIME_STOP
+    WRITE(*, '("Stop Time: ", E14.7)') TIME_STOP
+    CALL GET_COMMAND_ARGUMENT(3,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
+    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*) OUTPUT_FREQUENCY
+    WRITE(*, '("Output Frequency: ", I10)') OUTPUT_FREQUENCY
+    CALL GET_COMMAND_ARGUMENT(4,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
+    !IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 4.")
+    CellmlFile = adjustl(COMMAND_ARGUMENT)
+    WRITE(*, '("CellML File: ", A)') CellmlFile
+    inquire(file=CellmlFile, exist=fileExist)
+    if (.not. fileExist) then
+      write(*, '(">>ERROR: File does not exist")')
+      stop
+    endif
+  ELSE
+    !If there are not enough arguments die horribly
+    WRITE(*,'(">>USAGE: ",A)') "MonodomainExample <PDE step size> <stop time> <output frequency> <CellML Model URL>"
+    STOP
+  ENDIF
 
   !Intialise OpenCMISS
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
@@ -274,7 +308,7 @@ PROGRAM MONODOMAINEXAMPLE
   CALL CMISSCellML_Initialise(CellML,Err)
   CALL CMISSCellML_CreateStart(CellMLUserNumber,Region,CellML,Err)
   !Import a Noble 1998 model from a file
-  CALL CMISSCellML_ModelImport(CellML,"n98.xml",n98ModelIndex,Err)
+  CALL CMISSCellML_ModelImport(CellML,CellmlFile,n98ModelIndex,Err)
   CALL CMISSCellML_VariableSetAsKnown(CellML,n98ModelIndex,"fast_sodium_current/g_Na ",Err)
   CALL CMISSCellML_VariableSetAsKnown(CellML,n98ModelIndex,"membrane/IStim",Err)
   CALL CMISSCellML_VariableSetAsWanted(CellML,n98ModelIndex,"membrane/i_K1",Err)
@@ -401,7 +435,7 @@ PROGRAM MONODOMAINEXAMPLE
   !Set the output
   CALL CMISSControlLoop_OutputTypeSet(ControlLoop,CMISS_CONTROL_LOOP_TIMING_OUTPUT,Err)
   !Set the output frequency (0 for no output, n for output every n time steps)
-  CALL CMISSControlLoop_TimeOutputSet(ControlLoop,1,Err)
+  CALL CMISSControlLoop_TimeOutputSet(ControlLoop,OUTPUT_FREQUENCY,Err)
   !Finish creating the problem control loop
   CALL CMISSProblem_ControlLoopCreateFinish(Problem,Err)
  

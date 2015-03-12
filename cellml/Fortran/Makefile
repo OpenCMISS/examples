@@ -1,10 +1,11 @@
-# -*- makefile -*-
+#
+#-*- makefile -*-
 #
 # For use with GNU make.
 #
 #
 #----------------------------------------------------------------------------------------------------------------------------------
-# Makefile for compiling openCMISS examples
+# Makefile for compiling OpenCMISS examples
 #
 # Original by Chris Bradley adapted from the CMISS Makefile by Karl Tomlinson 
 # Changes:
@@ -25,7 +26,7 @@
 # License for the specific language governing rights and limitations
 # under the License.
 #
-# The Original Code is OpenCMISS
+# The Original Code is openCMISS
 #
 # The Initial Developer of the Original Code is University of Auckland,
 # Auckland, New Zealand and University of Oxford, Oxford, United
@@ -54,41 +55,17 @@ MAKEFLAGS = --no-builtin-rules --warn-undefined-variables
 #----------------------------------------------------------------------------------------------------------------------------------
 
 ifndef OPENCMISS_ROOT
-  OPENCMISS_ROOT := ../../../..
-  GLOBAL_ROOT := $(CURDIR)/../../../..
+  OPENCMISS_ROOT := ../../..
+  GLOBAL_ROOT := $(CURDIR)/../../..
 else
   GLOBAL_ROOT := ${OPENCMISS_ROOT}/cm
 endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-USEFIELDML = true
-FIELDML_LIB_PATH= ${GLOBAL_FIELDML_ROOT}/x86_64-linux-debug/gnu_4.6/lib/
+EXAMPLE_PATH = cellml/
 
-EXAMPLE_PATH=FluidMechanics/NavierStokes/
-
-EXAMPLE_NAME = Static_FieldML
+EXAMPLE_NAME = Fortran
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 
-# let's assume fluid_mechanics_IO_routines has been built in main_object, copy them over
-# redefine preliminaries
-preliminaries: $(OBJECT_DIR) $(EXE_DIR)
-	cp $(MAIN_OBJECT_DIR)/fluid_mechanics_IO_routines.o $(OBJECT_DIR)
-	cp $(MAIN_OBJECT_DIR)/fluid_mechanics_io_routines.mod $(OBJECT_DIR)
-
-info:
-	@echo "FIELDML_LIB_PATH:"
-	@echo $(FIELDML_LIB_PATH)
-	@echo "USEFIELDML:"
-	@echo $(USEFIELDML)
-	@echo "OBJECTS:"
-	@echo $(OBJECTS)
-	@echo "OBJECT_DIR:"
-	@echo $(OBJECT_DIR)
-	@echo "MAIN_OBJECT_DIR:"
-	@echo $(MAIN_OBJECT_DIR)
-	@echo "EXAMPLE_SOURCE_DIR:"
-	@echo $(EXAMPLE_SOURCE_DIR)
-	@echo "MAIN_SOURCE_DIR:"
-	@echo $(MAIN_SOURCE_DIR)

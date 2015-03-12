@@ -9,7 +9,8 @@ for ($i=0;$i<24000;$i=$i+10)
 #Read in the sequence of nodal positions.
   {
      $filename = sprintf("./output/MainTime_%01d.part0.exnode", $i);
-     print "Reading $filename time $i\n";
+     $time = $i/10
+     print "Reading $filename time $time\n";
      gfx read node "$filename" time $i;
   }
 
