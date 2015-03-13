@@ -81,13 +81,12 @@ CellMLIntermediateFieldUserNumber    = 26
 CellMLParametersFieldUserNumber      = 27
 MaterialsFieldUserNumberCellML       = 28
 AnalyticFieldUserNumber              = 29
-
+# Solver user numbers
 SolverDAEUserNumber            = 1
 SolverStreeUserNumber          = 1
 SolverCharacteristicUserNumber = 2
 SolverNavierStokesUserNumber   = 3
 SolverAdvectionUserNumber      = 4
-
 # Materials constants
 MaterialsFieldUserNumberMu    = 1
 MaterialsFieldUserNumberRho   = 2
@@ -97,7 +96,6 @@ MaterialsFieldUserNumberLs    = 5
 MaterialsFieldUserNumberTs    = 6
 MaterialsFieldUserNumberMs    = 7
 MaterialsFieldUserNumberD     = 1
-
 # Materials variables
 MaterialsFieldUserNumberA0    = 1
 MaterialsFieldUserNumberE     = 2
@@ -115,6 +113,11 @@ from scipy.linalg  import inv,eig
 from scipy.special import jn
 sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
 from opencmiss import CMISS
+
+# Diagnostics
+#CMISS.DiagnosticsSetOn(CMISS.DiagnosticTypes.ALL,[1,2,3,4,5],"Diagnostics",[""])
+#CMISS.ErrorHandlingModeSet(CMISS.ErrorHandlingModes.TRAP_ERROR)
+#CMISS.OutputSetOn("Testing")
 
 # Get the computational nodes info
 numberOfComputationalNodes = CMISS.ComputationalNumberOfNodesGet()
@@ -146,11 +149,12 @@ derivIdx   = 1
 versionIdx = 1
 
 # Set the flags
-RCRFlag        = False   # Set to use coupled 0D Windkessel models (from CellML) at model outlet boundaries
-streeFlag      = False   # Set to use structured tree outlet boundaries
-nonReflectFlag = False   # Set to use non-reflecting outlet boundaries
-advectionFlag  = False   # Set to solve a coupled advection problem
-timestepFlag   = False   # Set to do a basic check of the stability of the hyperbolic problem based on the timestep size
+RCRBoundaries      = False   # Set to use coupled 0D Windkessel models (from CellML) at model outlet boundaries
+nonReflecting      = False   # Set to use non-reflecting outlet boundaries
+streeBoundaries    = False   # Set to use structured tree outlet boundaries
+coupledAdvection   = False   # Set to solve a coupled advection problem
+timestepStability  = False   # Set to do a basic check of the stability of the hyperbolic problem based on the timestep size
+initialiseFromFile = False   # Set to initialise values
 
 #================================================================================================================================
 #  Mesh Reading
@@ -209,6 +213,8 @@ with open('Input/Node.csv','rb') as csvfile:
                 numberOfTerminalNodes = numberOfTerminalNodes+1
         # Next line
         rownum+=1      
+
+#------------------
 
 # Read the element file
 with open('Input/Element.csv','rb') as csvfile:
@@ -317,6 +323,15 @@ for trifIdx in range(1,numberOfTrifurcations+1):
 # Start with Q=0, A=A0 state
 A = A0
 
+# Or initialise from init file
+if (initialiseFromFile):
+    init = numpy.zeros([numberOfNodesSpace+1,4,4])
+    init = numpy.load('./Input/init.npy')
+    Q[1:numberOfNodesSpace+1,:] = init[:,0,:]
+    A[1:numberOfNodesSpace+1,:] = init[:,1,:]
+    dQ[1:numberOfNodesSpace+1,:] = init[:,2,:]
+    dA[1:numberOfNodesSpace+1,:] = init[:,3,:]
+
 # Set the output parameters
 # (NONE/PROGRESS/TIMING/SOLVER/MATRIX)
 DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE    = CMISS.SolverOutputTypes.NONE
@@ -354,13 +369,13 @@ MAXIMUM_ITERATIONS   = 100000   # default: 100000
 RESTART_VALUE        = 3000     # default: 30
 
 # N-S/C coupling tolerance
-couplingTolerance1D = 1.0e6
+couplingTolerance1D = 1.0E+6
 # 1D-0D coupling tolerance
 couplingTolerance1D0D = 0.001
 
 # Check the CellML flag
-if (RCRFlag):
-    if (advectionFlag):
+if (RCRBoundaries):
+    if (coupledAdvection):
         # Navier-Stokes solver
         EquationsSetSubtype = CMISS.EquationsSetSubtypes.Coupled1D0DAdv_NAVIER_STOKES
         # Characteristic solver
@@ -374,8 +389,8 @@ if (RCRFlag):
         # Characteristic solver
         EquationsSetCharacteristicSubtype = CMISS.EquationsSetSubtypes.Coupled1D0D_CHARACTERISTIC
         ProblemSubtype = CMISS.ProblemSubTypes.Coupled1D0D_NAVIER_STOKES
-elif (streeFlag):
-    if (advectionFlag):
+elif (streeBoundaries):
+    if (coupledAdvection):
         # Navier-Stokes solver
         EquationsSetSubtype = CMISS.EquationsSetSubtypes.Coupled1D0DAdv_NAVIER_STOKES
         # Characteristic solver
@@ -394,7 +409,7 @@ elif (streeFlag):
         EquationsSetStreeSubtype = CMISS.EquationsSetSubtypes.Stree1D0D
         ProblemSubtype = CMISS.ProblemSubTypes.Stree1D0D_NAVIER_STOKES
 else:
-    if (advectionFlag):
+    if (coupledAdvection):
         # Navier-Stokes solver
         EquationsSetSubtype = CMISS.EquationsSetSubtypes.OnedTransientAdv_NAVIER_STOKES
         # Characteristic solver
@@ -430,7 +445,7 @@ Region.label = "ArterialSystem"
 Region.coordinateSystem = CoordinateSystem
 Region.CreateFinish()
 
-if (streeFlag):
+if (streeBoundaries):
     # Start the creation of TIME region
     RegionStree = CMISS.Region()
     RegionStree.CreateStart(RegionUserNumber2,CMISS.WorldRegion)
@@ -452,7 +467,7 @@ BasisSpace.interpolationXi = [CMISS.BasisInterpolationSpecifications.QUADRATIC_L
 BasisSpace.quadratureNumberOfGaussXi = [basisXiGaussSpace]
 BasisSpace.CreateFinish()
 
-if (streeFlag):
+if (streeBoundaries):
     # Start the creation of TIME bases
     basisXiGaussSpace = 3
     BasisTime = CMISS.Basis()
@@ -472,16 +487,16 @@ Nodes = CMISS.Nodes()
 Nodes.CreateStart(Region,totalNumberOfNodes)
 Nodes.CreateFinish()
 
-if (streeFlag):
-    Nodes1 = CMISS.Nodes()
-    Nodes1.CreateStart(RegionStree,timePeriod+1)
-    Nodes1.CreateFinish()
+if (streeBoundaries):
+    NodesStree = CMISS.Nodes()
+    NodesStree.CreateStart(RegionStree,timePeriod+1)
+    NodesStree.CreateFinish()
 
 # Start the creation of SPACE mesh
 Mesh = CMISS.Mesh()
 Mesh.CreateStart(MeshUserNumber,Region,numberOfDimensions)
 Mesh.NumberOfElementsSet(totalNumberOfElements)
-if (advectionFlag):
+if (coupledAdvection):
     meshNumberOfComponents = 2
     Mesh.NumberOfComponentsSet(meshNumberOfComponents)
     # Specify the mesh components
@@ -519,7 +534,7 @@ MeshElementsSpace.CreateFinish()
 #------------------
 
 # Specify the CONCENTRATION mesh component
-if (advectionFlag):
+if (coupledAdvection):
     MeshElementsConc.CreateStart(Mesh,meshComponentNumberConc,BasisSpace)
     for elemIdx in range(1,totalNumberOfElements+1):
         MeshElementsConc.NodesSet(elemIdx,elementNodes[elemIdx])
@@ -530,7 +545,7 @@ Mesh.CreateFinish()
 
 #------------------
 
-if (streeFlag):
+if (streeBoundaries):
     # Start the creation of TIME mesh
     MeshTime = CMISS.Mesh()
     MeshTime.CreateStart(MeshUserNumber2,RegionStree,numberOfDimensions)
@@ -558,7 +573,7 @@ Decomposition.CreateFinish()
 
 #------------------
 
-if (streeFlag):
+if (streeBoundaries):
     # Start the creation of TIME mesh decomposition
     DecompositionTime = CMISS.Decomposition()
     DecompositionTime.CreateStart(DecompositionUserNumber2,MeshTime)
@@ -626,7 +641,7 @@ GeometricField.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMISS.FieldPa
 
 #------------------
 
-if (streeFlag):
+if (streeBoundaries):
     # Start the creation of TIME geometric field
     GeometricFieldTime = CMISS.Field()
     GeometricFieldTime.CreateStart(GeometricFieldUserNumber2,RegionStree)
@@ -646,7 +661,7 @@ if (streeFlag):
 #================================================================================================================================
 
 # Create the equations set for STREE
-if (streeFlag):
+if (streeBoundaries):
     EquationsSetStree = CMISS.EquationsSet()
     EquationsSetFieldStree = CMISS.Field()
     # Set the equations set to be a dynamic linear problem
@@ -678,7 +693,7 @@ EquationsSetNavierStokes.CreateFinish()
 #------------------
 
 # Create the equations set for ADVECTION
-if (advectionFlag):
+if (coupledAdvection):
     EquationsSetAdvection = CMISS.EquationsSet()
     EquationsSetFieldAdvection = CMISS.Field()
     # Set the equations set to be a dynamic linear problem
@@ -692,7 +707,7 @@ if (advectionFlag):
 #================================================================================================================================
 
 # STREE
-if (streeFlag):
+if (streeBoundaries):
     # Create the equations set dependent field variables
     DependentFieldStree = CMISS.Field()
     EquationsSetStree.DependentCreateStart(DependentFieldUserNumber3,DependentFieldStree)
@@ -709,7 +724,7 @@ EquationsSetCharacteristic.DependentCreateStart(DependentFieldUserNumber,Depende
 DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U,'General')
 DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.DELUDELN,'Derivatives')
 DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.V,'Characteristics')
-if (RCRFlag):
+if (RCRBoundaries):
     DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U1,'CellML Q and P')
 DependentFieldNavierStokes.VariableLabelSet(CMISS.FieldVariableTypes.U2,'Pressure')
 # Set the mesh component to be used by the field components.
@@ -723,7 +738,7 @@ DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DE
 DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.V,1,meshComponentNumberSpace)
 DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.V,2,meshComponentNumberSpace)
 # qCellML & pCellml
-if (RCRFlag):
+if (RCRBoundaries):
     DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U1,1,meshComponentNumberSpace)
     DependentFieldNavierStokes.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U1,2,meshComponentNumberSpace)
 # Pressure
@@ -776,7 +791,7 @@ DependentFieldNavierStokes.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,C
 #------------------
 
 # ADVECTION
-if (advectionFlag):
+if (coupledAdvection):
     # Create the equations set dependent field variables
     DependentFieldAdvection = CMISS.Field()
     EquationsSetAdvection.DependentCreateStart(DependentFieldUserNumber2,DependentFieldAdvection)
@@ -804,7 +819,7 @@ if (advectionFlag):
 #================================================================================================================================
 
 # STREE
-if (streeFlag):
+if (streeBoundaries):
     # Create the equations set materials field variables 
     MaterialsFieldStree = CMISS.Field()
     EquationsSetStree.MaterialsCreateStart(MaterialsFieldUserNumber2,MaterialsFieldStree)
@@ -874,7 +889,7 @@ MaterialsFieldNavierStokes.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.V,C
 #------------------
 
 # ADVECTION
-if (advectionFlag):
+if (coupledAdvection):
     # Create the equations set materials field variables 
     MaterialsFieldAdvection = CMISS.Field()
     EquationsSetAdvection.MaterialsCreateStart(MaterialsFieldUserNumber2,MaterialsFieldAdvection)
@@ -933,7 +948,7 @@ for trifIdx in range (1,numberOfTrifurcations+1):
         IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,  
          4,derivIdx,nodeIdx,2,-1.0)
 # Set the normal wave direction for terminal
-if (RCRFlag or nonReflectFlag or streeFlag):
+if (RCRBoundaries or nonReflecting or streeBoundaries):
     for terminalIdx in range (1,numberOfTerminalNodes+1):
         nodeIdx = coupledNodeNumber[terminalIdx]
         nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
@@ -949,7 +964,7 @@ IndependentFieldNavierStokes.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U
 #------------------
 
 # ADVECTION
-if (advectionFlag):
+if (coupledAdvection):
     # Create the equations set independent field variables  
     IndependentFieldAdvection = CMISS.Field()
     EquationsSetAdvection.IndependentCreateStart(DependentFieldUserNumber,DependentFieldNavierStokes)
@@ -970,7 +985,7 @@ EquationsSetNavierStokes.AnalyticCreateFinish()
 #  CellML Model Maps
 #================================================================================================================================
 
-if (RCRFlag):
+if (RCRBoundaries):
 
     #----------------------------------------------------------------------------------------------------------------------------
     # Description
@@ -1062,7 +1077,7 @@ if (RCRFlag):
 #================================================================================================================================
 
 # 1th Equations Set - STREE
-if (streeFlag):
+if (streeBoundaries):
     EquationsStree = CMISS.Equations()
     EquationsSetStree.EquationsCreateStart(EquationsStree)
     EquationsStree.sparsityType = CMISS.EquationsSparsityTypes.SPARSE
@@ -1094,7 +1109,7 @@ EquationsSetNavierStokes.EquationsCreateFinish()
 #------------------
 
 # 4th Equations Set - ADVECTION
-if (advectionFlag):
+if (coupledAdvection):
     EquationsAdvection = CMISS.Equations()
     EquationsSetAdvection.EquationsCreateStart(EquationsAdvection)
     EquationsAdvection.sparsityType = CMISS.EquationsSparsityTypes.SPARSE
@@ -1162,7 +1177,7 @@ SolverCharacteristicUserNumber = 1
 SolverNavierStokesUserNumber   = 2
 SolverAdvectionUserNumber      = 1
 SolverCellmlUserNumber         = 1
-if (RCRFlag or streeFlag):
+if (RCRBoundaries or streeBoundaries):
    Iterative1d0dControlLoopNumber   = 1
    SimpleAdvectionControlLoopNumber = 2
    Simple0DControlLoopNumber        = 1
@@ -1180,7 +1195,7 @@ TimeLoop.TimesSet(startTime,stopTime,timeIncrement)
 TimeLoop.TimeOutputSet(DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY)
 
 # Set tolerances for iterative convergence loops
-if (RCRFlag or streeFlag):
+if (RCRBoundaries or streeBoundaries):
     Iterative1DCouplingLoop = CMISS.ControlLoop()
     Problem.ControlLoopGet([Iterative1d0dControlLoopNumber,Iterative1dControlLoopNumber,
      CMISS.ControlLoopIdentifiers.NODE],Iterative1DCouplingLoop)
@@ -1207,9 +1222,9 @@ NonlinearSolverNavierStokes   = CMISS.Solver()
 LinearSolverNavierStokes      = CMISS.Solver()
 NonlinearSolverCharacteristic = CMISS.Solver()
 LinearSolverCharacteristic    = CMISS.Solver()
-if (streeFlag):
+if (streeBoundaries):
     LinearSolverStree             = CMISS.Solver()
-if (advectionFlag):
+if (coupledAdvection):
     DynamicSolverAdvection        = CMISS.Solver()
     LinearSolverAdvection         = CMISS.Solver()
 
@@ -1218,7 +1233,7 @@ Problem.SolversCreateStart()
 #------------------
 
 # 1st Solver, Simple 0D subloop - STREE
-if (streeFlag):
+if (streeBoundaries):
     Problem.SolverGet([Iterative1d0dControlLoopNumber,Simple0DControlLoopNumber,
      CMISS.ControlLoopIdentifiers.NODE],SolverStreeUserNumber,LinearSolverStree)
     # Set the nonlinear Jacobian type
@@ -1227,7 +1242,7 @@ if (streeFlag):
 #------------------
 
 # 1st Solver, Simple 0D subloop - CellML
-if (RCRFlag):
+if (RCRBoundaries):
     CellMLSolver = CMISS.Solver()
     Problem.SolverGet([Iterative1d0dControlLoopNumber,Simple0DControlLoopNumber,
      CMISS.ControlLoopIdentifiers.NODE],SolverDAEUserNumber,CellMLSolver)
@@ -1236,7 +1251,7 @@ if (RCRFlag):
 #------------------
 
 # 1st Solver, Iterative 1D subloop - CHARACTERISTIC
-if (RCRFlag or streeFlag):
+if (RCRBoundaries or streeBoundaries):
     Problem.SolverGet([Iterative1d0dControlLoopNumber,Iterative1dControlLoopNumber,
      CMISS.ControlLoopIdentifiers.NODE],SolverCharacteristicUserNumber,NonlinearSolverCharacteristic)
 else:
@@ -1263,7 +1278,7 @@ LinearSolverCharacteristic.LinearIterativeGMRESRestartSet(RESTART_VALUE)
 #------------------
 
 # 2nd Solver, Iterative 1D subloop - NAVIER-STOKES
-if (RCRFlag or streeFlag):
+if (RCRBoundaries or streeBoundaries):
     Problem.SolverGet([Iterative1d0dControlLoopNumber,Iterative1dControlLoopNumber,
      CMISS.ControlLoopIdentifiers.NODE],SolverNavierStokesUserNumber,DynamicSolverNavierStokes)
 else:
@@ -1295,7 +1310,7 @@ LinearSolverNavierStokes.LinearIterativeGMRESRestartSet(RESTART_VALUE)
 #------------------
 
 # 1st Solver, Simple advection subloop - ADVECTION
-if (advectionFlag):
+if (coupledAdvection):
     Problem.SolverGet([SimpleAdvectionControlLoopNumber,CMISS.ControlLoopIdentifiers.NODE],
      SolverAdvectionUserNumber,DynamicSolverAdvection)
     DynamicSolverAdvection.OutputTypeSet(DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE)
@@ -1315,10 +1330,10 @@ NonlinearSolverCharacteristic = CMISS.Solver()
 SolverEquationsCharacteristic = CMISS.SolverEquations()
 DynamicSolverNavierStokes     = CMISS.Solver()
 SolverEquationsNavierStokes   = CMISS.SolverEquations()
-if (streeFlag):
+if (streeBoundaries):
     LinearSolverStree             = CMISS.Solver()
     SolverEquationsStree          = CMISS.SolverEquations()
-if (advectionFlag):
+if (coupledAdvection):
     DynamicSolverAdvection        = CMISS.Solver()
     SolverEquationsAdvection      = CMISS.SolverEquations()
 
@@ -1327,7 +1342,7 @@ Problem.SolverEquationsCreateStart()
 #------------------
 
 # STREE Solver
-if (streeFlag):
+if (streeBoundaries):
     Problem.SolverGet([Iterative1d0dControlLoopNumber,Simple0DControlLoopNumber,
      CMISS.ControlLoopIdentifiers.NODE],SolverStreeUserNumber,LinearSolverStree)
     LinearSolverStree.SolverEquationsGet(SolverEquationsStree)
@@ -1338,7 +1353,7 @@ if (streeFlag):
 #------------------
 
 # CellML Solver
-if (RCRFlag):
+if (RCRBoundaries):
     CellMLSolver = CMISS.Solver()
     CellMLEquations = CMISS.CellMLEquations()
     Problem.CellMLEquationsCreateStart()
@@ -1352,7 +1367,7 @@ if (RCRFlag):
 #------------------
 
 # CHARACTERISTIC solver
-if (RCRFlag or streeFlag):
+if (RCRBoundaries or streeBoundaries):
     Problem.SolverGet([Iterative1d0dControlLoopNumber,Iterative1dControlLoopNumber,
      CMISS.ControlLoopIdentifiers.NODE],SolverCharacteristicUserNumber,NonlinearSolverCharacteristic)
 else:
@@ -1366,7 +1381,7 @@ EquationsSetCharacteristic = SolverEquationsCharacteristic.EquationsSetAdd(Equat
 #------------------
 
 #  NAVIER-STOKES solver
-if (RCRFlag or streeFlag):
+if (RCRBoundaries or streeBoundaries):
     Problem.SolverGet([Iterative1d0dControlLoopNumber,Iterative1dControlLoopNumber,
      CMISS.ControlLoopIdentifiers.NODE],SolverNavierStokesUserNumber,DynamicSolverNavierStokes)
 else:
@@ -1380,7 +1395,7 @@ EquationsSetNavierStokes = SolverEquationsNavierStokes.EquationsSetAdd(Equations
 #------------------
 
 # ADVECTION Solver
-if (advectionFlag):
+if (coupledAdvection):
     Problem.SolverGet([SimpleAdvectionControlLoopNumber,CMISS.ControlLoopIdentifiers.NODE],
      SolverAdvectionUserNumber,DynamicSolverAdvection)
     DynamicSolverAdvection.SolverEquationsGet(SolverEquationsAdvection)
@@ -1395,7 +1410,7 @@ Problem.SolverEquationsCreateFinish()
 #  Boundary Conditions
 #================================================================================================================================
 
-if (streeFlag):
+if (streeBoundaries):
     # STREE
     BoundaryConditionsStree = CMISS.BoundaryConditions()
     SolverEquationsStree.BoundaryConditionsCreateStart(BoundaryConditionsStree)
@@ -1412,13 +1427,13 @@ for terminalIdx in range (1,numberOfTerminalNodes+1):
     nodeNumber = coupledNodeNumber[terminalIdx]
     nodeDomain = Decomposition.NodeDomainGet(nodeNumber,meshComponentNumberSpace)
     if (nodeDomain == computationalNodeNumber):
-        if (nonReflectFlag):
+        if (nonReflecting):
             BoundaryConditionsCharacteristic.SetNode(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,
              versionIdx,derivIdx,nodeNumber,2,CMISS.BoundaryConditionsTypes.FixedNonreflecting,A[nodeNumber][0])
-        elif (RCRFlag):
+        elif (RCRBoundaries):
             BoundaryConditionsCharacteristic.SetNode(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,
              versionIdx,derivIdx,nodeNumber,2,CMISS.BoundaryConditionsTypes.FixedCellml,A[nodeNumber][0])
-        elif (streeFlag):
+        elif (streeBoundaries):
             BoundaryConditionsCharacteristic.SetNode(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,
              versionIdx,derivIdx,nodeNumber,2,CMISS.BoundaryConditionsTypes.FixedStree,A[nodeNumber][0])
         else:
@@ -1445,13 +1460,13 @@ for terminalIdx in range (1,numberOfTerminalNodes+1):
     nodeNumber = coupledNodeNumber[terminalIdx]
     nodeDomain = Decomposition.NodeDomainGet(nodeNumber,meshComponentNumberSpace)
     if (nodeDomain == computationalNodeNumber):
-        if (nonReflectFlag):
+        if (nonReflecting):
             BoundaryConditionsNavierStokes.SetNode(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,
              versionIdx,derivIdx,nodeNumber,2,CMISS.BoundaryConditionsTypes.FixedNonreflecting,A[nodeNumber][0])
-        elif (RCRFlag):
+        elif (RCRBoundaries):
             BoundaryConditionsNavierStokes.SetNode(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,
              versionIdx,derivIdx,nodeNumber,2,CMISS.BoundaryConditionsTypes.FixedCellml,A[nodeNumber][0])
-        elif (streeFlag):
+        elif (streeBoundaries):
             BoundaryConditionsNavierStokes.SetNode(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,
              versionIdx,derivIdx,nodeNumber,2,CMISS.BoundaryConditionsTypes.FixedStree,A[nodeNumber][0])
         else:
@@ -1464,7 +1479,7 @@ SolverEquationsNavierStokes.BoundaryConditionsCreateFinish()
 #------------------
 
 # ADVECTION
-if (advectionFlag):
+if (coupledAdvection):
     BoundaryConditionsAdvection = CMISS.BoundaryConditions()
     SolverEquationsAdvection.BoundaryConditionsCreateStart(BoundaryConditionsAdvection)
     for inputIdx in range (1,numberOfInputNodes+1):
@@ -1479,7 +1494,7 @@ if (advectionFlag):
 #  Element Length
 #================================================================================================================================
 
-if (timestepFlag):
+if (timestepStability):
     QMax = 430.0
     # Check the element length
     elementNumber = [0]*(totalNumberOfElements+1)
@@ -1549,7 +1564,7 @@ terminal 26 ---- left leg -------- left  fibular artery
 terminal 27 ---- intestines ------ inferior mesenteric artery
 '''
 
-if (streeFlag):
+if (streeBoundaries):
     numberOfTerminalNodes = 27
     # Loop through the terminal nodes
     for terminalIdx in range (1,numberOfTerminalNodes+1):
@@ -1589,9 +1604,9 @@ if (streeFlag):
     
             Ng  = 8                                       # Number of generations
             h   = 0.35*r                                  # Thickness
-            E   = 0.4e+6                                  # Elasticity
+            E   = 0.4E+6                                  # Elasticity
             A0  = math.pi*(r**2.0)                        # Area at rest
-            Qin = 6.5e-6                                  # Input flow
+            Qin = 6.5E-6                                  # Input flow
             T   = timePeriod/Ts                           # Time period
             zin = [0]*(timePeriod+1)                      # Impedance
             Cp  = (3.0*A0*(A0/math.pi)**0.5)/(2.0*E*h)    # Vessel wall compliance
