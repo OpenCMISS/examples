@@ -1,0 +1,9 @@
+{"example": {
+  "language": "python",
+  "script": "GeometricFittingExample.py",
+  "test": [   
+    {
+      "id": 1,
+      "tolerance": 1.0e-6,
+      "expectedPath": "expected_results"}]
+}}
