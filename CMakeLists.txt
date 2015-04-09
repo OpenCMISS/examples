@@ -1,15 +1,27 @@
+# This script generates CMakeLists.txt files for each example and adds them as external project
+# The only thing necessary to build them against an existing OpenCMISS installation is to specify the 
+# installation directory/prefix OPENCMISS_INSTALL_DIR containing the build context file (OpenCMISSBuildContext.cmake)
+#
+# You can change the build/install locations of the examples by providing
+# OPENCMISS_EXAMPLES_BUILD_DIR and OPENCMISS_EXAMPLES_INSTALL_PREFIX.
+#
+# @author Daniel Wirtz @date April 9th, 2015
 CMAKE_MINIMUM_REQUIRED(VERSION 3.2.0-rc1 FATAL_ERROR)
-project(OpenCMISS-Examples VERSION 1.0 LANGUAGES C)
-include(ExternalProject)
 
 # Paths and stuff
 if (NOT OPENCMISS_INSTALL_DIR)
     set(OPENCMISS_INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../install)
     get_filename_component(OPENCMISS_INSTALL_DIR ${OPENCMISS_INSTALL_DIR} ABSOLUTE)
 endif()
-if (NOT EXISTS ${OPENCMISS_INSTALL_DIR} OR NOT EXISTS ${OPENCMISS_INSTALL_DIR}/iron-config.cmake)
+if (NOT EXISTS ${OPENCMISS_INSTALL_DIR} OR NOT EXISTS ${OPENCMISS_INSTALL_DIR}/OpenCMISSBuildContext.cmake)
     message(FATAL_ERROR "OpenCMISS is not installed at '${OPENCMISS_INSTALL_DIR}'. Please specify OPENCMISS_INSTALL_DIR.")
 endif()
+include(${OPENCMISS_INSTALL_DIR}/OpenCMISSBuildContext.cmake)
+
+project(OpenCMISS-Examples VERSION 1.0 LANGUAGES C)
+include(ExternalProject)
+
+# Set default build/install dirs unless specified
 if (NOT OPENCMISS_EXAMPLES_BUILD_DIR)
     set(OPENCMISS_EXAMPLES_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
 endif()
@@ -17,32 +29,26 @@ if (NOT OPENCMISS_EXAMPLES_INSTALL_PREFIX)
     set(OPENCMISS_EXAMPLES_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/../install)
 endif()
 
-list(APPEND EXAMPLE_EXTRA_DEFS -DCMAKE_PREFIX_PATH=${OPENCMISS_INSTALL_DIR})
-
 function(RECURSE curdir)
-    #message(STATUS "Entering ${curdir}")
     file(GLOB content RELATIVE ${curdir} ${curdir}/*)
     SET(sources )
     foreach(entry ${content})
         set(filename ${curdir}/${entry})
         if(IS_DIRECTORY ${filename})
-            #list(FIND EXCLUDE_DIRS ${entry} EXCLUDE_ME)
-            #if (EXCLUDE_ME EQUAL -1)
                 RECURSE(${filename})
-            #endif()
         else()
             get_filename_component(fname ${filename} NAME)
-            # Process only c,h,cu files
             if (fname STREQUAL Makefile AND (NOT ${curdir} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR}))
                 get_filename_component(EXAMPLE_NAME ${curdir} NAME)
                 string(TOLOWER EXAMPLE_NAME ${EXAMPLE_NAME})
+                
                 # Generation of CMakeLists.txt files from template
-                #if (NOT EXISTS ${curdir}/CMakeLists.txt)
+                if (NOT EXISTS ${curdir}/CMakeLists.txt)
                     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.example.template.cmake
                         ${curdir}/CMakeLists.txt @ONLY)
-                #endif()
+                endif()
                     
-                # Add as external project
+                # Add as external project right away
                 GET_FULLNAME(${curdir} EXAMPLE_FULLNAME)
                 message(STATUS "Adding example ${EXAMPLE_FULLNAME}")
                 ExternalProject_Add(${EXAMPLE_FULLNAME}
@@ -57,22 +63,16 @@ function(RECURSE curdir)
             		CMAKE_COMMAND ${CMAKE_COMMAND} --no-warn-unused-cli # disables warnings for unused cmdline options
             		SOURCE_DIR ${curdir}
             		BINARY_DIR ${OPENCMISS_EXAMPLES_BUILD_DIR}/${EXAMPLE_NAME}
-            		CMAKE_ARGS ${EXAMPLE_EXTRA_DEFS}
-            		
-            		#--Build step-----------------
-            		#SET(BUILD_CMD $)
-                    #SET( INSTALL_CMD ${CMAKE_COMMAND} --build ${DIR} --target install)
-            		#BUILD_COMMAND {CMAKE_COMMAND} --build ${DIR}
-            		#--Install step---------------
-            		# currently set as extra arg (above), somehow does not work
-            		#INSTALL_DIR ${CMAKE_INSTALL_PREFIX} 
-            		#INSTALL_COMMAND ${INSTALL_COMMAND}
+            		# Need the prefix path in subprojects to find Iron and dependencies etc
+                    # This variable is also set in the build context file.
+            		CMAKE_ARGS -DCMAKE_PREFIX_PATH=${OPENCMISS_PREFIX_PATH}
             	)
             endif()
         endif()
     endforeach()
 endfunction()
 
+# Create a suitable unique example target name from the example folder
 function(GET_FULLNAME EXAMPLE_DIR VARNAME)
     string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "" TMP "${EXAMPLE_DIR}")
     string(REGEX REPLACE "[/\\]" "_" TMP ${TMP})
@@ -84,5 +84,6 @@ function(GET_FULLNAME EXAMPLE_DIR VARNAME)
     #endwhile()
     set(${VARNAME} ${TMP} PARENT_SCOPE)
 endfunction()
-  
+
+# Commence some real work here 
 RECURSE(${CMAKE_CURRENT_SOURCE_DIR})

@@ -19,5 +19,6 @@ nose_run_*
 nose_build_*
 nose_check_*
 
-# CMAKE generated files
+# CMAKE
 CMakeLists.txt
+build/
