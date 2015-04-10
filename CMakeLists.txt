@@ -25,8 +25,20 @@ include(ExternalProject)
 if (NOT OPENCMISS_EXAMPLES_BUILD_DIR)
     set(OPENCMISS_EXAMPLES_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
 endif()
-if (NOT OPENCMISS_EXAMPLES_INSTALL_PREFIX)
-    set(OPENCMISS_EXAMPLES_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/../install)
+# Put the executable binaries into the opencmiss installation folder if not specified otherwise
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT OR NOT CMAKE_INSTALL_PREFIX)
+    set(CMAKE_INSTALL_PREFIX ${OPENCMISS_INSTALL_DIR}/examples CACHE STRING "Installation directory" FORCE)
+endif()
+message(STATUS "Installing examples to ${CMAKE_INSTALL_PREFIX}")
+
+set(EXTRA_ARGS -DCMAKE_PREFIX_PATH=${OPENCMISS_PREFIX_PATH})
+# For shared libs, use the correct install RPATH to enable binaries to find the shared libs.
+# See http://www.cmake.org/Wiki/CMake_RPATH_handling
+if (BUILD_SHARED_LIBS)
+    list(APPEND EXTRA_ARGS 
+        -DCMAKE_INSTALL_RPATH=${OPENCMISS_INSTALL_DIR}/lib
+        -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+    )
 endif()
 
 function(RECURSE curdir)
@@ -38,9 +50,16 @@ function(RECURSE curdir)
                 RECURSE(${filename})
         else()
             get_filename_component(fname ${filename} NAME)
-            if (fname STREQUAL Makefile AND (NOT ${curdir} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR}))
-                get_filename_component(EXAMPLE_NAME ${curdir} NAME)
-                string(TOLOWER EXAMPLE_NAME ${EXAMPLE_NAME})
+            if (fname STREQUAL Makefile 
+                AND (NOT ${curdir} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+                AND (NOT ${curdir} STREQUAL ${CMAKE_CURRENT_BINARY_DIR}))
+                
+                # Add as external project right away
+                GET_FULLNAME(${curdir} EXAMPLE_FULLNAME)
+                message(STATUS "Configuring example ${EXAMPLE_FULLNAME}")
+                
+                #get_filename_component(EXAMPLE_NAME ${curdir} NAME)
+                #string(TOLOWER EXAMPLE_NAME ${EXAMPLE_NAME})
                 
                 # Generation of CMakeLists.txt files from template
                 if (NOT EXISTS ${curdir}/CMakeLists.txt)
@@ -48,9 +67,6 @@ function(RECURSE curdir)
                         ${curdir}/CMakeLists.txt @ONLY)
                 endif()
                     
-                # Add as external project right away
-                GET_FULLNAME(${curdir} EXAMPLE_FULLNAME)
-                message(STATUS "Adding example ${EXAMPLE_FULLNAME}")
                 ExternalProject_Add(${EXAMPLE_FULLNAME}
         		    PREFIX ${OPENCMISS_EXAMPLES_BUILD_DIR}
         		    TMP_DIR ${OPENCMISS_EXAMPLES_BUILD_DIR}/ep_tmp
@@ -62,10 +78,12 @@ function(RECURSE curdir)
         		    #--Configure step-------------
             		CMAKE_COMMAND ${CMAKE_COMMAND} --no-warn-unused-cli # disables warnings for unused cmdline options
             		SOURCE_DIR ${curdir}
-            		BINARY_DIR ${OPENCMISS_EXAMPLES_BUILD_DIR}/${EXAMPLE_NAME}
+            		BINARY_DIR ${OPENCMISS_EXAMPLES_BUILD_DIR}/${EXAMPLE_FULLNAME}
             		# Need the prefix path in subprojects to find Iron and dependencies etc
                     # This variable is also set in the build context file.
-            		CMAKE_ARGS -DCMAKE_PREFIX_PATH=${OPENCMISS_PREFIX_PATH}
+            		CMAKE_ARGS 
+            		    ${EXTRA_ARGS}
+            		    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}/${EXAMPLE_FULLNAME}
             	)
             endif()
         endif()
