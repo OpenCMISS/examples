@@ -402,7 +402,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
   CALL CMISSField_CreateStart(FieldGeometryUserNumberFE,Region,GeometricFieldFE,Err)
   CALL CMISSField_TypeSet(GeometricFieldFE,CMISS_FIELD_GEOMETRIC_TYPE,Err)
   CALL CMISSField_MeshDecompositionSet(GeometricFieldFE,Decomposition,Err)
-  CALL CMISSField_TypeSet(GeometricFieldFE,CMISS_FIELD_GEOMETRIC_TYPE,Err)  
+  CALL CMISSField_TypeSet(GeometricFieldFE,CMISS_FIELD_GEOMETRIC_GENERAL_TYPE,Err)
   CALL CMISSField_NumberOfVariablesSet(GeometricFieldFE,FieldGeometryNumberOfVariables,Err)
   CALL CMISSField_NumberOfComponentsSet(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,FieldGeometryNumberOfComponents,Err)  
   CALL CMISSField_ComponentMeshComponentSet(GeometricFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,QuadraticMeshComponentNumber,Err)
