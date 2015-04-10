@@ -22,3 +22,4 @@ nose_check_*
 # CMAKE
 CMakeLists.txt
 build/
+run
