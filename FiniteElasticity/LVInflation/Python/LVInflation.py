@@ -104,10 +104,10 @@ cellMLOption = [False]
 # Set up geometric model
 # longitudinal elements, circumferential elements, transmural elements
 elems = [16,16,2]
-cmd = '. ./matlab_batcher.sh benchmark_ellipse_linear ['+str(elems[0])+','+str(elems[1])+','+str(elems[2])+'];'
-print cmd
-if not os.path.exists("ellipse_benchmark_lin_"+str(elems[2])+"-"+str(elems[1])+"-"+str(elems[0])+".exnode"):
-    os.system(cmd)
+#cmd = '. ./matlab_batcher.sh benchmark_ellipse_linear ['+str(elems[0])+','+str(elems[1])+','+str(elems[2])+'];'
+#print cmd
+#if not os.path.exists("ellipse_benchmark_lin_"+str(elems[2])+"-"+str(elems[1])+"-"+str(elems[0])+".exnode"):
+#    os.system(cmd)
 
 inputNodes = exfile.Exnode("ellipse_benchmark_lin_"+str(elems[2])+"-"+str(elems[1])+"-"+str(elems[0])+".exnode")
 inputElems = exfile.Exelem("ellipse_benchmark_lin_"+str(elems[2])+"-"+str(elems[1])+"-"+str(elems[0])+".exelem")
@@ -235,7 +235,7 @@ fibreField = FibreFieldSetUp(fibreFieldUserNumber, region, decomposition, geomet
                              inputNodes)
 
 # Set up material field.
-params = [10.0, 1.0, 1.0, 1.0]
+params = [5.0, 1.0, 1.0, 1.0]
 materialField = MaterialFieldSetUp(materialFieldUserNumber, region, decomposition, geometricField, params, option,
                                    cellMLOption)
 

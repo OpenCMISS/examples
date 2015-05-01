@@ -1,0 +1,2645 @@
+Group name: Region
+Shape. Dimension=3
+ #Scale factor sets=1
+ l.Lagrange*l.Lagrange*l.Lagrange, #Scale factors=8
+ #Nodes=8
+ #Fields=1
+ 1) coordinates, coordinate, rectangular cartesian, #Components=3
+  x. l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+  #Nodes=8
+  1. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  2. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  3. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  4. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  5. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  6. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  7. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  8. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  y. l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+  #Nodes=8
+  1. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  2. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  3. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  4. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  5. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  6. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  7. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  8. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  z. l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+  #Nodes=8
+  1. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  2. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  3. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  4. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  5. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  6. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  7. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+  8. #Values=1
+     Value indices: 1
+     Scale factor indices: 0
+Element: 1 0 0
+Nodes: 
+115 115 124 126 50 50 59 61
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 2 0 0
+Nodes: 
+115 115 126 128 50 50 61 63
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 3 0 0
+Nodes: 
+115 115 128 130 50 50 63 65
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 4 0 0
+Nodes: 
+115 115 130 131 50 50 65 66
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 5 0 0
+Nodes: 
+115 115 131 129 50 50 66 64
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 6 0 0
+Nodes: 
+115 115 129 127 50 50 64 62
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 7 0 0
+Nodes: 
+115 115 127 125 50 50 62 60
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 8 0 0
+Nodes: 
+115 115 125 123 50 50 60 58
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 9 0 0
+Nodes: 
+115 115 123 121 50 50 58 56
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 10 0 0
+Nodes: 
+115 115 121 119 50 50 56 54
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 11 0 0
+Nodes: 
+115 115 119 117 50 50 54 52
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 12 0 0
+Nodes: 
+115 115 117 116 50 50 52 51
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 13 0 0
+Nodes: 
+115 115 116 118 50 50 51 53
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 14 0 0
+Nodes: 
+115 115 118 120 50 50 53 55
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 15 0 0
+Nodes: 
+115 115 120 122 50 50 55 57
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 16 0 0
+Nodes: 
+115 115 122 124 50 50 57 59
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 17 0 0
+Nodes: 
+124 126 172 174 59 61 75 77
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 18 0 0
+Nodes: 
+126 128 174 176 61 63 77 79
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 19 0 0
+Nodes: 
+128 130 176 178 63 65 79 81
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 20 0 0
+Nodes: 
+130 131 178 179 65 66 81 82
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 21 0 0
+Nodes: 
+131 129 179 177 66 64 82 80
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 22 0 0
+Nodes: 
+129 127 177 175 64 62 80 78
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 23 0 0
+Nodes: 
+127 125 175 173 62 60 78 76
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 24 0 0
+Nodes: 
+125 123 173 171 60 58 76 74
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 25 0 0
+Nodes: 
+123 121 171 169 58 56 74 72
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 26 0 0
+Nodes: 
+121 119 169 167 56 54 72 70
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 27 0 0
+Nodes: 
+119 117 167 165 54 52 70 68
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 28 0 0
+Nodes: 
+117 116 165 164 52 51 68 67
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 29 0 0
+Nodes: 
+116 118 164 166 51 53 67 69
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 30 0 0
+Nodes: 
+118 120 166 168 53 55 69 71
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 31 0 0
+Nodes: 
+120 122 168 170 55 57 71 73
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 32 0 0
+Nodes: 
+122 124 170 172 57 59 73 75
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 33 0 0
+Nodes: 
+172 174 188 190 75 77 107 109
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 34 0 0
+Nodes: 
+174 176 190 192 77 79 109 111
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 35 0 0
+Nodes: 
+176 178 192 194 79 81 111 113
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 36 0 0
+Nodes: 
+178 179 194 195 81 82 113 114
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 37 0 0
+Nodes: 
+179 177 195 193 82 80 114 112
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 38 0 0
+Nodes: 
+177 175 193 191 80 78 112 110
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 39 0 0
+Nodes: 
+175 173 191 189 78 76 110 108
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 40 0 0
+Nodes: 
+173 171 189 187 76 74 108 106
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 41 0 0
+Nodes: 
+171 169 187 185 74 72 106 104
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 42 0 0
+Nodes: 
+169 167 185 183 72 70 104 102
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 43 0 0
+Nodes: 
+167 165 183 181 70 68 102 100
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 44 0 0
+Nodes: 
+165 164 181 180 68 67 100 99
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 45 0 0
+Nodes: 
+164 166 180 182 67 69 99 101
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 46 0 0
+Nodes: 
+166 168 182 184 69 71 101 103
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 47 0 0
+Nodes: 
+168 170 184 186 71 73 103 105
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 48 0 0
+Nodes: 
+170 172 186 188 73 75 105 107
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 49 0 0
+Nodes: 
+188 190 236 238 107 109 156 158
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 50 0 0
+Nodes: 
+190 192 238 240 109 111 158 160
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 51 0 0
+Nodes: 
+192 194 240 242 111 113 160 162
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 52 0 0
+Nodes: 
+194 195 242 243 113 114 162 163
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 53 0 0
+Nodes: 
+195 193 243 241 114 112 163 161
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 54 0 0
+Nodes: 
+193 191 241 239 112 110 161 159
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 55 0 0
+Nodes: 
+191 189 239 237 110 108 159 157
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 56 0 0
+Nodes: 
+189 187 237 235 108 106 157 155
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 57 0 0
+Nodes: 
+187 185 235 233 106 104 155 153
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 58 0 0
+Nodes: 
+185 183 233 231 104 102 153 151
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 59 0 0
+Nodes: 
+183 181 231 229 102 100 151 149
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 60 0 0
+Nodes: 
+181 180 229 228 100 99 149 148
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 61 0 0
+Nodes: 
+180 182 228 230 99 101 148 150
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 62 0 0
+Nodes: 
+182 184 230 232 101 103 150 152
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 63 0 0
+Nodes: 
+184 186 232 234 103 105 152 154
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 64 0 0
+Nodes: 
+186 188 234 236 105 107 154 156
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 65 0 0
+Nodes: 
+236 238 268 270 156 158 204 206
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 66 0 0
+Nodes: 
+238 240 270 272 158 160 206 208
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 67 0 0
+Nodes: 
+240 242 272 274 160 162 208 210
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 68 0 0
+Nodes: 
+242 243 274 275 162 163 210 211
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 69 0 0
+Nodes: 
+243 241 275 273 163 161 211 209
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 70 0 0
+Nodes: 
+241 239 273 271 161 159 209 207
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 71 0 0
+Nodes: 
+239 237 271 269 159 157 207 205
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 72 0 0
+Nodes: 
+237 235 269 267 157 155 205 203
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 73 0 0
+Nodes: 
+235 233 267 265 155 153 203 201
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 74 0 0
+Nodes: 
+233 231 265 263 153 151 201 199
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 75 0 0
+Nodes: 
+231 229 263 261 151 149 199 197
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 76 0 0
+Nodes: 
+229 228 261 260 149 148 197 196
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 77 0 0
+Nodes: 
+228 230 260 262 148 150 196 198
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 78 0 0
+Nodes: 
+230 232 262 264 150 152 198 200
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 79 0 0
+Nodes: 
+232 234 264 266 152 154 200 202
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 80 0 0
+Nodes: 
+234 236 266 268 154 156 202 204
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 81 0 0
+Nodes: 
+268 270 300 302 204 206 252 254
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 82 0 0
+Nodes: 
+270 272 302 304 206 208 254 256
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 83 0 0
+Nodes: 
+272 274 304 306 208 210 256 258
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 84 0 0
+Nodes: 
+274 275 306 307 210 211 258 259
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 85 0 0
+Nodes: 
+275 273 307 305 211 209 259 257
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 86 0 0
+Nodes: 
+273 271 305 303 209 207 257 255
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 87 0 0
+Nodes: 
+271 269 303 301 207 205 255 253
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 88 0 0
+Nodes: 
+269 267 301 299 205 203 253 251
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 89 0 0
+Nodes: 
+267 265 299 297 203 201 251 249
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 90 0 0
+Nodes: 
+265 263 297 295 201 199 249 247
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 91 0 0
+Nodes: 
+263 261 295 293 199 197 247 245
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 92 0 0
+Nodes: 
+261 260 293 292 197 196 245 244
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 93 0 0
+Nodes: 
+260 262 292 294 196 198 244 246
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 94 0 0
+Nodes: 
+262 264 294 296 198 200 246 248
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 95 0 0
+Nodes: 
+264 266 296 298 200 202 248 250
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 96 0 0
+Nodes: 
+266 268 298 300 202 204 250 252
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 97 0 0
+Nodes: 
+300 302 348 350 252 254 316 318
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 98 0 0
+Nodes: 
+302 304 350 352 254 256 318 320
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 99 0 0
+Nodes: 
+304 306 352 354 256 258 320 322
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 100 0 0
+Nodes: 
+306 307 354 355 258 259 322 323
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 101 0 0
+Nodes: 
+307 305 355 353 259 257 323 321
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 102 0 0
+Nodes: 
+305 303 353 351 257 255 321 319
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 103 0 0
+Nodes: 
+303 301 351 349 255 253 319 317
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 104 0 0
+Nodes: 
+301 299 349 347 253 251 317 315
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 105 0 0
+Nodes: 
+299 297 347 345 251 249 315 313
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 106 0 0
+Nodes: 
+297 295 345 343 249 247 313 311
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 107 0 0
+Nodes: 
+295 293 343 341 247 245 311 309
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 108 0 0
+Nodes: 
+293 292 341 340 245 244 309 308
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 109 0 0
+Nodes: 
+292 294 340 342 244 246 308 310
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 110 0 0
+Nodes: 
+294 296 342 344 246 248 310 312
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 111 0 0
+Nodes: 
+296 298 344 346 248 250 312 314
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 112 0 0
+Nodes: 
+298 300 346 348 250 252 314 316
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 113 0 0
+Nodes: 
+348 350 396 398 316 318 364 366
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 114 0 0
+Nodes: 
+350 352 398 400 318 320 366 368
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 115 0 0
+Nodes: 
+352 354 400 402 320 322 368 370
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 116 0 0
+Nodes: 
+354 355 402 403 322 323 370 371
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 117 0 0
+Nodes: 
+355 353 403 401 323 321 371 369
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 118 0 0
+Nodes: 
+353 351 401 399 321 319 369 367
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 119 0 0
+Nodes: 
+351 349 399 397 319 317 367 365
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 120 0 0
+Nodes: 
+349 347 397 395 317 315 365 363
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 121 0 0
+Nodes: 
+347 345 395 393 315 313 363 361
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 122 0 0
+Nodes: 
+345 343 393 391 313 311 361 359
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 123 0 0
+Nodes: 
+343 341 391 389 311 309 359 357
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 124 0 0
+Nodes: 
+341 340 389 388 309 308 357 356
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 125 0 0
+Nodes: 
+340 342 388 390 308 310 356 358
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 126 0 0
+Nodes: 
+342 344 390 392 310 312 358 360
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 127 0 0
+Nodes: 
+344 346 392 394 312 314 360 362
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 128 0 0
+Nodes: 
+346 348 394 396 314 316 362 364
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 129 0 0
+Nodes: 
+396 398 428 430 364 366 412 414
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 130 0 0
+Nodes: 
+398 400 430 432 366 368 414 416
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 131 0 0
+Nodes: 
+400 402 432 434 368 370 416 418
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 132 0 0
+Nodes: 
+402 403 434 435 370 371 418 419
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 133 0 0
+Nodes: 
+403 401 435 433 371 369 419 417
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 134 0 0
+Nodes: 
+401 399 433 431 369 367 417 415
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 135 0 0
+Nodes: 
+399 397 431 429 367 365 415 413
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 136 0 0
+Nodes: 
+397 395 429 427 365 363 413 411
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 137 0 0
+Nodes: 
+395 393 427 425 363 361 411 409
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 138 0 0
+Nodes: 
+393 391 425 423 361 359 409 407
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 139 0 0
+Nodes: 
+391 389 423 421 359 357 407 405
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 140 0 0
+Nodes: 
+389 388 421 420 357 356 405 404
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 141 0 0
+Nodes: 
+388 390 420 422 356 358 404 406
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 142 0 0
+Nodes: 
+390 392 422 424 358 360 406 408
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 143 0 0
+Nodes: 
+392 394 424 426 360 362 408 410
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 144 0 0
+Nodes: 
+394 396 426 428 362 364 410 412
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 145 0 0
+Nodes: 
+428 430 476 478 412 414 460 462
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 146 0 0
+Nodes: 
+430 432 478 480 414 416 462 464
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 147 0 0
+Nodes: 
+432 434 480 482 416 418 464 466
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 148 0 0
+Nodes: 
+434 435 482 483 418 419 466 467
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 149 0 0
+Nodes: 
+435 433 483 481 419 417 467 465
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 150 0 0
+Nodes: 
+433 431 481 479 417 415 465 463
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 151 0 0
+Nodes: 
+431 429 479 477 415 413 463 461
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 152 0 0
+Nodes: 
+429 427 477 475 413 411 461 459
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 153 0 0
+Nodes: 
+427 425 475 473 411 409 459 457
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 154 0 0
+Nodes: 
+425 423 473 471 409 407 457 455
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 155 0 0
+Nodes: 
+423 421 471 469 407 405 455 453
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 156 0 0
+Nodes: 
+421 420 469 468 405 404 453 452
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 157 0 0
+Nodes: 
+420 422 468 470 404 406 452 454
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 158 0 0
+Nodes: 
+422 424 470 472 406 408 454 456
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 159 0 0
+Nodes: 
+424 426 472 474 408 410 456 458
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 160 0 0
+Nodes: 
+426 428 474 476 410 412 458 460
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 161 0 0
+Nodes: 
+476 478 524 526 460 462 508 510
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 162 0 0
+Nodes: 
+478 480 526 528 462 464 510 512
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 163 0 0
+Nodes: 
+480 482 528 530 464 466 512 514
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 164 0 0
+Nodes: 
+482 483 530 531 466 467 514 515
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 165 0 0
+Nodes: 
+483 481 531 529 467 465 515 513
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 166 0 0
+Nodes: 
+481 479 529 527 465 463 513 511
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 167 0 0
+Nodes: 
+479 477 527 525 463 461 511 509
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 168 0 0
+Nodes: 
+477 475 525 523 461 459 509 507
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 169 0 0
+Nodes: 
+475 473 523 521 459 457 507 505
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 170 0 0
+Nodes: 
+473 471 521 519 457 455 505 503
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 171 0 0
+Nodes: 
+471 469 519 517 455 453 503 501
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 172 0 0
+Nodes: 
+469 468 517 516 453 452 501 500
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 173 0 0
+Nodes: 
+468 470 516 518 452 454 500 502
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 174 0 0
+Nodes: 
+470 472 518 520 454 456 502 504
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 175 0 0
+Nodes: 
+472 474 520 522 456 458 504 506
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 176 0 0
+Nodes: 
+474 476 522 524 458 460 506 508
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 177 0 0
+Nodes: 
+524 526 572 574 508 510 556 558
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 178 0 0
+Nodes: 
+526 528 574 576 510 512 558 560
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 179 0 0
+Nodes: 
+528 530 576 578 512 514 560 562
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 180 0 0
+Nodes: 
+530 531 578 579 514 515 562 563
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 181 0 0
+Nodes: 
+531 529 579 577 515 513 563 561
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 182 0 0
+Nodes: 
+529 527 577 575 513 511 561 559
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 183 0 0
+Nodes: 
+527 525 575 573 511 509 559 557
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 184 0 0
+Nodes: 
+525 523 573 571 509 507 557 555
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 185 0 0
+Nodes: 
+523 521 571 569 507 505 555 553
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 186 0 0
+Nodes: 
+521 519 569 567 505 503 553 551
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 187 0 0
+Nodes: 
+519 517 567 565 503 501 551 549
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 188 0 0
+Nodes: 
+517 516 565 564 501 500 549 548
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 189 0 0
+Nodes: 
+516 518 564 566 500 502 548 550
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 190 0 0
+Nodes: 
+518 520 566 568 502 504 550 552
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 191 0 0
+Nodes: 
+520 522 568 570 504 506 552 554
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 192 0 0
+Nodes: 
+522 524 570 572 506 508 554 556
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 193 0 0
+Nodes: 
+572 574 620 622 556 558 604 606
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 194 0 0
+Nodes: 
+574 576 622 624 558 560 606 608
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 195 0 0
+Nodes: 
+576 578 624 626 560 562 608 610
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 196 0 0
+Nodes: 
+578 579 626 627 562 563 610 611
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 197 0 0
+Nodes: 
+579 577 627 625 563 561 611 609
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 198 0 0
+Nodes: 
+577 575 625 623 561 559 609 607
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 199 0 0
+Nodes: 
+575 573 623 621 559 557 607 605
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 200 0 0
+Nodes: 
+573 571 621 619 557 555 605 603
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 201 0 0
+Nodes: 
+571 569 619 617 555 553 603 601
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 202 0 0
+Nodes: 
+569 567 617 615 553 551 601 599
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 203 0 0
+Nodes: 
+567 565 615 613 551 549 599 597
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 204 0 0
+Nodes: 
+565 564 613 612 549 548 597 596
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 205 0 0
+Nodes: 
+564 566 612 614 548 550 596 598
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 206 0 0
+Nodes: 
+566 568 614 616 550 552 598 600
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 207 0 0
+Nodes: 
+568 570 616 618 552 554 600 602
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 208 0 0
+Nodes: 
+570 572 618 620 554 556 602 604
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 209 0 0
+Nodes: 
+620 622 668 670 604 606 652 654
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 210 0 0
+Nodes: 
+622 624 670 672 606 608 654 656
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 211 0 0
+Nodes: 
+624 626 672 674 608 610 656 658
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 212 0 0
+Nodes: 
+626 627 674 675 610 611 658 659
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 213 0 0
+Nodes: 
+627 625 675 673 611 609 659 657
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 214 0 0
+Nodes: 
+625 623 673 671 609 607 657 655
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 215 0 0
+Nodes: 
+623 621 671 669 607 605 655 653
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 216 0 0
+Nodes: 
+621 619 669 667 605 603 653 651
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 217 0 0
+Nodes: 
+619 617 667 665 603 601 651 649
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 218 0 0
+Nodes: 
+617 615 665 663 601 599 649 647
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 219 0 0
+Nodes: 
+615 613 663 661 599 597 647 645
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 220 0 0
+Nodes: 
+613 612 661 660 597 596 645 644
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 221 0 0
+Nodes: 
+612 614 660 662 596 598 644 646
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 222 0 0
+Nodes: 
+614 616 662 664 598 600 646 648
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 223 0 0
+Nodes: 
+616 618 664 666 600 602 648 650
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 224 0 0
+Nodes: 
+618 620 666 668 602 604 650 652
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 225 0 0
+Nodes: 
+668 670 716 718 652 654 700 702
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 226 0 0
+Nodes: 
+670 672 718 720 654 656 702 704
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 227 0 0
+Nodes: 
+672 674 720 722 656 658 704 706
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 228 0 0
+Nodes: 
+674 675 722 723 658 659 706 707
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 229 0 0
+Nodes: 
+675 673 723 721 659 657 707 705
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 230 0 0
+Nodes: 
+673 671 721 719 657 655 705 703
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 231 0 0
+Nodes: 
+671 669 719 717 655 653 703 701
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 232 0 0
+Nodes: 
+669 667 717 715 653 651 701 699
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 233 0 0
+Nodes: 
+667 665 715 713 651 649 699 697
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 234 0 0
+Nodes: 
+665 663 713 711 649 647 697 695
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 235 0 0
+Nodes: 
+663 661 711 709 647 645 695 693
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 236 0 0
+Nodes: 
+661 660 709 708 645 644 693 692
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 237 0 0
+Nodes: 
+660 662 708 710 644 646 692 694
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 238 0 0
+Nodes: 
+662 664 710 712 646 648 694 696
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 239 0 0
+Nodes: 
+664 666 712 714 648 650 696 698
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 240 0 0
+Nodes: 
+666 668 714 716 650 652 698 700
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 241 0 0
+Nodes: 
+716 718 748 752 700 702 749 754
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 242 0 0
+Nodes: 
+718 720 752 758 702 704 754 760
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 243 0 0
+Nodes: 
+720 722 758 762 704 706 760 767
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 244 0 0
+Nodes: 
+722 723 762 763 706 707 767 768
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 245 0 0
+Nodes: 
+723 721 763 761 707 705 768 766
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 246 0 0
+Nodes: 
+721 719 761 757 705 703 766 759
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 247 0 0
+Nodes: 
+719 717 757 751 703 701 759 753
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 248 0 0
+Nodes: 
+717 715 751 747 701 699 753 746
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 249 0 0
+Nodes: 
+715 713 747 743 699 697 746 741
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 250 0 0
+Nodes: 
+713 711 743 737 697 695 741 735
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 251 0 0
+Nodes: 
+711 709 737 733 695 693 735 728
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 252 0 0
+Nodes: 
+709 708 733 732 693 692 728 727
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 253 0 0
+Nodes: 
+708 710 732 734 692 694 727 729
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 254 0 0
+Nodes: 
+710 712 734 738 694 696 729 736
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 255 0 0
+Nodes: 
+712 714 738 744 696 698 736 742
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 256 0 0
+Nodes: 
+714 716 744 748 698 700 742 749
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 257 0 0
+Nodes: 
+50 50 59 61 1 1 10 12
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 258 0 0
+Nodes: 
+50 50 61 63 1 1 12 14
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 259 0 0
+Nodes: 
+50 50 63 65 1 1 14 16
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 260 0 0
+Nodes: 
+50 50 65 66 1 1 16 17
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 261 0 0
+Nodes: 
+50 50 66 64 1 1 17 15
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 262 0 0
+Nodes: 
+50 50 64 62 1 1 15 13
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 263 0 0
+Nodes: 
+50 50 62 60 1 1 13 11
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 264 0 0
+Nodes: 
+50 50 60 58 1 1 11 9
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 265 0 0
+Nodes: 
+50 50 58 56 1 1 9 7
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 266 0 0
+Nodes: 
+50 50 56 54 1 1 7 5
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 267 0 0
+Nodes: 
+50 50 54 52 1 1 5 3
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 268 0 0
+Nodes: 
+50 50 52 51 1 1 3 2
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 269 0 0
+Nodes: 
+50 50 51 53 1 1 2 4
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 270 0 0
+Nodes: 
+50 50 53 55 1 1 4 6
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 271 0 0
+Nodes: 
+50 50 55 57 1 1 6 8
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 272 0 0
+Nodes: 
+50 50 57 59 1 1 8 10
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 273 0 0
+Nodes: 
+59 61 75 77 10 12 26 28
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 274 0 0
+Nodes: 
+61 63 77 79 12 14 28 30
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 275 0 0
+Nodes: 
+63 65 79 81 14 16 30 32
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 276 0 0
+Nodes: 
+65 66 81 82 16 17 32 33
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 277 0 0
+Nodes: 
+66 64 82 80 17 15 33 31
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 278 0 0
+Nodes: 
+64 62 80 78 15 13 31 29
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 279 0 0
+Nodes: 
+62 60 78 76 13 11 29 27
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 280 0 0
+Nodes: 
+60 58 76 74 11 9 27 25
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 281 0 0
+Nodes: 
+58 56 74 72 9 7 25 23
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 282 0 0
+Nodes: 
+56 54 72 70 7 5 23 21
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 283 0 0
+Nodes: 
+54 52 70 68 5 3 21 19
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 284 0 0
+Nodes: 
+52 51 68 67 3 2 19 18
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 285 0 0
+Nodes: 
+51 53 67 69 2 4 18 20
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 286 0 0
+Nodes: 
+53 55 69 71 4 6 20 22
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 287 0 0
+Nodes: 
+55 57 71 73 6 8 22 24
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 288 0 0
+Nodes: 
+57 59 73 75 8 10 24 26
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 289 0 0
+Nodes: 
+75 77 107 109 26 28 42 44
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 290 0 0
+Nodes: 
+77 79 109 111 28 30 44 46
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 291 0 0
+Nodes: 
+79 81 111 113 30 32 46 48
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 292 0 0
+Nodes: 
+81 82 113 114 32 33 48 49
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 293 0 0
+Nodes: 
+82 80 114 112 33 31 49 47
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 294 0 0
+Nodes: 
+80 78 112 110 31 29 47 45
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 295 0 0
+Nodes: 
+78 76 110 108 29 27 45 43
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 296 0 0
+Nodes: 
+76 74 108 106 27 25 43 41
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 297 0 0
+Nodes: 
+74 72 106 104 25 23 41 39
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 298 0 0
+Nodes: 
+72 70 104 102 23 21 39 37
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 299 0 0
+Nodes: 
+70 68 102 100 21 19 37 35
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 300 0 0
+Nodes: 
+68 67 100 99 19 18 35 34
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 301 0 0
+Nodes: 
+67 69 99 101 18 20 34 36
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 302 0 0
+Nodes: 
+69 71 101 103 20 22 36 38
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 303 0 0
+Nodes: 
+71 73 103 105 22 24 38 40
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 304 0 0
+Nodes: 
+73 75 105 107 24 26 40 42
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 305 0 0
+Nodes: 
+107 109 156 158 42 44 91 93
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 306 0 0
+Nodes: 
+109 111 158 160 44 46 93 95
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 307 0 0
+Nodes: 
+111 113 160 162 46 48 95 97
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 308 0 0
+Nodes: 
+113 114 162 163 48 49 97 98
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 309 0 0
+Nodes: 
+114 112 163 161 49 47 98 96
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 310 0 0
+Nodes: 
+112 110 161 159 47 45 96 94
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 311 0 0
+Nodes: 
+110 108 159 157 45 43 94 92
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 312 0 0
+Nodes: 
+108 106 157 155 43 41 92 90
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 313 0 0
+Nodes: 
+106 104 155 153 41 39 90 88
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 314 0 0
+Nodes: 
+104 102 153 151 39 37 88 86
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 315 0 0
+Nodes: 
+102 100 151 149 37 35 86 84
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 316 0 0
+Nodes: 
+100 99 149 148 35 34 84 83
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 317 0 0
+Nodes: 
+99 101 148 150 34 36 83 85
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 318 0 0
+Nodes: 
+101 103 150 152 36 38 85 87
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 319 0 0
+Nodes: 
+103 105 152 154 38 40 87 89
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 320 0 0
+Nodes: 
+105 107 154 156 40 42 89 91
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 321 0 0
+Nodes: 
+156 158 204 206 91 93 140 142
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 322 0 0
+Nodes: 
+158 160 206 208 93 95 142 144
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 323 0 0
+Nodes: 
+160 162 208 210 95 97 144 146
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 324 0 0
+Nodes: 
+162 163 210 211 97 98 146 147
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 325 0 0
+Nodes: 
+163 161 211 209 98 96 147 145
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 326 0 0
+Nodes: 
+161 159 209 207 96 94 145 143
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 327 0 0
+Nodes: 
+159 157 207 205 94 92 143 141
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 328 0 0
+Nodes: 
+157 155 205 203 92 90 141 139
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 329 0 0
+Nodes: 
+155 153 203 201 90 88 139 137
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 330 0 0
+Nodes: 
+153 151 201 199 88 86 137 135
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 331 0 0
+Nodes: 
+151 149 199 197 86 84 135 133
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 332 0 0
+Nodes: 
+149 148 197 196 84 83 133 132
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 333 0 0
+Nodes: 
+148 150 196 198 83 85 132 134
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 334 0 0
+Nodes: 
+150 152 198 200 85 87 134 136
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 335 0 0
+Nodes: 
+152 154 200 202 87 89 136 138
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 336 0 0
+Nodes: 
+154 156 202 204 89 91 138 140
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 337 0 0
+Nodes: 
+204 206 252 254 140 142 220 222
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 338 0 0
+Nodes: 
+206 208 254 256 142 144 222 224
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 339 0 0
+Nodes: 
+208 210 256 258 144 146 224 226
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 340 0 0
+Nodes: 
+210 211 258 259 146 147 226 227
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 341 0 0
+Nodes: 
+211 209 259 257 147 145 227 225
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 342 0 0
+Nodes: 
+209 207 257 255 145 143 225 223
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 343 0 0
+Nodes: 
+207 205 255 253 143 141 223 221
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 344 0 0
+Nodes: 
+205 203 253 251 141 139 221 219
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 345 0 0
+Nodes: 
+203 201 251 249 139 137 219 217
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 346 0 0
+Nodes: 
+201 199 249 247 137 135 217 215
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 347 0 0
+Nodes: 
+199 197 247 245 135 133 215 213
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 348 0 0
+Nodes: 
+197 196 245 244 133 132 213 212
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 349 0 0
+Nodes: 
+196 198 244 246 132 134 212 214
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 350 0 0
+Nodes: 
+198 200 246 248 134 136 214 216
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 351 0 0
+Nodes: 
+200 202 248 250 136 138 216 218
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 352 0 0
+Nodes: 
+202 204 250 252 138 140 218 220
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 353 0 0
+Nodes: 
+252 254 316 318 220 222 284 286
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 354 0 0
+Nodes: 
+254 256 318 320 222 224 286 288
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 355 0 0
+Nodes: 
+256 258 320 322 224 226 288 290
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 356 0 0
+Nodes: 
+258 259 322 323 226 227 290 291
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 357 0 0
+Nodes: 
+259 257 323 321 227 225 291 289
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 358 0 0
+Nodes: 
+257 255 321 319 225 223 289 287
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 359 0 0
+Nodes: 
+255 253 319 317 223 221 287 285
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 360 0 0
+Nodes: 
+253 251 317 315 221 219 285 283
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 361 0 0
+Nodes: 
+251 249 315 313 219 217 283 281
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 362 0 0
+Nodes: 
+249 247 313 311 217 215 281 279
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 363 0 0
+Nodes: 
+247 245 311 309 215 213 279 277
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 364 0 0
+Nodes: 
+245 244 309 308 213 212 277 276
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 365 0 0
+Nodes: 
+244 246 308 310 212 214 276 278
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 366 0 0
+Nodes: 
+246 248 310 312 214 216 278 280
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 367 0 0
+Nodes: 
+248 250 312 314 216 218 280 282
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 368 0 0
+Nodes: 
+250 252 314 316 218 220 282 284
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 369 0 0
+Nodes: 
+316 318 364 366 284 286 332 334
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 370 0 0
+Nodes: 
+318 320 366 368 286 288 334 336
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 371 0 0
+Nodes: 
+320 322 368 370 288 290 336 338
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 372 0 0
+Nodes: 
+322 323 370 371 290 291 338 339
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 373 0 0
+Nodes: 
+323 321 371 369 291 289 339 337
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 374 0 0
+Nodes: 
+321 319 369 367 289 287 337 335
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 375 0 0
+Nodes: 
+319 317 367 365 287 285 335 333
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 376 0 0
+Nodes: 
+317 315 365 363 285 283 333 331
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 377 0 0
+Nodes: 
+315 313 363 361 283 281 331 329
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 378 0 0
+Nodes: 
+313 311 361 359 281 279 329 327
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 379 0 0
+Nodes: 
+311 309 359 357 279 277 327 325
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 380 0 0
+Nodes: 
+309 308 357 356 277 276 325 324
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 381 0 0
+Nodes: 
+308 310 356 358 276 278 324 326
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 382 0 0
+Nodes: 
+310 312 358 360 278 280 326 328
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 383 0 0
+Nodes: 
+312 314 360 362 280 282 328 330
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 384 0 0
+Nodes: 
+314 316 362 364 282 284 330 332
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 385 0 0
+Nodes: 
+364 366 412 414 332 334 380 382
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 386 0 0
+Nodes: 
+366 368 414 416 334 336 382 384
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 387 0 0
+Nodes: 
+368 370 416 418 336 338 384 386
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 388 0 0
+Nodes: 
+370 371 418 419 338 339 386 387
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 389 0 0
+Nodes: 
+371 369 419 417 339 337 387 385
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 390 0 0
+Nodes: 
+369 367 417 415 337 335 385 383
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 391 0 0
+Nodes: 
+367 365 415 413 335 333 383 381
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 392 0 0
+Nodes: 
+365 363 413 411 333 331 381 379
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 393 0 0
+Nodes: 
+363 361 411 409 331 329 379 377
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 394 0 0
+Nodes: 
+361 359 409 407 329 327 377 375
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 395 0 0
+Nodes: 
+359 357 407 405 327 325 375 373
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 396 0 0
+Nodes: 
+357 356 405 404 325 324 373 372
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 397 0 0
+Nodes: 
+356 358 404 406 324 326 372 374
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 398 0 0
+Nodes: 
+358 360 406 408 326 328 374 376
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 399 0 0
+Nodes: 
+360 362 408 410 328 330 376 378
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 400 0 0
+Nodes: 
+362 364 410 412 330 332 378 380
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 401 0 0
+Nodes: 
+412 414 460 462 380 382 444 446
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 402 0 0
+Nodes: 
+414 416 462 464 382 384 446 448
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 403 0 0
+Nodes: 
+416 418 464 466 384 386 448 450
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 404 0 0
+Nodes: 
+418 419 466 467 386 387 450 451
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 405 0 0
+Nodes: 
+419 417 467 465 387 385 451 449
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 406 0 0
+Nodes: 
+417 415 465 463 385 383 449 447
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 407 0 0
+Nodes: 
+415 413 463 461 383 381 447 445
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 408 0 0
+Nodes: 
+413 411 461 459 381 379 445 443
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 409 0 0
+Nodes: 
+411 409 459 457 379 377 443 441
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 410 0 0
+Nodes: 
+409 407 457 455 377 375 441 439
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 411 0 0
+Nodes: 
+407 405 455 453 375 373 439 437
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 412 0 0
+Nodes: 
+405 404 453 452 373 372 437 436
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 413 0 0
+Nodes: 
+404 406 452 454 372 374 436 438
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 414 0 0
+Nodes: 
+406 408 454 456 374 376 438 440
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 415 0 0
+Nodes: 
+408 410 456 458 376 378 440 442
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 416 0 0
+Nodes: 
+410 412 458 460 378 380 442 444
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 417 0 0
+Nodes: 
+460 462 508 510 444 446 492 494
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 418 0 0
+Nodes: 
+462 464 510 512 446 448 494 496
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 419 0 0
+Nodes: 
+464 466 512 514 448 450 496 498
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 420 0 0
+Nodes: 
+466 467 514 515 450 451 498 499
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 421 0 0
+Nodes: 
+467 465 515 513 451 449 499 497
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 422 0 0
+Nodes: 
+465 463 513 511 449 447 497 495
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 423 0 0
+Nodes: 
+463 461 511 509 447 445 495 493
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 424 0 0
+Nodes: 
+461 459 509 507 445 443 493 491
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 425 0 0
+Nodes: 
+459 457 507 505 443 441 491 489
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 426 0 0
+Nodes: 
+457 455 505 503 441 439 489 487
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 427 0 0
+Nodes: 
+455 453 503 501 439 437 487 485
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 428 0 0
+Nodes: 
+453 452 501 500 437 436 485 484
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 429 0 0
+Nodes: 
+452 454 500 502 436 438 484 486
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 430 0 0
+Nodes: 
+454 456 502 504 438 440 486 488
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 431 0 0
+Nodes: 
+456 458 504 506 440 442 488 490
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 432 0 0
+Nodes: 
+458 460 506 508 442 444 490 492
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 433 0 0
+Nodes: 
+508 510 556 558 492 494 540 542
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 434 0 0
+Nodes: 
+510 512 558 560 494 496 542 544
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 435 0 0
+Nodes: 
+512 514 560 562 496 498 544 546
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 436 0 0
+Nodes: 
+514 515 562 563 498 499 546 547
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 437 0 0
+Nodes: 
+515 513 563 561 499 497 547 545
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 438 0 0
+Nodes: 
+513 511 561 559 497 495 545 543
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 439 0 0
+Nodes: 
+511 509 559 557 495 493 543 541
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 440 0 0
+Nodes: 
+509 507 557 555 493 491 541 539
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 441 0 0
+Nodes: 
+507 505 555 553 491 489 539 537
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 442 0 0
+Nodes: 
+505 503 553 551 489 487 537 535
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 443 0 0
+Nodes: 
+503 501 551 549 487 485 535 533
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 444 0 0
+Nodes: 
+501 500 549 548 485 484 533 532
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 445 0 0
+Nodes: 
+500 502 548 550 484 486 532 534
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 446 0 0
+Nodes: 
+502 504 550 552 486 488 534 536
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 447 0 0
+Nodes: 
+504 506 552 554 488 490 536 538
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 448 0 0
+Nodes: 
+506 508 554 556 490 492 538 540
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 449 0 0
+Nodes: 
+556 558 604 606 540 542 588 590
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 450 0 0
+Nodes: 
+558 560 606 608 542 544 590 592
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 451 0 0
+Nodes: 
+560 562 608 610 544 546 592 594
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 452 0 0
+Nodes: 
+562 563 610 611 546 547 594 595
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 453 0 0
+Nodes: 
+563 561 611 609 547 545 595 593
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 454 0 0
+Nodes: 
+561 559 609 607 545 543 593 591
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 455 0 0
+Nodes: 
+559 557 607 605 543 541 591 589
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 456 0 0
+Nodes: 
+557 555 605 603 541 539 589 587
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 457 0 0
+Nodes: 
+555 553 603 601 539 537 587 585
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 458 0 0
+Nodes: 
+553 551 601 599 537 535 585 583
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 459 0 0
+Nodes: 
+551 549 599 597 535 533 583 581
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 460 0 0
+Nodes: 
+549 548 597 596 533 532 581 580
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 461 0 0
+Nodes: 
+548 550 596 598 532 534 580 582
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 462 0 0
+Nodes: 
+550 552 598 600 534 536 582 584
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 463 0 0
+Nodes: 
+552 554 600 602 536 538 584 586
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 464 0 0
+Nodes: 
+554 556 602 604 538 540 586 588
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 465 0 0
+Nodes: 
+604 606 652 654 588 590 636 638
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 466 0 0
+Nodes: 
+606 608 654 656 590 592 638 640
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 467 0 0
+Nodes: 
+608 610 656 658 592 594 640 642
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 468 0 0
+Nodes: 
+610 611 658 659 594 595 642 643
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 469 0 0
+Nodes: 
+611 609 659 657 595 593 643 641
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 470 0 0
+Nodes: 
+609 607 657 655 593 591 641 639
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 471 0 0
+Nodes: 
+607 605 655 653 591 589 639 637
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 472 0 0
+Nodes: 
+605 603 653 651 589 587 637 635
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 473 0 0
+Nodes: 
+603 601 651 649 587 585 635 633
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 474 0 0
+Nodes: 
+601 599 649 647 585 583 633 631
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 475 0 0
+Nodes: 
+599 597 647 645 583 581 631 629
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 476 0 0
+Nodes: 
+597 596 645 644 581 580 629 628
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 477 0 0
+Nodes: 
+596 598 644 646 580 582 628 630
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 478 0 0
+Nodes: 
+598 600 646 648 582 584 630 632
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 479 0 0
+Nodes: 
+600 602 648 650 584 586 632 634
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 480 0 0
+Nodes: 
+602 604 650 652 586 588 634 636
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 481 0 0
+Nodes: 
+652 654 700 702 636 638 684 686
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 482 0 0
+Nodes: 
+654 656 702 704 638 640 686 688
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 483 0 0
+Nodes: 
+656 658 704 706 640 642 688 690
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 484 0 0
+Nodes: 
+658 659 706 707 642 643 690 691
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 485 0 0
+Nodes: 
+659 657 707 705 643 641 691 689
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 486 0 0
+Nodes: 
+657 655 705 703 641 639 689 687
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 487 0 0
+Nodes: 
+655 653 703 701 639 637 687 685
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 488 0 0
+Nodes: 
+653 651 701 699 637 635 685 683
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 489 0 0
+Nodes: 
+651 649 699 697 635 633 683 681
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 490 0 0
+Nodes: 
+649 647 697 695 633 631 681 679
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 491 0 0
+Nodes: 
+647 645 695 693 631 629 679 677
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 492 0 0
+Nodes: 
+645 644 693 692 629 628 677 676
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 493 0 0
+Nodes: 
+644 646 692 694 628 630 676 678
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 494 0 0
+Nodes: 
+646 648 694 696 630 632 678 680
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 495 0 0
+Nodes: 
+648 650 696 698 632 634 680 682
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 496 0 0
+Nodes: 
+650 652 698 700 634 636 682 684
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 497 0 0
+Nodes: 
+700 702 749 754 684 686 750 756
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 498 0 0
+Nodes: 
+702 704 754 760 686 688 756 765
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 499 0 0
+Nodes: 
+704 706 760 767 688 690 765 770
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 500 0 0
+Nodes: 
+706 707 767 768 690 691 770 771
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 501 0 0
+Nodes: 
+707 705 768 766 691 689 771 769
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 502 0 0
+Nodes: 
+705 703 766 759 689 687 769 764
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 503 0 0
+Nodes: 
+703 701 759 753 687 685 764 755
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 504 0 0
+Nodes: 
+701 699 753 746 685 683 755 745
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 505 0 0
+Nodes: 
+699 697 746 741 683 681 745 739
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 506 0 0
+Nodes: 
+697 695 741 735 681 679 739 730
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 507 0 0
+Nodes: 
+695 693 735 728 679 677 730 725
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 508 0 0
+Nodes: 
+693 692 728 727 677 676 725 724
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 509 0 0
+Nodes: 
+692 694 727 729 676 678 724 726
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 510 0 0
+Nodes: 
+694 696 729 736 678 680 726 731
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 511 0 0
+Nodes: 
+696 698 736 742 680 682 731 740
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+Element: 512 0 0
+Nodes: 
+698 700 742 749 682 684 740 750
+Scale factors:
+ 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0

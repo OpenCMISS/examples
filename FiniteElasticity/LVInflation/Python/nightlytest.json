@@ -3,5 +3,17 @@
   "script": "LVInflation.py",
   "test": [   
     {
-      "id": 1}]
+     "id": 1,
+     "args": "",
+     "tolerance": 1e-6,
+     "expectedPath": "expected_results/LVInflation_trilinear_2-16-16.part0.exnode"
+    },
+    {
+     "id": 2,
+     "args": "",
+     "tolerance": 1e-6,
+     "expectedPath": "expected_results/LVInflation_trilinear_2-16-16.part0.exelem"
+    }
+
+  ]
 }}
