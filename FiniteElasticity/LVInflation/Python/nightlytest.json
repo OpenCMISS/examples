@@ -15,5 +15,12 @@
      "expectedPath": "expected_results/LVInflation_trilinear_2-8-8.part0.exelem"
     }
 
+    {
+     "id": 3,
+     "args": "",
+     "tolerance": 1e-6,
+     "expectedPath": "expected_results/displacement2-8-8.exdata"
+    }
+
   ]
 }}
