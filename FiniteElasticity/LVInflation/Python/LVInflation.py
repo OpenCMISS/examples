@@ -103,7 +103,7 @@ cellMLOption = [False]
 
 # Set up geometric model
 # longitudinal elements, circumferential elements, transmural elements
-elems = [16,16,2]
+elems = [8,8,2]
 #cmd = '. ./matlab_batcher.sh benchmark_ellipse_linear ['+str(elems[0])+','+str(elems[1])+','+str(elems[2])+'];'
 #print cmd
 #if not os.path.exists("ellipse_benchmark_lin_"+str(elems[2])+"-"+str(elems[1])+"-"+str(elems[0])+".exnode"):

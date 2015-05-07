@@ -117,8 +117,8 @@ elems[0] = int(sys.argv[1])
 elems[1] = int(sys.argv[2])
 elems[2] = int(sys.argv[3])
 
-f_exnode = "LVInflation_trilinear_"+str(dimensions[0])+"-"+str(dimensions[1])+"-"+str(dimensions[2])+".part0.exnode"
-f_exelem = "ellipse_benchmark_lin_"+str(dimensions[0])+"-"+str(dimensions[1])+"-"+str(dimensions[2])+".exelem"
+f_exnode = "LVInflation_trilinear_"+str(elems[0])+"-"+str(elems[1])+"-"+str(elems[2])+".part0.exnode"
+f_exelem = "ellipse_benchmark_lin_"+str(elems[0])+"-"+str(elems[1])+"-"+str(elems[2])+".exelem"
 print "Converting solution with dimensions "+str(elems)+" to VTK format\n"
 Convert2VTK(f_exnode, f_exelem)
 Convert2VTK_undef(f_exnode, f_exelem)

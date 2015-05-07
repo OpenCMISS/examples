@@ -6,13 +6,13 @@
      "id": 1,
      "args": "",
      "tolerance": 1e-6,
-     "expectedPath": "expected_results/LVInflation_trilinear_2-16-16.part0.exnode"
+     "expectedPath": "expected_results/LVInflation_trilinear_2-8-8.part0.exnode"
     },
     {
      "id": 2,
      "args": "",
      "tolerance": 1e-6,
-     "expectedPath": "expected_results/LVInflation_trilinear_2-16-16.part0.exelem"
+     "expectedPath": "expected_results/LVInflation_trilinear_2-8-8.part0.exelem"
     }
 
   ]
