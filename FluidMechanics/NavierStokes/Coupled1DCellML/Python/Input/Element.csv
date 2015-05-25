@@ -1,5 +1,5 @@
 Segment Name:,Node1:,Node2:,Node3:,Bif Parent:,Branch1:,Branch2:,Trif Parent:,Branch1:,Branch2:,Branch3:,Total Elements:
-Ascending Aorta,1,2,3,1,2,4,,,,,97
+Ascending Aorta,1,2,3,1,2,4,,,,,98
 Aortic Arch,3,4,5,2,3,25,,,,,
 Aortic Arch,5,6,7,3,31,45,,,,,
 Brachiocephalic Trunk,3,8,9,4,5,19,,,,,
@@ -96,3 +96,4 @@ Left Posterior Tibial Artery (2),187,188,189,,,,,,,,
 Left Fibular Artery,183,190,191,,,,,,,,
 Left Fibular Artery,191,192,193,,,,,,,,
 Inferior Mesenteric Artery,119,194,195,,,,,,,,
+Splenic Artery,103,196,197,,,,,,,,

@@ -1,5 +1,5 @@
 Segment Name:,X-coord:,Y-coord:,Z-coord:,Type:,Total Nodes:
-Ascending Aorta,-255.246,-239.503,860,input,195
+Ascending Aorta,-255.246,-239.503,860,input,197
 Ascending Aorta,-252.452,-238.944,878,,
 Ascending Aorta,-253.57,-240.341,895,bifurcation,
 Aortic Arch,-260.274,-247.603,899,,
@@ -101,7 +101,7 @@ Thoracic Aorta,-271,-260.783,653.5,trifurcation,
 Coeliac Trunk,-270.722,-262.733,683.13,,
 Coeliac Trunk,-269.886,-253.54,687.13,trifurcation,
 Splenic Artery,-273.786,-247.133,694.13,,
-Splenic Artery,-282.411,-249.385,700.301,terminal,
+Splenic Artery,-282.411,-249.385,700.301,,
 Common Hepatic Artery,-258.464,-243.512,703.13,,
 Common Hepatic Artery,-250.386,-236.826,720.13,terminal,
 Left Gastric Artery,-272.672,-254.097,705.13,,
@@ -194,3 +194,5 @@ Left Fibular Artery,-413.313,-333.628,-330,,
 Left Fibular Artery,-421.117,-327.71,-390,terminal,
 Inferior Mesenteric Artery,-274.067,-242.134,577,,
 Inferior Mesenteric Artery,-277.905,-239.19,547,terminal,
+Splenic Artery,-307.2,-260.5,709.9,,
+Splenic Artery,-336.6,-274.4,712.9,terminal,
