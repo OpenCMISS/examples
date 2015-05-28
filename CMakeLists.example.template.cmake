@@ -1,36 +1,38 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.2)
+# Included here from template generation
+set(OPENCMISS_INSTALL_DIR @OPENCMISS_INSTALL_DIR@)
+ 
 # Get lowercase name
 #string(TOLOWER "@EXAMPLE_NAME@" EXAMPLE_NAME)
 set(EXAMPLE_TARGET run)
+
+# Get the build context from the OpenCMISS installation
+if (NOT OPENCMISS_INSTALL_DIR)
+    set(OPENCMISS_INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../install)
+    get_filename_component(OPENCMISS_INSTALL_DIR ${OPENCMISS_INSTALL_DIR} ABSOLUTE)
+endif()
+if (NOT EXISTS ${OPENCMISS_INSTALL_DIR} OR NOT EXISTS ${OPENCMISS_INSTALL_DIR}/OpenCMISSBuildContext.cmake)
+    message(FATAL_ERROR "OpenCMISS is not installed at '${OPENCMISS_INSTALL_DIR}'. Please specify OPENCMISS_INSTALL_DIR.")
+endif()
+include(${OPENCMISS_INSTALL_DIR}/OpenCMISSBuildContext.cmake)
 
 project(OpenCMISSExample LANGUAGES C CXX Fortran VERSION 1.0)
 SET(CMAKE_NO_SYSTEM_FROM_IMPORTED YES)
 
 # Have CMake find the package components
-list(APPEND CMAKE_PREFIX_PATH @OPENCMISS_PREFIX_PATH@) # var defined in ~CMakeLists.main.template.cmake:90
+list(APPEND CMAKE_PREFIX_PATH ${OPENCMISS_PREFIX_PATH}) # var defined OpenCMISSBuildContext
+# Have CMake find the FindOpenCMISS file
+list(APPEND CMAKE_MODULE_PATH ${OPENCMISS_INSTALL_DIR}/cmake/modules)
+find_package(OpenCMISS REQUIRED)
 
-# Grab config files for packages
-find_package(Iron REQUIRED)
-find_package(LIBCELLML REQUIRED)
-find_package(CELLML-API REQUIRED)
-find_package(PETSC REQUIRED)
-find_package(SUNDIALS REQUIRED)
-find_package(HYPRE REQUIRED)
-find_package(MUMPS REQUIRED)
-find_package(SCALAPACK REQUIRED)
-find_package(PASTIX REQUIRED)
-find_package(SUITESPARSE REQUIRED)
-find_package(PTSCOTCH REQUIRED)
-find_package(PARMETIS REQUIRED)
-find_package(SUPERLU REQUIRED)
-find_package(SUPERLU_DIST REQUIRED)
+#################### Actual example code ####################
 
 # Get sources in /src
 file(GLOB SRC src/*.f90 src/*.c ../input/*.f90)
 # Add example executable
 add_executable(${EXAMPLE_TARGET} ${SRC})
-# Link to iron - contains forward refs to all other necessary libs
-target_link_libraries(${EXAMPLE_TARGET} PUBLIC iron)
-set(CMAKE_Fortran_FLAGS "-cpp")
+# Link to opencmiss - contains forward refs to all other necessary libs
+target_link_libraries(${EXAMPLE_TARGET} PRIVATE opencmiss)
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -cpp")
 
 install(TARGETS ${EXAMPLE_TARGET} DESTINATION .)

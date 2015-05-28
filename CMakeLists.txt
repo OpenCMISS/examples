@@ -78,7 +78,7 @@ function(RECURSE curdir)
         		    DOWNLOAD_COMMAND ""
         		
         		    #--Configure step-------------
-            		CMAKE_COMMAND ${CMAKE_COMMAND} --no-warn-unused-cli # disables warnings for unused cmdline options
+            		CMAKE_COMMAND ${CMAKE_COMMAND} -Wno-dev --no-warn-unused-cli # disables warnings for unused cmdline options
             		SOURCE_DIR ${curdir}
             		BINARY_DIR ${OPENCMISS_EXAMPLES_BUILD_DIR}/${EXAMPLE_FULLNAME}
             		# Need the prefix path in subprojects to find Iron and dependencies etc
