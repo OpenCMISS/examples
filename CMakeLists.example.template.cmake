@@ -21,8 +21,9 @@ SET(CMAKE_NO_SYSTEM_FROM_IMPORTED YES)
 
 # Have CMake find the package components
 list(APPEND CMAKE_PREFIX_PATH ${OPENCMISS_PREFIX_PATH}) # var defined OpenCMISSBuildContext
+
 # Have CMake find the FindOpenCMISS file
-list(APPEND CMAKE_MODULE_PATH ${OPENCMISS_INSTALL_DIR}/cmake/modules)
+list(APPEND CMAKE_MODULE_PATH ${OPENCMISS_MODULE_PATH})
 find_package(OpenCMISS REQUIRED)
 
 #################### Actual example code ####################
