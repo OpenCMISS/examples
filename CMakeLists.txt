@@ -5,6 +5,12 @@
 # You can change the build/install locations of the examples by providing
 # OPENCMISS_EXAMPLES_BUILD_DIR and OPENCMISS_EXAMPLES_INSTALL_PREFIX.
 #
+#
+# The USE MPI modification for windows has been made with eclipse, looking for
+# (\ )*USE MPI\R((.|\R)*)IMPLICIT NONE\R
+# and replacing with
+# #ifndef NOMPIMOD\R$1 USE MPI\R#endif\R$2IMPLICIT NONE\R\R#ifdef NOMPIMOD\R#include "mpif.h"\R#endif\R\R
+#
 # @author Daniel Wirtz @date April 9th, 2015
 CMAKE_MINIMUM_REQUIRED(VERSION 3.2.0-rc1 FATAL_ERROR)
 
@@ -86,6 +92,7 @@ function(RECURSE curdir)
             		CMAKE_ARGS 
             		    ${EXTRA_ARGS}
             		    -DCMAKE_INSTALL_PREFIX=${curdir}#${CMAKE_INSTALL_PREFIX}/${EXAMPLE_FULLNAME}
+            		    -DCMAKE_OBJECT_PATH_MAX=500
             	)
             endif()
         endif()
@@ -97,6 +104,10 @@ function(GET_FULLNAME EXAMPLE_DIR VARNAME)
     string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "" TMP "${EXAMPLE_DIR}")
     string(REGEX REPLACE "[/\\]" "_" TMP ${TMP})
     string(SUBSTRING ${TMP} 1 -1 TMP)
+    # Need to shorten the example names on windows!
+    if (WIN32)
+        string(MD5 TMP ${TMP})
+    endif()
     #set(RES "")
     #while(NOT EXAMPLE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     #    get_filename_component(PARENT ${EXAMPLE_DIR} PATH)

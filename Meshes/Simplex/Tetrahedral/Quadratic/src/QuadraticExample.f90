@@ -49,13 +49,20 @@
 PROGRAM QUADRATICTETRAHEDRASIMPLEXEXAMPLE
 
   USE OPENCMISS
+#ifndef NOMPIMOD
   USE MPI
+#endif
 
 #ifdef WIN32
   USE IFQWIN
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   !Test program parameters
 

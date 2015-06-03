@@ -51,7 +51,9 @@
 PROGRAM DefineGeometryAndExportExample
   
    USE OPENCMISS
+#ifndef NOMPIMOD
   USE MPI
+#endif
 
 
 #ifdef WIN32
@@ -59,6 +61,11 @@ PROGRAM DefineGeometryAndExportExample
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   !Test program parameters
 

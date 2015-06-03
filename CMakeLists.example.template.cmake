@@ -35,5 +35,8 @@ add_executable(${EXAMPLE_TARGET} ${SRC})
 # Link to opencmiss - contains forward refs to all other necessary libs
 target_link_libraries(${EXAMPLE_TARGET} PRIVATE opencmiss)
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -cpp")
+if (WIN32)
+    target_compile_definitions(${EXAMPLE_TARGET} PRIVATE NOMPIMOD)
+endif()
 
 install(TARGETS ${EXAMPLE_TARGET} DESTINATION .)

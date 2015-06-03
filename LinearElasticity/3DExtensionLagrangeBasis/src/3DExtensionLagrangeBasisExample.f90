@@ -46,7 +46,9 @@
 !> Main program
 PROGRAM LinearElasticity3DLagrangeBasis
 
+#ifndef NOMPIMOD
   USE MPI
+#endif
   USE OPENCMISS
 
 #ifdef WIN32
@@ -54,6 +56,11 @@ PROGRAM LinearElasticity3DLagrangeBasis
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
   TYPE(CMISSFieldType) :: EquationsSetField

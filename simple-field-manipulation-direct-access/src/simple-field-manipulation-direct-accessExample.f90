@@ -69,12 +69,18 @@ PROGRAM SimpleFieldManipulationExample
   USE KINDS
   USE LISTS
   USE MESH_ROUTINES
+#ifndef NOMPIMOD
   USE MPI
+#endif
   USE REGION_ROUTINES
   USE TIMER
   USE TYPES
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
 
   !Test program parameters
 

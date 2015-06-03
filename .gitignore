@@ -23,3 +23,6 @@ nose_check_*
 CMakeLists.txt
 build/
 run
+run.exe
+ep_tmp
+ep_stamps

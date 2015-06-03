@@ -52,7 +52,9 @@
 PROGRAM MONODOMAINCUDAEXAMPLE
 
   USE OPENCMISS
+#ifndef NOMPIMOD
   USE MPI
+#endif
   USE ISO_C_BINDING
 
 #ifdef WIN32
@@ -60,6 +62,11 @@ PROGRAM MONODOMAINCUDAEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
   TYPE(CMISSFieldType) :: EquationsSetField
