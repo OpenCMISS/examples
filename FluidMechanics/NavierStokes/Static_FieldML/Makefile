@@ -63,6 +63,7 @@ endif
 #----------------------------------------------------------------------------------------------------------------------------------
 
 USEFIELDML = true
+FIELDML_LIB_PATH= ${GLOBAL_FIELDML_ROOT}/x86_64-linux-debug/gnu_4.6/lib/
 
 EXAMPLE_PATH=FluidMechanics/NavierStokes/
 

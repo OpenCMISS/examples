@@ -60,20 +60,17 @@ PROGRAM CANTILEVEREXAMPLE
 
   !Test program parameters
 
-  REAL(CMISSDP) :: Width
-  REAL(CMISSDP) :: Length
-  REAL(CMISSDP) :: Height
-  REAL(CMISSDP) :: YoungsModulus,PoissonsRatio,ShearModulus,MooneyRivlin1,MooneyRivlin2
+  REAL(CMISSDP), PARAMETER :: Width=60.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: Length=40.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: Height=40.0_CMISSDP
   INTEGER(CMISSIntg) :: DisplacementInterpolationType
   INTEGER(CMISSIntg) :: PressureInterpolationType
   INTEGER(CMISSIntg) :: PressureMeshComponent
-  INTEGER(CMISSIntg) :: NumberOfGaussXi,TopNormalXi
-  INTEGER(CMISSIntg) :: ScalingType,ForceNode
-  REAL(CMISSDP) :: Density
-  REAL(CMISSDP), PARAMETER :: Gravity(3)=[0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP]
-  REAL(CMISSDP) :: ExternalForce,Load,EI,v,F_d,C_d,u_y
-  INTEGER(CMISSIntg), PARAMETER :: NumberOfLoadIncrements=5
-  INTEGER(CMISSIntg), ALLOCATABLE :: TopNodes(:)
+  INTEGER(CMISSIntg) :: NumberOfGaussXi
+  INTEGER(CMISSIntg) :: ScalingType
+  REAL(CMISSDP), PARAMETER :: Density=9.0E-4_CMISSDP !in g mm^-3
+  REAL(CMISSDP), PARAMETER :: Gravity(3)=[0.0_CMISSDP,0.0_CMISSDP,-9.8_CMISSDP] !in m s^-2
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfLoadIncrements=2
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
@@ -101,7 +98,6 @@ PROGRAM CANTILEVEREXAMPLE
   INTEGER(CMISSIntg) :: LeftNormalXi
   INTEGER(CMISSIntg) :: NumberOfArguments,ArgumentLength,ArgStatus
   CHARACTER(LEN=255) :: CommandArgument
-  LOGICAL :: SetupFlag=.FALSE.
 
   !CMISS variables
   TYPE(CMISSBasisType) :: DisplacementBasis,PressureBasis
@@ -148,120 +144,8 @@ PROGRAM CANTILEVEREXAMPLE
   DisplacementInterpolationType=CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION
   NumberGlobalXElements=3
   NumberGlobalYElements=2
-  NumberGlobalZElements=1
+  NumberGlobalZElements=2
   ScalingType=CMISS_FIELD_ARITHMETIC_MEAN_SCALING
-  
-  !=================================================================================================================================
-  
-  
-  !Set solver parameters
-!    RelativeTolerance=1.0E-4_CMISSDP !default: 1.0E-05_CMISSDP
-!    AbsoluteTolerance=1.0E-4_CMISSDP !default: 1.0E-10_CMISSDP
-!    DivergenceTolerance=1.0E5 !default: 1.0E5
-!    MaximumIterations=100000000 !default: 100000
-!    MaxFunctionEvaluations=100000
-!    RestartValue=30 !default: 30
-!    LinesearchAlpha=1.0_CMISSDP
-    
-    
-  !=================================================================================================================================
-  
-  SetupFlag=.TRUE.
-  IF(SetupFlag) THEN
-    DisplacementInterpolationType=CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION
-    NumberGlobalXElements=2
-    NumberGlobalYElements=1
-    NumberGlobalZElements=1
-    ScalingType=CMISS_FIELD_ARITHMETIC_MEAN_SCALING
-    !===========================================================================================================================================
-    Width=2000.0_CMISSDP ! m
-    Length=200.0_CMISSDP ! m
-    Height=200.0_CMISSDP ! m
-    !Solid
-    Density=300.0E-6_CMISSDP ! kg / m^3
-    !Young's modulus E
-    YoungsModulus=2.0E1_CMISSDP ! N / m^2
-    !Poisson's ratio
-    PoissonsRatio=0.3 ! [.]
-    !Homogenous, isotropic material G=E/(2*(1+poissonsRatio))
-    ShearModulus=YoungsModulus/(2.0_CMISSDP*(1.0_CMISSDP+PoissonsRatio)) ! N / m^2
-    !Neo-Hookean material: c1=G/2 c2=0
-    MooneyRivlin1=0.5_CMISSDP*ShearModulus ! N / m^2
-    MooneyRivlin2=0.0_CMISSDP !
-    
-    EI=(YoungsModulus*(Height)**3.0_CMISSDP)/(12.0_CMISSDP*(1-PoissonsRatio)) ! Nm
-    C_d=1.05_CMISSDP
-    C_d=9.46_CMISSDP
-    C_d=3.26_CMISSDP
-    v=0.1_CMISSDP ! m / s
-    F_d=0.5_CMISSDP*C_d*(Width*Length/1000/1000)*100.0_CMISSDP*v*v ! N
-    u_y=-(F_d*(Width)**4)/(8.0_CMISSDP*EI*(Width*Length)) ! m
-    PRINT *,"Constant load, u_y = ",u_y," m"
-    
-    !+========
-    !point force
-    EI=YoungsModulus/12.0_CMISSDP*(Height)*(Length)**3.0_CMISSDP
-    u_y=-(F_d*(Width)**3.0_CMISSDP)/(3.0_CMISSDP*EI)
-    
-    ExternalForce=-F_d/(DisplacementInterpolationType+1)*1000!N
-    Load=ExternalForce/(Width*Length)
-    !===========================================================================================================================================
-    Width=2.0_CMISSDP ! m
-    Length=0.2_CMISSDP ! m
-    Height=0.2_CMISSDP ! m
-    !Solid
-    Density=300.0_CMISSDP ! kg / m^3
-    !Young's modulus E
-    YoungsModulus=2.0E4_CMISSDP ! N / m^2
-    !Poisson's ratio
-    PoissonsRatio=0.3 ! [.]
-    !Homogenous, isotropic material G=E/(2*(1+poissonsRatio))
-    ShearModulus=YoungsModulus/(2.0_CMISSDP*(1.0_CMISSDP+PoissonsRatio)) ! N / m^2
-    !Neo-Hookean material: c1=G/2 c2=0
-    MooneyRivlin1=0.5_CMISSDP*ShearModulus ! N / m^2
-    MooneyRivlin2=0.0_CMISSDP !
-    
-    EI=(YoungsModulus*(Height)**3.0_CMISSDP)/(12.0_CMISSDP*(1-PoissonsRatio**2)) ! Nm
-  !  C_d=1.05_CMISSDP
-  !  C_d=9.46_CMISSDP
-    C_d=3.26_CMISSDP
-    v=0.1_CMISSDP ! m / s
-    F_d=0.5_CMISSDP*C_d*(Width*Length)*100.0_CMISSDP*v*v ! N
-    u_y=-(F_d*(Width)**4)/(8.0_CMISSDP*EI*(Width*Length)) ! m
-    PRINT *,"Constant load, u_y = ",u_y," m"
-    
-    !+========
-    !point force
-    EI=YoungsModulus/12.0_CMISSDP*(Height)*(Length)**3.0_CMISSDP
-    u_y=-(F_d*(Width)**3.0_CMISSDP)/(3.0_CMISSDP*EI)
-    
-    ExternalForce=-F_d/(DisplacementInterpolationType+1)!N
-    Load=ExternalForce/(Width*Length)
-  ENDIF
-  
-  
-    
-
-  
-    PRINT *, "Width = ",Width," m"
-    PRINT *, "Length = ",Length," m"
-    PRINT *, "Height = ",Height," m"
-    PRINT *, "Rho: ",Density," kg m^-3"
-    PRINT *, "E = ",YoungsModulus," N/m^2"
-    PRINT *, "nu = ",PoissonsRatio
-    PRINT *, "c10 = ",MooneyRivlin1," N/m^2"
-    PRINT *, "c01 = ",MooneyRivlin2
-    PRINT *, "EI = ",EI," N"
-    PRINT *, "C_d  =",C_d
-    PRINT *, "v = ",v," m/s"
-    PRINT *, "F_d = ",F_d," N"
-    PRINT *, "ExternalForce = ",ExternalForce,' N (point force)'
-    PRINT *, "Point force, u_y = ",u_y," m"
-  
-  
-  
-  
-  !=================================================================================================================================
 
   NumberOfArguments = COMMAND_ARGUMENT_COUNT()
   IF(NumberOfArguments >= 1) THEN
@@ -464,10 +348,8 @@ PROGRAM CANTILEVEREXAMPLE
   CALL CMISSEquationsSet_MaterialsCreateFinish(EquationsSet,Err)
 
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively
-  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, &
-    & MooneyRivlin1,Err)
-  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2, &
-    & MooneyRivlin2,Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,2.0_CMISSDP,Err)
+  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,6.0_CMISSDP,Err)
   CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,Density,Err)
 
   !Create the source field with the gravity vector
@@ -495,7 +377,7 @@ PROGRAM CANTILEVEREXAMPLE
   CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
     & 3,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3,Err)
   CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4, &
-    & -MooneyRivlin1, &
+    & -14.0_CMISSDP, &
     & Err)
   CALL CMISSField_ParameterSetUpdateStart(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
   CALL CMISSField_ParameterSetUpdateFinish(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
@@ -521,13 +403,6 @@ PROGRAM CANTILEVEREXAMPLE
   CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,Solver,Err)
   CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
   CALL CMISSSolver_NewtonJacobianCalculationTypeSet(Solver,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
-!  CALL CMISSSolver_NewtonLineSearchTypeSet(Solver,CMISS_SOLVER_NEWTON_LINESEARCH_LINEAR,Err)
-  CALL CMISSSolver_NewtonMaximumFunctionEvaluationsSet(Solver,100000,Err)
-!  CALL CMISSSolver_OutputTypeSet(Solver,NonlinearSolver_OutputType,Err)
-  CALL CMISSSolver_NewtonAbsoluteToleranceSet(Solver,1.0E-4_CMISSDP,Err)
-  CALL CMISSSolver_NewtonRelativeToleranceSet(Solver,1.0E-5_CMISSDP,Err)
-  CALL CMISSSolver_NewtonMaximumIterationsSet(Solver,100000,Err)
-!  CALL CMISSSolver_NewtonLineSearchAlphaSet(Solver,LinesearchAlpha,Err)
   CALL CMISSSolver_NewtonLinearSolverGet(Solver,LinearSolver,Err)
   CALL CMISSSolver_LinearTypeSet(LinearSolver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
   CALL CMISSProblem_SolversCreateFinish(Problem,Err)
@@ -566,94 +441,11 @@ PROGRAM CANTILEVEREXAMPLE
       ENDDO
     ENDIF
   ENDDO
-  CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_TOP_SURFACE,TopNodes,TopNormalXi,Err)
-  !DO node_idx=1,SIZE(TopNodes,1)
-  IF(.TRUE.) THEN
-    IF(SetupFlag) THEN
-      ForceNode=9
-      IF(DisplacementInterpolationType==CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION) ForceNode=35
-      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,1,1, &
-        & ForceNode,3,CMISS_BOUNDARY_CONDITION_FIXED,ExternalForce,Err)
-      ForceNode=12
-      IF(DisplacementInterpolationType==CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION) ForceNode=40
-      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,1,1, &
-        & ForceNode,3,CMISS_BOUNDARY_CONDITION_FIXED,ExternalForce,Err)
-      IF(DisplacementInterpolationType==CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION) THEN
-        ForceNode=45
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,1,1, &
-        & ForceNode,3,CMISS_BOUNDARY_CONDITION_FIXED,ExternalForce,Err)
-      ENDIF
-    ELSE
-      ForceNode=TopNodes(1)+NumberGlobalXElements+(NumberGlobalXElements+1)*NumberGlobalYElements/2
-      CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,1,1, &
-        & ForceNode,3,CMISS_BOUNDARY_CONDITION_FIXED,ExternalForce,Err)
-    ENDIF
-  ELSE
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 8,1,CMISS_BOUNDARY_CONDITION_FIXED,0.00593_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 11,1,CMISS_BOUNDARY_CONDITION_FIXED,0.00593_CMISSDP,Err)
-  !  CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-  !    & 2,1,CMISS_BOUNDARY_CONDITION_FIXED,-0.028_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 5,1,CMISS_BOUNDARY_CONDITION_FIXED,-0.028_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 9,1,CMISS_BOUNDARY_CONDITION_FIXED,-0.00065_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 12,1,CMISS_BOUNDARY_CONDITION_FIXED,-0.00065_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 3,1,CMISS_BOUNDARY_CONDITION_FIXED,-0.036_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 6,1,CMISS_BOUNDARY_CONDITION_FIXED,-0.036_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 8,2,CMISS_BOUNDARY_CONDITION_FIXED,0.016_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 11,2,CMISS_BOUNDARY_CONDITION_FIXED,-0.016_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 2,2,CMISS_BOUNDARY_CONDITION_FIXED,-0.00016_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 5,2,CMISS_BOUNDARY_CONDITION_FIXED,0.00016_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 9,2,CMISS_BOUNDARY_CONDITION_FIXED,0.000043_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 12,2,CMISS_BOUNDARY_CONDITION_FIXED,-0.000043_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 3,2,CMISS_BOUNDARY_CONDITION_FIXED,-0.000031_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 6,2,CMISS_BOUNDARY_CONDITION_FIXED,0.000031_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 8,3,CMISS_BOUNDARY_CONDITION_FIXED,-0.164_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 11,3,CMISS_BOUNDARY_CONDITION_FIXED,-0.164_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 2,3,CMISS_BOUNDARY_CONDITION_FIXED,-0.161_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 5,3,CMISS_BOUNDARY_CONDITION_FIXED,-0.161_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 9,3,CMISS_BOUNDARY_CONDITION_FIXED,-0.2496_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 12,3,CMISS_BOUNDARY_CONDITION_FIXED,-0.2496_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 3,3,CMISS_BOUNDARY_CONDITION_FIXED,-0.2465_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 6,3,CMISS_BOUNDARY_CONDITION_FIXED,-0.2465_CMISSDP,Err)
-    CALL CMISSBoundaryConditions_SetElement(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,4, &
-      & CMISS_BOUNDARY_CONDITION_FIXED,-3846.15_CMISSDP,err)
-    CALL CMISSBoundaryConditions_SetElement(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,2,4, &
-      & CMISS_BOUNDARY_CONDITION_FIXED,-3846.15_CMISSDP,err)
-    ForceNode=12
-  ENDIF
-  !    & TopNodes(node_idx),3,CMISS_BOUNDARY_CONDITION_FIXED,ExternalForce,Err)
-  !ENDDO
+
   CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve problem
-!  PRINT *,"Top surface nodes: ",TopNodes
-!  PRINT *,"Point force applied to node number ",ForceNode
   CALL CMISSProblem_Solve(Problem,Err)
-  CALL CMISSField_ParameterSetGetNode(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,1,ForceNode, &
-    & 3,u_y,err)
-  PRINT *,"Calculated u_y = ",u_y-Height,' m'
 
   !Output solution
   CALL CMISSFields_Initialise(Fields,Err)

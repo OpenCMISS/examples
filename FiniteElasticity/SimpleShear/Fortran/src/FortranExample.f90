@@ -359,7 +359,7 @@ PROGRAM SIMPLESHEAREXAMPLE
   CALL CMISSSolver_Initialise(LinearSolver,Err)
   CALL CMISSProblem_SolversCreateStart(Problem,Err)
   CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,Solver,Err)
-  CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_MATRIX_OUTPUT,Err)
+  CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
   CALL CMISSSolver_NewtonJacobianCalculationTypeSet(Solver,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
   CALL CMISSSolver_NewtonLinearSolverGet(Solver,LinearSolver,Err)
   CALL CMISSSolver_LinearTypeSet(LinearSolver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)

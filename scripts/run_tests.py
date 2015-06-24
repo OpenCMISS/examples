@@ -215,10 +215,10 @@ class Test(TestTreeNode):
       command = "python %s %s > %s 2>&1" %(self.parent.script, self.args,logPath)
     elif self.machine == "build-sn-gpu-p" :
       self.command = "%s/bin/%s-%s/%s/%s/%sExample%s %s" %(self.parent.path,arch,system,mpi,compilerVersion,self.exampleName,MODE_SUFFIX_MAP[mode],self.args)
-      f = open("nesi_%d.ll" %(self.id),"w")
+      f = open("nesi_%d.sl" %(self.id),"w")
       f.write(nesiTemplate.render(test=self,compiler=compiler,mpi=mpi))
       f.close()
-      command = "llsubmit -s nesi_%d.ll > %s 2>&1" %(self.id,logPath)
+      command = "sbatch -s nesi_%d.sl > %s 2>&1" %(self.id,logPath)
     else :
       command = "%s/bin/%s-%s/%s/%s/%sExample%s %s > %s 2>&1" %(self.parent.path,arch,system,mpi,compilerVersion,self.exampleName,MODE_SUFFIX_MAP[mode],self.args,logPath)
     self.runFail = os.system(command)
@@ -229,13 +229,15 @@ class Test(TestTreeNode):
       self.fail = 1
       self.accumulateParentFail() 
     elif self.machine == "build-sn-gpu-p" :
+      command = ". %s/scripts/checkJobsFinished.sh %s" %(globalExamplesDir,os.environ.get("LOGNAME"))
+      self.runFail = os.system(command)
       # Find the output log and replace with the submission log
       size = os.stat(logPath).st_size
       f = open(logPath, "r")
       data = mmap.mmap(f.fileno(), size, access=mmap.ACCESS_READ)
-      m = re.search(r'\.[0-9]+', data)
+      m = re.search(r'[0-9]+', data)
       f.close()   
-      f1 = open("nesi%s.out" %(m.group(0)), "r")
+      f1 = open("nesi.%s.out" %(m.group(0)), "r")
       output = f1.read()
       f1.close()
       self.wrapWithPre(logPath,1)

@@ -253,7 +253,6 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   !Create a field to put the geometry (default is geometry)
   CALL CMISSField_Initialise(GeometricField,Err)
   CALL CMISSField_CreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
-  CALL CMISSField_TypeSet(GeometricField,CMISS_FIELD_GEOMETRIC_TYPE,Err)
   CALL CMISSField_MeshDecompositionSet(GeometricField,Decomposition,Err)
   CALL CMISSField_VariableLabelSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,"Geometry",Err)
   CALL CMISSField_ScalingTypeSet(GeometricField,CMISS_FIELD_ARITHMETIC_MEAN_SCALING,Err)
@@ -357,7 +356,6 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSProblem_ControlLoopGet(Problem,CMISS_CONTROL_LOOP_NODE,ControlLoop,Err)
   CALL CMISSControlLoop_TypeSet(ControlLoop,CMISS_PROBLEM_CONTROL_LOAD_INCREMENT_LOOP_TYPE,Err)
   CALL CMISSControlLoop_MaximumIterationsSet(ControlLoop,5,Err)
-!  CALL CMISSControlLoop_WriteIntermediateResultsSet(ControlLoop,.TRUE.,Err)
   CALL CMISSProblem_ControlLoopCreateFinish(Problem,Err)
 
   !Create the problem solvers

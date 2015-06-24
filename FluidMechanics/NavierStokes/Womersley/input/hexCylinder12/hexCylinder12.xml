@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Fieldml version="0.5"
+  xsi:noNamespaceSchemaLocation="http://www.fieldml.org/resources/xml/0.5/FieldML_0.5.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <Region name="hexCylinder12">
+  <Import xlink:href="http://www.fieldml.org/resources/xml/0.5/FieldML_Library_0.5.xml" region="library">
+    <ImportType localName="real.type" remoteName="real.1d"/>
+    <ImportType localName="triquadratic.parameters.type" remoteName="parameters.3d.unit.triquadraticLagrange"/>
+    <ImportType localName="trilinear.parameters.type" remoteName="parameters.3d.unit.trilinearLagrange"/>
+    <ImportType localName="rc3.ensemble" remoteName="coordinates.rc.3d.component"/>
+    <ImportType localName="rc3.type" remoteName="coordinates.rc.3d"/>
+    <ImportEvaluator localName="triquadratic.node.argument" remoteName="localNodes.3d.cube3x3x3.argument"/>
+    <ImportEvaluator localName="triquadratic.parameters.argument" remoteName="parameters.3d.unit.triquadraticLagrange.argument"/>
+    <ImportEvaluator localName="triquadratic.interpolator" remoteName="interpolator.3d.unit.triquadraticLagrange"/>
+    <ImportEvaluator localName="trilinear.node.argument" remoteName="localNodes.3d.cube2x2x2.argument"/>
+    <ImportEvaluator localName="trilinear.parameters.argument" remoteName="parameters.3d.unit.trilinearLagrange.argument"/>
+    <ImportEvaluator localName="trilinear.interpolator" remoteName="interpolator.3d.unit.trilinearLagrange"/>
+    <ImportEvaluator localName="chart.argument" remoteName="chart.3d.argument"/>
+    <ImportEvaluator localName="rc3.component.argument" remoteName="coordinates.rc.3d.component.argument"/>
+    <ImportEvaluator localName="shape.unit.cube" remoteName="shape.unit.cube"/>
+  </Import>
+
+  <EnsembleType name="CylinderMesh.nodes">
+   <Members>
+    <MemberRange min="1" max="62953" />
+   </Members>
+  </EnsembleType>
+
+
+  <ArgumentEvaluator name="CylinderMesh.nodes.argument" valueType="CylinderMesh.nodes" />
+
+
+  <MeshType name="CylinderMesh.mesh">
+    <Elements name="element">
+     <Members>
+       <MemberRange min="1" max="7488"/>
+     </Members>
+    </Elements>
+    <Chart name="xi">
+      <Components name="xi" count="3"/>
+    </Chart>
+    <Shapes evaluator="shape.unit.cube" />
+  </MeshType>
+
+  <ArgumentEvaluator name="CylinderMesh.mesh.argument" valueType="CylinderMesh.mesh" />
+
+
+  <ArgumentEvaluator name="CylinderMesh.nodal_dofs" valueType="real.type" />
+
+  <DataResource name="CylinderMesh.node.coordinates.resource">
+    <DataResourceDescription>
+      <DataResourceHref xlink:href="hexCylinder12D.C" format="PLAIN_TEXT"/>
+    </DataResourceDescription>
+    <ArrayDataSource name="CylinderMesh.node.coordinates.data" location="2" rank="2">
+      <RawArraySize>
+        62953 3
+      </RawArraySize>
+    </ArrayDataSource>
+  </DataResource>
+
+  <DataResource name="CylinderMesh.node.coordinatesLinear.resource">
+    <DataResourceDescription>
+      <DataResourceHref xlink:href="hexCylinder12D.C" format="PLAIN_TEXT"/>
+    </DataResourceDescription>
+    <ArrayDataSource name="CylinderMesh.node.coordinatesLinear.data" location="2" rank="2">
+      <RawArraySize>
+        8281 3
+      </RawArraySize>
+    </ArrayDataSource>
+  </DataResource>
+
+  <DataResource name="CylinderMesh.triquadratic.ordering.resource">
+    <DataResourceDescription>
+      <DataResourceString>
+	<!-- 2 16 6 12 19 26 4 22 8 9 15 23 11 18 25 13 21 27 1 14 5 10 17 24 3 20 7 -->
+	1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+      </DataResourceString>
+    </DataResourceDescription>
+    <ArrayDataSource name="CylinderMesh.triquadratic.ordering.data" location="1" rank="1">
+      <RawArraySize>
+        27
+      </RawArraySize>
+    </ArrayDataSource>
+  </DataResource>
+
+  <DataResource name="CylinderMesh.trilinear.ordering.resource">
+    <DataResourceDescription>
+      <DataResourceString>
+	1 2 3 4 5 6 7 8
+	<!-- 2 6 4 8 1 5 3 7 -->
+      </DataResourceString>
+    </DataResourceDescription>
+    <ArrayDataSource name="CylinderMesh.trilinear.ordering.data" location="1" rank="1">
+      <RawArraySize>
+        8
+      </RawArraySize>
+    </ArrayDataSource>
+  </DataResource>
+
+  <DataResource name="CylinderMesh.nodes.resource">
+    <DataResourceDescription>
+      <DataResourceHref xlink:href="hexCylinder12.M" format="PLAIN_TEXT"/>
+    </DataResourceDescription>
+    <ArrayDataSource name="CylinderMesh.cube3x3x3.nodes.data" location="2" rank="2">
+      <RawArraySize>
+        7488 27
+      </RawArraySize>
+    </ArrayDataSource>
+    <ArrayDataSource name="CylinderMesh.cube2x2x2.nodes.data" location="7490" rank="2">
+      <RawArraySize>
+        7488 8
+      </RawArraySize>
+    </ArrayDataSource>
+  </DataResource>
+
+  <ParameterEvaluator name="CylinderMesh.cube3x3x3_nodes" valueType="CylinderMesh.nodes">
+   <DenseArrayData data="CylinderMesh.cube3x3x3.nodes.data">
+    <DenseIndexes>
+     <IndexEvaluator evaluator="triquadratic.node.argument" order="CylinderMesh.triquadratic.ordering.data"/>
+     <IndexEvaluator evaluator="CylinderMesh.mesh.argument.element" />
+    </DenseIndexes>
+   </DenseArrayData>
+  </ParameterEvaluator>
+
+
+  <ParameterEvaluator name="CylinderMesh.cube2x2x2_nodes" valueType="CylinderMesh.nodes">
+   <DenseArrayData data="CylinderMesh.cube2x2x2.nodes.data">
+    <DenseIndexes>
+     <IndexEvaluator evaluator="trilinear.node.argument" order="CylinderMesh.trilinear.ordering.data"/>
+     <IndexEvaluator evaluator="CylinderMesh.mesh.argument.element" />
+    </DenseIndexes>
+   </DenseArrayData>
+  </ParameterEvaluator>
+
+
+  <AggregateEvaluator name="CylinderMesh.element_params.triquadratic_lagrange" valueType="triquadratic.parameters.type">
+   <Bindings>
+    <BindIndex argument="triquadratic.node.argument" indexNumber="1" />
+    <Bind argument="CylinderMesh.nodes.argument" source="CylinderMesh.cube3x3x3_nodes" />
+   </Bindings>
+   <ComponentEvaluators default="CylinderMesh.nodal_dofs" />
+  </AggregateEvaluator>
+
+
+  <ReferenceEvaluator name="CylinderMesh.triquadratic_lagrange" evaluator="triquadratic.interpolator" valueType="real.type">
+   <Bindings>
+    <Bind argument="chart.argument" source="CylinderMesh.mesh.argument.xi" />
+    <Bind argument="triquadratic.parameters.argument" source="CylinderMesh.element_params.triquadratic_lagrange" />
+   </Bindings>
+  </ReferenceEvaluator>
+
+
+  <AggregateEvaluator name="CylinderMesh.element_params.trilinear_lagrange" valueType="trilinear.parameters.type">
+   <Bindings>
+    <BindIndex argument="trilinear.node.argument" indexNumber="1" />
+    <Bind argument="CylinderMesh.nodes.argument" source="CylinderMesh.cube2x2x2_nodes" />
+   </Bindings>
+   <ComponentEvaluators default="CylinderMesh.nodal_dofs" />
+  </AggregateEvaluator>
+
+
+  <ReferenceEvaluator name="CylinderMesh.trilinear_lagrange" evaluator="trilinear.interpolator" valueType="real.type">
+   <Bindings>
+    <Bind argument="chart.argument" source="CylinderMesh.mesh.argument.xi" />
+    <Bind argument="trilinear.parameters.argument" source="CylinderMesh.element_params.trilinear_lagrange" />
+   </Bindings>
+  </ReferenceEvaluator>
+
+
+  <PiecewiseEvaluator name="CylinderMesh.template.trilinear" valueType="real.type">
+   <IndexEvaluators>
+    <IndexEvaluator evaluator="CylinderMesh.mesh.argument.element" indexNumber="1" />
+   </IndexEvaluators>
+   <EvaluatorMap default="CylinderMesh.trilinear_lagrange" />
+  </PiecewiseEvaluator>
+
+
+  <PiecewiseEvaluator name="CylinderMesh.template.triquadratic" valueType="real.type">
+   <IndexEvaluators>
+    <IndexEvaluator evaluator="CylinderMesh.mesh.argument.element" indexNumber="1" />
+   </IndexEvaluators>
+   <EvaluatorMap default="CylinderMesh.triquadratic_lagrange" />
+  </PiecewiseEvaluator>
+
+  <ParameterEvaluator name="CylinderMesh.node.coordinates" valueType="real.type">
+   <DenseArrayData data="CylinderMesh.node.coordinates.data">
+    <DenseIndexes>
+     <IndexEvaluator evaluator="rc3.component.argument" />
+     <IndexEvaluator evaluator="CylinderMesh.nodes.argument" />
+    </DenseIndexes>
+   </DenseArrayData>
+  </ParameterEvaluator>
+  
+  <AggregateEvaluator name="CylinderMesh.coordinates" valueType="rc3.type">
+   <Bindings>
+    <Bind argument="CylinderMesh.nodal_dofs" source="CylinderMesh.node.coordinates" />
+   </Bindings>
+   <ComponentEvaluators default="CylinderMesh.template.triquadratic" />
+  </AggregateEvaluator>
+
+  <ParameterEvaluator name="CylinderMesh.node.coordinatesLinear" valueType="real.type">
+   <DenseArrayData data="CylinderMesh.node.coordinatesLinear.data">
+    <DenseIndexes>
+     <IndexEvaluator evaluator="rc3.component.argument" />
+     <IndexEvaluator evaluator="CylinderMesh.nodes.argument" />
+    </DenseIndexes>
+   </DenseArrayData>
+  </ParameterEvaluator>
+  
+  <AggregateEvaluator name="CylinderMesh.coordinatesLinear" valueType="rc3.type">
+   <Bindings>
+    <Bind argument="CylinderMesh.nodal_dofs" source="CylinderMesh.node.coordinatesLinear" />
+   </Bindings>
+   <ComponentEvaluators default="CylinderMesh.template.triquadratic" />
+  </AggregateEvaluator>
+
+ </Region>
+</Fieldml>

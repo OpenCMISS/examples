@@ -361,6 +361,7 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL CMISSDecomposition_TypeSet(Decomposition,CMISS_DECOMPOSITION_CALCULATED_TYPE, err )
   CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,DomainUserNumber, err )
+  CALL CMISSDecomposition_CalculateFacesSet(Decomposition,.TRUE.,Err)
   !Finish the decomposition
   CALL CMISSDecomposition_CreateFinish(Decomposition, err )
   
