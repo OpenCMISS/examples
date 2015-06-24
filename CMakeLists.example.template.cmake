@@ -1,35 +1,30 @@
-cmake_minimum_required(VERSION 3.2)
-# Included here from template generation
-set(OPENCMISS_INSTALL_DIR @OPENCMISS_INSTALL_DIR@)
- 
-# Get lowercase name
-#string(TOLOWER "@EXAMPLE_NAME@" EXAMPLE_NAME)
-set(EXAMPLE_TARGET run)
+# This is the main build file for OpenCMISS examples using the CMake build system
+#
+# If standard procedure has been followed building OpenCMISS using CMake, all you
+# need to do is set OPENCMISS_INSTALL_DIR to the <OPENCMISS_ROOT>/install/[release|debug|...] directory.
+# The script will do the rest.
+#
+# Otherwise, if the FindOpenCMISS.cmake module is located elsewhere on your system
+# (it is placed inside the OpenCMISS installation folder by default), you need to additionally add that path to
+# the CMAKE_MODULE_PATH variable.
 
 # Get the build context from the OpenCMISS installation
 if (NOT OPENCMISS_INSTALL_DIR)
     set(OPENCMISS_INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../install)
     get_filename_component(OPENCMISS_INSTALL_DIR ${OPENCMISS_INSTALL_DIR} ABSOLUTE)
 endif()
-if (NOT EXISTS ${OPENCMISS_INSTALL_DIR} OR NOT EXISTS ${OPENCMISS_INSTALL_DIR}/OpenCMISSBuildContext.cmake)
-    message(FATAL_ERROR "OpenCMISS is not installed at '${OPENCMISS_INSTALL_DIR}'. Please specify OPENCMISS_INSTALL_DIR.")
-endif()
-include(${OPENCMISS_INSTALL_DIR}/OpenCMISSBuildContext.cmake)
-
-project(OpenCMISSExample LANGUAGES C CXX Fortran VERSION 1.0)
-SET(CMAKE_NO_SYSTEM_FROM_IMPORTED YES)
-
-# Have CMake find the package components
-list(APPEND CMAKE_PREFIX_PATH ${OPENCMISS_PREFIX_PATH}) # var defined OpenCMISSBuildContext
-
-# Have CMake find the FindOpenCMISS file
-list(APPEND CMAKE_MODULE_PATH ${OPENCMISS_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${OPENCMISS_INSTALL_DIR})
 find_package(OpenCMISS REQUIRED)
 
 #################### Actual example code ####################
+cmake_minimum_required(VERSION ${OPENCMISS_CMAKE_MIN_VERSION} FATAL_ERROR)
+project(OpenCMISS-Example VERSION 1.0 LANGUAGES Fortran C CXX)
+
+OPENCMISS_IMPORT()
 
 # Get sources in /src
 file(GLOB SRC src/*.f90 src/*.c ../input/*.f90)
+set(EXAMPLE_TARGET run)
 # Add example executable
 add_executable(${EXAMPLE_TARGET} ${SRC})
 # Link to opencmiss - contains forward refs to all other necessary libs
@@ -38,5 +33,4 @@ set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -cpp")
 if (WIN32)
     target_compile_definitions(${EXAMPLE_TARGET} PRIVATE NOMPIMOD)
 endif()
-
 install(TARGETS ${EXAMPLE_TARGET} DESTINATION .)

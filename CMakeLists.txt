@@ -12,65 +12,51 @@
 # #ifndef NOMPIMOD\R$1 USE MPI\R#endif\R$2IMPLICIT NONE\R\R#ifdef NOMPIMOD\R#include "mpif.h"\R#endif\R\R
 #
 # @author Daniel Wirtz @date April 9th, 2015
-CMAKE_MINIMUM_REQUIRED(VERSION 3.2.0-rc1 FATAL_ERROR)
 
 # Paths and stuff
 if (NOT OPENCMISS_INSTALL_DIR)
     set(OPENCMISS_INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../install)
     get_filename_component(OPENCMISS_INSTALL_DIR ${OPENCMISS_INSTALL_DIR} ABSOLUTE)
 endif()
-if (NOT EXISTS ${OPENCMISS_INSTALL_DIR} OR NOT EXISTS ${OPENCMISS_INSTALL_DIR}/OpenCMISSBuildContext.cmake)
-    message(FATAL_ERROR "OpenCMISS is not installed at '${OPENCMISS_INSTALL_DIR}'. Please specify OPENCMISS_INSTALL_DIR.")
-endif()
-include(${OPENCMISS_INSTALL_DIR}/OpenCMISSBuildContext.cmake)
+list(APPEND CMAKE_MODULE_PATH ${OPENCMISS_INSTALL_DIR})
+find_package(OpenCMISS REQUIRED)
 
+cmake_minimum_required(VERSION ${OPENCMISS_CMAKE_MIN_VERSION} FATAL_ERROR)
 project(OpenCMISS-Examples VERSION 1.0 LANGUAGES C)
 include(ExternalProject)
+
+OPENCMISS_IMPORT()
 
 # Set default build/install dirs unless specified
 if (NOT OPENCMISS_EXAMPLES_BUILD_DIR)
     set(OPENCMISS_EXAMPLES_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
 endif()
-# Put the executable binaries into the opencmiss installation folder if not specified otherwise
-#if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT OR NOT CMAKE_INSTALL_PREFIX)
-#    set(CMAKE_INSTALL_PREFIX ${OPENCMISS_INSTALL_DIR}/examples CACHE STRING "Installation directory" FORCE)
-#endif()
-#message(STATUS "Installing examples to ${CMAKE_INSTALL_PREFIX}")
 
-set(EXTRA_ARGS -DCMAKE_PREFIX_PATH=${OPENCMISS_PREFIX_PATH})
 # For shared libs, use the correct install RPATH to enable binaries to find the shared libs.
 # See http://www.cmake.org/Wiki/CMake_RPATH_handling
-#if (BUILD_SHARED_LIBS) # always do it :-)
-    list(APPEND EXTRA_ARGS 
-        -DCMAKE_INSTALL_RPATH=${OPENCMISS_INSTALL_DIR}/lib
-        -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-    )
-#endif()
+set(EXTRA_ARGS 
+    -DCMAKE_INSTALL_RPATH=${OPENCMISS_INSTALL_DIR}/lib
+    -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+)
 
-#get_filename_component(BINDIRNAME ${CMAKE_CURRENT_BINARY_DIR} NAME)
 function(RECURSE curdir)
     file(GLOB content RELATIVE ${curdir} ${curdir}/*)
     SET(sources )
     foreach(entry ${content})
         set(filename ${curdir}/${entry})
-        if(IS_DIRECTORY ${filename} AND (NOT filename STREQUAL CMAKE_CURRENT_BINARY_DIR))
+        if(IS_DIRECTORY ${filename} AND NOT filename STREQUAL CMAKE_CURRENT_BINARY_DIR)
                 RECURSE(${filename})
         else()
             get_filename_component(fname ${filename} NAME)
             string(FIND "${curdir}" "${CMAKE_CURRENT_BINARY_DIR}" _TMP)
-            if (fname STREQUAL Makefile 
-                    AND (NOT curdir STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-                )
+            if (fname STREQUAL Makefile AND NOT curdir STREQUAL CMAKE_CURRENT_SOURCE_DIR)
                 
                 # Add as external project right away
                 GET_FULLNAME(${curdir} EXAMPLE_FULLNAME)
-                message(STATUS "Configuring example ${EXAMPLE_FULLNAME}")
-                
-                #get_filename_component(EXAMPLE_NAME ${curdir} NAME)
-                #string(TOLOWER EXAMPLE_NAME ${EXAMPLE_NAME})
                 
                 # Generation of CMakeLists.txt files from template
                 #if (NOT EXISTS ${curdir}/CMakeLists.txt)
+                    message(STATUS "Configuring example ${EXAMPLE_FULLNAME}")
                     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.example.template.cmake
                         ${curdir}/CMakeLists.txt @ONLY)
                 #endif()
@@ -87,11 +73,9 @@ function(RECURSE curdir)
             		CMAKE_COMMAND ${CMAKE_COMMAND} -Wno-dev --no-warn-unused-cli # disables warnings for unused cmdline options
             		SOURCE_DIR ${curdir}
             		BINARY_DIR ${OPENCMISS_EXAMPLES_BUILD_DIR}/${EXAMPLE_FULLNAME}
-            		# Need the prefix path in subprojects to find Iron and dependencies etc
-                    # This variable is also set in the build context file.
             		CMAKE_ARGS 
             		    ${EXTRA_ARGS}
-            		    -DCMAKE_INSTALL_PREFIX=${curdir}#${CMAKE_INSTALL_PREFIX}/${EXAMPLE_FULLNAME}
+            		    -DCMAKE_INSTALL_PREFIX=${curdir}
             		    -DCMAKE_OBJECT_PATH_MAX=500
             	)
             endif()
