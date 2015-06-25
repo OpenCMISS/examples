@@ -141,7 +141,6 @@ PROGRAM simple_geometryEXAMPLE
 !  REAL(CMISSDP), PARAMETER :: Vmax=-0.2_CMISSDP !to stabilise...
   
   REAL(CMISSDP), PARAMETER :: alpha=5.0_CMISSDP  !1.0_CMISSDP Original Value  !5.0_CMISSDP
-! klotz 1/12/14
   REAL(CMISSDP), PARAMETER :: beta=0.01_CMISSDP
   REAL(CMISSDP), PARAMETER :: gama=1.0_CMISSDP
   !CAUTION - what are the units???
@@ -151,7 +150,6 @@ PROGRAM simple_geometryEXAMPLE
 !      & gama*43.372873938671383_CMISSDP] !new values TOMO [N/cm^2]
     & [alpha*0.0000000000635201_CMISSDP,alpha*0.3626712895523322_CMISSDP,beta*1.074519943356914_CMISSDP, &
       & gama*9.173311371574769_CMISSDP] !new values TOMO [N/cm^2]
-!end klotz
 
 
   REAL(CMISSDP) :: INIT_PRESSURE
@@ -368,10 +366,10 @@ PROGRAM simple_geometryEXAMPLE
 !  fast_twitch=.true.
 !  if(fast_twitch) then
     filename= &
-!   &"data/homes/klotz/OpenCMISS/OpenCMISS/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/fast_2012_07_23.xml"
-!    "/data/home/klotz/OpenCMISS/OpenCMISS/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/fast_2012_07_23.xml"
-!    "/home/klotz/OpenCMISS/OpenCMISS/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/slow_2014_11_28.xml"
-!     "/home/klotz/OpenCMISS/OpenCMISS/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/slow_TK_2014_12_08.xml"
+!   &"data/homes/heidlauf/OpenCMISS/OpenCMISS/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/fast_2012_07_23.xml"
+!    "/data/home/heidlauf/OpenCMISS/OpenCMISS/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/fast_2012_07_23.xml"
+!    "/home/heidlauf/OpenCMISS/OpenCMISS/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/slow_2014_11_28.xml"
+!     "/home/heidlauf/OpenCMISS/OpenCMISS/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/slow_TK_2014_12_08.xml"
      "/home/heidlauf/OpenCMISS/OpenCMISS/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/slow_TK_2015_02_13.xml"
 !   &"/home/heidlauf/OpenCMISS/opencmiss/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/shorten_mod_2011_07_04.xml"
     STIM_VALUE=1200.0_CMISSDP
@@ -699,13 +697,13 @@ PROGRAM simple_geometryEXAMPLE
     CALL CMISSField_ComponentInterpolationSet(IndependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1, &
      & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err)
     CALL CMISSField_ComponentInterpolationSet(IndependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,2, &
-     & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err) ! titin force
+     & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err) ! titin force (unbound)
     CALL CMISSField_ComponentInterpolationSet(IndependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,3, &
-     & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err) ! additional titin force
+     & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err) ! titin force (bound)
     CALL CMISSField_ComponentInterpolationSet(IndependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,4, &
-     & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err) ! titin force in XF-direction
+     & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err) ! titin force in XF-direction (unbound)
     CALL CMISSField_ComponentInterpolationSet(IndependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,5, &
-     & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err) ! titin force in XF-direction
+     & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err) ! titin force in XF-direction (bound)
     CALL CMISSField_ComponentInterpolationSet(IndependentFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,1, &
      & CMISS_FIELD_ELEMENT_BASED_INTERPOLATION,Err)
     CALL CMISSField_ComponentInterpolationSet(IndependentFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,2, &
@@ -953,9 +951,9 @@ PROGRAM simple_geometryEXAMPLE
   CALL CMISSField_ComponentValuesInitialise(IndependentFieldM,CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3, &
    & LENGTH/NumberOfInSeriesFibres/(NumberOfNodesPerFibre-1),Err)
   CALL CMISSField_ComponentValuesInitialise(IndependentFieldM,CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4, &
-!   & 1.0_CMISSDP,Err)
+   & 1.0_CMISSDP,Err)
 !   & stretch_sarcolength_ratio,Err)
-   & 5.0_CMISSDP,Err)
+!   & 5.0_CMISSDP,Err)
   !fourth variable:
   !  components:
   !    1) old node distance
@@ -1338,8 +1336,8 @@ PROGRAM simple_geometryEXAMPLE
     CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-!        & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED,LENGTH*1.0_CMISSDP,Err) ! To change the initial half-sarcomere length. To create cases similar to Rode. KLOTZ
-        & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED,LENGTH*1.0_CMISSDP/stretch_sarcolength_ratio,Err) ! To change the initial half-sarcomere length. To create cases similar to Rode. KLOTZ
+!        & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED,LENGTH*1.0_CMISSDP,Err) ! To change the initial half-sarcomere length. To create cases similar to Rode. 
+        & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED,LENGTH*1.0_CMISSDP/stretch_sarcolength_ratio,Err) ! To change the initial half-sarcomere length. To create cases similar to Rode. 
     ENDIF
   ENDDO
 
