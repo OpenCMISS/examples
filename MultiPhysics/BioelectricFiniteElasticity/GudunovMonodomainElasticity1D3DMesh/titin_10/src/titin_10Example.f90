@@ -370,7 +370,8 @@ PROGRAM simple_geometryEXAMPLE
 !    "/data/home/heidlauf/OpenCMISS/OpenCMISS/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/fast_2012_07_23.xml"
 !    "/home/heidlauf/OpenCMISS/OpenCMISS/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/slow_2014_11_28.xml"
 !     "/home/heidlauf/OpenCMISS/OpenCMISS/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/slow_TK_2014_12_08.xml"
-     "/home/heidlauf/OpenCMISS/OpenCMISS/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/slow_TK_2015_02_13.xml"
+!     "/home/heidlauf/OpenCMISS/OpenCMISS/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/slow_TK_2015_02_13.xml"
+     "/home/heidlauf/OpenCMISS/OpenCMISS/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/slow_TK_2015_06_25.xml"
 !   &"/home/heidlauf/OpenCMISS/opencmiss/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/shorten_mod_2011_07_04.xml"
     STIM_VALUE=1200.0_CMISSDP
 !  else !slow twitch
@@ -692,7 +693,7 @@ PROGRAM simple_geometryEXAMPLE
     CALL CMISSField_NumberOfVariablesSet(IndependentFieldFE,FieldIndependentNumberOfVariablesFE,Err)
     CALL CMISSField_VariableTypesSet(IndependentFieldFE,[CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_V_VARIABLE_TYPE],Err)
     CALL CMISSField_DimensionSet(IndependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VECTOR_DIMENSION_TYPE,Err)
-    CALL CMISSField_NumberOfComponentsSet(IndependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,5,Err)
+    CALL CMISSField_NumberOfComponentsSet(IndependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,6,Err)
     CALL CMISSField_NumberOfComponentsSet(IndependentFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,4,Err)
     CALL CMISSField_ComponentInterpolationSet(IndependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1, &
      & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err)
@@ -704,6 +705,8 @@ PROGRAM simple_geometryEXAMPLE
      & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err) ! titin force in XF-direction (unbound)
     CALL CMISSField_ComponentInterpolationSet(IndependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,5, &
      & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err) ! titin force in XF-direction (bound)
+    CALL CMISSField_ComponentInterpolationSet(IndependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,6, &
+     & CMISS_FIELD_GAUSS_POINT_BASED_INTERPOLATION,Err) ! activation for titin
     CALL CMISSField_ComponentInterpolationSet(IndependentFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,1, &
      & CMISS_FIELD_ELEMENT_BASED_INTERPOLATION,Err)
     CALL CMISSField_ComponentInterpolationSet(IndependentFieldFE,CMISS_FIELD_V_VARIABLE_TYPE,2, &
@@ -802,21 +805,23 @@ PROGRAM simple_geometryEXAMPLE
     CALL CMISSField_VariableTypesSet(IndependentFieldM,[CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_V_VARIABLE_TYPE, &
      & CMISS_FIELD_U1_VARIABLE_TYPE,CMISS_FIELD_U2_VARIABLE_TYPE],Err)
     
-    !first variable:   CMISS_FIELD_U_VARIABLE_TYPE -- 1) active stress   2) initial titin stress P_0 (or passive sarcomere stress when non activated)    3) titin stress delta P    4) titin stress in cross-fibre direction
+    !first variable:   CMISS_FIELD_U_VARIABLE_TYPE
     CALL CMISSField_DataTypeSet(IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_DP_TYPE,Err)
     CALL CMISSField_DimensionSet(IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VECTOR_DIMENSION_TYPE,Err)
 !    CALL CMISSField_NumberOfComponentsSet(IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,1,Err)
-    CALL CMISSField_NumberOfComponentsSet(IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,5,Err)
+    CALL CMISSField_NumberOfComponentsSet(IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,6,Err)
     CALL CMISSField_ComponentInterpolationSet(IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,1, &
-     & CMISS_FIELD_NODE_BASED_INTERPOLATION,Err)
+     & CMISS_FIELD_NODE_BASED_INTERPOLATION,Err) !normalised sarcomere-based active stress
     CALL CMISSField_ComponentInterpolationSet(IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,2, &
-     & CMISS_FIELD_NODE_BASED_INTERPOLATION,Err) !this component is for the initial titin stress P_0 (or passive sarcomere stress when non activated)
+     & CMISS_FIELD_NODE_BASED_INTERPOLATION,Err) !this component is for the unbound titin stress
     CALL CMISSField_ComponentInterpolationSet(IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,3, &
-     & CMISS_FIELD_NODE_BASED_INTERPOLATION,Err) !this component is for the additional titin stress delta P
+     & CMISS_FIELD_NODE_BASED_INTERPOLATION,Err) !this component is for the bound titin stress
     CALL CMISSField_ComponentInterpolationSet(IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,4, &
-     & CMISS_FIELD_NODE_BASED_INTERPOLATION,Err) !this component is for the titin stress in the XF-direction
+     & CMISS_FIELD_NODE_BASED_INTERPOLATION,Err) !this component is for the unbound titin stress in the XF-direction
     CALL CMISSField_ComponentInterpolationSet(IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,5, &
-     & CMISS_FIELD_NODE_BASED_INTERPOLATION,Err) !this component is for the titin stress in the XF-direction
+     & CMISS_FIELD_NODE_BASED_INTERPOLATION,Err) !this component is for the bound titin stress in the XF-direction
+    CALL CMISSField_ComponentInterpolationSet(IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,6, &
+     & CMISS_FIELD_NODE_BASED_INTERPOLATION,Err) !this component is for the titin activation (stress without force-length relation)
     CALL CMISSField_VariableLabelSet(IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,"Active_Stress_M",Err)
 
     !second variable:   CMISS_FIELD_V_VARIABLE_TYPE -- 1) motor unit number   2) fibre type   3) fibre number   4) nearest Gauss point   5) in element number (LOCAL NODE NUMBERING!!!)
@@ -1080,6 +1085,7 @@ PROGRAM simple_geometryEXAMPLE
   !,  --> set "razumova/stress" as wanted!
   !,  --> no need to set "wal_environment/vS" since all STATE variables are automatically set as wanted! 
   CALL CMISSCellML_VariableSetAsWanted(CellML,shortenModelIndex,"razumova/stress",Err)
+  CALL CMISSCellML_VariableSetAsWanted(CellML,shortenModelIndex,"razumova/activation",Err)
 !  CALL CMISSCellML_VariableSetAsWanted(CellML,shortenModelIndex2,"razumova/stress",Err)
   !,- and override constant parameters without needing to set up fields
   !> \todo Need to allow parameter values to be overridden for the case when user has non-spatially varying parameter value.
@@ -1103,6 +1109,8 @@ PROGRAM simple_geometryEXAMPLE
   !Map the active stress
   CALL CMISSCellML_CreateCellMLToFieldMap(CellML,shortenModelIndex,"razumova/stress",CMISS_FIELD_VALUES_SET_TYPE, &
    & IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_VALUES_SET_TYPE,Err)
+  CALL CMISSCellML_CreateCellMLToFieldMap(CellML,shortenModelIndex,"razumova/activation",CMISS_FIELD_VALUES_SET_TYPE, &
+   & IndependentFieldM,CMISS_FIELD_U_VARIABLE_TYPE,6,CMISS_FIELD_VALUES_SET_TYPE,Err)
 
 !  CALL CMISSCellML_CreateFieldToCellMLMap(CellML,IndependentFieldM,CMISS_FIELD_U1_VARIABLE_TYPE,1,CMISS_FIELD_VALUES_SET_TYPE, &
 !   & shortenModelIndex2,"razumova/L_S",CMISS_FIELD_VALUES_SET_TYPE,Err)
