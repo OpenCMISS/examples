@@ -11,6 +11,13 @@ from opencmiss import CMISS
 
 # Set problem parameters
 #DOC-START parameters
+
+# get the model file
+if len(sys.argv) > 1:
+    modelFile = sys.argv[1]
+else:
+    modelFile = "../n98.xml"
+
 # 1D domain size
 width = 1.0
 numberOfXElements = 1
@@ -158,7 +165,7 @@ materialsField.ComponentValuesInitialise(CMISS.FieldVariableTypes.U,CMISS.FieldP
 cellML = CMISS.CellML()
 cellML.CreateStart(cellMLUserNumber, region)
 # Import a Nobel 98 cell model from a file
-noble98Model = cellML.ModelImport("../n98.xml")
+noble98Model = cellML.ModelImport(modelFile)
 #DOC-END create cellml environment
 
 #DOC-START flag variables
