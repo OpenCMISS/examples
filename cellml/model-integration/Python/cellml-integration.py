@@ -26,7 +26,8 @@ stimStop = 0.1
 timeStop = 1.5
 odeTimeStep = 0.00001
 pdeTimeStep = 0.001
-outputFrequency = 1
+# set this to 1 to get exfiles written out during solve
+outputFrequency = 0
 #DOC-END parameters
 
 #Setup field number handles
@@ -324,9 +325,10 @@ controlLoop.TimesSet(stimStop,timeStop,pdeTimeStep)
 problem.Solve()
 
 # Export the results, here we export them as standard exnode, exelem files
-fields = CMISS.Fields()
-fields.CreateRegion(region)
-fields.NodesExport("Monodomain","FORTRAN")
-fields.ElementsExport("Monodomain","FORTRAN")
-fields.Finalise()
+if outputFrequency != 0:
+    fields = CMISS.Fields()
+    fields.CreateRegion(region)
+    fields.NodesExport("Monodomain","FORTRAN")
+    fields.ElementsExport("Monodomain","FORTRAN")
+    fields.Finalise()
 
