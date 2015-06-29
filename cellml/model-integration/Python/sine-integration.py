@@ -345,7 +345,7 @@ while currentTime < timeStop:
     
 # save the results
 with open('results.txt', "w") as outputFile:
-    print >> outputFile, "#time Vm ICaL ICaLK ICaLNa IStim"
+    print >> outputFile, "#x sin(x) dx/dt=cos(x) parabolic_approximation"
     for i in range(0, len(time)):
         print >> outputFile, time[i], sin1[i], sin2[i], sin3[i]
          
