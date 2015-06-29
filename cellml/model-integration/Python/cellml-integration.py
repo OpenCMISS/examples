@@ -25,14 +25,18 @@ numberOfXElements = 1
 # Materials parameters
 Am = 193.6
 Cm = 0.014651
-conductivity = 0.1
+conductivity = 0.0
 
 # Simulation parameters
 stimValue = 100.0
 stimStop = 0.1
-timeStop = 1.5
-odeTimeStep = 0.00001
-pdeTimeStep = 0.001
+timeStop = 1.5 # [s]
+# this is used in the integration of the CellML model
+odeTimeStep = 0.00001 # [s]
+# this is used in the dummy monodomain problem/solver
+pdeTimeStep = 0.001 # [s]
+# this is the step at which we grab output from the solver
+outputTimeStep = 0.001
 # set this to 1 to get exfiles written out during solve
 outputFrequency = 0
 #DOC-END parameters
@@ -244,12 +248,23 @@ lastNodeNumber = (numberOfXElements+1)
 firstNodeDomain = decomposition.NodeDomainGet(firstNodeNumber, 1)
 lastNodeDomain = decomposition.NodeDomainGet(lastNodeNumber, 1)
 
-# Set the stimulus on all nodes
-stimComponent = cellML.FieldComponentGet(noble98Model, CMISS.CellMLFieldTypes.PARAMETERS, "membrane/IStim")
-for node in range(1,numberOfXElements+1):
-    nodeDomain = decomposition.NodeDomainGet(node,1)
-    if nodeDomain == computationalNodeNumber:
-        cellMLParametersField.ParameterSetUpdateNode(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1, node, stimComponent, stimValue)
+# set up the indices of the fields we want to grab
+potentialComponent = cellML.FieldComponentGet(noble98Model, CMISS.CellMLFieldTypes.STATE, "membrane/V")
+stimulusCurrentComponent = cellML.FieldComponentGet(noble98Model, CMISS.CellMLFieldTypes.PARAMETERS, "membrane/IStim")
+I_CaL_K_Component = cellML.FieldComponentGet(noble98Model, CMISS.CellMLFieldTypes.INTERMEDIATE, "membrane/i_Ca_L_K")
+I_CaL_Na_Component = cellML.FieldComponentGet(noble98Model, CMISS.CellMLFieldTypes.INTERMEDIATE, "membrane/i_Ca_L_Na")
+
+# We are using node 1 as the point in our dummy monodomain problem to integrate the CellML model
+cellmlNode = 1
+cellmlNodeDomain = decomposition.NodeDomainGet(cellmlNode, 1)
+cellmlNodeThisComputationalNode = False
+if cellmlNodeDomain == computationalNodeNumber:
+    cellmlNodeThisComputationalNode = True
+    
+# set the stimulus current on
+stimulusIsOn = True
+if cellmlNodeThisComputationalNode:
+    cellMLParametersField.ParameterSetUpdateNode(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1, cellmlNode, stimulusCurrentComponent, stimValue)
 
 # # Set up the gNa gradient
 # gNaComponent = cellML.FieldComponentGet(noble98Model, CMISS.CellMLFieldTypes.PARAMETERS, "fast_sodium_current/g_Na")
@@ -277,7 +292,10 @@ problem.ControlLoopCreateStart()
 controlLoop = CMISS.ControlLoop()
 problem.ControlLoopGet([CMISS.ControlLoopIdentifiers.NODE],controlLoop)
 controlLoop.TimesSet(0.0,stimStop,pdeTimeStep)
-controlLoop.OutputTypeSet(CMISS.ControlLoopOutputTypes.TIMING)
+
+# controlLoop.OutputTypeSet(CMISS.ControlLoopOutputTypes.TIMING)
+controlLoop.OutputTypeSet(CMISS.ControlLoopOutputTypes.NONE)
+
 controlLoop.TimeOutputSet(outputFrequency)
 problem.ControlLoopCreateFinish()
 
@@ -316,20 +334,31 @@ boundaryConditions = CMISS.BoundaryConditions()
 solverEquations.BoundaryConditionsCreateStart(boundaryConditions)
 solverEquations.BoundaryConditionsCreateFinish()
 
-# Solve the problem until stimStop
-problem.Solve()
+# Main time loop
+# Here we are really doing something that Iron is not designed to handle, so this is not optimal
+# but does allow up to test model integration in Iron.
+currentTime = 0.0
+# grab initial results
+print "Time: " + str(currentTime)
+while currentTime < timeStop:
+    # check if we need to turn off the stimulus current
+    if stimulusIsOn and (currentTime > stimStop):
+        stimulusIsOn = False
+        if cellmlNodeThisComputationalNode:
+            cellMLParametersField.ParameterSetUpdateNode(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1, cellmlNode, stimulusCurrentComponent, 0.0)
 
-# Now turn the stimulus off
-for node in range(1,numberOfXElements+1):
-    nodeDomain = decomposition.NodeDomainGet(node,1)
-    if nodeDomain == computationalNodeNumber:
-        cellMLParametersField.ParameterSetUpdateNode(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1, node, stimComponent, 0.0)
+    # set the next solution interval
+    nextTime = currentTime + outputTimeStep
+    controlLoop.TimesSet(currentTime, nextTime, outputTimeStep)
+    
+    # integrate the model
+    problem.Solve()
 
-#Set the time loop from stimStop to timeStop
-controlLoop.TimesSet(stimStop,timeStop,pdeTimeStep)
-
-# Now solve the problem from stim stop until time stop
-problem.Solve()
+    currentTime = nextTime
+    
+    # grab results
+    print "Time: " + str(currentTime)
+    
 
 # Export the results, here we export them as standard exnode, exelem files
 if outputFrequency != 0:
