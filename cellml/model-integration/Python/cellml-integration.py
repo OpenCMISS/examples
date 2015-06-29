@@ -20,7 +20,7 @@ else:
 
 # 1D domain size
 width = 1.0
-numberOfXElements = 1
+numberOfXElements = 2
 
 # Materials parameters
 Am = 193.6
@@ -28,15 +28,15 @@ Cm = 0.014651
 conductivity = 0.0
 
 # Simulation parameters
-stimValue = 100.0
-stimStop = 0.1
+stimValue = 150.0
+stimStop = 0.01
 timeStop = 1.5 # [s]
 # this is used in the integration of the CellML model
 odeTimeStep = 0.00001 # [s]
 # this is used in the dummy monodomain problem/solver
 pdeTimeStep = 0.001 # [s]
 # this is the step at which we grab output from the solver
-outputTimeStep = 0.001
+outputTimeStep = 0.0001
 # set this to 1 to get exfiles written out during solve
 outputFrequency = 0
 #DOC-END parameters
@@ -253,9 +253,15 @@ potentialComponent = cellML.FieldComponentGet(noble98Model, CMISS.CellMLFieldTyp
 stimulusCurrentComponent = cellML.FieldComponentGet(noble98Model, CMISS.CellMLFieldTypes.PARAMETERS, "membrane/IStim")
 I_CaL_K_Component = cellML.FieldComponentGet(noble98Model, CMISS.CellMLFieldTypes.INTERMEDIATE, "membrane/i_Ca_L_K")
 I_CaL_Na_Component = cellML.FieldComponentGet(noble98Model, CMISS.CellMLFieldTypes.INTERMEDIATE, "membrane/i_Ca_L_Na")
+# and the arrays to store them in
+Vm = []
+IStim = []
+ICaLK = []
+ICaLNa = []
+ICaL = []
 
 # We are using node 1 as the point in our dummy monodomain problem to integrate the CellML model
-cellmlNode = 1
+cellmlNode = 2
 cellmlNodeDomain = decomposition.NodeDomainGet(cellmlNode, 1)
 cellmlNodeThisComputationalNode = False
 if cellmlNodeDomain == computationalNodeNumber:
@@ -339,7 +345,17 @@ solverEquations.BoundaryConditionsCreateFinish()
 # but does allow up to test model integration in Iron.
 currentTime = 0.0
 # grab initial results
-print "Time: " + str(currentTime)
+#print "Time: " + str(currentTime)
+time = []
+value = 0.0
+if cellmlNodeThisComputationalNode:
+    time.append(currentTime)
+    Vm.append(cellMLStateField.ParameterSetGetNode(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1, cellmlNode, potentialComponent))
+    ICaLK.append(cellMLIntermediateField.ParameterSetGetNode(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1, cellmlNode, I_CaL_K_Component))
+    ICaLNa.append(cellMLIntermediateField.ParameterSetGetNode(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1, cellmlNode, I_CaL_Na_Component))
+    ICaL.append(ICaLK[-1] + ICaLNa[-1])
+    IStim.append(cellMLParametersField.ParameterSetGetNode(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1, cellmlNode, stimulusCurrentComponent))
+
 while currentTime < timeStop:
     # check if we need to turn off the stimulus current
     if stimulusIsOn and (currentTime > stimStop):
@@ -357,9 +373,21 @@ while currentTime < timeStop:
     currentTime = nextTime
     
     # grab results
-    print "Time: " + str(currentTime)
+    #print "Time: " + str(currentTime)
+    if cellmlNodeThisComputationalNode:
+        time.append(currentTime)
+        Vm.append(cellMLStateField.ParameterSetGetNode(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1, cellmlNode, potentialComponent))
+        ICaLK.append(cellMLIntermediateField.ParameterSetGetNode(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1, cellmlNode, I_CaL_K_Component))
+        ICaLNa.append(cellMLIntermediateField.ParameterSetGetNode(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1, cellmlNode, I_CaL_Na_Component))
+        ICaL.append(ICaLK[-1] + ICaLNa[-1])
+        IStim.append(cellMLParametersField.ParameterSetGetNode(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1, cellmlNode, stimulusCurrentComponent))
     
-
+# save the results
+with open('results.txt', "w") as outputFile:
+    print >> outputFile, "#time Vm ICaL ICaLK ICaLNa IStim"
+    for i in range(0, len(time)):
+        print >> outputFile, time[i], Vm[i], ICaL[i], ICaLK[i], ICaLNa[i], IStim[i]
+         
 # Export the results, here we export them as standard exnode, exelem files
 if outputFrequency != 0:
     fields = CMISS.Fields()
