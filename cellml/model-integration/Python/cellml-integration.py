@@ -28,15 +28,15 @@ Cm = 0.014651
 conductivity = 0.0
 
 # Simulation parameters
-stimValue = 150.0
-stimStop = 0.01
-timeStop = 1.5 # [s]
+stimValue = 2.5
+stimStop = 1.5
+timeStop = 500 # [ms?]
 # this is used in the integration of the CellML model
-odeTimeStep = 0.00001 # [s]
+odeTimeStep = 0.01 # [ms?]
 # this is used in the dummy monodomain problem/solver
-pdeTimeStep = 0.001 # [s]
+pdeTimeStep = 0.01 # [ms]
 # this is the step at which we grab output from the solver
-outputTimeStep = 0.0001
+outputTimeStep = 1.0
 # set this to 1 to get exfiles written out during solve
 outputFrequency = 0
 #DOC-END parameters
