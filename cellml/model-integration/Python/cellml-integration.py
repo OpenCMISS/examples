@@ -2,12 +2,15 @@
 
 #DOC-START imports
 import sys, os, math
+#from scipy.special.basic import euler
 # Make sure $OPENCMISS_ROOT/cm/bindings/python is first in our PYTHONPATH.
 sys.path.insert(1, os.path.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
 
 # Intialise OpenCMISS
 from opencmiss import CMISS
 #DOC-END imports
+
+usageString = "Usage: " + sys.argv[0] + " <Noble 98 model file> [euler | bdf] [ode time step]"
 
 # Set problem parameters
 #DOC-START parameters
@@ -16,8 +19,34 @@ from opencmiss import CMISS
 if len(sys.argv) > 1:
     modelFile = sys.argv[1]
 else:
-    modelFile = "../n98.xml"
+    print "You need to provide the location of the Noble 98 CellML model file"
+    print usageString
+    sys.exit(-2)
+    
+# check if we have an integrator specified
+integrationMethodName = "euler"
+if len(sys.argv) > 2:
+    integrationMethodName = sys.argv[2]
 
+# and setup the actual integrator type
+integrationMethod = CMISS.DAESolverTypes.EULER # no NONE type to default to?
+if integrationMethodName == "euler":
+    print "Using EULER integrator"
+    integrationMethod = CMISS.DAESolverTypes.EULER
+elif integrationMethodName == "bdf":
+    print "Using BDF (CVODE) integrator"
+    integrationMethod = CMISS.DAESolverTypes.BDF
+else:
+    print "Invalid integrator specified"
+    print usageString
+    sys.exit(-1)
+
+# and setup the (maximal) time step for the ODE integrator
+# this is used in the integration of the CellML model
+odeTimeStep = 0.01
+if len(sys.argv) > 3:
+    odeTimeStep = float(sys.argv[3])
+    
 # 1D domain size
 width = 1.0
 numberOfXElements = 2
@@ -31,8 +60,6 @@ conductivity = 0.0
 stimValue = 2.5
 stimStop = 1.5
 timeStop = 500 # [ms?]
-# this is used in the integration of the CellML model
-odeTimeStep = 0.01 # [ms?]
 # this is used in the dummy monodomain problem/solver
 pdeTimeStep = 0.01 # [ms]
 # this is the step at which we grab output from the solver
@@ -268,9 +295,9 @@ if cellmlNodeDomain == computationalNodeNumber:
     cellmlNodeThisComputationalNode = True
     
 # set the stimulus current on
-stimulusIsOn = True
+stimulusIsOn = False
 if cellmlNodeThisComputationalNode:
-    cellMLParametersField.ParameterSetUpdateNode(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1, cellmlNode, stimulusCurrentComponent, stimValue)
+    cellMLParametersField.ParameterSetUpdateNode(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1, cellmlNode, stimulusCurrentComponent, 0.0)
 
 # # Set up the gNa gradient
 # gNaComponent = cellML.FieldComponentGet(noble98Model, CMISS.CellMLFieldTypes.PARAMETERS, "fast_sodium_current/g_Na")
@@ -311,6 +338,7 @@ dynamicSolver = CMISS.Solver()
 problem.SolversCreateStart()
 # Get the first DAE solver
 problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],1,daeSolver)
+daeSolver.DAESolverTypeSet(integrationMethod)
 daeSolver.DAETimeStepSet(odeTimeStep)
 daeSolver.OutputTypeSet(CMISS.SolverOutputTypes.NONE)
 # Get the second dynamic solver for the parabolic problem
@@ -369,6 +397,12 @@ while currentTime < timeStop:
     
     # integrate the model
     problem.Solve()
+    
+    # check if we need to turn stimulus on (to match behaviour of OpenCOR (https://github.com/opencor/opencor/issues/675))
+    if not stimulusIsOn and (currentTime < stimStop):
+        stimulusIsOn = True
+        if cellmlNodeThisComputationalNode:
+            cellMLParametersField.ParameterSetUpdateNode(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1, cellmlNode, stimulusCurrentComponent, stimValue)
 
     currentTime = nextTime
     
