@@ -109,7 +109,7 @@ linearBasis.CreateFinish()
 
 
 def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,
-              outputFilename,transient,RBS,fdJacobian,analytic):
+              outputFilename,transient,RBS,fdJacobian,analytic,basisList):
     """ Sets up the lid driven cavity problem and solves with the provided parameter values
 
           Square Lid-Driven Cavity
@@ -129,12 +129,7 @@ def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,
     generatedMesh = CMISS.GeneratedMesh()
     generatedMesh.CreateStart(generatedMeshUserNumber,region)
     generatedMesh.type = CMISS.GeneratedMeshTypes.REGULAR
-    if RBS:
-        generatedMesh.basis = [quadraticBasis,linearBasis]
-#        generatedMesh.basis = [quadraticBasis,quadraticBasis]
-#        generatedMesh.basis = [linearBasis,linearBasis]
-    else:
-        generatedMesh.basis = [quadraticBasis,linearBasis]
+    generatedMesh.basis = basisList
     generatedMesh.extent = cavityDimensions
     generatedMesh.numberOfElements = numberOfElements
 
@@ -374,6 +369,7 @@ def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,
     problem.Destroy()
 
 
+#DOC-START Control Panel
 #==========================================================
 # P r o b l e m     C o n t r o l
 #==========================================================
@@ -383,13 +379,14 @@ elementResolutions = [20]
 ReynoldsNumbers = [2500]
 lidVelocity = [1.0,0.0]
 density = 1.0
-# Note: viscosity will be calculated based on specified Reynolds number
+basisList = [quadraticBasis,linearBasis]
 RBSTypes = [True,False]
 fdJacobian = False
 analyticLidVelocity = True
+# Note: viscosity will be calculated based on specified Reynolds number
 
 #==========================================================
-
+#DOC-END Control Panel
 
 #Check for command line arguments- used for nightly test on GFEM & RBS code
 if len(sys.argv) > 1:
@@ -436,7 +433,7 @@ for elemRes in elementResolutions:
                 print('    FD Jacobian: ' + str(fdJacobian))
             start = time.time()
             LidDriven(elementResolution,dimensions,lidVelocity,viscosity,density,
-                      outputFile,transient,RBS,fdJacobian,analyticLidVelocity)
+                      outputFile,transient,RBS,fdJacobian,analyticLidVelocity,basisList)
             end = time.time()
             runtime = end - start
             runtimes.append(runtime)
