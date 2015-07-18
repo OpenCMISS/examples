@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<model xmlns="http://www.cellml.org/cellml/1.1#" xmlns:cmeta="http://www.cellml.org/metadata/1.0#" cmeta:id="ModelRCR" name="ModelRCR">
+
+<units base_units="no" name="UnitP"><unit multiplier="0.0075" units="pascal"/></units>
+<units base_units="no" name="UnitQ"><unit prefix="hecto" units="UnitV"/><unit exponent="-1" units="second"/></units>
+<units base_units="no" name="UnitR"><unit units="UnitP"/><unit exponent="-1" units="UnitV"/><unit units="second"/></units>
+<units base_units="no" name="UnitC"><unit exponent="-1" units="UnitP"/><unit units="UnitV"/></units>
+<units base_units="no" name="UnitV"><unit prefix="milli" units="litre"/></units>
+<units base_units="no" name="UnitT"><unit prefix="milli" units="second"/></units>
+
+<component name="ParameterValues">
+<variable initial_value="20.0" name="ResistanceProximal" public_interface="out" units="UnitR"></variable>
+<variable initial_value="80.0" name="ResistanceDistal" public_interface="out" units="UnitR"></variable>
+<variable initial_value="0.0015" name="Capacitance" public_interface="out" units="UnitC"></variable>
+<variable initial_value="10.0" name="PressureTerminal" public_interface="out" units="UnitP"/></component>
+
+<component name="environment">
+<variable initial_value="0.0" name="t" public_interface="out" units="UnitT"/></component>
+
+<component name="Circuit">
+<variable initial_value="0.0" name="Pout" private_interface="in" public_interface="out" units="UnitP"/>
+<variable initial_value="0.0" name="Qin" private_interface="out" public_interface="in" units="UnitQ"/></component>
+
+<component name="RC">
+<variable initial_value="0.0" name="Pi" public_interface="out" units="UnitP"/>
+<variable name="Po" public_interface="in" units="UnitP"/>
+<variable name="Qi" public_interface="in" units="UnitQ"/>
+<variable name="Qo" public_interface="out" units="UnitQ"/>
+<variable name="R" public_interface="in" units="UnitR"/>
+<variable name="C" public_interface="in" units="UnitC"/>
+<variable name="t" public_interface="in" units="second"/>
+    
+<math xmlns="http://www.w3.org/1998/Math/MathML" id="RC equations"><apply><eq/><apply><divide/><apply><minus/><ci>Qi</ci><ci>Qo</ci></apply><ci>C</ci></apply><apply><diff/><bvar><ci>t</ci></bvar><ci>Pi</ci></apply></apply><apply><eq/><apply><divide/><apply><minus/><ci>Pi</ci><ci>Po</ci></apply><ci>R</ci></apply><ci>Qo</ci></apply>
+</math></component>
+
+<component name="Rp">
+<variable name="Pi" public_interface="out" units="UnitP"/>
+<variable name="Po" public_interface="in" units="UnitP"/>
+<variable name="Qi" public_interface="in" units="UnitQ"/>
+<variable name="Qo" public_interface="out" units="UnitQ"/>
+<variable name="R" public_interface="in" units="UnitR"/>
+
+<math xmlns="http://www.w3.org/1998/Math/MathML" id="R equations"><apply><eq/><ci>Pi</ci><apply><plus/><ci>Po</ci><apply><times/><ci>R</ci><ci>Qi</ci></apply></apply></apply><apply><eq/><ci>Qo</ci><ci>Qi</ci></apply>
+</math></component>
+
+<connection><map_components component_1="environment" component_2="RC"/>
+<map_variables variable_1="t" variable_2="t"/></connection>
+
+<connection><map_components component_1="Circuit" component_2="Rp"/>
+<map_variables variable_1="Pout" variable_2="Pi"/>
+<map_variables variable_1="Qin" variable_2="Qi"/></connection>
+
+<connection><map_components component_1="Rp" component_2="RC"/>
+<map_variables variable_1="Po" variable_2="Pi"/>
+<map_variables variable_1="Qo" variable_2="Qi"/></connection>
+
+<connection><map_components component_1="ParameterValues" component_2="Rp"/>
+<map_variables variable_1="ResistanceProximal" variable_2="R"/></connection>
+
+<connection><map_components component_1="ParameterValues" component_2="RC"/>
+<map_variables variable_1="ResistanceDistal" variable_2="R"/>
+<map_variables variable_1="Capacitance" variable_2="C"/>
+<map_variables variable_1="PressureTerminal" variable_2="Po"/></connection>
+
+<group>
+<relationship_ref relationship="encapsulation"/>
+<component_ref component="Circuit">
+<component_ref component="environment"/>
+<component_ref component="Rp"/>
+<component_ref component="RC"/>
+<component_ref component="ParameterValues"/></component_ref>
+</group></model>
