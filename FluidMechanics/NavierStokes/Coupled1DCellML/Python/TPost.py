@@ -7,8 +7,6 @@ import subprocess
 from subprocess import Popen, PIPE
 
 def Post(times):
-    # Set the reference values
-    Qs = 100.0e-6  # Flow     (m3/s)
     counter = 1
 
     # Node number for data extraction
@@ -23,9 +21,8 @@ def Post(times):
                 if outputLINE[i].split() == ['Node:', str(node)]:
                     # Extract the variables from output files
                     Flow = float(''.join(outputLINE[i+4].split()[0]))
-                    Conc = float(''.join(outputLINE[i+12].split()[0]))
-                    Pressure = float(''.join(outputLINE[i+11].split()[0]))
-                    Flow = Flow*Qs*1000000.0
+                    Pressure = float(''.join(outputLINE[i+12].split()[0]))
+                    Conc = float(''.join(outputLINE[i+14].split()[0]))
                     X = float(''.join(outputLINE[i+1].split()[0]))
                     Y = float(''.join(outputLINE[i+2].split()[0]))
                     Z = float(''.join(outputLINE[i+3].split()[0]))

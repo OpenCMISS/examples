@@ -53,18 +53,19 @@ MAKEFLAGS = --no-builtin-rules --warn-undefined-variables
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
+-finit-real=nan
 ifndef OPENCMISS_ROOT
-  OPENCMISS_ROOT := ../../..
-  GLOBAL_ROOT := $(CURDIR)/../../..
+  OPENCMISS_ROOT := ../../../..
+  GLOBAL_ROOT := $(CURDIR)/../../../..
 else
   GLOBAL_ROOT := ${OPENCMISS_ROOT}/cm
 endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_PATH= InterfaceExamples/
+EXAMPLE_PATH= InterfaceExamples/CoupledFluidSolid/
 
-EXAMPLE_NAME = CoupledFluidSolid
+EXAMPLE_NAME = Fortran
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 

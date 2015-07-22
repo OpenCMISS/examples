@@ -47,12 +47,13 @@
 !<
 
 !> Main program
-PROGRAM CoupledFluidSolidExample
+PROGRAM FortranExample
 
   USE OPENCMISS
-  
+  USE MPI
+
 #ifdef WIN32
-  USE IFQWIN
+  USE IFQWINCMISS
 #endif
 
   IMPLICIT NONE
@@ -61,11 +62,6 @@ PROGRAM CoupledFluidSolidExample
   !Material specification
   INTEGER(CMISSIntg), PARAMETER :: Plate2D=2
   INTEGER(CMISSIntg), PARAMETER :: Plate3D=3
-  
-  
-  !set no initial flow?
-  LOGICAL :: zeroCheckFlag=.FALSE.
-  REAL(CMISSDP) :: zeroCheck=1.0_CMISSDP
   
   REAL(CMISSDP) :: SolidDensity
   REAL(CMISSDP), ALLOCATABLE :: Gravity(:)
@@ -77,50 +73,24 @@ PROGRAM CoupledFluidSolidExample
   INTEGER(CMISSIntg) :: NumberOfInterfaceNodes
   INTEGER(CMISSIntg) :: NumberOfInterfaceElements
   
-  INTEGER(CMISSIntg), ALLOCATABLE :: NodeIndices(:),NodeIndexFMappings(:),NodeIndexSMappings(:), &
-    & SolidElements(:), &
-    & SolidElementSDNodes(:),SolidElementHPNodes(:),SolidElementSDNodeMappings(:),SolidElementHPNodeMappings(:),FluidElements(:), &
-    & FluidElementSVNodes(:),FluidElementSVNodeMappings(:), &
-    & MovingMeshElements(:), &
-    & MovingMeshElementNodes(:),MovingMeshBoundaryElementNodes(:),MovingMeshFixedNodes(:),MovingMeshMovingNodes(:), &
-    & MovingMeshBoundaryElementNodeMappings(:),MovingMeshFixedNodeMappings(:),MovingMeshMovingNodeMappings(:), &
-    & InterfaceElements(:),InterfaceInterfaceElementNodes(:),SolidInterfaceElements(:),SolidInterfaceElementNodes(:), &
-    & SolidInterfaceElementNodeMappings(:),FluidInterfaceElements(:),FluidInterfaceElementNodes(:), &
-    & FluidInterfaceElementNodeMappings(:), &
-    & InterfaceNodeNumbers(:),SolidInterfaceNodeNumbers(:),FluidInterfaceNodeNumbers(:),SolidInterfaceNodeNumberMappings(:), &
-    & FluidInterfaceNodeNumberMappings(:), &
-    & VelocityInletBoundaryNodes(:),VelocityInletBoundaryNodeMappings(:), &
-    & VelocityBoundaryNodes(:),VelocityBoundaryNodeMappings(:),PressureBoundaryNodes(:), &
-    & PressureBoundaryNodeMappings(:)
-  
-  REAL(CMISSDP), ALLOCATABLE :: SolidGeometry(:),FluidGeometry(:),InterfaceGeometry(:),InterfaceXiPosition(:), &
-    & SolidInterfaceXiPosition(:),FluidInterfaceXiPosition(:),VelocityBoundaryCondition(:), &
-    & PressureBoundaryCondition(:)
-    
-    
-    
-    
+  INTEGER(CMISSIntg), ALLOCATABLE :: SolidInterfaceElements(:),FluidInterfaceElements(:)
+
   ! 2D plate variables TODO Share variables for different geometries
   INTEGER(CMISSIntg), ALLOCATABLE :: SolidNodeNumbers(:),FluidNodeNumbers(:),SolidElementNodes(:,:),FluidElementNodes(:,:), &
     & InterfaceElementNodes(:,:),ConnectedInterfaceNodes(:,:), &
     & InterfaceNodeNumbersForGeometry(:), &
     & NoDisplacementNodes(:),FixedNodes(:),FixedZNodes(:),MovedNodes(:),MovedYNodes(:),InletNodes(:),NoSlipNodes(:), &
     & OutletNodes(:),SlipNodes(:),InterfaceInterfaceNodeInformationNE(:,:),SolidInterfaceNodeInformationNE(:,:), &
-    & FluidInterfaceNodeInformationNE(:,:),LagrangeNodes(:),SlipNodesTop(:),SlipNodesRightLeft(:),Components(:)
-  
+    & FluidInterfaceNodeInformationNE(:,:),LagrangeNodes(:),SlipNodesTop(:),SlipNodesRightLeft(:)
+
   REAL(CMISSDP), ALLOCATABLE :: SolidGeometryX(:),SolidGeometryY(:),SolidGeometryZ(:), &
     & FluidGeometryX(:),FluidGeometryY(:),FluidGeometryZ(:), &
     & InterfaceGeometryX(:),InterfaceGeometryY(:),InterfaceGeometryZ(:), &
     & SolidXi2(:,:),SolidXi3(:,:),FluidXi2(:,:),FluidXi3(:,:), &
     & SolidInterfaceNodeInformationXi(:,:),FluidInterfaceNodeInformationXi(:,:)
-  
-  
-                                                          
-  INTEGER(CMISSIntg), ALLOCATABLE :: IndexArray(:)
-  
+
   !variables for timing
-  REAL :: t(2)=(/0.0,0.0/)
-  REAL :: e
+  REAL :: e,t(2)
   
   INTEGER(CMISSIntg), PARAMETER :: SolidCoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: FluidCoordinateSystemUserNumber=2
@@ -129,7 +99,6 @@ PROGRAM CoupledFluidSolidExample
   INTEGER(CMISSIntg), PARAMETER :: SolidRegionUserNumber=6
   INTEGER(CMISSIntg), PARAMETER :: FluidRegionUserNumber=7
   INTEGER(CMISSIntg), PARAMETER :: InterfaceUserNumber=40
-  
   
   INTEGER(CMISSIntg), PARAMETER :: SolidMeshUserNumber=19
   INTEGER(CMISSIntg), PARAMETER :: FluidMeshUserNumber=20
@@ -153,7 +122,6 @@ PROGRAM CoupledFluidSolidExample
   INTEGER(CMISSIntg), PARAMETER :: LagrangeFieldUserNumber=44
   
   INTEGER(CMISSIntg), PARAMETER :: CoupledProblemUserNumber=46
-  
   
   INTEGER(CMISSIntg), PARAMETER :: SolidEquationsSetFieldUserNumber=49
   INTEGER(CMISSIntg), PARAMETER :: FluidEquationsSetFieldUserNumber=50
@@ -189,14 +157,12 @@ PROGRAM CoupledFluidSolidExample
   INTEGER(CMISSIntg), PARAMETER :: IndependentFieldMovingMeshUserNumber=121
   INTEGER(CMISSIntg), PARAMETER :: LinearSolverMovingMeshEquationsUserNumber=122
   
-  
   !Program types
   
   !Program variables
 
-  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,STATUS
-  INTEGER(CMISSIntg) :: NumberGlobalElementsX, &
-    & InterpolationTypeInterface,NumberOfGaussXi,NUMBER_OF_NODE_XI,NumberOfDimensions,component_idx, &
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS
+  INTEGER(CMISSIntg) :: InterpolationTypeInterface,NumberOfGaussXi,NUMBER_OF_NODE_XI,NumberOfDimensions,component_idx, &
     & NumberOfGaussXiSpace,NumberOfGaussXiVelocity,NumberOfGaussXiPressure,arraySize
 
   INTEGER(CMISSIntg) :: SolidEquationsSetIndex=1
@@ -215,16 +181,15 @@ PROGRAM CoupledFluidSolidExample
   INTEGER(CMISSIntg) :: LinearSolverMovingMesh_OutputType
   INTEGER(CMISSIntg) :: MaximumIterations,MaxFunctionEvaluations
   INTEGER(CMISSIntg) :: RestartValue
-  INTEGER(CMISSIntg) :: MMCondition=0
   
   INTEGER(CMISSIntg) :: EquationsNavierStokesOutput,InterfaceMeshComponentNumber,InterpolationTypeDisplacement, &
     & InterpolationTypeHydrostaticPressure,InterpolationTypePressure,InterpolationTypeSpace,InterpolationTypeVelocity, &
     & MovingMeshEquationsSetIndex,Mesh1ComponentNumberDisplacement,Mesh1ComponentNumberHydrostaticPressure, &
-    & Mesh1ComponentNumberSpace, &
-    & NodeDomain,Mesh2ComponentNumberPressure,Mesh2ComponentNumberSpace,MeshNumberOfComponents,NumberGlobalElementsY
+    & Mesh1ComponentNumberSpace,Components(3),NodeDomain,Mesh2ComponentNumberPressure,Mesh2ComponentNumberSpace, &
+    & MeshNumberOfComponents
   
   ! LOOP INTEGERS
-  INTEGER(CMISSIntg) :: NodeNumber,S,P,ElementIndex,NodeIndex,MM,MaterialSpecification,LocalNodeIndex
+  INTEGER(CMISSIntg) :: NodeNumber,S,ElementIndex,NodeIndex,MaterialSpecification,LocalNodeIndex
   
   !check below for units
   REAL(CMISSDP) :: XI2(2),XI3(3)
@@ -251,23 +216,18 @@ PROGRAM CoupledFluidSolidExample
   REAL(CMISSDP) :: TimeStepSize
 
   LOGICAL :: FileReadDiagnostics=.FALSE.
-  LOGICAL :: ExampleFileProgressDiagnostics=.TRUE.
+  LOGICAL :: ExampleFileProgressDiagnostics=.FALSE.
   LOGICAL :: GeometryCheck=.FALSE.
   LOGICAL :: GravityFlag=.FALSE.
   LOGICAL :: CheckWithoutInterfaceCondition=.FALSE.
-  LOGICAL :: SetupOutput=.TRUE.
+  LOGICAL :: SetupOutput=.FALSE.
   
-
   !CMISS variables
-  TYPE(CMISSBasisType) :: BasisSpaceSolid,BasisDisplacement,BasisHydrostaticPressure
-  TYPE(CMISSBasisType) :: BasisSpaceFluid,BasisVelocity,BasisPressure
-  TYPE(CMISSBasisType) :: InterfaceBasis1,InterfaceMappingBasis1
-  
-  TYPE(CMISSNodesType) :: SolidNodes
-  TYPE(CMISSNodesType) :: FluidNodes,InterfaceNodes
-  TYPE(CMISSMeshElementsType) :: SolidMeshElementsSpace,SolidMeshElementsDisplacement,SolidMeshElementsHydrostaticPressure
-  TYPE(CMISSMeshElementsType) :: FluidMeshElementsSpace,FluidMeshElementsVelocity,FluidMeshElementsPressure
-  TYPE(CMISSMeshElementsType) :: InterfaceMeshElements
+  TYPE(CMISSBasisType) :: BasisSpaceSolid,BasisDisplacement,BasisHydrostaticPressure, &
+    & BasisSpaceFluid,BasisVelocity,BasisPressure,InterfaceBasis1,InterfaceMappingBasis1
+  TYPE(CMISSNodesType) :: SolidNodes,FluidNodes,InterfaceNodes
+  TYPE(CMISSMeshElementsType) :: SolidMeshElementsSpace,SolidMeshElementsDisplacement,SolidMeshElementsHydrostaticPressure, &
+    & FluidMeshElementsSpace,FluidMeshElementsVelocity,FluidMeshElementsPressure,InterfaceMeshElements
   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions,BoundaryConditionsMovingMesh
   TYPE(CMISSCoordinateSystemType) :: SolidCoordinateSystem,FluidCoordinateSystem,InterfaceCoordinateSystem, &
     & WorldCoordinateSystem
@@ -276,8 +236,8 @@ PROGRAM CoupledFluidSolidExample
   TYPE(CMISSEquationsSetType) :: SolidEquationsSet,FluidEquationsSet,MovingMeshEquationsSet
   TYPE(CMISSFieldType) :: GeometricField1,GeometricField2,InterfaceGeometricField1, &
     & DependentField1,DependentField2,LagrangeField1,EquationsSetField1,EquationsSetField2, &
-    & DependentFieldMovingMesh,MaterialFieldMovingMesh,IndependentField2,IndependentFieldMovingMesh
-  TYPE(CMISSFieldType) :: MaterialField1,MaterialField2,EquationsSetFieldMovingMesh,SourceField1
+    & DependentFieldMovingMesh,MaterialFieldMovingMesh,IndependentField2,IndependentFieldMovingMesh, &
+    & MaterialField1,MaterialField2,EquationsSetFieldMovingMesh,SourceField1
   TYPE(CMISSFieldsType) :: Fields1,Fields2,FieldsI
   TYPE(CMISSInterfaceType) :: Interface1
   TYPE(CMISSInterfaceConditionType) :: InterfaceCondition
@@ -287,10 +247,7 @@ PROGRAM CoupledFluidSolidExample
   TYPE(CMISSProblemType) :: CoupledProblem
   TYPE(CMISSControlLoopType) :: ControlLoop
   TYPE(CMISSRegionType) :: Region1,Region2,WorldRegion
-  TYPE(CMISSSolverType) :: DynamicSolver
-  TYPE(CMISSSolverType) :: NonlinearSolver
-  TYPE(CMISSSolverType) :: LinearSolver
-  TYPE(CMISSSolverType) :: LinearSolverMovingMesh
+  TYPE(CMISSSolverType) :: DynamicSolver,NonlinearSolver,LinearSolver,LinearSolverMovingMesh
   TYPE(CMISSSolverEquationsType) :: CoupledSolverEquations,LinearSolverMovingMeshEquations
   !
   !=================================================================================================================================
@@ -316,7 +273,6 @@ PROGRAM CoupledFluidSolidExample
   IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
 #endif
 
-  e=etime(t)
   !
   !=================================================================================================================================
   !
@@ -345,8 +301,9 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
   !Set error handling mode
   CALL CMISSErrorHandlingModeSet(CMISS_ERRORS_TRAP_ERROR,Err)
+  !CALL CMISSOutputSetOn("Testing",Err)
   !Set diganostics for testing
-  !CALL CMISSDiagnosticsSetOn(CMISS_FROM_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["SOLVER_MAPPING_CALCULATE         ", &
+  !CALL CMISSDiagnosticsSetOn(CMISS_FROM_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["SOLVER_MAPPING_CALCULATE", &
   !  & "SOLVER_MATRIX_STRUCTURE_CALCULATE"],Err)
   !Get the computational nodes information
   CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -365,17 +322,17 @@ PROGRAM CoupledFluidSolidExample
   !Set output parameters
   SetupOutput=.TRUE.
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
-  LinearSolverMovingMesh_OutputType=CMISS_SOLVER_SOLVER_OUTPUT
-  DynamicSolver_OutputType=CMISS_SOLVER_SOLVER_OUTPUT
-  LinearSolver_OutputType=CMISS_SOLVER_SOLVER_OUTPUT
-  NonlinearSolver_OutputType=CMISS_SOLVER_SOLVER_OUTPUT
+  LinearSolverMovingMesh_OutputType=CMISS_SOLVER_NO_OUTPUT
+  DynamicSolver_OutputType=CMISS_SOLVER_NO_OUTPUT
+  LinearSolver_OutputType=CMISS_SOLVER_NO_OUTPUT
+  NonlinearSolver_OutputType=CMISS_SOLVER_NO_OUTPUT
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
   EquationsNavierStokesOutput=CMISS_EQUATIONS_NO_OUTPUT
   !Set result output parameter
   OutputFrequency=1
   
   !Choose 2D or 3D case
-  MaterialSpecification=Plate2D
+  MaterialSpecification=Plate3D
   !Set solver parameters
   RelativeTolerance=1.0E-4_CMISSDP !default: 1.0E-05_CMISSDP
   AbsoluteTolerance=1.0E-4_CMISSDP !default: 1.0E-10_CMISSDP
@@ -384,30 +341,29 @@ PROGRAM CoupledFluidSolidExample
   MaxFunctionEvaluations=100000
   RestartValue=30 !default: 30
   LinesearchAlpha=1.0_CMISSDP
-  MovingMeshParameterK=1.0!default
+  MovingMeshParameterK=1.0 !default
   DynamicSolver_Theta=1.0_CMISSDP
   StartTime=0.0_CMISSDP
-  StopTime=20.0_CMISSDP
-  TimeStepSize=1.0_CMISSDP
   StopTime=2000.0_CMISSDP
   TimeStepSize=1.0_CMISSDP
   IF(MaterialSpecification==Plate2D) THEN
-    StopTime=100.0_CMISSDP
+    StopTime=0.1_CMISSDP
     TimeStepSize=0.05_CMISSDP
   ENDIF
   
   !Material properties
   !NOTE: USE OF SI UNITS unless comment
   !Low density fluid, rubber-like solid
-  FluidDynamicViscosity=0.05! kg / (m s)
-  FluidDensity=100! kg m^-3
-  SolidDensity=300! kg m^-3
+  FluidDynamicViscosity=0.05! kg/(m.s)
+  FluidDensity=100! kg/m3
+  SolidDensity=300! kg/m3
   YoungsModulus=2.3E4! Pa
-  PoissonsRatio=0.49! [.]
+  PoissonsRatio=0.49
   !Neo-Hookean material law
-  ShearModulus=YoungsModulus/(2.0_CMISSDP*(1.0_CMISSDP+PoissonsRatio)) ! N / m^2
+  ShearModulus=YoungsModulus/(2.0_CMISSDP*(1.0_CMISSDP+PoissonsRatio)) ! N/m2
   BulkModulus=YoungsModulus/(3.0_CMISSDP*(1.0_CMISSDP-2.0_CMISSDP*PoissonsRatio))
-  MooneyRivlin1=0.5_CMISSDP*ShearModulus ! N / m^2
+  !MooneyRivlin1=0.5_CMISSDP*ShearModulus ! N/m2
+  MooneyRivlin1=0.0595_CMISSDP
   MooneyRivlin2=0.0_CMISSDP
   
   
@@ -416,14 +372,14 @@ PROGRAM CoupledFluidSolidExample
   CASE(Plate2D)
     NumberOfDimensions=2
     ALLOCATE(Gravity(NumberOfDimensions))
-    Gravity(:)=[0.0_CMISSDP,9.81_CMISSDP] !in m s^-2
+    Gravity(:)=[0.0_CMISSDP,9.81_CMISSDP] ! m/s2
   CASE(Plate3D)
     NumberOfDimensions=3
     CheckWithoutInterfaceCondition=.FALSE.!if set to true we remove all Lagrange field dofs by setting them as zero dirichlet BC
     IF(CheckWithoutInterfaceCondition) THEN
       GravityFlag=.TRUE.
       ALLOCATE(Gravity(NumberOfDimensions))
-      Gravity(:)=[0.0_CMISSDP,9.81_CMISSDP,0.0_CMISSDP] !in m s^-2
+      Gravity(:)=[0.0_CMISSDP,9.81_CMISSDP,0.0_CMISSDP] ! m/s2
     ENDIF
   END SELECT
     
@@ -433,11 +389,9 @@ PROGRAM CoupledFluidSolidExample
   !Read node numbers
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, file='./Plate2DSolidNodes.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/Solid/Plate2DSolidNodes.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, file='./Plate3DSolidNodes.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/Solid/Plate3DSolidNodes.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -451,11 +405,9 @@ PROGRAM CoupledFluidSolidExample
   
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, file='./Plate2DFluidNodes.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/Fluid/Plate2DFluidNodes.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, file='./Plate3DFluidNodes.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/Fluid/Plate3DFluidNodes.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -469,11 +421,9 @@ PROGRAM CoupledFluidSolidExample
   
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, file='./Plate2DInterfaceNodes.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/Interface/Plate2DInterfaceNodes.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, file='./Plate3DInterfaceNodes.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/Interface/Plate3DInterfaceNodes.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -487,8 +437,7 @@ PROGRAM CoupledFluidSolidExample
   
   !Read geometry
   IF(NumberOfDimensions==3) THEN
-    OPEN (unit=1, file='./Plate3DSolidX.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/Solid/Plate3DSolidX.txt', status='old', action='read')
     READ(1, *), arraySize
     IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
     ALLOCATE(SolidGeometryX(arraySize))
@@ -502,11 +451,9 @@ PROGRAM CoupledFluidSolidExample
   
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, file='./Plate2DSolidY.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/Solid/Plate2DSolidY.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, file='./Plate3DSolidY.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/Solid/Plate3DSolidY.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -520,11 +467,9 @@ PROGRAM CoupledFluidSolidExample
   
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, file='./Plate2DSolidZ.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/Solid/Plate2DSolidZ.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, file='./Plate3DSolidZ.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/Solid/Plate3DSolidZ.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -537,8 +482,7 @@ PROGRAM CoupledFluidSolidExample
   IF(FileReadDiagnostics) PRINT *, 'Solid z coordinates: ',SolidGeometryZ
   
   IF(NumberOfDimensions==3) THEN
-    OPEN (unit=1, file='./Plate3DFluidX.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/Fluid/Plate3DFluidX.txt', status='old', action='read')
     READ(1, *), arraySize
     IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
     ALLOCATE(FluidGeometryX(arraySize))
@@ -552,11 +496,9 @@ PROGRAM CoupledFluidSolidExample
   
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, file='./Plate2DFluidY.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/Fluid/Plate2DFluidY.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, file='./Plate3DFluidY.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/Fluid/Plate3DFluidY.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -570,11 +512,9 @@ PROGRAM CoupledFluidSolidExample
   
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, file='./Plate2DFluidZ.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/Fluid/Plate2DFluidZ.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, file='./Plate3DFluidZ.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/Fluid/Plate3DFluidZ.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -587,8 +527,7 @@ PROGRAM CoupledFluidSolidExample
   IF(FileReadDiagnostics) PRINT *, 'Fluid z coordinates: ',FluidGeometryZ
   
   IF(NumberOfDimensions==3) THEN
-    OPEN (unit=1, file='./Plate3DInterfaceX.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/Interface/Plate3DInterfaceX.txt', status='old', action='read')
     READ(1, *), arraySize
     IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
     ALLOCATE(InterfaceGeometryX(arraySize))
@@ -602,10 +541,10 @@ PROGRAM CoupledFluidSolidExample
   
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, file='./Plate2DInterfaceY.txt', &
+    OPEN (unit=1, file='./Input/2D/Interface/Plate2DInterfaceY.txt', &
       & status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, file='./Plate3DInterfaceY.txt', &
+    OPEN (unit=1, file='./Input/3D/Interface/Plate3DInterfaceY.txt', &
       & status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
@@ -620,10 +559,10 @@ PROGRAM CoupledFluidSolidExample
   
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, file='./Plate2DInterfaceZ.txt', &
+    OPEN (unit=1, file='./Input/2D/Interface/Plate2DInterfaceZ.txt', &
       & status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, file='./Plate3DInterfaceZ.txt', &
+    OPEN (unit=1, file='./Input/3D/Interface/Plate3DInterfaceZ.txt', &
       & status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
@@ -639,13 +578,9 @@ PROGRAM CoupledFluidSolidExample
   !Read element information
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, &
-      & file='./Plate2DSolidElementNodeNumbers.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/Solid/Plate2DSolidElementNodeNumbers.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, &
-      & file='./Plate3DSolidElementNodeNumbers.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/Solid/Plate3DSolidElementNodeNumbers.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -659,13 +594,9 @@ PROGRAM CoupledFluidSolidExample
   
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, &
-      & file='./Plate2DFluidElementNodeNumbers.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/Fluid/Plate2DFluidElementNodeNumbers.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, &
-      & file='./Plate3DFluidElementNodeNumbers.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/Fluid/Plate3DFluidElementNodeNumbers.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -679,13 +610,9 @@ PROGRAM CoupledFluidSolidExample
   
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, &
-      & file='./Plate2DInterfaceElementNodeNumbers.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/Interface/Plate2DInterfaceElementNodeNumbers.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, &
-      & file='./Plate3DInterfaceElementNodeNumbers.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/Interface/Plate3DInterfaceElementNodeNumbers.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -701,8 +628,7 @@ PROGRAM CoupledFluidSolidExample
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
     !Read xi position's
-    OPEN (unit=1, file='./Plate2DSolidXi1.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/Solid/Plate2DSolidXi1.txt', status='old', action='read')
     READ(1, *), arraySize
     IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
     ALLOCATE(SolidXi2(arraySize,3))
@@ -713,8 +639,7 @@ PROGRAM CoupledFluidSolidExample
     CLOSE(1)
     IF(FileReadDiagnostics) PRINT *, 'Solid xi2: ',SolidXi2
     
-    OPEN (unit=1, file='./Plate2DSolidXi2.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/Solid/Plate2DSolidXi2.txt', status='old', action='read')
     READ(1, *), arraySize
     IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
     ALLOCATE(SolidXi3(arraySize,3))
@@ -725,8 +650,7 @@ PROGRAM CoupledFluidSolidExample
     CLOSE(1)
     IF(FileReadDiagnostics) PRINT *, 'Solid xi3: ',SolidXi3
     
-    OPEN (unit=1, file='./Plate2DFluidXi1.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/Fluid/Plate2DFluidXi1.txt', status='old', action='read')
     READ(1, *), arraySize
     IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
     ALLOCATE(FluidXi2(arraySize,3))
@@ -737,8 +661,7 @@ PROGRAM CoupledFluidSolidExample
     CLOSE(1)
     IF(FileReadDiagnostics) PRINT *, 'Fluid xi2: ',FluidXi2
     
-    OPEN (unit=1, file='./Plate2DFluidXi2.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/Fluid/Plate2DFluidXi2.txt', status='old', action='read')
     READ(1, *), arraySize
     IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
     ALLOCATE(FluidXi3(arraySize,3))
@@ -749,9 +672,7 @@ PROGRAM CoupledFluidSolidExample
     CLOSE(1)
     IF(FileReadDiagnostics) PRINT *, 'Fluid xi3: ',FluidXi3
     
-    OPEN (unit=1, &
-      & file='./Plate2DInterfaceSolidElements.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/Interface/Plate2DInterfaceSolidElements.txt', status='old', action='read')
     READ(1, *), arraySize
     IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
     ALLOCATE(SolidInterfaceElements(arraySize))
@@ -760,9 +681,7 @@ PROGRAM CoupledFluidSolidExample
     CLOSE(1)
     IF(FileReadDiagnostics) PRINT *, 'Solid interface element numbers: ',SolidInterfaceElements
     
-    OPEN (unit=1, &
-      & file='./Plate2DInterfaceFluidElements.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/Interface/Plate2DInterfaceFluidElements.txt', status='old', action='read')
     READ(1, *), arraySize
     IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
     ALLOCATE(FluidInterfaceElements(arraySize))
@@ -771,9 +690,7 @@ PROGRAM CoupledFluidSolidExample
     CLOSE(1)
     IF(FileReadDiagnostics) PRINT *, 'Fluid interface element numbers: ',FluidInterfaceElements
   CASE(Plate3D)
-    OPEN (unit=1, file=&
- & './Plate3DSolidInterfaceNodeInformationNodeElement.txt',&
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/Solid/Plate3DSolidInterfaceNodeInformationNodeElement.txt',status='old', action='read')
     READ(1, *), arraySize
     IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
     ALLOCATE(SolidInterfaceNodeInformationNE(arraySize,2))
@@ -783,9 +700,7 @@ PROGRAM CoupledFluidSolidExample
     arraySize=0
     CLOSE(1)
     
-    OPEN (unit=1, file=&
- & './Plate3DFluidInterfaceNodeInformationNodeElement.txt',&
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/Fluid/Plate3DFluidInterfaceNodeInformationNodeElement.txt', status='old', action='read')
     READ(1, *), arraySize
     IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
     ALLOCATE(FluidInterfaceNodeInformationNE(arraySize,2))
@@ -795,9 +710,7 @@ PROGRAM CoupledFluidSolidExample
     arraySize=0
     CLOSE(1)
     
-    OPEN (unit=1, file=&
-      &'./Plate3DIInterfaceNodeInformationNodeElement.txt',&
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/Interface/Plate3DIInterfaceNodeInformationNodeElement.txt',status='old', action='read')
     READ(1, *), arraySize
     IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
     ALLOCATE(InterfaceInterfaceNodeInformationNE(arraySize,2))
@@ -807,9 +720,7 @@ PROGRAM CoupledFluidSolidExample
     arraySize=0
     CLOSE(1)
     
-    OPEN (unit=1, file=&
-      & './Plate3DSolidInterfaceNodeInformationXi.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file= './Input/3D/Solid/Plate3DSolidInterfaceNodeInformationXi.txt', status='old', action='read')
     READ(1, *), arraySize
     IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
     ALLOCATE(SolidInterfaceNodeInformationXi(arraySize,3))
@@ -819,9 +730,7 @@ PROGRAM CoupledFluidSolidExample
     arraySize=0
     CLOSE(1)
     
-    OPEN (unit=1, file= &
-      & './Plate3DFluidInterfaceNodeInformationXi.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file= './Input/3D/Fluid/Plate3DFluidInterfaceNodeInformationXi.txt', status='old', action='read')
     READ(1, *), arraySize
     IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
     ALLOCATE(FluidInterfaceNodeInformationXi(arraySize,3))
@@ -831,8 +740,7 @@ PROGRAM CoupledFluidSolidExample
     arraySize=0
     CLOSE(1)
     
-    OPEN (unit=1, file='./Plate3DlagrangeNodes.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/BC/Plate3DlagrangeNodes.txt', status='old', action='read')
     READ(1, *), arraySize
     IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
     ALLOCATE(LagrangeNodes(arraySize))
@@ -844,13 +752,9 @@ PROGRAM CoupledFluidSolidExample
   !Read connected solid/fluid nodes for sorted interface nodes
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, &
-      & file='./Plate2DSortedInterfaceNodes.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/Interface/Plate2DSortedInterfaceNodes.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, &
-      & file='./Plate3DSortedInterfaceNodes.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/Interface/Plate3DSortedInterfaceNodes.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -865,11 +769,9 @@ PROGRAM CoupledFluidSolidExample
   !Read boundary conditions
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, file='./Plate2DdisplacementBC.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/BC/Plate2DdisplacementBC.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, file='./Plate3DdisplacementBC.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/BC/Plate3DdisplacementBC.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -881,11 +783,9 @@ PROGRAM CoupledFluidSolidExample
   
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, file='./Plate2DfixedNodesBC.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/BC/Plate2DfixedNodesBC.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, file='./Plate3DfixedNodesBC.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/BC/Plate3DfixedNodesBC.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -897,11 +797,9 @@ PROGRAM CoupledFluidSolidExample
   
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, file='./Plate2DfixedZNodesBC.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/BC/Plate2DfixedZNodesBC.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, file='./Plate3DfixedZNodesBC.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/BC/Plate3DfixedZNodesBC.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -913,11 +811,9 @@ PROGRAM CoupledFluidSolidExample
   
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, file='./Plate2DmovedNodesBC.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/BC/Plate2DmovedNodesBC.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, file='./Plate3DmovedNodesBC.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/BC/Plate3DmovedNodesBC.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -929,11 +825,9 @@ PROGRAM CoupledFluidSolidExample
   
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, file='./Plate2DmovedYNodesBC.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/BC/Plate2DmovedYNodesBC.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, file='./Plate3DmovedYNodesBC.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/BC/Plate3DmovedYNodesBC.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -945,11 +839,9 @@ PROGRAM CoupledFluidSolidExample
   
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, file='./Plate2DinletBC.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/BC/Plate2DinletBC.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, file='./Plate3DinletBC.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/BC/Plate3DinletBC.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -961,11 +853,9 @@ PROGRAM CoupledFluidSolidExample
   
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, file='./Plate2DnoSlipBC.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/BC/Plate2DnoSlipBC.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, file='./Plate3DnoSlipBC.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/BC/Plate3DnoSlipBC.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -977,11 +867,9 @@ PROGRAM CoupledFluidSolidExample
   
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, file='./Plate2DslipBC.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/BC/Plate2DslipBC.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, file='./Plate3DslipTop.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/BC/Plate3DslipTop.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -993,11 +881,9 @@ PROGRAM CoupledFluidSolidExample
   
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, file='./Plate2DslipBC.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/BC/Plate2DslipBC.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, file='./Plate3DslipRightLeft.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/BC/Plate3DslipRightLeft.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -1009,11 +895,9 @@ PROGRAM CoupledFluidSolidExample
   
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, file='./Plate2DpressureBC.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/BC/Plate2DpressureBC.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, file='./Plate3DpressureBC.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/BC/Plate3DpressureBC.txt', status='old', action='read')
   ENDSELECT
   READ(1, *), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -1025,11 +909,9 @@ PROGRAM CoupledFluidSolidExample
   
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
-    OPEN (unit=1, file='./Plate2DslipBC.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/2D/BC/Plate2DslipBC.txt', status='old', action='read')
   CASE(Plate3D)
-    OPEN (unit=1, file='./Plate3DslipBC.txt', &
-      & status='old', action='read')
+    OPEN (unit=1, file='./Input/3D/BC/Plate3DslipBC.txt', status='old', action='read')
   ENDSELECT
   READ(1,*), arraySize
   IF(arraySize==0) CALL HANDLE_ERROR("Incorrect number.")
@@ -1049,40 +931,49 @@ PROGRAM CoupledFluidSolidExample
   PRINT *, "Finished reading geometry."
   
   IF(SetupOutput) THEN
-    PRINT *,"SUMMARY"
+1   FORMAT(1X,A,F10.2)
+2   FORMAT(1X,A,F10.2,3X,A)
+3   FORMAT(1X,A,F10.2,1X,A,F5.2,1X,A,F5.2,1X,A)
+4   FORMAT(1X,A,F10.2,1X,A,F5.2,1X,A)
+5   FORMAT(1X,A,I7)
     PRINT *," "
-    PRINT *,"Start time: ",StartTime
-    PRINT *,"Stop time: ",StopTime
-    PRINT *,"Time increment: ",TimeStepSize
+    PRINT *,"==========SUMMARY=========="
+    PRINT *," "
+    PRINT 1,"Start time:",StartTime
+    PRINT 1,"Stop time:",StopTime
+    PRINT 1,"Time increment:",TimeStepSize
     PRINT *," "
     PRINT *,"FLUID:"
-    PRINT *,"Dynamic viscosity: ",FluidDynamicViscosity," kg / (m s)"
-    PRINT *,"Density: ",FluidDensity," kg m^-3"
+    PRINT 2,"Dynamic viscosity:",FluidDynamicViscosity,"kg/(m.s)"
+    PRINT 2,"Density:",FluidDensity,"kg/m3"
     IF(NumberOfDimensions==3) THEN
-      PRINT *,"Domain:",FluidGeometryX(NumberOfFluidNodes),"x",FluidGeometryY(NumberOfFluidNodes),"x", &
-        & FluidGeometryZ(NumberOfFluidNodes)," m^3"
+      PRINT 3,"Domain:",FluidGeometryX(NumberOfFluidNodes),"x",FluidGeometryY(NumberOfFluidNodes),"x", &
+        & FluidGeometryZ(NumberOfFluidNodes),"m3"
     ELSE
-      PRINT *,"Domain:",FluidGeometryY(NumberOfFluidNodes),"x", &
-        & FluidGeometryZ(NumberOfFluidNodes)," m^2"
+      PRINT 4,"Domain:",FluidGeometryY(NumberOfFluidNodes),"x",FluidGeometryZ(NumberOfFluidNodes),"m2"
     ENDIF
-    PRINT *, "Number of nodes: ",NumberOfFluidNodes
+    PRINT 5, "Number of nodes:",NumberOfFluidNodes
     PRINT *," "
     PRINT *,"SOLID:"
-    PRINT *,"Density: ",SolidDensity," kg m^-3"
-    PRINT *,"Young's modulus: ",YoungsModulus," Pa"
-    PRINT *,"Poisson's ratio: ",PoissonsRatio
-    PRINT *,"Neo-Hookean constant: ",MooneyRivlin1
+    PRINT 2,"Density:",SolidDensity,"kg/m3"
+    PRINT 2,"Young's modulus:",YoungsModulus,"Pa"
+    PRINT 1,"Poisson's ratio:",PoissonsRatio
+    PRINT 1,"Neo-Hookean constant:",MooneyRivlin1
     IF(NumberOfDimensions==3) THEN
-      PRINT *,"Domain:",SolidGeometryX(NumberOfSolidNodes)-SolidGeometryX(1),"x", &
+      PRINT 3,"Domain:",SolidGeometryX(NumberOfSolidNodes)-SolidGeometryX(1),"x", &
         & SolidGeometryY(NumberOfSolidNodes)-SolidGeometryY(1),"x", &
-        & SolidGeometryZ(NumberOfSolidNodes)-SolidGeometryZ(1)," m^3"
+        & SolidGeometryZ(NumberOfSolidNodes)-SolidGeometryZ(1),"m3"
     ELSE
-      PRINT *,"Domain:",SolidGeometryY(NumberOfSolidNodes)-SolidGeometryY(1),"x", &
-        & SolidGeometryZ(NumberOfSolidNodes)-SolidGeometryZ(1)," m^2"
+      PRINT 4,"Domain:",SolidGeometryY(NumberOfSolidNodes)-SolidGeometryY(1),"x", &
+        & SolidGeometryZ(NumberOfSolidNodes)-SolidGeometryZ(1),"m2"
     ENDIF
-    PRINT *, "Number of nodes: ",NumberOfSolidNodes
+    PRINT 5, "Number of nodes:",NumberOfSolidNodes
     PRINT *," "
-    PRINT *, "Number of interface nodes: ",NumberOfInterfaceNodes
+    PRINT *,"INTERFACE:"
+    PRINT 5, "Number of interface nodes:",NumberOfInterfaceNodes
+    PRINT *," "
+    PRINT *,"==========================="
+    PRINT *," "
   ENDIF
   !
   !=================================================================================================================================
@@ -1676,6 +1567,7 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSField_Initialise(DependentField1,Err)
   CALL CMISSEquationsSet_DependentCreateStart(SolidEquationsSet,SolidDependentFieldUserNumber,DependentField1,Err)
   CALL CMISSField_VariableLabelSet(DependentField1,CMISS_FIELD_U_VARIABLE_TYPE,"SolidDF",Err)
+  CALL CMISSField_VariableLabelSet(DependentField1,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,"SolidDerivatives",Err)
   DO component_idx=1,NumberOfDimensions
     CALL CMISSField_ComponentMeshComponentSet(DependentField1,CMISS_FIELD_U_VARIABLE_TYPE,component_idx,1,Err)
     CALL CMISSField_ComponentMeshComponentSet(DependentField1,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,component_idx,1,Err)
@@ -1744,6 +1636,7 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSField_Initialise(DependentField2,Err)
   CALL CMISSEquationsSet_DependentCreateStart(FluidEquationsSet,FluidDependentFieldUserNumber,DependentField2,Err)
   CALL CMISSField_VariableLabelSet(DependentField2,CMISS_FIELD_U_VARIABLE_TYPE,"FluidDF",Err)
+  CALL CMISSField_VariableLabelSet(DependentField2,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,"FluidDerivatives",Err)
   !Set the mesh component to be used by the field components.
   DO ComponentNumber=1,NumberOfDimensions
     CALL CMISSField_ComponentMeshComponentSet(DependentField2,CMISS_FIELD_U_VARIABLE_TYPE,ComponentNumber,1,Err)
@@ -1770,6 +1663,7 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSEquationsSet_DependentCreateStart(MovingMeshEquationsSet,DependentFieldMovingMeshUserNumber, & 
     & DependentFieldMovingMesh,Err)
   CALL CMISSField_VariableLabelSet(DependentFieldMovingMesh,CMISS_FIELD_U_VARIABLE_TYPE,"MovingMeshDF",Err)
+  CALL CMISSField_VariableLabelSet(DependentFieldMovingMesh,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,"MovingMeshDerivatives",Err)
   !Set the mesh component to be used by the field components.
   DO ComponentNumber=1,NumberOfDimensions
     CALL CMISSField_ComponentMeshComponentSet(DependentFieldMovingMesh,CMISS_FIELD_U_VARIABLE_TYPE,ComponentNumber, & 
@@ -1824,6 +1718,8 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSField_Initialise(IndependentFieldMovingMesh,Err)
   CALL CMISSEquationsSet_IndependentCreateStart(MovingMeshEquationsSet,IndependentFieldMovingMeshUserNumber, & 
     & IndependentFieldMovingMesh,Err)
+  !Set the scaling to use
+  CALL CMISSField_ScalingTypeSet(IndependentFieldMovingMesh,CMISS_FIELD_NO_SCALING,Err)
   CALL CMISSField_VariableLabelSet(IndependentFieldMovingMesh,CMISS_FIELD_U_VARIABLE_TYPE,"MovingMeshInDF",Err)
   !Set the mesh component to be used by the field components.
   DO ComponentNumber=1,NumberOfDimensions
@@ -1983,15 +1879,13 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSSolver_Initialise(NonlinearSolver,Err)
   CALL CMISSSolver_Initialise(LinearSolver,Err)
   !Get the dynamic ALE solver
-  CALL CMISSProblem_SolverGet(CoupledProblem,CMISS_CONTROL_LOOP_NODE,DynamicSolverIndex, &
-    & DynamicSolver,Err)
+  CALL CMISSProblem_SolverGet(CoupledProblem,CMISS_CONTROL_LOOP_NODE,DynamicSolverIndex,DynamicSolver,Err)
   CALL CMISSSolver_OutputTypeSet(DynamicSolver,DynamicSolver_OutputType,Err)
   CALL CMISSSolver_DynamicThetaSet(DynamicSolver,DynamicSolver_Theta,Err)
   !Get the dynamic nonlinear solver
   CALL CMISSSolver_DynamicNonlinearSolverGet(DynamicSolver,NonlinearSolver,Err)
   CALL CMISSSolver_NewtonLineSearchTypeSet(NonlinearSolver,CMISS_SOLVER_NEWTON_LINESEARCH_LINEAR,Err)
-  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolver,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED, &
-    & Err)
+  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolver,CMISS_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)
   CALL CMISSSolver_NewtonMaximumFunctionEvaluationsSet(NonlinearSolver,MaxFunctionEvaluations,Err)
   CALL CMISSSolver_OutputTypeSet(NonlinearSolver,NonlinearSolver_OutputType,Err)
   CALL CMISSSolver_NewtonAbsoluteToleranceSet(NonlinearSolver,AbsoluteTolerance,Err)
@@ -2003,6 +1897,8 @@ PROGRAM CoupledFluidSolidExample
   !Choose type of linear solver
   IF(.FALSE.) THEN
     CALL CMISSSolver_LinearTypeSet(LinearSolver,CMISS_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
+    !NO,JACOBI,BLOCK_JACOBI,SOR,INCOMPLETE_CHOLESKY,INCOMPLETE_LU,ADDITIVE_SCHWARZ
+    CALL CMISSSolver_LinearIterativePreconditionerTypeSet(LinearSolver,CMISS_SOLVER_ITERATIVE_INCOMPLETE_LU_PRECONDITIONER,Err)
     CALL CMISSSolver_LinearIterativeMaximumIterationsSet(LinearSolver,MaximumIterations,Err)
     CALL CMISSSolver_LinearIterativeAbsoluteToleranceSet(LinearSolver,AbsoluteTolerance,Err)
     CALL CMISSSolver_LinearIterativeRelativeToleranceSet(LinearSolver,RelativeTolerance,Err)
@@ -2023,18 +1919,15 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSSolver_Initialise(LinearSolverMovingMesh,Err)
   CALL CMISSSolverEquations_Initialise(LinearSolverMovingMeshEquations,Err)
   !Get the linear solver equations
-  CALL CMISSProblem_SolverGet(CoupledProblem,CMISS_CONTROL_LOOP_NODE, &
-    & LinearSolverMovingMeshIndex,LinearSolverMovingMesh,Err)
+  CALL CMISSProblem_SolverGet(CoupledProblem,CMISS_CONTROL_LOOP_NODE,LinearSolverMovingMeshIndex,LinearSolverMovingMesh,Err)
   CALL CMISSSolver_SolverEquationsGet(LinearSolverMovingMesh,LinearSolverMovingMeshEquations,Err)
   CALL CMISSSolverEquations_SparsityTypeSet(LinearSolverMovingMeshEquations,CMISS_SOLVER_SPARSE_MATRICES,Err)
-  CALL CMISSSolverEquations_EquationsSetAdd(LinearSolverMovingMeshEquations,MovingMeshEquationsSet, &
-    & MovingMeshEquationsSetIndex,Err)
+  CALL CMISSSolverEquations_EquationsSetAdd(LinearSolverMovingMeshEquations,MovingMeshEquationsSet,MovingMeshEquationsSetIndex,Err)
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> SOLVER EQUATIONS << == '
   CALL CMISSSolver_Initialise(DynamicSolver,Err)
   CALL CMISSSolverEquations_Initialise(CoupledSolverEquations,Err)
   !Get the dynamic solver equations
-  CALL CMISSProblem_SolverGet(CoupledProblem,CMISS_CONTROL_LOOP_NODE,DynamicSolverIndex, &
-    & DynamicSolver,Err)
+  CALL CMISSProblem_SolverGet(CoupledProblem,CMISS_CONTROL_LOOP_NODE,DynamicSolverIndex,DynamicSolver,Err)
   CALL CMISSSolver_SolverEquationsGet(DynamicSolver,CoupledSolverEquations,Err)
   CALL CMISSSolverEquations_SparsityTypeSet(CoupledSolverEquations,CMISS_SOLVER_SPARSE_MATRICES,Err)
   CALL CMISSSolverEquations_EquationsSetAdd(CoupledSolverEquations,SolidEquationsSet,SolidEquationsSetIndex,Err)
@@ -2042,11 +1935,9 @@ PROGRAM CoupledFluidSolidExample
   CALL CMISSSolverEquations_InterfaceConditionAdd(CoupledSolverEquations,InterfaceCondition,InterfaceConditionIndex,Err)
   !Set the time dependence of the interface matrix to determine the interface matrix coefficient in the solver matrix
   ! (basically position in big coupled matrix system)
-  CALL CMISSInterfaceMatrices_TimeDependenceTypeSet(InterfaceCondition, &
-    & SolidEquationsSetIndex,.TRUE., &
+  CALL CMISSInterfaceMatrices_TimeDependenceTypeSet(InterfaceCondition,SolidEquationsSetIndex,.TRUE., &
     & (/CMISS_INTERFACE_MATRIX_STATIC,CMISS_INTERFACE_MATRIX_FIRST_ORDER_DYNAMIC/),Err)
-  CALL CMISSInterfaceMatrices_TimeDependenceTypeSet(InterfaceCondition, &
-    & FluidEquationsSetIndex,.TRUE., &
+  CALL CMISSInterfaceMatrices_TimeDependenceTypeSet(InterfaceCondition,FluidEquationsSetIndex,.TRUE., &
     & (/CMISS_INTERFACE_MATRIX_STATIC,CMISS_INTERFACE_MATRIX_STATIC/),Err)
   !Finish the creation of the problem solver equations
   CALL CMISSProblem_SolverEquationsCreateFinish(CoupledProblem,Err)
@@ -2056,8 +1947,6 @@ PROGRAM CoupledFluidSolidExample
   ! B O U N D A R Y _ C O N D I T I O N S
   !Start the creation of the equations set boundary conditions
   IF(ExampleFileProgressDiagnostics) PRINT *, ' == >> BOUNDARY CONDITIONS << == '
-  !SUBROUTINE CMISSBoundaryConditions_SetNodeObj(boundaryConditions,field,variableType,versionNumber,derivativeNumber, &
-  !  & nodeUserNumber,componentNumber,condition,value,err)
   IF(MaterialSpecification==Plate2D) THEN
     PRINT *, 'Boundary conditions for 2D plate reference case.'
   ELSE
@@ -2271,8 +2160,8 @@ PROGRAM CoupledFluidSolidExample
   !Finialise CMISS
   CALL CMISSFinalise(Err)
 
-  e=etime(t)
-  PRINT *, "Program successfully completed in ",e," seconds."
+  e=etime(t)/60.0_CMISSSP
+  PRINT *, "Program successfully completed in ",e," minutes."
   
   STOP
   
@@ -2287,4 +2176,4 @@ CONTAINS
     
   END SUBROUTINE HANDLE_ERROR
   
-END PROGRAM CoupledFluidSolidExample
+END PROGRAM FortranExample
