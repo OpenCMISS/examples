@@ -63,7 +63,7 @@ endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_PATH = Bioelectrics/Monodomain/
+EXAMPLE_PATH = cellml/model-integration/
 
 EXAMPLE_NAME = Fortran
 
