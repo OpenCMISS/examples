@@ -1,18 +1,17 @@
-$numProcs=7;
-$tmax=100;
-$tinc=1;
+$numProcs=1;
 
-for ($t=0; $t<=$tmax; $t+=$tinc){
-  for ($proc=$numProcs; $proc>=0; $proc=$proc-1){
-    $time =  sprintf("%04d", $t);
-    $node = "TIME_STEP_".$time.".part".$proc.".exnode";
-    gfx read node $node time $t;
-  }
+for ($proc=0; $proc<$numProcs; $proc=$proc+1){
+    $node = "./output/Re2500Elem20x20_GFEM/LidDrivenCavity.part".$proc.".exnode";
+    gfx read node $node time 0;
 }
 
-for ($proc=$numProcs; $proc>=0; $proc=$proc-1){
-    $time =  sprintf("%04d", $t);
-    $elem = "TIME_STEP_0000.part".$proc.".exelem";
+for ($proc=0; $proc<$numProcs; $proc=$proc+1){
+    $node = "./output/Re2500Elem20x20_RBS/LidDrivenCavity.part".$proc.".exnode";
+    gfx read node $node time 1;
+}
+
+for ($proc=0; $proc<$numProcs; $proc=$proc+1){
+    $elem = "./output/Re2500Elem20x20_RBS/LidDrivenCavity.part".$proc.".exelem";
     gfx read elem $elem;
 }
 
