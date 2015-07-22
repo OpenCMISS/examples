@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<model xmlns="http://www.cellml.org/cellml/1.0#" xmlns:cmeta="http://www.cellml.org/metadata/1.0#" cmeta:id="ModelHeart" name="ModelHeart">
+
+<units base_units="no" name="UnitP"><unit multiplier="133" units="pascal"/></units>
+<units base_units="no" name="UnitQ"><unit units="UnitV"/><unit exponent="-1" units="second"/></units>
+<units base_units="no" name="UnitR"><unit units="UnitP"/><unit exponent="-1" units="UnitQ"/></units>
+<units base_units="no" name="UnitE"><unit units="UnitP"/><unit exponent="-1" units="UnitV"/></units>
+<units base_units="no" name="UnitV"><unit multiplier="0.001" units="litre"/></units>
+<units base_units="no" name="UnitT"><unit multiplier="0.001" units="second"/></units>
+
+<component name="environment">
+<variable initial_value="0.0" name="t" public_interface="out" units="UnitT"/></component>
+
+<component name="Heart">
+<variable initial_value="0.0" name="P_art" private_interface="out" public_interface="out" units="UnitP"/>
+<variable                     name="Q_art" private_interface="in"  public_interface="out" units="UnitQ"/></component>
+
+<component name="LV">
+<variable                      name="P_lv"     public_interface="in"  units="UnitP"/>
+<variable                      name="P_art"    public_interface="in"  units="UnitP"/>
+<variable                      name="Q_art"    public_interface="out" units="UnitQ"/>
+<variable                      name="Q_av"     public_interface="out" units="UnitQ"/>
+<variable                      name="E"        public_interface="in"  units="UnitE"/>
+<variable                      name="t"        public_interface="in"  units="UnitT"/>
+<variable                      name="R_av"                            units="UnitR"/>
+<variable                      name="R_v-art"                         units="UnitR"/>
+<variable initial_value="14"   name="P_venous"                        units="UnitP"/>
+<variable initial_value="1.0"  name="P_lv_0"                          units="UnitP"/>
+<variable initial_value="5.0"  name="V_lv_0"                          units="UnitV"/>
+<variable initial_value="10.0" name="V_lv"                            units="UnitV"/>
+
+<math xmlns="http://www.w3.org/1998/Math/MathML">
+<apply id="ValveA: Rav"><eq/><ci>R_av</ci><piecewise><piece><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" units="dimensionless">2.083</cn><apply><geq/><ci>P_lv</ci><ci>P_venous</ci></apply></piece><piece><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" units="dimensionless">1000000.0</cn><apply><lt/><ci>P_lv</ci><ci>P_venous</ci></apply></piece></piecewise></apply>
+<apply id="ValveV: Rv-art"><eq/><ci>R_v-art</ci><piecewise><piece><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" units="dimensionless">2.083</cn><apply><geq/><ci>P_art</ci><ci>P_lv</ci></apply></piece><piece><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" units="dimensionless">1000000.0</cn><apply><lt/><ci>P_art</ci><ci>P_lv</ci></apply></piece></piecewise></apply>
+<apply id="Ventricle: Qart"><eq/><ci>Q_art</ci><apply><plus/><apply><divide/><apply><minus/><ci>P_lv</ci><ci>P_art</ci></apply><ci>R_v-art</ci></apply></apply></apply>
+<apply id="Ventricle: Qav"><eq/><ci>Q_av</ci><apply><plus/><apply><divide/><apply><minus/><ci>P_venous</ci><ci>P_lv</ci></apply><ci>R_av</ci></apply></apply></apply>
+<apply id="Ventricle: Vlv"><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>V_lv</ci></apply><apply><minus/><ci>Q_av</ci><ci>Q_art</ci></apply></apply>
+<apply id="Ventricle: Plv"><eq/><ci>P_lv</ci><apply><plus/><ci>P_lv_0</ci><apply><times/><ci>E</ci><apply><minus/><ci>V_lv</ci><ci>V_lv_0</ci></apply></apply></apply></apply>
+</math></component>
+
+<component name="Elv">
+<variable                       name="E"    public_interface="out" units="UnitE"/>
+<variable                       name="t"    public_interface="in"  units="UnitT"/>
+<variable                       name="mt"                          units="UnitT"/>
+<variable                       name="et"                          units="dimensionless"/>
+<variable initial_value="0.3"   name="Ts1"                         units="dimensionless"/>
+<variable initial_value="0.45"  name="Ts2"                         units="dimensionless"/>
+<variable initial_value="800.0" name="T"                           units="UnitT"/>
+<variable initial_value="2.5"   name="Emax"                        units="UnitE"/>
+<variable initial_value="0.1"   name="Emin"                        units="UnitE"/>
+
+<math xmlns="http://www.w3.org/1998/Math/MathML">
+<apply><eq/><ci>mt</ci><apply><minus/><ci>t</ci><apply><times/><ci>T</ci><apply><floor/><apply><divide/><ci>t</ci><ci>T</ci></apply></apply></apply></apply></apply>
+<apply><eq/><ci>et</ci><piecewise><piece><apply><minus/><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" units="dimensionless">1</cn><apply><cos/><apply><divide/><apply><times/><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" units="dimensionless">3.14159</cn><ci>mt</ci></apply><apply><times/><ci>Ts1</ci><ci>T</ci></apply></apply></apply></apply><apply><and/><apply><geq/><ci>mt</ci><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" units="second">0</cn></apply><apply><leq/><ci>mt</ci><apply><times/><ci>Ts1</ci><ci>T</ci></apply></apply></apply></piece><piece><apply><plus/><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" units="dimensionless">1</cn><apply><cos/><apply><divide/><apply><times/><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" units="dimensionless">3.14159</cn><apply><minus/><ci>mt</ci><apply><times/><ci>Ts1</ci><ci>T</ci></apply></apply></apply><apply><times/><apply><minus/><ci>Ts2</ci><ci>Ts1</ci></apply><ci>T</ci></apply></apply></apply></apply><apply><and/><apply><gt/><ci>mt</ci><apply><times/><ci>Ts1</ci><ci>T</ci></apply></apply><apply><leq/><ci>mt</ci><apply><times/><ci>Ts2</ci><ci>T</ci></apply></apply></apply></piece><piece><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" units="dimensionless">0</cn><apply><and/><apply><gt/><ci>mt</ci><apply><times/><ci>Ts2</ci><ci>T</ci></apply></apply><apply><lt/><ci>mt</ci><ci>T</ci></apply></apply></piece></piecewise></apply>
+<apply><eq/><ci>E</ci><apply><plus/><ci>Emin</ci><apply><divide/><apply><times/><ci>et</ci><apply><minus/><ci>Emax</ci><ci>Emin</ci></apply></apply><cn xmlns:cellml="http://www.cellml.org/cellml/1.1#" units="dimensionless">2</cn></apply></apply></apply></math></component>
+
+<connection><map_components component_1="environment" component_2="Elv"/>
+<map_variables variable_1="t" variable_2="t"/></connection>
+
+<connection><map_components component_1="environment" component_2="LV"/>
+<map_variables variable_1="t" variable_2="t"/></connection>
+
+<connection><map_components component_1="Heart" component_2="LV"/>
+<map_variables variable_1="P_art" variable_2="P_art"/>
+<map_variables variable_1="Q_art" variable_2="Q_art"/></connection>
+
+<connection><map_components component_1="LV" component_2="Elv"/>
+<map_variables variable_1="E" variable_2="E"/></connection>
+
+<group><relationship_ref relationship="encapsulation"/>
+<component_ref component="Heart">
+<component_ref component="environment"/>
+<component_ref component="LV"/>
+<component_ref component="Elv"/></component_ref>
+</group></model>
+
