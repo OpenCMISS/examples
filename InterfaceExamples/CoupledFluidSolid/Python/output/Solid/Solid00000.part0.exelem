@@ -1,0 +1,240 @@
+ Group name: SolidRegion
+ Shape.  Dimension=2
+ #Scale factor sets= 2
+ q.Lagrange*q.Lagrange, #Scale factors=9
+ l.Lagrange*l.Lagrange, #Scale factors=4
+ #Nodes=           9
+ #Fields=5
+ 1) SolidGF, coordinate, rectangular cartesian, #Components=2
+   x.   q.Lagrange*q.Lagrange, no modify, standard node based.
+     #Nodes= 9
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     9.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+   y.   q.Lagrange*q.Lagrange, no modify, standard node based.
+     #Nodes= 9
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     9.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+ 2) SolidDF, field,  rectangular cartesian, #Components=3
+   1.   q.Lagrange*q.Lagrange, no modify, standard node based.
+     #Nodes= 9
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     9.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+   2.   q.Lagrange*q.Lagrange, no modify, standard node based.
+     #Nodes= 9
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     9.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+   3.   l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 4
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     9.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+ 3) del U/del n, field,  rectangular cartesian, #Components=3
+   1.   q.Lagrange*q.Lagrange, no modify, standard node based.
+     #Nodes= 9
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     9.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+   2.   q.Lagrange*q.Lagrange, no modify, standard node based.
+     #Nodes= 9
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     9.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+   3.   l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 4
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+     9.  #Values=1
+      Value indices:     1
+      Scale factor indices:  0
+ 4) Material1, field,  rectangular cartesian, #Components=2
+   1.   l.Lagrange*l.Lagrange, no modify, grid based.
+     #xi1=1, #xi2=1
+   2.   l.Lagrange*l.Lagrange, no modify, grid based.
+     #xi1=1, #xi2=1
+ 5) SolidDensity, field,  real, #Components=1
+   1.   l.Lagrange*l.Lagrange, no modify, grid based.
+     #xi1=1, #xi2=1
+ Element:            1 0 0
+   Values:
+     3.8590604026845640E+03   3.8590604026845640E+03   3.8590604026845640E+03   3.8590604026845640E+03
+     0.0000000000000000E+00   0.0000000000000000E+00   0.0000000000000000E+00   0.0000000000000000E+00
+     3.0000000000000000E+02   3.0000000000000000E+02   3.0000000000000000E+02   3.0000000000000000E+02
+   Nodes:
+           1           7           2           8           9          10           3          11           4
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            2 0 0
+   Values:
+     3.8590604026845640E+03   3.8590604026845640E+03   3.8590604026845640E+03   3.8590604026845640E+03
+     0.0000000000000000E+00   0.0000000000000000E+00   0.0000000000000000E+00   0.0000000000000000E+00
+     3.0000000000000000E+02   3.0000000000000000E+02   3.0000000000000000E+02   3.0000000000000000E+02
+   Nodes:
+           3          11           4          12          13          14           5          15           6
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00

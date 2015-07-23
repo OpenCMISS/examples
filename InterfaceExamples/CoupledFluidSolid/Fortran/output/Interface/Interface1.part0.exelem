@@ -1,0 +1,100 @@
+ Group name: Interface1
+ Shape.  Dimension=1
+ #Scale factor sets= 1
+ q.Lagrange, #Scale factors=3
+ #Nodes=           3
+ #Fields=3
+ 1) InterfaceGF, coordinate, rectangular cartesian, #Components=2
+   x.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   y.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 2) InterfaceLF, field,  rectangular cartesian, #Components=2
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 3) Lambda RHS, field,  rectangular cartesian, #Components=2
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ Element:            1 0 0
+   Nodes:
+           1           2           3
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            2 0 0
+   Nodes:
+           3           4           5
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            3 0 0
+   Nodes:
+           5           6           7
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            4 0 0
+   Nodes:
+           7           8           9
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            5 0 0
+   Nodes:
+           9          10          11
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00

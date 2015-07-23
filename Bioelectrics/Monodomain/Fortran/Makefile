@@ -55,17 +55,17 @@ MAKEFLAGS = --no-builtin-rules --warn-undefined-variables
 #----------------------------------------------------------------------------------------------------------------------------------
 
 ifndef OPENCMISS_ROOT
-  OPENCMISS_ROOT := ../../..
-  GLOBAL_ROOT := $(CURDIR)/../../..
+  OPENCMISS_ROOT := ../../../..
+  GLOBAL_ROOT := ${OPENCMISS_ROOT}/cm
 else
   GLOBAL_ROOT := ${OPENCMISS_ROOT}/cm
 endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_PATH = Bioelectrics/
+EXAMPLE_PATH = Bioelectrics/Monodomain/
 
-EXAMPLE_NAME = Monodomain
+EXAMPLE_NAME = Fortran
 
 include $(GLOBAL_ROOT)/ExampleMakefile
 
