@@ -103,11 +103,9 @@ PROGRAM simple_geometryEXAMPLE
   !all times in [ms]
   REAL(CMISSDP) :: time !=10.00_CMISSDP 
 !  REAL(CMISSDP), PARAMETER :: PERIODD=10.00_CMISSDP
-!  REAL(CMISSDP), PARAMETER :: PERIODD=20.00_CMISSDP
-  REAL(CMISSDP), PARAMETER :: PERIODD=0.500_CMISSDP
+  REAL(CMISSDP), PARAMETER :: PERIODD=20.00_CMISSDP
 !  REAL(CMISSDP), PARAMETER :: TIME_STOP=300.0_CMISSDP
-!  REAL(CMISSDP), PARAMETER :: TIME_STOP=500.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: TIME_STOP=1.0_CMISSDP
+  REAL(CMISSDP), PARAMETER :: TIME_STOP=500.0_CMISSDP
   REAL(CMISSDP), PARAMETER :: TIME_STOP_2=750.0_CMISSDP !time the muscle is stimulated at fixed length + stretch
 
 
@@ -1604,17 +1602,12 @@ PROGRAM simple_geometryEXAMPLE
   !--------------------------------------------------------------------------------------------------------------------------------
   !--------------------------------------------------------------------------------------------------------------------------------
 
-  WRITE(*,'(A)') "now stretch"
-  WRITE(*,'(A)') "now stretch"
-  WRITE(*,'(A)') "now stretch"
-  WRITE(*,'(A)') "now stretch"
-  WRITE(*,'(A)') "now stretch"
-  WRITE(*,'(A)') "now stretch"
+
 
 
 
   !--------------------------------------------------------------------------------------------------------------------------------
-  VALUE = 0.0_CMISSDP
+  VALUE = 0.0_CMISSDP 
 
   !second, activate and stretch!!!
   do while(time <= TIME_STOP_2)
@@ -1631,8 +1624,6 @@ PROGRAM simple_geometryEXAMPLE
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL CMISSField_ParameterSetUpdateNode(DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
         & 1,1,NodeNumber,1,VALUE,Err)
-!      CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-!        & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
     ENDIF
   ENDDO
 
@@ -1691,8 +1682,6 @@ PROGRAM simple_geometryEXAMPLE
       IF(NodeDomain==ComputationalNodeNumber) THEN
         CALL CMISSField_ParameterSetUpdateNode(DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
           & 1,1,NodeNumber,1,VALUE,Err)
-!        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-!          & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
       ENDIF
     ENDDO
     
