@@ -108,8 +108,8 @@ class TestTreeNode:
 
 class Example(TestTreeNode):
   
-  def __init__(self,name,dct,parent):
-    TestTreeNode.__init__(self,name=name,parent=parent)
+  def __init__(self,name,dct,parent,path=None):
+    TestTreeNode.__init__(self,name=name,path=path,parent=parent)
     self.logDir = self.path.replace(globalExamplesDir,rootLogDir)
     self.masterLogDir = self.path.replace(globalExamplesDir,masterLogDir)
     self.ensureDir(self.logDir) 
@@ -284,11 +284,11 @@ class Test(TestTreeNode):
 
 
 
-def object_encode(name,parent,dct=None) :
+def object_encode(name,parent,path=None,dct=None) :
   if dct==None :
-    example = Example(name=name,parent=parent)
+    example = Example(name=name,parent=parent,path=path)
   else :
-    example = Example(name,dct["example"],parent)
+    example = Example(name,dct["example"],parent,path=path)
   return example
 
 def fileInTestSets(f,path) :
@@ -304,6 +304,7 @@ def fileInTestSets(f,path) :
 root = TestTreeNode(name="examples", path=examplesDir)
 if "html" in sys.argv :
   print('<div style="display:none">')
+
 for path, subFolders, files in os.walk(top=root.path,topdown=True) :
   if path.find(".svn")==-1 :	
     for f in files :
@@ -320,7 +321,7 @@ for path, subFolders, files in os.walk(top=root.path,topdown=True) :
         os.chdir(path)
         try:
           json_data=open(f).read()
-          example = object_encode(name=path[path.rfind('/')+1:],parent=parent,dct=json.loads(json_data))
+          example = object_encode(name=path[path.rfind('/')+1:],parent=parent,path=path,dct=json.loads(json_data))
           example.start()
         except ValueError:
           example = Example(name=path[path.rfind('/')+1:],parent=parent,dct=None)
