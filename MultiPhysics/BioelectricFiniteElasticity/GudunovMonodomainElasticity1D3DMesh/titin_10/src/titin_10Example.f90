@@ -1622,8 +1622,8 @@ PROGRAM simple_geometryEXAMPLE
     NodeNumber=LeftSurfaceNodes(node_idx)
     CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-        & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+      CALL CMISSField_ParameterSetUpdateNode(DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+        & 1,1,NodeNumber,1,VALUE,Err)
     ENDIF
   ENDDO
 
@@ -1680,8 +1680,8 @@ PROGRAM simple_geometryEXAMPLE
       NodeNumber=LeftSurfaceNodes(node_idx)
       CALL CMISSDecomposition_NodeDomainGet(DecompositionFE,NodeNumber,1,NodeDomain,Err)
       IF(NodeDomain==ComputationalNodeNumber) THEN
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-          & CMISS_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+        CALL CMISSField_ParameterSetUpdateNode(DependentFieldFE,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+          & 1,1,NodeNumber,1,VALUE,Err)
       ENDIF
     ENDDO
     
