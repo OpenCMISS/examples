@@ -375,12 +375,14 @@ def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,
 #==========================================================
 
 dimensions = [1.0,1.0]
-elementResolutions = [20]
-ReynoldsNumbers = [2500]
+elementResolutions = [10]
+ReynoldsNumbers = [1000]
 lidVelocity = [1.0,0.0]
 density = 1.0
 basisList = [quadraticBasis,linearBasis]
 RBSTypes = [True,False]
+timeIncrement = 0.1
+stopTime = 100.001
 fdJacobian = False
 analyticLidVelocity = True
 # Note: viscosity will be calculated based on specified Reynolds number
@@ -390,14 +392,18 @@ analyticLidVelocity = True
 
 #Check for command line arguments- used for nightly test on GFEM & RBS code
 if len(sys.argv) > 1:
-    if len(sys.argv) > 2:
-        sys.exit('Error: too many arguments- currently only accepting 1 option: choose "RBS" or "GFEM"')
+    if len(sys.argv) > 4:
+        sys.exit('Error: too many arguments- currently only accepting 3 options: "RBS" or "GFEM", time increment, stop time')
     if sys.argv[1] == 'RBS':
         RBSTypes = [True]
     elif sys.argv[1] == 'GFEM':
         RBSTypes = [False]
     else:
-        sys.exit('Error: unknown argument- currently only accepting 1 option: choose "RBS" or "GFEM"')
+        sys.exit('Error: unknown argument for the problem type: choose "RBS" or "GFEM"')
+    if len(sys.argv) > 2:
+        timeIncrement = float(sys.argv[2])
+    if len(sys.argv) > 3:
+        stopTime = float(sys.argv[3])
 
 runtimes = []
 for elemRes in elementResolutions:
@@ -408,7 +414,7 @@ for elemRes in elementResolutions:
             viscosity = density*lidVelocity[0]/Re
 
             # transient parameters: startTime,stopTime,timeIncrement,outputFrequency
-            transient = [0.0,60.000001,0.1,100000]
+            transient = [0.0,stopTime,timeIncrement,100000]
             if RBS:    
                 outputDirectory = "./output/Re" + str(Re) + "Elem" +str(elementResolution[0])+"x" +str(elementResolution[1]) + "_RBS/"
             else:
