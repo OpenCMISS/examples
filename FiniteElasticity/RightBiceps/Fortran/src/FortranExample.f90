@@ -47,7 +47,7 @@
 !<
 
 !> Main program
-PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
+PROGRAM RIGHTBICEPSACTIVECONTRACTIONEXAMPLE
 
   USE OPENCMISS
   USE MPI
@@ -108,7 +108,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   INTEGER(CMISSIntg) :: i,j,k,elem_idx
   INTEGER(CMISSIntg) :: Elem,Node
   INTEGER(CMISSIntg) :: stat
-  character(len=256) :: filename,string,format_string
+  character(len=256) :: filename,string
 
 
   REAL(CMISSDP), DIMENSION(NumberOfNodes,3) :: AllNodes
@@ -156,16 +156,6 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
 #endif
 
-  
-!  MAT_FE= &
-!    & [0.0000000000635201_CMISSDP,0.3626712895523322_CMISSDP, &
-!    & 0.0000027562837093_CMISSDP,43.372873938671383_CMISSDP, &
-!    & 0.0_CMISSDP,7.3_CMISSDP]
-!
-!    & [2.0_CMISSDP,6.0_CMISSDP, &
-!    & 0.0_CMISSDP,1.0_CMISSDP, &
-!    & 0.0_CMISSDP,0.0_CMISSDP]
-
   !C(1)=c1_m1...Mooney Rivlin parameter material 1
   !C(2)=c2_m1...Mooney Rivlin parameter material 1
   !C(3)=c4_m1...polynomial coefficient (Markert model) material 1
@@ -185,13 +175,6 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
     & 7.99_CMISSDP,16.6_CMISSDP, &
     & 0.0_CMISSDP,1.0_CMISSDP, &
     & 0.3_CMISSDP]  ! MPa = N/mm^2 = 100 N/cm^2
-!
-!    & [3.56_CMISSDP,0.386_CMISSDP, &
-!    & 0.00000357_CMISSDP,42.6_CMISSDP, &
-!    & 231.0_CMISSDP,0.000115_CMISSDP, &
-!    & 799.0_CMISSDP,16.6_CMISSDP, &
-!    & 0.0_CMISSDP,1.0_CMISSDP, &
-!    & 0.0_CMISSDP]  ! N/cm^2
 
 
   WRITE(*,*) "Reading file: input/biceps_3D27.dat"
@@ -215,8 +198,6 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
     END IF
     k=k+1
   END DO
-  !convert from mm to cm
-!  AllNodes=AllNodes/10.0_CMISSDP
 
   !read the element nodes from file
   k=1
@@ -651,8 +632,8 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   !Output solution
   CALL CMISSFields_Initialise(Fields,Err)
   CALL CMISSFields_Create(Region,Fields,Err)
-  CALL CMISSFields_NodesExport(Fields,"LargeUniaxialExtension","FORTRAN",Err)
-  CALL CMISSFields_ElementsExport(Fields,"LargeUniaxialExtension","FORTRAN",Err)
+  CALL CMISSFields_NodesExport(Fields,"RightBicepsActiveContraction","FORTRAN",Err)
+  CALL CMISSFields_ElementsExport(Fields,"RightBicepsActiveContraction","FORTRAN",Err)
 !  CALL CMISSFields_Finalise(Fields,Err)
 
 
@@ -686,8 +667,8 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   !Output solution
 !  CALL CMISSFields_Initialise(Fields,Err)
 !  CALL CMISSFields_Create(Region,Fields,Err)
-!  CALL CMISSFields_NodesExport(Fields,"LargeUniaxialExtension","FORTRAN",Err)
-!  CALL CMISSFields_ElementsExport(Fields,"LargeUniaxialExtension","FORTRAN",Err)
+!  CALL CMISSFields_NodesExport(Fields,"RightBicepsActiveContraction","FORTRAN",Err)
+!  CALL CMISSFields_ElementsExport(Fields,"RightBicepsActiveContraction","FORTRAN",Err)
   CALL CMISSFields_Finalise(Fields,Err)
 
   CALL CMISSFinalise(Err)
@@ -696,5 +677,5 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
 
   STOP
 
-END PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
+END PROGRAM RIGHTBICEPSACTIVECONTRACTIONEXAMPLE
 
