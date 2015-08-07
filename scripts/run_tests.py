@@ -304,27 +304,40 @@ def fileInTestSets(f,path) :
 root = TestTreeNode(name="examples", path=examplesDir)
 if "html" in sys.argv :
   print('<div style="display:none">')
-for path, subFolders, files in os.walk(top=root.path,topdown=True) :
-  if path.find(".svn")==-1 :	
-    for f in files :
-      if fileInTestSets(f,path) :
-        pathFromRoot = path[len(root.path)+1:path.rfind('/')]
-        parent = root
-        if len(pathFromRoot.strip()) != 0 :
-          for dirToPath in pathFromRoot.split("/") :
-            t = parent.findChild(dirToPath)
-            if t==None :
-              t = TestTreeNode(name=dirToPath,parent=parent)
-            parent = t
-        # Example
-        os.chdir(path)
-        try:
-          json_data=open(f).read()
-          example = object_encode(name=path[path.rfind('/')+1:],parent=parent,dct=json.loads(json_data))
-          example.start()
-        except ValueError:
-          example = Example(name=path[path.rfind('/')+1:],parent=parent,dct=None)
-          example.invalidConfig()
+if os.path.isfile("%s/%s"%(root.path,"nightlytest.json")) :
+  path = root.path
+  os.chdir(path)
+  examplePath = examplesDir[:path.rfind('/')]
+  root = TestTreeNode(name="examples", path=examplePath)
+  try:
+    json_data=open("nightlytest.json").read()
+    example = object_encode(name=path[path.rfind('/')+1:],parent=root,dct=json.loads(json_data))
+    example.start()
+  except ValueError:
+    example = Example(name=path[path.rfind('/')+1:],parent=root,dct=None)
+    example.invalidConfig()
+else :
+  for path, subFolders, files in os.walk(top=root.path,topdown=True) :
+    if path.find(".svn")==-1 :	
+      for f in files :
+        if fileInTestSets(f,path) :
+          pathFromRoot = path[len(root.path)+1:path.rfind('/')]
+          parent = root
+          if len(pathFromRoot.strip()) != 0 :
+            for dirToPath in pathFromRoot.split("/") :
+              t = parent.findChild(dirToPath)
+              if t==None :
+                t = TestTreeNode(name=dirToPath,parent=parent)
+              parent = t
+          # Example
+          os.chdir(path)
+          try:
+            json_data=open(f).read()
+            example = object_encode(name=path[path.rfind('/')+1:],parent=parent,dct=json.loads(json_data))
+            example.start()
+          except ValueError:
+            example = Example(name=path[path.rfind('/')+1:],parent=parent,dct=None)
+            example.invalidConfig()
 if "html" in sys.argv :
   print('</div>')
 os.chdir(globalExamplesDir)
@@ -333,3 +346,4 @@ if "html" in sys.argv :
   print(template.render(examples=root))
 if root.fail != 0 :
   exit("ERROR: At least one examples failed")
+
