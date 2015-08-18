@@ -48,8 +48,8 @@
 #  Initialise OpenCMISS and any other needed libraries
 #================================================================================================================================
 import numpy as np
-import math,cmath,csv,time,sys,os,glob
-import FluidExamples1DUtilities as Utilities
+import math,csv,time,sys,os,glob,shutil
+import FluidExamples1DUtilities as Utilities1D
 
 sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
 from opencmiss import CMISS
@@ -99,7 +99,7 @@ computationalNodeNumber    = CMISS.ComputationalNodeNumberGet()
 # Set the flags
 RCRBoundaries            = True   # Set to use coupled 0D Windkessel models (from CellML) at model outlet boundaries
 nonReflecting            = False    # Set to use non-reflecting outlet boundaries
-CheckTimestepStability   = True   # Set to do a basic check of the stability of the hyperbolic problem based on the timestep size
+CheckTimestepStability   = False   # Set to do a basic check of the stability of the hyperbolic problem based on the timestep size
 initialiseFromFile       = False   # Set to initialise values
 ProgressDiagnostics      = True    # Set to diagnostics
 
@@ -120,9 +120,9 @@ trifurcationNodeNumbers = []
 coupledNodeNumbers      = []
 arteryLabels            = []
 filename = 'input/Node.csv'
-numberOfNodes = Utilities.GetNumberOfNodes(filename)
+numberOfNodes = Utilities1D.GetNumberOfNodes(filename)
 nodeCoordinates = np.zeros([numberOfNodes,4,3])
-Utilities.CsvNodeReader(filename,inputNodeNumbers,bifurcationNodeNumbers,trifurcationNodeNumbers,coupledNodeNumbers,
+Utilities1D.CsvNodeReader(filename,inputNodeNumbers,bifurcationNodeNumbers,trifurcationNodeNumbers,coupledNodeNumbers,
                         nodeCoordinates,arteryLabels)
 numberOfInputNodes     = len(inputNodeNumbers)
 numberOfBifurcations   = len(bifurcationNodeNumbers)
@@ -134,7 +134,7 @@ elementNodes = []
 elementNodes.append([0,0,0])
 bifurcationElements = (numberOfBifurcations+1)*[3*[0]]
 trifurcationElements = (numberOfTrifurcations+1)*[4*[0]]
-Utilities.CsvElementReader('input/Element.csv',elementNodes,bifurcationElements,trifurcationElements,numberOfBifurcations,numberOfTrifurcations)
+Utilities1D.CsvElementReader('input/Element.csv',elementNodes,bifurcationElements,trifurcationElements,numberOfBifurcations,numberOfTrifurcations)
 numberOfElements = len(elementNodes)-1
         
 if (ProgressDiagnostics):
@@ -153,11 +153,9 @@ if (ProgressDiagnostics):
 # Set the material parameters
 Rho  = 1050.0     # Density     (kg/m3)
 Mu   = 0.004      # Viscosity   (Pa.s)
-D    = 100.0      # Diffusivity (m2/s)
-G0   = 9.81       # Gravitational acceleration (m/s2)
+G0   = 0.0        # Gravitational acceleration (m/s2)
 Pext = 0.0        # External pressure (Pa)
-Pv   = 2667.0     # Venous pressure = 20.0 mmHg (Pa)
-Alpha = 1.3       # Flow profile type
+Alpha = 1.0       # Flow profile type
 
 # Material parameter scaling factors
 Ls = 1000.0              # Length   (m -> mm)
@@ -170,8 +168,6 @@ Es    = Ms/(Ls*Ts**2.0)  # Elasticity Pa    (kg/(ms2) --> g/(mm.ms^2)
 Rhos  = Ms/(Ls**3.0)     # Density          (kg/m3)
 Mus   = Ms/(Ls*Ts)       # Viscosity        (kg/(ms))
 Ps    = Ms/(Ls*Ts**2.0)  # Pressure         (kg/(ms2))
-Ds    = (Ls**2.0)/Ts     # Diffusivity      (m2/s)
-Zs    = Ps/Qs            # Impedance        (pa/(m3/s))
 Gs    = Ls/(Ts**2.0)     # Acceleration    (m/s2)
 
 # Initialise the node-based parameters
@@ -179,7 +175,7 @@ A0   = np.zeros((numberOfNodes+1,4))  # Area        (m2)
 H    = np.zeros((numberOfNodes+1,4))  # Thickness   (m)
 E    = np.zeros((numberOfNodes+1,4))  # Elasticity  (Pa)
 # Read the MATERIAL csv file
-Utilities.CsvMaterialReader('input/Material.csv',A0,E,H)
+Utilities1D.CsvMaterialReader('input/Material.csv',A0,E,H)
 
 # Apply scale factors        
 Rho = Rho*Rhos
@@ -188,7 +184,6 @@ P   = Pext*Ps
 A0  = A0*As
 E   = E*Es
 H   = H*Hs
-D   = D*Ds
 G0  = G0*Gs
 
 Q  = np.zeros((numberOfNodes+1,4))
@@ -235,7 +230,7 @@ dynamicSolverNavierStokesOutputFrequency = 10
 # Set the time parameters
 numberOfPeriods = 4.0
 timePeriod      = 790.
-timeIncrement   = 0.05
+timeIncrement   = 0.2
 startTime       = 0.0
 stopTime  = numberOfPeriods*timePeriod
 dynamicSolverNavierStokesTheta = [1.0]
@@ -257,15 +252,21 @@ MAXIMUM_ITERATIONS   = 100000   # default: 100000
 RESTART_VALUE        = 3000     # default: 30
 
 # N-S/C coupling tolerance
-couplingTolerance1D = 1.0E+6
+couplingTolerance1D = 1.0E+10
 # 1D-0D coupling tolerance
 couplingTolerance1D0D = 0.001
 
 # Navier-Stokes solver
-EquationsSetSubtype = CMISS.EquationsSetSubtypes.COUPLED1D0D_NAVIER_STOKES
-# Characteristic solver
-EquationsSetCharacteristicSubtype = CMISS.EquationsSetSubtypes.CHARACTERISTIC
-ProblemSubtype = CMISS.ProblemSubTypes.COUPLED1D0D_NAVIER_STOKES
+if(RCRBoundaries):
+    EquationsSetSubtype = CMISS.EquationsSetSubtypes.COUPLED1D0D_NAVIER_STOKES
+    # Characteristic solver
+    EquationsSetCharacteristicSubtype = CMISS.EquationsSetSubtypes.CHARACTERISTIC
+    ProblemSubtype = CMISS.ProblemSubTypes.COUPLED1D0D_NAVIER_STOKES
+else:
+    EquationsSetSubtype = CMISS.EquationsSetSubtypes.TRANSIENT1D_NAVIER_STOKES
+    # Characteristic solver
+    EquationsSetCharacteristicSubtype = CMISS.EquationsSetSubtypes.CHARACTERISTIC
+    ProblemSubtype = CMISS.ProblemSubTypes.TRANSIENT1D_NAVIER_STOKES
 
 #================================================================================================================================
 #  Coordinate System
@@ -648,7 +649,8 @@ if (RCRBoundaries or nonReflecting):
         nodeIdx = coupledNodeNumbers[terminalIdx-1]
         nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumber)
         if (nodeDomain == computationalNodeNumber):
-            # Incoming
+            # Incoming (parent) - outgoing component to come from 0D
+            versionIdx = 1
             IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
                                                                   versionIdx,1,nodeIdx,1,1.0)
 
@@ -745,6 +747,7 @@ if (RCRBoundaries):
         nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumber)
         if (nodeDomain == computationalNodeNumber):
             #print("Terminal node: " + str(nodeIdx))
+            versionIdx = 1
             CellMLModelsField.ParameterSetUpdateNode(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
                                                      versionIdx,1,nodeIdx,1,CellMLModelIndex[terminalIdx])
 
@@ -1018,6 +1021,7 @@ BoundaryConditionsCharacteristic = CMISS.BoundaryConditions()
 SolverEquationsCharacteristic.BoundaryConditionsCreateStart(BoundaryConditionsCharacteristic)
 
 # Area-outlet
+versionIdx = 1
 for terminalIdx in range (1,numberOfTerminalNodes+1):
     nodeNumber = coupledNodeNumbers[terminalIdx-1]
     nodeDomain = Decomposition.NodeDomainGet(nodeNumber,meshComponentNumber)
@@ -1041,6 +1045,7 @@ BoundaryConditionsNavierStokes = CMISS.BoundaryConditions()
 SolverEquationsNavierStokes.BoundaryConditionsCreateStart(BoundaryConditionsNavierStokes)
 
 # Inlet (Flow)
+versionIdx = 1
 for inputIdx in range (1,numberOfInputNodes+1):
     nodeNumber = inputNodeNumbers[inputIdx-1]
     nodeDomain = Decomposition.NodeDomainGet(nodeNumber,meshComponentNumber)
@@ -1048,6 +1053,7 @@ for inputIdx in range (1,numberOfInputNodes+1):
         BoundaryConditionsNavierStokes.SetNode(DependentFieldNavierStokes,CMISS.FieldVariableTypes.U,
                                                versionIdx,1,nodeNumber,1,CMISS.BoundaryConditionsTypes.FIXED_FITTED,Q[inputIdx][0])
 # Area-outlet
+versionIdx = 1
 for terminalIdx in range (1,numberOfTerminalNodes+1):
     nodeNumber = coupledNodeNumbers[terminalIdx-1]
     nodeDomain = Decomposition.NodeDomainGet(nodeNumber,meshComponentNumber)
@@ -1067,7 +1073,7 @@ SolverEquationsNavierStokes.BoundaryConditionsCreateFinish()
 
 if (CheckTimestepStability):
     QMax = 430.0
-    maxTimestep = Utilities.GetMaxStableTimestep(elementNodes,QMax,nodeCoordinates,H,E,A0,Rho)
+    maxTimestep = Utilities1D.GetMaxStableTimestep(elementNodes,QMax,nodeCoordinates,H,E,A0,Rho)
     if (timeIncrement > maxTimestep):
         sys.exit('Timestep size '+str(timeIncrement)+' above maximum allowable size of '+str(maxTimestep)+'. Please reduce step size and re-run')
 
@@ -1087,7 +1093,7 @@ print "Problem solved!"
 
 # Remove CellML tmp files
 for filename in glob.glob("./tmp.cellml2code*"):
-    os.remove(filename)
+    shutil.rmtree(filename)
 
 #================================================================================================================================
 #  Finish Program

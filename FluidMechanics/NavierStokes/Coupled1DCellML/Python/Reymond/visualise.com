@@ -5,11 +5,13 @@ $h=1000;                        # height of the graphical window
 
 gfx create material a_colour ambient 1 0.1 0.1 diffuse 1 0.1 0.1;
 
-for ($i=0;$i<10000;$i=$i+10) 
+#for ($i=47400;$i<63200;$i=$i+10)
+for ($i=0;$i<4000;$i=$i+10)
+#for ($i=0;$i<771;$i=$i+1) 
 #Read in the sequence of nodal positions.
   {
      $filename = sprintf("./output/MainTime_%01d.part0.exnode", $i);
-     $time = $i/10
+     $time = $i*0.2
      print "Reading $filename time $time\n";
      gfx read node "$filename" time $i;
   }
