@@ -50,7 +50,9 @@ PROGRAM DIFFUSIONIOALEEXAMPLE
 
   USE OPENCMISS
   USE FLUID_MECHANICS_IO_ROUTINES
+#ifndef NOMPIMOD
   USE MPI
+#endif
 
 
 #ifdef WIN32
@@ -58,6 +60,11 @@ PROGRAM DIFFUSIONIOALEEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
   TYPE(CMISSFieldType) :: EquationsSetField

@@ -51,7 +51,9 @@ PROGRAM DIFFUSIONCONSTANTSOURCEEXAMPLE
 
 
   USE OPENCMISS
+#ifndef NOMPIMOD
   USE MPI
+#endif
 
 
 #ifdef WIN32
@@ -59,6 +61,11 @@ PROGRAM DIFFUSIONCONSTANTSOURCEEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
   TYPE(CMISSFieldType) :: EquationsSetField

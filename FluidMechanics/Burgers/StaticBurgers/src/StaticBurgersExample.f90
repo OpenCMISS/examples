@@ -49,7 +49,9 @@ PROGRAM STATICBURGERSEXAMPLE
 
 
   USE OPENCMISS
+#ifndef NOMPIMOD
   USE MPI
+#endif
 
 
 #ifdef WIN32
@@ -57,6 +59,11 @@ PROGRAM STATICBURGERSEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   !-----------------------------------------------------------------------------------------------------------
   ! PROGRAM VARIABLES AND TYPES
