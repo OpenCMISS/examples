@@ -96,7 +96,6 @@ PROGRAM UNIAXIALEXTENSIONEXAMPLE
 
   !Program types
 
-
   !Program variables
 
   INTEGER(CMISSIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
@@ -349,8 +348,8 @@ PROGRAM UNIAXIALEXTENSIONEXAMPLE
   CALL CMISSField_Initialise(EquationsSetField,Err)
   CALL CMISSEquationsSet_Initialise(EquationsSet,Err)
   CALL CMISSEquationsSet_CreateStart(EquationSetUserNumber,Region,FibreField,CMISS_EQUATIONS_SET_ELASTICITY_CLASS, &
-    & CMISS_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMISS_EQUATIONS_SET_NO_SUBTYPE,EquationsSetFieldUserNumber,EquationsSetField,&
-    & EquationsSet,Err)
+    & CMISS_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMISS_EQUATIONS_SET_NO_SUBTYPE,EquationsSetFieldUserNumber, &
+    & EquationsSetField,EquationsSet,Err)
   CALL CMISSEquationsSet_CreateFinish(EquationsSet,Err)
 
   CALL CMISSEquationsSet_DependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err) 

@@ -1,7 +1,7 @@
 #Read in the sequence of nodal positions.
-for $i (1..5)
+for $i (0..5)
   {
-	 $filename = sprintf("./output/TIME_STEP_%04d.exnode", $i);
+	 $filename = sprintf("TIME_STEP_%04d.exnode", $i);
 	 print "Reading $filename time $i\n";
 	 gfx read node "$filename" time $i;
   }

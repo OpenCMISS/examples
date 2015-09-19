@@ -250,7 +250,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
   CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
 
-  !Create a field to put the geometry (defualt is geometry)
+  !Create a field to put the geometry (default is geometry)
   CALL CMISSField_Initialise(GeometricField,Err)
   CALL CMISSField_CreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
   CALL CMISSField_MeshDecompositionSet(GeometricField,Decomposition,Err)
@@ -273,13 +273,15 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   !Create the dependent field
   CALL CMISSField_Initialise(DependentField,Err)
   CALL CMISSField_CreateStart(FieldDependentUserNumber,Region,DependentField,Err)
-  CALL CMISSField_TypeSet(DependentField,CMISS_FIELD_GENERAL_TYPE,Err)
+  CALL CMISSField_TypeSet(DependentField,CMISS_FIELD_GEOMETRIC_GENERAL_TYPE,Err)
   CALL CMISSField_MeshDecompositionSet(DependentField,Decomposition,Err)
   CALL CMISSField_GeometricFieldSet(DependentField,GeometricField,Err)
   CALL CMISSField_DependentTypeSet(DependentField,CMISS_FIELD_DEPENDENT_TYPE,Err)
   CALL CMISSField_NumberOfVariablesSet(DependentField,2,Err)
+  CALL CMISSField_VariableTypesSet(DependentField,[CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_DELUDELN_VARIABLE_TYPE],Err)
   CALL CMISSField_VariableLabelSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,"Dependent",Err)
   CALL CMISSField_NumberOfComponentsSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,NUMBER_OF_COMPONENTS,Err)
+  CALL CMISSField_NumberOfComponentsSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,NUMBER_OF_COMPONENTS,Err)
   IF(UsePressureBasis) THEN
     !Set the pressure to be nodally based and use the second mesh component if required
     CALL CMISSField_ComponentInterpolationSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,4,CMISS_FIELD_NODE_BASED_INTERPOLATION,Err)
@@ -353,8 +355,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL CMISSControlLoop_Initialise(ControlLoop,Err)
   CALL CMISSProblem_ControlLoopGet(Problem,CMISS_CONTROL_LOOP_NODE,ControlLoop,Err)
   CALL CMISSControlLoop_TypeSet(ControlLoop,CMISS_PROBLEM_CONTROL_LOAD_INCREMENT_LOOP_TYPE,Err)
-  CALL CMISSControlLoop_MaximumIterationsSet(ControlLoop,50,Err)
-  CALL CMISSControlLoop_WriteIntermediateResultsSet(ControlLoop,.TRUE.,Err)
+  CALL CMISSControlLoop_MaximumIterationsSet(ControlLoop,5,Err)
   CALL CMISSProblem_ControlLoopCreateFinish(Problem,Err)
 
   !Create the problem solvers
@@ -405,7 +406,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
     CALL CMISSDecomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL CMISSBoundaryConditions_SetNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-        & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED,1.5_CMISSDP*WIDTH,Err)
+        & CMISS_BOUNDARY_CONDITION_FIXED_INCREMENTED,1.1_CMISSDP*WIDTH,Err)
 !        & CMISS_BOUNDARY_CONDITION_FIXED,1.2_CMISSDP*WIDTH,Err)
     ENDIF
   ENDDO

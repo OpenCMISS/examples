@@ -1,0 +1,1832 @@
+ Group name: Region
+ Shape.  Dimension=3
+ #Scale factor sets= 1
+ l.Lagrange*l.Lagrange*l.Lagrange, #Scale factors=8
+ #Nodes=           6
+ #Fields=5
+ 1) Geometry, coordinate, rectangular cartesian, #Components=3
+   x.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   y.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   z.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+ 2) Fibre, anatomical, fibre, #Components=3
+   1.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   2.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   3.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+ 3) Dependent, field,  rectangular cartesian, #Components=4
+   1.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   2.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   3.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   4.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, grid based.
+     #xi1=1, #xi2=1, #xi3=1
+ 4) del U/del n, field,  rectangular cartesian, #Components=4
+   1.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   2.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   3.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   4.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, grid based.
+     #xi1=1, #xi2=1, #xi3=1
+ 5) DeformedGeometry, coordinate, rectangular cartesian, #Components=3
+   x.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   y.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   z.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+ Element:            1 0 0
+   Values:
+     -1.7182901327091528E+01   -1.7182901327091528E+01   -1.7182901327091528E+01   -1.7182901327091528E+01   -1.7182901327091528E+01   -1.7182901327091528E+01   -1.7182901327091528E+01   -1.7182901327091528E+01
+     5.9407102848130222E-10   5.9407102848130222E-10   5.9407102848130222E-10   5.9407102848130222E-10   5.9407102848130222E-10   5.9407102848130222E-10   5.9407102848130222E-10   5.9407102848130222E-10
+   Nodes:
+          27          40          42          10          15          17
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            2 0 0
+   Values:
+     -2.9767774559586218E+00   -2.9767774559586218E+00   -2.9767774559586218E+00   -2.9767774559586218E+00   -2.9767774559586218E+00   -2.9767774559586218E+00   -2.9767774559586218E+00   -2.9767774559586218E+00
+     -1.0672276257173152E-09   -1.0672276257173152E-09   -1.0672276257173152E-09   -1.0672276257173152E-09   -1.0672276257173152E-09   -1.0672276257173152E-09   -1.0672276257173152E-09   -1.0672276257173152E-09
+   Nodes:
+          10          15          17           1           6           8
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            3 0 0
+   Values:
+     -1.7182900238341784E+01   -1.7182900238341784E+01   -1.7182900238341784E+01   -1.7182900238341784E+01   -1.7182900238341784E+01   -1.7182900238341784E+01   -1.7182900238341784E+01   -1.7182900238341784E+01
+     5.9408455932441484E-10   5.9408455932441484E-10   5.9408455932441484E-10   5.9408455932441484E-10   5.9408455932441484E-10   5.9408455932441484E-10   5.9408455932441484E-10   5.9408455932441484E-10
+   Nodes:
+          27          42          43          10          17          18
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            4 0 0
+   Values:
+     -2.9767774518351491E+00   -2.9767774518351491E+00   -2.9767774518351491E+00   -2.9767774518351491E+00   -2.9767774518351491E+00   -2.9767774518351491E+00   -2.9767774518351491E+00   -2.9767774518351491E+00
+     -1.0672144279411100E-09   -1.0672144279411100E-09   -1.0672144279411100E-09   -1.0672144279411100E-09   -1.0672144279411100E-09   -1.0672144279411100E-09   -1.0672144279411100E-09   -1.0672144279411100E-09
+   Nodes:
+          10          17          18           1           8           9
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            5 0 0
+   Values:
+     -1.7182901328697930E+01   -1.7182901328697930E+01   -1.7182901328697930E+01   -1.7182901328697930E+01   -1.7182901328697930E+01   -1.7182901328697930E+01   -1.7182901328697930E+01   -1.7182901328697930E+01
+     5.9411075364890209E-10   5.9411075364890209E-10   5.9411075364890209E-10   5.9411075364890209E-10   5.9411075364890209E-10   5.9411075364890209E-10   5.9411075364890209E-10   5.9411075364890209E-10
+   Nodes:
+          27          43          41          10          18          16
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            6 0 0
+   Values:
+     -2.9767774680281591E+00   -2.9767774680281591E+00   -2.9767774680281591E+00   -2.9767774680281591E+00   -2.9767774680281591E+00   -2.9767774680281591E+00   -2.9767774680281591E+00   -2.9767774680281591E+00
+     -1.0671604433465376E-09   -1.0671604433465376E-09   -1.0671604433465376E-09   -1.0671604433465376E-09   -1.0671604433465376E-09   -1.0671604433465376E-09   -1.0671604433465376E-09   -1.0671604433465376E-09
+   Nodes:
+          10          18          16           1           9           7
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            7 0 0
+   Values:
+     -1.7182900262769497E+01   -1.7182900262769497E+01   -1.7182900262769497E+01   -1.7182900262769497E+01   -1.7182900262769497E+01   -1.7182900262769497E+01   -1.7182900262769497E+01   -1.7182900262769497E+01
+     5.9414830000381613E-10   5.9414830000381613E-10   5.9414830000381613E-10   5.9414830000381613E-10   5.9414830000381613E-10   5.9414830000381613E-10   5.9414830000381613E-10   5.9414830000381613E-10
+   Nodes:
+          27          41          39          10          16          14
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            8 0 0
+   Values:
+     -2.9767774562995259E+00   -2.9767774562995259E+00   -2.9767774562995259E+00   -2.9767774562995259E+00   -2.9767774562995259E+00   -2.9767774562995259E+00   -2.9767774562995259E+00   -2.9767774562995259E+00
+     -1.0671020456154423E-09   -1.0671020456154423E-09   -1.0671020456154423E-09   -1.0671020456154423E-09   -1.0671020456154423E-09   -1.0671020456154423E-09   -1.0671020456154423E-09   -1.0671020456154423E-09
+   Nodes:
+          10          16          14           1           7           5
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            9 0 0
+   Values:
+     -1.7182901356562596E+01   -1.7182901356562596E+01   -1.7182901356562596E+01   -1.7182901356562596E+01   -1.7182901356562596E+01   -1.7182901356562596E+01   -1.7182901356562596E+01   -1.7182901356562596E+01
+     5.9413565733912321E-10   5.9413565733912321E-10   5.9413565733912321E-10   5.9413565733912321E-10   5.9413565733912321E-10   5.9413565733912321E-10   5.9413565733912321E-10   5.9413565733912321E-10
+   Nodes:
+          27          39          37          10          14          12
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            10 0 0
+   Values:
+     -2.9767774595014749E+00   -2.9767774595014749E+00   -2.9767774595014749E+00   -2.9767774595014749E+00   -2.9767774595014749E+00   -2.9767774595014749E+00   -2.9767774595014749E+00   -2.9767774595014749E+00
+     -1.0671282468788235E-09   -1.0671282468788235E-09   -1.0671282468788235E-09   -1.0671282468788235E-09   -1.0671282468788235E-09   -1.0671282468788235E-09   -1.0671282468788235E-09   -1.0671282468788235E-09
+   Nodes:
+          10          14          12           1           5           3
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            11 0 0
+   Values:
+     -1.7182900276488482E+01   -1.7182900276488482E+01   -1.7182900276488482E+01   -1.7182900276488482E+01   -1.7182900276488482E+01   -1.7182900276488482E+01   -1.7182900276488482E+01   -1.7182900276488482E+01
+     5.9413447078826565E-10   5.9413447078826565E-10   5.9413447078826565E-10   5.9413447078826565E-10   5.9413447078826565E-10   5.9413447078826565E-10   5.9413447078826565E-10   5.9413447078826565E-10
+   Nodes:
+          27          37          36          10          12          11
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            12 0 0
+   Values:
+     -2.9767774491430932E+00   -2.9767774491430932E+00   -2.9767774491430932E+00   -2.9767774491430932E+00   -2.9767774491430932E+00   -2.9767774491430932E+00   -2.9767774491430932E+00   -2.9767774491430932E+00
+     -1.0671383915417110E-09   -1.0671383915417110E-09   -1.0671383915417110E-09   -1.0671383915417110E-09   -1.0671383915417110E-09   -1.0671383915417110E-09   -1.0671383915417110E-09   -1.0671383915417110E-09
+   Nodes:
+          10          12          11           1           3           2
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            13 0 0
+   Values:
+     -1.7182901354925214E+01   -1.7182901354925214E+01   -1.7182901354925214E+01   -1.7182901354925214E+01   -1.7182901354925214E+01   -1.7182901354925214E+01   -1.7182901354925214E+01   -1.7182901354925214E+01
+     5.9410550090621683E-10   5.9410550090621683E-10   5.9410550090621683E-10   5.9410550090621683E-10   5.9410550090621683E-10   5.9410550090621683E-10   5.9410550090621683E-10   5.9410550090621683E-10
+   Nodes:
+          27          36          38          10          11          13
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            14 0 0
+   Values:
+     -2.9767774474137587E+00   -2.9767774474137587E+00   -2.9767774474137587E+00   -2.9767774474137587E+00   -2.9767774474137587E+00   -2.9767774474137587E+00   -2.9767774474137587E+00   -2.9767774474137587E+00
+     -1.0672153022417419E-09   -1.0672153022417419E-09   -1.0672153022417419E-09   -1.0672153022417419E-09   -1.0672153022417419E-09   -1.0672153022417419E-09   -1.0672153022417419E-09   -1.0672153022417419E-09
+   Nodes:
+          10          11          13           1           2           4
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            15 0 0
+   Values:
+     -1.7182900252041602E+01   -1.7182900252041602E+01   -1.7182900252041602E+01   -1.7182900252041602E+01   -1.7182900252041602E+01   -1.7182900252041602E+01   -1.7182900252041602E+01   -1.7182900252041602E+01
+     5.9406431857089714E-10   5.9406431857089714E-10   5.9406431857089714E-10   5.9406431857089714E-10   5.9406431857089714E-10   5.9406431857089714E-10   5.9406431857089714E-10   5.9406431857089714E-10
+   Nodes:
+          27          38          40          10          13          15
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            16 0 0
+   Values:
+     -2.9767774446702773E+00   -2.9767774446702773E+00   -2.9767774446702773E+00   -2.9767774446702773E+00   -2.9767774446702773E+00   -2.9767774446702773E+00   -2.9767774446702773E+00   -2.9767774446702773E+00
+     -1.0672333156103164E-09   -1.0672333156103164E-09   -1.0672333156103164E-09   -1.0672333156103164E-09   -1.0672333156103164E-09   -1.0672333156103164E-09   -1.0672333156103164E-09   -1.0672333156103164E-09
+   Nodes:
+          10          13          15           1           4           6
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ #Scale factor sets= 1
+ l.Lagrange*l.Lagrange*l.Lagrange, #Scale factors=8
+ #Nodes=           8
+ #Fields=5
+ 1) Geometry, coordinate, rectangular cartesian, #Components=3
+   x.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   y.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   z.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+ 2) Fibre, anatomical, fibre, #Components=3
+   1.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   2.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   3.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+ 3) Dependent, field,  rectangular cartesian, #Components=4
+   1.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   2.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   3.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   4.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, grid based.
+     #xi1=1, #xi2=1, #xi3=1
+ 4) del U/del n, field,  rectangular cartesian, #Components=4
+   1.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   2.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   3.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   4.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, grid based.
+     #xi1=1, #xi2=1, #xi3=1
+ 5) DeformedGeometry, coordinate, rectangular cartesian, #Components=3
+   x.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   y.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+   z.   l.Lagrange*l.Lagrange*l.Lagrange, no modify, standard node based.
+     #Nodes= 8
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+     4.  #Values=1
+      Value indices:     1
+      Scale factor indices:    4
+     5.  #Values=1
+      Value indices:     1
+      Scale factor indices:    5
+     6.  #Values=1
+      Value indices:     1
+      Scale factor indices:    6
+     7.  #Values=1
+      Value indices:     1
+      Scale factor indices:    7
+     8.  #Values=1
+      Value indices:     1
+      Scale factor indices:    8
+ Element:            17 0 0
+   Values:
+     -1.2590504901327346E+01   -1.2590504901327346E+01   -1.2590504901327346E+01   -1.2590504901327346E+01   -1.2590504901327346E+01   -1.2590504901327346E+01   -1.2590504901327346E+01   -1.2590504901327346E+01
+     1.0187892335311588E-09   1.0187892335311588E-09   1.0187892335311588E-09   1.0187892335311588E-09   1.0187892335311588E-09   1.0187892335311588E-09   1.0187892335311588E-09   1.0187892335311588E-09
+   Nodes:
+          40          42          56          58          15          17          32          34
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            18 0 0
+   Values:
+     -4.4085958447437044E+00   -4.4085958447437044E+00   -4.4085958447437044E+00   -4.4085958447437044E+00   -4.4085958447437044E+00   -4.4085958447437044E+00   -4.4085958447437044E+00   -4.4085958447437044E+00
+     1.1493917206895077E-09   1.1493917206895077E-09   1.1493917206895077E-09   1.1493917206895077E-09   1.1493917206895077E-09   1.1493917206895077E-09   1.1493917206895077E-09   1.1493917206895077E-09
+   Nodes:
+          15          17          32          34           6           8          23          25
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            19 0 0
+   Values:
+     -1.2590505534879656E+01   -1.2590505534879656E+01   -1.2590505534879656E+01   -1.2590505534879656E+01   -1.2590505534879656E+01   -1.2590505534879656E+01   -1.2590505534879656E+01   -1.2590505534879656E+01
+     1.0187842652831236E-09   1.0187842652831236E-09   1.0187842652831236E-09   1.0187842652831236E-09   1.0187842652831236E-09   1.0187842652831236E-09   1.0187842652831236E-09   1.0187842652831236E-09
+   Nodes:
+          42          43          58          59          17          18          34          35
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            20 0 0
+   Values:
+     -4.4085959161446553E+00   -4.4085959161446553E+00   -4.4085959161446553E+00   -4.4085959161446553E+00   -4.4085959161446553E+00   -4.4085959161446553E+00   -4.4085959161446553E+00   -4.4085959161446553E+00
+     1.1494363447162037E-09   1.1494363447162037E-09   1.1494363447162037E-09   1.1494363447162037E-09   1.1494363447162037E-09   1.1494363447162037E-09   1.1494363447162037E-09   1.1494363447162037E-09
+   Nodes:
+          17          18          34          35           8           9          25          26
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            21 0 0
+   Values:
+     -1.2590504910234529E+01   -1.2590504910234529E+01   -1.2590504910234529E+01   -1.2590504910234529E+01   -1.2590504910234529E+01   -1.2590504910234529E+01   -1.2590504910234529E+01   -1.2590504910234529E+01
+     1.0188322546733630E-09   1.0188322546733630E-09   1.0188322546733630E-09   1.0188322546733630E-09   1.0188322546733630E-09   1.0188322546733630E-09   1.0188322546733630E-09   1.0188322546733630E-09
+   Nodes:
+          43          41          59          57          18          16          35          33
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            22 0 0
+   Values:
+     -4.4085958525375162E+00   -4.4085958525375162E+00   -4.4085958525375162E+00   -4.4085958525375162E+00   -4.4085958525375162E+00   -4.4085958525375162E+00   -4.4085958525375162E+00   -4.4085958525375162E+00
+     1.1496336660421491E-09   1.1496336660421491E-09   1.1496336660421491E-09   1.1496336660421491E-09   1.1496336660421491E-09   1.1496336660421491E-09   1.1496336660421491E-09   1.1496336660421491E-09
+   Nodes:
+          18          16          35          33           9           7          26          24
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            23 0 0
+   Values:
+     -1.2590505571357509E+01   -1.2590505571357509E+01   -1.2590505571357509E+01   -1.2590505571357509E+01   -1.2590505571357509E+01   -1.2590505571357509E+01   -1.2590505571357509E+01   -1.2590505571357509E+01
+     1.0188756505158381E-09   1.0188756505158381E-09   1.0188756505158381E-09   1.0188756505158381E-09   1.0188756505158381E-09   1.0188756505158381E-09   1.0188756505158381E-09   1.0188756505158381E-09
+   Nodes:
+          41          39          57          55          16          14          33          31
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            24 0 0
+   Values:
+     -4.4085959171797962E+00   -4.4085959171797962E+00   -4.4085959171797962E+00   -4.4085959171797962E+00   -4.4085959171797962E+00   -4.4085959171797962E+00   -4.4085959171797962E+00   -4.4085959171797962E+00
+     1.1498124397046894E-09   1.1498124397046894E-09   1.1498124397046894E-09   1.1498124397046894E-09   1.1498124397046894E-09   1.1498124397046894E-09   1.1498124397046894E-09   1.1498124397046894E-09
+   Nodes:
+          16          14          33          31           7           5          24          22
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            25 0 0
+   Values:
+     -1.2590504955503290E+01   -1.2590504955503290E+01   -1.2590504955503290E+01   -1.2590504955503290E+01   -1.2590504955503290E+01   -1.2590504955503290E+01   -1.2590504955503290E+01   -1.2590504955503290E+01
+     1.0188851012893352E-09   1.0188851012893352E-09   1.0188851012893352E-09   1.0188851012893352E-09   1.0188851012893352E-09   1.0188851012893352E-09   1.0188851012893352E-09   1.0188851012893352E-09
+   Nodes:
+          39          37          55          53          14          12          31          29
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            26 0 0
+   Values:
+     -4.4085958469170983E+00   -4.4085958469170983E+00   -4.4085958469170983E+00   -4.4085958469170983E+00   -4.4085958469170983E+00   -4.4085958469170983E+00   -4.4085958469170983E+00   -4.4085958469170983E+00
+     1.1499591417996058E-09   1.1499591417996058E-09   1.1499591417996058E-09   1.1499591417996058E-09   1.1499591417996058E-09   1.1499591417996058E-09   1.1499591417996058E-09   1.1499591417996058E-09
+   Nodes:
+          14          12          31          29           5           3          22          20
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            27 0 0
+   Values:
+     -1.2590505596616278E+01   -1.2590505596616278E+01   -1.2590505596616278E+01   -1.2590505596616278E+01   -1.2590505596616278E+01   -1.2590505596616278E+01   -1.2590505596616278E+01   -1.2590505596616278E+01
+     1.0189067506383154E-09   1.0189067506383154E-09   1.0189067506383154E-09   1.0189067506383154E-09   1.0189067506383154E-09   1.0189067506383154E-09   1.0189067506383154E-09   1.0189067506383154E-09
+   Nodes:
+          37          36          53          52          12          11          29          28
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            28 0 0
+   Values:
+     -4.4085959050346997E+00   -4.4085959050346997E+00   -4.4085959050346997E+00   -4.4085959050346997E+00   -4.4085959050346997E+00   -4.4085959050346997E+00   -4.4085959050346997E+00   -4.4085959050346997E+00
+     1.1499797086811370E-09   1.1499797086811370E-09   1.1499797086811370E-09   1.1499797086811370E-09   1.1499797086811370E-09   1.1499797086811370E-09   1.1499797086811370E-09   1.1499797086811370E-09
+   Nodes:
+          12          11          29          28           3           2          20          19
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            29 0 0
+   Values:
+     -1.2590504946596219E+01   -1.2590504946596219E+01   -1.2590504946596219E+01   -1.2590504946596219E+01   -1.2590504946596219E+01   -1.2590504946596219E+01   -1.2590504946596219E+01   -1.2590504946596219E+01
+     1.0188270782585107E-09   1.0188270782585107E-09   1.0188270782585107E-09   1.0188270782585107E-09   1.0188270782585107E-09   1.0188270782585107E-09   1.0188270782585107E-09   1.0188270782585107E-09
+   Nodes:
+          36          38          52          54          11          13          28          30
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            30 0 0
+   Values:
+     -4.4085958391190596E+00   -4.4085958391190596E+00   -4.4085958391190596E+00   -4.4085958391190596E+00   -4.4085958391190596E+00   -4.4085958391190596E+00   -4.4085958391190596E+00   -4.4085958391190596E+00
+     1.1497708340968416E-09   1.1497708340968416E-09   1.1497708340968416E-09   1.1497708340968416E-09   1.1497708340968416E-09   1.1497708340968416E-09   1.1497708340968416E-09   1.1497708340968416E-09
+   Nodes:
+          11          13          28          30           2           4          19          21
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            31 0 0
+   Values:
+     -1.2590505560113160E+01   -1.2590505560113160E+01   -1.2590505560113160E+01   -1.2590505560113160E+01   -1.2590505560113160E+01   -1.2590505560113160E+01   -1.2590505560113160E+01   -1.2590505560113160E+01
+     1.0187787558013639E-09   1.0187787558013639E-09   1.0187787558013639E-09   1.0187787558013639E-09   1.0187787558013639E-09   1.0187787558013639E-09   1.0187787558013639E-09   1.0187787558013639E-09
+   Nodes:
+          38          40          54          56          13          15          30          32
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            32 0 0
+   Values:
+     -4.4085959039990756E+00   -4.4085959039990756E+00   -4.4085959039990756E+00   -4.4085959039990756E+00   -4.4085959039990756E+00   -4.4085959039990756E+00   -4.4085959039990756E+00   -4.4085959039990756E+00
+     1.1495482621359798E-09   1.1495482621359798E-09   1.1495482621359798E-09   1.1495482621359798E-09   1.1495482621359798E-09   1.1495482621359798E-09   1.1495482621359798E-09   1.1495482621359798E-09
+   Nodes:
+          13          15          30          32           4           6          21          23
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            33 0 0
+   Values:
+     -1.0116411299830235E+01   -1.0116411299830235E+01   -1.0116411299830235E+01   -1.0116411299830235E+01   -1.0116411299830235E+01   -1.0116411299830235E+01   -1.0116411299830235E+01   -1.0116411299830235E+01
+     1.2068105681439789E-09   1.2068105681439789E-09   1.2068105681439789E-09   1.2068105681439789E-09   1.2068105681439789E-09   1.2068105681439789E-09   1.2068105681439789E-09   1.2068105681439789E-09
+   Nodes:
+          56          58          72          74          32          34          64          66
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            34 0 0
+   Values:
+     -3.4847685573233416E+00   -3.4847685573233416E+00   -3.4847685573233416E+00   -3.4847685573233416E+00   -3.4847685573233416E+00   -3.4847685573233416E+00   -3.4847685573233416E+00   -3.4847685573233416E+00
+     4.8069018964910781E-09   4.8069018964910781E-09   4.8069018964910781E-09   4.8069018964910781E-09   4.8069018964910781E-09   4.8069018964910781E-09   4.8069018964910781E-09   4.8069018964910781E-09
+   Nodes:
+          32          34          64          66          23          25          48          50
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            35 0 0
+   Values:
+     -1.0116411083655654E+01   -1.0116411083655654E+01   -1.0116411083655654E+01   -1.0116411083655654E+01   -1.0116411083655654E+01   -1.0116411083655654E+01   -1.0116411083655654E+01   -1.0116411083655654E+01
+     1.2069960447780304E-09   1.2069960447780304E-09   1.2069960447780304E-09   1.2069960447780304E-09   1.2069960447780304E-09   1.2069960447780304E-09   1.2069960447780304E-09   1.2069960447780304E-09
+   Nodes:
+          58          59          74          75          34          35          66          67
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            36 0 0
+   Values:
+     -3.4847685267715316E+00   -3.4847685267715316E+00   -3.4847685267715316E+00   -3.4847685267715316E+00   -3.4847685267715316E+00   -3.4847685267715316E+00   -3.4847685267715316E+00   -3.4847685267715316E+00
+     4.8072660531126021E-09   4.8072660531126021E-09   4.8072660531126021E-09   4.8072660531126021E-09   4.8072660531126021E-09   4.8072660531126021E-09   4.8072660531126021E-09   4.8072660531126021E-09
+   Nodes:
+          34          35          66          67          25          26          50          51
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            37 0 0
+   Values:
+     -1.0116411288182329E+01   -1.0116411288182329E+01   -1.0116411288182329E+01   -1.0116411288182329E+01   -1.0116411288182329E+01   -1.0116411288182329E+01   -1.0116411288182329E+01   -1.0116411288182329E+01
+     1.2072362831627714E-09   1.2072362831627714E-09   1.2072362831627714E-09   1.2072362831627714E-09   1.2072362831627714E-09   1.2072362831627714E-09   1.2072362831627714E-09   1.2072362831627714E-09
+   Nodes:
+          59          57          75          73          35          33          67          65
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            38 0 0
+   Values:
+     -3.4847685670555228E+00   -3.4847685670555228E+00   -3.4847685670555228E+00   -3.4847685670555228E+00   -3.4847685670555228E+00   -3.4847685670555228E+00   -3.4847685670555228E+00   -3.4847685670555228E+00
+     4.8076220201045961E-09   4.8076220201045961E-09   4.8076220201045961E-09   4.8076220201045961E-09   4.8076220201045961E-09   4.8076220201045961E-09   4.8076220201045961E-09   4.8076220201045961E-09
+   Nodes:
+          35          33          67          65          26          24          51          49
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            39 0 0
+   Values:
+     -1.0116411122771325E+01   -1.0116411122771325E+01   -1.0116411122771325E+01   -1.0116411122771325E+01   -1.0116411122771325E+01   -1.0116411122771325E+01   -1.0116411122771325E+01   -1.0116411122771325E+01
+     1.2075587474402738E-09   1.2075587474402738E-09   1.2075587474402738E-09   1.2075587474402738E-09   1.2075587474402738E-09   1.2075587474402738E-09   1.2075587474402738E-09   1.2075587474402738E-09
+   Nodes:
+          57          55          73          71          33          31          65          63
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            40 0 0
+   Values:
+     -3.4847685226986296E+00   -3.4847685226986296E+00   -3.4847685226986296E+00   -3.4847685226986296E+00   -3.4847685226986296E+00   -3.4847685226986296E+00   -3.4847685226986296E+00   -3.4847685226986296E+00
+     4.8081492884377575E-09   4.8081492884377575E-09   4.8081492884377575E-09   4.8081492884377575E-09   4.8081492884377575E-09   4.8081492884377575E-09   4.8081492884377575E-09   4.8081492884377575E-09
+   Nodes:
+          33          31          65          63          24          22          49          47
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            41 0 0
+   Values:
+     -1.0116411354241354E+01   -1.0116411354241354E+01   -1.0116411354241354E+01   -1.0116411354241354E+01   -1.0116411354241354E+01   -1.0116411354241354E+01   -1.0116411354241354E+01   -1.0116411354241354E+01
+     1.2075965644120501E-09   1.2075965644120501E-09   1.2075965644120501E-09   1.2075965644120501E-09   1.2075965644120501E-09   1.2075965644120501E-09   1.2075965644120501E-09   1.2075965644120501E-09
+   Nodes:
+          55          53          71          69          31          29          63          61
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            42 0 0
+   Values:
+     -3.4847685484833857E+00   -3.4847685484833857E+00   -3.4847685484833857E+00   -3.4847685484833857E+00   -3.4847685484833857E+00   -3.4847685484833857E+00   -3.4847685484833857E+00   -3.4847685484833857E+00
+     4.8083830051295906E-09   4.8083830051295906E-09   4.8083830051295906E-09   4.8083830051295906E-09   4.8083830051295906E-09   4.8083830051295906E-09   4.8083830051295906E-09   4.8083830051295906E-09
+   Nodes:
+          31          29          63          61          22          20          47          45
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            43 0 0
+   Values:
+     -1.0116411173659934E+01   -1.0116411173659934E+01   -1.0116411173659934E+01   -1.0116411173659934E+01   -1.0116411173659934E+01   -1.0116411173659934E+01   -1.0116411173659934E+01   -1.0116411173659934E+01
+     1.2074340277612450E-09   1.2074340277612450E-09   1.2074340277612450E-09   1.2074340277612450E-09   1.2074340277612450E-09   1.2074340277612450E-09   1.2074340277612450E-09   1.2074340277612450E-09
+   Nodes:
+          53          52          69          68          29          28          61          60
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            44 0 0
+   Values:
+     -3.4847685023577730E+00   -3.4847685023577730E+00   -3.4847685023577730E+00   -3.4847685023577730E+00   -3.4847685023577730E+00   -3.4847685023577730E+00   -3.4847685023577730E+00   -3.4847685023577730E+00
+     4.8080204748113253E-09   4.8080204748113253E-09   4.8080204748113253E-09   4.8080204748113253E-09   4.8080204748113253E-09   4.8080204748113253E-09   4.8080204748113253E-09   4.8080204748113253E-09
+   Nodes:
+          29          28          61          60          20          19          45          44
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            45 0 0
+   Values:
+     -1.0116411365853287E+01   -1.0116411365853287E+01   -1.0116411365853287E+01   -1.0116411365853287E+01   -1.0116411365853287E+01   -1.0116411365853287E+01   -1.0116411365853287E+01   -1.0116411365853287E+01
+     1.2071661170676151E-09   1.2071661170676151E-09   1.2071661170676151E-09   1.2071661170676151E-09   1.2071661170676151E-09   1.2071661170676151E-09   1.2071661170676151E-09   1.2071661170676151E-09
+   Nodes:
+          52          54          68          70          28          30          60          62
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            46 0 0
+   Values:
+     -3.4847685387453109E+00   -3.4847685387453109E+00   -3.4847685387453109E+00   -3.4847685387453109E+00   -3.4847685387453109E+00   -3.4847685387453109E+00   -3.4847685387453109E+00   -3.4847685387453109E+00
+     4.8076655529902257E-09   4.8076655529902257E-09   4.8076655529902257E-09   4.8076655529902257E-09   4.8076655529902257E-09   4.8076655529902257E-09   4.8076655529902257E-09   4.8076655529902257E-09
+   Nodes:
+          28          30          60          62          19          21          44          46
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            47 0 0
+   Values:
+     -1.0116411134523874E+01   -1.0116411134523874E+01   -1.0116411134523874E+01   -1.0116411134523874E+01   -1.0116411134523874E+01   -1.0116411134523874E+01   -1.0116411134523874E+01   -1.0116411134523874E+01
+     1.2069017868432397E-09   1.2069017868432397E-09   1.2069017868432397E-09   1.2069017868432397E-09   1.2069017868432397E-09   1.2069017868432397E-09   1.2069017868432397E-09   1.2069017868432397E-09
+   Nodes:
+          54          56          70          72          30          32          62          64
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            48 0 0
+   Values:
+     -3.4847685064368923E+00   -3.4847685064368923E+00   -3.4847685064368923E+00   -3.4847685064368923E+00   -3.4847685064368923E+00   -3.4847685064368923E+00   -3.4847685064368923E+00   -3.4847685064368923E+00
+     4.8072407964061536E-09   4.8072407964061536E-09   4.8072407964061536E-09   4.8072407964061536E-09   4.8072407964061536E-09   4.8072407964061536E-09   4.8072407964061536E-09   4.8072407964061536E-09
+   Nodes:
+          30          32          62          64          21          23          46          48
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            49 0 0
+   Values:
+     -8.2920743022273609E+00   -8.2920743022273609E+00   -8.2920743022273609E+00   -8.2920743022273609E+00   -8.2920743022273609E+00   -8.2920743022273609E+00   -8.2920743022273609E+00   -8.2920743022273609E+00
+     -3.7201979136147756E-09   -3.7201979136147756E-09   -3.7201979136147756E-09   -3.7201979136147756E-09   -3.7201979136147756E-09   -3.7201979136147756E-09   -3.7201979136147756E-09   -3.7201979136147756E-09
+   Nodes:
+          72          74          96          98          64          66          88          90
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            50 0 0
+   Values:
+     -2.5342500101166361E+00   -2.5342500101166361E+00   -2.5342500101166361E+00   -2.5342500101166361E+00   -2.5342500101166361E+00   -2.5342500101166361E+00   -2.5342500101166361E+00   -2.5342500101166361E+00
+     8.5260299150652363E-09   8.5260299150652363E-09   8.5260299150652363E-09   8.5260299150652363E-09   8.5260299150652363E-09   8.5260299150652363E-09   8.5260299150652363E-09   8.5260299150652363E-09
+   Nodes:
+          64          66          88          90          48          50          80          82
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            51 0 0
+   Values:
+     -8.2920743447835665E+00   -8.2920743447835665E+00   -8.2920743447835665E+00   -8.2920743447835665E+00   -8.2920743447835665E+00   -8.2920743447835665E+00   -8.2920743447835665E+00   -8.2920743447835665E+00
+     -3.7197956104240149E-09   -3.7197956104240149E-09   -3.7197956104240149E-09   -3.7197956104240149E-09   -3.7197956104240149E-09   -3.7197956104240149E-09   -3.7197956104240149E-09   -3.7197956104240149E-09
+   Nodes:
+          74          75          98          99          66          67          90          91
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            52 0 0
+   Values:
+     -2.5342500053448607E+00   -2.5342500053448607E+00   -2.5342500053448607E+00   -2.5342500053448607E+00   -2.5342500053448607E+00   -2.5342500053448607E+00   -2.5342500053448607E+00   -2.5342500053448607E+00
+     8.5265730830064168E-09   8.5265730830064168E-09   8.5265730830064168E-09   8.5265730830064168E-09   8.5265730830064168E-09   8.5265730830064168E-09   8.5265730830064168E-09   8.5265730830064168E-09
+   Nodes:
+          66          67          90          91          50          51          82          83
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            53 0 0
+   Values:
+     -8.2920742682661199E+00   -8.2920742682661199E+00   -8.2920742682661199E+00   -8.2920742682661199E+00   -8.2920742682661199E+00   -8.2920742682661199E+00   -8.2920742682661199E+00   -8.2920742682661199E+00
+     -3.7190517054863648E-09   -3.7190517054863648E-09   -3.7190517054863648E-09   -3.7190517054863648E-09   -3.7190517054863648E-09   -3.7190517054863648E-09   -3.7190517054863648E-09   -3.7190517054863648E-09
+   Nodes:
+          75          73          99          97          67          65          91          89
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            54 0 0
+   Values:
+     -2.5342500159504602E+00   -2.5342500159504602E+00   -2.5342500159504602E+00   -2.5342500159504602E+00   -2.5342500159504602E+00   -2.5342500159504602E+00   -2.5342500159504602E+00   -2.5342500159504602E+00
+     8.5273047702866256E-09   8.5273047702866256E-09   8.5273047702866256E-09   8.5273047702866256E-09   8.5273047702866256E-09   8.5273047702866256E-09   8.5273047702866256E-09   8.5273047702866256E-09
+   Nodes:
+          67          65          91          89          51          49          83          81
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            55 0 0
+   Values:
+     -8.2920743793835570E+00   -8.2920743793835570E+00   -8.2920743793835570E+00   -8.2920743793835570E+00   -8.2920743793835570E+00   -8.2920743793835570E+00   -8.2920743793835570E+00   -8.2920743793835570E+00
+     -3.7182150275372194E-09   -3.7182150275372194E-09   -3.7182150275372194E-09   -3.7182150275372194E-09   -3.7182150275372194E-09   -3.7182150275372194E-09   -3.7182150275372194E-09   -3.7182150275372194E-09
+   Nodes:
+          73          71          97          95          65          63          89          87
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            56 0 0
+   Values:
+     -2.5342499975603108E+00   -2.5342499975603108E+00   -2.5342499975603108E+00   -2.5342499975603108E+00   -2.5342499975603108E+00   -2.5342499975603108E+00   -2.5342499975603108E+00   -2.5342499975603108E+00
+     8.5278749183820279E-09   8.5278749183820279E-09   8.5278749183820279E-09   8.5278749183820279E-09   8.5278749183820279E-09   8.5278749183820279E-09   8.5278749183820279E-09   8.5278749183820279E-09
+   Nodes:
+          65          63          89          87          49          47          81          79
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            57 0 0
+   Values:
+     -8.2920743500203571E+00   -8.2920743500203571E+00   -8.2920743500203571E+00   -8.2920743500203571E+00   -8.2920743500203571E+00   -8.2920743500203571E+00   -8.2920743500203571E+00   -8.2920743500203571E+00
+     -3.7180103718004176E-09   -3.7180103718004176E-09   -3.7180103718004176E-09   -3.7180103718004176E-09   -3.7180103718004176E-09   -3.7180103718004176E-09   -3.7180103718004176E-09   -3.7180103718004176E-09
+   Nodes:
+          71          69          95          93          63          61          87          85
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            58 0 0
+   Values:
+     -2.5342499966024850E+00   -2.5342499966024850E+00   -2.5342499966024850E+00   -2.5342499966024850E+00   -2.5342499966024850E+00   -2.5342499966024850E+00   -2.5342499966024850E+00   -2.5342499966024850E+00
+     8.5280192595182935E-09   8.5280192595182935E-09   8.5280192595182935E-09   8.5280192595182935E-09   8.5280192595182935E-09   8.5280192595182935E-09   8.5280192595182935E-09   8.5280192595182935E-09
+   Nodes:
+          63          61          87          85          47          45          79          77
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            59 0 0
+   Values:
+     -8.2920744553640233E+00   -8.2920744553640233E+00   -8.2920744553640233E+00   -8.2920744553640233E+00   -8.2920744553640233E+00   -8.2920744553640233E+00   -8.2920744553640233E+00   -8.2920744553640233E+00
+     -3.7185468038103409E-09   -3.7185468038103409E-09   -3.7185468038103409E-09   -3.7185468038103409E-09   -3.7185468038103409E-09   -3.7185468038103409E-09   -3.7185468038103409E-09   -3.7185468038103409E-09
+   Nodes:
+          69          68          93          92          61          60          85          84
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            60 0 0
+   Values:
+     -2.5342499775425247E+00   -2.5342499775425247E+00   -2.5342499775425247E+00   -2.5342499775425247E+00   -2.5342499775425247E+00   -2.5342499775425247E+00   -2.5342499775425247E+00   -2.5342499775425247E+00
+     8.5273468477392589E-09   8.5273468477392589E-09   8.5273468477392589E-09   8.5273468477392589E-09   8.5273468477392589E-09   8.5273468477392589E-09   8.5273468477392589E-09   8.5273468477392589E-09
+   Nodes:
+          61          60          85          84          45          44          77          76
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            61 0 0
+   Values:
+     -8.2920743839345388E+00   -8.2920743839345388E+00   -8.2920743839345388E+00   -8.2920743839345388E+00   -8.2920743839345388E+00   -8.2920743839345388E+00   -8.2920743839345388E+00   -8.2920743839345388E+00
+     -3.7191747459530689E-09   -3.7191747459530689E-09   -3.7191747459530689E-09   -3.7191747459530689E-09   -3.7191747459530689E-09   -3.7191747459530689E-09   -3.7191747459530689E-09   -3.7191747459530689E-09
+   Nodes:
+          68          70          92          94          60          62          84          86
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            62 0 0
+   Values:
+     -2.5342499907602529E+00   -2.5342499907602529E+00   -2.5342499907602529E+00   -2.5342499907602529E+00   -2.5342499907602529E+00   -2.5342499907602529E+00   -2.5342499907602529E+00   -2.5342499907602529E+00
+     8.5268988363196296E-09   8.5268988363196296E-09   8.5268988363196296E-09   8.5268988363196296E-09   8.5268988363196296E-09   8.5268988363196296E-09   8.5268988363196296E-09   8.5268988363196296E-09
+   Nodes:
+          60          62          84          86          44          46          76          78
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            63 0 0
+   Values:
+     -8.2920744207602048E+00   -8.2920744207602048E+00   -8.2920744207602048E+00   -8.2920744207602048E+00   -8.2920744207602048E+00   -8.2920744207602048E+00   -8.2920744207602048E+00   -8.2920744207602048E+00
+     -3.7200006131055119E-09   -3.7200006131055119E-09   -3.7200006131055119E-09   -3.7200006131055119E-09   -3.7200006131055119E-09   -3.7200006131055119E-09   -3.7200006131055119E-09   -3.7200006131055119E-09
+   Nodes:
+          70          72          94          96          62          64          86          88
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            64 0 0
+   Values:
+     -2.5342499853349447E+00   -2.5342499853349447E+00   -2.5342499853349447E+00   -2.5342499853349447E+00   -2.5342499853349447E+00   -2.5342499853349447E+00   -2.5342499853349447E+00   -2.5342499853349447E+00
+     8.5262795036095129E-09   8.5262795036095129E-09   8.5262795036095129E-09   8.5262795036095129E-09   8.5262795036095129E-09   8.5262795036095129E-09   8.5262795036095129E-09   8.5262795036095129E-09
+   Nodes:
+          62          64          86          88          46          48          78          80
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            65 0 0
+   Values:
+     -7.3787226814279974E+00   -7.3787226814279974E+00   -7.3787226814279974E+00   -7.3787226814279974E+00   -7.3787226814279974E+00   -7.3787226814279974E+00   -7.3787226814279974E+00   -7.3787226814279974E+00
+     -5.7106487871827483E-09   -5.7106487871827483E-09   -5.7106487871827483E-09   -5.7106487871827483E-09   -5.7106487871827483E-09   -5.7106487871827483E-09   -5.7106487871827483E-09   -5.7106487871827483E-09
+   Nodes:
+          96          98         120         122          88          90         112         114
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            66 0 0
+   Values:
+     -1.8822787092758402E+00   -1.8822787092758402E+00   -1.8822787092758402E+00   -1.8822787092758402E+00   -1.8822787092758402E+00   -1.8822787092758402E+00   -1.8822787092758402E+00   -1.8822787092758402E+00
+     7.1600633200219477E-09   7.1600633200219477E-09   7.1600633200219477E-09   7.1600633200219477E-09   7.1600633200219477E-09   7.1600633200219477E-09   7.1600633200219477E-09   7.1600633200219477E-09
+   Nodes:
+          88          90         112         114          80          82         104         106
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            67 0 0
+   Values:
+     -7.3787226210852808E+00   -7.3787226210852808E+00   -7.3787226210852808E+00   -7.3787226210852808E+00   -7.3787226210852808E+00   -7.3787226210852808E+00   -7.3787226210852808E+00   -7.3787226210852808E+00
+     -5.7098238914754518E-09   -5.7098238914754518E-09   -5.7098238914754518E-09   -5.7098238914754518E-09   -5.7098238914754518E-09   -5.7098238914754518E-09   -5.7098238914754518E-09   -5.7098238914754518E-09
+   Nodes:
+          98          99         122         123          90          91         114         115
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            68 0 0
+   Values:
+     -1.8822787390109657E+00   -1.8822787390109657E+00   -1.8822787390109657E+00   -1.8822787390109657E+00   -1.8822787390109657E+00   -1.8822787390109657E+00   -1.8822787390109657E+00   -1.8822787390109657E+00
+     7.1606080995212373E-09   7.1606080995212373E-09   7.1606080995212373E-09   7.1606080995212373E-09   7.1606080995212373E-09   7.1606080995212373E-09   7.1606080995212373E-09   7.1606080995212373E-09
+   Nodes:
+          90          91         114         115          82          83         106         107
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            69 0 0
+   Values:
+     -7.3787226374772485E+00   -7.3787226374772485E+00   -7.3787226374772485E+00   -7.3787226374772485E+00   -7.3787226374772485E+00   -7.3787226374772485E+00   -7.3787226374772485E+00   -7.3787226374772485E+00
+     -5.7090338428933407E-09   -5.7090338428933407E-09   -5.7090338428933407E-09   -5.7090338428933407E-09   -5.7090338428933407E-09   -5.7090338428933407E-09   -5.7090338428933407E-09   -5.7090338428933407E-09
+   Nodes:
+          99          97         123         121          91          89         115         113
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            70 0 0
+   Values:
+     -1.8822787100337999E+00   -1.8822787100337999E+00   -1.8822787100337999E+00   -1.8822787100337999E+00   -1.8822787100337999E+00   -1.8822787100337999E+00   -1.8822787100337999E+00   -1.8822787100337999E+00
+     7.1612990815150823E-09   7.1612990815150823E-09   7.1612990815150823E-09   7.1612990815150823E-09   7.1612990815150823E-09   7.1612990815150823E-09   7.1612990815150823E-09   7.1612990815150823E-09
+   Nodes:
+          91          89         115         113          83          81         107         105
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            71 0 0
+   Values:
+     -7.3787226308694187E+00   -7.3787226308694187E+00   -7.3787226308694187E+00   -7.3787226308694187E+00   -7.3787226308694187E+00   -7.3787226308694187E+00   -7.3787226308694187E+00   -7.3787226308694187E+00
+     -5.7079673626558858E-09   -5.7079673626558858E-09   -5.7079673626558858E-09   -5.7079673626558858E-09   -5.7079673626558858E-09   -5.7079673626558858E-09   -5.7079673626558858E-09   -5.7079673626558858E-09
+   Nodes:
+          97          95         121         119          89          87         113         111
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            72 0 0
+   Values:
+     -1.8822787327060273E+00   -1.8822787327060273E+00   -1.8822787327060273E+00   -1.8822787327060273E+00   -1.8822787327060273E+00   -1.8822787327060273E+00   -1.8822787327060273E+00   -1.8822787327060273E+00
+     7.1620757172152771E-09   7.1620757172152771E-09   7.1620757172152771E-09   7.1620757172152771E-09   7.1620757172152771E-09   7.1620757172152771E-09   7.1620757172152771E-09   7.1620757172152771E-09
+   Nodes:
+          89          87         113         111          81          79         105         103
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            73 0 0
+   Values:
+     -7.3787226959223950E+00   -7.3787226959223950E+00   -7.3787226959223950E+00   -7.3787226959223950E+00   -7.3787226959223950E+00   -7.3787226959223950E+00   -7.3787226959223950E+00   -7.3787226959223950E+00
+     -5.7079547477467685E-09   -5.7079547477467685E-09   -5.7079547477467685E-09   -5.7079547477467685E-09   -5.7079547477467685E-09   -5.7079547477467685E-09   -5.7079547477467685E-09   -5.7079547477467685E-09
+   Nodes:
+          95          93         119         117          87          85         111         109
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            74 0 0
+   Values:
+     -1.8822786982118063E+00   -1.8822786982118063E+00   -1.8822786982118063E+00   -1.8822786982118063E+00   -1.8822786982118063E+00   -1.8822786982118063E+00   -1.8822786982118063E+00   -1.8822786982118063E+00
+     7.1620433611530032E-09   7.1620433611530032E-09   7.1620433611530032E-09   7.1620433611530032E-09   7.1620433611530032E-09   7.1620433611530032E-09   7.1620433611530032E-09   7.1620433611530032E-09
+   Nodes:
+          87          85         111         109          79          77         103         101
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            75 0 0
+   Values:
+     -7.3787226949332139E+00   -7.3787226949332139E+00   -7.3787226949332139E+00   -7.3787226949332139E+00   -7.3787226949332139E+00   -7.3787226949332139E+00   -7.3787226949332139E+00   -7.3787226949332139E+00
+     -5.7087288785062640E-09   -5.7087288785062640E-09   -5.7087288785062640E-09   -5.7087288785062640E-09   -5.7087288785062640E-09   -5.7087288785062640E-09   -5.7087288785062640E-09   -5.7087288785062640E-09
+   Nodes:
+          93          92         117         116          85          84         109         108
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            76 0 0
+   Values:
+     -1.8822787199427957E+00   -1.8822787199427957E+00   -1.8822787199427957E+00   -1.8822787199427957E+00   -1.8822787199427957E+00   -1.8822787199427957E+00   -1.8822787199427957E+00   -1.8822787199427957E+00
+     7.1613621560606688E-09   7.1613621560606688E-09   7.1613621560606688E-09   7.1613621560606688E-09   7.1613621560606688E-09   7.1613621560606688E-09   7.1613621560606688E-09   7.1613621560606688E-09
+   Nodes:
+          85          84         109         108          77          76         101         100
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            77 0 0
+   Values:
+     -7.3787227398329289E+00   -7.3787227398329289E+00   -7.3787227398329289E+00   -7.3787227398329289E+00   -7.3787227398329289E+00   -7.3787227398329289E+00   -7.3787227398329289E+00   -7.3787227398329289E+00
+     -5.7095653760441678E-09   -5.7095653760441678E-09   -5.7095653760441678E-09   -5.7095653760441678E-09   -5.7095653760441678E-09   -5.7095653760441678E-09   -5.7095653760441678E-09   -5.7095653760441678E-09
+   Nodes:
+          92          94         116         118          84          86         108         110
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            78 0 0
+   Values:
+     -1.8822786974474066E+00   -1.8822786974474066E+00   -1.8822786974474066E+00   -1.8822786974474066E+00   -1.8822786974474066E+00   -1.8822786974474066E+00   -1.8822786974474066E+00   -1.8822786974474066E+00
+     7.1609281976359185E-09   7.1609281976359185E-09   7.1609281976359185E-09   7.1609281976359185E-09   7.1609281976359185E-09   7.1609281976359185E-09   7.1609281976359185E-09   7.1609281976359185E-09
+   Nodes:
+          84          86         108         110          76          78         100         102
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            79 0 0
+   Values:
+     -7.3787226851498255E+00   -7.3787226851498255E+00   -7.3787226851498255E+00   -7.3787226851498255E+00   -7.3787226851498255E+00   -7.3787226851498255E+00   -7.3787226851498255E+00   -7.3787226851498255E+00
+     -5.7105136314072880E-09   -5.7105136314072880E-09   -5.7105136314072880E-09   -5.7105136314072880E-09   -5.7105136314072880E-09   -5.7105136314072880E-09   -5.7105136314072880E-09   -5.7105136314072880E-09
+   Nodes:
+          94          96         118         120          86          88         110         112
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            80 0 0
+   Values:
+     -1.8822787262547929E+00   -1.8822787262547929E+00   -1.8822787262547929E+00   -1.8822787262547929E+00   -1.8822787262547929E+00   -1.8822787262547929E+00   -1.8822787262547929E+00   -1.8822787262547929E+00
+     7.1600105636115963E-09   7.1600105636115963E-09   7.1600105636115963E-09   7.1600105636115963E-09   7.1600105636115963E-09   7.1600105636115963E-09   7.1600105636115963E-09   7.1600105636115963E-09
+   Nodes:
+          86          88         110         112          78          80         102         104
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            81 0 0
+   Values:
+     -6.6020236935485359E+00   -6.6020236935485359E+00   -6.6020236935485359E+00   -6.6020236935485359E+00   -6.6020236935485359E+00   -6.6020236935485359E+00   -6.6020236935485359E+00   -6.6020236935485359E+00
+     -1.6244505740559134E-12   -1.6244505740559134E-12   -1.6244505740559134E-12   -1.6244505740559134E-12   -1.6244505740559134E-12   -1.6244505740559134E-12   -1.6244505740559134E-12   -1.6244505740559134E-12
+   Nodes:
+         120         122         144         146         112         114         136         138
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            82 0 0
+   Values:
+     -1.7748038249031473E+00   -1.7748038249031473E+00   -1.7748038249031473E+00   -1.7748038249031473E+00   -1.7748038249031473E+00   -1.7748038249031473E+00   -1.7748038249031473E+00   -1.7748038249031473E+00
+     3.3523895465181752E-10   3.3523895465181752E-10   3.3523895465181752E-10   3.3523895465181752E-10   3.3523895465181752E-10   3.3523895465181752E-10   3.3523895465181752E-10   3.3523895465181752E-10
+   Nodes:
+         112         114         136         138         104         106         128         130
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            83 0 0
+   Values:
+     -6.6020237053605255E+00   -6.6020237053605255E+00   -6.6020237053605255E+00   -6.6020237053605255E+00   -6.6020237053605255E+00   -6.6020237053605255E+00   -6.6020237053605255E+00   -6.6020237053605255E+00
+     -1.9102774917456600E-12   -1.9102774917456600E-12   -1.9102774917456600E-12   -1.9102774917456600E-12   -1.9102774917456600E-12   -1.9102774917456600E-12   -1.9102774917456600E-12   -1.9102774917456600E-12
+   Nodes:
+         122         123         146         147         114         115         138         139
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            84 0 0
+   Values:
+     -1.7748037939819576E+00   -1.7748037939819576E+00   -1.7748037939819576E+00   -1.7748037939819576E+00   -1.7748037939819576E+00   -1.7748037939819576E+00   -1.7748037939819576E+00   -1.7748037939819576E+00
+     3.3560558498901827E-10   3.3560558498901827E-10   3.3560558498901827E-10   3.3560558498901827E-10   3.3560558498901827E-10   3.3560558498901827E-10   3.3560558498901827E-10   3.3560558498901827E-10
+   Nodes:
+         114         115         138         139         106         107         130         131
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            85 0 0
+   Values:
+     -6.6020236721472383E+00   -6.6020236721472383E+00   -6.6020236721472383E+00   -6.6020236721472383E+00   -6.6020236721472383E+00   -6.6020236721472383E+00   -6.6020236721472383E+00   -6.6020236721472383E+00
+     -1.4428458428028534E-12   -1.4428458428028534E-12   -1.4428458428028534E-12   -1.4428458428028534E-12   -1.4428458428028534E-12   -1.4428458428028534E-12   -1.4428458428028534E-12   -1.4428458428028534E-12
+   Nodes:
+         123         121         147         145         115         113         139         137
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            86 0 0
+   Values:
+     -1.7748038200928022E+00   -1.7748038200928022E+00   -1.7748038200928022E+00   -1.7748038200928022E+00   -1.7748038200928022E+00   -1.7748038200928022E+00   -1.7748038200928022E+00   -1.7748038200928022E+00
+     3.3545221461706021E-10   3.3545221461706021E-10   3.3545221461706021E-10   3.3545221461706021E-10   3.3545221461706021E-10   3.3545221461706021E-10   3.3545221461706021E-10   3.3545221461706021E-10
+   Nodes:
+         115         113         139         137         107         105         131         129
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            87 0 0
+   Values:
+     -6.6020236867274269E+00   -6.6020236867274269E+00   -6.6020236867274269E+00   -6.6020236867274269E+00   -6.6020236867274269E+00   -6.6020236867274269E+00   -6.6020236867274269E+00   -6.6020236867274269E+00
+     -6.1617377866696188E-14   -6.1617377866696188E-14   -6.1617377866696188E-14   -6.1617377866696188E-14   -6.1617377866696188E-14   -6.1617377866696188E-14   -6.1617377866696188E-14   -6.1617377866696188E-14
+   Nodes:
+         121         119         145         143         113         111         137         135
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            88 0 0
+   Values:
+     -1.7748037894908293E+00   -1.7748037894908293E+00   -1.7748037894908293E+00   -1.7748037894908293E+00   -1.7748037894908293E+00   -1.7748037894908293E+00   -1.7748037894908293E+00   -1.7748037894908293E+00
+     3.3615527722519190E-10   3.3615527722519190E-10   3.3615527722519190E-10   3.3615527722519190E-10   3.3615527722519190E-10   3.3615527722519190E-10   3.3615527722519190E-10   3.3615527722519190E-10
+   Nodes:
+         113         111         137         135         105         103         129         127
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            89 0 0
+   Values:
+     -6.6020236659234719E+00   -6.6020236659234719E+00   -6.6020236659234719E+00   -6.6020236659234719E+00   -6.6020236659234719E+00   -6.6020236659234719E+00   -6.6020236659234719E+00   -6.6020236659234719E+00
+     7.3874240058557916E-13   7.3874240058557916E-13   7.3874240058557916E-13   7.3874240058557916E-13   7.3874240058557916E-13   7.3874240058557916E-13   7.3874240058557916E-13   7.3874240058557916E-13
+   Nodes:
+         119         117         143         141         111         109         135         133
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            90 0 0
+   Values:
+     -1.7748038161117556E+00   -1.7748038161117556E+00   -1.7748038161117556E+00   -1.7748038161117556E+00   -1.7748038161117556E+00   -1.7748038161117556E+00   -1.7748038161117556E+00   -1.7748038161117556E+00
+     3.3596954385206601E-10   3.3596954385206601E-10   3.3596954385206601E-10   3.3596954385206601E-10   3.3596954385206601E-10   3.3596954385206601E-10   3.3596954385206601E-10   3.3596954385206601E-10
+   Nodes:
+         111         109         135         133         103         101         127         125
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            91 0 0
+   Values:
+     -6.6020236899410722E+00   -6.6020236899410722E+00   -6.6020236899410722E+00   -6.6020236899410722E+00   -6.6020236899410722E+00   -6.6020236899410722E+00   -6.6020236899410722E+00   -6.6020236899410722E+00
+     9.9936725561633466E-13   9.9936725561633466E-13   9.9936725561633466E-13   9.9936725561633466E-13   9.9936725561633466E-13   9.9936725561633466E-13   9.9936725561633466E-13   9.9936725561633466E-13
+   Nodes:
+         117         116         141         140         109         108         133         132
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            92 0 0
+   Values:
+     -1.7748037861564330E+00   -1.7748037861564330E+00   -1.7748037861564330E+00   -1.7748037861564330E+00   -1.7748037861564330E+00   -1.7748037861564330E+00   -1.7748037861564330E+00   -1.7748037861564330E+00
+     3.3594469567299612E-10   3.3594469567299612E-10   3.3594469567299612E-10   3.3594469567299612E-10   3.3594469567299612E-10   3.3594469567299612E-10   3.3594469567299612E-10   3.3594469567299612E-10
+   Nodes:
+         109         108         133         132         101         100         125         124
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            93 0 0
+   Values:
+     -6.6020236873021174E+00   -6.6020236873021174E+00   -6.6020236873021174E+00   -6.6020236873021174E+00   -6.6020236873021174E+00   -6.6020236873021174E+00   -6.6020236873021174E+00   -6.6020236873021174E+00
+     5.4464766030548617E-13   5.4464766030548617E-13   5.4464766030548617E-13   5.4464766030548617E-13   5.4464766030548617E-13   5.4464766030548617E-13   5.4464766030548617E-13   5.4464766030548617E-13
+   Nodes:
+         116         118         140         142         108         110         132         134
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            94 0 0
+   Values:
+     -1.7748038209171508E+00   -1.7748038209171508E+00   -1.7748038209171508E+00   -1.7748038209171508E+00   -1.7748038209171508E+00   -1.7748038209171508E+00   -1.7748038209171508E+00   -1.7748038209171508E+00
+     3.3587943537582987E-10   3.3587943537582987E-10   3.3587943537582987E-10   3.3587943537582987E-10   3.3587943537582987E-10   3.3587943537582987E-10   3.3587943537582987E-10   3.3587943537582987E-10
+   Nodes:
+         108         110         132         134         100         102         124         126
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            95 0 0
+   Values:
+     -6.6020237085722329E+00   -6.6020237085722329E+00   -6.6020237085722329E+00   -6.6020237085722329E+00   -6.6020237085722329E+00   -6.6020237085722329E+00   -6.6020237085722329E+00   -6.6020237085722329E+00
+     -6.7171268547383534E-13   -6.7171268547383534E-13   -6.7171268547383534E-13   -6.7171268547383534E-13   -6.7171268547383534E-13   -6.7171268547383534E-13   -6.7171268547383534E-13   -6.7171268547383534E-13
+   Nodes:
+         118         120         142         144         110         112         134         136
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            96 0 0
+   Values:
+     -1.7748037906490124E+00   -1.7748037906490124E+00   -1.7748037906490124E+00   -1.7748037906490124E+00   -1.7748037906490124E+00   -1.7748037906490124E+00   -1.7748037906490124E+00   -1.7748037906490124E+00
+     3.3536561028224554E-10   3.3536561028224554E-10   3.3536561028224554E-10   3.3536561028224554E-10   3.3536561028224554E-10   3.3536561028224554E-10   3.3536561028224554E-10   3.3536561028224554E-10
+   Nodes:
+         110         112         134         136         102         104         126         128
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            97 0 0
+   Values:
+     -6.6855975130996086E+00   -6.6855975130996086E+00   -6.6855975130996086E+00   -6.6855975130996086E+00   -6.6855975130996086E+00   -6.6855975130996086E+00   -6.6855975130996086E+00   -6.6855975130996086E+00
+     6.9305080216408577E-09   6.9305080216408577E-09   6.9305080216408577E-09   6.9305080216408577E-09   6.9305080216408577E-09   6.9305080216408577E-09   6.9305080216408577E-09   6.9305080216408577E-09
+   Nodes:
+         144         146         168         170         136         138         160         162
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            98 0 0
+   Values:
+     -1.0478006876620654E+00   -1.0478006876620654E+00   -1.0478006876620654E+00   -1.0478006876620654E+00   -1.0478006876620654E+00   -1.0478006876620654E+00   -1.0478006876620654E+00   -1.0478006876620654E+00
+     3.9389067563178060E-09   3.9389067563178060E-09   3.9389067563178060E-09   3.9389067563178060E-09   3.9389067563178060E-09   3.9389067563178060E-09   3.9389067563178060E-09   3.9389067563178060E-09
+   Nodes:
+         136         138         160         162         128         130         152         154
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            99 0 0
+   Values:
+     -6.6855975141092285E+00   -6.6855975141092285E+00   -6.6855975141092285E+00   -6.6855975141092285E+00   -6.6855975141092285E+00   -6.6855975141092285E+00   -6.6855975141092285E+00   -6.6855975141092285E+00
+     6.9305366029448479E-09   6.9305366029448479E-09   6.9305366029448479E-09   6.9305366029448479E-09   6.9305366029448479E-09   6.9305366029448479E-09   6.9305366029448479E-09   6.9305366029448479E-09
+   Nodes:
+         146         147         170         171         138         139         162         163
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            100 0 0
+   Values:
+     -1.0478007170987704E+00   -1.0478007170987704E+00   -1.0478007170987704E+00   -1.0478007170987704E+00   -1.0478007170987704E+00   -1.0478007170987704E+00   -1.0478007170987704E+00   -1.0478007170987704E+00
+     3.9392457629183752E-09   3.9392457629183752E-09   3.9392457629183752E-09   3.9392457629183752E-09   3.9392457629183752E-09   3.9392457629183752E-09   3.9392457629183752E-09   3.9392457629183752E-09
+   Nodes:
+         138         139         162         163         130         131         154         155
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            101 0 0
+   Values:
+     -6.6855975203798739E+00   -6.6855975203798739E+00   -6.6855975203798739E+00   -6.6855975203798739E+00   -6.6855975203798739E+00   -6.6855975203798739E+00   -6.6855975203798739E+00   -6.6855975203798739E+00
+     6.9305421263043954E-09   6.9305421263043954E-09   6.9305421263043954E-09   6.9305421263043954E-09   6.9305421263043954E-09   6.9305421263043954E-09   6.9305421263043954E-09   6.9305421263043954E-09
+   Nodes:
+         147         145         171         169         139         137         163         161
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            102 0 0
+   Values:
+     -1.0478006835775624E+00   -1.0478006835775624E+00   -1.0478006835775624E+00   -1.0478006835775624E+00   -1.0478006835775624E+00   -1.0478006835775624E+00   -1.0478006835775624E+00   -1.0478006835775624E+00
+     3.9390438133501959E-09   3.9390438133501959E-09   3.9390438133501959E-09   3.9390438133501959E-09   3.9390438133501959E-09   3.9390438133501959E-09   3.9390438133501959E-09   3.9390438133501959E-09
+   Nodes:
+         139         137         163         161         131         129         155         153
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            103 0 0
+   Values:
+     -6.6855974845926278E+00   -6.6855974845926278E+00   -6.6855974845926278E+00   -6.6855974845926278E+00   -6.6855974845926278E+00   -6.6855974845926278E+00   -6.6855974845926278E+00   -6.6855974845926278E+00
+     6.9310586020554510E-09   6.9310586020554510E-09   6.9310586020554510E-09   6.9310586020554510E-09   6.9310586020554510E-09   6.9310586020554510E-09   6.9310586020554510E-09   6.9310586020554510E-09
+   Nodes:
+         145         143         169         167         137         135         161         159
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            104 0 0
+   Values:
+     -1.0478007173614405E+00   -1.0478007173614405E+00   -1.0478007173614405E+00   -1.0478007173614405E+00   -1.0478007173614405E+00   -1.0478007173614405E+00   -1.0478007173614405E+00   -1.0478007173614405E+00
+     3.9389163597469690E-09   3.9389163597469690E-09   3.9389163597469690E-09   3.9389163597469690E-09   3.9389163597469690E-09   3.9389163597469690E-09   3.9389163597469690E-09   3.9389163597469690E-09
+   Nodes:
+         137         135         161         159         129         127         153         151
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            105 0 0
+   Values:
+     -6.6855974678450778E+00   -6.6855974678450778E+00   -6.6855974678450778E+00   -6.6855974678450778E+00   -6.6855974678450778E+00   -6.6855974678450778E+00   -6.6855974678450778E+00   -6.6855974678450778E+00
+     6.9312073233684934E-09   6.9312073233684934E-09   6.9312073233684934E-09   6.9312073233684934E-09   6.9312073233684934E-09   6.9312073233684934E-09   6.9312073233684934E-09   6.9312073233684934E-09
+   Nodes:
+         143         141         167         165         135         133         159         157
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            106 0 0
+   Values:
+     -1.0478006861603244E+00   -1.0478006861603244E+00   -1.0478006861603244E+00   -1.0478006861603244E+00   -1.0478006861603244E+00   -1.0478006861603244E+00   -1.0478006861603244E+00   -1.0478006861603244E+00
+     3.9385312233797265E-09   3.9385312233797265E-09   3.9385312233797265E-09   3.9385312233797265E-09   3.9385312233797265E-09   3.9385312233797265E-09   3.9385312233797265E-09   3.9385312233797265E-09
+   Nodes:
+         135         133         159         157         127         125         151         149
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            107 0 0
+   Values:
+     -6.6855974393741597E+00   -6.6855974393741597E+00   -6.6855974393741597E+00   -6.6855974393741597E+00   -6.6855974393741597E+00   -6.6855974393741597E+00   -6.6855974393741597E+00   -6.6855974393741597E+00
+     6.9312254685760522E-09   6.9312254685760522E-09   6.9312254685760522E-09   6.9312254685760522E-09   6.9312254685760522E-09   6.9312254685760522E-09   6.9312254685760522E-09   6.9312254685760522E-09
+   Nodes:
+         141         140         165         164         133         132         157         156
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            108 0 0
+   Values:
+     -1.0478007209306512E+00   -1.0478007209306512E+00   -1.0478007209306512E+00   -1.0478007209306512E+00   -1.0478007209306512E+00   -1.0478007209306512E+00   -1.0478007209306512E+00   -1.0478007209306512E+00
+     3.9383183936259059E-09   3.9383183936259059E-09   3.9383183936259059E-09   3.9383183936259059E-09   3.9383183936259059E-09   3.9383183936259059E-09   3.9383183936259059E-09   3.9383183936259059E-09
+   Nodes:
+         133         132         157         156         125         124         149         148
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            109 0 0
+   Values:
+     -6.6855974605567550E+00   -6.6855974605567550E+00   -6.6855974605567550E+00   -6.6855974605567550E+00   -6.6855974605567550E+00   -6.6855974605567550E+00   -6.6855974605567550E+00   -6.6855974605567550E+00
+     6.9311932929250197E-09   6.9311932929250197E-09   6.9311932929250197E-09   6.9311932929250197E-09   6.9311932929250197E-09   6.9311932929250197E-09   6.9311932929250197E-09   6.9311932929250197E-09
+   Nodes:
+         140         142         164         166         132         134         156         158
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            110 0 0
+   Values:
+     -1.0478006902450627E+00   -1.0478006902450627E+00   -1.0478006902450627E+00   -1.0478006902450627E+00   -1.0478006902450627E+00   -1.0478006902450627E+00   -1.0478006902450627E+00   -1.0478006902450627E+00
+     3.9385488204146668E-09   3.9385488204146668E-09   3.9385488204146668E-09   3.9385488204146668E-09   3.9385488204146668E-09   3.9385488204146668E-09   3.9385488204146668E-09   3.9385488204146668E-09
+   Nodes:
+         132         134         156         158         124         126         148         150
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            111 0 0
+   Values:
+     -6.6855974688856206E+00   -6.6855974688856206E+00   -6.6855974688856206E+00   -6.6855974688856206E+00   -6.6855974688856206E+00   -6.6855974688856206E+00   -6.6855974688856206E+00   -6.6855974688856206E+00
+     6.9307715538924342E-09   6.9307715538924342E-09   6.9307715538924342E-09   6.9307715538924342E-09   6.9307715538924342E-09   6.9307715538924342E-09   6.9307715538924342E-09   6.9307715538924342E-09
+   Nodes:
+         142         144         166         168         134         136         158         160
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            112 0 0
+   Values:
+     -1.0478007206652435E+00   -1.0478007206652435E+00   -1.0478007206652435E+00   -1.0478007206652435E+00   -1.0478007206652435E+00   -1.0478007206652435E+00   -1.0478007206652435E+00   -1.0478007206652435E+00
+     3.9385231742627980E-09   3.9385231742627980E-09   3.9385231742627980E-09   3.9385231742627980E-09   3.9385231742627980E-09   3.9385231742627980E-09   3.9385231742627980E-09   3.9385231742627980E-09
+   Nodes:
+         134         136         158         160         126         128         150         152
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            113 0 0
+   Values:
+     -7.3782953685427772E+00   -7.3782953685427772E+00   -7.3782953685427772E+00   -7.3782953685427772E+00   -7.3782953685427772E+00   -7.3782953685427772E+00   -7.3782953685427772E+00   -7.3782953685427772E+00
+     3.7383278972402678E-09   3.7383278972402678E-09   3.7383278972402678E-09   3.7383278972402678E-09   3.7383278972402678E-09   3.7383278972402678E-09   3.7383278972402678E-09   3.7383278972402678E-09
+   Nodes:
+         168         170         184         188         160         162         185         190
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            114 0 0
+   Values:
+     -3.0906832599310134E+00   -3.0906832599310134E+00   -3.0906832599310134E+00   -3.0906832599310134E+00   -3.0906832599310134E+00   -3.0906832599310134E+00   -3.0906832599310134E+00   -3.0906832599310134E+00
+     2.0188550831079510E-09   2.0188550831079510E-09   2.0188550831079510E-09   2.0188550831079510E-09   2.0188550831079510E-09   2.0188550831079510E-09   2.0188550831079510E-09   2.0188550831079510E-09
+   Nodes:
+         160         162         185         190         152         154         186         193
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            115 0 0
+   Values:
+     -7.3782954030305437E+00   -7.3782954030305437E+00   -7.3782954030305437E+00   -7.3782954030305437E+00   -7.3782954030305437E+00   -7.3782954030305437E+00   -7.3782954030305437E+00   -7.3782954030305437E+00
+     3.7385582130067263E-09   3.7385582130067263E-09   3.7385582130067263E-09   3.7385582130067263E-09   3.7385582130067263E-09   3.7385582130067263E-09   3.7385582130067263E-09   3.7385582130067263E-09
+   Nodes:
+         170         171         188         191         162         163         190         194
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            116 0 0
+   Values:
+     -3.0906832308373096E+00   -3.0906832308373096E+00   -3.0906832308373096E+00   -3.0906832308373096E+00   -3.0906832308373096E+00   -3.0906832308373096E+00   -3.0906832308373096E+00   -3.0906832308373096E+00
+     2.0189790950198017E-09   2.0189790950198017E-09   2.0189790950198017E-09   2.0189790950198017E-09   2.0189790950198017E-09   2.0189790950198017E-09   2.0189790950198017E-09   2.0189790950198017E-09
+   Nodes:
+         162         163         190         194         154         155         193         195
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            117 0 0
+   Values:
+     -7.3782953969025709E+00   -7.3782953969025709E+00   -7.3782953969025709E+00   -7.3782953969025709E+00   -7.3782953969025709E+00   -7.3782953969025709E+00   -7.3782953969025709E+00   -7.3782953969025709E+00
+     3.7385862738936737E-09   3.7385862738936737E-09   3.7385862738936737E-09   3.7385862738936737E-09   3.7385862738936737E-09   3.7385862738936737E-09   3.7385862738936737E-09   3.7385862738936737E-09
+   Nodes:
+         171         169         191         187         163         161         194         189
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            118 0 0
+   Values:
+     -3.0906832572952516E+00   -3.0906832572952516E+00   -3.0906832572952516E+00   -3.0906832572952516E+00   -3.0906832572952516E+00   -3.0906832572952516E+00   -3.0906832572952516E+00   -3.0906832572952516E+00
+     2.0189992455676986E-09   2.0189992455676986E-09   2.0189992455676986E-09   2.0189992455676986E-09   2.0189992455676986E-09   2.0189992455676986E-09   2.0189992455676986E-09   2.0189992455676986E-09
+   Nodes:
+         163         161         194         189         155         153         195         192
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            119 0 0
+   Values:
+     -7.3782953849730335E+00   -7.3782953849730335E+00   -7.3782953849730335E+00   -7.3782953849730335E+00   -7.3782953849730335E+00   -7.3782953849730335E+00   -7.3782953849730335E+00   -7.3782953849730335E+00
+     3.7385183837557179E-09   3.7385183837557179E-09   3.7385183837557179E-09   3.7385183837557179E-09   3.7385183837557179E-09   3.7385183837557179E-09   3.7385183837557179E-09   3.7385183837557179E-09
+   Nodes:
+         169         167         187         183         161         159         189         182
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            120 0 0
+   Values:
+     -3.0906832218894111E+00   -3.0906832218894111E+00   -3.0906832218894111E+00   -3.0906832218894111E+00   -3.0906832218894111E+00   -3.0906832218894111E+00   -3.0906832218894111E+00   -3.0906832218894111E+00
+     2.0187689298012401E-09   2.0187689298012401E-09   2.0187689298012401E-09   2.0187689298012401E-09   2.0187689298012401E-09   2.0187689298012401E-09   2.0187689298012401E-09   2.0187689298012401E-09
+   Nodes:
+         161         159         189         182         153         151         192         181
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            121 0 0
+   Values:
+     -7.3782953417235273E+00   -7.3782953417235273E+00   -7.3782953417235273E+00   -7.3782953417235273E+00   -7.3782953417235273E+00   -7.3782953417235273E+00   -7.3782953417235273E+00   -7.3782953417235273E+00
+     3.7381727158170008E-09   3.7381727158170008E-09   3.7381727158170008E-09   3.7381727158170008E-09   3.7381727158170008E-09   3.7381727158170008E-09   3.7381727158170008E-09   3.7381727158170008E-09
+   Nodes:
+         167         165         183         179         159         157         182         177
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            122 0 0
+   Values:
+     -3.0906832447121690E+00   -3.0906832447121690E+00   -3.0906832447121690E+00   -3.0906832447121690E+00   -3.0906832447121690E+00   -3.0906832447121690E+00   -3.0906832447121690E+00   -3.0906832447121690E+00
+     2.0184129367883941E-09   2.0184129367883941E-09   2.0184129367883941E-09   2.0184129367883941E-09   2.0184129367883941E-09   2.0184129367883941E-09   2.0184129367883941E-09   2.0184129367883941E-09
+   Nodes:
+         159         157         182         177         151         149         181         174
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            123 0 0
+   Values:
+     -7.3782953264506546E+00   -7.3782953264506546E+00   -7.3782953264506546E+00   -7.3782953264506546E+00   -7.3782953264506546E+00   -7.3782953264506546E+00   -7.3782953264506546E+00   -7.3782953264506546E+00
+     3.7378810324728562E-09   3.7378810324728562E-09   3.7378810324728562E-09   3.7378810324728562E-09   3.7378810324728562E-09   3.7378810324728562E-09   3.7378810324728562E-09   3.7378810324728562E-09
+   Nodes:
+         165         164         179         176         157         156         177         173
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            124 0 0
+   Values:
+     -3.0906832142743457E+00   -3.0906832142743457E+00   -3.0906832142743457E+00   -3.0906832142743457E+00   -3.0906832142743457E+00   -3.0906832142743457E+00   -3.0906832142743457E+00   -3.0906832142743457E+00
+     2.0182168158910940E-09   2.0182168158910940E-09   2.0182168158910940E-09   2.0182168158910940E-09   2.0182168158910940E-09   2.0182168158910940E-09   2.0182168158910940E-09   2.0182168158910940E-09
+   Nodes:
+         157         156         177         173         149         148         174         172
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            125 0 0
+   Values:
+     -7.3782953133657143E+00   -7.3782953133657143E+00   -7.3782953133657143E+00   -7.3782953133657143E+00   -7.3782953133657143E+00   -7.3782953133657143E+00   -7.3782953133657143E+00   -7.3782953133657143E+00
+     3.7378771744478456E-09   3.7378771744478456E-09   3.7378771744478456E-09   3.7378771744478456E-09   3.7378771744478456E-09   3.7378771744478456E-09   3.7378771744478456E-09   3.7378771744478456E-09
+   Nodes:
+         164         166         176         180         156         158         173         178
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            126 0 0
+   Values:
+     -3.0906832473446366E+00   -3.0906832473446366E+00   -3.0906832473446366E+00   -3.0906832473446366E+00   -3.0906832473446366E+00   -3.0906832473446366E+00   -3.0906832473446366E+00   -3.0906832473446366E+00
+     2.0182415183533919E-09   2.0182415183533919E-09   2.0182415183533919E-09   2.0182415183533919E-09   2.0182415183533919E-09   2.0182415183533919E-09   2.0182415183533919E-09   2.0182415183533919E-09
+   Nodes:
+         156         158         173         178         148         150         172         175
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            127 0 0
+   Values:
+     -7.3782953445071131E+00   -7.3782953445071131E+00   -7.3782953445071131E+00   -7.3782953445071131E+00   -7.3782953445071131E+00   -7.3782953445071131E+00   -7.3782953445071131E+00   -7.3782953445071131E+00
+     3.7379131456738435E-09   3.7379131456738435E-09   3.7379131456738435E-09   3.7379131456738435E-09   3.7379131456738435E-09   3.7379131456738435E-09   3.7379131456738435E-09   3.7379131456738435E-09
+   Nodes:
+         166         168         180         184         158         160         178         185
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            128 0 0
+   Values:
+     -3.0906832232161841E+00   -3.0906832232161841E+00   -3.0906832232161841E+00   -3.0906832232161841E+00   -3.0906832232161841E+00   -3.0906832232161841E+00   -3.0906832232161841E+00   -3.0906832232161841E+00
+     2.0185398352801087E-09   2.0185398352801087E-09   2.0185398352801087E-09   2.0185398352801087E-09   2.0185398352801087E-09   2.0185398352801087E-09   2.0185398352801087E-09   2.0185398352801087E-09
+   Nodes:
+         158         160         178         185         150         152         175         186
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00

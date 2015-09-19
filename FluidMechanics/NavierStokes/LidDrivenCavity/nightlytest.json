@@ -1,0 +1,20 @@
+{"example": {
+  "language": "python",
+  "script": "LidDriven.py",
+  "test": [
+    {
+     "id": 1,
+     "args": "RBS 1.0 50.0001",
+     "tolerance": 1e-6,
+     "outputPath": "output/Re1000Elem10x10_RBS",
+     "expectedPath": "output/Re1000Elem10x10_RBS/expected_results"
+    },
+    {
+     "id": 2,
+     "args": "GFEM 1.0 50.0001",
+     "tolerance": 1e-6,
+     "outputPath": "output/Re1000Elem10x10_GFEM",
+     "expectedPath": "output/Re1000Elem10x10_GFEM/expected_results"
+    }
+  ]
+}}

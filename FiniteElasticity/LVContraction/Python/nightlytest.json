@@ -1,0 +1,26 @@
+{"example": {
+  "language": "python",
+  "script": "LVContraction.py",
+  "test": [   
+    {
+     "id": 1,
+     "args": "",
+     "tolerance": 1e-6,
+     "expectedPath": "expected_results/LVContraction_trilinear_2-8-8.part0.exnode"
+    },
+    {
+     "id": 2,
+     "args": "",
+     "tolerance": 1e-6,
+     "expectedPath": "expected_results/LVContraction_trilinear_2-8-8.part0.exelem"
+    }
+
+    {
+     "id": 3,
+     "args": "",
+     "tolerance": 1e-6,
+     "expectedPath": "expected_results/displacement2-8-8.exdata"
+    }
+
+  ]
+}}
