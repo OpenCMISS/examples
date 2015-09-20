@@ -479,7 +479,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
 
    !After
    !DO gauss_idx=1,1
-   !CALL CMISSField_ParameterSetGetGaussPoint(DependentField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,gauss_idx,1,value,Err)
+   !CALL CMISSField_ParameterSetGetGaussPoint(DependentField1,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,gauss_idx,1,1,value,Err)
    !WRITE(*,*) 'The values at the nodes for field 1 after',value
    !ENDDO
   CALL CMISSFinalise(Err)
