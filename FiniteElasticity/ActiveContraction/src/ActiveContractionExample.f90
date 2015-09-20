@@ -281,10 +281,10 @@ PROGRAM ActiveContractionExample
   D=0;
   DO E=1,size(Elements,2)
   DO I=1,8
-    CALL CMISSField_ParameterSetGetGaussPoint(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,E,I,1,TMP,Err)
-    CALL CMISSField_ParameterSetUpdateGaussPoint(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,E,I,1,TMP+D,Err)
-    CALL CMISSField_ParameterSetGetGaussPoint(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,E,I,2,TMP,Err)
-    CALL CMISSField_ParameterSetUpdateGaussPoint(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,E,I,2,TMP+D,Err)
+    CALL CMISSField_ParameterSetGetGaussPoint(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,I,E,1,TMP,Err)
+    CALL CMISSField_ParameterSetUpdateGaussPoint(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,I,E,1,TMP+D,Err)
+    CALL CMISSField_ParameterSetGetGaussPoint(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,I,E,2,TMP,Err)
+    CALL CMISSField_ParameterSetUpdateGaussPoint(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,I,E,2,TMP+D,Err)
     D=D+1
   ENDDO
   ENDDO
@@ -292,9 +292,9 @@ PROGRAM ActiveContractionExample
   D=0;
   DO E=1,size(Elements,2)
   DO I=1,8
-    CALL CMISSField_ParameterSetGetGaussPoint(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,E,I,1,TMP,Err)
+    CALL CMISSField_ParameterSetGetGaussPoint(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,I,E,1,TMP,Err)
     WRITE(*,*) 'COMPONENT 1 ELEMENT ',E,', GP ', I, ' = ',TMP, ' Should = ', 3.14 + 1 + D
-    CALL CMISSField_ParameterSetGetGaussPoint(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,E,I,2,TMP,Err)
+    CALL CMISSField_ParameterSetGetGaussPoint(GPfield,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,I,E,2,TMP,Err)
     WRITE(*,*) 'COMPONENT 2 ELEMENT ',E,', GP ', I, ' = ',TMP, ' Should = ', 2.17 + D
     D=D+1;
   ENDDO
@@ -331,7 +331,7 @@ CALL CMISSEquationsSet_CreateStart(EquationSetUserNumber,Region,FibreField,CMISS
   DO E=1,size(Elements,2)
   DO I=1,27
     CALL CMISSField_ParameterSetUpdateGaussPoint(MaterialField,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & E, I, 1, ActivationTimes(E,ROTATE_ELEM(I)), Err) ! rotating an element with 27 nodes can be done in the same way as the Gauss points
+    & I, E, 1, ActivationTimes(E,ROTATE_ELEM(I)), Err) ! rotating an element with 27 nodes can be done in the same way as the Gauss points
   ENDDO
   ENDDO
 
