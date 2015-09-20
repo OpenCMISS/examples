@@ -235,5 +235,5 @@ gaussPointNumber = 1
 componentNumber = 4
 gaussPointStrain = strainField.ParameterSetGetGaussPoint(
         iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES,
-        elementNumber, gaussPointNumber, componentNumber)
+        gaussPointNumber, elementNumber, componentNumber)
 assert(abs(gaussPointStrain - E[1, 1]) < 1.0e-10)

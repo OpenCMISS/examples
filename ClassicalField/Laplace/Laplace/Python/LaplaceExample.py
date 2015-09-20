@@ -56,6 +56,8 @@ sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','pytho
 # Intialise OpenCMISS
 from opencmiss import CMISS
 
+parameters.parse()
+
 # Set problem parameters
 height = 1.0
 width = 2.0

@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<model
+    name="MooneyRivlin"
+    cmeta:id="MooneyRivlin"
+    xmlns="http://www.cellml.org/cellml/1.0#"
+    xmlns:cellml="http://www.cellml.org/cellml/1.0#"
+    xmlns:cmeta="http://www.cellml.org/metadata/1.0#">
+    
+  <rdf:RDF
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:cmeta="http://www.cellml.org/metadata/1.0#"
+      xmlns:bqs="http://www.cellml.org/bqs/1.0#"
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:dcterms="http://purl.org/dc/terms/"
+      xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">
+
+    <!-- metadata about the CellML document itself -->
+    <rdf:Description rdf:about="">
+      <dc:creator rdf:parseType="Resource">
+        <vCard:N rdf:parseType="Resource">
+          <vCard:Family>Nickerson</vCard:Family>
+          <vCard:Given>David</vCard:Given>
+        </vCard:N>
+        <vCard:EMAIL rdf:parseType="Resource">
+          <rdf:value>d.nickerson@auckland.ac.nz</rdf:value>
+          <rdf:type rdf:resource="http://imc.org/vCard/3.0#internet" />
+        </vCard:EMAIL>
+        <vCard:ORG rdf:parseType="Resource">
+          <vCard:Orgname>The University of Auckland</vCard:Orgname>
+          <vCard:Orgunit>The Bioengineering Institute</vCard:Orgunit>
+        </vCard:ORG>
+      </dc:creator>
+
+      <dcterms:created rdf:parseType="Resource">
+        <dcterms:W3CDTF>2003-11-28</dcterms:W3CDTF>
+      </dcterms:created>
+    </rdf:Description>
+    
+    <!-- description of the model -->
+    <rdf:Description rdf:about="#MooneyRivlin">
+      <cmeta:comment rdf:parseType="Resource">
+        <rdf:value>
+          This is a CellML version of the Mooney-Rivlin constitutive material law,
+          defining the relation between the eight independent strain components
+          and the stress components. It is assumed that the strain components
+          will be controlled externally by the application using this CellML
+          model.
+        </rdf:value>
+      </cmeta:comment>
+      <bqs:reference>
+        <bqs:Pubmed_id>pubmed_id</bqs:Pubmed_id>
+        <bqs:JournalArticle rdf:parseType="Resource">
+          <dc:creator>
+            <rdf:Seq>
+              <rdf:li rdf:parseType="Resource">
+                <bqs:Person rdf:parseType="Resource">
+                  <vCard:N rdf:parseType="Resource">
+                    <vCard:Family>Master</vCard:Family>
+                    <vCard:Given>Andre</vCard:Given>
+                    <vCard:Other>T</vCard:Other>
+                  </vCard:N>
+                </bqs:Person>
+              </rdf:li>
+              <rdf:li rdf:parseType="Resource">
+                <bqs:Person rdf:parseType="Resource">
+                  <vCard:N rdf:parseType="Resource">
+                    <vCard:Family>Bob</vCard:Family>
+                    <vCard:Given>Billy</vCard:Given>
+                  </vCard:N>
+                </bqs:Person>
+              </rdf:li>
+            </rdf:Seq>
+          </dc:creator>
+          <dc:title>
+            What cool article to reference ??
+          </dc:title>
+          <dcterms:issued rdf:parseType="Resource">
+            <dcterms:W3CDTF>year</dcterms:W3CDTF>
+          </dcterms:issued>
+          <bqs:Journal rdf:parseType="Resource">
+            <dc:title>The Journal of Cool Stuff</dc:title>
+          </bqs:Journal>
+          <bqs:volume>volume</bqs:volume>
+          <bqs:first_page>1</bqs:first_page>
+          <bqs:last_page>1000</bqs:last_page>
+        </bqs:JournalArticle>
+      </bqs:reference>
+    </rdf:Description>
+  </rdf:RDF>
+
+  <!-- Global units -->
+  <units name="strain">
+    <unit units="dimensionless"/>
+  </units>
+  <units name="stress">
+    <unit units="dimensionless"/>
+  </units>
+  <units name="pole">
+    <unit units="dimensionless"/>
+  </units>
+  <units name="curvature">
+    <unit units="dimensionless"/>
+  </units>
+  <units name="scale">
+    <unit units="dimensionless"/>
+  </units>
+
+  <component name="interface" cmeta:id="interface">
+
+    <rdf:RDF
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:cmeta="http://www.cellml.org/metadata/1.0#">
+      <rdf:Description rdf:about="#interface">
+        <cmeta:comment rdf:parseType="Resource">
+          <rdf:value>
+            We'll use this component as the "interface" to the model, all 
+            other components are hidden via encapsulation in this component.
+          </rdf:value>
+        </cmeta:comment>
+      </rdf:Description>
+    </rdf:RDF>
+  
+    <!-- Variables we expect to be set/controlled externally -->
+    <variable name="E11" units="strain"  initial_value="0" private_interface="out"/>
+    <variable name="E22" units="strain"  initial_value="0" private_interface="out"/>
+    <variable name="E33" units="strain"  initial_value="0" private_interface="out"/>
+    <variable name="E12" units="strain"  initial_value="0" private_interface="out"/>
+    <variable name="E13" units="strain"  initial_value="0" private_interface="out"/>
+    <variable name="E23" units="strain"  initial_value="0" private_interface="out"/>
+    <variable name="c1" units="strain"  initial_value="2" private_interface="out"/>
+    <variable name="c2" units="strain"  initial_value="6" private_interface="out"/>
+    
+    <!-- Variables we want to make available externally -->
+    <variable name="Tdev11" units="stress" initial_value="0" public_interface="out" private_interface="in"/>
+    <variable name="Tdev22" units="stress" initial_value="0" public_interface="out" private_interface="in"/>
+    <variable name="Tdev33" units="stress" initial_value="0" public_interface="out" private_interface="in"/>
+    <variable name="Tdev12" units="stress" initial_value="0" public_interface="out" private_interface="in"/>
+    <variable name="Tdev13" units="stress" initial_value="0" public_interface="out" private_interface="in"/>
+    <variable name="Tdev23" units="stress" initial_value="0" public_interface="out" private_interface="in"/>
+    
+  </component> <!--interface-->
+
+  <component name="equations" cmeta:id="equations">
+
+    <rdf:RDF
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:cmeta="http://www.cellml.org/metadata/1.0#">
+      <rdf:Description rdf:about="#equations">
+        <cmeta:comment rdf:parseType="Resource">
+          <rdf:value>
+            In this simple model we only have one component, which holds the
+            six equations.
+          </rdf:value>
+        </cmeta:comment>
+      </rdf:Description>
+    </rdf:RDF>
+
+    <!-- Inputs -->
+    <variable name="E11" units="strain"  public_interface="in"/>
+    <variable name="E22" units="strain"  public_interface="in"/>
+    <variable name="E33" units="strain"  public_interface="in"/>
+    <variable name="E12" units="strain"  public_interface="in"/>
+    <variable name="E13" units="strain"  public_interface="in"/>
+    <variable name="E23" units="strain"  public_interface="in"/>
+    <variable name="c1" units="strain"  public_interface="in"/>
+    <variable name="c2" units="strain"  public_interface="in"/>
+    
+    <!-- Outputs computed here -->
+    <variable name="Tdev11" units="stress" public_interface="out"/>
+    <variable name="Tdev22" units="stress" public_interface="out"/>
+    <variable name="Tdev33" units="stress" public_interface="out"/>
+    <variable name="Tdev12" units="stress" public_interface="out"/>
+    <variable name="Tdev13" units="stress" public_interface="out"/>
+    <variable name="Tdev23" units="stress" public_interface="out"/>
+    
+    <!-- Temporary variables -->
+    
+    <math xmlns="http://www.w3.org/1998/Math/MathML" cmeta:id="Tdev11_calculation_eq">
+      <apply id="Tdev11_calculation"><eq/>
+        <ci>Tdev11</ci>
+        <apply><plus/>
+          <apply><times/>
+            <cn cellml:units="strain">2.0</cn>
+            <ci>c1</ci>
+          </apply>
+          <apply><times/>
+            <cn cellml:units="strain">4.0</cn>
+            <ci>c2</ci>
+            <apply><plus/>
+              <ci>E22</ci>
+              <ci>E33</ci>
+            </apply>
+          </apply>
+          <apply><times/>
+            <cn cellml:units="strain">4</cn>
+            <ci>c2</ci>
+          </apply>
+        </apply>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML" cmeta:id="Tdev22_calculation_eq">
+      <apply id="Tdev22_calculation"><eq/>
+        <ci>Tdev22</ci>
+        <apply><plus/>
+          <apply><times/>
+            <cn cellml:units="strain">2.0</cn>
+            <ci>c1</ci>
+          </apply>
+          <apply><times/>
+            <cn cellml:units="strain">4.0</cn>
+            <ci>c2</ci>
+            <apply><plus/>
+              <ci>E11</ci>
+              <ci>E33</ci>
+            </apply>
+          </apply>
+          <apply><times/>
+            <cn cellml:units="strain">4</cn>
+            <ci>c2</ci>
+          </apply>
+        </apply>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML" cmeta:id="Tdev33_calculation_eq">
+      <apply id="Tdev33_calculation"><eq/>
+        <ci>Tdev33</ci>
+        <apply><plus/>
+          <apply><times/>
+            <cn cellml:units="strain">2.0</cn>
+            <ci>c1</ci>
+          </apply>
+          <apply><times/>
+            <cn cellml:units="strain">4.0</cn>
+            <ci>c2</ci>
+            <apply><plus/>
+              <ci>E11</ci>
+              <ci>E22</ci>
+            </apply>
+          </apply>
+          <apply><times/>
+            <cn cellml:units="strain">4</cn>
+            <ci>c2</ci>
+          </apply>
+        </apply>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML" cmeta:id="Tdev12_calculation_eq">
+      <apply id="Tdev12_calculation"><eq/>
+        <ci>Tdev12</ci>
+        <apply><minus/>
+          <apply><times/>
+            <cn cellml:units="strain">4.0</cn>
+            <ci>E12</ci>
+            <ci>c2</ci>
+          </apply>
+        </apply>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML" cmeta:id="Tdev13_calculation_eq">
+      <apply id="Tdev13_calculation"><eq/>
+        <ci>Tdev13</ci>
+        <apply><minus/>
+          <apply><times/>
+            <cn cellml:units="strain">4.0</cn>
+            <ci>E13</ci>
+            <ci>c2</ci>
+          </apply>
+        </apply>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML" cmeta:id="Tdev23_calculation_eq">
+      <apply id="Tdev23_calculation"><eq/>
+        <ci>Tdev23</ci>
+        <apply><minus/>
+          <apply><times/>
+            <cn cellml:units="strain">4.0</cn>
+            <ci>E23</ci>
+            <ci>c2</ci>
+          </apply>
+        </apply>
+      </apply>
+    </math>
+  </component><!--membrane-->
+
+  <connection>
+    <map_components component_1="interface" component_2="equations"/>
+    <map_variables variable_1="E11" variable_2="E11"/>
+    <map_variables variable_1="E22" variable_2="E22"/>
+    <map_variables variable_1="E33" variable_2="E33"/>
+    <map_variables variable_1="E12" variable_2="E12"/>
+    <map_variables variable_1="E13" variable_2="E13"/>
+    <map_variables variable_1="E23" variable_2="E23"/>
+    <map_variables variable_1="Tdev11" variable_2="Tdev11"/>
+    <map_variables variable_1="Tdev22" variable_2="Tdev22"/>
+    <map_variables variable_1="Tdev33" variable_2="Tdev33"/>
+    <map_variables variable_1="Tdev12" variable_2="Tdev12"/>
+    <map_variables variable_1="Tdev13" variable_2="Tdev13"/>
+    <map_variables variable_1="Tdev23" variable_2="Tdev23"/>
+    <map_variables variable_1="c1" variable_2="c1"/>
+    <map_variables variable_1="c2" variable_2="c2"/>
+  </connection>
+  
+  <group>
+    <relationship_ref relationship="encapsulation"/>
+    <component_ref component="interface">
+      <component_ref component="equations"/>
+    </component_ref>
+  </group>
+
+</model>

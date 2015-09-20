@@ -371,8 +371,8 @@ for elem in exregion.elements:
                 ctr = ctr + 1
                 CellMLModelsField.ParameterSetUpdateGaussPoint(CMISS.FieldVariableTypes.U,
                                                                CMISS.FieldParameterSetTypes.VALUES,
-                                                               elem.number,
                                                                ctr,
+                                                               elem.number,
                                                                1,
                                                                MooneyRivlinModel)
 #DOC-END define CellML models field
