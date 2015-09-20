@@ -2,7 +2,7 @@
 
 #> \file
 #> \author Chris Bradley
-#> \brief This is an example script to solve a finite elasticity problem with a growth and constituative law in CellML
+#> \brief This is an example script to solve a finite elasticity cantilever problem with a growth and constituative law in CellML. The growth occurs just at the bottom of the cantilever in order to cause upward bending. 
 #>
 #> \section LICENSE
 #>
@@ -50,17 +50,30 @@ sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','pytho
 # Intialise OpenCMISS
 from opencmiss import CMISS
 
-# Set problem parameters
-height = 1.0
+# Set the physical size of the cantilever
+length = 5.0
 width = 1.0
-length = 1.0
+height = 1.0
 
-NumberOfGaussXi = 2
+# Set the number of elements in the cantilever
+numberXElements = 5
+numberYElements = 1
+numberZElements = 1
 
+# Set the number of Gauss points to use in each direction
+numberOfGaussXi = 3
+
+# Set the growth rates
+xGrowthRate = 0.05
+yGrowthRate = 0.0
+zGrowthRate = 0.0
+
+# Set the similation times.
 startTime = 0.0
 stopTime = 10.0
 timeIncrement = 1.0
 
+# Set the user numbers
 coordinateSystemUserNumber = 1
 regionUserNumber = 1
 basisUserNumber = 1
@@ -82,8 +95,6 @@ constituativeCellMLParametersFieldUserNumber = 10
 constituativeCellMLIntermediateFieldUserNumber = 11
 problemUserNumber = 1
 
-InterpolationType = 1
-
 # Get the number of computational nodes and this computational node number
 numberOfComputationalNodes = CMISS.ComputationalNumberOfNodesGet()
 computationalNodeNumber = CMISS.ComputationalNodeNumberGet()
@@ -101,34 +112,25 @@ region.LabelSet("Region")
 region.coordinateSystem = coordinateSystem
 region.CreateFinish()
 
-# Define basis
+# Define a basis
 basis = CMISS.Basis()
 basis.CreateStart(basisUserNumber)
-if InterpolationType in (1,2,3,4):
-    basis.type = CMISS.BasisTypes.LAGRANGE_HERMITE_TP
+basis.type = CMISS.BasisTypes.LAGRANGE_HERMITE_TP
 basis.numberOfXi = 3
 basis.interpolationXi = [CMISS.BasisInterpolationSpecifications.LINEAR_LAGRANGE]*3
-if(NumberOfGaussXi>0):
-    basis.quadratureNumberOfGaussXi = [NumberOfGaussXi]*3
+basis.quadratureNumberOfGaussXi = [numberOfGaussXi]*3
 basis.CreateFinish()
 
-# Start the creation of a manually generated mesh in the region
+# Start the creation of a generated mesh in the region
+generatedMesh = CMISS.GeneratedMesh()
+generatedMesh.CreateStart(generatedMeshUserNumber,region)
+generatedMesh.type = CMISS.GeneratedMeshTypes.REGULAR
+generatedMesh.basis = [basis]
+generatedMesh.extent = [length,width,height]
+generatedMesh.numberOfElements = [numberXElements,numberYElements,numberZElements]
+# Finish the creation of a generated mesh in the region
 mesh = CMISS.Mesh()
-mesh.CreateStart(meshUserNumber,region,3)
-mesh.NumberOfComponentsSet(1)
-mesh.NumberOfElementsSet(1)
-
-#Define nodes for the mesh
-nodes = CMISS.Nodes()
-nodes.CreateStart(region,8)
-nodes.CreateFinish()
-
-elements = CMISS.MeshElements()
-elements.CreateStart(mesh,1,basis)
-elements.NodesSet(1,[1,2,3,4,5,6,7,8])
-elements.CreateFinish()
-
-mesh.CreateFinish() 
+generatedMesh.CreateFinish(meshUserNumber,mesh)
 
 # Create a decomposition for the mesh
 decomposition = CMISS.Decomposition()
@@ -146,47 +148,11 @@ geometricField.VariableLabelSet(CMISS.FieldVariableTypes.U,"Geometry")
 geometricField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,1)
 geometricField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,2,1)
 geometricField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,3,1)
-if InterpolationType == 4:
-    geometricField.fieldScalingType = CMISS.FieldScalingTypes.ARITHMETIC_MEAN
+geometricField.fieldScalingType = CMISS.FieldScalingTypes.ARITHMETIC_MEAN
 geometricField.CreateFinish()
 
-# Update the geometric field parameters manually
-# node 1
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,1,1,0.0)
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,1,2,0.0)
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,1,3,0.0)
-# node 2
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,2,1,height)
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,2,2,0.0)
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,2,3,0.0)
-# node 3
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,3,1,0.0)
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,3,2,width)
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,3,3,0.0)
-# node 4
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,4,1,height)
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,4,2,width)
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,4,3,0.0)
-# node 5
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,5,1,0.0)
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,5,2,0.0)
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,5,3,length)
-# node 6
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,6,1,height)
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,6,2,0.0)
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,6,3,length)
-# node 7
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,7,1,0.0)
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,7,2,width)
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,7,3,length)
-# node 8
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,8,1,height)
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,8,2,width)
-geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,8,3,length)
-
-# Update the geometric field
-geometricField.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
-geometricField.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
+# Update the geometric field parameters from generated mesh
+generatedMesh.GeometricParametersCalculate(geometricField)
 
 # Create a fibre field and attach it to the geometric field
 fibreField = CMISS.Field()
@@ -195,8 +161,7 @@ fibreField.TypeSet(CMISS.FieldTypes.FIBRE)
 fibreField.MeshDecompositionSet(decomposition)
 fibreField.GeometricFieldSet(geometricField)
 fibreField.VariableLabelSet(CMISS.FieldVariableTypes.U,"Fibre")
-if InterpolationType == 4:
-    fibreField.fieldScalingType = CMISS.FieldScalingTypes.ARITHMETIC_MEAN
+fibreField.fieldScalingType = CMISS.FieldScalingTypes.ARITHMETIC_MEAN
 fibreField.CreateFinish()
 
 # Create the dependent field
@@ -206,6 +171,7 @@ dependentField.TypeSet(CMISS.FieldTypes.GEOMETRIC_GENERAL)
 dependentField.MeshDecompositionSet(decomposition)
 dependentField.GeometricFieldSet(geometricField) 
 dependentField.DependentTypeSet(CMISS.FieldDependentTypes.DEPENDENT) 
+# Set the field to have 5 variables: U - dependent; del U/del n - tractions; U1 - strain; U2 - stress; U3 - growth
 dependentField.NumberOfVariablesSet(5)
 dependentField.VariableTypesSet([CMISS.FieldVariableTypes.U,CMISS.FieldVariableTypes.DELUDELN,CMISS.FieldVariableTypes.U1,CMISS.FieldVariableTypes.U2,CMISS.FieldVariableTypes.U3])
 dependentField.VariableLabelSet(CMISS.FieldVariableTypes.U,"Dependent")
@@ -235,8 +201,7 @@ dependentField.ComponentInterpolationSet(CMISS.FieldVariableTypes.U2,6,CMISS.Fie
 dependentField.ComponentInterpolationSet(CMISS.FieldVariableTypes.U3,1,CMISS.FieldInterpolationTypes.GAUSS_POINT_BASED)
 dependentField.ComponentInterpolationSet(CMISS.FieldVariableTypes.U3,2,CMISS.FieldInterpolationTypes.GAUSS_POINT_BASED)
 dependentField.ComponentInterpolationSet(CMISS.FieldVariableTypes.U3,3,CMISS.FieldInterpolationTypes.GAUSS_POINT_BASED)
-if InterpolationType == 4:
-    dependentField.fieldScalingType = CMISS.FieldScalingTypes.ARITHMETIC_MEAN
+dependentField.fieldScalingType = CMISS.FieldScalingTypes.ARITHMETIC_MEAN
 dependentField.CreateFinish()
 
 # Initialise dependent field from undeformed geometry
@@ -253,6 +218,10 @@ CMISS.Field.ParametersToFieldParametersComponentCopy(
 CMISS.Field.ComponentValuesInitialiseDP(
     dependentField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,4,-8.0)
 
+# Update the dependent field
+dependentField.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
+dependentField.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
+
 # Create the equations_set
 equationsSetField = CMISS.Field()
 equationsSet = CMISS.EquationsSet()
@@ -266,16 +235,16 @@ equationsSet.CreateFinish()
 equationsSet.DependentCreateStart(dependentFieldUserNumber,dependentField)
 equationsSet.DependentCreateFinish()
 
-# Create the CellML environment for the growth law
+# Create the CellML environment for the growth law. Set the rates as known so that we can spatially vary them.
 growthCellML = CMISS.CellML()
 growthCellML.CreateStart(growthCellMLUserNumber,region)
 growthCellMLIdx = growthCellML.ModelImport("simplegrowth.cellml")
-#growthCellML.VariableSetAsKnown(growthCellMLIdx,"Main/fibrerate")
-#growthCellML.VariableSetAsKnown(growthCellMLIdx,"Main/sheetrate")
-#growthCellML.VariableSetAsKnown(growthCellMLIdx,"Main/normalrate")
+growthCellML.VariableSetAsKnown(growthCellMLIdx,"Main/fibrerate")
+growthCellML.VariableSetAsKnown(growthCellMLIdx,"Main/sheetrate")
+growthCellML.VariableSetAsKnown(growthCellMLIdx,"Main/normalrate")
 growthCellML.CreateFinish()
 
-# Create CellML <--> OpenCMISS field maps
+# Create CellML <--> OpenCMISS field maps. Map the lambda's to the U3/growth dependent field variable
 growthCellML.FieldMapsCreateStart()
 growthCellML.CreateCellMLToFieldMap(growthCellMLIdx,"Main/lambda1",CMISS.FieldParameterSetTypes.VALUES,
     dependentField,CMISS.FieldVariableTypes.U3,1,CMISS.FieldParameterSetTypes.VALUES)
@@ -292,10 +261,26 @@ growthCellMLModelsField.VariableLabelSet(CMISS.FieldVariableTypes.U,"GrowthModel
 growthCellML.ModelsFieldCreateFinish()
 
 # Create the CELL parameters field
-#growthCellMLParametersField = CMISS.Field()
-#growthCellML.ParametersFieldCreateStart(growthCellMLParametersFieldUserNumber,growthCellMLParametersField)
-#growthCellMLParametersField.VariableLabelSet(CMISS.FieldVariableTypes.U,"GrowthParameters")
-#growthCellML.ParametersFieldCreateFinish()
+growthCellMLParametersField = CMISS.Field()
+growthCellML.ParametersFieldCreateStart(growthCellMLParametersFieldUserNumber,growthCellMLParametersField)
+growthCellMLParametersField.VariableLabelSet(CMISS.FieldVariableTypes.U,"GrowthParameters")
+growthCellML.ParametersFieldCreateFinish()
+
+# Set the parameters so that only the bottom layer of Gauss points has a non-zero growth rate
+for yElem in range(1, numberYElements+1):
+    for xElem in range(1, numberXElements+1):
+        elementNumber = xElem + (yElem-1)*numberXElements
+        for xGauss in range(1, numberOfGaussXi+1):
+            for yGauss in range(1, numberOfGaussXi+1):
+                gaussNumber = xGauss + (yGauss-1)*numberOfGaussXi
+                print 'Setting growth parameter at element ',elementNumber,' and Gauss point number ',gaussNumber
+                growthCellMLParametersField.ParameterSetUpdateGaussPoint(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, gaussNumber, elementNumber, 1, xGrowthRate)
+                growthCellMLParametersField.ParameterSetUpdateGaussPoint(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, gaussNumber, elementNumber, 2, yGrowthRate)
+                growthCellMLParametersField.ParameterSetUpdateGaussPoint(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, gaussNumber, elementNumber, 3, zGrowthRate)
+ 
+# Update the parameters field
+growthCellMLParametersField.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
+growthCellMLParametersField.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
 
 # Create the CELL state field
 growthCellMLStateField = CMISS.Field()
@@ -323,7 +308,7 @@ constituativeCellML.VariableSetAsWanted(constituativeCellMLIdx,"equations/Tdev23
 constituativeCellML.VariableSetAsWanted(constituativeCellMLIdx,"equations/Tdev33")
 constituativeCellML.CreateFinish()
 
-# Create CellML <--> OpenCMISS field maps
+# Create CellML <--> OpenCMISS field maps. Map the stress and strain fields.
 constituativeCellML.FieldMapsCreateStart()
 constituativeCellML.CreateFieldToCellMLMap(dependentField,CMISS.FieldVariableTypes.U1,1,CMISS.FieldParameterSetTypes.VALUES,
     constituativeCellMLIdx,"equations/E11",CMISS.FieldParameterSetTypes.VALUES)
@@ -428,38 +413,24 @@ problem.CellMLEquationsCreateFinish()
 boundaryConditions = CMISS.BoundaryConditions()
 nonlinearEquations.BoundaryConditionsCreateStart(boundaryConditions)
 
-#Set x=0 nodes to no x displacment in x. Set x=width nodes to 10% x displacement
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,1,1,CMISS.BoundaryConditionsTypes.FIXED,0.0)
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,3,1,CMISS.BoundaryConditionsTypes.FIXED,0.0)
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,5,1,CMISS.BoundaryConditionsTypes.FIXED,0.0)
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,7,1,CMISS.BoundaryConditionsTypes.FIXED,0.0)
-
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,2,1,CMISS.BoundaryConditionsTypes.FIXED,0.1*width)
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,4,1,CMISS.BoundaryConditionsTypes.FIXED,0.1*width)
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,6,1,CMISS.BoundaryConditionsTypes.FIXED,0.1*width)
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,8,1,CMISS.BoundaryConditionsTypes.FIXED,0.1*width)
-
-# Set y=0 nodes to no y displacement
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,1,2,CMISS.BoundaryConditionsTypes.FIXED,0.0)
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,2,2,CMISS.BoundaryConditionsTypes.FIXED,0.0)
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,5,2,CMISS.BoundaryConditionsTypes.FIXED,0.0)
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,6,2,CMISS.BoundaryConditionsTypes.FIXED,0.0)
-
-# Set z=0 nodes to no y displacement
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,1,3,CMISS.BoundaryConditionsTypes.FIXED,0.0)
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,2,3,CMISS.BoundaryConditionsTypes.FIXED,0.0)
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,3,3,CMISS.BoundaryConditionsTypes.FIXED,0.0)
-boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,4,3,CMISS.BoundaryConditionsTypes.FIXED,0.0)
-
+#Set x=0 nodes to built-in
+for zNode in range(1, numberZElements+2):
+    for yNode in range(1, numberYElements+2):
+        nodeNumber = 1+(yNode-1)*(numberXElements+1)+(zNode-1)*(numberXElements+1)*(numberYElements+1)
+        print 'Setting boundary condition at node ',nodeNumber
+        boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,nodeNumber,1,CMISS.BoundaryConditionsTypes.FIXED,0.0)
+        boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,nodeNumber,2,CMISS.BoundaryConditionsTypes.FIXED,0.0)
+        boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,nodeNumber,3,CMISS.BoundaryConditionsTypes.FIXED,0.0)
+ 
 nonlinearEquations.BoundaryConditionsCreateFinish()
 
 # Solve the problem
-problem.Solve()
+#problem.Solve()
 
 # Export results
 fields = CMISS.Fields()
 fields.CreateRegion(region)
-fields.NodesExport("CellMLGrowth","FORTRAN")
-fields.ElementsExport("CellMLGrowth","FORTRAN")
+fields.NodesExport("CantileverGrowth","FORTRAN")
+fields.ElementsExport("CantileverGrowth","FORTRAN")
 fields.Finalise()
 
