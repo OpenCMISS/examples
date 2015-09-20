@@ -64,7 +64,7 @@ numberZElements = 1
 numberOfGaussXi = 3
 
 # Set the growth rates
-xGrowthRate = 0.05
+xGrowthRate = 0.02
 yGrowthRate = 0.0
 zGrowthRate = 0.0
 
@@ -270,10 +270,10 @@ growthCellML.ParametersFieldCreateFinish()
 for yElem in range(1, numberYElements+1):
     for xElem in range(1, numberXElements+1):
         elementNumber = xElem + (yElem-1)*numberXElements
-        for xGauss in range(1, numberOfGaussXi+1):
-            for yGauss in range(1, numberOfGaussXi+1):
+        for yGauss in range(1, numberOfGaussXi+1):
+            for xGauss in range(1, numberOfGaussXi+1):
                 gaussNumber = xGauss + (yGauss-1)*numberOfGaussXi
-                print 'Setting growth parameter at element ',elementNumber,' and Gauss point number ',gaussNumber
+                #print 'Setting growth parameter at element ',elementNumber,' and Gauss point number ',gaussNumber
                 growthCellMLParametersField.ParameterSetUpdateGaussPoint(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, gaussNumber, elementNumber, 1, xGrowthRate)
                 growthCellMLParametersField.ParameterSetUpdateGaussPoint(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, gaussNumber, elementNumber, 2, yGrowthRate)
                 growthCellMLParametersField.ParameterSetUpdateGaussPoint(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, gaussNumber, elementNumber, 3, zGrowthRate)
@@ -417,7 +417,7 @@ nonlinearEquations.BoundaryConditionsCreateStart(boundaryConditions)
 for zNode in range(1, numberZElements+2):
     for yNode in range(1, numberYElements+2):
         nodeNumber = 1+(yNode-1)*(numberXElements+1)+(zNode-1)*(numberXElements+1)*(numberYElements+1)
-        print 'Setting boundary condition at node ',nodeNumber
+        #print 'Setting boundary condition at node ',nodeNumber
         boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,nodeNumber,1,CMISS.BoundaryConditionsTypes.FIXED,0.0)
         boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,nodeNumber,2,CMISS.BoundaryConditionsTypes.FIXED,0.0)
         boundaryConditions.AddNode(dependentField,CMISS.FieldVariableTypes.U,1,1,nodeNumber,3,CMISS.BoundaryConditionsTypes.FIXED,0.0)
@@ -425,7 +425,7 @@ for zNode in range(1, numberZElements+2):
 nonlinearEquations.BoundaryConditionsCreateFinish()
 
 # Solve the problem
-#problem.Solve()
+problem.Solve()
 
 # Export results
 fields = CMISS.Fields()
