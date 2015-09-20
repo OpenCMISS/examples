@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+This CellML file was generated on 3/04/2014 at 12:12:01 at p.m. using:
+
+COR (0.9.31.1409)
+Copyright 2002-2014 Dr Alan Garny
+http://cor.physiol.ox.ac.uk/ - cor@physiol.ox.ac.uk
+
+CellML 1.0 was used to generate this model
+http://www.cellml.org/
+-->
+<model xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqs="http://www.cellml.org/bqs/1.0#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" name="simplegrowth" cmeta:id="simplegrowth" xmlns="http://www.cellml.org/cellml/1.0#" xmlns:cellml="http://www.cellml.org/cellml/1.0#" xmlns:cmeta="http://www.cellml.org/metadata/1.0#">
+   <units name="millisecond">
+      <unit units="second" prefix="milli"/>
+   </units>
+   <units name="per_millisecond">
+      <unit units="second" prefix="milli" exponent="-1"/>
+   </units>
+   <units name="stress">
+      <unit units="dimensionless"/>
+   </units>
+   <component name="Main">
+      <variable name="S11" units="stress" initial_value="0.000005"/>
+      <variable name="S22" units="stress" initial_value="0.000001"/>
+      <variable name="S33" units="stress" initial_value="0.0000001"/>
+      <variable name="bff" units="stress" initial_value="0.02"/>
+      <variable name="bnn" units="stress" initial_value="0.015"/>
+      <variable name="bss" units="stress" initial_value="0.001"/>
+      <variable name="time" units="millisecond"/>
+      <variable name="lambda1" units="dimensionless" initial_value="1.0"/>
+      <variable name="lambda2" units="dimensionless" initial_value="1.0"/>
+      <variable name="lambda3" units="dimensionless" initial_value="1.0"/>
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+         <apply>
+            <eq/>
+            <apply>
+               <diff/>
+               <bvar>
+                  <ci>time</ci>
+               </bvar>
+               <ci>lambda1</ci>
+            </apply>
+            <apply>
+               <times/>
+               <cn cellml:units="per_millisecond">1</cn>
+               <ci>bff</ci>
+               <ci>S11</ci>
+            </apply>
+         </apply>
+         <apply>
+            <eq/>
+            <apply>
+               <diff/>
+               <bvar>
+                  <ci>time</ci>
+               </bvar>
+               <ci>lambda2</ci>
+            </apply>
+            <apply>
+               <times/>
+               <cn cellml:units="per_millisecond">1</cn>
+               <ci>bss</ci>
+               <ci>S22</ci>
+            </apply>
+         </apply>
+         <apply>
+            <eq/>
+            <apply>
+               <diff/>
+               <bvar>
+                  <ci>time</ci>
+               </bvar>
+               <ci>lambda3</ci>
+            </apply>
+            <apply>
+               <times/>
+               <cn cellml:units="per_millisecond">1</cn>
+               <ci>bnn</ci>
+               <ci>S33</ci>
+            </apply>
+         </apply>
+      </math>
+   </component>
+</model>

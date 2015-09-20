@@ -2,11 +2,11 @@
   "test": [   
     {
       "id": 1,
-      "args": "4 4 0 1",
+      "args": "4 4 1 1",
       "processors": 1 },
     {
       "id": 2,
-      "args": "4 4 0 2",
+      "args": "4 4 1 2",
       "processors": 2 },
     {
       "id": 3,

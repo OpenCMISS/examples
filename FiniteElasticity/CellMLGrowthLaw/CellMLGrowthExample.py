@@ -2,7 +2,7 @@
 
 #> \file
 #> \author Chris Bradley
-#> \brief This is an example script to solve a finite elasticity problem with a growth and constituation law in CellML
+#> \brief This is an example script to solve a finite elasticity problem with a growth and constituative law in CellML
 #>
 #> \section LICENSE
 #>
@@ -69,8 +69,7 @@ meshUserNumber = 1
 decompositionUserNumber = 1
 geometricFieldUserNumber = 1
 fibreFieldUserNumber = 2
-materialFieldUserNumber = 3
-dependentFieldUserNumber = 4
+dependentFieldUserNumber = 3
 equationsSetUserNumber = 1
 equationsSetFieldUserNumber = 5
 growthCellMLUserNumber = 1
@@ -198,27 +197,6 @@ if InterpolationType == 4:
     fibreField.fieldScalingType = CMISS.FieldScalingTypes.ARITHMETIC_MEAN
 fibreField.CreateFinish()
 
-# Create the material field
-materialField = CMISS.Field()
-materialField.CreateStart(materialFieldUserNumber,region)
-materialField.TypeSet(CMISS.FieldTypes.MATERIAL)
-materialField.MeshDecompositionSet(decomposition)
-materialField.GeometricFieldSet(geometricField)
-materialField.NumberOfVariablesSet(1)
-materialField.NumberOfComponentsSet(CMISS.FieldVariableTypes.U,2)
-materialField.VariableLabelSet(CMISS.FieldVariableTypes.U,"Material")
-materialField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,1)
-materialField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,2,1)
-if InterpolationType == 4:
-    materialField.fieldScalingType = CMISS.FieldScalingTypes.ARITHMETIC_MEAN
-materialField.CreateFinish()
-
-# Set Mooney-Rivlin constants c10 and c01 respectively.
-CMISS.Field.ComponentValuesInitialiseDP(
-    materialField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,2.0)
-CMISS.Field.ComponentValuesInitialiseDP(
-    materialField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,2,6.0)
-
 # Create the dependent field
 dependentField = CMISS.Field()
 dependentField.CreateStart(dependentFieldUserNumber,region)
@@ -233,11 +211,13 @@ dependentField.VariableLabelSet(CMISS.FieldVariableTypes.DELUDELN,"del U/del n")
 dependentField.VariableLabelSet(CMISS.FieldVariableTypes.U1,"Strain")
 dependentField.VariableLabelSet(CMISS.FieldVariableTypes.U2,"Stress")
 dependentField.VariableLabelSet(CMISS.FieldVariableTypes.U3,"Growth")
-dependentField.NumberOfComponentsSet(CMISS.FieldVariableTypes.U,3)
-dependentField.NumberOfComponentsSet(CMISS.FieldVariableTypes.DELUDELN,3)
+dependentField.NumberOfComponentsSet(CMISS.FieldVariableTypes.U,4)
+dependentField.NumberOfComponentsSet(CMISS.FieldVariableTypes.DELUDELN,4)
 dependentField.NumberOfComponentsSet(CMISS.FieldVariableTypes.U1,6)
 dependentField.NumberOfComponentsSet(CMISS.FieldVariableTypes.U2,6)
 dependentField.NumberOfComponentsSet(CMISS.FieldVariableTypes.U3,3)
+dependentField.ComponentInterpolationSet(CMISS.FieldVariableTypes.U,4,CMISS.FieldInterpolationTypes.ELEMENT_BASED)
+dependentField.ComponentInterpolationSet(CMISS.FieldVariableTypes.DELUDELN,4,CMISS.FieldInterpolationTypes.ELEMENT_BASED)
 dependentField.ComponentInterpolationSet(CMISS.FieldVariableTypes.U1,1,CMISS.FieldInterpolationTypes.GAUSS_POINT_BASED)
 dependentField.ComponentInterpolationSet(CMISS.FieldVariableTypes.U1,2,CMISS.FieldInterpolationTypes.GAUSS_POINT_BASED)
 dependentField.ComponentInterpolationSet(CMISS.FieldVariableTypes.U1,3,CMISS.FieldInterpolationTypes.GAUSS_POINT_BASED)
@@ -267,6 +247,9 @@ CMISS.Field.ParametersToFieldParametersComponentCopy(
 CMISS.Field.ParametersToFieldParametersComponentCopy(
     geometricField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,3,
     dependentField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,3)
+# Initialise the hydrostatic pressure
+CMISS.Field.ComponentValuesInitialiseDP(
+    dependentField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,4,-8.0)
 
 # Create the equations_set
 equationsSetField = CMISS.Field()
@@ -278,9 +261,6 @@ equationsSet.CreateStart(equationsSetUserNumber,region,fibreField,
     equationsSetFieldUserNumber, equationsSetField)
 equationsSet.CreateFinish()
 
-equationsSet.MaterialsCreateStart(materialFieldUserNumber,materialField)
-equationsSet.MaterialsCreateFinish()
-
 equationsSet.DependentCreateStart(dependentFieldUserNumber,dependentField)
 equationsSet.DependentCreateFinish()
 
@@ -288,22 +268,13 @@ equationsSet.DependentCreateFinish()
 growthCellML = CMISS.CellML()
 growthCellML.CreateStart(growthCellMLUserNumber,region)
 growthCellMLIdx = growthCellML.ModelImport("simplegrowth.cellml")
-growthCellML.VariableSetAsKnown(growthCellMLIdx,"Main/S11")
-growthCellML.VariableSetAsKnown(growthCellMLIdx,"Main/S22")
-growthCellML.VariableSetAsKnown(growthCellMLIdx,"Main/S33")
-#growthCellML.VariableSetAsKnown(growthCellMLIdx,"Main/bff")
-#growthCellML.VariableSetAsKnown(growthCellMLIdx,"Main/bss")
-#growthCellML.VariableSetAsKnown(growthCellMLIdx,"Main/bnn")
+#growthCellML.VariableSetAsKnown(growthCellMLIdx,"Main/fibrerate")
+#growthCellML.VariableSetAsKnown(growthCellMLIdx,"Main/sheetrate")
+#growthCellML.VariableSetAsKnown(growthCellMLIdx,"Main/normalrate")
 growthCellML.CreateFinish()
 
 # Create CellML <--> OpenCMISS field maps
 growthCellML.FieldMapsCreateStart()
-growthCellML.CreateFieldToCellMLMap(dependentField,CMISS.FieldVariableTypes.U2,1,CMISS.FieldParameterSetTypes.VALUES,
-    growthCellMLIdx,"Main/S11",CMISS.FieldParameterSetTypes.VALUES)
-growthCellML.CreateFieldToCellMLMap(dependentField,CMISS.FieldVariableTypes.U2,4,CMISS.FieldParameterSetTypes.VALUES,
-    growthCellMLIdx,"Main/S22",CMISS.FieldParameterSetTypes.VALUES)
-growthCellML.CreateFieldToCellMLMap(dependentField,CMISS.FieldVariableTypes.U2,6,CMISS.FieldParameterSetTypes.VALUES,
-    growthCellMLIdx,"Main/S33",CMISS.FieldParameterSetTypes.VALUES)
 growthCellML.CreateCellMLToFieldMap(growthCellMLIdx,"Main/lambda1",CMISS.FieldParameterSetTypes.VALUES,
     dependentField,CMISS.FieldVariableTypes.U3,1,CMISS.FieldParameterSetTypes.VALUES)
 growthCellML.CreateCellMLToFieldMap(growthCellMLIdx,"Main/lambda2",CMISS.FieldParameterSetTypes.VALUES,
@@ -319,10 +290,10 @@ growthCellMLModelsField.VariableLabelSet(CMISS.FieldVariableTypes.U,"GrowthModel
 growthCellML.ModelsFieldCreateFinish()
 
 # Create the CELL parameters field
-growthCellMLParametersField = CMISS.Field()
-growthCellML.ParametersFieldCreateStart(growthCellMLParametersFieldUserNumber,growthCellMLParametersField)
-growthCellMLParametersField.VariableLabelSet(CMISS.FieldVariableTypes.U,"GrowthParameters")
-growthCellML.ParametersFieldCreateFinish()
+#growthCellMLParametersField = CMISS.Field()
+#growthCellML.ParametersFieldCreateStart(growthCellMLParametersFieldUserNumber,growthCellMLParametersField)
+#growthCellMLParametersField.VariableLabelSet(CMISS.FieldVariableTypes.U,"GrowthParameters")
+#growthCellML.ParametersFieldCreateFinish()
 
 # Create the CELL state field
 growthCellMLStateField = CMISS.Field()
