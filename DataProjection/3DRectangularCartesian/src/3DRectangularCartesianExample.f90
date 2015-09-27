@@ -40,8 +40,9 @@
 
 !> Main program
 PROGRAM DataProjection3DRectangularCartesian
-
+#ifndef NOMPIMOD
   USE MPI
+#endif
   USE OPENCMISS
 
 #ifdef WIN32
@@ -49,6 +50,11 @@ PROGRAM DataProjection3DRectangularCartesian
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   !Program parameters
   INTEGER(CMISSIntg),PARAMETER :: BasisUserNumber=1  

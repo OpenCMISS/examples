@@ -51,7 +51,9 @@
 PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
 
   USE OPENCMISS
+#ifndef NOMPIMOD
   USE MPI
+#endif
 !  USE CONSTANTS   !for pi
 
 #ifdef WIN32
@@ -59,6 +61,11 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
 !--------------------------------------------------------------------------------------------------------------------------------
   !Test program parameters

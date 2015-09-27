@@ -47,8 +47,9 @@
 
 !> Main program
 PROGRAM ANALYTICLAPLACEEXAMPLE
-
+#ifndef NOMPIMOD
   USE MPI
+#endif
   USE OPENCMISS
   USE TEST_FRAMEWORK_ROUTINES
 
@@ -57,6 +58,11 @@ PROGRAM ANALYTICLAPLACEEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
   TYPE(CMISSFieldType) :: EquationsSetField

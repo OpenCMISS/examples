@@ -58,7 +58,9 @@ PROGRAM SupgChannel
 
   USE OPENCMISS
   USE FIELDML_API
+#ifndef NOMPIMOD
   USE MPI
+#endif
 
 
 #ifdef WIN32
@@ -72,6 +74,11 @@ PROGRAM SupgChannel
   !PROGRAM VARIABLES AND TYPES
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
   TYPE(CMISSFieldType) :: EquationsSetField

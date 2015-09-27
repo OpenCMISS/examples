@@ -45,8 +45,9 @@
 
 !> Main program
 PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
-
+#ifndef NOMPIMOD
   USE MPI
+#endif
   USE OPENCMISS
 
 #ifdef WIN32
@@ -54,6 +55,11 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   !Test program parameters
 

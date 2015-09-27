@@ -49,7 +49,9 @@
 PROGRAM LAPLACEELLIPSOIDEXAMPLE
 
   USE OPENCMISS
+#ifndef NOMPIMOD
   USE MPI
+#endif
 
 
 #ifdef WIN32
@@ -57,6 +59,11 @@ PROGRAM LAPLACEELLIPSOIDEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
   TYPE(CMISSFieldType) :: EquationsSetField

@@ -50,7 +50,9 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
 
   USE OPENCMISS
   USE FIELDML_API
+#ifndef NOMPIMOD
   USE MPI
+#endif
 
 
 #ifdef WIN32
@@ -58,6 +60,11 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   !Test program parameters
 
