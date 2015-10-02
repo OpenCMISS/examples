@@ -77,28 +77,28 @@ PROGRAM DARCYDYNAMICEXAMPLE
 
   IMPLICIT NONE
 
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(CMISSFieldType) :: EquationsSetField
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(cmfe_FieldType) :: EquationsSetField
 
 
   !Test program parameters
 
-  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=3
-  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=4
-  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
-  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberDarcy=6
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcy=7
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDarcy=8
-  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=9
+  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=3
+  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=4
+  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=5
+  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumberDarcy=6
+  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberDarcy=7
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberDarcy=8
+  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=9
 
-  INTEGER(CMISSIntg), PARAMETER :: SolverDarcyUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPorosity=1
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPermOverVis=2
+  INTEGER(CMFEIntg), PARAMETER :: SolverDarcyUserNumber=1
+  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPorosity=1
+  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPermOverVis=2
 
 
-  REAL(CMISSDP), PARAMETER :: PI=3.141592653589793238462643383279502884197_CMISSDP
+  REAL(CMFEDP), PARAMETER :: PI=3.141592653589793238462643383279502884197_CMFEDP
 
 
   !Program types
@@ -107,59 +107,59 @@ PROGRAM DARCYDYNAMICEXAMPLE
 
   !Program variables
 
-  INTEGER(CMISSIntg) :: NUMBER_OF_DIMENSIONS
+  INTEGER(CMFEIntg) :: NUMBER_OF_DIMENSIONS
   
-  INTEGER(CMISSIntg) :: BASIS_TYPE
-  INTEGER(CMISSIntg) :: BASIS_NUMBER_GEOMETRY
-  INTEGER(CMISSIntg) :: BASIS_NUMBER_VELOCITY
-  INTEGER(CMISSIntg) :: BASIS_NUMBER_PRESSURE
-  INTEGER(CMISSIntg) :: BASIS_XI_GAUSS_GEOMETRY
-  INTEGER(CMISSIntg) :: BASIS_XI_GAUSS_VELOCITY
-  INTEGER(CMISSIntg) :: BASIS_XI_GAUSS_PRESSURE
-  INTEGER(CMISSIntg) :: BASIS_XI_INTERPOLATION_GEOMETRY
-  INTEGER(CMISSIntg) :: BASIS_XI_INTERPOLATION_VELOCITY
-  INTEGER(CMISSIntg) :: BASIS_XI_INTERPOLATION_PRESSURE
-  INTEGER(CMISSIntg) :: MESH_NUMBER_OF_COMPONENTS
-  INTEGER(CMISSIntg) :: MESH_COMPONENT_NUMBER_GEOMETRY
-  INTEGER(CMISSIntg) :: MESH_COMPONENT_NUMBER_VELOCITY
-  INTEGER(CMISSIntg) :: MESH_COMPONENT_NUMBER_PRESSURE
-  INTEGER(CMISSIntg) :: NUMBER_OF_NODES_GEOMETRY
-  INTEGER(CMISSIntg) :: NUMBER_OF_NODES_VELOCITY
-  INTEGER(CMISSIntg) :: NUMBER_OF_NODES_PRESSURE
-  INTEGER(CMISSIntg) :: NUMBER_OF_ELEMENT_NODES_GEOMETRY
-  INTEGER(CMISSIntg) :: NUMBER_OF_ELEMENT_NODES_VELOCITY
-  INTEGER(CMISSIntg) :: NUMBER_OF_ELEMENT_NODES_PRESSURE
-  INTEGER(CMISSIntg) :: TOTAL_NUMBER_OF_NODES
-  INTEGER(CMISSIntg) :: TOTAL_NUMBER_OF_ELEMENTS
-  INTEGER(CMISSIntg) :: MAXIMUM_ITERATIONS
-  INTEGER(CMISSIntg) :: RESTART_VALUE
-!   INTEGER(CMISSIntg) :: MPI_IERROR
+  INTEGER(CMFEIntg) :: BASIS_TYPE
+  INTEGER(CMFEIntg) :: BASIS_NUMBER_GEOMETRY
+  INTEGER(CMFEIntg) :: BASIS_NUMBER_VELOCITY
+  INTEGER(CMFEIntg) :: BASIS_NUMBER_PRESSURE
+  INTEGER(CMFEIntg) :: BASIS_XI_GAUSS_GEOMETRY
+  INTEGER(CMFEIntg) :: BASIS_XI_GAUSS_VELOCITY
+  INTEGER(CMFEIntg) :: BASIS_XI_GAUSS_PRESSURE
+  INTEGER(CMFEIntg) :: BASIS_XI_INTERPOLATION_GEOMETRY
+  INTEGER(CMFEIntg) :: BASIS_XI_INTERPOLATION_VELOCITY
+  INTEGER(CMFEIntg) :: BASIS_XI_INTERPOLATION_PRESSURE
+  INTEGER(CMFEIntg) :: MESH_NUMBER_OF_COMPONENTS
+  INTEGER(CMFEIntg) :: MESH_COMPONENT_NUMBER_GEOMETRY
+  INTEGER(CMFEIntg) :: MESH_COMPONENT_NUMBER_VELOCITY
+  INTEGER(CMFEIntg) :: MESH_COMPONENT_NUMBER_PRESSURE
+  INTEGER(CMFEIntg) :: NUMBER_OF_NODES_GEOMETRY
+  INTEGER(CMFEIntg) :: NUMBER_OF_NODES_VELOCITY
+  INTEGER(CMFEIntg) :: NUMBER_OF_NODES_PRESSURE
+  INTEGER(CMFEIntg) :: NUMBER_OF_ELEMENT_NODES_GEOMETRY
+  INTEGER(CMFEIntg) :: NUMBER_OF_ELEMENT_NODES_VELOCITY
+  INTEGER(CMFEIntg) :: NUMBER_OF_ELEMENT_NODES_PRESSURE
+  INTEGER(CMFEIntg) :: TOTAL_NUMBER_OF_NODES
+  INTEGER(CMFEIntg) :: TOTAL_NUMBER_OF_ELEMENTS
+  INTEGER(CMFEIntg) :: MAXIMUM_ITERATIONS
+  INTEGER(CMFEIntg) :: RESTART_VALUE
+!   INTEGER(CMFEIntg) :: MPI_IERROR
 
-  INTEGER(CMISSIntg) :: EQUATIONS_DARCY_OUTPUT
-  INTEGER(CMISSIntg) :: COMPONENT_NUMBER
-  INTEGER(CMISSIntg) :: NODE_NUMBER
-  INTEGER(CMISSIntg) :: ELEMENT_NUMBER
-  INTEGER(CMISSIntg) :: CONDITION
+  INTEGER(CMFEIntg) :: EQUATIONS_DARCY_OUTPUT
+  INTEGER(CMFEIntg) :: COMPONENT_NUMBER
+  INTEGER(CMFEIntg) :: NODE_NUMBER
+  INTEGER(CMFEIntg) :: ELEMENT_NUMBER
+  INTEGER(CMFEIntg) :: CONDITION
 
-  INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY
-  INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_DARCY_OUTPUT_TYPE
-  INTEGER(CMISSIntg) :: LINEAR_SOLVER_DARCY_OUTPUT_TYPE
+  INTEGER(CMFEIntg) :: DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY
+  INTEGER(CMFEIntg) :: DYNAMIC_SOLVER_DARCY_OUTPUT_TYPE
+  INTEGER(CMFEIntg) :: LINEAR_SOLVER_DARCY_OUTPUT_TYPE
 
-  REAL(CMISSDP) :: COORD_X, COORD_Y, COORD_Z
-  REAL(CMISSDP) :: DOMAIN_X1, DOMAIN_X2, DOMAIN_Y1, DOMAIN_Y2, DOMAIN_Z1, DOMAIN_Z2
-  REAL(CMISSDP) :: GEOMETRY_TOLERANCE
+  REAL(CMFEDP) :: COORD_X, COORD_Y, COORD_Z
+  REAL(CMFEDP) :: DOMAIN_X1, DOMAIN_X2, DOMAIN_Y1, DOMAIN_Y2, DOMAIN_Z1, DOMAIN_Z2
+  REAL(CMFEDP) :: GEOMETRY_TOLERANCE
 
-  REAL(CMISSDP) :: INITIAL_FIELD_DARCY(3)
-  REAL(CMISSDP) :: DIVERGENCE_TOLERANCE
-  REAL(CMISSDP) :: RELATIVE_TOLERANCE
-  REAL(CMISSDP) :: ABSOLUTE_TOLERANCE
-  REAL(CMISSDP) :: VALUE
-  REAL(CMISSDP) :: POROSITY_PARAM_DARCY, PERM_OVER_VIS_PARAM_DARCY
+  REAL(CMFEDP) :: INITIAL_FIELD_DARCY(3)
+  REAL(CMFEDP) :: DIVERGENCE_TOLERANCE
+  REAL(CMFEDP) :: RELATIVE_TOLERANCE
+  REAL(CMFEDP) :: ABSOLUTE_TOLERANCE
+  REAL(CMFEDP) :: VALUE
+  REAL(CMFEDP) :: POROSITY_PARAM_DARCY, PERM_OVER_VIS_PARAM_DARCY
 
-  REAL(CMISSDP) :: DYNAMIC_SOLVER_DARCY_START_TIME
-  REAL(CMISSDP) :: DYNAMIC_SOLVER_DARCY_STOP_TIME
-  REAL(CMISSDP) :: DYNAMIC_SOLVER_DARCY_THETA
-  REAL(CMISSDP) :: DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
+  REAL(CMFEDP) :: DYNAMIC_SOLVER_DARCY_START_TIME
+  REAL(CMFEDP) :: DYNAMIC_SOLVER_DARCY_STOP_TIME
+  REAL(CMFEDP) :: DYNAMIC_SOLVER_DARCY_THETA
+  REAL(CMFEDP) :: DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
 
   LOGICAL :: EXPORT_FIELD_IO
   LOGICAL :: LINEAR_SOLVER_DARCY_DIRECT_FLAG
@@ -167,48 +167,48 @@ PROGRAM DARCYDYNAMICEXAMPLE
   !CMISS variables
 
   !Regions
-  TYPE(CMISSRegionType) :: Region
-  TYPE(CMISSRegionType) :: WorldRegion
+  TYPE(cmfe_RegionType) :: Region
+  TYPE(cmfe_RegionType) :: WorldRegion
   !Coordinate systems
-  TYPE(CMISSCoordinateSystemType) :: CoordinateSystem
-  TYPE(CMISSCoordinateSystemType) :: WorldCoordinateSystem
+  TYPE(cmfe_CoordinateSystemType) :: CoordinateSystem
+  TYPE(cmfe_CoordinateSystemType) :: WorldCoordinateSystem
   !Basis
-  TYPE(CMISSBasisType) :: BasisGeometry
-  TYPE(CMISSBasisType) :: BasisVelocity
-  TYPE(CMISSBasisType) :: BasisPressure
+  TYPE(cmfe_BasisType) :: BasisGeometry
+  TYPE(cmfe_BasisType) :: BasisVelocity
+  TYPE(cmfe_BasisType) :: BasisPressure
   !Nodes
-  TYPE(CMISSNodesType) :: Nodes
+  TYPE(cmfe_NodesType) :: Nodes
   !Elements
-  TYPE(CMISSMeshElementsType) :: MeshElementsGeometry
-  TYPE(CMISSMeshElementsType) :: MeshElementsVelocity
-  TYPE(CMISSMeshElementsType) :: MeshElementsPressure
+  TYPE(cmfe_MeshElementsType) :: MeshElementsGeometry
+  TYPE(cmfe_MeshElementsType) :: MeshElementsVelocity
+  TYPE(cmfe_MeshElementsType) :: MeshElementsPressure
   !Meshes
-  TYPE(CMISSMeshType) :: Mesh
+  TYPE(cmfe_MeshType) :: Mesh
   !Decompositions
-  TYPE(CMISSDecompositionType) :: Decomposition
+  TYPE(cmfe_DecompositionType) :: Decomposition
   !Fields
-  TYPE(CMISSFieldsType) :: Fields
+  TYPE(cmfe_FieldsType) :: Fields
   !Field types
-  TYPE(CMISSFieldType) :: GeometricField
-  TYPE(CMISSFieldType) :: DependentFieldDarcy
-  TYPE(CMISSFieldType) :: MaterialsFieldDarcy
+  TYPE(cmfe_FieldType) :: GeometricField
+  TYPE(cmfe_FieldType) :: DependentFieldDarcy
+  TYPE(cmfe_FieldType) :: MaterialsFieldDarcy
   !Boundary conditions
-  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsDarcy
+  TYPE(cmfe_BoundaryConditionsType) :: BoundaryConditionsDarcy
   !Equations sets
-  TYPE(CMISSEquationsSetType) :: EquationsSetDarcy
+  TYPE(cmfe_EquationsSetType) :: EquationsSetDarcy
   !Equations
-  TYPE(CMISSEquationsType) :: EquationsDarcy
+  TYPE(cmfe_EquationsType) :: EquationsDarcy
   !Problems
-  TYPE(CMISSProblemType) :: Problem
+  TYPE(cmfe_ProblemType) :: Problem
   !Control loops
-  TYPE(CMISSControlLoopType) :: ControlLoop
+  TYPE(cmfe_ControlLoopType) :: ControlLoop
   !Solvers
-  TYPE(CMISSSolverType) :: DynamicSolverDarcy
-  TYPE(CMISSSolverType) :: LinearSolverDarcy
+  TYPE(cmfe_SolverType) :: DynamicSolverDarcy
+  TYPE(cmfe_SolverType) :: LinearSolverDarcy
   !Solver equations
-  TYPE(CMISSSolverEquationsType) :: SolverEquationsDarcy
+  TYPE(cmfe_SolverEquationsType) :: SolverEquationsDarcy
   !Computational information
-  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber,NodeDomain
+  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber,NodeDomain
 
 #ifdef WIN32
   !Quickwin type
@@ -218,11 +218,11 @@ PROGRAM DARCYDYNAMICEXAMPLE
   
   !Generic CMISS variables
   
-  INTEGER(CMISSIntg) :: EquationsSetIndex
-  INTEGER(CMISSIntg) :: Err
+  INTEGER(CMFEIntg) :: EquationsSetIndex
+  INTEGER(CMFEIntg) :: Err
 
 
-  INTEGER(CMISSIntg) :: DIAG_LEVEL_LIST(5)
+  INTEGER(CMFEIntg) :: DIAG_LEVEL_LIST(5)
   CHARACTER(LEN=255) :: DIAG_ROUTINE_LIST(1) !,TIMING_ROUTINE_LIST(1)
 
   
@@ -243,13 +243,13 @@ PROGRAM DARCYDYNAMICEXAMPLE
 
   !INITIALISE OPENCMISS
 
-  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
+  CALL cmfe_Initialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  CALL CMISSErrorHandlingModeSet(CMISS_ERRORS_TRAP_ERROR,Err)
+  CALL cmfe_ErrorHandlingModeSet(CMFE_ERRORS_TRAP_ERROR,Err)
 
   !Get the computational nodes information
-  CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
-  CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
+  CALL cmfe_ComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
+  CALL cmfe_ComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
   !
   !================================================================================================================================
@@ -276,45 +276,45 @@ PROGRAM DARCYDYNAMICEXAMPLE
   NUMBER_OF_ELEMENT_NODES_VELOCITY=CM%EN_V
   NUMBER_OF_ELEMENT_NODES_PRESSURE=CM%EN_P
   !Set domain dimensions
-  DOMAIN_X1 = -5.0_CMISSDP
-  DOMAIN_X2 =  5.0_CMISSDP
-  DOMAIN_Y1 = -5.0_CMISSDP
-  DOMAIN_Y2 =  5.0_CMISSDP
-  DOMAIN_Z1 = -5.0_CMISSDP
-  DOMAIN_Z2 =  5.0_CMISSDP
+  DOMAIN_X1 = -5.0_CMFEDP
+  DOMAIN_X2 =  5.0_CMFEDP
+  DOMAIN_Y1 = -5.0_CMFEDP
+  DOMAIN_Y2 =  5.0_CMFEDP
+  DOMAIN_Z1 = -5.0_CMFEDP
+  DOMAIN_Z2 =  5.0_CMFEDP
   !Set geometric tolerance
-  GEOMETRY_TOLERANCE = 1.0E-12_CMISSDP
+  GEOMETRY_TOLERANCE = 1.0E-12_CMFEDP
   !Set initial values
-  INITIAL_FIELD_DARCY(1)=0.0_CMISSDP
-  INITIAL_FIELD_DARCY(2)=0.0_CMISSDP
-  INITIAL_FIELD_DARCY(3)=0.0_CMISSDP
+  INITIAL_FIELD_DARCY(1)=0.0_CMFEDP
+  INITIAL_FIELD_DARCY(2)=0.0_CMFEDP
+  INITIAL_FIELD_DARCY(3)=0.0_CMFEDP
   !Set material parameters
-  POROSITY_PARAM_DARCY=0.3_CMISSDP
-  PERM_OVER_VIS_PARAM_DARCY=0.8_CMISSDP 
+  POROSITY_PARAM_DARCY=0.3_CMFEDP
+  PERM_OVER_VIS_PARAM_DARCY=0.8_CMFEDP 
   !Set number of Gauss points (Mind that also material field may be interpolated)
   BASIS_XI_GAUSS_GEOMETRY=3 !4
   BASIS_XI_GAUSS_VELOCITY=3 !4
   BASIS_XI_GAUSS_PRESSURE=3 !4
   !Set output parameter
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
-  DYNAMIC_SOLVER_DARCY_OUTPUT_TYPE=CMISS_SOLVER_NO_OUTPUT
-  LINEAR_SOLVER_DARCY_OUTPUT_TYPE=CMISS_SOLVER_SOLVER_OUTPUT
+  DYNAMIC_SOLVER_DARCY_OUTPUT_TYPE=CMFE_SOLVER_NO_OUTPUT
+  LINEAR_SOLVER_DARCY_OUTPUT_TYPE=CMFE_SOLVER_SOLVER_OUTPUT
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
-  EQUATIONS_DARCY_OUTPUT=CMISS_EQUATIONS_NO_OUTPUT
+  EQUATIONS_DARCY_OUTPUT=CMFE_EQUATIONS_NO_OUTPUT
   !Set time parameter
-  DYNAMIC_SOLVER_DARCY_START_TIME=0.0_CMISSDP
-  DYNAMIC_SOLVER_DARCY_STOP_TIME=5.0_CMISSDP 
-  DYNAMIC_SOLVER_DARCY_TIME_INCREMENT=1.0_CMISSDP
-  DYNAMIC_SOLVER_DARCY_THETA=1.0_CMISSDP !2.0_CMISSDP/3.0_CMISSDP
+  DYNAMIC_SOLVER_DARCY_START_TIME=0.0_CMFEDP
+  DYNAMIC_SOLVER_DARCY_STOP_TIME=5.0_CMFEDP 
+  DYNAMIC_SOLVER_DARCY_TIME_INCREMENT=1.0_CMFEDP
+  DYNAMIC_SOLVER_DARCY_THETA=1.0_CMFEDP !2.0_CMFEDP/3.0_CMFEDP
   !Set result output parameter
   DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY=1
   !Set solver parameters
   LINEAR_SOLVER_DARCY_DIRECT_FLAG=.FALSE.
-  RELATIVE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-05_CMISSDP
-  ABSOLUTE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-10_CMISSDP
-  DIVERGENCE_TOLERANCE=1.0E5_CMISSDP !default: 1.0E5
-  MAXIMUM_ITERATIONS=10000_CMISSIntg !default: 100000
-  RESTART_VALUE=30_CMISSIntg !default: 30
+  RELATIVE_TOLERANCE=1.0E-10_CMFEDP !default: 1.0E-05_CMFEDP
+  ABSOLUTE_TOLERANCE=1.0E-10_CMFEDP !default: 1.0E-10_CMFEDP
+  DIVERGENCE_TOLERANCE=1.0E5_CMFEDP !default: 1.0E5
+  MAXIMUM_ITERATIONS=10000_CMFEIntg !default: 100000
+  RESTART_VALUE=30_CMFEIntg !default: 30
 
   !
   !================================================================================================================================
@@ -330,10 +330,10 @@ PROGRAM DARCYDYNAMICEXAMPLE
 
   DIAG_ROUTINE_LIST(1)="DARCY_EQUATION_FINITE_ELEMENT_CALCULATE"
 
-  !CMISS_ALL_DIAG_TYPE/CMISS_IN_DIAG_TYPE/CMISS_FROM_DIAG_TYPE
-!   CALL CMISSDiagnosticsSetOn(CMISS_IN_DIAG_TYPE,DIAG_LEVEL_LIST,"DarcyDiagnostics",DIAG_ROUTINE_LIST,Err)
+  !CMFE_ALL_DIAG_TYPE/CMFE_IN_DIAG_TYPE/CMFE_FROM_DIAG_TYPE
+!   CALL cmfe_DiagnosticsSetOn(CMFE_IN_DIAG_TYPE,DIAG_LEVEL_LIST,"DarcyDiagnostics",DIAG_ROUTINE_LIST,Err)
 
-  !CMISS_ALL_TIMING_TYPE/CMISS_IN_TIMING_TYPE/CMISS_FROM_TIMING_TYPE
+  !CMFE_ALL_TIMING_TYPE/CMFE_IN_TIMING_TYPE/CMFE_FROM_TIMING_TYPE
   !TIMING_ROUTINE_LIST(1)="PROBLEM_FINITE_ELEMENT_CALCULATE"
   !CALL TIMING_SET_ON(IN_TIMING_TYPE,.TRUE.,"",TIMING_ROUTINE_LIST,ERR,ERROR,*999)
 
@@ -344,12 +344,12 @@ PROGRAM DARCYDYNAMICEXAMPLE
   !COORDINATE SYSTEM
 
   !Start the creation of a new RC coordinate system
-  CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
-  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_Initialise(CoordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   !Set the coordinate system dimension
-  CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystem,NUMBER_OF_DIMENSIONS,Err)
+  CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystem,NUMBER_OF_DIMENSIONS,Err)
   !Finish the creation of the coordinate system
-  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !
   !================================================================================================================================
@@ -358,12 +358,12 @@ PROGRAM DARCYDYNAMICEXAMPLE
   !REGION
 
   !Start the creation of a new region
-  CALL CMISSRegion_Initialise(Region,Err)
-  CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  CALL cmfe_Region_Initialise(Region,Err)
+  CALL cmfe_Region_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
   !Set the regions coordinate system as defined above
-  CALL CMISSRegion_CoordinateSystemSet(Region,CoordinateSystem,Err)
+  CALL cmfe_Region_CoordinateSystemSet(Region,CoordinateSystem,Err)
   !Finish the creation of the region
-  CALL CMISSRegion_CreateFinish(Region,Err)
+  CALL cmfe_Region_CreateFinish(Region,Err)
 
   !
   !================================================================================================================================
@@ -373,24 +373,24 @@ PROGRAM DARCYDYNAMICEXAMPLE
 
   !Start the creation of new bases
   MESH_NUMBER_OF_COMPONENTS=1
-  CALL CMISSBasis_Initialise(BasisGeometry,Err)
-  CALL CMISSBasis_CreateStart(BASIS_NUMBER_GEOMETRY,BasisGeometry,Err)
+  CALL cmfe_Basis_Initialise(BasisGeometry,Err)
+  CALL cmfe_Basis_CreateStart(BASIS_NUMBER_GEOMETRY,BasisGeometry,Err)
   !Set the basis type (Lagrange/Simplex)
-  CALL CMISSBasis_TypeSet(BasisGeometry,BASIS_TYPE,Err)
+  CALL cmfe_Basis_TypeSet(BasisGeometry,BASIS_TYPE,Err)
   !Set the basis xi number
-  CALL CMISSBasis_NumberOfXiSet(BasisGeometry,NUMBER_OF_DIMENSIONS,Err)
+  CALL cmfe_Basis_NumberOfXiSet(BasisGeometry,NUMBER_OF_DIMENSIONS,Err)
   !Set the basis xi interpolation and number of Gauss points
   IF(NUMBER_OF_DIMENSIONS==2) THEN
-    CALL CMISSBasis_InterpolationXiSet(BasisGeometry,(/BASIS_XI_INTERPOLATION_GEOMETRY,BASIS_XI_INTERPOLATION_GEOMETRY/),Err)
-    CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisGeometry,(/BASIS_XI_GAUSS_GEOMETRY,BASIS_XI_GAUSS_GEOMETRY/),Err)
+    CALL cmfe_Basis_InterpolationXiSet(BasisGeometry,(/BASIS_XI_INTERPOLATION_GEOMETRY,BASIS_XI_INTERPOLATION_GEOMETRY/),Err)
+    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisGeometry,(/BASIS_XI_GAUSS_GEOMETRY,BASIS_XI_GAUSS_GEOMETRY/),Err)
   ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-    CALL CMISSBasis_InterpolationXiSet(BasisGeometry,(/BASIS_XI_INTERPOLATION_GEOMETRY,BASIS_XI_INTERPOLATION_GEOMETRY, & 
+    CALL cmfe_Basis_InterpolationXiSet(BasisGeometry,(/BASIS_XI_INTERPOLATION_GEOMETRY,BASIS_XI_INTERPOLATION_GEOMETRY, & 
       & BASIS_XI_INTERPOLATION_GEOMETRY/),Err)                         
-    CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisGeometry,(/BASIS_XI_GAUSS_GEOMETRY,BASIS_XI_GAUSS_GEOMETRY, &
+    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisGeometry,(/BASIS_XI_GAUSS_GEOMETRY,BASIS_XI_GAUSS_GEOMETRY, &
       & BASIS_XI_GAUSS_GEOMETRY/),Err)
   ENDIF
   !Finish the creation of the basis
-  CALL CMISSBasis_CreateFinish(BasisGeometry,Err)
+  CALL cmfe_Basis_CreateFinish(BasisGeometry,Err)
   !
   !Start the creation of another basis
   IF(BASIS_XI_INTERPOLATION_VELOCITY==BASIS_XI_INTERPOLATION_GEOMETRY) THEN
@@ -398,25 +398,25 @@ PROGRAM DARCYDYNAMICEXAMPLE
   ELSE
     MESH_NUMBER_OF_COMPONENTS=MESH_NUMBER_OF_COMPONENTS+1
     !Initialise a new velocity basis
-    CALL CMISSBasis_Initialise(BasisVelocity,Err)
+    CALL cmfe_Basis_Initialise(BasisVelocity,Err)
     !Start the creation of a basis
-    CALL CMISSBasis_CreateStart(BASIS_NUMBER_VELOCITY,BasisVelocity,Err)
+    CALL cmfe_Basis_CreateStart(BASIS_NUMBER_VELOCITY,BasisVelocity,Err)
     !Set the basis type (Lagrange/Simplex)
-    CALL CMISSBasis_TypeSet(BasisVelocity,BASIS_TYPE,Err)
+    CALL cmfe_Basis_TypeSet(BasisVelocity,BASIS_TYPE,Err)
     !Set the basis xi number
-    CALL CMISSBasis_NumberOfXiSet(BasisVelocity,NUMBER_OF_DIMENSIONS,Err)
+    CALL cmfe_Basis_NumberOfXiSet(BasisVelocity,NUMBER_OF_DIMENSIONS,Err)
     !Set the basis xi interpolation and number of Gauss points
     IF(NUMBER_OF_DIMENSIONS==2) THEN
-      CALL CMISSBasis_InterpolationXiSet(BasisVelocity,(/BASIS_XI_INTERPOLATION_VELOCITY,BASIS_XI_INTERPOLATION_VELOCITY/),Err)
-      CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisVelocity,(/BASIS_XI_GAUSS_VELOCITY,BASIS_XI_GAUSS_VELOCITY/),Err)
+      CALL cmfe_Basis_InterpolationXiSet(BasisVelocity,(/BASIS_XI_INTERPOLATION_VELOCITY,BASIS_XI_INTERPOLATION_VELOCITY/),Err)
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisVelocity,(/BASIS_XI_GAUSS_VELOCITY,BASIS_XI_GAUSS_VELOCITY/),Err)
     ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-      CALL CMISSBasis_InterpolationXiSet(BasisVelocity,(/BASIS_XI_INTERPOLATION_VELOCITY,BASIS_XI_INTERPOLATION_VELOCITY, & 
+      CALL cmfe_Basis_InterpolationXiSet(BasisVelocity,(/BASIS_XI_INTERPOLATION_VELOCITY,BASIS_XI_INTERPOLATION_VELOCITY, & 
         & BASIS_XI_INTERPOLATION_VELOCITY/),Err)                         
-      CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisVelocity,(/BASIS_XI_GAUSS_VELOCITY,BASIS_XI_GAUSS_VELOCITY, & 
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisVelocity,(/BASIS_XI_GAUSS_VELOCITY,BASIS_XI_GAUSS_VELOCITY, & 
         & BASIS_XI_GAUSS_VELOCITY/),Err)
     ENDIF
     !Finish the creation of the basis
-    CALL CMISSBasis_CreateFinish(BasisVelocity,Err)
+    CALL cmfe_Basis_CreateFinish(BasisVelocity,Err)
   ENDIF
   !
   !Start the creation of another basis
@@ -427,25 +427,25 @@ PROGRAM DARCYDYNAMICEXAMPLE
   ELSE
     MESH_NUMBER_OF_COMPONENTS=MESH_NUMBER_OF_COMPONENTS+1
     !Initialise a new pressure basis
-    CALL CMISSBasis_Initialise(BasisPressure,Err)
+    CALL cmfe_Basis_Initialise(BasisPressure,Err)
     !Start the creation of a basis
-    CALL CMISSBasis_CreateStart(BASIS_NUMBER_PRESSURE,BasisPressure,Err)
+    CALL cmfe_Basis_CreateStart(BASIS_NUMBER_PRESSURE,BasisPressure,Err)
     !Set the basis type (Lagrange/Simplex)
-    CALL CMISSBasis_TypeSet(BasisPressure,BASIS_TYPE,Err)
+    CALL cmfe_Basis_TypeSet(BasisPressure,BASIS_TYPE,Err)
     !Set the basis xi number
-    CALL CMISSBasis_NumberOfXiSet(BasisPressure,NUMBER_OF_DIMENSIONS,Err)
+    CALL cmfe_Basis_NumberOfXiSet(BasisPressure,NUMBER_OF_DIMENSIONS,Err)
     !Set the basis xi interpolation and number of Gauss points
     IF(NUMBER_OF_DIMENSIONS==2) THEN
-      CALL CMISSBasis_InterpolationXiSet(BasisPressure,(/BASIS_XI_INTERPOLATION_PRESSURE,BASIS_XI_INTERPOLATION_PRESSURE/),Err)
-      CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisPressure,(/BASIS_XI_GAUSS_PRESSURE,BASIS_XI_GAUSS_PRESSURE/),Err)
+      CALL cmfe_Basis_InterpolationXiSet(BasisPressure,(/BASIS_XI_INTERPOLATION_PRESSURE,BASIS_XI_INTERPOLATION_PRESSURE/),Err)
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisPressure,(/BASIS_XI_GAUSS_PRESSURE,BASIS_XI_GAUSS_PRESSURE/),Err)
     ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-      CALL CMISSBasis_InterpolationXiSet(BasisPressure,(/BASIS_XI_INTERPOLATION_PRESSURE,BASIS_XI_INTERPOLATION_PRESSURE, & 
+      CALL cmfe_Basis_InterpolationXiSet(BasisPressure,(/BASIS_XI_INTERPOLATION_PRESSURE,BASIS_XI_INTERPOLATION_PRESSURE, & 
         & BASIS_XI_INTERPOLATION_PRESSURE/),Err)                         
-      CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisPressure,(/BASIS_XI_GAUSS_PRESSURE,BASIS_XI_GAUSS_PRESSURE, & 
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisPressure,(/BASIS_XI_GAUSS_PRESSURE,BASIS_XI_GAUSS_PRESSURE, & 
         & BASIS_XI_GAUSS_PRESSURE/),Err)
     ENDIF
     !Finish the creation of the basis
-    CALL CMISSBasis_CreateFinish(BasisPressure,Err)
+    CALL cmfe_Basis_CreateFinish(BasisPressure,Err)
   ENDIF
 
   !
@@ -455,39 +455,39 @@ PROGRAM DARCYDYNAMICEXAMPLE
   !MESH
 
   !Start the creation of mesh nodes
-  CALL CMISSNodes_Initialise(Nodes,Err)
-  CALL CMISSNodes_CreateStart(Region,TOTAL_NUMBER_OF_NODES,Nodes,Err)
-  CALL CMISSNodes_CreateFinish(Nodes,Err)
+  CALL cmfe_Nodes_Initialise(Nodes,Err)
+  CALL cmfe_Nodes_CreateStart(Region,TOTAL_NUMBER_OF_NODES,Nodes,Err)
+  CALL cmfe_Nodes_CreateFinish(Nodes,Err)
   !Start the creation of the mesh
-  CALL CMISSMesh_Initialise(Mesh,Err)
-  CALL CMISSMesh_CreateStart(MeshUserNumber,Region,NUMBER_OF_DIMENSIONS,Mesh,Err)
+  CALL cmfe_Mesh_Initialise(Mesh,Err)
+  CALL cmfe_Mesh_CreateStart(MeshUserNumber,Region,NUMBER_OF_DIMENSIONS,Mesh,Err)
   !Set number of mesh elements
-  CALL CMISSMesh_NumberOfElementsSet(Mesh,TOTAL_NUMBER_OF_ELEMENTS,Err)
+  CALL cmfe_Mesh_NumberOfElementsSet(Mesh,TOTAL_NUMBER_OF_ELEMENTS,Err)
   !Set number of mesh components
-  CALL CMISSMesh_NumberOfComponentsSet(Mesh,MESH_NUMBER_OF_COMPONENTS,Err)
+  CALL cmfe_Mesh_NumberOfComponentsSet(Mesh,MESH_NUMBER_OF_COMPONENTS,Err)
   !Specify spatial mesh component
-  CALL CMISSMeshElements_Initialise(MeshElementsGeometry,Err)
-  CALL CMISSMeshElements_Initialise(MeshElementsVelocity,Err)
-  CALL CMISSMeshElements_Initialise(MeshElementsPressure,Err)
+  CALL cmfe_MeshElements_Initialise(MeshElementsGeometry,Err)
+  CALL cmfe_MeshElements_Initialise(MeshElementsVelocity,Err)
+  CALL cmfe_MeshElements_Initialise(MeshElementsPressure,Err)
   MESH_COMPONENT_NUMBER_GEOMETRY=1
   MESH_COMPONENT_NUMBER_VELOCITY=1
   MESH_COMPONENT_NUMBER_PRESSURE=1
-  CALL CMISSMeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_GEOMETRY,BasisGeometry,MeshElementsGeometry,Err)
+  CALL cmfe_MeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_GEOMETRY,BasisGeometry,MeshElementsGeometry,Err)
   DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
-    CALL CMISSMeshElements_NodesSet(MeshElementsGeometry,ELEMENT_NUMBER,CM%M(ELEMENT_NUMBER,1:NUMBER_OF_ELEMENT_NODES_GEOMETRY),Err)
+    CALL cmfe_MeshElements_NodesSet(MeshElementsGeometry,ELEMENT_NUMBER,CM%M(ELEMENT_NUMBER,1:NUMBER_OF_ELEMENT_NODES_GEOMETRY),Err)
   ENDDO
-  CALL CMISSMeshElements_CreateFinish(MeshElementsGeometry,Err)
+  CALL cmfe_MeshElements_CreateFinish(MeshElementsGeometry,Err)
   !Specify velocity mesh component
   IF(BASIS_XI_INTERPOLATION_VELOCITY==BASIS_XI_INTERPOLATION_GEOMETRY) THEN
     MeshElementsVelocity=MeshElementsGeometry
   ELSE
     MESH_COMPONENT_NUMBER_VELOCITY=MESH_COMPONENT_NUMBER_GEOMETRY+1
-    CALL CMISSMeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_VELOCITY,BasisVelocity,MeshElementsVelocity,Err)
+    CALL cmfe_MeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_VELOCITY,BasisVelocity,MeshElementsVelocity,Err)
     DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
-      CALL CMISSMeshElements_NodesSet(MeshElementsVelocity,ELEMENT_NUMBER,CM%V(ELEMENT_NUMBER, & 
+      CALL cmfe_MeshElements_NodesSet(MeshElementsVelocity,ELEMENT_NUMBER,CM%V(ELEMENT_NUMBER, & 
         & 1:NUMBER_OF_ELEMENT_NODES_VELOCITY),Err)
     ENDDO
-    CALL CMISSMeshElements_CreateFinish(MeshElementsVelocity,Err)
+    CALL cmfe_MeshElements_CreateFinish(MeshElementsVelocity,Err)
   ENDIF
   !Specify pressure mesh component
   IF(BASIS_XI_INTERPOLATION_PRESSURE==BASIS_XI_INTERPOLATION_GEOMETRY) THEN
@@ -498,15 +498,15 @@ PROGRAM DARCYDYNAMICEXAMPLE
     MESH_COMPONENT_NUMBER_PRESSURE=MESH_COMPONENT_NUMBER_VELOCITY
   ELSE
     MESH_COMPONENT_NUMBER_PRESSURE=MESH_COMPONENT_NUMBER_VELOCITY+1
-    CALL CMISSMeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_PRESSURE,BasisPressure,MeshElementsPressure,Err)
+    CALL cmfe_MeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_PRESSURE,BasisPressure,MeshElementsPressure,Err)
     DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
-      CALL CMISSMeshElements_NodesSet(MeshElementsPressure,ELEMENT_NUMBER,CM%P(ELEMENT_NUMBER, & 
+      CALL cmfe_MeshElements_NodesSet(MeshElementsPressure,ELEMENT_NUMBER,CM%P(ELEMENT_NUMBER, & 
         & 1:NUMBER_OF_ELEMENT_NODES_PRESSURE),Err)
     ENDDO
-    CALL CMISSMeshElements_CreateFinish(MeshElementsPressure,Err)
+    CALL cmfe_MeshElements_CreateFinish(MeshElementsPressure,Err)
   ENDIF
   !Finish the creation of the mesh
-  CALL CMISSMesh_CreateFinish(Mesh,Err)
+  CALL cmfe_Mesh_CreateFinish(Mesh,Err)
 
   !
   !================================================================================================================================
@@ -515,45 +515,45 @@ PROGRAM DARCYDYNAMICEXAMPLE
   !GEOMETRIC FIELD
 
   !Create a decomposition
-  CALL CMISSDecomposition_Initialise(Decomposition,Err)
-  CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
+  CALL cmfe_Decomposition_Initialise(Decomposition,Err)
+  CALL cmfe_Decomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
-  CALL CMISSDecomposition_TypeSet(Decomposition,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
-  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
+  CALL cmfe_Decomposition_TypeSet(Decomposition,CMFE_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL cmfe_Decomposition_NumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
   !Finish the decomposition
-  CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
+  CALL cmfe_Decomposition_CreateFinish(Decomposition,Err)
 
   !Start to create a default (geometric) field on the region
-  CALL CMISSField_Initialise(GeometricField,Err)
-  CALL CMISSField_CreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
+  CALL cmfe_Field_Initialise(GeometricField,Err)
+  CALL cmfe_Field_CreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
   !Set the field type
-  CALL CMISSField_TypeSet(GeometricField,CMISS_FIELD_GEOMETRIC_TYPE,Err)
+  CALL cmfe_Field_TypeSet(GeometricField,CMFE_FIELD_GEOMETRIC_TYPE,Err)
   !Set the decomposition to use
-  CALL CMISSField_MeshDecompositionSet(GeometricField,Decomposition,Err)
+  CALL cmfe_Field_MeshDecompositionSet(GeometricField,Decomposition,Err)
   !Set the scaling to use
-  CALL CMISSField_ScalingTypeSet(GeometricField,CMISS_FIELD_NO_SCALING,Err)
+  CALL cmfe_Field_ScalingTypeSet(GeometricField,CMFE_FIELD_NO_SCALING,Err)
   !Set the mesh component to be used by the field components.
 
   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-    CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
+    CALL cmfe_Field_ComponentMeshComponentSet(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_GEOMETRY,Err)
   ENDDO
 
   !Finish creating the field
-  CALL CMISSField_CreateFinish(GeometricField,Err)
+  CALL cmfe_Field_CreateFinish(GeometricField,Err)
   !Update the geometric field parameters
   DO NODE_NUMBER=1,NUMBER_OF_NODES_GEOMETRY
     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-      CALL CMISSDecomposition_NodeDomainGet(Decomposition,NODE_NUMBER,MESH_COMPONENT_NUMBER_GEOMETRY,NodeDomain,Err)
+      CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NODE_NUMBER,MESH_COMPONENT_NUMBER_GEOMETRY,NodeDomain,Err)
       IF(NodeDomain==ComputationalNodeNumber) THEN
         VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)
-        CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, & 
-          & CMISS_NO_GLOBAL_DERIV,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+        CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1, & 
+          & CMFE_NO_GLOBAL_DERIV,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
       ENDIF
     ENDDO
   ENDDO
-  CALL CMISSField_ParameterSetUpdateStart(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
-  CALL CMISSField_ParameterSetUpdateFinish(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
+  CALL cmfe_Field_ParameterSetUpdateStart(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
+  CALL cmfe_Field_ParameterSetUpdateFinish(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
 
   !
   !================================================================================================================================
@@ -562,16 +562,15 @@ PROGRAM DARCYDYNAMICEXAMPLE
   !EQUATIONS SETS
 
   !Create the equations set for Dynamic Darcy
-  CALL CMISSEquationsSet_Initialise(EquationsSetDarcy,Err)
-    CALL CMISSField_Initialise(EquationsSetField,Err)
-CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumberDarcy,Region,GeometricField,CMISS_EQUATIONS_SET_FLUID_MECHANICS_CLASS, &
-    & CMISS_EQUATIONS_SET_DARCY_EQUATION_TYPE,CMISS_EQUATIONS_SET_TRANSIENT_DARCY_SUBTYPE,EquationsSetFieldUserNumber, &
-      & EquationsSetField, &
-    & EquationsSetDarcy,Err)
+  CALL cmfe_EquationsSet_Initialise(EquationsSetDarcy,Err)
+    CALL cmfe_Field_Initialise(EquationsSetField,Err)
+CALL cmfe_EquationsSet_CreateStart(EquationsSetUserNumberDarcy,Region,GeometricField,[CMFE_EQUATIONS_SET_FLUID_MECHANICS_CLASS, &
+  & CMFE_EQUATIONS_SET_DARCY_EQUATION_TYPE,CMFE_EQUATIONS_SET_TRANSIENT_DARCY_SUBTYPE],EquationsSetFieldUserNumber, &
+  & EquationsSetField,EquationsSetDarcy,Err)
   !Set the equations set to be a Dynamic Darcy problem
   
   !Finish creating the equations set
-  CALL CMISSEquationsSet_CreateFinish(EquationsSetDarcy,Err)
+  CALL cmfe_EquationsSet_CreateFinish(EquationsSetDarcy,Err)
 
   !
   !================================================================================================================================
@@ -580,27 +579,27 @@ CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumberDarcy,Region,GeometricF
   !DEPENDENT FIELDS
 
   !Create the equations set dependent field variables for Dynamic Darcy
-  CALL CMISSField_Initialise(DependentFieldDarcy,Err)
-  CALL CMISSEquationsSet_DependentCreateStart(EquationsSetDarcy,DependentFieldUserNumberDarcy, & 
+  CALL cmfe_Field_Initialise(DependentFieldDarcy,Err)
+  CALL cmfe_EquationsSet_DependentCreateStart(EquationsSetDarcy,DependentFieldUserNumberDarcy, & 
     & DependentFieldDarcy,Err)
   !Set the mesh component to be used by the field components.
   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-    CALL CMISSField_ComponentMeshComponentSet(DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
+    CALL cmfe_Field_ComponentMeshComponentSet(DependentFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_VELOCITY,Err)
-    CALL CMISSField_ComponentMeshComponentSet(DependentFieldDarcy,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,COMPONENT_NUMBER, & 
+    CALL cmfe_Field_ComponentMeshComponentSet(DependentFieldDarcy,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_VELOCITY,Err)
   ENDDO
   COMPONENT_NUMBER=NUMBER_OF_DIMENSIONS+1
-    CALL CMISSField_ComponentMeshComponentSet(DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
+    CALL cmfe_Field_ComponentMeshComponentSet(DependentFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_PRESSURE,Err)
-    CALL CMISSField_ComponentMeshComponentSet(DependentFieldDarcy,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,COMPONENT_NUMBER, & 
+    CALL cmfe_Field_ComponentMeshComponentSet(DependentFieldDarcy,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_PRESSURE,Err)
   !Finish the equations set dependent field variables
-  CALL CMISSEquationsSet_DependentCreateFinish(EquationsSetDarcy,Err)
+  CALL cmfe_EquationsSet_DependentCreateFinish(EquationsSetDarcy,Err)
 
   !Initialise dependent field (velocity components)
   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-    CALL CMISSField_ComponentValuesInitialise(DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
+    CALL cmfe_Field_ComponentValuesInitialise(DependentFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
       & COMPONENT_NUMBER,INITIAL_FIELD_DARCY(COMPONENT_NUMBER),Err)
   ENDDO
 
@@ -611,14 +610,14 @@ CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumberDarcy,Region,GeometricF
   !MATERIALS FIELDS
 
   !Create the equations set materials field variables for Dynamic Darcy
-  CALL CMISSField_Initialise(MaterialsFieldDarcy,Err)
-  CALL CMISSEquationsSet_MaterialsCreateStart(EquationsSetDarcy,MaterialsFieldUserNumberDarcy, & 
+  CALL cmfe_Field_Initialise(MaterialsFieldDarcy,Err)
+  CALL cmfe_EquationsSet_MaterialsCreateStart(EquationsSetDarcy,MaterialsFieldUserNumberDarcy, & 
     & MaterialsFieldDarcy,Err)
   !Finish the equations set materials field variables
-  CALL CMISSEquationsSet_MaterialsCreateFinish(EquationsSetDarcy,Err)
-  CALL CMISSField_ComponentValuesInitialise(MaterialsFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
+  CALL cmfe_EquationsSet_MaterialsCreateFinish(EquationsSetDarcy,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialsFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
     & MaterialsFieldUserNumberDarcyPorosity,POROSITY_PARAM_DARCY,Err)
-  CALL CMISSField_ComponentValuesInitialise(MaterialsFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialsFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
     & MaterialsFieldUserNumberDarcyPermOverVis,PERM_OVER_VIS_PARAM_DARCY,Err)
 
   !
@@ -628,16 +627,16 @@ CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumberDarcy,Region,GeometricF
   !EQUATIONS
 
   !Create the equations set equations
-  CALL CMISSEquations_Initialise(EquationsDarcy,Err)
-  CALL CMISSEquationsSet_EquationsCreateStart(EquationsSetDarcy,EquationsDarcy,Err)
+  CALL cmfe_Equations_Initialise(EquationsDarcy,Err)
+  CALL cmfe_EquationsSet_EquationsCreateStart(EquationsSetDarcy,EquationsDarcy,Err)
   !Set the equations matrices sparsity type
-  CALL CMISSEquations_SparsityTypeSet(EquationsDarcy,CMISS_EQUATIONS_SPARSE_MATRICES,Err)
+  CALL cmfe_Equations_SparsityTypeSet(EquationsDarcy,CMFE_EQUATIONS_SPARSE_MATRICES,Err)
   !Set the equations lumping type
-  CALL CMISSEquations_LumpingTypeSet(EquationsDarcy,CMISS_EQUATIONS_UNLUMPED_MATRICES,Err)
+  CALL cmfe_Equations_LumpingTypeSet(EquationsDarcy,CMFE_EQUATIONS_UNLUMPED_MATRICES,Err)
   !Set the equations set output
-  CALL CMISSEquations_OutputTypeSet(EquationsDarcy,EQUATIONS_DARCY_OUTPUT,Err)
+  CALL cmfe_Equations_OutputTypeSet(EquationsDarcy,EQUATIONS_DARCY_OUTPUT,Err)
   !Finish the equations set equations
-  CALL CMISSEquationsSet_EquationsCreateFinish(EquationsSetDarcy,Err)
+  CALL cmfe_EquationsSet_EquationsCreateFinish(EquationsSetDarcy,Err)
 
   !
   !================================================================================================================================
@@ -646,25 +645,23 @@ CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumberDarcy,Region,GeometricF
   !PROBLEMS
 
   !Start the creation of a problem.
-  CALL CMISSProblem_Initialise(Problem,Err)
-  CALL CMISSControlLoop_Initialise(ControlLoop,Err)
-  CALL CMISSProblem_CreateStart(ProblemUserNumber,Problem,Err)
-  !Set the problem to be a Dynamic Darcy problem
-  CALL CMISSProblem_SpecificationSet(Problem,CMISS_PROBLEM_FLUID_MECHANICS_CLASS,CMISS_PROBLEM_DARCY_EQUATION_TYPE, &
-    & CMISS_PROBLEM_TRANSIENT_DARCY_SUBTYPE,Err)
+  CALL cmfe_Problem_Initialise(Problem,Err)
+  CALL cmfe_ControlLoop_Initialise(ControlLoop,Err)
+  CALL cmfe_Problem_CreateStart(ProblemUserNumber,[CMFE_PROBLEM_FLUID_MECHANICS_CLASS,CMFE_PROBLEM_DARCY_EQUATION_TYPE, &
+    & CMFE_PROBLEM_TRANSIENT_DARCY_SUBTYPE],Problem,Err)
   !Finish the creation of a problem.
-  CALL CMISSProblem_CreateFinish(Problem,Err)
+  CALL cmfe_Problem_CreateFinish(Problem,Err)
   !Start the creation of the problem control loop
-  CALL CMISSProblem_ControlLoopCreateStart(Problem,Err)
+  CALL cmfe_Problem_ControlLoopCreateStart(Problem,Err)
   !Get the control loop
-  CALL CMISSProblem_ControlLoopGet(Problem,CMISS_CONTROL_LOOP_NODE,ControlLoop,Err)
+  CALL cmfe_Problem_ControlLoopGet(Problem,CMFE_CONTROL_LOOP_NODE,ControlLoop,Err)
   !Set the times
-  CALL CMISSControlLoop_TimesSet(ControlLoop,DYNAMIC_SOLVER_DARCY_START_TIME,DYNAMIC_SOLVER_DARCY_STOP_TIME, & 
+  CALL cmfe_ControlLoop_TimesSet(ControlLoop,DYNAMIC_SOLVER_DARCY_START_TIME,DYNAMIC_SOLVER_DARCY_STOP_TIME, & 
     & DYNAMIC_SOLVER_DARCY_TIME_INCREMENT,Err)
   !Set the output timing
-  CALL CMISSControlLoop_TimeOutputSet(ControlLoop,DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY,Err)
+  CALL cmfe_ControlLoop_TimeOutputSet(ControlLoop,DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY,Err)
   !Finish creating the problem control loop
-  CALL CMISSProblem_ControlLoopCreateFinish(Problem,Err)
+  CALL cmfe_Problem_ControlLoopCreateFinish(Problem,Err)
 
   !
   !================================================================================================================================
@@ -673,40 +670,40 @@ CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumberDarcy,Region,GeometricF
   !SOLVERS
 
   !Start the creation of the problem solvers
-  CALL CMISSSolver_Initialise(DynamicSolverDarcy,Err)
-  CALL CMISSSolver_Initialise(LinearSolverDarcy,Err)
-  CALL CMISSProblem_SolversCreateStart(Problem,Err)
+  CALL cmfe_Solver_Initialise(DynamicSolverDarcy,Err)
+  CALL cmfe_Solver_Initialise(LinearSolverDarcy,Err)
+  CALL cmfe_Problem_SolversCreateStart(Problem,Err)
 
 
   !Get the dynamic dymamic solver
-  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,SolverDarcyUserNumber,DynamicSolverDarcy,Err)
+  CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,SolverDarcyUserNumber,DynamicSolverDarcy,Err)
   !Set the output type
-  CALL CMISSSolver_OutputTypeSet(DynamicSolverDarcy,DYNAMIC_SOLVER_DARCY_OUTPUT_TYPE,Err)
+  CALL cmfe_Solver_OutputTypeSet(DynamicSolverDarcy,DYNAMIC_SOLVER_DARCY_OUTPUT_TYPE,Err)
   !Set theta
-  CALL CMISSSolver_DynamicThetaSet(DynamicSolverDarcy,DYNAMIC_SOLVER_DARCY_THETA,Err)
-!   CALL CMISSSolverDynamicDynamicSet(DynamicSolverDarcy,.TRUE.,Err)
+  CALL cmfe_Solver_DynamicThetaSet(DynamicSolverDarcy,DYNAMIC_SOLVER_DARCY_THETA,Err)
+!   CALL cmfe_SolverDynamicDynamicSet(DynamicSolverDarcy,.TRUE.,Err)
   !Get the dynamic linear solver
-  CALL CMISSSolver_DynamicLinearSolverGet(DynamicSolverDarcy,LinearSolverDarcy,Err)
+  CALL cmfe_Solver_DynamicLinearSolverGet(DynamicSolverDarcy,LinearSolverDarcy,Err)
 
 !   !Get the Darcy solver
-!   CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,SolverDarcyUserNumber,LinearSolverDarcy,Err)
+!   CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,SolverDarcyUserNumber,LinearSolverDarcy,Err)
 
   !Set the output type
-  CALL CMISSSolver_OutputTypeSet(LinearSolverDarcy,LINEAR_SOLVER_DARCY_OUTPUT_TYPE,Err)
+  CALL cmfe_Solver_OutputTypeSet(LinearSolverDarcy,LINEAR_SOLVER_DARCY_OUTPUT_TYPE,Err)
   !Set the solver settings
   IF(LINEAR_SOLVER_DARCY_DIRECT_FLAG) THEN
-    CALL CMISSSolver_LinearTypeSet(LinearSolverDarcy,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
-    CALL CMISSSolver_LibraryTypeSet(LinearSolverDarcy,CMISS_SOLVER_MUMPS_LIBRARY,Err)
+    CALL cmfe_Solver_LinearTypeSet(LinearSolverDarcy,CMFE_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
+    CALL cmfe_Solver_LibraryTypeSet(LinearSolverDarcy,CMFE_SOLVER_MUMPS_LIBRARY,Err)
   ELSE
-    CALL CMISSSolver_LinearTypeSet(LinearSolverDarcy,CMISS_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
-    CALL CMISSSolver_LinearIterativeMaximumIterationsSet(LinearSolverDarcy,MAXIMUM_ITERATIONS,Err)
-    CALL CMISSSolver_LinearIterativeDivergenceToleranceSet(LinearSolverDarcy,DIVERGENCE_TOLERANCE,Err)
-    CALL CMISSSolver_LinearIterativeRelativeToleranceSet(LinearSolverDarcy,RELATIVE_TOLERANCE,Err)
-    CALL CMISSSolver_LinearIterativeAbsoluteToleranceSet(LinearSolverDarcy,ABSOLUTE_TOLERANCE,Err)
-    CALL CMISSSolver_LinearIterativeGMRESRestartSet(LinearSolverDarcy,RESTART_VALUE,Err)
+    CALL cmfe_Solver_LinearTypeSet(LinearSolverDarcy,CMFE_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
+    CALL cmfe_Solver_LinearIterativeMaximumIterationsSet(LinearSolverDarcy,MAXIMUM_ITERATIONS,Err)
+    CALL cmfe_Solver_LinearIterativeDivergenceToleranceSet(LinearSolverDarcy,DIVERGENCE_TOLERANCE,Err)
+    CALL cmfe_Solver_LinearIterativeRelativeToleranceSet(LinearSolverDarcy,RELATIVE_TOLERANCE,Err)
+    CALL cmfe_Solver_LinearIterativeAbsoluteToleranceSet(LinearSolverDarcy,ABSOLUTE_TOLERANCE,Err)
+    CALL cmfe_Solver_LinearIterativeGMRESRestartSet(LinearSolverDarcy,RESTART_VALUE,Err)
   ENDIF
   !Finish the creation of the problem solver
-  CALL CMISSProblem_SolversCreateFinish(Problem,Err)
+  CALL cmfe_Problem_SolversCreateFinish(Problem,Err)
 
   !
   !================================================================================================================================
@@ -715,19 +712,19 @@ CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumberDarcy,Region,GeometricF
   !SOLVER EQUATIONS
 
   !Start the creation of the problem solver equations
-  CALL CMISSSolver_Initialise(DynamicSolverDarcy,Err)
-  CALL CMISSSolverEquations_Initialise(SolverEquationsDarcy,Err)
+  CALL cmfe_Solver_Initialise(DynamicSolverDarcy,Err)
+  CALL cmfe_SolverEquations_Initialise(SolverEquationsDarcy,Err)
 
-  CALL CMISSProblem_SolverEquationsCreateStart(Problem,Err)
+  CALL cmfe_Problem_SolverEquationsCreateStart(Problem,Err)
   !Get the dynamic solver equations
-  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,SolverDarcyUserNumber,DynamicSolverDarcy,Err)
-  CALL CMISSSolver_SolverEquationsGet(DynamicSolverDarcy,SolverEquationsDarcy,Err)
+  CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,SolverDarcyUserNumber,DynamicSolverDarcy,Err)
+  CALL cmfe_Solver_SolverEquationsGet(DynamicSolverDarcy,SolverEquationsDarcy,Err)
   !Set the solver equations sparsity
-  CALL CMISSSolverEquations_SparsityTypeSet(SolverEquationsDarcy,CMISS_SOLVER_SPARSE_MATRICES,Err)
+  CALL cmfe_SolverEquations_SparsityTypeSet(SolverEquationsDarcy,CMFE_SOLVER_SPARSE_MATRICES,Err)
   !Add in the equations set
-  CALL CMISSSolverEquations_EquationsSetAdd(SolverEquationsDarcy,EquationsSetDarcy,EquationsSetIndex,Err)
+  CALL cmfe_SolverEquations_EquationsSetAdd(SolverEquationsDarcy,EquationsSetDarcy,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
-  CALL CMISSProblem_SolverEquationsCreateFinish(Problem,Err)
+  CALL cmfe_Problem_SolverEquationsCreateFinish(Problem,Err)
 
   !
   !================================================================================================================================
@@ -735,109 +732,109 @@ CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumberDarcy,Region,GeometricF
 
   !BOUNDARY CONDITIONS
   !Start the creation of the equations set boundary conditions for Darcy
-  CALL CMISSBoundaryConditions_Initialise(BoundaryConditionsDarcy,Err)
-  CALL CMISSSolverEquations_BoundaryConditionsCreateStart(SolverEquationsDarcy,BoundaryConditionsDarcy,Err)
+  CALL cmfe_BoundaryConditions_Initialise(BoundaryConditionsDarcy,Err)
+  CALL cmfe_SolverEquations_BoundaryConditionsCreateStart(SolverEquationsDarcy,BoundaryConditionsDarcy,Err)
 
   !--- BCs on normal velocity only
-  CONDITION = CMISS_BOUNDARY_CONDITION_MOVED_WALL
+  CONDITION = CMFE_BOUNDARY_CONDITION_MOVED_WALL
 
-  IF( CM%D==2_CMISSIntg ) THEN
-    DO NODE_NUMBER=1_CMISSIntg,NUMBER_OF_NODES_GEOMETRY
-      COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
-      COORD_Y = CM%N(NODE_NUMBER,2_CMISSIntg)
-      CALL CMISSDecomposition_NodeDomainGet(Decomposition,NODE_NUMBER,MESH_COMPONENT_NUMBER_VELOCITY,NodeDomain,Err)
+  IF( CM%D==2_CMFEIntg ) THEN
+    DO NODE_NUMBER=1_CMFEIntg,NUMBER_OF_NODES_GEOMETRY
+      COORD_X = CM%N(NODE_NUMBER,1_CMFEIntg)
+      COORD_Y = CM%N(NODE_NUMBER,2_CMFEIntg)
+      CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NODE_NUMBER,MESH_COMPONENT_NUMBER_VELOCITY,NodeDomain,Err)
 
       IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !x-velocity
-        VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE,1, &
-          & CMISS_NO_GLOBAL_DERIV, &
-          & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+        VALUE = 1.0_CMFEDP
+        CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE,1, &
+          & CMFE_NO_GLOBAL_DERIV, &
+          & NODE_NUMBER,1_CMFEIntg,CONDITION,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !x-velocity
-        VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE,1, &
-          & CMISS_NO_GLOBAL_DERIV, &
-          & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+        VALUE = 1.0_CMFEDP
+        CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE,1, &
+          & CMFE_NO_GLOBAL_DERIV, &
+          & NODE_NUMBER,1_CMFEIntg,CONDITION,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !y-velocity
-        VALUE = 2.0_CMISSDP
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE,1, &
-          & CMISS_NO_GLOBAL_DERIV, &
-          & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+        VALUE = 2.0_CMFEDP
+        CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE,1, &
+          & CMFE_NO_GLOBAL_DERIV, &
+          & NODE_NUMBER,2_CMFEIntg,CONDITION,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !y-velocity
-        VALUE = 2.0_CMISSDP
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE,1, &
-          & CMISS_NO_GLOBAL_DERIV, &
-          & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+        VALUE = 2.0_CMFEDP
+        CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE,1, &
+          & CMFE_NO_GLOBAL_DERIV, &
+          & NODE_NUMBER,2_CMFEIntg,CONDITION,VALUE,Err)
       END IF
     END DO
-  ELSE IF( CM%D==3_CMISSIntg ) THEN
-    DO NODE_NUMBER=1_CMISSIntg,NUMBER_OF_NODES_GEOMETRY
-      COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
-      COORD_Y = CM%N(NODE_NUMBER,2_CMISSIntg)
-      COORD_Z = CM%N(NODE_NUMBER,3_CMISSIntg)
-      CALL CMISSDecomposition_NodeDomainGet(Decomposition,NODE_NUMBER,MESH_COMPONENT_NUMBER_VELOCITY,NodeDomain,Err)
+  ELSE IF( CM%D==3_CMFEIntg ) THEN
+    DO NODE_NUMBER=1_CMFEIntg,NUMBER_OF_NODES_GEOMETRY
+      COORD_X = CM%N(NODE_NUMBER,1_CMFEIntg)
+      COORD_Y = CM%N(NODE_NUMBER,2_CMFEIntg)
+      COORD_Z = CM%N(NODE_NUMBER,3_CMFEIntg)
+      CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NODE_NUMBER,MESH_COMPONENT_NUMBER_VELOCITY,NodeDomain,Err)
 
       IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !x-velocity
-        VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE, &
-          & CMISS_NO_GLOBAL_DERIV,1, &
-          & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+        VALUE = 1.0_CMFEDP
+        CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE, &
+          & CMFE_NO_GLOBAL_DERIV,1, &
+          & NODE_NUMBER,1_CMFEIntg,CONDITION,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !x-velocity
-        VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE, &
-          & CMISS_NO_GLOBAL_DERIV,1, &
-          & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
+        VALUE = 1.0_CMFEDP
+        CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE, &
+          & CMFE_NO_GLOBAL_DERIV,1, &
+          & NODE_NUMBER,1_CMFEIntg,CONDITION,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !y-velocity
-        VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE, &
-          & CMISS_NO_GLOBAL_DERIV,1, &
-          & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+        VALUE = 1.0_CMFEDP
+        CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE, &
+          & CMFE_NO_GLOBAL_DERIV,1, &
+          & NODE_NUMBER,2_CMFEIntg,CONDITION,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !y-velocity
-        VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE, &
-          & CMISS_NO_GLOBAL_DERIV,1, &
-          & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
+        VALUE = 1.0_CMFEDP
+        CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE, &
+          & CMFE_NO_GLOBAL_DERIV,1, &
+          & NODE_NUMBER,2_CMFEIntg,CONDITION,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !z-velocity
-        VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE, &
-          & CMISS_NO_GLOBAL_DERIV,1, &
-          & NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
+        VALUE = 1.0_CMFEDP
+        CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE, &
+          & CMFE_NO_GLOBAL_DERIV,1, &
+          & NODE_NUMBER,3_CMFEIntg,CONDITION,VALUE,Err)
       END IF
       !
       IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) .AND. ComputationalNodeNumber==NodeDomain ) THEN
         !z-velocity
-        VALUE = 1.0_CMISSDP
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMISS_FIELD_U_VARIABLE_TYPE, &
-          & CMISS_NO_GLOBAL_DERIV,1, &
-          & NODE_NUMBER,3_CMISSIntg,CONDITION,VALUE,Err)
+        VALUE = 1.0_CMFEDP
+        CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE, &
+          & CMFE_NO_GLOBAL_DERIV,1, &
+          & NODE_NUMBER,3_CMFEIntg,CONDITION,VALUE,Err)
       END IF
     END DO
   END IF
 
   !Finish the creation of the equations set boundary conditions for Darcy
-  CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquationsDarcy,Err)
+  CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquationsDarcy,Err)
 
   !
   !================================================================================================================================
@@ -850,7 +847,7 @@ CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumberDarcy,Region,GeometricF
 
   !Solve the problem
   WRITE(*,'(A)') "Solving problem..."
-  CALL CMISSProblem_Solve(Problem,Err)
+  CALL cmfe_Problem_Solve(Problem,Err)
   WRITE(*,'(A)') "Problem solved!"
 
   !
@@ -862,16 +859,16 @@ CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumberDarcy,Region,GeometricF
   EXPORT_FIELD_IO=.TRUE.
   IF(EXPORT_FIELD_IO) THEN
     WRITE(*,'(A)') "Exporting fields..."
-    CALL CMISSFields_Initialise(Fields,Err)
-    CALL CMISSFields_Create(Region,Fields,Err)
-    CALL CMISSFields_NodesExport(Fields,"DynamicDarcy","FORTRAN",Err)
-    CALL CMISSFields_ElementsExport(Fields,"DynamicDarcy","FORTRAN",Err)
-    CALL CMISSFields_Finalise(Fields,Err)
+    CALL cmfe_Fields_Initialise(Fields,Err)
+    CALL cmfe_Fields_Create(Region,Fields,Err)
+    CALL cmfe_Fields_NodesExport(Fields,"DynamicDarcy","FORTRAN",Err)
+    CALL cmfe_Fields_ElementsExport(Fields,"DynamicDarcy","FORTRAN",Err)
+    CALL cmfe_Fields_Finalise(Fields,Err)
     WRITE(*,'(A)') "Field exported!"
   ENDIF
 
   !Finialise CMISS
-  CALL CMISSFinalise(Err)
+  CALL cmfe_Finalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
 

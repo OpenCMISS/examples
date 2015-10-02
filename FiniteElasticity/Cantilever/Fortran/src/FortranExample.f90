@@ -60,64 +60,64 @@ PROGRAM CANTILEVEREXAMPLE
 
   !Test program parameters
 
-  REAL(CMISSDP), PARAMETER :: Width=60.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: Length=40.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: Height=40.0_CMISSDP
-  INTEGER(CMISSIntg) :: DisplacementInterpolationType
-  INTEGER(CMISSIntg) :: PressureInterpolationType
-  INTEGER(CMISSIntg) :: PressureMeshComponent
-  INTEGER(CMISSIntg) :: NumberOfGaussXi
-  INTEGER(CMISSIntg) :: ScalingType
-  REAL(CMISSDP), PARAMETER :: Density=9.0E-4_CMISSDP !in g mm^-3
-  REAL(CMISSDP), PARAMETER :: Gravity(3)=[0.0_CMISSDP,0.0_CMISSDP,-9.8_CMISSDP] !in m s^-2
-  INTEGER(CMISSIntg), PARAMETER :: NumberOfLoadIncrements=2
+  REAL(CMFEDP), PARAMETER :: Width=60.0_CMFEDP
+  REAL(CMFEDP), PARAMETER :: Length=40.0_CMFEDP
+  REAL(CMFEDP), PARAMETER :: Height=40.0_CMFEDP
+  INTEGER(CMFEIntg) :: DisplacementInterpolationType
+  INTEGER(CMFEIntg) :: PressureInterpolationType
+  INTEGER(CMFEIntg) :: PressureMeshComponent
+  INTEGER(CMFEIntg) :: NumberOfGaussXi
+  INTEGER(CMFEIntg) :: ScalingType
+  REAL(CMFEDP), PARAMETER :: Density=9.0E-4_CMFEDP !in g mm^-3
+  REAL(CMFEDP), PARAMETER :: Gravity(3)=[0.0_CMFEDP,0.0_CMFEDP,-9.8_CMFEDP] !in m s^-2
+  INTEGER(CMFEIntg), PARAMETER :: NumberOfLoadIncrements=2
 
-  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: DisplacementBasisUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: PressureBasisUserNumber=2
-  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: FieldFibreUserNumber=2
-  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
-  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=4
-  INTEGER(CMISSIntg), PARAMETER :: FieldSourceUserNumber=5
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=6
-  INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
-  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
+  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=1
+  INTEGER(CMFEIntg), PARAMETER :: DisplacementBasisUserNumber=1
+  INTEGER(CMFEIntg), PARAMETER :: PressureBasisUserNumber=2
+  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=1
+  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=1
+  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryUserNumber=1
+  INTEGER(CMFEIntg), PARAMETER :: FieldFibreUserNumber=2
+  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialUserNumber=3
+  INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumber=4
+  INTEGER(CMFEIntg), PARAMETER :: FieldSourceUserNumber=5
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=6
+  INTEGER(CMFEIntg), PARAMETER :: EquationSetUserNumber=1
+  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=1
 
   !Program variables
 
-  INTEGER(CMISSIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
-  INTEGER(CMISSIntg) :: EquationsSetIndex
-  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
-  INTEGER(CMISSIntg) :: NodeNumber,NodeDomain,node_idx,component_idx,deriv_idx
-  INTEGER(CMISSIntg),ALLOCATABLE :: LeftSurfaceNodes(:)
-  INTEGER(CMISSIntg) :: LeftNormalXi
-  INTEGER(CMISSIntg) :: NumberOfArguments,ArgumentLength,ArgStatus
+  INTEGER(CMFEIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
+  INTEGER(CMFEIntg) :: EquationsSetIndex
+  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
+  INTEGER(CMFEIntg) :: NodeNumber,NodeDomain,node_idx,component_idx,deriv_idx
+  INTEGER(CMFEIntg),ALLOCATABLE :: LeftSurfaceNodes(:)
+  INTEGER(CMFEIntg) :: LeftNormalXi
+  INTEGER(CMFEIntg) :: NumberOfArguments,ArgumentLength,ArgStatus
   CHARACTER(LEN=255) :: CommandArgument
 
   !CMISS variables
-  TYPE(CMISSBasisType) :: DisplacementBasis,PressureBasis
-  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
-  TYPE(CMISSCoordinateSystemType) :: CoordinateSystem, WorldCoordinateSystem
-  TYPE(CMISSMeshType) :: Mesh
-  TYPE(CMISSDecompositionType) :: Decomposition
-  TYPE(CMISSEquationsType) :: Equations
-  TYPE(CMISSEquationsSetType) :: EquationsSet
-  TYPE(CMISSFieldType) :: GeometricField,FibreField,MaterialField,DependentField,SourceField,EquationsSetField
-  TYPE(CMISSFieldsType) :: Fields
-  TYPE(CMISSGeneratedMeshType) :: GeneratedMesh
-  TYPE(CMISSProblemType) :: Problem
-  TYPE(CMISSRegionType) :: Region,WorldRegion
-  TYPE(CMISSSolverType) :: Solver,LinearSolver
-  TYPE(CMISSSolverEquationsType) :: SolverEquations
-  TYPE(CMISSControlLoopType) :: ControlLoop
+  TYPE(cmfe_BasisType) :: DisplacementBasis,PressureBasis
+  TYPE(cmfe_BoundaryConditionsType) :: BoundaryConditions
+  TYPE(cmfe_CoordinateSystemType) :: CoordinateSystem, WorldCoordinateSystem
+  TYPE(cmfe_MeshType) :: Mesh
+  TYPE(cmfe_DecompositionType) :: Decomposition
+  TYPE(cmfe_EquationsType) :: Equations
+  TYPE(cmfe_EquationsSetType) :: EquationsSet
+  TYPE(cmfe_FieldType) :: GeometricField,FibreField,MaterialField,DependentField,SourceField,EquationsSetField
+  TYPE(cmfe_FieldsType) :: Fields
+  TYPE(cmfe_GeneratedMeshType) :: GeneratedMesh
+  TYPE(cmfe_ProblemType) :: Problem
+  TYPE(cmfe_RegionType) :: Region,WorldRegion
+  TYPE(cmfe_SolverType) :: Solver,LinearSolver
+  TYPE(cmfe_SolverEquationsType) :: SolverEquations
+  TYPE(cmfe_ControlLoopType) :: ControlLoop
 
   !Generic CMISS variables
-  INTEGER(CMISSIntg) :: Err
+  INTEGER(CMFEIntg) :: Err
 
 #ifdef WIN32
   !Quickwin type
@@ -134,18 +134,18 @@ PROGRAM CANTILEVEREXAMPLE
 #endif
 
   !Intialise cmiss
-  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
-  CALL CMISSErrorHandlingModeSet(CMISS_ERRORS_TRAP_ERROR,Err)
-  CALL CMISSOutputSetOn("Cantilever",Err)
+  CALL cmfe_Initialise(WorldCoordinateSystem,WorldRegion,Err)
+  CALL cmfe_ErrorHandlingModeSet(CMFE_ERRORS_TRAP_ERROR,Err)
+  CALL cmfe_OutputSetOn("Cantilever",Err)
 
   !Read in arguments and overwrite default values
   !Usage: CantileverExample [Displacement Interpolation Type] [X elements] [Y elements] [Z elements] [Scaling Type]
   !Defaults:
-  DisplacementInterpolationType=CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION
+  DisplacementInterpolationType=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
   NumberGlobalXElements=3
   NumberGlobalYElements=2
   NumberGlobalZElements=2
-  ScalingType=CMISS_FIELD_ARITHMETIC_MEAN_SCALING
+  ScalingType=CMFE_FIELD_ARITHMETIC_MEAN_SCALING
 
   NumberOfArguments = COMMAND_ARGUMENT_COUNT()
   IF(NumberOfArguments >= 1) THEN
@@ -171,7 +171,7 @@ PROGRAM CANTILEVEREXAMPLE
     READ(CommandArgument(1:ArgumentLength),*) NumberGlobalZElements
     IF(NumberGlobalZElements<1) CALL HANDLE_ERROR("Invalid number of Z elements.")
   ENDIF
-  IF(DisplacementInterpolationType==CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION) THEN
+  IF(DisplacementInterpolationType==CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION) THEN
     IF(NumberOfArguments >= 5) THEN
       CALL GET_COMMAND_ARGUMENT(5,CommandArgument,ArgumentLength,ArgStatus)
       IF(ArgStatus>0) CALL HANDLE_ERROR("Error for command argument 5.")
@@ -179,21 +179,21 @@ PROGRAM CANTILEVEREXAMPLE
       IF(ScalingType<0.OR.ScalingType>5) CALL HANDLE_ERROR("Invalid scaling type.")
     ENDIF
   ELSE
-    ScalingType=CMISS_FIELD_NO_SCALING
+    ScalingType=CMFE_FIELD_NO_SCALING
   ENDIF
   SELECT CASE(DisplacementInterpolationType)
-  CASE(CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION)
+  CASE(CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION)
     NumberOfGaussXi=2
     PressureMeshComponent=1
-  CASE(CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION)
+  CASE(CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION)
     NumberOfGaussXi=3
     PressureMeshComponent=2
-    PressureInterpolationType=CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION
-  CASE(CMISS_BASIS_CUBIC_LAGRANGE_INTERPOLATION,CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION)
+    PressureInterpolationType=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
+  CASE(CMFE_BASIS_CUBIC_LAGRANGE_INTERPOLATION,CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION)
     NumberOfGaussXi=4
     PressureMeshComponent=2
     !Should generally use quadratic interpolation but use linear to match CMISS example 5e
-    PressureInterpolationType=CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION
+    PressureInterpolationType=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
   CASE DEFAULT
     NumberOfGaussXi=0
     PressureMeshComponent=1
@@ -203,258 +203,255 @@ PROGRAM CANTILEVEREXAMPLE
   WRITE(*,'("Scaling type: ", i3)') ScalingType
 
   !Get the number of computational nodes and this computational node number
-  CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
-  CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
+  CALL cmfe_ComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
+  CALL cmfe_ComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
   NumberOfDomains=NumberOfComputationalNodes
 
   !Create a 3D rectangular cartesian coordinate system
-  CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
-  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
-  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_Initialise(CoordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Create a region and assign the coordinate system to the region
-  CALL CMISSRegion_Initialise(Region,Err)
-  CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
-  CALL CMISSRegion_LabelSet(Region,"Region",Err)
-  CALL CMISSRegion_CoordinateSystemSet(Region,CoordinateSystem,Err)
-  CALL CMISSRegion_CreateFinish(Region,Err)
+  CALL cmfe_Region_Initialise(Region,Err)
+  CALL cmfe_Region_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  CALL cmfe_Region_LabelSet(Region,"Region",Err)
+  CALL cmfe_Region_CoordinateSystemSet(Region,CoordinateSystem,Err)
+  CALL cmfe_Region_CreateFinish(Region,Err)
 
   !Define basis function for displacement
-  CALL CMISSBasis_Initialise(DisplacementBasis,Err)
-  CALL CMISSBasis_CreateStart(DisplacementBasisUserNumber,DisplacementBasis,Err)
+  CALL cmfe_Basis_Initialise(DisplacementBasis,Err)
+  CALL cmfe_Basis_CreateStart(DisplacementBasisUserNumber,DisplacementBasis,Err)
   SELECT CASE(DisplacementInterpolationType)
   CASE(1,2,3,4)
-    CALL CMISSBasis_TypeSet(DisplacementBasis,CMISS_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
+    CALL cmfe_Basis_TypeSet(DisplacementBasis,CMFE_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
   CASE(7,8,9)
-    CALL CMISSBasis_TypeSet(DisplacementBasis,CMISS_BASIS_SIMPLEX_TYPE,Err)
+    CALL cmfe_Basis_TypeSet(DisplacementBasis,CMFE_BASIS_SIMPLEX_TYPE,Err)
   END SELECT
-  CALL CMISSBasis_NumberOfXiSet(DisplacementBasis,3,Err)
-  CALL CMISSBasis_InterpolationXiSet(DisplacementBasis,[DisplacementInterpolationType,DisplacementInterpolationType, &
+  CALL cmfe_Basis_NumberOfXiSet(DisplacementBasis,3,Err)
+  CALL cmfe_Basis_InterpolationXiSet(DisplacementBasis,[DisplacementInterpolationType,DisplacementInterpolationType, &
       & DisplacementInterpolationType],Err)
   IF(NumberOfGaussXi>0) THEN
-    CALL CMISSBasis_QuadratureNumberOfGaussXiSet(DisplacementBasis,[NumberOfGaussXi,NumberOfGaussXi,NumberOfGaussXi],Err)
+    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(DisplacementBasis,[NumberOfGaussXi,NumberOfGaussXi,NumberOfGaussXi],Err)
   ENDIF
-  CALL CMISSBasis_CreateFinish(DisplacementBasis,Err)
+  CALL cmfe_Basis_CreateFinish(DisplacementBasis,Err)
 
   IF(PressureMeshComponent/=1) THEN
     !Basis for pressure
-    CALL CMISSBasis_Initialise(PressureBasis,Err)
-    CALL CMISSBasis_CreateStart(PressureBasisUserNumber,PressureBasis,Err)
+    CALL cmfe_Basis_Initialise(PressureBasis,Err)
+    CALL cmfe_Basis_CreateStart(PressureBasisUserNumber,PressureBasis,Err)
     SELECT CASE(PressureInterpolationType)
     CASE(1,2,3,4)
-      CALL CMISSBasis_TypeSet(PressureBasis,CMISS_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
+      CALL cmfe_Basis_TypeSet(PressureBasis,CMFE_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
     CASE(7,8,9)
-      CALL CMISSBasis_TypeSet(PressureBasis,CMISS_BASIS_SIMPLEX_TYPE,Err)
+      CALL cmfe_Basis_TypeSet(PressureBasis,CMFE_BASIS_SIMPLEX_TYPE,Err)
     END SELECT
-    CALL CMISSBasis_NumberOfXiSet(PressureBasis,3,Err)
-    CALL CMISSBasis_InterpolationXiSet(PressureBasis,[PressureInterpolationType,PressureInterpolationType, &
+    CALL cmfe_Basis_NumberOfXiSet(PressureBasis,3,Err)
+    CALL cmfe_Basis_InterpolationXiSet(PressureBasis,[PressureInterpolationType,PressureInterpolationType, &
         & PressureInterpolationType],Err)
     IF(NumberOfGaussXi>0) THEN
-      CALL CMISSBasis_QuadratureNumberOfGaussXiSet(PressureBasis,[NumberOfGaussXi,NumberOfGaussXi,NumberOfGaussXi],Err)
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(PressureBasis,[NumberOfGaussXi,NumberOfGaussXi,NumberOfGaussXi],Err)
     ENDIF
-    CALL CMISSBasis_CreateFinish(PressureBasis,Err)
+    CALL cmfe_Basis_CreateFinish(PressureBasis,Err)
   ENDIF
 
   !Start the creation of a generated mesh in the region
-  CALL CMISSGeneratedMesh_Initialise(GeneratedMesh,Err)
-  CALL CMISSGeneratedMesh_CreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
+  CALL cmfe_GeneratedMesh_Initialise(GeneratedMesh,Err)
+  CALL cmfe_GeneratedMesh_CreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
   !Set up a regular x*y*z mesh
-  CALL CMISSGeneratedMesh_TypeSet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_MESH_TYPE,Err)
+  CALL cmfe_GeneratedMesh_TypeSet(GeneratedMesh,CMFE_GENERATED_MESH_REGULAR_MESH_TYPE,Err)
   !Set the default basis
   IF(PressureMeshComponent==1) THEN
-    CALL CMISSGeneratedMesh_BasisSet(GeneratedMesh,[DisplacementBasis],Err)
+    CALL cmfe_GeneratedMesh_BasisSet(GeneratedMesh,[DisplacementBasis],Err)
   ELSE
-    CALL CMISSGeneratedMesh_BasisSet(GeneratedMesh,[DisplacementBasis,PressureBasis],Err)
+    CALL cmfe_GeneratedMesh_BasisSet(GeneratedMesh,[DisplacementBasis,PressureBasis],Err)
   ENDIF
   !Define the mesh on the region
   IF(NumberGlobalXElements==0) THEN
-    CALL CMISSGeneratedMesh_ExtentSet(GeneratedMesh,[Width,Height],Err)
-    CALL CMISSGeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements,NumberGlobalYElements],Err)
+    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[Width,Height],Err)
+    CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements,NumberGlobalYElements],Err)
   ELSE
-    CALL CMISSGeneratedMesh_ExtentSet(GeneratedMesh,[Width,Length,Height],Err)
-    CALL CMISSGeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements,NumberGlobalYElements, &
+    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[Width,Length,Height],Err)
+    CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements,NumberGlobalYElements, &
       & NumberGlobalZElements],Err)
   ENDIF
   !Finish the creation of a generated mesh in the region
-  CALL CMISSMesh_Initialise(Mesh,Err)
-  CALL CMISSGeneratedMesh_CreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
+  CALL cmfe_Mesh_Initialise(Mesh,Err)
+  CALL cmfe_GeneratedMesh_CreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
 
   !Create a decomposition
-  CALL CMISSDecomposition_Initialise(Decomposition,Err)
-  CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
-  CALL CMISSDecomposition_TypeSet(Decomposition,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
-  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
-  CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
+  CALL cmfe_Decomposition_Initialise(Decomposition,Err)
+  CALL cmfe_Decomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
+  CALL cmfe_Decomposition_TypeSet(Decomposition,CMFE_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL cmfe_Decomposition_NumberOfDomainsSet(Decomposition,NumberOfDomains,Err)
+  CALL cmfe_Decomposition_CreateFinish(Decomposition,Err)
 
   !Create a field to put the geometry (defualt is geometry)
-  CALL CMISSField_Initialise(GeometricField,Err)
-  CALL CMISSField_CreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
-  CALL CMISSField_MeshDecompositionSet(GeometricField,Decomposition,Err)
-  CALL CMISSField_VariableLabelSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,"Geometry",Err)
-  CALL CMISSField_ScalingTypeSet(GeometricField,ScalingType,Err)
-  CALL CMISSField_CreateFinish(GeometricField,Err)
+  CALL cmfe_Field_Initialise(GeometricField,Err)
+  CALL cmfe_Field_CreateStart(FieldGeometryUserNumber,Region,GeometricField,Err)
+  CALL cmfe_Field_MeshDecompositionSet(GeometricField,Decomposition,Err)
+  CALL cmfe_Field_VariableLabelSet(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,"Geometry",Err)
+  CALL cmfe_Field_ScalingTypeSet(GeometricField,ScalingType,Err)
+  CALL cmfe_Field_CreateFinish(GeometricField,Err)
 
   !Update the geometric field parameters
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
+  CALL cmfe_GeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
 
   !Create a fibre field and attach it to the geometric field
-  CALL CMISSField_Initialise(FibreField,Err)
-  CALL CMISSField_CreateStart(FieldFibreUserNumber,Region,FibreField,Err)
-  CALL CMISSField_TypeSet(FibreField,CMISS_FIELD_FIBRE_TYPE,Err)
-  CALL CMISSField_MeshDecompositionSet(FibreField,Decomposition,Err)
-  CALL CMISSField_GeometricFieldSet(FibreField,GeometricField,Err)
-  CALL CMISSField_VariableLabelSet(FibreField,CMISS_FIELD_U_VARIABLE_TYPE,"Fibre",Err)
-  CALL CMISSField_ScalingTypeSet(FibreField,ScalingType,Err)
-  CALL CMISSField_CreateFinish(FibreField,Err)
+  CALL cmfe_Field_Initialise(FibreField,Err)
+  CALL cmfe_Field_CreateStart(FieldFibreUserNumber,Region,FibreField,Err)
+  CALL cmfe_Field_TypeSet(FibreField,CMFE_FIELD_FIBRE_TYPE,Err)
+  CALL cmfe_Field_MeshDecompositionSet(FibreField,Decomposition,Err)
+  CALL cmfe_Field_GeometricFieldSet(FibreField,GeometricField,Err)
+  CALL cmfe_Field_VariableLabelSet(FibreField,CMFE_FIELD_U_VARIABLE_TYPE,"Fibre",Err)
+  CALL cmfe_Field_ScalingTypeSet(FibreField,ScalingType,Err)
+  CALL cmfe_Field_CreateFinish(FibreField,Err)
 
   !Create the equations_set
-  CALL CMISSField_Initialise(EquationsSetField,Err)
-  CALL CMISSEquationsSet_CreateStart(EquationSetUserNumber,Region,FibreField,CMISS_EQUATIONS_SET_ELASTICITY_CLASS, &
-    & CMISS_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMISS_EQUATIONS_SET_MOONEY_RIVLIN_SUBTYPE,EquationsSetFieldUserNumber, &
-      & EquationsSetField, &
-    & EquationsSet,Err)
-  CALL CMISSEquationsSet_CreateFinish(EquationsSet,Err)
+  CALL cmfe_Field_Initialise(EquationsSetField,Err)
+  CALL cmfe_EquationsSet_CreateStart(EquationSetUserNumber,Region,FibreField,[CMFE_EQUATIONS_SET_ELASTICITY_CLASS, &
+    & CMFE_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMFE_EQUATIONS_SET_MOONEY_RIVLIN_SUBTYPE],EquationsSetFieldUserNumber, &
+    & EquationsSetField,EquationsSet,Err)
+  CALL cmfe_EquationsSet_CreateFinish(EquationsSet,Err)
 
   !Create the dependent field
-  CALL CMISSField_Initialise(DependentField,Err)
-  CALL CMISSEquationsSet_DependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)
-  CALL CMISSField_VariableLabelSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,"Dependent",Err)
+  CALL cmfe_Field_Initialise(DependentField,Err)
+  CALL cmfe_EquationsSet_DependentCreateStart(EquationsSet,FieldDependentUserNumber,DependentField,Err)
+  CALL cmfe_Field_VariableLabelSet(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,"Dependent",Err)
   DO component_idx=1,3
-    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,component_idx,1,Err)
-    CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,component_idx,1,Err)
+    CALL cmfe_Field_ComponentMeshComponentSet(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,component_idx,1,Err)
+    CALL cmfe_Field_ComponentMeshComponentSet(DependentField,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,component_idx,1,Err)
   ENDDO
-  CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,4,PressureMeshComponent,Err)
-  CALL CMISSField_ComponentMeshComponentSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,4,PressureMeshComponent,Err)
+  CALL cmfe_Field_ComponentMeshComponentSet(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,4,PressureMeshComponent,Err)
+  CALL cmfe_Field_ComponentMeshComponentSet(DependentField,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,4,PressureMeshComponent,Err)
   IF(PressureMeshComponent==1) THEN
-    CALL CMISSField_ComponentInterpolationSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,4, &
-      & CMISS_FIELD_ELEMENT_BASED_INTERPOLATION, &
+    CALL cmfe_Field_ComponentInterpolationSet(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,4, &
+      & CMFE_FIELD_ELEMENT_BASED_INTERPOLATION, &
       & Err)
-    CALL CMISSField_ComponentInterpolationSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,4, &
-      & CMISS_FIELD_ELEMENT_BASED_INTERPOLATION,Err)
+    CALL cmfe_Field_ComponentInterpolationSet(DependentField,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,4, &
+      & CMFE_FIELD_ELEMENT_BASED_INTERPOLATION,Err)
   ELSE
-    CALL CMISSField_ComponentInterpolationSet(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,4,CMISS_FIELD_NODE_BASED_INTERPOLATION,Err)
-    CALL CMISSField_ComponentInterpolationSet(DependentField,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,4, &
-      & CMISS_FIELD_NODE_BASED_INTERPOLATION,Err)
+    CALL cmfe_Field_ComponentInterpolationSet(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,4,CMFE_FIELD_NODE_BASED_INTERPOLATION,Err)
+    CALL cmfe_Field_ComponentInterpolationSet(DependentField,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,4, &
+      & CMFE_FIELD_NODE_BASED_INTERPOLATION,Err)
   ENDIF
-  CALL CMISSField_ScalingTypeSet(DependentField,ScalingType,Err)
-  CALL CMISSEquationsSet_DependentCreateFinish(EquationsSet,Err)
+  CALL cmfe_Field_ScalingTypeSet(DependentField,ScalingType,Err)
+  CALL cmfe_EquationsSet_DependentCreateFinish(EquationsSet,Err)
 
   !Create the material field
-  CALL CMISSField_Initialise(MaterialField,Err)
-  CALL CMISSEquationsSet_MaterialsCreateStart(EquationsSet,FieldMaterialUserNumber,MaterialField,Err)
-  CALL CMISSField_VariableLabelSet(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,"Material",Err)
-  CALL CMISSField_VariableLabelSet(MaterialField,CMISS_FIELD_V_VARIABLE_TYPE,"Density",Err)
-  CALL CMISSEquationsSet_MaterialsCreateFinish(EquationsSet,Err)
+  CALL cmfe_Field_Initialise(MaterialField,Err)
+  CALL cmfe_EquationsSet_MaterialsCreateStart(EquationsSet,FieldMaterialUserNumber,MaterialField,Err)
+  CALL cmfe_Field_VariableLabelSet(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,"Material",Err)
+  CALL cmfe_Field_VariableLabelSet(MaterialField,CMFE_FIELD_V_VARIABLE_TYPE,"Density",Err)
+  CALL cmfe_EquationsSet_MaterialsCreateFinish(EquationsSet,Err)
 
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively
-  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,2.0_CMISSDP,Err)
-  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,6.0_CMISSDP,Err)
-  CALL CMISSField_ComponentValuesInitialise(MaterialField,CMISS_FIELD_V_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,Density,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0_CMFEDP,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,6.0_CMFEDP,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,Density,Err)
 
   !Create the source field with the gravity vector
-  CALL CMISSField_Initialise(SourceField,Err)
-  CALL CMISSEquationsSet_SourceCreateStart(EquationsSet,FieldSourceUserNumber,SourceField,Err)
-  CALL CMISSField_ScalingTypeSet(SourceField,ScalingType,Err)
-  CALL CMISSEquationsSet_SourceCreateFinish(EquationsSet,Err)
+  CALL cmfe_Field_Initialise(SourceField,Err)
+  CALL cmfe_EquationsSet_SourceCreateStart(EquationsSet,FieldSourceUserNumber,SourceField,Err)
+  CALL cmfe_Field_ScalingTypeSet(SourceField,ScalingType,Err)
+  CALL cmfe_EquationsSet_SourceCreateFinish(EquationsSet,Err)
   DO component_idx=1,3
-    CALL CMISSField_ComponentValuesInitialise(SourceField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
+    CALL cmfe_Field_ComponentValuesInitialise(SourceField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
         & component_idx,Gravity(component_idx),Err)
   ENDDO
 
   !Create the equations set equations
-  CALL CMISSEquations_Initialise(Equations,Err)
-  CALL CMISSEquationsSet_EquationsCreateStart(EquationsSet,Equations,Err)
-  CALL CMISSEquations_SparsityTypeSet(Equations,CMISS_EQUATIONS_SPARSE_MATRICES,Err)
-  CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_NO_OUTPUT,Err)
-  CALL CMISSEquationsSet_EquationsCreateFinish(EquationsSet,Err)
+  CALL cmfe_Equations_Initialise(Equations,Err)
+  CALL cmfe_EquationsSet_EquationsCreateStart(EquationsSet,Equations,Err)
+  CALL cmfe_Equations_SparsityTypeSet(Equations,CMFE_EQUATIONS_SPARSE_MATRICES,Err)
+  CALL cmfe_Equations_OutputTypeSet(Equations,CMFE_EQUATIONS_NO_OUTPUT,Err)
+  CALL cmfe_EquationsSet_EquationsCreateFinish(EquationsSet,Err)
 
   !Initialise dependent field from undeformed geometry and displacement bcs and set hydrostatic pressure
-  CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1,Err)
-  CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 2,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,2,Err)
-  CALL CMISSField_ParametersToFieldParametersComponentCopy(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 3,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,3,Err)
-  CALL CMISSField_ComponentValuesInitialise(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,4, &
-    & -14.0_CMISSDP, &
-    & Err)
-  CALL CMISSField_ParameterSetUpdateStart(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
-  CALL CMISSField_ParameterSetUpdateFinish(DependentField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
+  CALL cmfe_Field_ParametersToFieldParametersComponentCopy(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,Err)
+  CALL cmfe_Field_ParametersToFieldParametersComponentCopy(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 2,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,Err)
+  CALL cmfe_Field_ParametersToFieldParametersComponentCopy(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 3,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4, &
+    & -14.0_CMFEDP,Err)
+  CALL cmfe_Field_ParameterSetUpdateStart(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
+  CALL cmfe_Field_ParameterSetUpdateFinish(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
 
   !Define the problem
-  CALL CMISSProblem_Initialise(Problem,Err)
-  CALL CMISSProblem_CreateStart(ProblemUserNumber,Problem,Err)
-  CALL CMISSProblem_SpecificationSet(Problem,CMISS_PROBLEM_ELASTICITY_CLASS,CMISS_PROBLEM_FINITE_ELASTICITY_TYPE, &
-    & CMISS_PROBLEM_NO_SUBTYPE,Err)
-  CALL CMISSProblem_CreateFinish(Problem,Err)
+  CALL cmfe_Problem_Initialise(Problem,Err)
+  CALL cmfe_Problem_CreateStart(ProblemUserNumber,[CMFE_PROBLEM_ELASTICITY_CLASS,CMFE_PROBLEM_FINITE_ELASTICITY_TYPE, &
+    & CMFE_PROBLEM_NO_SUBTYPE],Problem,Err)
+  CALL cmfe_Problem_CreateFinish(Problem,Err)
 
   !Create the problem control loop
-  CALL CMISSProblem_ControlLoopCreateStart(Problem,Err)
-  CALL CMISSControlLoop_Initialise(ControlLoop,Err)
-  CALL CMISSProblem_ControlLoopGet(Problem,CMISS_CONTROL_LOOP_NODE,ControlLoop,Err)
-  CALL CMISSControlLoop_MaximumIterationsSet(ControlLoop,NumberOfLoadIncrements,Err)
-  CALL CMISSProblem_ControlLoopCreateFinish(Problem,Err)
+  CALL cmfe_Problem_ControlLoopCreateStart(Problem,Err)
+  CALL cmfe_ControlLoop_Initialise(ControlLoop,Err)
+  CALL cmfe_Problem_ControlLoopGet(Problem,CMFE_CONTROL_LOOP_NODE,ControlLoop,Err)
+  CALL cmfe_ControlLoop_MaximumIterationsSet(ControlLoop,NumberOfLoadIncrements,Err)
+  CALL cmfe_Problem_ControlLoopCreateFinish(Problem,Err)
 
   !Create the problem solvers
-  CALL CMISSSolver_Initialise(Solver,Err)
-  CALL CMISSSolver_Initialise(LinearSolver,Err)
-  CALL CMISSProblem_SolversCreateStart(Problem,Err)
-  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,Solver,Err)
-  CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
-  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(Solver,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
-  CALL CMISSSolver_NewtonLinearSolverGet(Solver,LinearSolver,Err)
-  CALL CMISSSolver_LinearTypeSet(LinearSolver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
-  CALL CMISSProblem_SolversCreateFinish(Problem,Err)
+  CALL cmfe_Solver_Initialise(Solver,Err)
+  CALL cmfe_Solver_Initialise(LinearSolver,Err)
+  CALL cmfe_Problem_SolversCreateStart(Problem,Err)
+  CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,1,Solver,Err)
+  CALL cmfe_Solver_OutputTypeSet(Solver,CMFE_SOLVER_PROGRESS_OUTPUT,Err)
+  CALL cmfe_Solver_NewtonJacobianCalculationTypeSet(Solver,CMFE_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
+  CALL cmfe_Solver_NewtonLinearSolverGet(Solver,LinearSolver,Err)
+  CALL cmfe_Solver_LinearTypeSet(LinearSolver,CMFE_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
+  CALL cmfe_Problem_SolversCreateFinish(Problem,Err)
 
   !Create the problem solver equations
-  CALL CMISSSolver_Initialise(Solver,Err)
-  CALL CMISSSolverEquations_Initialise(SolverEquations,Err)
-  CALL CMISSProblem_SolverEquationsCreateStart(Problem,Err)
-  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,Solver,Err)
-  CALL CMISSSolver_SolverEquationsGet(Solver,SolverEquations,Err)
-  CALL CMISSSolverEquations_SparsityTypeSet(SolverEquations,CMISS_SOLVER_SPARSE_MATRICES,Err)
-  CALL CMISSSolverEquations_EquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
-  CALL CMISSProblem_SolverEquationsCreateFinish(Problem,Err)
+  CALL cmfe_Solver_Initialise(Solver,Err)
+  CALL cmfe_SolverEquations_Initialise(SolverEquations,Err)
+  CALL cmfe_Problem_SolverEquationsCreateStart(Problem,Err)
+  CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,1,Solver,Err)
+  CALL cmfe_Solver_SolverEquationsGet(Solver,SolverEquations,Err)
+  CALL cmfe_SolverEquations_SparsityTypeSet(SolverEquations,CMFE_SOLVER_SPARSE_MATRICES,Err)
+  CALL cmfe_SolverEquations_EquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
+  CALL cmfe_Problem_SolverEquationsCreateFinish(Problem,Err)
 
   !Prescribe boundary conditions (absolute nodal parameters)
-  CALL CMISSBoundaryConditions_Initialise(BoundaryConditions,Err)
-  CALL CMISSSolverEquations_BoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+  CALL cmfe_BoundaryConditions_Initialise(BoundaryConditions,Err)
+  CALL cmfe_SolverEquations_BoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
 
-  CALL CMISSGeneratedMesh_SurfaceGet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_LEFT_SURFACE,LeftSurfaceNodes,LeftNormalXi,Err)
+  CALL cmfe_GeneratedMesh_SurfaceGet(GeneratedMesh,CMFE_GENERATED_MESH_REGULAR_LEFT_SURFACE,LeftSurfaceNodes,LeftNormalXi,Err)
 
   !Fix x=0 nodes in x, y and z
   DO node_idx=1,SIZE(LeftSurfaceNodes,1)
     NodeNumber=LeftSurfaceNodes(node_idx)
-    CALL CMISSDecomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
+    CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       DO component_idx=1,3
-        CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber, &
-          & component_idx,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
-        IF(DisplacementInterpolationType==CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION) THEN
+        CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber, &
+          & component_idx,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+        IF(DisplacementInterpolationType==CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION) THEN
           DO deriv_idx=3,8
-            CALL CMISSBoundaryConditions_AddNode(BoundaryConditions,DependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,deriv_idx, &
+            CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,deriv_idx, &
               & NodeNumber, &
-              & component_idx,CMISS_BOUNDARY_CONDITION_FIXED,0.0_CMISSDP,Err)
+              & component_idx,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
           ENDDO
         ENDIF
       ENDDO
     ENDIF
   ENDDO
 
-  CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
+  CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
 
   !Solve problem
-  CALL CMISSProblem_Solve(Problem,Err)
+  CALL cmfe_Problem_Solve(Problem,Err)
 
   !Output solution
-  CALL CMISSFields_Initialise(Fields,Err)
-  CALL CMISSFields_Create(Region,Fields,Err)
-  CALL CMISSFields_NodesExport(Fields,"Cantilever","FORTRAN",Err)
-  CALL CMISSFields_ElementsExport(Fields,"Cantilever","FORTRAN",Err)
-  CALL CMISSFields_Finalise(Fields,Err)
+  CALL cmfe_Fields_Initialise(Fields,Err)
+  CALL cmfe_Fields_Create(Region,Fields,Err)
+  CALL cmfe_Fields_NodesExport(Fields,"Cantilever","FORTRAN",Err)
+  CALL cmfe_Fields_ElementsExport(Fields,"Cantilever","FORTRAN",Err)
+  CALL cmfe_Fields_Finalise(Fields,Err)
 
-  CALL CMISSFinalise(Err)
+  CALL cmfe_Finalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
 

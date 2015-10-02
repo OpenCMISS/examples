@@ -58,25 +58,25 @@ PROGRAM ANALYTICLAPLACEEXAMPLE
 
   IMPLICIT NONE
 
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(CMISSFieldType) :: EquationsSetField
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  TYPE(cmfe_FieldType) :: EquationsSetField
 
 
   !Test program parameters
 
-  REAL(CMISSDP), PARAMETER :: ORIGIN(2)=[-3.141592653579_CMISSDP/2, -3.141592653579_CMISSDP/2]
-  REAL(CMISSDP), PARAMETER :: HEIGHT=2.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: WIDTH=2.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: LENGTH=2.0_CMISSDP
+  REAL(CMFEDP), PARAMETER :: ORIGIN(2)=[-3.141592653579_CMFEDP/2, -3.141592653579_CMFEDP/2]
+  REAL(CMFEDP), PARAMETER :: HEIGHT=2.0_CMFEDP
+  REAL(CMFEDP), PARAMETER :: WIDTH=2.0_CMFEDP
+  REAL(CMFEDP), PARAMETER :: LENGTH=2.0_CMFEDP
 
   !Program types
 
   !Program variables
 
-  TYPE(CMISSRegionType) :: WORLD_REGION
-  TYPE(CMISSCoordinateSystemType) :: WorldCoordinateSystem
+  TYPE(cmfe_RegionType) :: WORLD_REGION
+  TYPE(cmfe_CoordinateSystemType) :: WorldCoordinateSystem
 
-  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS,INTERPOLATION
+  INTEGER(CMFEIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS,INTERPOLATION
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT
 
 #ifdef WIN32
@@ -86,7 +86,7 @@ PROGRAM ANALYTICLAPLACEEXAMPLE
 #endif
 
   !Generic CMISS variables
-  INTEGER(CMISSIntg) :: Err
+  INTEGER(CMFEIntg) :: Err
 
 #ifdef WIN32
   !Initialise QuickWin
@@ -100,13 +100,13 @@ PROGRAM ANALYTICLAPLACEEXAMPLE
 #endif
   
   !Intialise cmiss
-  CALL CMISSInitialise(WorldCoordinateSystem,WORLD_REGION,Err)
+  CALL cmfe_Initialise(WorldCoordinateSystem,WORLD_REGION,Err)
 
-  CALL CMISSErrorHandlingModeSet(CMISS_ERRORS_TRAP_ERROR,Err)
+  CALL cmfe_ErrorHandlingModeSet(CMFE_ERRORS_TRAP_ERROR,Err)
 
-  CALL CMISSRandomSeedsSet(9999,Err)
+  CALL cmfe_RandomSeedsSet(9999,Err)
   
-  CALL CMISSDiagnosticsSetOn(CMISS_ALL_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",[""],Err)
+  CALL cmfe_DiagnosticsSetOn(CMFE_ALL_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",[""],Err)
 
   NUMBER_OF_ARGUMENTS = COMMAND_ARGUMENT_COUNT()
   IF(NUMBER_OF_ARGUMENTS >= 1) THEN
@@ -137,7 +137,7 @@ PROGRAM ANALYTICLAPLACEEXAMPLE
     CALL ANALYTICLAPLACE_TESTCASE_CUBIC_HERMITE_EXPORT(2,2,0)
   ENDIF
 
-  CALL CMISSFinalise(Err)
+  CALL cmfe_Finalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
   
@@ -154,17 +154,17 @@ CONTAINS
     & NUMBER_GLOBAL_Z_ELEMENTS)
 
     !Argument variables
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_X_ELEMENTS !<initial number of elements per axis
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Y_ELEMENTS !<final number of elements per axis
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Z_ELEMENTS !<increment interval number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_X_ELEMENTS !<initial number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_Y_ELEMENTS !<final number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_Z_ELEMENTS !<increment interval number of elements per axis
     !Local Variables
-    TYPE(CMISSFieldType) :: FIELD
+    TYPE(cmfe_FieldType) :: FIELD
 
-    CALL CMISSField_Initialise(FIELD,Err)
+    CALL cmfe_Field_Initialise(FIELD,Err)
     CALL ANALYTICLAPLACE_GENERIC(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,4, &
       & FIELD)
 
-    CALL CMISSAnalyticAnalysisOutput(FIELD,"AnalyticLaplaceCubicHermite",Err)
+    CALL cmfe_AnalyticAnalysisOutput(FIELD,"AnalyticLaplaceCubicHermite",Err)
     
     CALL ANALYTICLAPLACE_GENERIC_CLEAN(1,1,1,1,1)
 
@@ -179,17 +179,17 @@ CONTAINS
     & NUMBER_GLOBAL_Z_ELEMENTS)
 
     !Argument variables
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_X_ELEMENTS !<initial number of elements per axis
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Y_ELEMENTS !<final number of elements per axis
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Z_ELEMENTS !<increment interval number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_X_ELEMENTS !<initial number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_Y_ELEMENTS !<final number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_Z_ELEMENTS !<increment interval number of elements per axis
     !Local Variables
-    TYPE(CMISSFieldType) :: FIELD
+    TYPE(cmfe_FieldType) :: FIELD
 
-    CALL CMISSField_Initialise(FIELD,Err)
+    CALL cmfe_Field_Initialise(FIELD,Err)
     CALL ANALYTICLAPLACE_GENERIC(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,1, &
       & FIELD)
 
-    CALL CMISSAnalyticAnalysisOutput(FIELD,"AnalyticLaplaceLinearLagrange",Err)
+    CALL cmfe_AnalyticAnalysisOutput(FIELD,"AnalyticLaplaceLinearLagrange",Err)
     
     CALL ANALYTICLAPLACE_GENERIC_CLEAN(1,1,1,1,1)
 
@@ -204,17 +204,17 @@ CONTAINS
     & NUMBER_GLOBAL_Z_ELEMENTS)
 
     !Argument variables
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_X_ELEMENTS !<initial number of elements per axis
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Y_ELEMENTS !<final number of elements per axis
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Z_ELEMENTS !<increment interval number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_X_ELEMENTS !<initial number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_Y_ELEMENTS !<final number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_Z_ELEMENTS !<increment interval number of elements per axis
     !Local Variables
-    TYPE(CMISSFieldType) :: FIELD
+    TYPE(cmfe_FieldType) :: FIELD
 
-    CALL CMISSField_Initialise(FIELD,Err)
+    CALL cmfe_Field_Initialise(FIELD,Err)
     CALL ANALYTICLAPLACE_GENERIC(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,7, &
       & FIELD)
 
-    CALL CMISSAnalyticAnalysisOutput(FIELD,"AnalyticLaplaceLinearSimplex",Err)
+    CALL cmfe_AnalyticAnalysisOutput(FIELD,"AnalyticLaplaceLinearSimplex",Err)
     
     CALL ANALYTICLAPLACE_GENERIC_CLEAN(1,1,1,1,1)
 
@@ -229,19 +229,19 @@ CONTAINS
     & NUMBER_OF_ELEMENTS_XI_END,NUMBER_OF_ELEMENTS_XI_INTERVAL)
   
     !Argument variables
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_START !<initial number of elements per axis
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_END !<final number of elements per axis
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_INTERVAL !<increment interval number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_START !<initial number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_END !<final number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_INTERVAL !<increment interval number of elements per axis
     !Local Variables
-    REAL(CMISSDP) :: VALUE
-    REAL(CMISSDP), ALLOCATABLE :: X_VALUES(:),Y_VALUES(:)
+    REAL(CMFEDP) :: VALUE
+    REAL(CMFEDP), ALLOCATABLE :: X_VALUES(:),Y_VALUES(:)
     
     CALL ANALYTICLAPLACE_GENERIC_CONVERGENCE(NUMBER_OF_ELEMENTS_XI_START,NUMBER_OF_ELEMENTS_XI_END, &
       & NUMBER_OF_ELEMENTS_XI_INTERVAL,7,X_VALUES,Y_VALUES)
     
     CALL TEST_FRAMEWORK_GRADIENT_VALUE_GET(X_VALUES,Y_VALUES,VALUE)
 
-    CALL TEST_FRAMEWORK_ASSERT_EQUALS(2.0_CMISSDP,VALUE,0.5_CMISSDP,ERR)
+    CALL TEST_FRAMEWORK_ASSERT_EQUALS(2.0_CMFEDP,VALUE,0.5_CMFEDP,ERR)
     
     WRITE(*,'(A)') "Analytic Laplace Example Testcase 1 - bilinear Simplex has successfully completed."
     
@@ -256,19 +256,19 @@ CONTAINS
     & NUMBER_OF_ELEMENTS_XI_END,NUMBER_OF_ELEMENTS_XI_INTERVAL)
   
     !Argument variables
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_START !<initial number of elements per axis
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_END !<final number of elements per axis
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_INTERVAL !<increment interval number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_START !<initial number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_END !<final number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_INTERVAL !<increment interval number of elements per axis
     !Local Variables
-    REAL(CMISSDP) :: VALUE
-    REAL(CMISSDP), ALLOCATABLE :: X_VALUES(:),Y_VALUES(:)
+    REAL(CMFEDP) :: VALUE
+    REAL(CMFEDP), ALLOCATABLE :: X_VALUES(:),Y_VALUES(:)
     
     CALL ANALYTICLAPLACE_GENERIC_CONVERGENCE(NUMBER_OF_ELEMENTS_XI_START,NUMBER_OF_ELEMENTS_XI_END, &
       & NUMBER_OF_ELEMENTS_XI_INTERVAL,1,X_VALUES,Y_VALUES)
     
     CALL TEST_FRAMEWORK_GRADIENT_VALUE_GET(X_VALUES,Y_VALUES,VALUE)
 
-    CALL TEST_FRAMEWORK_ASSERT_EQUALS(2.0_CMISSDP,VALUE,0.5_CMISSDP,ERR)
+    CALL TEST_FRAMEWORK_ASSERT_EQUALS(2.0_CMFEDP,VALUE,0.5_CMFEDP,ERR)
     
     WRITE(*,'(A)') "Analytic Laplace Example Testcase 2 - bilinear Lagrange has successfully completed."
     
@@ -283,12 +283,12 @@ CONTAINS
     & NUMBER_OF_ELEMENTS_XI_END,NUMBER_OF_ELEMENTS_XI_INTERVAL)
   
     !Argument variables
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_START !<initial number of elements per axis
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_END !<final number of elements per axis
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_INTERVAL !<increment interval number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_START !<initial number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_END !<final number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_INTERVAL !<increment interval number of elements per axis
     !Local Variables
-    REAL(CMISSDP) :: VALUE
-    REAL(CMISSDP), ALLOCATABLE :: X_VALUES(:),Y_VALUES(:)
+    REAL(CMFEDP) :: VALUE
+    REAL(CMFEDP), ALLOCATABLE :: X_VALUES(:),Y_VALUES(:)
 
     !Note INTERPOLATION_SPECIFICATIONS of 4 is Cubic Hermite
     CALL ANALYTICLAPLACE_GENERIC_CONVERGENCE(NUMBER_OF_ELEMENTS_XI_START,NUMBER_OF_ELEMENTS_XI_END, &
@@ -296,7 +296,7 @@ CONTAINS
     
     CALL TEST_FRAMEWORK_GRADIENT_VALUE_GET(X_VALUES,Y_VALUES,VALUE)
     !This test is superconvergent so look for a slope of 5 rather than 4. Should really test >= 4
-    CALL TEST_FRAMEWORK_ASSERT_EQUALS(5.0_CMISSDP,VALUE,1.0_CMISSDP,Err)
+    CALL TEST_FRAMEWORK_ASSERT_EQUALS(5.0_CMFEDP,VALUE,1.0_CMFEDP,Err)
     IF (Err/=0) THEN
       WRITE(*,'(A,F6.3)') "Analytic Laplace Example Testcase 3 - bicubic Hermite failure: Convergence should be around 4.0" &
         & //", but it was ", VALUE
@@ -314,25 +314,25 @@ CONTAINS
     & NUMBER_OF_ELEMENTS_XI_INTERVAL,INTERPOLATION_SPECIFICATIONS,X_VALUES,Y_VALUES)
   
     !Argument variables 
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_START !<initial number of elements per axis
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_END !<final number of elements per axis
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_INTERVAL !<increment interval number of elements per axis
-    INTEGER(CMISSIntg), INTENT(IN) :: INTERPOLATION_SPECIFICATIONS !<interpolation specifications
-    REAL(CMISSDP), ALLOCATABLE :: X_VALUES(:),Y_VALUES(:)
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_START !<initial number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_END !<final number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_INTERVAL !<increment interval number of elements per axis
+    INTEGER(CMFEIntg), INTENT(IN) :: INTERPOLATION_SPECIFICATIONS !<interpolation specifications
+    REAL(CMFEDP), ALLOCATABLE :: X_VALUES(:),Y_VALUES(:)
     !Local Variables
-    REAL(CMISSDP) :: VALUE
+    REAL(CMFEDP) :: VALUE
     
-    INTEGER(CMISSIntg) :: i
-    TYPE(CMISSFieldType) :: FIELD
+    INTEGER(CMFEIntg) :: i
+    TYPE(cmfe_FieldType) :: FIELD
     
     ALLOCATE(X_VALUES((NUMBER_OF_ELEMENTS_XI_END-NUMBER_OF_ELEMENTS_XI_START)/NUMBER_OF_ELEMENTS_XI_INTERVAL+1),STAT=ERR)
     ALLOCATE(Y_VALUES((NUMBER_OF_ELEMENTS_XI_END-NUMBER_OF_ELEMENTS_XI_START)/NUMBER_OF_ELEMENTS_XI_INTERVAL+1),STAT=ERR)
 
     DO i = NUMBER_OF_ELEMENTS_XI_START,NUMBER_OF_ELEMENTS_XI_END,NUMBER_OF_ELEMENTS_XI_INTERVAL
 
-      CALL CMISSField_Initialise(FIELD,Err)
+      CALL cmfe_Field_Initialise(FIELD,Err)
       CALL ANALYTICLAPLACE_GENERIC(i,i,0,INTERPOLATION_SPECIFICATIONS,FIELD)
-      CALL CMISSAnalyticAnalysisAbsoluteErrorGetNode(FIELD,1,1,1,(i+1)**2/2+1,1,VALUE,Err)
+      CALL cmfe_AnalyticAnalysisAbsoluteErrorGetNode(FIELD,1,1,1,(i+1)**2/2+1,1,VALUE,Err)
 
       Y_VALUES((i-NUMBER_OF_ELEMENTS_XI_START)/NUMBER_OF_ELEMENTS_XI_INTERVAL+1)=log10(VALUE)
       X_VALUES((i-NUMBER_OF_ELEMENTS_XI_START)/NUMBER_OF_ELEMENTS_XI_INTERVAL+1)=log10(HEIGHT/i)
@@ -349,30 +349,30 @@ CONTAINS
   SUBROUTINE ANALYTICLAPLACE_GENERIC(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, &
     & INTERPOLATION_SPECIFICATIONS,DEPENDENT_FIELD)
     !Argument variables 
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_X_ELEMENTS !<number of elements on x axis
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Y_ELEMENTS !<number of elements on y axis
-    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Z_ELEMENTS !<number of elements on z axis
-    INTEGER(CMISSIntg), INTENT(IN) :: INTERPOLATION_SPECIFICATIONS !<the interpolation specifications
-    TYPE(CMISSFieldType) :: DEPENDENT_FIELD
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_X_ELEMENTS !<number of elements on x axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_Y_ELEMENTS !<number of elements on y axis
+    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_Z_ELEMENTS !<number of elements on z axis
+    INTEGER(CMFEIntg), INTENT(IN) :: INTERPOLATION_SPECIFICATIONS !<the interpolation specifications
+    TYPE(cmfe_FieldType) :: DEPENDENT_FIELD
     !Local Variables
-    INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
-    INTEGER(CMISSIntg) :: MPI_IERROR
-    INTEGER(CMISSIntg) :: ANALYTIC_FUNCTION
-    INTEGER(CMISSIntg) :: EquationsSetIndex
+    INTEGER(CMFEIntg) :: NUMBER_OF_DOMAINS
+    INTEGER(CMFEIntg) :: MPI_IERROR
+    INTEGER(CMFEIntg) :: ANALYTIC_FUNCTION
+    INTEGER(CMFEIntg) :: EquationsSetIndex
 
-    TYPE(CMISSBasisType) :: Basis
-    TYPE(CMISSCoordinateSystemType) :: CoordinateSystem
-    TYPE(CMISSBoundaryConditionsType) :: BoundaryConditions
-    TYPE(CMISSGeneratedMeshType) :: GENERATED_MESH
-    TYPE(CMISSMeshType) :: MESH
-    TYPE(CMISSDecompositionType) :: DECOMPOSITION
-    TYPE(CMISSEquationsType) :: EQUATIONS
-    TYPE(CMISSEquationsSetType) :: EQUATIONS_SET
-    TYPE(CMISSFieldType) :: ANALYTIC_FIELD,GEOMETRIC_FIELD
-    TYPE(CMISSProblemType) :: PROBLEM
-    TYPE(CMISSRegionType) :: REGION
-    TYPE(CMISSSolverType) :: SOLVER
-    TYPE(CMISSSolverEquationsType) :: SOLVER_EQUATIONS
+    TYPE(cmfe_BasisType) :: Basis
+    TYPE(cmfe_CoordinateSystemType) :: CoordinateSystem
+    TYPE(cmfe_BoundaryConditionsType) :: BoundaryConditions
+    TYPE(cmfe_GeneratedMeshType) :: GENERATED_MESH
+    TYPE(cmfe_MeshType) :: MESH
+    TYPE(cmfe_DecompositionType) :: DECOMPOSITION
+    TYPE(cmfe_EquationsType) :: EQUATIONS
+    TYPE(cmfe_EquationsSetType) :: EQUATIONS_SET
+    TYPE(cmfe_FieldType) :: ANALYTIC_FIELD,GEOMETRIC_FIELD
+    TYPE(cmfe_ProblemType) :: PROBLEM
+    TYPE(cmfe_RegionType) :: REGION
+    TYPE(cmfe_SolverType) :: SOLVER
+    TYPE(cmfe_SolverEquationsType) :: SOLVER_EQUATIONS
     
     NUMBER_OF_DOMAINS=1
 
@@ -384,195 +384,192 @@ CONTAINS
     CALL MPI_BCAST(INTERPOLATION_SPECIFICATIONS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
 
     !Start the creation of a new RC coordinate system
-    CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
-    CALL CMISSCoordinateSystem_CreateStart(1,CoordinateSystem,Err)
+    CALL cmfe_CoordinateSystem_Initialise(CoordinateSystem,Err)
+    CALL cmfe_CoordinateSystem_CreateStart(1,CoordinateSystem,Err)
     IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
       !Set the coordinate system to be 2D
-      CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystem,2,Err)
+      CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystem,2,Err)
     ELSE
       !Set the coordinate system to be 3D
-      CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystem,3,Err)
+      CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystem,3,Err)
     ENDIF
     !Finish the creation of the coordinate system
-    CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
+    CALL cmfe_CoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
     !Start the creation of the region
-    CALL CMISSRegion_Initialise(REGION,Err)
-    CALL CMISSRegion_CreateStart(1,WORLD_REGION,REGION,Err)
+    CALL cmfe_Region_Initialise(REGION,Err)
+    CALL cmfe_Region_CreateStart(1,WORLD_REGION,REGION,Err)
     !Set the regions coordinate system to the 2D RC coordinate system that we have created
-    CALL CMISSRegion_CoordinateSystemSet(REGION,CoordinateSystem,Err)
+    CALL cmfe_Region_CoordinateSystemSet(REGION,CoordinateSystem,Err)
     !Finish the creation of the region
-    CALL CMISSRegion_CreateFinish(REGION,Err)
+    CALL cmfe_Region_CreateFinish(REGION,Err)
 
   
     !Start the creation of a basis (default is trilinear lagrange)
-    CALL CMISSBasis_Initialise(Basis,Err)
-    CALL CMISSBasis_CreateStart(1,Basis,Err)
+    CALL cmfe_Basis_Initialise(Basis,Err)
+    CALL cmfe_Basis_CreateStart(1,Basis,Err)
     SELECT CASE(INTERPOLATION_SPECIFICATIONS)
-    CASE(CMISS_BASIS_LINEAR_LAGRANGE_INTERPOLATION,CMISS_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION, &
-      & CMISS_BASIS_CUBIC_LAGRANGE_INTERPOLATION, &
-      & CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION)
+    CASE(CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION,CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION, &
+      & CMFE_BASIS_CUBIC_LAGRANGE_INTERPOLATION, &
+      & CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION)
       !Do nothing
-    CASE(CMISS_BASIS_LINEAR_SIMPLEX_INTERPOLATION,CMISS_BASIS_QUADRATIC_SIMPLEX_INTERPOLATION, &
-      & CMISS_BASIS_CUBIC_SIMPLEX_INTERPOLATION)
-      CALL CMISSBasis_TypeSet(Basis,CMISS_BASIS_SIMPLEX_TYPE,Err)
+    CASE(CMFE_BASIS_LINEAR_SIMPLEX_INTERPOLATION,CMFE_BASIS_QUADRATIC_SIMPLEX_INTERPOLATION, &
+      & CMFE_BASIS_CUBIC_SIMPLEX_INTERPOLATION)
+      CALL cmfe_Basis_TypeSet(Basis,CMFE_BASIS_SIMPLEX_TYPE,Err)
     CASE DEFAULT
       WRITE(*,'(A)') "Invalid interpolation specification."
       STOP
     END SELECT
     IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
       !Set the basis to be a bilinear basis
-      CALL CMISSBasis_NumberOfXiSet(Basis,2,Err)
-      CALL CMISSBasis_InterpolationXiSet(Basis,[INTERPOLATION_SPECIFICATIONS,INTERPOLATION_SPECIFICATIONS],Err)
+      CALL cmfe_Basis_NumberOfXiSet(Basis,2,Err)
+      CALL cmfe_Basis_InterpolationXiSet(Basis,[INTERPOLATION_SPECIFICATIONS,INTERPOLATION_SPECIFICATIONS],Err)
     ELSE
       !Set the basis to be a trilinear basis
-      CALL CMISSBasis_NumberOfXiSet(Basis,3,Err)
-      CALL CMISSBasis_InterpolationXiSet(Basis,[INTERPOLATION_SPECIFICATIONS,INTERPOLATION_SPECIFICATIONS, &
+      CALL cmfe_Basis_NumberOfXiSet(Basis,3,Err)
+      CALL cmfe_Basis_InterpolationXiSet(Basis,[INTERPOLATION_SPECIFICATIONS,INTERPOLATION_SPECIFICATIONS, &
           & INTERPOLATION_SPECIFICATIONS],Err)
     ENDIF
     !Set the number of Gauss points
-    IF(INTERPOLATION_SPECIFICATIONS==CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION) THEN
-      CALL CMISSBasis_QuadratureNumberOfGaussXiSet(Basis,[3,3],Err)
+    IF(INTERPOLATION_SPECIFICATIONS==CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION) THEN
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis,[3,3],Err)
     ENDIF
     !Finish the creation of the basis
-    CALL CMISSBasis_CreateFinish(Basis,Err)
+    CALL cmfe_Basis_CreateFinish(Basis,Err)
 
     !Start the creation of a generated mesh in the region
-    CALL CMISSGeneratedMesh_Initialise(GENERATED_MESH,Err)
-    CALL CMISSGeneratedMesh_CreateStart(1,REGION,GENERATED_MESH,Err)
+    CALL cmfe_GeneratedMesh_Initialise(GENERATED_MESH,Err)
+    CALL cmfe_GeneratedMesh_CreateStart(1,REGION,GENERATED_MESH,Err)
     !Set up a regular 100x100 mesh
-    CALL CMISSGeneratedMesh_TypeSet(GENERATED_MESH,1,Err)
-    CALL CMISSGeneratedMesh_BasisSet(GENERATED_MESH,Basis,Err)
+    CALL cmfe_GeneratedMesh_TypeSet(GENERATED_MESH,1,Err)
+    CALL cmfe_GeneratedMesh_BasisSet(GENERATED_MESH,Basis,Err)
     !Define the mesh on the region
     IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-      CALL CMISSGeneratedMesh_ExtentSet(GENERATED_MESH,[WIDTH,HEIGHT],Err)
-      CALL CMISSGeneratedMesh_NumberOfElementsSet(GENERATED_MESH,[NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS], &
+      CALL cmfe_GeneratedMesh_ExtentSet(GENERATED_MESH,[WIDTH,HEIGHT],Err)
+      CALL cmfe_GeneratedMesh_NumberOfElementsSet(GENERATED_MESH,[NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS], &
         & Err)
-      CALL CMISSGeneratedMesh_OriginSet(GENERATED_MESH,ORIGIN,Err)
+      CALL cmfe_GeneratedMesh_OriginSet(GENERATED_MESH,ORIGIN,Err)
     ELSE
-      CALL CMISSGeneratedMesh_ExtentSet(GENERATED_MESH,[WIDTH,HEIGHT,LENGTH],Err)
-      CALL CMISSGeneratedMesh_NumberOfElementsSet(GENERATED_MESH,[NUMBER_GLOBAL_X_ELEMENTS, &
+      CALL cmfe_GeneratedMesh_ExtentSet(GENERATED_MESH,[WIDTH,HEIGHT,LENGTH],Err)
+      CALL cmfe_GeneratedMesh_NumberOfElementsSet(GENERATED_MESH,[NUMBER_GLOBAL_X_ELEMENTS, &
         & NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS],Err)
     ENDIF
     !Finish the creation of a generated mesh in the region
-    CALL CMISSMesh_Initialise(MESH,Err)
-    CALL CMISSGeneratedMesh_CreateFinish(GENERATED_MESH,1,MESH,Err)
+    CALL cmfe_Mesh_Initialise(MESH,Err)
+    CALL cmfe_GeneratedMesh_CreateFinish(GENERATED_MESH,1,MESH,Err)
     
     !Create a decomposition
-    CALL CMISSDecomposition_Initialise(DECOMPOSITION,Err)
-    CALL CMISSDecomposition_CreateStart(1,MESH,DECOMPOSITION,Err)
+    CALL cmfe_Decomposition_Initialise(DECOMPOSITION,Err)
+    CALL cmfe_Decomposition_CreateStart(1,MESH,DECOMPOSITION,Err)
     !Set the decomposition to be a general decomposition with the specified number of domains
-    CALL CMISSDecomposition_TypeSet(DECOMPOSITION,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
-    CALL CMISSDecomposition_NumberOfDomainsSet(DECOMPOSITION,NUMBER_OF_DOMAINS,Err)
-    CALL CMISSDecomposition_CreateFinish(DECOMPOSITION,Err)
+    CALL cmfe_Decomposition_TypeSet(DECOMPOSITION,CMFE_DECOMPOSITION_CALCULATED_TYPE,Err)
+    CALL cmfe_Decomposition_NumberOfDomainsSet(DECOMPOSITION,NUMBER_OF_DOMAINS,Err)
+    CALL cmfe_Decomposition_CreateFinish(DECOMPOSITION,Err)
 
     !Start to create a default (geometric) field on the region
-    CALL CMISSField_Initialise(GEOMETRIC_FIELD,Err)
-    CALL CMISSField_CreateStart(1,REGION,GEOMETRIC_FIELD,Err)
+    CALL cmfe_Field_Initialise(GEOMETRIC_FIELD,Err)
+    CALL cmfe_Field_CreateStart(1,REGION,GEOMETRIC_FIELD,Err)
     !Set the decomposition to use
-    CALL CMISSField_MeshDecompositionSet(GEOMETRIC_FIELD,DECOMPOSITION,Err)
+    CALL cmfe_Field_MeshDecompositionSet(GEOMETRIC_FIELD,DECOMPOSITION,Err)
     !Set the domain to be used by the field components
     !NB these are needed now as the default mesh component number is 1
-    CALL CMISSField_ComponentMeshComponentSet(GEOMETRIC_FIELD,CMISS_FIELD_U_VARIABLE_TYPE,1,1,Err)
-    CALL CMISSField_ComponentMeshComponentSet(GEOMETRIC_FIELD,CMISS_FIELD_U_VARIABLE_TYPE,2,1,Err)
+    CALL cmfe_Field_ComponentMeshComponentSet(GEOMETRIC_FIELD,CMFE_FIELD_U_VARIABLE_TYPE,1,1,Err)
+    CALL cmfe_Field_ComponentMeshComponentSet(GEOMETRIC_FIELD,CMFE_FIELD_U_VARIABLE_TYPE,2,1,Err)
     IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
-      CALL CMISSField_ComponentMeshComponentSet(GEOMETRIC_FIELD,CMISS_FIELD_U_VARIABLE_TYPE,3,1,Err)
+      CALL cmfe_Field_ComponentMeshComponentSet(GEOMETRIC_FIELD,CMFE_FIELD_U_VARIABLE_TYPE,3,1,Err)
     ENDIF
-    IF(INTERPOLATION_SPECIFICATIONS==CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION) THEN
-      CALL CMISSField_ScalingTypeSet(GEOMETRIC_FIELD,CMISS_FIELD_ARITHMETIC_MEAN_SCALING,Err)
+    IF(INTERPOLATION_SPECIFICATIONS==CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION) THEN
+      CALL cmfe_Field_ScalingTypeSet(GEOMETRIC_FIELD,CMFE_FIELD_ARITHMETIC_MEAN_SCALING,Err)
     ENDIF
     !Finish creating the field
-    CALL CMISSField_CreateFinish(GEOMETRIC_FIELD,Err)
+    CALL cmfe_Field_CreateFinish(GEOMETRIC_FIELD,Err)
 
     !Update the geometric field parameters
-    CALL CMISSGeneratedMesh_GeometricParametersCalculate(GENERATED_MESH,GEOMETRIC_FIELD,Err)
+    CALL cmfe_GeneratedMesh_GeometricParametersCalculate(GENERATED_MESH,GEOMETRIC_FIELD,Err)
 
     !Create the equations_set
-    CALL CMISSEquationsSet_Initialise(EQUATIONS_SET,Err)
-    CALL CMISSField_Initialise(EquationsSetField,Err)
-    CALL CMISSEquationsSet_CreateStart(1,REGION,GEOMETRIC_FIELD,CMISS_EQUATIONS_SET_CLASSICAL_FIELD_CLASS, &
-    & CMISS_EQUATIONS_SET_LAPLACE_EQUATION_TYPE,CMISS_EQUATIONS_SET_STANDARD_LAPLACE_SUBTYPE,EquationsSetFieldUserNumber, &
-      & EquationsSetField, &
-    & EQUATIONS_SET,Err)
+    CALL cmfe_EquationsSet_Initialise(EQUATIONS_SET,Err)
+    CALL cmfe_Field_Initialise(EquationsSetField,Err)
+    CALL cmfe_EquationsSet_CreateStart(1,REGION,GEOMETRIC_FIELD,[CMFE_EQUATIONS_SET_CLASSICAL_FIELD_CLASS, &
+      & CMFE_EQUATIONS_SET_LAPLACE_EQUATION_TYPE,CMFE_EQUATIONS_SET_STANDARD_LAPLACE_SUBTYPE],EquationsSetFieldUserNumber, &
+      & EquationsSetField,EQUATIONS_SET,Err)
     !Set the equations set to be a standard Laplace problem
     
     !Finish creating the equations set
-    CALL CMISSEquationsSet_CreateFinish(EQUATIONS_SET,Err)
+    CALL cmfe_EquationsSet_CreateFinish(EQUATIONS_SET,Err)
   
     !Create the equations set dependent field variables
-    CALL CMISSField_Initialise(DEPENDENT_FIELD,Err)
-    CALL CMISSEquationsSet_DependentCreateStart(EQUATIONS_SET,2,DEPENDENT_FIELD,Err)
+    CALL cmfe_Field_Initialise(DEPENDENT_FIELD,Err)
+    CALL cmfe_EquationsSet_DependentCreateStart(EQUATIONS_SET,2,DEPENDENT_FIELD,Err)
     !Finish the equations set dependent field variables
-    CALL CMISSEquationsSet_DependentCreateFinish(EQUATIONS_SET,Err)
+    CALL cmfe_EquationsSet_DependentCreateFinish(EQUATIONS_SET,Err)
 
     !Create the equations set analytic field variables
     IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
-      ANALYTIC_FUNCTION=CMISS_EQUATIONS_SET_LAPLACE_EQUATION_THREE_DIM_2
+      ANALYTIC_FUNCTION=CMFE_EQUATIONS_SET_LAPLACE_EQUATION_THREE_DIM_2
     ELSE
-      ANALYTIC_FUNCTION=CMISS_EQUATIONS_SET_LAPLACE_EQUATION_TWO_DIM_2
+      ANALYTIC_FUNCTION=CMFE_EQUATIONS_SET_LAPLACE_EQUATION_TWO_DIM_2
     ENDIF
-    CALL CMISSField_Initialise(ANALYTIC_FIELD,Err)
-    CALL CMISSEquationsSet_AnalyticCreateStart(EQUATIONS_SET,ANALYTIC_FUNCTION,3,ANALYTIC_FIELD,Err)
+    CALL cmfe_Field_Initialise(ANALYTIC_FIELD,Err)
+    CALL cmfe_EquationsSet_AnalyticCreateStart(EQUATIONS_SET,ANALYTIC_FUNCTION,3,ANALYTIC_FIELD,Err)
     !Finish the equations set analtyic field variables
-    CALL CMISSEquationsSet_AnalyticCreateFinish(EQUATIONS_SET,Err)
+    CALL cmfe_EquationsSet_AnalyticCreateFinish(EQUATIONS_SET,Err)
 
     !Create the equations set equations
-    CALL CMISSEquations_Initialise(EQUATIONS,Err)
-    CALL CMISSEquationsSet_EquationsCreateStart(EQUATIONS_SET,EQUATIONS,Err)
+    CALL cmfe_Equations_Initialise(EQUATIONS,Err)
+    CALL cmfe_EquationsSet_EquationsCreateStart(EQUATIONS_SET,EQUATIONS,Err)
     !Set the equations matrices sparsity type
-    CALL CMISSEquations_SparsityTypeSet(EQUATIONS,CMISS_EQUATIONS_SPARSE_MATRICES,Err)
-    CALL CMISSEquationsSet_EquationsCreateFinish(EQUATIONS_SET,Err)
+    CALL cmfe_Equations_SparsityTypeSet(EQUATIONS,CMFE_EQUATIONS_SPARSE_MATRICES,Err)
+    CALL cmfe_EquationsSet_EquationsCreateFinish(EQUATIONS_SET,Err)
 
     !Create the problem
-    CALL CMISSProblem_Initialise(PROBLEM,Err)
-    CALL CMISSProblem_CreateStart(1,PROBLEM,Err)
-    !Set the problem to be a standard Laplace problem
-    CALL CMISSProblem_SpecificationSet(PROBLEM,CMISS_PROBLEM_CLASSICAL_FIELD_CLASS,CMISS_PROBLEM_LAPLACE_EQUATION_TYPE, &
-      & CMISS_PROBLEM_STANDARD_LAPLACE_SUBTYPE,Err)
+    CALL cmfe_Problem_Initialise(PROBLEM,Err)
+    CALL cmfe_Problem_CreateStart(1,[CMFE_PROBLEM_CLASSICAL_FIELD_CLASS,CMFE_PROBLEM_LAPLACE_EQUATION_TYPE, &
+      & CMFE_PROBLEM_STANDARD_LAPLACE_SUBTYPE],PROBLEM,Err)
     !Finish creating the problem
-    CALL CMISSProblem_CreateFinish(PROBLEM,Err)
+    CALL cmfe_Problem_CreateFinish(PROBLEM,Err)
 
     !Create the problem control loop
-    CALL CMISSProblem_ControlLoopCreateStart(PROBLEM,Err)
+    CALL cmfe_Problem_ControlLoopCreateStart(PROBLEM,Err)
     !Finish creating the problem control
-    CALL CMISSProblem_ControlLoopCreateFinish(PROBLEM,Err)
+    CALL cmfe_Problem_ControlLoopCreateFinish(PROBLEM,Err)
 
     !Start the creation of the problem solvers
-    CALL CMISSSolver_Initialise(Solver,Err)
-    CALL CMISSProblem_SolversCreateStart(Problem,Err)
-    CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,Solver,Err)
+    CALL cmfe_Solver_Initialise(Solver,Err)
+    CALL cmfe_Problem_SolversCreateStart(Problem,Err)
+    CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,1,Solver,Err)
     !Set solver to direct type
-    CALL CMISSSolver_LinearTypeSet(Solver,CMISS_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
-    CALL CMISSSolver_LinearIterativeAbsoluteToleranceSet(Solver,1.0E-12_CMISSDP,Err)
-    CALL CMISSSolver_LinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMISSDP,Err)
-    !CALL CMISSSolver_LinearTypeSet(Solver,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
-    !CALL CMISSSolver_LibraryTypeSet(Solver,CMISS_SOLVER_MUMPS_LIBRARY,Err)
+    CALL cmfe_Solver_LinearTypeSet(Solver,CMFE_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
+    CALL cmfe_Solver_LinearIterativeAbsoluteToleranceSet(Solver,1.0E-12_CMFEDP,Err)
+    CALL cmfe_Solver_LinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMFEDP,Err)
+    !CALL cmfe_Solver_LinearTypeSet(Solver,CMFE_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
+    !CALL cmfe_Solver_LibraryTypeSet(Solver,CMFE_SOLVER_MUMPS_LIBRARY,Err)
     !Finish the creation of the problem solver
-    CALL CMISSProblem_SolversCreateFinish(Problem,Err)
+    CALL cmfe_Problem_SolversCreateFinish(Problem,Err)
 
     !Start the creation of the problem solver equations
-    CALL CMISSSolver_Initialise(Solver,Err)
-    CALL CMISSSolverEquations_Initialise(Solver_Equations,Err)
-    CALL CMISSProblem_SolverEquationsCreateStart(Problem,Err)
+    CALL cmfe_Solver_Initialise(Solver,Err)
+    CALL cmfe_SolverEquations_Initialise(Solver_Equations,Err)
+    CALL cmfe_Problem_SolverEquationsCreateStart(Problem,Err)
     !Get the solve equations
-    CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,Solver,Err)
-    CALL CMISSSolver_SolverEquationsGet(Solver,Solver_Equations,Err)
+    CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,1,Solver,Err)
+    CALL cmfe_Solver_SolverEquationsGet(Solver,Solver_Equations,Err)
     !Set the solver equations sparsity
-    CALL CMISSSolverEquations_SparsityTypeSet(Solver_Equations,CMISS_SOLVER_SPARSE_MATRICES,Err)
-    !CALL CMISSSolverEquations_SparsityTypeSet(SolverEquations,CMISS_SOLVER_FULL_MATRICES,Err)
+    CALL cmfe_SolverEquations_SparsityTypeSet(Solver_Equations,CMFE_SOLVER_SPARSE_MATRICES,Err)
+    !CALL cmfe_SolverEquations_SparsityTypeSet(SolverEquations,CMFE_SOLVER_FULL_MATRICES,Err)
     !Add in the equations set
-    CALL CMISSSolverEquations_EquationsSetAdd(Solver_Equations,Equations_Set,EquationsSetIndex,Err)
+    CALL cmfe_SolverEquations_EquationsSetAdd(Solver_Equations,Equations_Set,EquationsSetIndex,Err)
     !Finish the creation of the problem solver equations
-    CALL CMISSProblem_SolverEquationsCreateFinish(Problem,Err)
+    CALL cmfe_Problem_SolverEquationsCreateFinish(Problem,Err)
 
     !Set up the boundary conditions as per the analytic solution
-    CALL CMISSBoundaryConditions_Initialise(BoundaryConditions,Err)
-    CALL CMISSSolverEquations_BoundaryConditionsCreateStart(Solver_Equations,BoundaryConditions,Err)
-    CALL CMISSSolverEquations_BoundaryConditionsAnalytic(Solver_Equations,Err)
-    CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(Solver_Equations,Err)
+    CALL cmfe_BoundaryConditions_Initialise(BoundaryConditions,Err)
+    CALL cmfe_SolverEquations_BoundaryConditionsCreateStart(Solver_Equations,BoundaryConditions,Err)
+    CALL cmfe_SolverEquations_BoundaryConditionsAnalytic(Solver_Equations,Err)
+    CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(Solver_Equations,Err)
 
     !Solve the problem
-    CALL CMISSProblem_Solve(PROBLEM,Err)
+    CALL cmfe_Problem_Solve(PROBLEM,Err)
 
   END SUBROUTINE ANALYTICLAPLACE_GENERIC
 
@@ -580,17 +577,17 @@ CONTAINS
     & ProblemUserNumber)
 
     !Argument variables
-    INTEGER(CMISSIntg), INTENT(IN) :: CoordinateSystemUserNumber
-    INTEGER(CMISSIntg), INTENT(IN) :: RegionUserNumber
-    INTEGER(CMISSIntg), INTENT(IN) :: BasisUserNumber
-    INTEGER(CMISSIntg), INTENT(IN) :: GeneratedMeshUserNumber
-    INTEGER(CMISSIntg), INTENT(IN) :: ProblemUserNumber
+    INTEGER(CMFEIntg), INTENT(IN) :: CoordinateSystemUserNumber
+    INTEGER(CMFEIntg), INTENT(IN) :: RegionUserNumber
+    INTEGER(CMFEIntg), INTENT(IN) :: BasisUserNumber
+    INTEGER(CMFEIntg), INTENT(IN) :: GeneratedMeshUserNumber
+    INTEGER(CMFEIntg), INTENT(IN) :: ProblemUserNumber
 
-    CALL CMISSProblem_Destroy(ProblemUserNumber,Err)
-    CALL CMISSGeneratedMesh_Destroy(RegionUserNumber,GeneratedMeshUserNumber,Err)
-    CALL CMISSBasis_Destroy(BasisUserNumber,Err)
-    CALL CMISSRegion_Destroy(RegionUserNumber,Err)
-    CALL CMISSCoordinateSystem_Destroy(CoordinateSystemUserNumber,Err)
+    CALL cmfe_Problem_Destroy(ProblemUserNumber,Err)
+    CALL cmfe_GeneratedMesh_Destroy(RegionUserNumber,GeneratedMeshUserNumber,Err)
+    CALL cmfe_Basis_Destroy(BasisUserNumber,Err)
+    CALL cmfe_Region_Destroy(RegionUserNumber,Err)
+    CALL cmfe_CoordinateSystem_Destroy(CoordinateSystemUserNumber,Err)
 
   END SUBROUTINE ANALYTICLAPLACE_GENERIC_CLEAN
 
