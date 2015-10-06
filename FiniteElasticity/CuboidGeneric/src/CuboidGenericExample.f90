@@ -1,6 +1,6 @@
 !> \file
 !> \author Chris Bradley
-!> \brief This is an example program to solve a finite elasticity equation using openCMISS calls.
+!> \brief This is an example program to solve a finite elasticity equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -16,7 +16,7 @@
 !> License for the specific language governing rights and limitations
 !> under the License.
 !>
-!> The Original Code is openCMISS
+!> The Original Code is OpenCMISS
 !>
 !> The Initial Developer of the Original Code is University of Auckland,
 !> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -49,7 +49,7 @@
 !> Main program
 PROGRAM CUBOIDGENERICEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 #ifdef WIN32
@@ -101,8 +101,6 @@ PROGRAM CUBOIDGENERICEXAMPLE
   INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumber=4
   INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfVariables=2
   INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfComponents=4
-
-  !INTEGER(CMFEIntg), PARAMETER :: FieldAnalyticUserNumber=1337
 
   INTEGER(CMFEIntg), PARAMETER :: EquationSetUserNumber=1
   INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=5
@@ -184,7 +182,7 @@ PROGRAM CUBOIDGENERICEXAMPLE
   CALL GET_BC(ALL_ARGS,BC)
 
   !Set all diganostic levels on for testing
-  CALL cmfe_DiagnosticsSetOn(CMFE_FROM_DIAG_TYPE,(/1,2,3,4,5/),"Diagnostics",(/"PROBLEM_FINITE_ELEMENT_CALCULATE"/),Err)
+  CALL cmfe_DiagnosticsSetOn(CMFE_FROM_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["PROBLEM_FINITE_ELEMENT_CALCULATE"],Err)
   !CALL cmfe_DiagnosticsSetOff(Err)
 
   !Get the number of computational nodes and this computational node number
@@ -205,7 +203,7 @@ PROGRAM CUBOIDGENERICEXAMPLE
   CALL cmfe_CoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   CALL cmfe_CoordinateSystem_TypeSet(CoordinateSystem,CMFE_COORDINATE_RECTANGULAR_CARTESIAN_TYPE,Err)
   CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystem,NumberOfSpatialCoordinates,Err)
-  CALL cmfe_CoordinateSystem_OriginSet(CoordinateSystem,(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/),Err)
+  CALL cmfe_CoordinateSystem_OriginSet(CoordinateSystem,[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP],Err)
   CALL cmfe_CoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Create a region and assign the CS to the region
@@ -218,25 +216,25 @@ PROGRAM CUBOIDGENERICEXAMPLE
   CALL cmfe_Basis_Initialise(LinearBasis,Err)
   CALL cmfe_Basis_CreateStart(LinearBasisUserNumber,LinearBasis,Err)
   CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(LinearBasis, &
-    & (/CMFE_BASIS_HIGH_QUADRATURE_SCHEME,CMFE_BASIS_HIGH_QUADRATURE_SCHEME,CMFE_BASIS_HIGH_QUADRATURE_SCHEME/),Err)
+    & [CMFE_BASIS_HIGH_QUADRATURE_SCHEME,CMFE_BASIS_HIGH_QUADRATURE_SCHEME,CMFE_BASIS_HIGH_QUADRATURE_SCHEME],Err)
   CALL cmfe_Basis_QuadratureLocalFaceGaussEvaluateSet(LinearBasis,.true.,Err)
   CALL cmfe_Basis_CreateFinish(LinearBasis,Err)
 
   CALL cmfe_Basis_Initialise(QuadraticBasis,Err)
   CALL cmfe_Basis_CreateStart(QuadraticBasisUserNumber,QuadraticBasis,Err)
-  CALL cmfe_Basis_InterpolationXiSet(QuadraticBasis,(/CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION, &
-    & CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION,CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION/),Err)
+  CALL cmfe_Basis_InterpolationXiSet(QuadraticBasis,[CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION, &
+    & CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION,CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION],Err)
   CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(QuadraticBasis, &
-    & (/CMFE_BASIS_HIGH_QUADRATURE_SCHEME,CMFE_BASIS_HIGH_QUADRATURE_SCHEME,CMFE_BASIS_HIGH_QUADRATURE_SCHEME/),Err)
+    & [CMFE_BASIS_HIGH_QUADRATURE_SCHEME,CMFE_BASIS_HIGH_QUADRATURE_SCHEME,CMFE_BASIS_HIGH_QUADRATURE_SCHEME],Err)
   CALL cmfe_Basis_QuadratureLocalFaceGaussEvaluateSet(QuadraticBasis,.true.,Err)
   CALL cmfe_Basis_CreateFinish(QuadraticBasis,Err)
 
   CALL cmfe_Basis_Initialise(CubicBasis,Err)
   CALL cmfe_Basis_CreateStart(CubicBasisUserNumber,CubicBasis,Err)
-  CALL cmfe_Basis_InterpolationXiSet(CubicBasis,(/CMFE_BASIS_CUBIC_LAGRANGE_INTERPOLATION, &
-    & CMFE_BASIS_CUBIC_LAGRANGE_INTERPOLATION,CMFE_BASIS_CUBIC_LAGRANGE_INTERPOLATION/),Err)
+  CALL cmfe_Basis_InterpolationXiSet(CubicBasis,[CMFE_BASIS_CUBIC_LAGRANGE_INTERPOLATION, &
+    & CMFE_BASIS_CUBIC_LAGRANGE_INTERPOLATION,CMFE_BASIS_CUBIC_LAGRANGE_INTERPOLATION],Err)
   CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(CubicBasis, &
-    & (/CMFE_BASIS_HIGH_QUADRATURE_SCHEME,CMFE_BASIS_HIGH_QUADRATURE_SCHEME,CMFE_BASIS_HIGH_QUADRATURE_SCHEME/),Err)
+    & [CMFE_BASIS_HIGH_QUADRATURE_SCHEME,CMFE_BASIS_HIGH_QUADRATURE_SCHEME,CMFE_BASIS_HIGH_QUADRATURE_SCHEME],Err)
   CALL cmfe_Basis_QuadratureLocalFaceGaussEvaluateSet(CubicBasis,.true.,Err) !Enable 3D interpolation on faces
   CALL cmfe_Basis_CreateFinish(CubicBasis,Err)
 

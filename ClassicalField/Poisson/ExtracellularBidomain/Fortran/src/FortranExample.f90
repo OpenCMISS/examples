@@ -50,7 +50,7 @@
 !> Main program
 PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
 !  USE CONSTANTS   !for pi
 
@@ -479,8 +479,8 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   !          entry in Angle(3) means rotated around x-axis => no change
   ! 45° equivalent to pi/4, 90° equivalent to pi/2
   
-!  FibreFieldAngle=(/PI/4.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/)
-  FibreFieldAngle=(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/)
+!  FibreFieldAngle=[PI/4.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP]
+  FibreFieldAngle=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP]
 
   DO component_idx=1,FibreFieldNumberOfComponents
     CALL cmfe_Field_ComponentValuesInitialise(FibreField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,component_idx, &
@@ -694,7 +694,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   CALL cmfe_Field_MeshDecompositionSet(DependentField,Decomposition,Err)
   CALL cmfe_Field_GeometricFieldSet(DependentField,GeometricField,Err)
   CALL cmfe_Field_NumberOfVariablesSet(DependentField,2,Err)  
-  CALL cmfe_Field_VariableTypesSet(DependentField,(/CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_DELUDELN_VARIABLE_TYPE/),Err)
+  CALL cmfe_Field_VariableTypesSet(DependentField,[CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_DELUDELN_VARIABLE_TYPE],Err)
     
   CALL cmfe_Field_VariableLabelSet(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,"Phi",Err)        
   CALL cmfe_Field_VariableLabelSet(DependentField,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,"del Phi/del n",Err)        

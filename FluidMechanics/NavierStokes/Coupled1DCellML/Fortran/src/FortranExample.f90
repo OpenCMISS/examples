@@ -48,7 +48,7 @@ PROGRAM FortranExample
 
   ! Libraries
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE FLUID_MECHANICS_IO_ROUTINES
   USE MPI
 
@@ -63,31 +63,28 @@ PROGRAM FortranExample
   !Test program parameters
   !================================================================================================================================
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumberNavierStokes=1337
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumberCharacteristic=1338
-  TYPE(cmfe_FieldType) :: EquationsSetFieldNavierStokes
-  TYPE(cmfe_FieldType) :: EquationsSetFieldCharacteristic
-
   INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
   INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=3
   INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=4
   INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberNavierStokes=9
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberCharacteristic=10
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=11
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumberNavierStokes=6
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumberCharacteristic=7
+  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=8
+  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=9
+  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldUserNumber=10
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberNavierStokes=11
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberCharacteristic=12
+  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=13
   INTEGER(CMFEIntg), PARAMETER :: Basis_Lagrange_Hermite_TP_Type=1
   INTEGER(CMFEIntg), PARAMETER :: Basis_Quadratic_Lagrange_Interpolation=2
 
-  INTEGER(CMFEIntg), PARAMETER :: CellMLUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: CellMLModelsFieldUserNumber=14
-  INTEGER(CMFEIntg), PARAMETER :: CellMLStateFieldUserNumber=15
-  INTEGER(CMFEIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=16
-  INTEGER(CMFEIntg), PARAMETER :: CellMLParametersFieldUserNumber=17
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberCellML=18
+  INTEGER(CMFEIntg), PARAMETER :: CellMLUserNumber=14
+  INTEGER(CMFEIntg), PARAMETER :: CellMLModelsFieldUserNumber=15
+  INTEGER(CMFEIntg), PARAMETER :: CellMLStateFieldUserNumber=16
+  INTEGER(CMFEIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=17
+  INTEGER(CMFEIntg), PARAMETER :: CellMLParametersFieldUserNumber=18
+  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberCellML=19
 
   INTEGER(CMFEIntg), PARAMETER :: DomainUserNumber=1
   INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberMu=1
@@ -100,7 +97,6 @@ PROGRAM FortranExample
   INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberA0=8
   INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberE=9
   INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberH0=10
-
 
   !Program variables
 
@@ -205,6 +201,8 @@ PROGRAM FortranExample
   TYPE(cmfe_DecompositionType) :: Decomposition
   !Field types
   TYPE(cmfe_FieldType) :: GeometricField
+  TYPE(cmfe_FieldType) :: EquationsSetFieldNavierStokes
+  TYPE(cmfe_FieldType) :: EquationsSetFieldCharacteristic
   TYPE(cmfe_FieldType) :: DependentFieldNavierStokes
   TYPE(cmfe_FieldType) :: MaterialsFieldNavierStokes
   TYPE(cmfe_FieldType) :: IndependentFieldNavierStokes
@@ -424,28 +422,28 @@ PROGRAM FortranExample
 
   IF(cellmlFlag) THEN
     ! New equations set type to store p values in the Equations Set Field
-    EquationsSetSubtype=CMFE_EQUATIONS_SET_Coupled1D0D_NAVIER_STOKES_SUBTYPE 
+    EquationsSetSubtype=CMFE_EQUATIONS_SET_COUPLED1D0D_NAVIER_STOKES_SUBTYPE
     ! Characteristic (nodal/characteristic) solver remains the same
-    EquationsSetCharacteristicSubtype=CMFE_EQUATIONS_SET_Coupled1D0D_CHARACTERISTIC_SUBTYPE
+    EquationsSetCharacteristicSubtype=CMFE_EQUATIONS_SET_COUPLED1D0D_NAVIER_STOKES_SUBTYPE
     IF(windkesselFlag) THEN
       SolverDAEUserNumber=1
       SolverCharacteristicUserNumber=2
       SolverNavierStokesUserNumber=3
-      ProblemSubtype=CMFE_PROBLEM_Coupled1dDae_NAVIER_STOKES_SUBTYPE
+      ProblemSubtype=CMFE_PROBLEM_COUPLED1D0D_NAVIER_STOKES_SUBTYPE
     ELSE
       SolverDAEUserNumber=0
       SolverCharacteristicUserNumber=1
       SolverNavierStokesUserNumber=2
       ! New problem type to execute the 1D-0D coupling subloop at each timestep
-      ProblemSubtype=CMFE_PROBLEM_Coupled1D0D_NAVIER_STOKES_SUBTYPE
+      ProblemSubtype=CMFE_PROBLEM_COUPLED1D0D_NAVIER_STOKES_SUBTYPE
     ENDIF
   ELSE
     SolverDAEUserNumber=0
     SolverCharacteristicUserNumber=1
     SolverNavierStokesUserNumber=2
-    EquationsSetSubtype=CMFE_EQUATIONS_SET_1DTRANSIENT_NAVIER_STOKES_SUBTYPE
-    EquationsSetCharacteristicSubtype=CMFE_EQUATIONS_SET_STATIC_CHARACTERISTIC_SUBTYPE
-    ProblemSubtype=CMFE_PROBLEM_1DTRANSIENT_NAVIER_STOKES_SUBTYPE
+    EquationsSetSubtype=CMFE_EQUATIONS_SET_TRANSIENT1D_NAVIER_STOKES_SUBTYPE
+    EquationsSetCharacteristicSubtype=CMFE_EQUATIONS_SET_CHARACTERISTIC_SUBTYPE
+    ProblemSubtype=CMFE_PROBLEM_TRANSIENT1D_NAVIER_STOKES_SUBTYPE
   ENDIF
 
   ! Default cellml model-specific flags to false if CellML is turned off
@@ -494,8 +492,8 @@ PROGRAM FortranExample
   !Set the basis xi number
   CALL cmfe_Basis_NumberOfXiSet(BasisSpace,NUMBER_OF_DIMENSIONS,Err)
   !Set the basis xi interpolation and number of Gauss points
-  CALL cmfe_Basis_InterpolationXiSet(BasisSpace,(/BASIS_XI_INTERPOLATION_SPACE/),Err)
-  CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace,(/BASIS_XI_GAUSS_SPACE/),Err)
+  CALL cmfe_Basis_InterpolationXiSet(BasisSpace,[BASIS_XI_INTERPOLATION_SPACE],Err)
+  CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace,[BASIS_XI_GAUSS_SPACE],Err)
   !Finish the creation of the basis
   CALL cmfe_Basis_CreateFinish(BasisSpace,Err)
 

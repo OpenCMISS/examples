@@ -48,7 +48,7 @@
 PROGRAM GENERALISEDBURGERSEXAMPLE
 
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 
@@ -82,7 +82,6 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=10
   INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=11
   INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=12
-  INTEGER(CMFEIntg), PARAMETER :: ControlLoopNode=0
   INTEGER(CMFEIntg), PARAMETER :: AnalyticFieldUserNumber=13
   INTEGER(CMFEIntg), PARAMETER :: SolverUserNumber=1
   
@@ -331,7 +330,7 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   !CALL cmfe_Solver_NewtonJacobianCalculationTypeSet(NonlinearSolver,CMFE_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)
   CALL cmfe_Solver_NewtonJacobianCalculationTypeSet(NonlinearSolver,CMFE_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
   !Set the line search
-  CALL cmfe_Solver_NewtonLineSearchTypeSet(NonlinearSolver,CMFE_SOLVER_NEWTON_LINESEARCH_NONE,Err)
+  CALL cmfe_Solver_NewtonLineSearchTypeSet(NonlinearSolver,CMFE_SOLVER_NEWTON_LINESEARCH_LINEAR,Err)
   !Set the output type
   CALL cmfe_Solver_OutputTypeSet(NonlinearSolver,CMFE_SOLVER_MATRIX_OUTPUT,Err)
   !Get the dynamic nonlinear linear solver
@@ -391,7 +390,7 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   !OUTPUT
   !-----------------------------------------------------------------------------------------------------------
   !Output Analytic analysis
-  Call cmfe_AnalyticAnalysisOutput(DependentField,"BurgersAnalytic_1D",Err)
+  Call cmfe_AnalyticAnalysis_Output(DependentField,"BurgersAnalytic_1D",Err)
 
   !export fields
   CALL cmfe_Fields_Initialise(Fields,Err)

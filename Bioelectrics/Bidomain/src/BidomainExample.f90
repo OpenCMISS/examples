@@ -50,7 +50,7 @@
 !> Main program
 PROGRAM BIDOMAINEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 #ifdef WIN32
@@ -58,10 +58,6 @@ PROGRAM BIDOMAINEXAMPLE
 #endif
 
   IMPLICIT NONE
-
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(cmfe_FieldType) :: EquationsSetField
-
 
   !Test program parameters
 
@@ -76,17 +72,18 @@ PROGRAM BIDOMAINEXAMPLE
   INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
   INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
   INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: SourceFieldUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: CellMLUserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: CellMLModelsFieldUserNumber=12
-  INTEGER(CMFEIntg), PARAMETER :: CellMLStateFieldUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=14
-  INTEGER(CMFEIntg), PARAMETER :: CellMLParametersFieldUserNumber=15
-  INTEGER(CMFEIntg), PARAMETER :: ParabolicEquationsSetUserNumber=16
-  INTEGER(CMFEIntg), PARAMETER :: EllipticEquationsSetUserNumber=17
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=18
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=10
+  INTEGER(CMFEIntg), PARAMETER :: SourceFieldUserNumber=11
+  INTEGER(CMFEIntg), PARAMETER :: CellMLUserNumber=12
+  INTEGER(CMFEIntg), PARAMETER :: CellMLModelsFieldUserNumber=13
+  INTEGER(CMFEIntg), PARAMETER :: CellMLStateFieldUserNumber=14
+  INTEGER(CMFEIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=15
+  INTEGER(CMFEIntg), PARAMETER :: CellMLParametersFieldUserNumber=16
+  INTEGER(CMFEIntg), PARAMETER :: ParabolicEquationsSetUserNumber=17
+  INTEGER(CMFEIntg), PARAMETER :: EllipticEquationsSetUserNumber=18
+  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=19
 
   !Program types
   
@@ -98,8 +95,6 @@ PROGRAM BIDOMAINEXAMPLE
   INTEGER(CMFEIntg) :: MPI_IERROR
 
   LOGICAL :: EXPORT_FIELD
-
-  INTEGER(CMFEIntg) :: N,CELL_TYPE
 
   INTEGER(CMFEIntg) :: n98ModelIndex,JRWModelIndex
 
@@ -114,7 +109,7 @@ PROGRAM BIDOMAINEXAMPLE
   TYPE(cmfe_DecompositionType) :: Decomposition
   TYPE(cmfe_EquationsType) :: Equations
   TYPE(cmfe_EquationsSetType) :: ParabolicEquationsSet,EllipticEquationsSet
-  TYPE(cmfe_FieldType) :: GeometricField,DependentField,MaterialsField,SourceField
+  TYPE(cmfe_FieldType) :: GeometricField,EquationsSetField,DependentField,MaterialsField,SourceField
   TYPE(cmfe_FieldType) :: CellMLModelsField,CellMLStateField,CellMLIntermediateField,CellMLParametersField
   TYPE(cmfe_FieldsType) :: Fields
   TYPE(cmfe_GeneratedMeshType) :: GeneratedMesh  

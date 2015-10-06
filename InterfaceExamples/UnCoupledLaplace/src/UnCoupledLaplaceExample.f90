@@ -1,6 +1,6 @@
 !> \file
 !> \author Chris Bradley
-!> \brief This is an example program which solves a weakly coupled Laplace equation in two regions using openCMISS calls.
+!> \brief This is an example program which solves a weakly coupled Laplace equation in two regions using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -49,7 +49,8 @@
 !> Main program
 PROGRAM COUPLEDLAPLACE
 
-  USE OPENCMISS
+  USE OpenCMISS
+  USE OpenCMISS_Iron  
   USE MPI
   
 #ifdef WIN32
@@ -60,46 +61,45 @@ PROGRAM COUPLEDLAPLACE
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: HEIGHT=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=2.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: LENGTH=3.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: HEIGHT=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=2.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: LENGTH=3.0_CMISSRP
  
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystem1UserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystem2UserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: Region1UserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: Region2UserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: Basis1UserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: Basis2UserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMesh1UserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMesh2UserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: Mesh1UserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: Mesh2UserNumber=12
-  INTEGER(CMFEIntg), PARAMETER :: Decomposition1UserNumber=14
-  INTEGER(CMFEIntg), PARAMETER :: Decomposition2UserNumber=15
-  INTEGER(CMFEIntg), PARAMETER :: GeometricField1UserNumber=17
-  INTEGER(CMFEIntg), PARAMETER :: GeometricField2UserNumber=18
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSet1UserNumber=20
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSet2UserNumber=21
-  INTEGER(CMFEIntg), PARAMETER :: DependentField1UserNumber=22
-  INTEGER(CMFEIntg), PARAMETER :: DependentField2UserNumber=23
-  INTEGER(CMFEIntg), PARAMETER :: LagrangeFieldUserNumber=26
-  INTEGER(CMFEIntg), PARAMETER :: CoupledProblemUserNumber=27
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetField1UserNumber=40
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetField2UserNumber=41
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystem1UserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystem2UserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: Region1UserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: Region2UserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: Basis1UserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: Basis2UserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMesh1UserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMesh2UserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: Mesh1UserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: Mesh2UserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: Decomposition1UserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: Decomposition2UserNumber=15
+  INTEGER(CMISSIntg), PARAMETER :: GeometricField1UserNumber=17
+  INTEGER(CMISSIntg), PARAMETER :: GeometricField2UserNumber=18
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSet1UserNumber=20
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSet2UserNumber=21
+  INTEGER(CMISSIntg), PARAMETER :: DependentField1UserNumber=22
+  INTEGER(CMISSIntg), PARAMETER :: DependentField2UserNumber=23
+  INTEGER(CMISSIntg), PARAMETER :: CoupledProblemUserNumber=27
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetField1UserNumber=40
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetField2UserNumber=41
  
   !Program types
   
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, &
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, &
     & INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT
 
-  INTEGER(CMFEIntg) :: EquationsSet1Index,EquationsSet2Index
-  INTEGER(CMFEIntg) :: FirstNodeNumber,LastNodeNumber
-  INTEGER(CMFEIntg) :: FirstNodeDomain,LastNodeDomain
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: EquationsSet1Index,EquationsSet2Index
+  INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
+  INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
 
   !CMISS variables
 
@@ -127,7 +127,7 @@ PROGRAM COUPLEDLAPLACE
   
   !Generic CMISS variables
   
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: Err
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -305,12 +305,12 @@ PROGRAM COUPLEDLAPLACE
   CALL cmfe_GeneratedMesh_BasisSet(GeneratedMesh2,Basis2,Err)   
   !Define the mesh on the second region
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    CALL cmfe_GeneratedMesh_OriginSet(GeneratedMesh2,[WIDTH,0.0_CMFEDP],Err)
+    CALL cmfe_GeneratedMesh_OriginSet(GeneratedMesh2,[WIDTH,0.0_CMISSRP],Err)
     CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh2,[WIDTH,HEIGHT],Err)
     CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh2,[NUMBER_GLOBAL_X_ELEMENTS, &
       & NUMBER_GLOBAL_Y_ELEMENTS],Err)
   ELSE
-    CALL cmfe_GeneratedMesh_OriginSet(GeneratedMesh2,[WIDTH,0.0_CMFEDP,0.0_CMFEDP],Err)
+    CALL cmfe_GeneratedMesh_OriginSet(GeneratedMesh2,[WIDTH,0.0_CMISSRP,0.0_CMISSRP],Err)
     CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh2,[WIDTH,HEIGHT,LENGTH],Err)
     CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh2,[NUMBER_GLOBAL_X_ELEMENTS, &
       & NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS],Err)
@@ -493,7 +493,7 @@ PROGRAM COUPLEDLAPLACE
   CALL cmfe_Decomposition_NodeDomainGet(Decomposition1,FirstNodeNumber,1,FirstNodeDomain,Err)
   IF(FirstNodeDomain==ComputationalNodeNumber) THEN
     CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField1,CMFE_FIELD_U_VARIABLE_TYPE,1,1,FirstNodeNumber,1, &
-      & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+      & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
   ENDIF
   
   !Set boundary conditions for second dependent field
@@ -504,7 +504,7 @@ PROGRAM COUPLEDLAPLACE
   CALL cmfe_Decomposition_NodeDomainGet(Decomposition2,LastNodeNumber,1,LastNodeDomain,Err)
   IF(LastNodeDomain==ComputationalNodeNumber) THEN
     CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField2,CMFE_FIELD_U_VARIABLE_TYPE,1,1,LastNodeNumber,1, &
-      & CMFE_BOUNDARY_CONDITION_FIXED,1.0_CMFEDP,Err)
+      & CMFE_BOUNDARY_CONDITION_FIXED,1.0_CMISSRP,Err)
   ENDIF
   CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(CoupledSolverEquations,Err)
 

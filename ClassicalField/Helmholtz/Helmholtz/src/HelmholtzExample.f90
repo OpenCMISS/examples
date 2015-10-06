@@ -1,6 +1,6 @@
 !> \file
 !> \author Chris Bradley
-!> \brief This is an example program to solve a Helmholtz equation using openCMISS calls.
+!> \brief This is an example program to solve a Helmholtz equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -49,7 +49,7 @@
 !> Main program
 PROGRAM HELMHOLTZEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 #ifdef WIN32
@@ -57,10 +57,6 @@ PROGRAM HELMHOLTZEXAMPLE
 #endif
 
   IMPLICIT NONE
-
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(cmfe_FieldType) :: EquationsSetField
-
 
   !Test program parameters
   REAL(CMFEDP), PARAMETER :: Height=1.0_CMFEDP
@@ -78,6 +74,7 @@ PROGRAM HELMHOLTZEXAMPLE
   INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=1
   INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=1
   INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=1
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
   INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=2
   INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=3
   INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=1
@@ -98,7 +95,7 @@ PROGRAM HELMHOLTZEXAMPLE
   TYPE(cmfe_DecompositionType) :: Decomposition
   TYPE(cmfe_EquationsType) :: Equations
   TYPE(cmfe_EquationsSetType) :: EquationsSet
-  TYPE(cmfe_FieldType) :: DependentField,GeometricField,MaterialsField
+  TYPE(cmfe_FieldType) :: DependentField,EquationsSetField,GeometricField,MaterialsField
   TYPE(cmfe_FieldsType) :: Fields
   TYPE(cmfe_ProblemType) :: Problem
   TYPE(cmfe_RegionType) :: Region,WorldRegion
@@ -130,7 +127,7 @@ PROGRAM HELMHOLTZEXAMPLE
   CALL cmfe_Initialise(WorldCoordinateSystem,WorldRegion,Err)
 
   CALL cmfe_ErrorHandlingModeSet(CMFE_ERRORS_TRAP_ERROR,Err)
-  !CALL cmfe_DiagnosticsSetOn(CMFE_ALL_DIAG_TYPE,(/1,2,3,4,5/),"Diagnostics",(//),Err)
+  !CALL cmfe_DiagnosticsSetOn(CMFE_ALL_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",[],Err)
 
   !Get the computational nodes information
   CALL cmfe_ComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -188,12 +185,12 @@ PROGRAM HELMHOLTZEXAMPLE
   
   !Define the mesh on the region
   IF(NumberGlobalZElements==0) THEN
-    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,(/Width,Height/),Err)
-    CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,(/NumberGlobalXElements,NumberGlobalYElements/),Err)
+    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[Width,Height],Err)
+    CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements,NumberGlobalYElements],Err)
   ELSE
-    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,(/Width,Height,Length/),Err)
-    CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,(/NumberGlobalXElements,NumberGlobalYElements, &
-      & NumberGlobalZElements/),Err)
+    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[Width,Height,Length],Err)
+    CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements,NumberGlobalYElements, &
+      & NumberGlobalZElements],Err)
   ENDIF    
   !Finish the creation of a generated mesh in the region
   CALL cmfe_Mesh_Initialise(Mesh,Err)
@@ -227,12 +224,11 @@ PROGRAM HELMHOLTZEXAMPLE
   
   !Create the equations_set
   CALL cmfe_EquationsSet_Initialise(EquationsSet,Err)
-    CALL cmfe_Field_Initialise(EquationsSetField,Err)
-CALL cmfe_EquationsSet_CreateStart(EquationsSetUserNumber,Region,GeometricField,[CMFE_EQUATIONS_SET_CLASSICAL_FIELD_CLASS, &
-  & CMFE_EQUATIONS_SET_HELMHOLTZ_EQUATION_TYPE,CMFE_EQUATIONS_SET_STANDARD_HELMHOLTZ_SUBTYPE],EquationsSetFieldUserNumber, &
-  & EquationsSetField,EquationsSet,Err)
+  CALL cmfe_Field_Initialise(EquationsSetField,Err)
   !Set the equations set to be a standard Helmholtz problem
-  
+  CALL cmfe_EquationsSet_CreateStart(EquationsSetUserNumber,Region,GeometricField,[CMFE_EQUATIONS_SET_CLASSICAL_FIELD_CLASS, &
+    & CMFE_EQUATIONS_SET_HELMHOLTZ_EQUATION_TYPE,CMFE_EQUATIONS_SET_STANDARD_HELMHOLTZ_SUBTYPE],EquationsSetFieldUserNumber, &
+    & EquationsSetField,EquationsSet,Err)
   !Finish creating the equations set
   CALL cmfe_EquationsSet_CreateFinish(EquationsSet,Err)
 

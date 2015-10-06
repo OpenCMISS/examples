@@ -43,7 +43,7 @@
 !> Main program
 PROGRAM Embedded1DLaplaceExample 
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 

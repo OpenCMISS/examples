@@ -40,13 +40,13 @@
 !>
 
 !> \example FluidMechanics/Poiseuille/Static/src/StaticExample.f90
-!! Example program to solve a static Poiseuille equation using openCMISS calls.
+!! Example program to solve a static Poiseuille equation using OpenCMISS calls.
 !<
 
 !> Main program
 PROGRAM STATICPOISEUILLEEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 #ifdef WIN32
@@ -70,23 +70,21 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
   INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=8
   INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: SourceFieldUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=12
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=13
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=10
+  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=11
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=12
 
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_DIMENSIONS,INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
-  INTEGER(CMFEIntg) :: component_idx
+  INTEGER(CMFEIntg) :: NUMBER_OF_GAUSS_XI
+  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS
   INTEGER(CMFEIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
+  INTEGER(CMFEIntg) :: INTERPOLATION_TYPE
   REAL(CMFEDP) :: POSITION(3),PIPE_LENGTH
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT
 
   INTEGER(CMFEIntg) :: FirstNodeNumber,LastNodeNumber,FirstNodeDomain,LastNodeDomain
 
-  LOGICAL :: EXPORT_FIELD
 
   !CMISS variables
 
@@ -96,7 +94,7 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   TYPE(cmfe_DecompositionType) :: Decomposition
   TYPE(cmfe_EquationsType) :: Equations
   TYPE(cmfe_EquationsSetType) :: EquationsSet
-  TYPE(cmfe_FieldType) :: GeometricField,DependentField,MaterialsField,SourceField
+  TYPE(cmfe_FieldType) :: GeometricField,DependentField,MaterialsField
   TYPE(cmfe_FieldsType) :: Fields
   TYPE(cmfe_GeneratedMeshType) :: GeneratedMesh
   TYPE(cmfe_MeshType) :: Mesh

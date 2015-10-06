@@ -1,6 +1,6 @@
 !> \file
 !> \author Christian Michler
-!> \brief This is an example program to solve a dynamic Darcy equation using openCMISS calls.
+!> \brief This is an example program to solve a dynamic Darcy equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -61,7 +61,7 @@ PROGRAM DARCYDYNAMICEXAMPLE
 
   !PROGRAM LIBRARIES
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE FLUID_MECHANICS_IO_ROUTINES
   USE MPI
 
@@ -77,10 +77,6 @@ PROGRAM DARCYDYNAMICEXAMPLE
 
   IMPLICIT NONE
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(cmfe_FieldType) :: EquationsSetField
-
-
   !Test program parameters
 
   INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -88,10 +84,11 @@ PROGRAM DARCYDYNAMICEXAMPLE
   INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=3
   INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=4
   INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumberDarcy=6
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberDarcy=7
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberDarcy=8
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=9
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=6
+  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumberDarcy=7
+  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberDarcy=8
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberDarcy=9
+  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=10
 
   INTEGER(CMFEIntg), PARAMETER :: SolverDarcyUserNumber=1
   INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPorosity=1
@@ -190,6 +187,7 @@ PROGRAM DARCYDYNAMICEXAMPLE
   TYPE(cmfe_FieldsType) :: Fields
   !Field types
   TYPE(cmfe_FieldType) :: GeometricField
+  TYPE(cmfe_FieldType) :: EquationsSetField
   TYPE(cmfe_FieldType) :: DependentFieldDarcy
   TYPE(cmfe_FieldType) :: MaterialsFieldDarcy
   !Boundary conditions

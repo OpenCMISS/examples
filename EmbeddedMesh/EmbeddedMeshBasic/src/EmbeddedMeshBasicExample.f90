@@ -19,7 +19,7 @@
 !> License for the specific language governing rights and limitations
 !> under the License.
 !>
-!> The Original Code is openCMISS
+!> The Original Code is OpenCMISS
 !>
 !> The Initial Developer of the Original Code is University of Auckland,
 !> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -45,14 +45,12 @@
 !> Main program
 PROGRAM EMBEDDEDMESHEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
   IMPLICIT NONE
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  
-  !Test program parameters
+   !Test program parameters
 
   REAL(CMFEDP), PARAMETER :: HEIGHT=1.0_CMFEDP
   REAL(CMFEDP), PARAMETER :: WIDTH=1.0_CMFEDP
@@ -72,7 +70,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   INTEGER(CMFEIntg), PARAMETER :: DecompositionTwoUserNumber=11
   INTEGER(CMFEIntg), PARAMETER :: GeometricFieldOneUserNumber=13
   INTEGER(CMFEIntg), PARAMETER :: GeometricFieldTwoUserNumber=14
-  !INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
   INTEGER(CMFEIntg), PARAMETER :: DependentFieldOneUserNumber=15
   INTEGER(CMFEIntg), PARAMETER :: DependentFieldTwoUserNumber=16
   !INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=10
@@ -176,13 +174,13 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   CALL cmfe_Basis_CreateStart(BasisOneUserNumber,Basis1,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
     CALL cmfe_Basis_NumberOfXiSet(Basis1,2,Err)
-    CALL cmfe_Basis_InterpolationXiSet(Basis1,(/1,1/),Err)
-    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis1,(/3,3/),Err) 
+    CALL cmfe_Basis_InterpolationXiSet(Basis1,[1,1],Err)
+    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis1,[3,3],Err) 
   ELSE
     !Set the basis to be a trilinear Lagrange basis
     CALL cmfe_Basis_NumberOfXiSet(Basis1,3,Err)
-    CALL cmfe_Basis_InterpolationXiSet(Basis1,(/1,1,1/),Err)
-    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis1,(/3,3,3/),Err) 
+    CALL cmfe_Basis_InterpolationXiSet(Basis1,[1,1,1],Err)
+    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis1,[3,3,3],Err) 
   ENDIF
   !Finish the creation of the basis
   CALL cmfe_Basis_CreateFinish(Basis1,Err)
@@ -298,13 +296,13 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   IF(NUMBER_GLOBAL_Z_ELEMENTS_2==0) THEN
     !Set the basis to be a bilinear Lagrange basis
     CALL cmfe_Basis_NumberOfXiSet(Basis2,2,Err)
-    CALL cmfe_Basis_InterpolationXiSet(Basis2,(/1,1/),Err)
-    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis2,(/3,3/),Err) 
+    CALL cmfe_Basis_InterpolationXiSet(Basis2,[1,1],Err)
+    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis2,[3,3],Err) 
   ELSE
     !Set the basis to be a trilinear Lagrange basis
     CALL cmfe_Basis_NumberOfXiSet(Basis2,3,Err)
-        CALL cmfe_Basis_InterpolationXiSet(Basis2,(/1,1,1/),Err)
-    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis2,(/3,3,3/),Err) 
+        CALL cmfe_Basis_InterpolationXiSet(Basis2,[1,1,1],Err)
+    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis2,[3,3,3],Err) 
   ENDIF
   !Finish the creation of the basis
   CALL cmfe_Basis_CreateFinish(Basis2,Err)

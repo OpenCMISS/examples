@@ -1,7 +1,7 @@
 !> \file
 !> $Id: QuadraticEllipsoidExample.f90 1714 2010-11-10 15:43:15Z jackisawesome $
 !> \author Chris Bradley
-!> \brief This is an example program to solve a finite elasticity equation using openCMISS calls.
+!> \brief This is an example program to solve a finite elasticity equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -17,7 +17,7 @@
 !> License for the specific language governing rights and limitations
 !> under the License.
 !>
-!> The Original Code is openCMISS
+!> The Original Code is OpenCMISS
 !>
 !> The Initial Developer of the Original Code is University of Auckland,
 !> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -41,7 +41,7 @@
 !>
 
 !> \example FiniteElasticity/UniAxialExtension/src/UniAxialExtensionExample.f90
-!! Example program to solve a finite elasticity equation using openCMISS calls.
+!! Example program to solve a finite elasticity equation using OpenCMISS calls.
 !! \par Latest Builds:
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/UniAxialExtension/build-intel'>Linux Intel Build</a>
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/UniAxialExtension/build-gnu'>Linux GNU Build</a>
@@ -50,7 +50,7 @@
 !> Main program
 PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 #ifdef WIN32
@@ -69,7 +69,7 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
   REAL(CMFEDP), PARAMETER :: FIBRE_SLOPE_ENDO=1.73205_CMFEDP !Slope of fibres in base endocardium = 60 degrees
   REAL(CMFEDP), PARAMETER :: FIBRE_SLOPE_EPI=-1.73205_CMFEDP !Slope change of fibres from 60 to -60 degrees in transmural direction
   REAL(CMFEDP), PARAMETER :: SHEET_SLOPE_BASE_ENDO=1.0_CMFEDP !Slope of sheet at base endocardium
-  REAL(CMFEDP), DIMENSION(1:7) :: COSTA_PARAMS =  (/ 0.2, 30.0, 12.0, 14.0, 14.0, 10.0, 18.0 /) ! a bff bfs bfn bss bsn bnn
+  REAL(CMFEDP), DIMENSION(1:7) :: COSTA_PARAMS =  [ 0.2, 30.0, 12.0, 14.0, 14.0, 10.0, 18.0 ] ! a bff bfs bfn bss bsn bnn
   REAL(CMFEDP), PARAMETER :: INNER_PRESSURE=1.0_CMFEDP  !Positive is compressive
   REAL(CMFEDP), PARAMETER :: OUTER_PRESSURE=0.0_CMFEDP  !Positive is compressive
 
@@ -185,7 +185,7 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
   WRITE(*,'(A)') "Program starting."
 
   !Set all diganostic levels on for testing
-  CALL cmfe_DiagnosticsSetOn(CMFE_FROM_DIAG_TYPE,(/1,2,3,4,5/),"Diagnostics",(/"PROBLEM_FINITE_ELEMENT_CALCULATE"/),Err)
+  CALL cmfe_DiagnosticsSetOn(CMFE_FROM_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["PROBLEM_FINITE_ELEMENT_CALCULATE"],Err)
 
   !Get the number of computational nodes and this computational node number
   CALL cmfe_ComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -203,7 +203,7 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
   CALL cmfe_CoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   CALL cmfe_CoordinateSystem_TypeSet(CoordinateSystem,CMFE_COORDINATE_RECTANGULAR_CARTESIAN_TYPE,Err)
   CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystem,NumberOfSpatialCoordinates,Err)
-  CALL cmfe_CoordinateSystem_OriginSet(CoordinateSystem,(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/),Err)
+  CALL cmfe_CoordinateSystem_OriginSet(CoordinateSystem,[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP],Err)
   CALL cmfe_CoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Create a region and assign the CS to the region
@@ -216,10 +216,10 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
     !Quadratic Basis
   CALL cmfe_Basis_Initialise(QuadraticBasis,Err)
   CALL cmfe_Basis_CreateStart(QuadraticBasisUserNumber,QuadraticBasis,Err)
-  CALL cmfe_Basis_InterpolationXiSet(QuadraticBasis,(/CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION, &
-    & CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION,CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION/),Err)
+  CALL cmfe_Basis_InterpolationXiSet(QuadraticBasis,[CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION, &
+    & CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION,CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION],Err)
   CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(QuadraticBasis, &
-    & (/CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME/),Err)
+    & [CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME],Err)
   CALL cmfe_Basis_QuadratureLocalFaceGaussEvaluateSet(QuadraticBasis,.true.,Err) !Have to do this
   CALL cmfe_Basis_CreateFinish(QuadraticBasis,Err)
 
@@ -228,12 +228,12 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
   CALL cmfe_Basis_CreateStart(QuadraticCollapsedBasisUserNumber,QuadraticCollapsedBasis,Err)
   CALL cmfe_Basis_TypeSet(QuadraticCollapsedBasis,CMFE_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
   CALL cmfe_Basis_NumberOfXiSet(QuadraticCollapsedBasis,NumberOfXiCoordinates,Err)
-  CALL cmfe_Basis_InterpolationXiSet(QuadraticCollapsedBasis,(/CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION, &
-       & CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION,CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION/),Err)
-  CALL cmfe_Basis_CollapsedXiSet(QuadraticCollapsedBasis,(/CMFE_BASIS_XI_COLLAPSED, &
-       & CMFE_BASIS_COLLAPSED_AT_XI0,CMFE_BASIS_NOT_COLLAPSED/),Err)
+  CALL cmfe_Basis_InterpolationXiSet(QuadraticCollapsedBasis,[CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION, &
+       & CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION,CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION],Err)
+  CALL cmfe_Basis_CollapsedXiSet(QuadraticCollapsedBasis,[CMFE_BASIS_XI_COLLAPSED, &
+       & CMFE_BASIS_COLLAPSED_AT_XI0,CMFE_BASIS_NOT_COLLAPSED],Err)
   CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(QuadraticCollapsedBasis, &
-       & (/CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME/),Err)
+       & [CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME],Err)
   CALL cmfe_Basis_QuadratureLocalFaceGaussEvaluateSet(QuadraticCollapsedBasis,.true.,Err) !Have to do this
   CALL cmfe_Basis_CreateFinish(QuadraticCollapsedBasis,Err)
 
@@ -241,7 +241,7 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
   CALL cmfe_Basis_Initialise(LinearBasis,Err)
   CALL cmfe_Basis_CreateStart(LinearBasisUserNumber,LinearBasis,Err)
   CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(LinearBasis, &
-    & (/CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME/),Err)
+    & [CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME],Err)
   CALL cmfe_Basis_QuadratureLocalFaceGaussEvaluateSet(LinearBasis,.true.,Err) !Have to do this (unused) due to field_interp setup
   CALL cmfe_Basis_CreateFinish(LinearBasis,Err)
 
@@ -250,12 +250,12 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
   CALL cmfe_Basis_CreateStart(LinearCollapsedBasisUserNumber,LinearCollapsedBasis,Err)
   CALL cmfe_Basis_TypeSet(LinearCollapsedBasis,CMFE_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
   CALL cmfe_Basis_NumberOfXiSet(LinearCollapsedBasis,NumberOfXiCoordinates,Err)
-  CALL cmfe_Basis_InterpolationXiSet(LinearCollapsedBasis,(/CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION, &
-       & CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION,CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION/),Err)
-  CALL cmfe_Basis_CollapsedXiSet(LinearCollapsedBasis,(/CMFE_BASIS_XI_COLLAPSED,CMFE_BASIS_COLLAPSED_AT_XI0, &
-    & CMFE_BASIS_NOT_COLLAPSED/),Err)
+  CALL cmfe_Basis_InterpolationXiSet(LinearCollapsedBasis,[CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION, &
+       & CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION,CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION],Err)
+  CALL cmfe_Basis_CollapsedXiSet(LinearCollapsedBasis,[CMFE_BASIS_XI_COLLAPSED,CMFE_BASIS_COLLAPSED_AT_XI0, &
+    & CMFE_BASIS_NOT_COLLAPSED],Err)
   CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(LinearCollapsedBasis, &
-       & (/CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME/),Err)
+       & [CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME],Err)
   CALL cmfe_Basis_QuadratureLocalFaceGaussEvaluateSet(LinearCollapsedBasis,.true.,Err) !Have to do this (unused) due to field_interp setup
   CALL cmfe_Basis_CreateFinish(LinearCollapsedBasis,Err)
 
@@ -267,9 +267,9 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
    !Set the quadratic and linear bases
   CALL cmfe_GeneratedMesh_BasisSet(GeneratedMesh,[QuadraticBasis,QuadraticCollapsedBasis,LinearBasis,LinearCollapsedBasis],Err)
   !Define the mesh on the region
-  CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,(/LONG_AXIS,SHORT_AXIS,WALL_THICKNESS,CUTOFF_ANGLE/),Err)
-  CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,(/NumberGlobalXElements,NumberGlobalYElements, &
-    & NumberGlobalZElements/),Err)
+  CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[LONG_AXIS,SHORT_AXIS,WALL_THICKNESS,CUTOFF_ANGLE],Err)
+  CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements,NumberGlobalYElements, &
+    & NumberGlobalZElements],Err)
 
   !Finish the creation of a generated mesh in the region
   CALL cmfe_Mesh_Initialise(Mesh,Err)
@@ -369,7 +369,7 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
     CorrectNodeNumber=G(node_idx)
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,CorrectNodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
-      FibreFieldAngle=(/zero,zero,zero/)
+      FibreFieldAngle=[zero,zero,zero]
       DO component_idx=1,FieldFibreNumberOfComponents
         CALL cmfe_Field_ParameterSetUpdateNode(FibreField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1, &
           & DerivativeUserNumber, &
@@ -385,7 +385,7 @@ PROGRAM QUADRATICELLIPSOIDCOSTAEXAMPLE
         CorrectNodeNumber=G(node_idx)
         CALL cmfe_Decomposition_NodeDomainGet(Decomposition,CorrectNodeNumber,1,NodeDomain,Err)
         IF(NodeDomain==ComputationalNodeNumber) THEN
-          FibreFieldAngle=(/theta,zero,omega/)
+          FibreFieldAngle=[theta,zero,omega]
           DO component_idx=1,FieldFibreNumberOfComponents
             CALL cmfe_Field_ParameterSetUpdateNode(FibreField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1, &
               & DerivativeUserNumber,CorrectNodeNumber,component_idx,FibreFieldAngle(component_idx),Err)

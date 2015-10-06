@@ -55,7 +55,7 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
 
   !PROGRAM LIBRARIES
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE FLUID_MECHANICS_IO_ROUTINES
   USE MPI
 
@@ -71,10 +71,6 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
 
   IMPLICIT NONE
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(cmfe_FieldType) :: EquationsSetField
-
-
   !Test program parameters
 
   INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -84,14 +80,15 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
   INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
   INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
   INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumberAdvecDiff=8
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberAdvecDiff=9
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberAdvecDiff=10
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=11
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumberAdvecDiff=9
+  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberAdvecDiff=10
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberAdvecDiff=11
+  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=12
   INTEGER(CMFEIntg), PARAMETER :: ControlLoopNode=0
-  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldUserNumberAdvecDiff=12
-  !INTEGER(CMFEIntg), PARAMETER :: AnalyticFieldUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: SourceFieldUserNumberAdvecDiff=14
+  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldUserNumberAdvecDiff=13
+  !INTEGER(CMFEIntg), PARAMETER :: AnalyticFieldUserNumber=14
+  INTEGER(CMFEIntg), PARAMETER :: SourceFieldUserNumberAdvecDiff=15
   INTEGER(CMFEIntg), PARAMETER :: DomainUserNumber=1
 
   !Program types
@@ -174,6 +171,7 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
   TYPE(cmfe_FieldsType) :: Fields
   !Field types
   TYPE(cmfe_FieldType) :: GeometricField
+  TYPE(cmfe_FieldType) :: EquationsSetField
   TYPE(cmfe_FieldType) :: DependentFieldAdvecDiff
   TYPE(cmfe_FieldType) :: MaterialsFieldAdvecDiff
   TYPE(cmfe_FieldType) :: IndependentFieldAdvecDiff

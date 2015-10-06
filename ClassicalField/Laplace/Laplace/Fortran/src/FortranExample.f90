@@ -48,6 +48,7 @@
 !> Main program
 PROGRAM LAPLACEEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 

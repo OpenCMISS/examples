@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 #> \file
 #> \author Adam Reeve
-#> \brief Test Neumann boundary conditions using Laplace's
-#> equation on a cylinder
+#> \brief Test Neumann boundary conditions using Laplace's equation on a cylinder
 #>
 #> \section LICENSE
 #>

@@ -49,7 +49,7 @@
 !> Main program
 PROGRAM COUPLEDLAPLACE
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   
 #ifdef WIN32
   USE IFQWIN
@@ -422,7 +422,7 @@ PROGRAM COUPLEDLAPLACE
   PRINT *, ' == >> CREATING INTERFACE MESHES CONNECTIVITY << == '
   CALL cmfe_InterfaceMeshConnectivity_Initialise(InterfaceMeshConnectivity,Err)
   CALL cmfe_InterfaceMeshConnectivity_CreateStart(Interface,InterfaceMesh,InterfaceMeshConnectivity,Err)
-  CALL cmfe_InterfaceMeshConnectivity_SetBasis(InterfaceMeshConnectivity,InterfaceMappingBasis,Err)
+  CALL cmfe_InterfaceMeshConnectivity_BasisSet(InterfaceMeshConnectivity,InterfaceMappingBasis,Err)
   SELECT CASE(INTERPOLATION_TYPE)
   CASE(1,4)
     NUMBER_OF_NODE_XI=2

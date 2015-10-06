@@ -47,20 +47,14 @@
 !> Main program
 PROGRAM DIFFUSIONEXAMPLE
 
-
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
-
 
 #ifdef WIN32
   USE IFQWIN
 #endif
 
   IMPLICIT NONE
-
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(cmfe_FieldType) :: EquationsSetField
-
 
   !Test program parameters
 
@@ -75,12 +69,13 @@ PROGRAM DIFFUSIONEXAMPLE
   INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
   INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
   INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=11
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=10
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=11
+  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=12
   INTEGER(CMFEIntg), PARAMETER :: ControlLoopNode=0
-  INTEGER(CMFEIntg), PARAMETER :: AnalyticFieldUserNumber=12
+  INTEGER(CMFEIntg), PARAMETER :: AnalyticFieldUserNumber=13
 
   !Program types
   
@@ -95,14 +90,14 @@ PROGRAM DIFFUSIONEXAMPLE
   !INTEGER(INTG) :: EQUATIONS_SET_INDEX
   !TYPE(DOMAIN_MAPPING_TYPE), POINTER :: DEPENDENT_DOF_MAPPING
   
-    !CMISS variables
+  !CMISS variables
 
   TYPE(cmfe_BasisType) :: Basis
   TYPE(cmfe_CoordinateSystemType) :: CoordinateSystem,WorldCoordinateSystem
   TYPE(cmfe_DecompositionType) :: Decomposition
   TYPE(cmfe_EquationsType) :: Equations
   TYPE(cmfe_EquationsSetType) :: EquationsSet
-  TYPE(cmfe_FieldType) :: GeometricField,DependentField,MaterialsField,AnalyticField
+  TYPE(cmfe_FieldType) :: GeometricField,EquationsSetField,DependentField,MaterialsField,AnalyticField
   TYPE(cmfe_FieldsType) :: Fields
   TYPE(cmfe_GeneratedMeshType) :: GeneratedMesh  
   TYPE(cmfe_MeshType) :: Mesh
@@ -189,8 +184,8 @@ PROGRAM DIFFUSIONEXAMPLE
     !Set the basis to be a bilinear Lagrange basis
     !CALL cmfe_Basis_TypeSet(Basis,CMFE_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
     CALL cmfe_Basis_NumberOfXiSet(Basis,2,Err)
-    CALL cmfe_Basis_InterpolationXiSet(Basis,(/3,3/),Err)
-    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis,(/4,4/),Err) 
+    CALL cmfe_Basis_InterpolationXiSet(Basis,[3,3],Err)
+    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis,[4,4],Err) 
   ELSE
     !Set the basis to be a trilinear Lagrange basis
     CALL cmfe_Basis_NumberOfXiSet(Basis,3,Err)
@@ -207,12 +202,12 @@ PROGRAM DIFFUSIONEXAMPLE
   CALL cmfe_GeneratedMesh_BasisSet(GeneratedMesh,Basis,Err)   
   !Define the mesh on the region
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,(/WIDTH,HEIGHT/),Err)
-    CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS/),Err)
+    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[WIDTH,HEIGHT],Err)
+    CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS],Err)
   ELSE
-    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,(/WIDTH,HEIGHT,LENGTH/),Err)
-    CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
-      & NUMBER_GLOBAL_Z_ELEMENTS/),Err)
+    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[WIDTH,HEIGHT,LENGTH],Err)
+    CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
+      & NUMBER_GLOBAL_Z_ELEMENTS],Err)
   ENDIF
   !Finish the creation of a generated mesh in the region
   CALL cmfe_Mesh_Initialise(Mesh,Err)
@@ -403,7 +398,7 @@ CALL cmfe_EquationsSet_CreateStart(EquationsSetUserNumber,Region,GeometricField,
   CALL cmfe_Problem_Solve(Problem,Err)
 
   !Output Analytic analysis
-  Call cmfe_AnalyticAnalysisOutput(DependentField,"DiffusionAnalytics_x10_y10_C_T1",Err)
+  Call cmfe_AnalyticAnalysis_Output(DependentField,"DiffusionAnalytics_x10_y10_C_T1",Err)
 
 
   EXPORT_FIELD=.TRUE.

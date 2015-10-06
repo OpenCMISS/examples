@@ -48,7 +48,7 @@
 !> Main program
 PROGRAM NUMBERLAPLACEEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 #ifdef WIN32
@@ -165,13 +165,13 @@ PROGRAM NUMBERLAPLACEEXAMPLE
   CALL cmfe_GeneratedMesh_BasisSet(RegionUserNumber,GeneratedMeshUserNumber,BasisUserNumber,Err)
   !Define the mesh on the region
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    CALL cmfe_GeneratedMesh_ExtentSet(RegionUserNumber,GeneratedMeshUserNumber,(/WIDTH,HEIGHT/),Err)
+    CALL cmfe_GeneratedMesh_ExtentSet(RegionUserNumber,GeneratedMeshUserNumber,[WIDTH,HEIGHT],Err)
     CALL cmfe_GeneratedMesh_NumberOfElementsSet(RegionUserNumber,GeneratedMeshUserNumber, &
-      & (/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS/),Err)
+      & [NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS],Err)
   ELSE
-    CALL cmfe_GeneratedMesh_ExtentSet(RegionUserNumber,GeneratedMeshUserNumber,(/WIDTH,HEIGHT,LENGTH/),Err)
+    CALL cmfe_GeneratedMesh_ExtentSet(RegionUserNumber,GeneratedMeshUserNumber,[WIDTH,HEIGHT,LENGTH],Err)
     CALL cmfe_GeneratedMesh_NumberOfElementsSet(RegionUserNumber,GeneratedMeshUserNumber, &
-      & (/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS/),Err)
+      & [NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS],Err)
   ENDIF
   !Finish the creation of a generated mesh in the region
   CALL cmfe_GeneratedMesh_CreateFinish(RegionUserNumber,GeneratedMeshUserNumber,MeshUserNumber,Err)
@@ -200,13 +200,10 @@ PROGRAM NUMBERLAPLACEEXAMPLE
   !Update the geometric field parameters
   CALL cmfe_GeneratedMesh_GeometricParametersCalculate(RegionUserNumber,GeneratedMeshUserNumber,GeometricFieldUserNumber,Err)
   
-  !Create the equations_set
+  !Create the standard Laplace equations set
   CALL cmfe_EquationsSet_CreateStart(EquationsSetUserNumber,RegionUserNumber,GeometricFieldUserNumber, &
     & [CMFE_EQUATIONS_SET_CLASSICAL_FIELD_CLASS,CMFE_EQUATIONS_SET_LAPLACE_EQUATION_TYPE, &
     & CMFE_EQUATIONS_SET_STANDARD_LAPLACE_SUBTYPE],EquationsSetFieldUserNumber,Err)
-  !Set the equations set to be a standard Laplace problem
-!   CALL cmfe_EquationsSet_SpecificationSet(RegionUserNumber,EquationsSetUserNumber,CMFE_EQUATIONS_SET_CLASSICAL_FIELD_CLASS, &
-!     & CMFE_EQUATIONS_SET_LAPLACE_EQUATION_TYPE,CMFE_EQUATIONS_SET_STANDARD_LAPLACE_SUBTYPE,Err)
   !Finish creating the equations set
   CALL cmfe_EquationsSet_CreateFinish(RegionUserNumber,EquationsSetUserNumber,Err)
 

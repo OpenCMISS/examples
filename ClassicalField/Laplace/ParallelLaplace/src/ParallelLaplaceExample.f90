@@ -48,7 +48,7 @@
 !> Main program
 PROGRAM PARALLELLAPLACEEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
 
 #ifdef WIN32
   USE IFQWIN
@@ -268,12 +268,10 @@ PROGRAM PARALLELLAPLACEEXAMPLE
   !Create the equations set analytic 
   IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
     CALL cmfe_EquationsSet_AnalyticCreateStart(EquationsSet,CMFE_EQUATIONS_SET_LAPLACE_EQUATION_THREE_DIM_2, &
-      & AnalyticFieldUserNumber, &
-      AnalyticField,Err)
+      & AnalyticFieldUserNumber,AnalyticField,Err)
   ELSE
     CALL cmfe_EquationsSet_AnalyticCreateStart(EquationsSet,CMFE_EQUATIONS_SET_LAPLACE_EQUATION_TWO_DIM_2, &
-      & AnalyticFieldUserNumber, &
-      AnalyticField,Err)
+      & AnalyticFieldUserNumber,AnalyticField,Err)
   ENDIF
   !Finish the equations set analytic
   CALL cmfe_EquationsSet_AnalyticCreateFinish(EquationsSet,Err)
@@ -342,7 +340,7 @@ PROGRAM PARALLELLAPLACEEXAMPLE
   CALL cmfe_Problem_Solve(Problem,Err)
 
   !Compute Analytic analysis
-  !CALL cmfe_AnalyticAnalysisOutput(DependentField,"ParallelLaplace",Err)
+  !CALL cmfe_AnalyticAnalysis_Output(DependentField,"ParallelLaplace",Err)
   
   !Export result
   !CALL cmfe_Fields_Initialise(Fields,Err)

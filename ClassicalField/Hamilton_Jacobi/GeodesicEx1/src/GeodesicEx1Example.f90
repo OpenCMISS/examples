@@ -1,6 +1,6 @@
 !> \file
 !> \author Ali PASHAEI
-!> \brief This is an example program to find the geodesic using openCMISS calls.
+!> \brief This is an example program to find the geodesic using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -16,7 +16,7 @@
 !> License for the specific language governing rights and limitations
 !> under the License.
 !>
-!> The Original Code is openCMISS
+!> The Original Code is OpenCMISS
 !>
 !> The Initial Developer of the Original Code is  University of Pompeu Fabra,
 !> Barcelona, Spain, University of Auckland, Auckland, New Zealand and 
@@ -51,7 +51,7 @@ PROGRAM GeodesicEx1
 
 ! OpenCMISS Modules
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
 
 #ifdef WIN32
   USE IFQWIN

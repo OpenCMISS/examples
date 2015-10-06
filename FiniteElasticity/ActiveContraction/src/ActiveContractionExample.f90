@@ -1,6 +1,6 @@
 !> \file
 !> \author Sander Land
-!> \brief This is an example program to solve active contraction based finite elasticity equation using openCMISS calls.
+!> \brief This is an example program to solve active contraction based finite elasticity equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -16,7 +16,7 @@
 !> License for the specific language governing rights and limitations
 !> under the License.
 !>
-!> The Original Code is openCMISS
+!> The Original Code is OpenCMISS
 !>
 !> The Initial Developer of the Original Code is University of Auckland,
 !> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -42,14 +42,10 @@
 !> Main program
 PROGRAM ActiveContractionExample
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
   IMPLICIT NONE
-
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(cmfe_FieldType) :: EquationsSetField
-
 
   !Test program parameters
 
@@ -69,6 +65,7 @@ PROGRAM ActiveContractionExample
   INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumber=4
   INTEGER(CMFEIntg), PARAMETER :: FieldGPUserNumber=5 ! temp/test
   INTEGER(CMFEIntg), PARAMETER :: IndependentFieldUserNumber=6
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=7
 
   INTEGER(CMFEIntg), PARAMETER :: NumberOfMeshComponents=2
   INTEGER(CMFEIntg), PARAMETER :: QuadraticMeshComponentNumber=1
@@ -86,16 +83,16 @@ PROGRAM ActiveContractionExample
 
   !Program variables
 
-  INTEGER(CMFEIntg), PARAMETER, DIMENSION(1:27) :: ROTATE_ELEM = (/ 1, 2, 3,10,11,12,19,20,21, &
+  INTEGER(CMFEIntg), PARAMETER, DIMENSION(1:27) :: ROTATE_ELEM = [ 1, 2, 3,10,11,12,19,20,21, &
                                                                   &  4, 5, 6,13,14,15,22,23,24, &  ! swap xi2 and xi3 directions for fiber angle
-                                                                  &  7, 8, 9,16,17,18,25,26,27 /)  ! swap xi2 and xi3 directions for fiber angle
+                                                                  &  7, 8, 9,16,17,18,25,26,27 ]  ! swap xi2 and xi3 directions for fiber angle
 
   INTEGER(CMFEIntg) :: EquationsSetIndex  
   INTEGER(CMFEIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
   INTEGER(CMFEIntg) :: D, E, N, I
 
   REAL(CMFEDP) :: TMP
-  REAL(CMFEDP), DIMENSION(1:7) :: COSTA_PARAMS =  (/ 0.2, 30.0, 12.0, 14.0, 14.0, 10.0, 18.0 /) ! a bff bfs bfn bss bsn bnn
+  REAL(CMFEDP), DIMENSION(1:7) :: COSTA_PARAMS =  [ 0.2, 30.0, 12.0, 14.0, 14.0, 10.0, 18.0 ] ! a bff bfs bfn bss bsn bnn
 
   INTEGER(CMFEIntg), dimension(:,:), allocatable :: Elements
   REAL(CMFEDP)     , dimension(:,:), allocatable :: Nodes
@@ -111,7 +108,7 @@ PROGRAM ActiveContractionExample
   TYPE(cmfe_DecompositionType) :: Decomposition
   TYPE(cmfe_EquationsType) :: Equations
   TYPE(cmfe_EquationsSetType) :: EquationsSet
-  TYPE(cmfe_FieldType) :: GeometricField,FibreField,MaterialField,DependentField, GPfield, IndependentField
+  TYPE(cmfe_FieldType) :: GeometricField,EquationsSetField,FibreField,MaterialField,DependentField, GPfield, IndependentField
   TYPE(cmfe_FieldsType) :: Fields
   TYPE(cmfe_ProblemType) :: Problem
   TYPE(cmfe_RegionType) :: Region,WorldRegion
@@ -130,7 +127,7 @@ PROGRAM ActiveContractionExample
   CALL cmfe_ErrorHandlingModeSet(CMFE_ERRORS_TRAP_ERROR,Err)
 
   !Set all diganostic levels on for testing
-  !CALL cmfe_DiagnosticsSetOn(CMFE_FROM_DIAG_TYPE,(/1,2,3,4,5/),"Diagnostics",(/"PROBLEM_RESIDUAL_EVALUATE"/),Err)
+  !CALL cmfe_DiagnosticsSetOn(CMFE_FROM_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["PROBLEM_RESIDUAL_EVALUATE"],Err)
 
   !Get the number of computational nodes and this computational node number
   CALL cmfe_ComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -167,10 +164,10 @@ PROGRAM ActiveContractionExample
 
   CALL cmfe_Basis_Initialise(QuadraticBasis,Err)
   CALL cmfe_Basis_CreateStart(QuadraticBasisUserNumber,QuadraticBasis,Err)
-  CALL cmfe_Basis_InterpolationXiSet(QuadraticBasis,(/CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION, &
-    & CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION,CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION/),Err)
+  CALL cmfe_Basis_InterpolationXiSet(QuadraticBasis,[CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION, &
+    & CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION,CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION],Err)
   CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(QuadraticBasis, &
-    & (/CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME/),Err)
+    & [CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME],Err)
   CALL cmfe_Basis_CreateFinish(QuadraticBasis,Err)
 
   !Create a mesh with two components, Quadratic for geometry and fibers and linear lagrange
@@ -195,7 +192,7 @@ PROGRAM ActiveContractionExample
   CALL cmfe_MeshElements_Initialise(LinearElements,Err)
   CALL cmfe_MeshElements_CreateStart(Mesh,LinearMeshComponentNumber,LinearBasis,LinearElements,Err)
   DO E=1,size(Elements,2)
-    CALL cmfe_MeshElements_NodesSet(LinearElements,E, Elements( (/1,3,7,9,19,21,25,27/),E),Err)
+    CALL cmfe_MeshElements_NodesSet(LinearElements,E, Elements( [1,3,7,9,19,21,25,27],E),Err)
   ENDDO
   CALL cmfe_MeshElements_CreateFinish(LinearElements,Err)
 

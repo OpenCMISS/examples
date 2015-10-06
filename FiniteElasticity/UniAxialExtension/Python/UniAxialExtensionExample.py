@@ -2,7 +2,7 @@
 
 #> \file
 #> \author Chris Bradley
-#> \brief This is an example script to solve a finite elasticity equation using OpenCMISS-Iron calls in python.
+#> \brief This is an example script to solve a finite elasticity equation using OpenCMISS calls in python.
 #>
 #> \section LICENSE
 #>
@@ -42,7 +42,7 @@
 #>
 
 #> \example FiniteElasticity/UniAxialExtension/src/UniAxialExtensionExample.py
-## Example script to solve a finite elasticity equation using OpenCMISS-Iron calls in python.
+## Example script to solve a finite elasticity equation using OpenCMISS calls in python.
 ## \par Latest Builds:
 ## \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/UniAxialExtension/build-intel'>Linux Intel Build</a>
 ## \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/UniAxialExtension/build-gnu'>Linux GNU Build</a>
@@ -54,7 +54,7 @@ import sys, os
 
 sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
 
-# Intialise OpenCMISS-Iron
+# Intialise OpenCMISS
 from opencmiss import iron
 
 # Set problem parameters

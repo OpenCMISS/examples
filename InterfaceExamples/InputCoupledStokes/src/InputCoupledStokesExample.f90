@@ -49,7 +49,7 @@
 !> Main program
 PROGRAM COUPLEDSTOKES
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE FLUID_MECHANICS_IO_ROUTINES
   
 #ifdef WIN32
@@ -309,15 +309,15 @@ PROGRAM COUPLEDSTOKES
   IF(FIXED_WALL_NODES1_FLAG) THEN
     NUMBER_OF_FIXED_WALL_NODES1=80
     ALLOCATE(FIXED_WALL_NODES1(NUMBER_OF_FIXED_WALL_NODES1))
-    FIXED_WALL_NODES1=(/1,2,3,4,5,7,9,10,11,12,13,14,17,20,24,28,29,30,31,32,33,34,35,37,39, & 
+    FIXED_WALL_NODES1=[1,2,3,4,5,7,9,10,11,12,13,14,17,20,24,28,29,30,31,32,33,34,35,37,39, & 
     & 41,44,46,47,48,50,51,52,53,54,57,60,64,65,66,67,68,70,72,74,76,77,78,79,80,83,86, & 
     & 89,90,91,92,93,94,95,97,99,101,102,103,104,105,106,107,108,111,114,115,116,117,118, & 
-    & 120,122,123,124,125/)
+    & 120,122,123,124,125]
   ENDIF
   IF(INLET_WALL_NODES1_FLAG) THEN
     NUMBER_OF_INLET_WALL_NODES1=9
     ALLOCATE(INLET_WALL_NODES1(NUMBER_OF_INLET_WALL_NODES1))
-    INLET_WALL_NODES1=(/67,74,76,79,87,88,102,103,113/)
+    INLET_WALL_NODES1=[67,74,76,79,87,88,102,103,113]
     !Set initial boundary conditions
     BOUNDARY_CONDITIONS1(1)=1.0_CMFEDP
     BOUNDARY_CONDITIONS1(2)=0.0_CMFEDP
@@ -326,15 +326,15 @@ PROGRAM COUPLEDSTOKES
   IF(FIXED_WALL_NODES2_FLAG) THEN
     NUMBER_OF_FIXED_WALL_NODES2=80
     ALLOCATE(FIXED_WALL_NODES2(NUMBER_OF_FIXED_WALL_NODES2))
-    FIXED_WALL_NODES2=(/1,2,3,4,5,7,9,10,11,12,13,14,17,20,24,28,29,30,31,32,33,34,35,37,39, & 
+    FIXED_WALL_NODES2=[1,2,3,4,5,7,9,10,11,12,13,14,17,20,24,28,29,30,31,32,33,34,35,37,39, & 
     & 41,44,46,47,48,50,51,52,53,54,57,60,64,65,66,67,68,70,72,74,76,77,78,79,80,83,86, & 
     & 89,90,91,92,93,94,95,97,99,101,102,103,104,105,106,107,108,111,114,115,116,117,118, & 
-    & 120,122,123,124,125/)
+    & 120,122,123,124,125]
   ENDIF
   IF(INLET_WALL_NODES2_FLAG) THEN
     NUMBER_OF_INLET_WALL_NODES2=9
     ALLOCATE(INLET_WALL_NODES2(NUMBER_OF_INLET_WALL_NODES1))
-    INLET_WALL_NODES2=(/67,74,76,79,87,88,102,103,113/)
+    INLET_WALL_NODES2=[67,74,76,79,87,88,102,103,113]
     !Set initial boundary conditions
     BOUNDARY_CONDITIONS2(1)=1.0_CMFEDP
     BOUNDARY_CONDITIONS2(2)=0.0_CMFEDP
@@ -413,18 +413,18 @@ PROGRAM COUPLEDSTOKES
   CALL cmfe_Basis_NumberOfXiSet(BasisSpace1,NUMBER_OF_DIMENSIONS1,Err)
   !Set the basis xi interpolation and number of Gauss points
   IF(NUMBER_OF_DIMENSIONS1==2.AND.NUMBER_OF_DIMENSIONS2==2) THEN
-    CALL cmfe_Basis_InterpolationXiSet(BasisSpace1,(/BASIS_XI_INTERPOLATION_SPACE1,BASIS_XI_INTERPOLATION_SPACE1/),Err)
+    CALL cmfe_Basis_InterpolationXiSet(BasisSpace1,[BASIS_XI_INTERPOLATION_SPACE1,BASIS_XI_INTERPOLATION_SPACE1],Err)
     IF(BASIS_TYPE1/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace1,(/BASIS_XI_GAUSS_SPACE1,BASIS_XI_GAUSS_SPACE1/),Err)
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace1,[BASIS_XI_GAUSS_SPACE1,BASIS_XI_GAUSS_SPACE1],Err)
     ELSE
       CALL cmfe_Basis_QuadratureOrderSet(BasisSpace1,BASIS_XI_GAUSS_SPACE1+1,Err)
     ENDIF
   ELSE IF(NUMBER_OF_DIMENSIONS1==3.AND.NUMBER_OF_DIMENSIONS2==3) THEN
-    CALL cmfe_Basis_InterpolationXiSet(BasisSpace1,(/BASIS_XI_INTERPOLATION_SPACE1,BASIS_XI_INTERPOLATION_SPACE1, & 
-      & BASIS_XI_INTERPOLATION_SPACE1/),Err)                         
+    CALL cmfe_Basis_InterpolationXiSet(BasisSpace1,[BASIS_XI_INTERPOLATION_SPACE1,BASIS_XI_INTERPOLATION_SPACE1, & 
+      & BASIS_XI_INTERPOLATION_SPACE1],Err)                         
     IF(BASIS_TYPE1/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace1,(/BASIS_XI_GAUSS_SPACE1,BASIS_XI_GAUSS_SPACE1, &
-        & BASIS_XI_GAUSS_SPACE1/),Err)
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace1,[BASIS_XI_GAUSS_SPACE1,BASIS_XI_GAUSS_SPACE1, &
+        & BASIS_XI_GAUSS_SPACE1],Err)
     ELSE
       CALL cmfe_Basis_QuadratureOrderSet(BasisSpace1,BASIS_XI_GAUSS_SPACE1+1,Err)
     ENDIF
@@ -448,18 +448,18 @@ PROGRAM COUPLEDSTOKES
     CALL cmfe_Basis_NumberOfXiSet(BasisVelocity1,NUMBER_OF_DIMENSIONS1,Err)
     !Set the basis xi interpolation and number of Gauss points
     IF(NUMBER_OF_DIMENSIONS1==2.AND.NUMBER_OF_DIMENSIONS2==2) THEN
-      CALL cmfe_Basis_InterpolationXiSet(BasisVelocity1,(/BASIS_XI_INTERPOLATION_VELOCITY1,BASIS_XI_INTERPOLATION_VELOCITY1/),Err)
+      CALL cmfe_Basis_InterpolationXiSet(BasisVelocity1,[BASIS_XI_INTERPOLATION_VELOCITY1,BASIS_XI_INTERPOLATION_VELOCITY1],Err)
       IF(BASIS_TYPE1/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisVelocity1,(/BASIS_XI_GAUSS_VELOCITY1,BASIS_XI_GAUSS_VELOCITY1/),Err)
+        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisVelocity1,[BASIS_XI_GAUSS_VELOCITY1,BASIS_XI_GAUSS_VELOCITY1],Err)
       ELSE
         CALL cmfe_Basis_QuadratureOrderSet(BasisVelocity1,BASIS_XI_GAUSS_VELOCITY1+1,Err)
       ENDIF
     ELSE IF(NUMBER_OF_DIMENSIONS1==3.AND.NUMBER_OF_DIMENSIONS2==3) THEN
-      CALL cmfe_Basis_InterpolationXiSet(BasisVelocity1,(/BASIS_XI_INTERPOLATION_VELOCITY1,BASIS_XI_INTERPOLATION_VELOCITY1, & 
-        & BASIS_XI_INTERPOLATION_VELOCITY1/),Err)                         
+      CALL cmfe_Basis_InterpolationXiSet(BasisVelocity1,[BASIS_XI_INTERPOLATION_VELOCITY1,BASIS_XI_INTERPOLATION_VELOCITY1, & 
+        & BASIS_XI_INTERPOLATION_VELOCITY1],Err)                         
       IF(BASIS_TYPE1/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisVelocity1,(/BASIS_XI_GAUSS_VELOCITY1,BASIS_XI_GAUSS_VELOCITY1, &
-          & BASIS_XI_GAUSS_VELOCITY1/),Err)
+        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisVelocity1,[BASIS_XI_GAUSS_VELOCITY1,BASIS_XI_GAUSS_VELOCITY1, &
+          & BASIS_XI_GAUSS_VELOCITY1],Err)
       ELSE
         CALL cmfe_Basis_QuadratureOrderSet(BasisVelocity1,BASIS_XI_GAUSS_VELOCITY1+1,Err)
       ENDIF
@@ -486,18 +486,18 @@ PROGRAM COUPLEDSTOKES
     CALL cmfe_Basis_NumberOfXiSet(BasisPressure1,NUMBER_OF_DIMENSIONS1,Err)
     !Set the basis xi interpolation and number of Gauss points
     IF(NUMBER_OF_DIMENSIONS1==2.AND.NUMBER_OF_DIMENSIONS2==2) THEN
-      CALL cmfe_Basis_InterpolationXiSet(BasisPressure1,(/BASIS_XI_INTERPOLATION_PRESSURE1,BASIS_XI_INTERPOLATION_PRESSURE1/),Err)
+      CALL cmfe_Basis_InterpolationXiSet(BasisPressure1,[BASIS_XI_INTERPOLATION_PRESSURE1,BASIS_XI_INTERPOLATION_PRESSURE1],Err)
       IF(BASIS_TYPE1/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisPressure1,(/BASIS_XI_GAUSS_PRESSURE1,BASIS_XI_GAUSS_PRESSURE1/),Err)
+        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisPressure1,[BASIS_XI_GAUSS_PRESSURE1,BASIS_XI_GAUSS_PRESSURE1],Err)
       ELSE
         CALL cmfe_Basis_QuadratureOrderSet(BasisPressure1,BASIS_XI_GAUSS_PRESSURE1+1,Err)
       ENDIF
     ELSE IF(NUMBER_OF_DIMENSIONS1==3.AND.NUMBER_OF_DIMENSIONS2==3) THEN
-      CALL cmfe_Basis_InterpolationXiSet(BasisPressure1,(/BASIS_XI_INTERPOLATION_PRESSURE1,BASIS_XI_INTERPOLATION_PRESSURE1, & 
-        & BASIS_XI_INTERPOLATION_PRESSURE1/),Err)                         
+      CALL cmfe_Basis_InterpolationXiSet(BasisPressure1,[BASIS_XI_INTERPOLATION_PRESSURE1,BASIS_XI_INTERPOLATION_PRESSURE1, & 
+        & BASIS_XI_INTERPOLATION_PRESSURE1],Err)                         
       IF(BASIS_TYPE1/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisPressure1,(/BASIS_XI_GAUSS_PRESSURE1,BASIS_XI_GAUSS_PRESSURE1, &
-          & BASIS_XI_GAUSS_PRESSURE1/),Err)
+        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisPressure1,[BASIS_XI_GAUSS_PRESSURE1,BASIS_XI_GAUSS_PRESSURE1, &
+          & BASIS_XI_GAUSS_PRESSURE1],Err)
       ELSE
         CALL cmfe_Basis_QuadratureOrderSet(BasisPressure1,BASIS_XI_GAUSS_PRESSURE1+1,Err)
       ENDIF
@@ -521,18 +521,18 @@ PROGRAM COUPLEDSTOKES
   CALL cmfe_Basis_NumberOfXiSet(BasisSpace2,NUMBER_OF_DIMENSIONS2,Err)
   !Set the basis xi interpolation and number of Gauss points
   IF(NUMBER_OF_DIMENSIONS1==2.AND.NUMBER_OF_DIMENSIONS2==2) THEN
-    CALL cmfe_Basis_InterpolationXiSet(BasisSpace2,(/BASIS_XI_INTERPOLATION_SPACE2,BASIS_XI_INTERPOLATION_SPACE2/),Err)
+    CALL cmfe_Basis_InterpolationXiSet(BasisSpace2,[BASIS_XI_INTERPOLATION_SPACE2,BASIS_XI_INTERPOLATION_SPACE2],Err)
     IF(BASIS_TYPE2/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace2,(/BASIS_XI_GAUSS_SPACE2,BASIS_XI_GAUSS_SPACE2/),Err)
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace2,[BASIS_XI_GAUSS_SPACE2,BASIS_XI_GAUSS_SPACE2],Err)
     ELSE
       CALL cmfe_Basis_QuadratureOrderSet(BasisSpace2,BASIS_XI_GAUSS_SPACE2+1,Err)
     ENDIF
   ELSE IF(NUMBER_OF_DIMENSIONS1==3.AND.NUMBER_OF_DIMENSIONS2==3) THEN
-    CALL cmfe_Basis_InterpolationXiSet(BasisSpace2,(/BASIS_XI_INTERPOLATION_SPACE2,BASIS_XI_INTERPOLATION_SPACE2, & 
-      & BASIS_XI_INTERPOLATION_SPACE2/),Err)                         
+    CALL cmfe_Basis_InterpolationXiSet(BasisSpace2,[BASIS_XI_INTERPOLATION_SPACE2,BASIS_XI_INTERPOLATION_SPACE2, & 
+      & BASIS_XI_INTERPOLATION_SPACE2],Err)                         
     IF(BASIS_TYPE2/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace2,(/BASIS_XI_GAUSS_SPACE2,BASIS_XI_GAUSS_SPACE2, &
-        & BASIS_XI_GAUSS_SPACE2/),Err)
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace2,[BASIS_XI_GAUSS_SPACE2,BASIS_XI_GAUSS_SPACE2, &
+        & BASIS_XI_GAUSS_SPACE2],Err)
     ELSE
       CALL cmfe_Basis_QuadratureOrderSet(BasisSpace2,BASIS_XI_GAUSS_SPACE2+1,Err)
     ENDIF
@@ -556,18 +556,18 @@ PROGRAM COUPLEDSTOKES
     CALL cmfe_Basis_NumberOfXiSet(BasisVelocity2,NUMBER_OF_DIMENSIONS2,Err)
     !Set the basis xi interpolation and number of Gauss points
     IF(NUMBER_OF_DIMENSIONS1==2.AND.NUMBER_OF_DIMENSIONS2==2) THEN
-      CALL cmfe_Basis_InterpolationXiSet(BasisVelocity2,(/BASIS_XI_INTERPOLATION_VELOCITY2,BASIS_XI_INTERPOLATION_VELOCITY2/),Err)
+      CALL cmfe_Basis_InterpolationXiSet(BasisVelocity2,[BASIS_XI_INTERPOLATION_VELOCITY2,BASIS_XI_INTERPOLATION_VELOCITY2],Err)
       IF(BASIS_TYPE2/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisVelocity2,(/BASIS_XI_GAUSS_VELOCITY2,BASIS_XI_GAUSS_VELOCITY2/),Err)
+        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisVelocity2,[BASIS_XI_GAUSS_VELOCITY2,BASIS_XI_GAUSS_VELOCITY2],Err)
       ELSE
         CALL cmfe_Basis_QuadratureOrderSet(BasisVelocity2,BASIS_XI_GAUSS_VELOCITY2+1,Err)
       ENDIF
     ELSE IF(NUMBER_OF_DIMENSIONS1==3.AND.NUMBER_OF_DIMENSIONS2==3) THEN
-      CALL cmfe_Basis_InterpolationXiSet(BasisVelocity2,(/BASIS_XI_INTERPOLATION_VELOCITY2,BASIS_XI_INTERPOLATION_VELOCITY2, & 
-        & BASIS_XI_INTERPOLATION_VELOCITY2/),Err)                         
+      CALL cmfe_Basis_InterpolationXiSet(BasisVelocity2,[BASIS_XI_INTERPOLATION_VELOCITY2,BASIS_XI_INTERPOLATION_VELOCITY2, & 
+        & BASIS_XI_INTERPOLATION_VELOCITY2],Err)                         
       IF(BASIS_TYPE2/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisVelocity2,(/BASIS_XI_GAUSS_VELOCITY2,BASIS_XI_GAUSS_VELOCITY2, &
-          & BASIS_XI_GAUSS_VELOCITY2/),Err)
+        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisVelocity2,[BASIS_XI_GAUSS_VELOCITY2,BASIS_XI_GAUSS_VELOCITY2, &
+          & BASIS_XI_GAUSS_VELOCITY2],Err)
       ELSE
         CALL cmfe_Basis_QuadratureOrderSet(BasisVelocity2,BASIS_XI_GAUSS_VELOCITY2+1,Err)
       ENDIF
@@ -594,18 +594,18 @@ PROGRAM COUPLEDSTOKES
     CALL cmfe_Basis_NumberOfXiSet(BasisPressure2,NUMBER_OF_DIMENSIONS2,Err)
     !Set the basis xi interpolation and number of Gauss points
     IF(NUMBER_OF_DIMENSIONS1==2.AND.NUMBER_OF_DIMENSIONS2==2) THEN
-      CALL cmfe_Basis_InterpolationXiSet(BasisPressure2,(/BASIS_XI_INTERPOLATION_PRESSURE2,BASIS_XI_INTERPOLATION_PRESSURE2/),Err)
+      CALL cmfe_Basis_InterpolationXiSet(BasisPressure2,[BASIS_XI_INTERPOLATION_PRESSURE2,BASIS_XI_INTERPOLATION_PRESSURE2],Err)
       IF(BASIS_TYPE2/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisPressure2,(/BASIS_XI_GAUSS_PRESSURE2,BASIS_XI_GAUSS_PRESSURE2/),Err)
+        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisPressure2,[BASIS_XI_GAUSS_PRESSURE2,BASIS_XI_GAUSS_PRESSURE2],Err)
       ELSE
         CALL cmfe_Basis_QuadratureOrderSet(BasisPressure2,BASIS_XI_GAUSS_PRESSURE2+1,Err)
       ENDIF
     ELSE IF(NUMBER_OF_DIMENSIONS1==3.AND.NUMBER_OF_DIMENSIONS2==3) THEN
-      CALL cmfe_Basis_InterpolationXiSet(BasisPressure2,(/BASIS_XI_INTERPOLATION_PRESSURE2,BASIS_XI_INTERPOLATION_PRESSURE2, & 
-        & BASIS_XI_INTERPOLATION_PRESSURE2/),Err)                         
+      CALL cmfe_Basis_InterpolationXiSet(BasisPressure2,[BASIS_XI_INTERPOLATION_PRESSURE2,BASIS_XI_INTERPOLATION_PRESSURE2, & 
+        & BASIS_XI_INTERPOLATION_PRESSURE2],Err)                         
       IF(BASIS_TYPE2/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisPressure2,(/BASIS_XI_GAUSS_PRESSURE2,BASIS_XI_GAUSS_PRESSURE2, &
-          & BASIS_XI_GAUSS_PRESSURE2/),Err)
+        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisPressure2,[BASIS_XI_GAUSS_PRESSURE2,BASIS_XI_GAUSS_PRESSURE2, &
+          & BASIS_XI_GAUSS_PRESSURE2],Err)
       ELSE
         CALL cmfe_Basis_QuadratureOrderSet(BasisPressure2,BASIS_XI_GAUSS_PRESSURE2+1,Err)
       ENDIF
@@ -762,9 +762,9 @@ PROGRAM COUPLEDSTOKES
   CALL cmfe_Basis_NumberOfXiSet(InterfaceBasis,NUMBER_OF_DIMENSIONS_INTERFACE,Err)
   !Set the basis xi interpolation and number of Gauss points
   IF(NUMBER_OF_DIMENSIONS1==3.AND.NUMBER_OF_DIMENSIONS2==3.AND.NUMBER_OF_DIMENSIONS_INTERFACE==2) THEN
-    CALL cmfe_Basis_InterpolationXiSet(InterfaceBasis,(/BASIS_XI_INTERPOLATION_INTERFACE,BASIS_XI_INTERPOLATION_INTERFACE/),Err)
+    CALL cmfe_Basis_InterpolationXiSet(InterfaceBasis,[BASIS_XI_INTERPOLATION_INTERFACE,BASIS_XI_INTERPOLATION_INTERFACE],Err)
     IF(BASIS_TYPE_INTERFACE/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(InterfaceBasis,(/BASIS_XI_GAUSS_INTERFACE,BASIS_XI_GAUSS_INTERFACE/),Err)
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(InterfaceBasis,[BASIS_XI_GAUSS_INTERFACE,BASIS_XI_GAUSS_INTERFACE],Err)
     ELSE
       CALL cmfe_Basis_QuadratureOrderSet(InterfaceBasis,BASIS_XI_GAUSS_INTERFACE+1,Err)
     ENDIF
@@ -786,10 +786,10 @@ PROGRAM COUPLEDSTOKES
   CALL cmfe_Basis_TypeSet(InterfaceMappingBasis,BASIS_TYPE_INTERFACE,Err)
   CALL cmfe_Basis_NumberOfXiSet(InterfaceMappingBasis,NUMBER_OF_DIMENSIONS_INTERFACE,Err)
   IF(NUMBER_OF_DIMENSIONS1==3.AND.NUMBER_OF_DIMENSIONS2==3.AND.NUMBER_OF_DIMENSIONS_INTERFACE==2) THEN
-    CALL cmfe_Basis_InterpolationXiSet(InterfaceMappingBasis,(/BASIS_XI_INTERPOLATION_INTERFACE, &
-      & BASIS_XI_INTERPOLATION_INTERFACE/),Err)
+    CALL cmfe_Basis_InterpolationXiSet(InterfaceMappingBasis,[BASIS_XI_INTERPOLATION_INTERFACE, &
+      & BASIS_XI_INTERPOLATION_INTERFACE],Err)
     IF(BASIS_TYPE_INTERFACE/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(InterfaceMappingBasis,(/BASIS_XI_GAUSS_INTERFACE,BASIS_XI_GAUSS_INTERFACE/),Err)
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(InterfaceMappingBasis,[BASIS_XI_GAUSS_INTERFACE,BASIS_XI_GAUSS_INTERFACE],Err)
     ELSE
       CALL cmfe_Basis_QuadratureOrderSet(InterfaceMappingBasis,BASIS_XI_GAUSS_INTERFACE+1,Err)
     ENDIF
@@ -840,7 +840,7 @@ PROGRAM COUPLEDSTOKES
   PRINT *, ' == >> CREATING INTERFACE MESHES CONNECTIVITY << == '
   CALL cmfe_InterfaceMeshConnectivity_Initialise(InterfaceMeshConnectivity,Err)
   CALL cmfe_InterfaceMeshConnectivity_CreateStart(Interface,InterfaceMesh,InterfaceMeshConnectivity,Err)
-  CALL cmfe_InterfaceMeshConnectivity_SetBasis(InterfaceMeshConnectivity,InterfaceMappingBasis,Err)
+  CALL cmfe_InterfaceMeshConnectivity_BasisSet(InterfaceMeshConnectivity,InterfaceMappingBasis,Err)
 
   DO ic_idx=1,CMX%NUMBER_OF_COUPLINGS
     !Map the interface element to the elements in mesh 1

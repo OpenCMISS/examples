@@ -48,7 +48,7 @@
 !> Main program
 PROGRAM GENERALISEDLAPLACEEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 #ifdef WIN32
@@ -341,13 +341,13 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   !          entry in Angle(3) means rotated around x-axis => no change
   ! 45° equivalent to pi/4, 90° equivalent to pi/2
   
-!  FibreFieldAngle=(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/)
+!  FibreFieldAngle=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP]
 
-  FibreFieldAngle=(/PI/4,0.0_CMFEDP,PI/4/)
-!  FibreFieldAngle=(/0.0_CMFEDP,PI/4,0.0_CMFEDP/)
-!  FibreFieldAngle=(/0.0_CMFEDP,0.0_CMFEDP,PI/4/)
+  FibreFieldAngle=[PI/4,0.0_CMFEDP,PI/4]
+!  FibreFieldAngle=[0.0_CMFEDP,PI/4,0.0_CMFEDP]
+!  FibreFieldAngle=[0.0_CMFEDP,0.0_CMFEDP,PI/4]
 
-!  FibreFieldAngle=(/PI/2,0.0_CMFEDP,0.0_CMFEDP/)
+!  FibreFieldAngle=[PI/2,0.0_CMFEDP,0.0_CMFEDP]
 
   DO node_idx=1,TotalNumberOfNodes
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)

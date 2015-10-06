@@ -49,7 +49,7 @@
 PROGRAM ANALYTICHELMHOLTZEXAMPLE
 
   USE MPI
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE TEST_FRAMEWORK_ROUTINES
 
 #ifdef WIN32
@@ -64,7 +64,7 @@ PROGRAM ANALYTICHELMHOLTZEXAMPLE
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: ORIGIN(2)=(/-3.141592653579_CMFEDP/2, -3.141592653579_CMFEDP/2/)
+  REAL(CMFEDP), PARAMETER :: ORIGIN(2)=[-3.141592653579_CMFEDP/2, -3.141592653579_CMFEDP/2]
   REAL(CMFEDP), PARAMETER :: HEIGHT=2.0_CMFEDP
   REAL(CMFEDP), PARAMETER :: WIDTH=2.0_CMFEDP
   REAL(CMFEDP), PARAMETER :: LENGTH=2.0_CMFEDP
@@ -129,7 +129,7 @@ CONTAINS
     CALL ANALYTICHELMHOLTZ_GENERIC(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,1, &
       & FIELD)
 
-    CALL cmfe_AnalyticAnalysisOutput(FIELD,"AnalyticHelmholtzBilinear",Err)
+    CALL cmfe_AnalyticAnalysis_Output(FIELD,"AnalyticHelmholtzBilinear",Err)
     
     CALL ANALYTICHELMHOLTZ_GENERIC_CLEAN(1,1,1,1,1)
 
@@ -217,7 +217,7 @@ CONTAINS
     DO i = NUMBER_OF_ELEMENTS_XI_START,NUMBER_OF_ELEMENTS_XI_END,NUMBER_OF_ELEMENTS_XI_INTERVAL
       
       CALL ANALYTICHELMHOLTZ_GENERIC(i,i,0,INTERPOLATION_SPECIFICATIONS,FIELD)
-      CALL cmfe_AnalyticAnalysisAbsoluteErrorGetNode(FIELD,1,1,1,(i+1)**2/2+1,1,VALUE,Err)
+      CALL cmfe_AnalyticAnalysis_AbsoluteErrorGetNode(FIELD,1,1,1,(i+1)**2/2+1,1,VALUE,Err)
 
       Y_VALUES((i-NUMBER_OF_ELEMENTS_XI_START)/NUMBER_OF_ELEMENTS_XI_INTERVAL+1)=log10(VALUE)
       X_VALUES((i-NUMBER_OF_ELEMENTS_XI_START)/NUMBER_OF_ELEMENTS_XI_INTERVAL+1)=log10(HEIGHT/i)
@@ -302,7 +302,6 @@ CONTAINS
     CALL cmfe_Region_CoordinateSystemSet(Region,CoordinateSystem,Err)
     !Finish the creation of the region
     CALL cmfe_Region_CreateFinish(Region,Err)
-
   
     !Start the creation of a basis (default is trilinear lagrange)
     CALL cmfe_Basis_Initialise(Basis,Err)
@@ -310,12 +309,12 @@ CONTAINS
     IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
       !Set the basis to be a bilinear basis
       CALL cmfe_Basis_NumberOfXiSet(Basis,2,Err)
-      CALL cmfe_Basis_InterpolationXiSet(Basis,(/INTERPOLATION_SPECIFICATIONS,INTERPOLATION_SPECIFICATIONS/),Err)
+      CALL cmfe_Basis_InterpolationXiSet(Basis,[INTERPOLATION_SPECIFICATIONS,INTERPOLATION_SPECIFICATIONS],Err)
     ELSE
       !Set the basis to be a trilinear basis
       CALL cmfe_Basis_NumberOfXiSet(Basis,3,Err)
-      CALL cmfe_Basis_InterpolationXiSet(Basis,(/INTERPOLATION_SPECIFICATIONS,INTERPOLATION_SPECIFICATIONS, &
-          & INTERPOLATION_SPECIFICATIONS/),Err)
+      CALL cmfe_Basis_InterpolationXiSet(Basis,[INTERPOLATION_SPECIFICATIONS,INTERPOLATION_SPECIFICATIONS, &
+        & INTERPOLATION_SPECIFICATIONS],Err)
     ENDIF
     !Finish the creation of the basis
     CALL cmfe_Basis_CreateFinish(Basis,Err)
@@ -328,14 +327,14 @@ CONTAINS
     CALL cmfe_GeneratedMesh_BasisSet(GeneratedMesh,Basis,Err)
     !Define the mesh on the region
     IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-      CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,(/WIDTH,HEIGHT/),Err)
-      CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS/), &
+      CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[WIDTH,HEIGHT],Err)
+      CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS], &
         & Err)
       CALL cmfe_GeneratedMesh_OriginSet(GeneratedMesh,ORIGIN,Err)
     ELSE
-      CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,(/WIDTH,HEIGHT,LENGTH/),Err)
-      CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS, &
-        & NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS/),Err)
+      CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[WIDTH,HEIGHT,LENGTH],Err)
+      CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS, &
+        & NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS],Err)
     ENDIF
     !Finish the creation of a generated mesh in the region
     CALL cmfe_Mesh_Initialise(Mesh,Err)
@@ -369,12 +368,11 @@ CONTAINS
 
     !Create the equations set
     CALL cmfe_EquationsSet_Initialise(EquationsSet,Err)
-      CALL cmfe_Field_Initialise(EquationsSetField,Err)
-CALL cmfe_EquationsSet_CreateStart(EquationsSetUserNumber,Region,GeometricField,[CMFE_EQUATIONS_SET_CLASSICAL_FIELD_CLASS, &
-  & CMFE_EQUATIONS_SET_HELMHOLTZ_EQUATION_TYPE,CMFE_EQUATIONS_SET_STANDARD_HELMHOLTZ_SUBTYPE],EquationsSetFieldUserNumber, &
-  & EquationsSetField,EquationsSet,Err)
+    CALL cmfe_Field_Initialise(EquationsSetField,Err)
     !Set the equations set to be a standard Helmholtz problem
-    
+    CALL cmfe_EquationsSet_CreateStart(EquationsSetUserNumber,Region,GeometricField,[CMFE_EQUATIONS_SET_CLASSICAL_FIELD_CLASS, &
+      & CMFE_EQUATIONS_SET_HELMHOLTZ_EQUATION_TYPE,CMFE_EQUATIONS_SET_STANDARD_HELMHOLTZ_SUBTYPE],EquationsSetFieldUserNumber, &
+      & EquationsSetField,EquationsSet,Err)
     !Finish creating the equations set
     CALL cmfe_EquationsSet_CreateFinish(EquationsSet,Err)
   

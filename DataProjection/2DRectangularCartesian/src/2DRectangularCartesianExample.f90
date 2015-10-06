@@ -1,6 +1,6 @@
 !> \file
 !> \author Tim Wu
-!> \brief This is an example program to solve 3D data points projecting onto 2D cartesian elements using openCMISS calls.
+!> \brief This is an example program to solve 3D data points projecting onto 2D cartesian elements using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -16,7 +16,7 @@
 !> License for the specific language governing rights and limitations
 !> under the License.
 !>
-!> The Original Code is openCMISS
+!> The Original Code is OpenCMISS
 !>
 !> The Initial Developer of the Original Code is University of Auckland,
 !> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -42,7 +42,7 @@
 PROGRAM DataProjection1DRectangularCartesian
 
   USE MPI
-  USE OPENCMISS
+  USE OpenCMISS_Iron
 
 #ifdef WIN32
   USE IFQWIN
@@ -55,11 +55,12 @@ PROGRAM DataProjection1DRectangularCartesian
   INTEGER(CMFEIntg),PARAMETER :: CoordinateSystemDimension=3
   INTEGER(CMFEIntg),PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMFEIntg),PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMFEIntg),PARAMETER :: DataProjectionUserNumber=1
   INTEGER(CMFEIntg),PARAMETER :: FieldUserNumber=1  
   INTEGER(CMFEIntg),PARAMETER :: MeshUserNumber=1
   INTEGER(CMFEIntg),PARAMETER :: RegionUserNumber=1
 
-  REAL(CMFEDP), PARAMETER :: CoordinateSystemOrigin(3)=(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/)  
+  REAL(CMFEDP), PARAMETER :: CoordinateSystemOrigin(3)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP]  
   !Program types
 
   !Program variables   
@@ -71,7 +72,7 @@ PROGRAM DataProjection1DRectangularCartesian
   INTEGER(CMFEIntg) :: NumberOfDomains=1 !NumberOfDomains=2 for parallel processing, need to set up MPI
   INTEGER(CMFEIntg) :: NumberOfNodes
   INTEGER(CMFEIntg) :: NumberOfXi=2
-  INTEGER(CMFEIntg) :: BasisInterpolation(2)=(/CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION,CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION/)
+  INTEGER(CMFEIntg) :: BasisInterpolation(2)=[CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION,CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION]
   INTEGER(CMFEIntg) :: WorldCoordinateSystemUserNumber
   INTEGER(CMFEIntg) :: WorldRegionUserNumber
   
@@ -114,63 +115,63 @@ PROGRAM DataProjection1DRectangularCartesian
 #endif
     
   !Define data points
-  DataPointValues(1,:)=(/5.0_CMFEDP,3.0_CMFEDP,3.0_CMFEDP/)
-  DataPointValues(2,:)=(/6.0_CMFEDP,12.8_CMFEDP,-10.0_CMFEDP/)  
-  DataPointValues(3,:)=(/16.0_CMFEDP,6.9_CMFEDP,-5.0_CMFEDP/)  
-  DataPointValues(4,:)=(/21.0_CMFEDP,11.0_CMFEDP,20.0_CMFEDP/)
-  DataPointValues(5,:)=(/24.0_CMFEDP,21.5_CMFEDP,10.0_CMFEDP/)
+  DataPointValues(1,:)=[5.0_CMFEDP,3.0_CMFEDP,3.0_CMFEDP]
+  DataPointValues(2,:)=[6.0_CMFEDP,12.8_CMFEDP,-10.0_CMFEDP]  
+  DataPointValues(3,:)=[16.0_CMFEDP,6.9_CMFEDP,-5.0_CMFEDP]  
+  DataPointValues(4,:)=[21.0_CMFEDP,11.0_CMFEDP,20.0_CMFEDP]
+  DataPointValues(5,:)=[24.0_CMFEDP,21.5_CMFEDP,10.0_CMFEDP]
   NumberOfDataPoints=SIZE(DataPointValues,1)
   !Define element connectivities
-  ElementUserNodes(1,:)=(/1,2,4,5/)
-  ElementUserNodes(2,:)=(/2,3,5,6/)
-  ElementUserNodes(3,:)=(/4,5,7,8/)
-  ElementUserNodes(4,:)=(/5,6,8,9/)
+  ElementUserNodes(1,:)=[1,2,4,5]
+  ElementUserNodes(2,:)=[2,3,5,6]
+  ElementUserNodes(3,:)=[4,5,7,8]
+  ElementUserNodes(4,:)=[5,6,8,9]
   MeshNumberOfElements=SIZE(ElementUserNodes,1)     
   !Define nodal fields
-  FieldValues(1,1,:)=(/0.0_CMFEDP,0.0_CMFEDP,10.0_CMFEDP/) !no der, node 1
-  FieldValues(2,1,:)=(/10.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/) !s1 der, node 1
-  FieldValues(3,1,:)=(/0.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP/) !s2 der, node 1  
-  FieldValues(4,1,:)=(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/) !s1 s2 der, node 1    
+  FieldValues(1,1,:)=[0.0_CMFEDP,0.0_CMFEDP,10.0_CMFEDP] !no der, node 1
+  FieldValues(2,1,:)=[10.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 der, node 1
+  FieldValues(3,1,:)=[0.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP] !s2 der, node 1  
+  FieldValues(4,1,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 der, node 1    
   
-  FieldValues(1,2,:)=(/10.0_CMFEDP,0.0_CMFEDP,-5.0_CMFEDP/) !no der, node 2
-  FieldValues(2,2,:)=(/10.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/) !s1 der, node 2
-  FieldValues(3,2,:)=(/0.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP/) !s2 der, node 2  
-  FieldValues(4,2,:)=(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/) !s1 s2 der, node 2    
+  FieldValues(1,2,:)=[10.0_CMFEDP,0.0_CMFEDP,-5.0_CMFEDP] !no der, node 2
+  FieldValues(2,2,:)=[10.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 der, node 2
+  FieldValues(3,2,:)=[0.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP] !s2 der, node 2  
+  FieldValues(4,2,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 der, node 2    
   
-  FieldValues(1,3,:)=(/20.0_CMFEDP,0.0_CMFEDP,10.0_CMFEDP/) !no der, node 3
-  FieldValues(2,3,:)=(/10.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/) !s1 der, node 3
-  FieldValues(3,3,:)=(/0.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP/) !s2 der, node 3  
-  FieldValues(4,3,:)=(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/) !s1 s2 der, node 3   
+  FieldValues(1,3,:)=[20.0_CMFEDP,0.0_CMFEDP,10.0_CMFEDP] !no der, node 3
+  FieldValues(2,3,:)=[10.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 der, node 3
+  FieldValues(3,3,:)=[0.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP] !s2 der, node 3  
+  FieldValues(4,3,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 der, node 3   
   
-  FieldValues(1,4,:)=(/0.0_CMFEDP,10.0_CMFEDP,-5.0_CMFEDP/) !no der, node 4
-  FieldValues(2,4,:)=(/10.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/) !s1 der, node 4
-  FieldValues(3,4,:)=(/0.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP/) !s2 der, node 4  
-  FieldValues(4,4,:)=(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/) !s1 s2 der, node 4 
+  FieldValues(1,4,:)=[0.0_CMFEDP,10.0_CMFEDP,-5.0_CMFEDP] !no der, node 4
+  FieldValues(2,4,:)=[10.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 der, node 4
+  FieldValues(3,4,:)=[0.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP] !s2 der, node 4  
+  FieldValues(4,4,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 der, node 4 
   
-  FieldValues(1,5,:)=(/10.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP/) !no der, node 5
-  FieldValues(2,5,:)=(/10.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/) !s1 der, node 5
-  FieldValues(3,5,:)=(/0.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP/) !s2 der, node 5  
-  FieldValues(4,5,:)=(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/) !s1 s2 der, node 5   
+  FieldValues(1,5,:)=[10.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP] !no der, node 5
+  FieldValues(2,5,:)=[10.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 der, node 5
+  FieldValues(3,5,:)=[0.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP] !s2 der, node 5  
+  FieldValues(4,5,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 der, node 5   
   
-  FieldValues(1,6,:)=(/20.0_CMFEDP,10.0_CMFEDP,-5.0_CMFEDP/) !no der, node 6
-  FieldValues(2,6,:)=(/10.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/) !s1 der, node 6  
-  FieldValues(3,6,:)=(/0.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP/) !s2 der, node 6  
-  FieldValues(4,6,:)=(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/) !s1 s2 der, node 6   
+  FieldValues(1,6,:)=[20.0_CMFEDP,10.0_CMFEDP,-5.0_CMFEDP] !no der, node 6
+  FieldValues(2,6,:)=[10.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 der, node 6  
+  FieldValues(3,6,:)=[0.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP] !s2 der, node 6  
+  FieldValues(4,6,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 der, node 6   
   
-  FieldValues(1,7,:)=(/0.0_CMFEDP,20.0_CMFEDP,10.0_CMFEDP/) !no der, node 7
-  FieldValues(2,7,:)=(/10.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/) !s1 der, node 7
-  FieldValues(3,7,:)=(/0.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP/) !s2 der, node 7  
-  FieldValues(4,7,:)=(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/) !s1 s2 der, node 7
+  FieldValues(1,7,:)=[0.0_CMFEDP,20.0_CMFEDP,10.0_CMFEDP] !no der, node 7
+  FieldValues(2,7,:)=[10.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 der, node 7
+  FieldValues(3,7,:)=[0.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP] !s2 der, node 7  
+  FieldValues(4,7,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 der, node 7
     
-  FieldValues(1,8,:)=(/10.0_CMFEDP,20.0_CMFEDP,-5.0_CMFEDP/) !no der, node 8
-  FieldValues(2,8,:)=(/10.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/) !s1 der, node 8
-  FieldValues(3,8,:)=(/0.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP/) !s2 der, node 8  
-  FieldValues(4,8,:)=(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/) !s1 s2 der, node 8   
+  FieldValues(1,8,:)=[10.0_CMFEDP,20.0_CMFEDP,-5.0_CMFEDP] !no der, node 8
+  FieldValues(2,8,:)=[10.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 der, node 8
+  FieldValues(3,8,:)=[0.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP] !s2 der, node 8  
+  FieldValues(4,8,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 der, node 8   
     
-  FieldValues(1,9,:)=(/20.0_CMFEDP,20.0_CMFEDP,10.0_CMFEDP/) !no der, node 9
-  FieldValues(2,9,:)=(/10.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/) !s1 der, node 9
-  FieldValues(3,9,:)=(/0.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP/) !s2 der, node 9  
-  FieldValues(4,9,:)=(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/) !s1 s2 der, node 9
+  FieldValues(1,9,:)=[20.0_CMFEDP,20.0_CMFEDP,10.0_CMFEDP] !no der, node 9
+  FieldValues(2,9,:)=[10.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 der, node 9
+  FieldValues(3,9,:)=[0.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP] !s2 der, node 9  
+  FieldValues(4,9,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 der, node 9
   NumberOfNodes=SIZE(FieldValues,2)
   
   !Intialise cmiss
@@ -247,8 +248,7 @@ PROGRAM DataProjection1DRectangularCartesian
     DO node_idx=1,SIZE(FieldValues,2)
       DO comp_idx=1,SIZE(FieldValues,3)
         CALL cmfe_Field_ParameterSetUpdateNode(RegionUserNumber,FieldUserNumber,CMFE_FIELD_U_VARIABLE_TYPE, &
-          & CMFE_FIELD_VALUES_SET_TYPE, &
-          & ver_idx,der_idx,node_idx,comp_idx,FieldValues(der_idx,node_idx,comp_idx),Err)
+          & CMFE_FIELD_VALUES_SET_TYPE,ver_idx,der_idx,node_idx,comp_idx,FieldValues(der_idx,node_idx,comp_idx),Err)
       ENDDO
     ENDDO
   ENDDO
@@ -256,26 +256,30 @@ PROGRAM DataProjection1DRectangularCartesian
   !=========================================================================================================================
   !Create a data projection
   
-  CALL cmfe_DataProjection_CreateStart(RegionUserNumber,FieldUserNumber,RegionUserNumber,Err)
-  CALL cmfe_DataProjection_CreateFinish(RegionUserNumber,Err)
+  CALL cmfe_DataProjection_CreateStart(DataProjectionUserNumber,RegionUserNumber,FieldUserNumber,RegionUserNumber,Err)
+  CALL cmfe_DataProjection_CreateFinish(DataProjectionUserNumber,RegionUserNumber,Err)
   
   !=========================================================================================================================
   !Start data projection
-  CALL cmfe_DataProjection_Evaluate(RegionUserNumber,Err)
+  CALL cmfe_DataProjection_DataPointsProjectionEvaluate(DataProjectionUserNumber,RegionUserNumber,FieldUserNumber, &
+    & RegionUserNumber,Err)
   
   !=========================================================================================================================
   !Retrieve projection results
   DO data_point_idx=1,NumberOfDataPoints
-    CALL cmfe_DataPoints_ProjectionDistanceGet(RegionUserNumber,data_point_idx,DataPointProjectionDistance(data_point_idx),Err)
-    CALL cmfe_DataPoints_ProjectionElementNumberGet(RegionUserNumber,data_point_idx,DataPointProjectionElementNumber( &
-      & data_point_idx),Err)
-    CALL cmfe_DataPoints_ProjectionExitTagGet(RegionUserNumber,data_point_idx,DataPointProjectionExitTag(data_point_idx),Err)
-    CALL cmfe_DataPoints_ProjectionXiGet(RegionUserNumber,data_point_idx,DataPointProjectionXi(data_point_idx,:),Err)
+    CALL cmfe_DataProjection_ResultDistanceGet(DataProjectionUserNumber,RegionUserNumber,data_point_idx, &
+      & DataPointProjectionDistance(data_point_idx),Err)
+    CALL cmfe_DataProjection_ResultElementNumberGet(DataProjectionUserNumber,RegionUserNumber,data_point_idx, &
+      & DataPointProjectionElementNumber(data_point_idx),Err)
+    CALL cmfe_DataProjection_ResultExitTagGet(DataProjectionUserNumber,RegionUserNumber,data_point_idx, &
+      & DataPointProjectionExitTag(data_point_idx),Err)
+    CALL cmfe_DataProjection_ResultXiGet(DataProjectionUserNumber,RegionUserNumber,data_point_idx, &
+      & DataPointProjectionXi(data_point_idx,:),Err)
   ENDDO
   
   !=========================================================================================================================
   !Destroy used types
-  CALL cmfe_DataProjection_Destroy(RegionUserNumber,Err)
+  CALL cmfe_DataProjection_Destroy(DataProjectionUserNumber,RegionUserNumber,Err)
   CALL cmfe_DataPoints_Destroy(RegionUserNumber,Err)
     
   CALL cmfe_Region_Destroy(RegionUserNumber,Err)

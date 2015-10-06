@@ -49,7 +49,7 @@
 PROGRAM ANALYTICLAPLACEEXAMPLE
 
   USE MPI
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE TEST_FRAMEWORK_ROUTINES
 
 #ifdef WIN32
@@ -58,13 +58,9 @@ PROGRAM ANALYTICLAPLACEEXAMPLE
 
   IMPLICIT NONE
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(cmfe_FieldType) :: EquationsSetField
-
-
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: ORIGIN(2)=[-3.141592653579_CMFEDP/2, -3.141592653579_CMFEDP/2]
+  REAL(CMFEDP), PARAMETER :: ORIGIN(2)=[-3.141592653579_CMFEDP/2.0_CMFEDP, -3.141592653579_CMFEDP/2.0_CMFEDP]
   REAL(CMFEDP), PARAMETER :: HEIGHT=2.0_CMFEDP
   REAL(CMFEDP), PARAMETER :: WIDTH=2.0_CMFEDP
   REAL(CMFEDP), PARAMETER :: LENGTH=2.0_CMFEDP
@@ -164,7 +160,7 @@ CONTAINS
     CALL ANALYTICLAPLACE_GENERIC(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,4, &
       & FIELD)
 
-    CALL cmfe_AnalyticAnalysisOutput(FIELD,"AnalyticLaplaceCubicHermite",Err)
+    CALL cmfe_AnalyticAnalysis_Output(FIELD,"AnalyticLaplaceCubicHermite",Err)
     
     CALL ANALYTICLAPLACE_GENERIC_CLEAN(1,1,1,1,1)
 
@@ -189,7 +185,7 @@ CONTAINS
     CALL ANALYTICLAPLACE_GENERIC(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,1, &
       & FIELD)
 
-    CALL cmfe_AnalyticAnalysisOutput(FIELD,"AnalyticLaplaceLinearLagrange",Err)
+    CALL cmfe_AnalyticAnalysis_Output(FIELD,"AnalyticLaplaceLinearLagrange",Err)
     
     CALL ANALYTICLAPLACE_GENERIC_CLEAN(1,1,1,1,1)
 
@@ -214,7 +210,7 @@ CONTAINS
     CALL ANALYTICLAPLACE_GENERIC(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,7, &
       & FIELD)
 
-    CALL cmfe_AnalyticAnalysisOutput(FIELD,"AnalyticLaplaceLinearSimplex",Err)
+    CALL cmfe_AnalyticAnalysis_Output(FIELD,"AnalyticLaplaceLinearSimplex",Err)
     
     CALL ANALYTICLAPLACE_GENERIC_CLEAN(1,1,1,1,1)
 
@@ -332,7 +328,7 @@ CONTAINS
 
       CALL cmfe_Field_Initialise(FIELD,Err)
       CALL ANALYTICLAPLACE_GENERIC(i,i,0,INTERPOLATION_SPECIFICATIONS,FIELD)
-      CALL cmfe_AnalyticAnalysisAbsoluteErrorGetNode(FIELD,1,1,1,(i+1)**2/2+1,1,VALUE,Err)
+      CALL cmfe_AnalyticAnalysis_AbsoluteErrorGetNode(FIELD,1,1,1,(i+1)**2/2+1,1,VALUE,Err)
 
       Y_VALUES((i-NUMBER_OF_ELEMENTS_XI_START)/NUMBER_OF_ELEMENTS_XI_INTERVAL+1)=log10(VALUE)
       X_VALUES((i-NUMBER_OF_ELEMENTS_XI_START)/NUMBER_OF_ELEMENTS_XI_INTERVAL+1)=log10(HEIGHT/i)
@@ -368,7 +364,7 @@ CONTAINS
     TYPE(cmfe_DecompositionType) :: DECOMPOSITION
     TYPE(cmfe_EquationsType) :: EQUATIONS
     TYPE(cmfe_EquationsSetType) :: EQUATIONS_SET
-    TYPE(cmfe_FieldType) :: ANALYTIC_FIELD,GEOMETRIC_FIELD
+    TYPE(cmfe_FieldType) :: ANALYTIC_FIELD,GEOMETRIC_FIELD,EquationsSetField
     TYPE(cmfe_ProblemType) :: PROBLEM
     TYPE(cmfe_RegionType) :: REGION
     TYPE(cmfe_SolverType) :: SOLVER
@@ -490,10 +486,10 @@ CONTAINS
     !Create the equations_set
     CALL cmfe_EquationsSet_Initialise(EQUATIONS_SET,Err)
     CALL cmfe_Field_Initialise(EquationsSetField,Err)
-    CALL cmfe_EquationsSet_CreateStart(1,REGION,GEOMETRIC_FIELD,[CMFE_EQUATIONS_SET_CLASSICAL_FIELD_CLASS, &
-      & CMFE_EQUATIONS_SET_LAPLACE_EQUATION_TYPE,CMFE_EQUATIONS_SET_STANDARD_LAPLACE_SUBTYPE],EquationsSetFieldUserNumber, &
-      & EquationsSetField,EQUATIONS_SET,Err)
     !Set the equations set to be a standard Laplace problem
+    CALL cmfe_EquationsSet_CreateStart(1,REGION,GEOMETRIC_FIELD,[CMFE_EQUATIONS_SET_CLASSICAL_FIELD_CLASS, &
+      & CMFE_EQUATIONS_SET_LAPLACE_EQUATION_TYPE,CMFE_EQUATIONS_SET_STANDARD_LAPLACE_SUBTYPE],8, &
+      & EquationsSetField,EQUATIONS_SET,Err)
     
     !Finish creating the equations set
     CALL cmfe_EquationsSet_CreateFinish(EQUATIONS_SET,Err)

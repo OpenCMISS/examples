@@ -47,8 +47,7 @@
 !> Main program
 PROGRAM BURGERSEXAMPLE
 
-
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 
@@ -62,9 +61,6 @@ PROGRAM BURGERSEXAMPLE
   ! PROGRAM VARIABLES AND TYPES
   !-----------------------------------------------------------------------------------------------------------
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(cmfe_FieldType) :: EquationsSetField
-
   !Test program parameters
   
   INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -74,12 +70,13 @@ PROGRAM BURGERSEXAMPLE
   INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
   INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
   INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=11
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=10
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=11
+  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=12
   INTEGER(CMFEIntg), PARAMETER :: ControlLoopNode=0
-  INTEGER(CMFEIntg), PARAMETER :: AnalyticFieldUserNumber=12
+  INTEGER(CMFEIntg), PARAMETER :: AnalyticFieldUserNumber=13
   INTEGER(CMFEIntg), PARAMETER :: SolverUserNumber=1
   
   !Program variables
@@ -129,7 +126,7 @@ PROGRAM BURGERSEXAMPLE
   TYPE(cmfe_DecompositionType) :: Decomposition
   TYPE(cmfe_EquationsType) :: Equations
   TYPE(cmfe_EquationsSetType) :: EquationsSet
-  TYPE(cmfe_FieldType) :: GeometricField,DependentField,MaterialsField,AnalyticField
+  TYPE(cmfe_FieldType) :: GeometricField,EquationsSetField,DependentField,MaterialsField,AnalyticField
   TYPE(cmfe_FieldsType) :: Fields
   TYPE(cmfe_GeneratedMeshType) :: GeneratedMesh  
   TYPE(cmfe_MeshType) :: Mesh
@@ -246,8 +243,8 @@ PROGRAM BURGERSEXAMPLE
   CALL cmfe_Basis_TypeSet(Basis,CMFE_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
   CALL cmfe_Basis_NumberOfXiSet(Basis,1,Err)
   !Set the basis xi interpolation and number of Gauss points
-  CALL cmfe_Basis_InterpolationXiSet(Basis,(/CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION/),Err)
-  CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis,(/2/),Err)
+  CALL cmfe_Basis_InterpolationXiSet(Basis,[CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION],Err)
+  CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis,[2],Err)
   !Finish the creation of the basis
   CALL cmfe_Basis_CreateFinish(Basis,Err)
 
@@ -262,8 +259,8 @@ PROGRAM BURGERSEXAMPLE
   !Set the default basis
   CALL cmfe_GeneratedMesh_BasisSet(GeneratedMesh,Basis,Err)   
   !Define the mesh on the region
-  CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,(/LENGTH/),Err)
-  CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS/),Err)
+  CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[LENGTH],Err)
+  CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS],Err)
   !Finish the creation of a generated mesh in the region
   CALL cmfe_Mesh_Initialise(Mesh,Err)
   CALL cmfe_GeneratedMesh_CreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
@@ -443,6 +440,7 @@ PROGRAM BURGERSEXAMPLE
   CALL cmfe_SolverEquations_Initialise(SolverEquations,Err)
   CALL cmfe_Problem_SolverEquationsCreateStart(Problem,Err)
   !Get the dynamic solver equations
+  CALL cmfe_Solver_Initialise(DynamicSolver,Err)
   CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,1,DynamicSolver,Err)
   CALL cmfe_Solver_SolverEquationsGet(DynamicSolver,SolverEquations,Err)
   !Set the solver equations sparsity (Sparse/Full)
@@ -487,7 +485,7 @@ PROGRAM BURGERSEXAMPLE
   !OUTPUT
   !-----------------------------------------------------------------------------------------------------------
   !Output Analytic analysis
-  !Call cmfe_AnalyticAnalysisOutput(DependentField,"BurgersAnalytics_1D",Err)
+  !Call cmfe_AnalyticAnalysis_Output(DependentField,"BurgersAnalytics_1D",Err)
 
   !export fields
   EXPORT_FIELD=.TRUE.

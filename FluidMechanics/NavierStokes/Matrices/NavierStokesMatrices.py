@@ -1,7 +1,7 @@
 #> \file
 #> \author Adam Reeve
 #> \brief An example program to show how to obtain equation and solver
-#> matrices and vectors set up by OpenCMISS-Iron.
+#> matrices and vectors set up by OpenCMISS.
 #>
 #> \section LICENSE
 #>
@@ -42,13 +42,13 @@
 
 #> \example FluidMechanics/NavierStokes/Matrices/NavierStokesMatrices.py
 #> An example program to show how to obtain equation and solver matrices
-#> and vectors set up by OpenCMISS-Iron.
+#> and vectors set up by OpenCMISS.
 #<
 
 import sys
 import os
 
-# Add OpenCMISS-Iron python bindings directory to path so we can import it
+# Add OpenCMISS python bindings directory to path so we can import it
 sys.path.append(os.sep.join((
     os.environ['OPENCMISS_ROOT'], 'cm', 'bindings', 'python')))
 from opencmiss import iron

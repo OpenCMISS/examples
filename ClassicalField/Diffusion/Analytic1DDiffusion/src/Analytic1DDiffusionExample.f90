@@ -48,7 +48,7 @@
 !> Main program
 PROGRAM ANALYTIC1DDIFFUSIONEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
 
 #ifdef WIN32
   USE IFQWIN
@@ -306,7 +306,7 @@ PROGRAM ANALYTIC1DDIFFUSIONEXAMPLE
   !Output Analytic analysis
   !CALL cmfe_EquationsSet_AnalyticTimeSet(EquationsSet,END_TIME,Err)
   !CALL cmfe_EquationsSet_AnalyticEvaluate(EquationsSet,Err)
-  CALL cmfe_AnalyticAnalysisOutput(DependentField,"Diffusion1DAnalytic",Err)
+  CALL cmfe_AnalyticAnalysis_Output(DependentField,"Diffusion1DAnalytic",Err)
 
   !Output fields
   CALL cmfe_Fields_Initialise(Fields,Err)

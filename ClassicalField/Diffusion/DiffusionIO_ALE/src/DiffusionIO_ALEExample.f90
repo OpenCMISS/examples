@@ -47,8 +47,7 @@
 !> Main program
 PROGRAM DIFFUSIONIOALEEXAMPLE
 
-
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE FLUID_MECHANICS_IO_ROUTINES
   USE MPI
 
@@ -59,10 +58,6 @@ PROGRAM DIFFUSIONIOALEEXAMPLE
 
   IMPLICIT NONE
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(cmfe_FieldType) :: EquationsSetField
-
-
   !Test program parameters
   
   INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -72,10 +67,11 @@ PROGRAM DIFFUSIONIOALEEXAMPLE
   INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
   INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
   INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=11
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=10
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=11
+  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=12
   INTEGER(CMFEIntg), PARAMETER :: ControlLoopNode=0
   INTEGER(CMFEIntg), PARAMETER :: DomainUserNumber=1
 
@@ -167,6 +163,7 @@ PROGRAM DIFFUSIONIOALEEXAMPLE
   TYPE(cmfe_FieldsType) :: Fields
   !Field types
   TYPE(cmfe_FieldType) :: GeometricField
+  TYPE(cmfe_FieldType) :: EquationsSetField
   TYPE(cmfe_FieldType) :: DependentField
   TYPE(cmfe_FieldType) :: MaterialsField
   TYPE(cmfe_FieldType) :: IndependentField
@@ -184,20 +181,6 @@ PROGRAM DIFFUSIONIOALEEXAMPLE
   TYPE(cmfe_SolverType) :: Solver, LinearSolver
   !Solver equations
   TYPE(cmfe_SolverEquationsType) :: SolverEquations
-!   TYPE(cmfe_BasisType) :: Basis
-!   TYPE(cmfe_CoordinateSystemType) :: CoordinateSystem,WorldCoordinateSystem
-!   TYPE(cmfe_DecompositionType) :: Decomposition
-!   TYPE(cmfe_EquationsType) :: Equations
-!   TYPE(cmfe_EquationsSetType) :: EquationsSet
-!   TYPE(cmfe_FieldType) :: GeometricField,DependentField,MaterialsField,AnalyticField
-!   TYPE(cmfe_FieldsType) :: Fields
-!   TYPE(cmfe_GeneratedMeshType) :: GeneratedMesh  
-!   TYPE(cmfe_MeshType) :: Mesh
-!   TYPE(cmfe_ProblemType) :: Problem
-!   TYPE(cmfe_ControlLoopType) :: ControlLoop
-!   TYPE(cmfe_RegionType) :: Region,WorldRegion
-!   TYPE(cmfe_SolverType) :: Solver, LinearSolver
-!   TYPE(cmfe_SolverEquationsType) :: SolverEquations
 
   LOGICAL :: EXPORT_FIELD
 
@@ -212,7 +195,6 @@ PROGRAM DIFFUSIONIOALEEXAMPLE
   INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
   INTEGER(CMFEIntg) :: EquationsSetIndex
   INTEGER(CMFEIntg) :: Err
-
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -258,16 +240,16 @@ PROGRAM DIFFUSIONIOALEEXAMPLE
   IF(FIXED_WALL_NODES_ADVECTION_DIFFUSION_FLAG) THEN
     NUMBER_OF_FIXED_WALL_NODES_ADVECTION_DIFFUSION=1
     ALLOCATE(FIXED_WALL_NODES_ADVECTION_DIFFUSION(NUMBER_OF_FIXED_WALL_NODES_ADVECTION_DIFFUSION))
-    FIXED_WALL_NODES_ADVECTION_DIFFUSION=(/42/)
+    FIXED_WALL_NODES_ADVECTION_DIFFUSION=[42]
   ENDIF
   IF(INLET_WALL_NODES_ADVECTION_DIFFUSION_FLAG) THEN
     NUMBER_OF_INLET_WALL_NODES_ADVECTION_DIFFUSION=105
     ALLOCATE(INLET_WALL_NODES_ADVECTION_DIFFUSION(NUMBER_OF_INLET_WALL_NODES_ADVECTION_DIFFUSION))
-    INLET_WALL_NODES_ADVECTION_DIFFUSION=(/4,11,12,13,29,33,34,35,47,51,52,53,69,71,83,87,88,89,100,102,103,104,112,114,115, & 
+    INLET_WALL_NODES_ADVECTION_DIFFUSION=[4,11,12,13,29,33,34,35,47,51,52,53,69,71,83,87,88,89,100,102,103,104,112,114,115, & 
     & 116,126,128,137,141,142,143,154,156,157,158,166,168,169,170,180,182,191,195,196,197,208,210,211, & 
     & 212,220,222,223,224,234,236,245,249,250,251,262,264,265,266,274,276,277,278,288,290,299,303,304, & 
     & 305,316,318,319,320,328,330,331,332,342,344,353,357,358,359,370,372,373,374,382,384,385,386,396, & 
-    & 398,411,412,426,427,438,439,450/)
+    & 398,411,412,426,427,438,439,450]
 
     !Set initial boundary conditions
     BOUNDARY_CONDITIONS_ADVECTION_DIFFUSION(1)=42.0_CMFEDP
@@ -341,12 +323,12 @@ PROGRAM DIFFUSIONIOALEEXAMPLE
   CALL cmfe_Basis_NumberOfXiSet(BasisSpace,NUMBER_OF_DIMENSIONS,Err)
   !Set the basis xi interpolation and number of Gauss points
   IF(NUMBER_OF_DIMENSIONS==2) THEN
-    CALL cmfe_Basis_InterpolationXiSet(BasisSpace,(/BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE/),Err)
-    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace,(/BASIS_XI_GAUSS_SPACE,BASIS_XI_GAUSS_SPACE/),Err)
+    CALL cmfe_Basis_InterpolationXiSet(BasisSpace,[BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE],Err)
+    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace,[BASIS_XI_GAUSS_SPACE,BASIS_XI_GAUSS_SPACE],Err)
   ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-    CALL cmfe_Basis_InterpolationXiSet(BasisSpace,(/BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE, & 
-      & BASIS_XI_INTERPOLATION_SPACE/),Err)                         
-    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace,(/BASIS_XI_GAUSS_SPACE,BASIS_XI_GAUSS_SPACE,BASIS_XI_GAUSS_SPACE/),Err)
+    CALL cmfe_Basis_InterpolationXiSet(BasisSpace,[BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE, & 
+      & BASIS_XI_INTERPOLATION_SPACE],Err)                         
+    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace,[BASIS_XI_GAUSS_SPACE,BASIS_XI_GAUSS_SPACE,BASIS_XI_GAUSS_SPACE],Err)
   ENDIF
   !Finish the creation of the basis
   CALL cmfe_Basis_CreateFinish(BasisSpace,Err)
@@ -365,15 +347,15 @@ PROGRAM DIFFUSIONIOALEEXAMPLE
     CALL cmfe_Basis_NumberOfXiSet(BasisConcentration,NUMBER_OF_DIMENSIONS,Err)
     !Set the basis xi interpolation and number of Gauss points
     IF(NUMBER_OF_DIMENSIONS==2) THEN
-      CALL cmfe_Basis_InterpolationXiSet(BasisConcentration,(/BASIS_XI_INTERPOLATION_CONCENTRATION, &
-        & BASIS_XI_INTERPOLATION_CONCENTRATION/),Err)
-      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisConcentration,(/BASIS_XI_GAUSS_CONCENTRATION, &
-        & BASIS_XI_GAUSS_CONCENTRATION/),Err)
+      CALL cmfe_Basis_InterpolationXiSet(BasisConcentration,[BASIS_XI_INTERPOLATION_CONCENTRATION, &
+        & BASIS_XI_INTERPOLATION_CONCENTRATION],Err)
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisConcentration,[BASIS_XI_GAUSS_CONCENTRATION, &
+        & BASIS_XI_GAUSS_CONCENTRATION],Err)
     ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-      CALL cmfe_Basis_InterpolationXiSet(BasisConcentration,(/BASIS_XI_INTERPOLATION_CONCENTRATION, & 
-        & BASIS_XI_INTERPOLATION_CONCENTRATION, BASIS_XI_INTERPOLATION_CONCENTRATION/),Err)                         
-      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisConcentration,(/BASIS_XI_GAUSS_CONCENTRATION, & 
-        & BASIS_XI_GAUSS_CONCENTRATION, BASIS_XI_GAUSS_CONCENTRATION/),Err)
+      CALL cmfe_Basis_InterpolationXiSet(BasisConcentration,[BASIS_XI_INTERPOLATION_CONCENTRATION, & 
+        & BASIS_XI_INTERPOLATION_CONCENTRATION, BASIS_XI_INTERPOLATION_CONCENTRATION],Err)                         
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisConcentration,[BASIS_XI_GAUSS_CONCENTRATION, & 
+        & BASIS_XI_GAUSS_CONCENTRATION, BASIS_XI_GAUSS_CONCENTRATION],Err)
     ENDIF
     !Finish the creation of the basis
     CALL cmfe_Basis_CreateFinish(BasisConcentration,Err)
@@ -457,7 +439,7 @@ PROGRAM DIFFUSIONIOALEEXAMPLE
     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
       VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)
       CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
-        & CMFE_NO_GLOBAL_DERIV,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+        & 1,CMFE_NO_GLOBAL_DERIV,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
   ENDDO
   CALL cmfe_Field_ParameterSetUpdateStart(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
@@ -602,7 +584,7 @@ CALL cmfe_EquationsSet_CreateStart(EquationsSetUserNumber,Region,GeometricField,
       CONDITION=CMFE_BOUNDARY_CONDITION_FIXED
 !       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
         VALUE=0.0_CMFEDP
-        CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
+        CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,CMFE_NO_GLOBAL_DERIV, &
           & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONCENTRATION,CONDITION,VALUE,Err)
 !       ENDDO
     ENDDO
@@ -614,7 +596,7 @@ CALL cmfe_EquationsSet_CreateStart(EquationsSetUserNumber,Region,GeometricField,
       CONDITION=CMFE_BOUNDARY_CONDITION_FIXED
 !       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
         VALUE=0.1_CMFEDP
-        CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
+        CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,CMFE_NO_GLOBAL_DERIV, &
           & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONCENTRATION,CONDITION,VALUE,Err)
 !       ENDDO
     ENDDO

@@ -1,6 +1,6 @@
 !> \file
 !> \author Chris Bradley
-!> \brief This is an example program which sets up a field which uses a mixed Lagrange and Simplex mesh using openCMISS calls.
+!> \brief This is an example program which sets up a field which uses a mixed Lagrange and Simplex mesh using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -40,48 +40,17 @@
 !>
 
 !> \example LagrangeSimplexMesh/src/LagrangeSimplexMeshExample.f90
-!! Example program which sets up a field which uses a mixed Lagrange and Simplex mesh using openCMISS calls.
+!! Example program which sets up a field which uses a mixed Lagrange and Simplex mesh using OpenCMISS calls.
 !! \par Latest Builds:
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/LagrangeSimplexMesh/build-intel'>Linux Intel Build</a>
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/LagrangeSimplexMesh/build-gnu'>Linux GNU Build</a>
 !<
 
 !> Main program
-PROGRAM LAGRANGESIMPLEXMESHEXAMPLE
+PROGRAM LagrangeSimplexMeshExample
 
-  USE BASE_ROUTINES
-  USE BASIS_ROUTINES
-  USE CMISS
-  USE CMFE_MPI
-  USE COMP_ENVIRONMENT
-  USE CONSTANTS
-  USE CONTROL_LOOP_ROUTINES
-  USE COORDINATE_ROUTINES
-  USE DISTRIBUTED_MATRIX_VECTOR
-  USE DOMAIN_MAPPINGS
-  USE EQUATIONS_ROUTINES
-  USE EQUATIONS_SET_CONSTANTS
-  USE EQUATIONS_SET_ROUTINES
-  USE FIELD_ROUTINES
-  USE FIELD_IO_ROUTINES
-  USE GENERATED_MESH_ROUTINES
-  USE INPUT_OUTPUT
-  USE ISO_VARYING_STRING
-  USE KINDS
-  USE LISTS
-  USE MESH_ROUTINES
-  USE MPI
-  USE NODE_ROUTINES
-  USE PROBLEM_CONSTANTS
-  USE PROBLEM_ROUTINES
-  USE REGION_ROUTINES
-  USE SOLVER_ROUTINES
-  USE TIMER
-  USE TYPES
-
-#ifdef WIN32
-  USE IFQWIN
-#endif
+  USE OpenCMISS
+  USE OpenCMISS_Iron
 
   IMPLICIT NONE
 
@@ -91,115 +60,76 @@ PROGRAM LAGRANGESIMPLEXMESHEXAMPLE
   
   !Program variables
   
-  INTEGER(INTG) :: NUMBER_COMPUTATIONAL_NODES
-  INTEGER(INTG) :: MY_COMPUTATIONAL_NODE_NUMBER
+  INTEGER(CMISSIntg) :: NUMBER_COMPUTATIONAL_NODES
+  INTEGER(CMISSIntg) :: MY_COMPUTATIONAL_NODE_NUMBER
  
-  TYPE(BASIS_TYPE), POINTER :: BASIS1,BASIS2
-  TYPE(COORDINATE_SYSTEM_TYPE), POINTER :: COORDINATE_SYSTEM
-  TYPE(MESH_TYPE), POINTER :: MESH
-  TYPE(MESH_ELEMENTS_TYPE), POINTER :: MESH_ELEMENTS
-  TYPE(NODES_TYPE), POINTER :: NODES
-  TYPE(DECOMPOSITION_TYPE), POINTER :: DECOMPOSITION
-  TYPE(FIELD_TYPE), POINTER :: GEOMETRIC_FIELD
-  TYPE(REGION_TYPE), POINTER :: REGION,WORLD_REGION
+  TYPE(cmfe_BasisType) :: basis1,basis2
+  TYPE(cmfe_CoordinateSystemType) :: coordinateSystem,worldCoordinates
+  TYPE(cmfe_MeshType) :: mesh
+  TYPE(cmfe_MeshElementsType) :: meshElements
+  TYPE(cmfe_NodesType) :: nodes
+  TYPE(cmfe_DecompositionType) :: decomposition
+  TYPE(cmfe_FieldType) :: geometricField
+  TYPE(cmfe_FieldsType) :: fields
+  TYPE(cmfe_RegionType) :: region,worldRegion
    
   LOGICAL :: EXPORT_FIELD
   TYPE(VARYING_STRING) :: FILE,METHOD
 
   REAL(SP) :: START_USER_TIME(1),STOP_USER_TIME(1),START_SYSTEM_TIME(1),STOP_SYSTEM_TIME(1)
-
-#ifdef WIN32
-  !Quickwin type
-  LOGICAL :: QUICKWIN_STATUS=.FALSE.
-  TYPE(WINDOWCONFIG) :: QUICKWIN_WINDOW_CONFIG
-#endif
   
   !Generic CMISS variables
   
-  INTEGER(INTG) :: ERR
-  TYPE(VARYING_STRING) :: ERROR
+  INTEGER(INTG) :: err
+  TYPE(VARYING_STRING) :: error
 
   INTEGER(INTG) :: DIAG_LEVEL_LIST(5)
   CHARACTER(LEN=MAXSTRLEN) :: DIAG_ROUTINE_LIST(1),TIMING_ROUTINE_LIST(1)
-  
-#ifdef WIN32
-  !Initialise QuickWin
-  QUICKWIN_WINDOW_CONFIG%TITLE="General Output" !Window title
-  QUICKWIN_WINDOW_CONFIG%NUMTEXTROWS=-1 !Max possible number of rows
-  QUICKWIN_WINDOW_CONFIG%MODE=QWIN$SCROLLDOWN
-  !Set the window parameters
-  QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
-  !If attempt fails set with system estimated values
-  IF(.NOT.QUICKWIN_STATUS) QUICKWIN_STATUS=SETWINDOWCONFIG(QUICKWIN_WINDOW_CONFIG)
-#endif
 
   !Intialise cmiss
-  NULLIFY(WORLD_REGION)
-  CALL CMFE_INITIALISE(WORLD_REGION,ERR,ERROR,*999)
+  CALL cmfe_RegionInitialise(worldRegion,err)
+  CALL cmfe_CoordinateSystemInitialise(worldCoordinates,err)
+  CALL cmfe_Initialise(WorldCoordinateSystem,WorldRegion,err)
   
-  !Set all diganostic levels on for testing
-  !DIAG_LEVEL_LIST(1)=1
-  !DIAG_LEVEL_LIST(2)=2
-  !DIAG_LEVEL_LIST(3)=3
-  !DIAG_LEVEL_LIST(4)=4
-  !DIAG_LEVEL_LIST(5)=5
-  !DIAG_ROUTINE_LIST(1)=""
-  !CALL DIAGNOSTICS_SET_ON(ALL_DIAG_TYPE,DIAG_LEVEL_LIST,"LagrangeSimplexMeshExample",DIAG_ROUTINE_LIST,ERR,ERROR,*999)
-  !CALL DIAGNOSTICS_SET_ON(ALL_DIAG_TYPE,DIAG_LEVEL_LIST,"",DIAG_ROUTINE_LIST,ERR,ERROR,*999)
- 
-  !TIMING_ROUTINE_LIST(1)=""
-  !CALL TIMING_SET_ON(IN_TIMING_TYPE,.TRUE.,"",TIMING_ROUTINE_LIST,ERR,ERROR,*999)
-  
-  !Calculate the start times
-  CALL CPU_TIMER(USER_CPU,START_USER_TIME,ERR,ERROR,*999)
-  CALL CPU_TIMER(SYSTEM_CPU,START_SYSTEM_TIME,ERR,ERROR,*999)
-  
-  !Get the number of computational nodes
-  NUMBER_COMPUTATIONAL_NODES=COMPUTATIONAL_NODES_NUMBER_GET(ERR,ERROR)
-  IF(ERR/=0) GOTO 999
-  !Get my computational node number
-  MY_COMPUTATIONAL_NODE_NUMBER=COMPUTATIONAL_NODE_NUMBER_GET(ERR,ERROR)
-  IF(ERR/=0) GOTO 999
-
   !Start the creation of a new RC coordinate system
-  NULLIFY(COORDINATE_SYSTEM)
-  CALL COORDINATE_SYSTEM_CREATE_START(1,COORDINATE_SYSTEM,ERR,ERROR,*999)
+  CALL cmfe_CoordinateSystem_Initialise(coordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_CreateStart(1,coordinateSystem,Err)
   !Set the coordinate system to be 2D
-  CALL COORDINATE_SYSTEM_DIMENSION_SET(COORDINATE_SYSTEM,2,ERR,ERROR,*999)
+  CALL cmfe_CoordinateSystem_DimensionSet(coordinateSystem,2,Err)
   !Finish the creation of the coordinate system
-  CALL COORDINATE_SYSTEM_CREATE_FINISH(COORDINATE_SYSTEM,ERR,ERROR,*999)
-
+  CALL cmfe_CoordinateSystem_CreateFinish(coordinateSystem,Err)
+ 
   !Start the creation of a region
-  NULLIFY(REGION)
-  CALL REGION_CREATE_START(1,WORLD_REGION,REGION,ERR,ERROR,*999)
-  !Set the regions coordinate system to the RC coordinate system that we have created
-  CALL REGION_COORDINATE_SYSTEM_SET(REGION,COORDINATE_SYSTEM,ERR,ERROR,*999)
+  CALL cmfe_Region_Initialise(region,err)
+  CALL cmfe_Region_CreateStart(1,worldRegion,region,err)
+  !Set the regions coordinate system to the 2D RC coordinate system that we have created
+  CALL cmfe_Region_CoordinateSystemSet(region,coordinateSystem,3rr)
   !Finish the creation of the region
-  CALL REGION_CREATE_FINISH(REGION,ERR,ERROR,*999)
-  
+  CALL cmfe_Region_CreateFinish(region,err)
+
   !Start the creation of a linear-quadratic Lagrange basis
-  NULLIFY(BASIS1)
-  CALL BASIS_CREATE_START(1,BASIS1,ERR,ERROR,*999)
+  CALL cmfe_Basis_Initialise(basis1,err)
+  CALL cmfe_Basis_CreateStart(1,basis1,err)
   !Set the basis to be a 2D basis
-  CALL BASIS_NUMBER_OF_XI_SET(BASIS1,2,ERR,ERROR,*999)
+  CALL cmfe_Basis_NumberOfXiSet(basis1,2,err)
   !Set the interpolation to be linear-quadratic
-  CALL BASIS_INTERPOLATION_XI_SET(BASIS1,(/BASIS_LINEAR_LAGRANGE_INTERPOLATION,BASIS_QUADRATIC_LAGRANGE_INTERPOLATION/), &
-    & ERR,ERROR,*999)
+  CALL cmfe_Basis_InterpolationXiSet(Basis,[CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION, &
+    & CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION],err)
   !Finish the creation of the basis
-  CALL BASIS_CREATE_FINISH(BASIS1,ERR,ERROR,*999)
+  CALL cmfe_Basis_CreateFinish(basis1,err)
 
   !Start the creation of a quadratic Simplex triangle basis
-  NULLIFY(BASIS2)
-  CALL BASIS_CREATE_START(2,BASIS2,ERR,ERROR,*999)
+  CALL cmfe_Basis_Initialise(basis2,err)
+  CALL cmfe_Basis_CreateStart(2,basis2,err)
   !Set the basis to be of Simplex type
-  CALL BASIS_TYPE_SET(BASIS2,BASIS_SIMPLEX_TYPE,ERR,ERROR,*999)
+  CALL cmfe_Basis_TypeSet(basis2,CMFE_BASIS_SIMPLEX_TYPE,err)
   !Set the basis to be a triangluar basis
-  CALL BASIS_NUMBER_OF_XI_SET(BASIS2,2,ERR,ERROR,*999)
+  CALL cmfe_Basis_NumberOfXiSet(basis2,2,err)
   !Set the interpolation to be quadratic
-  CALL BASIS_INTERPOLATION_XI_SET(BASIS2,(/BASIS_QUADRATIC_SIMPLEX_INTERPOLATION,BASIS_QUADRATIC_SIMPLEX_INTERPOLATION/), &
-    & ERR,ERROR,*999)
+  CALL cmfe_Basis_InterpolationXiSet(basis2,[CMFE_BASIS_QUADRATIC_SIMPLEX_INTERPOLATION, &
+    & CMFE_BASIS_QUADRATIC_SIMPLEX_INTERPOLATION],err)
   !Finish the creation of the basis
-  CALL BASIS_CREATE_FINISH(BASIS2,ERR,ERROR,*999)
+  CALL cmfe_Basis_CreateFinish(basis2,err)
 
   !Create a mesh. The mesh will consist of a linear-quadratic Lagrange element and a quadratic Simplex element i.e.,
   !
@@ -213,86 +143,97 @@ PROGRAM LAGRANGESIMPLEXMESHEXAMPLE
   !  |       |      \
   !  1-------2---3---4
   !
-  NULLIFY(NODES)
-  CALL NODES_CREATE_START(REGION,9,NODES,ERR,ERROR,*999)
-  CALL NODES_CREATE_FINISH(NODES,ERR,ERROR,*999)
-  NULLIFY(MESH)
-  NULLIFY(MESH_ELEMENTS)
-  CALL MESH_CREATE_START(1,REGION,2,MESH,ERR,ERROR,*999)
-  CALL MESH_NUMBER_OF_ELEMENTS_SET(MESH,2,ERR,ERROR,*999)
-  CALL MESH_TOPOLOGY_ELEMENTS_CREATE_START(MESH,1,BASIS1,MESH_ELEMENTS,ERR,ERROR,*999)
-  CALL MESH_TOPOLOGY_ELEMENTS_ELEMENT_NODES_SET(1,MESH_ELEMENTS,(/1,2,5,6,8,9/),ERR,ERROR,*999)
-  CALL MESH_TOPOLOGY_ELEMENTS_ELEMENT_BASIS_SET(2,MESH_ELEMENTS,BASIS2,ERR,ERROR,*999)
-  CALL MESH_TOPOLOGY_ELEMENTS_ELEMENT_NODES_SET(2,MESH_ELEMENTS,(/9,2,4,6,3,7/),ERR,ERROR,*999)
-  CALL MESH_TOPOLOGY_ELEMENTS_CREATE_FINISH(MESH_ELEMENTS,ERR,ERROR,*999)
-  CALL MESH_CREATE_FINISH(MESH,ERR,ERROR,*999)
+  CALL cmfe_Nodes_Initialise(nodes,err)
+  CALL cmfe_Nodes_CreateStart(region,9,nodes,err)
+  CALL cmfe_Nodes_CreateFinish(nodes,err)
+  CALL cmfe_Mesh_Initialise(mesh,err)
+  CALL cmfe_MeshElements_Initialise(meshElements,err)
+  CALL cmfe_Mesh_CreateStart(1,region,2,mesh,err)
+  CALL cmfe_Mesh_NumberOfElementsSet(mesh,2,err)
+  CALL cmfe_MeshElements_CreateStart(mesh,1,basis,meshElements,err)
+  CALL cmfe_MeshElements_ElementNodesSet(1,meshElements,[1,2,5,6,8,9],err)
+  CALL cmfe_MeshElements_ElementBasisSet(2,meshElements,basis2,err)
+  CALL cmfe_MeshElements_ElementNodesSet(2,meshElements,[9,2,4,6,3,7],err)
+  CALL cmfe_MeshElements_CreateFinish(meshElements,err)
+  CALL cmfe_Mesh_CreateFinish(mesh,err)
 
   !Create a decomposition for mesh
   NULLIFY(DECOMPOSITION)
-  CALL DECOMPOSITION_CREATE_START(1,MESH,DECOMPOSITION,ERR,ERROR,*999)
+  CALL cmfe_Decomposition_Initialise(decomposition,err)
   !Set the decomposition to be a general decomposition with the specified number of domains
-  CALL DECOMPOSITION_TYPE_SET(DECOMPOSITION,DECOMPOSITION_CALCULATED_TYPE,ERR,ERROR,*999)
-  CALL DECOMPOSITION_NUMBER_OF_DOMAINS_SET(DECOMPOSITION,NUMBER_COMPUTATIONAL_NODES,ERR,ERROR,*999)
-  !Finish the decomposition creation
-  CALL DECOMPOSITION_CREATE_FINISH(DECOMPOSITION,ERR,ERROR,*999)
-
+  CALL cmfe_Decomposition_CreateStart(1,mesh,decomposition,err)
+  !Set the decomposition to be a general decomposition with the specified number of domains
+  CALL cmfe_Decomposition_TypeSet(decomposition,CMFE_DECOMPOSITION_CALCULATED_TYPE,err)
+  CALL cmfe_Decomposition_NumberOfDomainsSet(decomposition,1,err)
+  !Finish the decomposition
+  CALL cmfe_Decomposition_CreateFinish(decomposition,err)
+ 
   !Start to create a default (geometric) field on the region
-  NULLIFY(GEOMETRIC_FIELD)
-  CALL FIELD_CREATE_START(1,REGION,GEOMETRIC_FIELD,ERR,ERROR,*999)
+  CALL cmfe_Field_Initialise(geometricField,Err)
+  CALL cmfe_Field_CreateStart(1,region,geometricField,err)
   !Set the decomposition to use
-  CALL FIELD_MESH_DECOMPOSITION_SET(GEOMETRIC_FIELD,DECOMPOSITION,ERR,ERROR,*999)
-  !Set the mesh components to be used by the field components
-  CALL FIELD_COMPONENT_MESH_COMPONENT_SET(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,1,1,ERR,ERROR,*999)
-  CALL FIELD_COMPONENT_MESH_COMPONENT_SET(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,2,1,ERR,ERROR,*999)
+  CALL cmfe_Field_MeshDecompositionSet(geometricField,decomposition,err)
+  !Set the domain to be used by the field components.
+  CALL cmfe_Field_ComponentMeshComponentSet(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,err)
+  CALL cmfe_Field_ComponentMeshComponentSet(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,2,1,err)
   !Finish creating the field
-  CALL FIELD_CREATE_FINISH(GEOMETRIC_FIELD,ERR,ERROR,*999)
+  CALL cmfe_Field_CreateFinish(geometricField,Err)
 
   !Set the geometric field values
   !X values
-  CALL FIELD_PARAMETER_SET_UPDATE_NODE(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,1,1,1,0.0_DP,ERR,ERROR,*999)
-  CALL FIELD_PARAMETER_SET_UPDATE_NODE(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,1,2,1,1.0_DP,ERR,ERROR,*999)
-  CALL FIELD_PARAMETER_SET_UPDATE_NODE(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,1,3,1,1.5_DP,ERR,ERROR,*999)
-  CALL FIELD_PARAMETER_SET_UPDATE_NODE(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,1,4,1,2.0_DP,ERR,ERROR,*999)
-  CALL FIELD_PARAMETER_SET_UPDATE_NODE(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,1,5,1,0.0_DP,ERR,ERROR,*999)
-  CALL FIELD_PARAMETER_SET_UPDATE_NODE(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,1,6,1,1.0_DP,ERR,ERROR,*999)
-  CALL FIELD_PARAMETER_SET_UPDATE_NODE(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,1,7,1,1.5_DP,ERR,ERROR,*999)
-  CALL FIELD_PARAMETER_SET_UPDATE_NODE(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,1,8,1,0.0_DP,ERR,ERROR,*999)
-  CALL FIELD_PARAMETER_SET_UPDATE_NODE(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,1,9,1,1.0_DP,ERR,ERROR,*999)
+  CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,1,1,0.0_CMISSDP,err)
+  CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,2,1,1.0_CMISSDP,err)
+  CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,3,1,1.5_CMISSDP,err)
+  CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,4,1,2.0_CMISSDP,err)
+  CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,5,1,0.0_CMISSDP,err)
+  CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,6,1,1.0_CMISSDP,err)
+  CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,7,1,1.5_CMISSDP,err)
+  CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,8,1,0.0_CMISSDP,err)
+  CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,9,1,1.0_CMISSDP,err)
   !Y values
-  CALL FIELD_PARAMETER_SET_UPDATE_NODE(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,1,1,2,0.0_DP,ERR,ERROR,*999)
-  CALL FIELD_PARAMETER_SET_UPDATE_NODE(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,1,2,2,0.0_DP,ERR,ERROR,*999)
-  CALL FIELD_PARAMETER_SET_UPDATE_NODE(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,1,3,2,0.0_DP,ERR,ERROR,*999)
-  CALL FIELD_PARAMETER_SET_UPDATE_NODE(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,1,4,2,0.0_DP,ERR,ERROR,*999)
-  CALL FIELD_PARAMETER_SET_UPDATE_NODE(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,1,5,2,0.5_DP,ERR,ERROR,*999)
-  CALL FIELD_PARAMETER_SET_UPDATE_NODE(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,1,6,2,0.5_DP,ERR,ERROR,*999)
-  CALL FIELD_PARAMETER_SET_UPDATE_NODE(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,1,7,2,0.5_DP,ERR,ERROR,*999)
-  CALL FIELD_PARAMETER_SET_UPDATE_NODE(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,1,8,2,1.0_DP,ERR,ERROR,*999)
-  CALL FIELD_PARAMETER_SET_UPDATE_NODE(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,1,9,2,1.0_DP,ERR,ERROR,*999)
-  
-  CALL FIELD_PARAMETER_SET_UPDATE_START(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,ERR,ERROR,*999)
-  CALL FIELD_PARAMETER_SET_UPDATE_FINISH(GEOMETRIC_FIELD,FIELD_U_VARIABLE_TYPE,FIELD_VALUES_SET_TYPE,ERR,ERROR,*999)
- 
-  EXPORT_FIELD=.TRUE.
-  METHOD="FORTRAN"
-  IF(EXPORT_FIELD) THEN
-    FILE="LagrangeSimplexMeshExample"
-    CALL FIELD_IO_NODES_EXPORT(REGION%FIELDS, FILE, METHOD, ERR,ERROR,*999)  
-    CALL FIELD_IO_ELEMENTS_EXPORT(REGION%FIELDS, FILE, METHOD, ERR,ERROR,*999)
-  ENDIF
-  
-  !Calculate the stop times and write out the elapsed user and system times
-  CALL CPU_TIMER(USER_CPU,STOP_USER_TIME,ERR,ERROR,*999)
-  CALL CPU_TIMER(SYSTEM_CPU,STOP_SYSTEM_TIME,ERR,ERROR,*999)
+  CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,1,2,0.0_CMISSDP,err)
+  CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,2,2,0.0_CMISSDP,err)
+  CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,3,2,0.0_CMISSDP,err)
+  CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,4,2,0.0_CMISSDP,err)
+  CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,5,2,0.5_CMISSDP,err)
+  CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,6,2,0.5_CMISSDP,err)
+  CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,7,2,0.5_CMISSDP,err)
+  CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,8,2,1.0_CMISSDP,err)
+  CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,9,2,1.0_CMISSDP,err)
 
-  CALL WRITE_STRING_TWO_VALUE(GENERAL_OUTPUT_TYPE,"User time = ",STOP_USER_TIME(1)-START_USER_TIME(1),", System time = ", &
-    & STOP_SYSTEM_TIME(1)-START_SYSTEM_TIME(1),ERR,ERROR,*999)
-  
-  CALL CMFE_FINALISE(ERR,ERROR,*999)
+  CALL cmfe_Field_ParameterSetUpdateStart(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,err)
+  CALL cmfe_Field_ParameterSetUpdateFinish(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,err)
+ 
+  !Export results
+  CALL cmfe_Fields_Initialise(fields,err)
+  CALL cmfe_Fields_Create(region,fields,err)
+  CALL cmfe_Fields_NodesExport(fields,"LagrangeSimplexMeshExample","FORTRAN",err)
+  CALL cmfe_Fields_ElementsExport(fields,"LagrangeSimplexMeshExample","FORTRAN",err)
+  CALL cmfe_Fields_Finalise(fields,err)
+
+  !Finialise CMISS
+  CALL cmfe_Finalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
   
   STOP
-999 CALL CMFE_WRITE_ERROR(ERR,ERROR)
-  STOP
   
-END PROGRAM LAGRANGESIMPLEXMESHEXAMPLE
+END PROGRAM LagrangeSimplexMeshExample

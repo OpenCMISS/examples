@@ -1,6 +1,6 @@
 MODULE UniAxialExtensionExample
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 !#ifdef WIN32
@@ -113,7 +113,7 @@ subroutine uniaxialextensionexample_initialize() BIND (C, NAME = &
   WRITE(*,'(A)') "Program starting."
 
   !Set all diganostic levels on for testing
-  CALL cmfe_DiagnosticsSetOn(CMFE_FROM_DIAG_TYPE,(/1,2,3,4,5/),"Diagnostics",(/"PROBLEM_FINITE_ELEMENT_CALCULATE"/),Err)
+  CALL cmfe_DiagnosticsSetOn(CMFE_FROM_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["PROBLEM_FINITE_ELEMENT_CALCULATE"],Err)
 
   !Get the number of computational nodes and this computational node number
   CALL cmfe_ComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -135,7 +135,7 @@ subroutine uniaxialextensionexample_initialize() BIND (C, NAME = &
   CALL cmfe_CoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   CALL cmfe_CoordinateSystem_TypeSet(CoordinateSystem,CMFE_COORDINATE_RECTANGULAR_CARTESIAN_TYPE,Err)
   CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystem,NumberOfSpatialCoordinates,Err)
-  CALL cmfe_CoordinateSystem_OriginSet(CoordinateSystem,(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/),Err)
+  CALL cmfe_CoordinateSystem_OriginSet(CoordinateSystem,[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP],Err)
   CALL cmfe_CoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Create a region and assign the CS to the region
@@ -149,10 +149,10 @@ subroutine uniaxialextensionexample_initialize() BIND (C, NAME = &
   CALL cmfe_Basis_CreateStart(BasisUserNumber,Basis,Err) 
   CALL cmfe_Basis_TypeSet(Basis,CMFE_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
   CALL cmfe_Basis_NumberOfXiSet(Basis,NumberOfXiCoordinates,Err)
-  CALL cmfe_Basis_InterpolationXiSet(Basis,(/CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION, &
-    & CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION,CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION/),Err)
+  CALL cmfe_Basis_InterpolationXiSet(Basis,[CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION, &
+    & CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION,CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION],Err)
   CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis, &
-    & (/CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME/),Err)  
+    & [CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME],Err)  
   CALL cmfe_Basis_CreateFinish(Basis,Err)
 
   !Create a mesh
@@ -169,7 +169,7 @@ subroutine uniaxialextensionexample_initialize() BIND (C, NAME = &
 
   CALL cmfe_MeshElements_Initialise(Elements,Err)
   CALL cmfe_MeshElements_CreateStart(Mesh,MeshComponentNumber,Basis,Elements,Err)
-  CALL cmfe_MeshElements_NodesSet(Elements,1,(/1,2,3,4,5,6,7,8/),Err)
+  CALL cmfe_MeshElements_NodesSet(Elements,1,[1,2,3,4,5,6,7,8],Err)
   CALL cmfe_MeshElements_CreateFinish(Elements,Err)
 
   CALL cmfe_Mesh_CreateFinish(Mesh,Err) 

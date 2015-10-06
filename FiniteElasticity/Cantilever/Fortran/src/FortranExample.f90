@@ -1,6 +1,6 @@
 !> \file
 !> \author Adam Reeve
-!> \brief This is an example program to solve a finite elasticity equation using openCMISS calls.
+!> \brief This is an example program to solve a finite elasticity equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -16,7 +16,7 @@
 !> License for the specific language governing rights and limitations
 !> under the License.
 !>
-!> The Original Code is openCMISS
+!> The Original Code is OpenCMISS
 !>
 !> The Initial Developer of the Original Code is University of Auckland,
 !> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -49,7 +49,7 @@
 !> Main program
 PROGRAM CANTILEVEREXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 #ifdef WIN32
@@ -59,7 +59,6 @@ PROGRAM CANTILEVEREXAMPLE
   IMPLICIT NONE
 
   !Test program parameters
-
   REAL(CMFEDP), PARAMETER :: Width=60.0_CMFEDP
   REAL(CMFEDP), PARAMETER :: Length=40.0_CMFEDP
   REAL(CMFEDP), PARAMETER :: Height=40.0_CMFEDP
@@ -89,7 +88,6 @@ PROGRAM CANTILEVEREXAMPLE
   INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=1
 
   !Program variables
-
   INTEGER(CMFEIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
   INTEGER(CMFEIntg) :: EquationsSetIndex
   INTEGER(CMFEIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber

@@ -55,7 +55,7 @@ PROGRAM TwoElmnTet
 
 ! OpenCMISS Modules
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
 
 #ifdef WIN32
   USE IFQWIN

@@ -1,7 +1,7 @@
 !> \file
 !> $Id: DiffusionExample.f90 1528 2010-09-21 01:32:29Z chrispbradley $
 !> \author Chris Bradley
-!> \brief This is an example program to solve a diffusion equation using openCMISS calls.
+!> \brief This is an example program to solve a reaction diffusion equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -17,7 +17,7 @@
 !> License for the specific language governing rights and limitations
 !> under the License.
 !>
-!> The Original Code is openCMISS
+!> The Original Code is OpenCMISS
 !>
 !> The Initial Developer of the Original Code is University of Auckland,
 !> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -48,20 +48,14 @@
 !> Main program
 PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
 
-
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
-
 
 #ifdef WIN32
   USE IFQWIN
 #endif
 
   IMPLICIT NONE
-
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(cmfe_FieldType) :: EquationsSetField
-
 
   !Test program parameters
 
@@ -74,19 +68,17 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
   INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
   INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: ControlLoopNode=0
-  INTEGER(CMFEIntg), PARAMETER :: AnalyticFieldUserNumber=12
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=10
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=11
+  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=12
   INTEGER(CMFEIntg), PARAMETER :: SourceFieldUserNumber=13
   INTEGER(CMFEIntg), PARAMETER :: CellMLUserNumber=14
   INTEGER(CMFEIntg), PARAMETER :: CellMLModelsFieldUserNumber=15
   INTEGER(CMFEIntg), PARAMETER :: CellMLStateFieldUserNumber=16
   INTEGER(CMFEIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=17
   INTEGER(CMFEIntg), PARAMETER :: CellMLParametersFieldUserNumber=18
-
 
   !Program types
   
@@ -104,14 +96,14 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   !INTEGER(INTG) :: EQUATIONS_SET_INDEX
   !TYPE(DOMAIN_MAPPING_TYPE), POINTER :: DEPENDENT_DOF_MAPPING
   
-    !CMISS variables
+  !CMISS variables
 
   TYPE(cmfe_BasisType) :: Basis
   TYPE(cmfe_CoordinateSystemType) :: CoordinateSystem,WorldCoordinateSystem
   TYPE(cmfe_DecompositionType) :: Decomposition
   TYPE(cmfe_EquationsType) :: Equations
   TYPE(cmfe_EquationsSetType) :: EquationsSet
-  TYPE(cmfe_FieldType) :: GeometricField,DependentField,MaterialsField,SourceField
+  TYPE(cmfe_FieldType) :: GeometricField,EquationsSetField,DependentField,MaterialsField,SourceField
   TYPE(cmfe_FieldsType) :: Fields
   TYPE(cmfe_BoundaryConditionsType) :: BoundaryConditions
   TYPE(cmfe_GeneratedMeshType) :: GeneratedMesh  
@@ -124,7 +116,6 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   TYPE(cmfe_CellMLType) :: CellML
   TYPE(cmfe_CellMLEquationsType) :: CellMLEquations
   TYPE(cmfe_FieldType) :: CellMLModelsField,CellMLStateField,CellMLIntermediateField,CellMLParametersField
-
 
   LOGICAL :: EXPORT_FIELD
 
@@ -200,8 +191,8 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   !Set the default basis
   CALL cmfe_GeneratedMesh_BasisSet(GeneratedMesh,Basis,Err)   
   !Define the mesh on the region
-  CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,(/LENGTH/),Err)
-  CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS/),Err)
+  CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[LENGTH],Err)
+  CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS],Err)
   !Finish the creation of a generated mesh in the region
   CALL cmfe_Mesh_Initialise(Mesh,Err)
   CALL cmfe_GeneratedMesh_CreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
@@ -235,7 +226,6 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   CALL cmfe_EquationsSet_CreateStart(EquationsSetUserNumber,Region,GeometricField,[CMFE_EQUATIONS_SET_CLASSICAL_FIELD_CLASS, &
     & CMFE_EQUATIONS_SET_REACTION_DIFFUSION_EQUATION_TYPE,CMFE_EQUATIONS_SET_CELLML_REAC_SPLIT_REAC_DIFF_SUBTYPE], &
     & EquationsSetFieldUserNumber,EquationsSetField,EquationsSet,Err)
-  !Set the equations set to be a standard Diffusion no source problem
   !Finish creating the equations set
   CALL cmfe_EquationsSet_CreateFinish(EquationsSet,Err)
 
@@ -267,9 +257,6 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   CALL cmfe_EquationsSet_SourceCreateFinish(EquationsSet,Err)
   CALL cmfe_Field_ComponentValuesInitialise(SourceField,CMFE_FIELD_U_VARIABLE_TYPE, &
     & CMFE_FIELD_VALUES_SET_TYPE,1,0.0_CMFEDP,Err)
-
-  
-
 
   !Start to set up CellML Fields
 
@@ -380,8 +367,6 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   !Finish the equations set equations
   CALL cmfe_EquationsSet_EquationsCreateFinish(EquationsSet,Err)
 
-
-
   !Create the problem
   CALL cmfe_Problem_Initialise(Problem,Err)
   CALL cmfe_Problem_CreateStart(ProblemUserNumber,[CMFE_PROBLEM_CLASSICAL_FIELD_CLASS, &
@@ -438,7 +423,6 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   !CALL cmfe_SolverOutputTypeSet(Solver,cmfe_SolverTimingOutput,Err)
   !CALL cmfe_SolverOutputTypeSet(Solver,cmfe_SolverSolverOutput,Err)
   !CALL cmfe_SolverOutputTypeSet(Solver,CMFE_SOLVER_PROGRESS_OUTPUT,Err)
-
   !Finish the creation of the problem solver
   CALL cmfe_Problem_SolversCreateFinish(Problem,Err)
 
@@ -483,7 +467,7 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   CALL cmfe_Problem_SolverEquationsCreateFinish(Problem,Err)
 
   !Create the equations set boundary conditions
-  BCNODES = (/1,11/)
+  BCNODES = [1,11]
   CALL cmfe_BoundaryConditions_Initialise(BoundaryConditions,Err)
   CALL cmfe_SolverEquations_BoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
   DO node=1,2

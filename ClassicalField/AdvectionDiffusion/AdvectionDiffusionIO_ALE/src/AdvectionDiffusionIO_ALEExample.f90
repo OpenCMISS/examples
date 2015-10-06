@@ -55,7 +55,7 @@ PROGRAM ADVECTIONDIFFUSIONIOALEEXAMPLE
 
   !PROGRAM LIBRARIES
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE FLUID_MECHANICS_IO_ROUTINES
   USE MPI
 
@@ -71,10 +71,6 @@ PROGRAM ADVECTIONDIFFUSIONIOALEEXAMPLE
 
   IMPLICIT NONE
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(cmfe_FieldType) :: EquationsSetField
-
-
   !Test program parameters
 
   INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -84,6 +80,7 @@ PROGRAM ADVECTIONDIFFUSIONIOALEEXAMPLE
   INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
   INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
   INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
   INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumberAdvecDiff=8
   INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberAdvecDiff=9
   INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberAdvecDiff=10
@@ -174,6 +171,7 @@ PROGRAM ADVECTIONDIFFUSIONIOALEEXAMPLE
   TYPE(cmfe_FieldsType) :: Fields
   !Field types
   TYPE(cmfe_FieldType) :: GeometricField
+  TYPE(cmfe_FieldType) :: EquationsSetField
   TYPE(cmfe_FieldType) :: DependentFieldAdvecDiff
   TYPE(cmfe_FieldType) :: MaterialsFieldAdvecDiff
   TYPE(cmfe_FieldType) :: IndependentFieldAdvecDiff

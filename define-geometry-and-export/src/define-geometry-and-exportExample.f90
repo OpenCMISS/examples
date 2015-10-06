@@ -1,6 +1,6 @@
 !> \file
 !> \author David Nickerson <nickerso@users.sourceforge.net>
-!> \brief This is an example program to define a discretised geometry and export for visualisation using openCMISS calls.
+!> \brief This is an example program to define a discretised geometry and export for visualisation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -50,7 +50,7 @@
 !> Main program
 PROGRAM DefineGeometryAndExportExample
   
-   USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 

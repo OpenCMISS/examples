@@ -48,7 +48,7 @@
 !> Main program
 PROGRAM DIFFUSIONQUADRATICSOURCEEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
 
 #ifdef WIN32
   USE IFQWIN
@@ -292,7 +292,7 @@ PROGRAM DIFFUSIONQUADRATICSOURCEEXAMPLE
   !Output Analytic analysis
   CALL cmfe_EquationsSet_AnalyticTimeSet(EquationsSet,END_TIME,Err)
   CALL cmfe_EquationsSet_AnalyticEvaluate(EquationsSet,Err)
-  CALL cmfe_AnalyticAnalysisOutput(DependentField,"DiffusionQuadraticSourceAnalytic",Err)
+  CALL cmfe_AnalyticAnalysis_Output(DependentField,"DiffusionQuadraticSourceAnalytic",Err)
 
   !Output fields
   CALL cmfe_Fields_Initialise(Fields,Err)

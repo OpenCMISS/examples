@@ -42,7 +42,7 @@
 PROGRAM DataProjection1DRectangularCartesian
 
   USE MPI
-  USE OPENCMISS
+  USE OpenCMISS_Iron
 
 #ifdef WIN32
   USE IFQWIN
@@ -55,11 +55,13 @@ PROGRAM DataProjection1DRectangularCartesian
   INTEGER(CMFEIntg),PARAMETER :: CoordinateSystemDimension=3
   INTEGER(CMFEIntg),PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMFEIntg),PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMFEIntg),PARAMETER :: DataProjectionUserNumber=1
   INTEGER(CMFEIntg),PARAMETER :: FieldUserNumber=1  
   INTEGER(CMFEIntg),PARAMETER :: MeshUserNumber=1
   INTEGER(CMFEIntg),PARAMETER :: RegionUserNumber=1
 
-  REAL(CMFEDP), PARAMETER :: CoordinateSystemOrigin(3)=(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/)
+  REAL(CMFEDP), PARAMETER :: CoordinateSystemOrigin(3)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP]
+  
   !Program types
 
   !Program variables   
@@ -70,7 +72,7 @@ PROGRAM DataProjection1DRectangularCartesian
   INTEGER(CMFEIntg) :: NumberOfDomains=2
   INTEGER(CMFEIntg) :: NumberOfNodes
   INTEGER(CMFEIntg) :: NumberOfXi=1
-  INTEGER(CMFEIntg) :: BasisInterpolation(1)=(/CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION/)
+  INTEGER(CMFEIntg) :: BasisInterpolation(1)=[CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION]
   INTEGER(CMFEIntg) :: WorldCoordinateSystemUserNumber
   INTEGER(CMFEIntg) :: WorldRegionUserNumber
   
@@ -240,36 +242,37 @@ PROGRAM DataProjection1DRectangularCartesian
   
   !=========================================================================================================================
   !Create a data projection
-  CALL cmfe_DataProjection_CreateStart(RegionUserNumber,FieldUserNumber,RegionUserNumber,Err)
+  CALL cmfe_DataProjection_CreateStart(DataProjectionUserNumber,RegionUserNumber,MeshUserNumber,RegionUserNumber,Err)
   !=========================================================================================================================
   !Test parameter set functions
-  CALL cmfe_DataProjection_AbsoluteToleranceSet(RegionUserNumber,AbsoluteToleranceSet,Err) !test
-  CALL cmfe_DataProjection_MaximumIterationUpdateSet(RegionUserNumber,MaximumIterationUpdateSet,Err) !test
-  CALL cmfe_DataProjection_MaximumNumberOfIterationsSet(RegionUserNumber,MaximumNumberOfIterationsSet,Err) !test
-  CALL cmfe_DataProjection_NumberOfClosestElementsSet(RegionUserNumber,NumberOfClosestElementsSet,Err) !test
-  CALL cmfe_DataProjection_ProjectionTypeSet(RegionUserNumber,ProjectionTypeSet,Err)
-  CALL cmfe_DataProjection_RelativeToleranceSet(RegionUserNumber,RelativeToleranceSet,Err) !test
-  CALL cmfe_DataProjection_StartingXiSet(RegionUserNumber,StartingXiSet,Err) !test
+  CALL cmfe_DataProjection_AbsoluteToleranceSet(DataProjectionUserNumber,RegionUserNumber,AbsoluteToleranceSet,Err)
+  CALL cmfe_DataProjection_MaximumIterationUpdateSet(DataProjectionUserNumber,RegionUserNumber,MaximumIterationUpdateSet,Err)
+  CALL cmfe_DataProjection_MaximumNumberOfIterationsSet(DataProjectionUserNumber,RegionUserNumber,MaximumNumberOfIterationsSet,Err)
+  CALL cmfe_DataProjection_NumberOfClosestElementsSet(DataProjectionUserNumber,RegionUserNumber,NumberOfClosestElementsSet,Err)
+  CALL cmfe_DataProjection_ProjectionTypeSet(DataProjectionUserNumber,RegionUserNumber,ProjectionTypeSet,Err)
+  CALL cmfe_DataProjection_RelativeToleranceSet(DataProjectionUserNumber,RegionUserNumber,RelativeToleranceSet,Err)
+  CALL cmfe_DataProjection_StartingXiSet(DataProjectionUserNumber,RegionUserNumber,StartingXiSet,Err)
   !=========================================================================================================================
   !Finish data projection  
-  CALL cmfe_DataProjection_CreateFinish(RegionUserNumber,Err)
+  CALL cmfe_DataProjection_CreateFinish(DataProjectionUserNumber,RegionUserNumber,Err)
   !=========================================================================================================================
   !Test parameter get functions
-  CALL cmfe_DataProjection_AbsoluteToleranceGet(RegionUserNumber,AbsoluteToleranceGet,Err) !test
-  CALL cmfe_DataProjection_MaximumIterationUpdateGet(RegionUserNumber,MaximumIterationUpdateGet,Err) !test
-  CALL cmfe_DataProjection_MaximumNumberOfIterationsGet(RegionUserNumber,MaximumNumberOfIterationsGet,Err) !test
-  CALL cmfe_DataProjection_NumberOfClosestElementsGet(RegionUserNumber,NumberOfClosestElementsGet,Err) !test
-  CALL cmfe_DataProjection_ProjectionTypeGet(RegionUserNumber,ProjectionTypeGet,Err) !test
-  CALL cmfe_DataProjection_RelativeToleranceGet(RegionUserNumber,RelativeToleranceGet,Err) !test
-  CALL cmfe_DataProjection_StartingXiGet(RegionUserNumber,StartingXiGet,Err) !test  
+  CALL cmfe_DataProjection_AbsoluteToleranceGet(DataProjectionUserNumber,RegionUserNumber,AbsoluteToleranceGet,Err) 
+  CALL cmfe_DataProjection_MaximumIterationUpdateGet(DataProjectionUserNumber,RegionUserNumber,MaximumIterationUpdateGet,Err)
+  CALL cmfe_DataProjection_MaximumNumberOfIterationsGet(DataProjectionUserNumber,RegionUserNumber,MaximumNumberOfIterationsGet,Err)
+  CALL cmfe_DataProjection_NumberOfClosestElementsGet(DataProjectionUserNumber,RegionUserNumber,NumberOfClosestElementsGet,Err) 
+  CALL cmfe_DataProjection_ProjectionTypeGet(DataProjectionUserNumber,RegionUserNumber,ProjectionTypeGet,Err)
+  CALL cmfe_DataProjection_RelativeToleranceGet(DataProjectionUserNumber,RegionUserNumber,RelativeToleranceGet,Err)
+  CALL cmfe_DataProjection_StartingXiGet(DataProjectionUserNumber,RegionUserNumber,StartingXiGet,Err)
   
   !=========================================================================================================================
   !Start data projection
-  CALL cmfe_DataProjection_Evaluate(RegionUserNumber,Err)
+  CALL cmfe_DataProjection_DataPointsProjectionEvaluate(DataProjectionUserNumber,RegionUserNumber,FieldUserNumber, &
+    & RegionUserNumber,Err)
   
   !=========================================================================================================================
   !Destroy used types
-  CALL cmfe_DataProjection_Destroy(RegionUserNumber,Err)
+  CALL cmfe_DataProjection_Destroy(DataProjectionUserNumber,RegionUserNumber,Err)
   CALL cmfe_DataPoints_Destroy(RegionUserNumber,Err)
     
   CALL cmfe_Region_Destroy(RegionUserNumber,Err)

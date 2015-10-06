@@ -48,10 +48,9 @@
 !> Main program
 PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE FIELDML_API
   USE MPI
-
 
 #ifdef WIN32
   USE IFQWIN
@@ -113,7 +112,6 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   TYPE(cmfe_SolverEquationsType) :: SolverEquations
 
   LOGICAL :: EXPORT_FIELD,IMPORT_FIELD
- 
 
 #ifdef WIN32
   !Quickwin type
@@ -202,12 +200,12 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   CALL cmfe_GeneratedMesh_BasisSet(GeneratedMesh,Basis,Err)   
   !Define the mesh on the region
   IF(dimensions == 2) THEN
-    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,(/WIDTH,HEIGHT/),Err)
-    CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS/),Err)
+    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[WIDTH,HEIGHT],Err)
+    CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS],Err)
   ELSE
-    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,(/WIDTH,HEIGHT,LENGTH/),Err)
-    CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
-      & NUMBER_GLOBAL_Z_ELEMENTS/),Err)
+    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[WIDTH,HEIGHT,LENGTH],Err)
+    CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
+      & NUMBER_GLOBAL_Z_ELEMENTS],Err)
   ENDIF
   !Finish the creation of a generated mesh in the region
   CALL cmfe_Mesh_Initialise(Mesh,Err)
@@ -403,7 +401,7 @@ PROGRAM STATICADVECTIONDIFFUSIONEXAMPLE
   CALL cmfe_Problem_Solve(Problem,Err)
 
  !Output Analytic analysis
-  Call cmfe_AnalyticAnalysisOutput(DependentField,"StaticAdvectionDiffusionAnalytics",Err)
+  Call cmfe_AnalyticAnalysis_Output(DependentField,"StaticAdvectionDiffusionAnalytics",Err)
 
   EXPORT_FIELD=.TRUE.
   IF(EXPORT_FIELD) THEN

@@ -49,7 +49,7 @@
 !> Main program
 PROGRAM THREEDCOUPLEDLAPLACE
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE FLUID_MECHANICS_IO_ROUTINES
   
 #ifdef WIN32
@@ -357,17 +357,17 @@ PROGRAM THREEDCOUPLEDLAPLACE
   CALL cmfe_Basis_NumberOfXiSet(Basis1,NUMBER_OF_DIMENSIONS1,Err)
   !Set the basis xi interpolation and number of Gauss points
   IF(NUMBER_OF_DIMENSIONS1==2.AND.NUMBER_OF_DIMENSIONS2==2) THEN
-    CALL cmfe_Basis_InterpolationXiSet(Basis1,(/BASIS_XI_INTERPOLATION_SPACE1,BASIS_XI_INTERPOLATION_SPACE1/),Err)
+    CALL cmfe_Basis_InterpolationXiSet(Basis1,[BASIS_XI_INTERPOLATION_SPACE1,BASIS_XI_INTERPOLATION_SPACE1],Err)
     IF(BASIS_TYPE1/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis1,(/BASIS_XI_GAUSS_SPACE1,BASIS_XI_GAUSS_SPACE1/),Err)
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis1,[BASIS_XI_GAUSS_SPACE1,BASIS_XI_GAUSS_SPACE1],Err)
     ELSE
       CALL cmfe_Basis_QuadratureOrderSet(Basis1,BASIS_XI_GAUSS_SPACE1+1,Err)
     ENDIF
   ELSE IF(NUMBER_OF_DIMENSIONS1==3.AND.NUMBER_OF_DIMENSIONS2==3) THEN
-    CALL cmfe_Basis_InterpolationXiSet(Basis1,(/BASIS_XI_INTERPOLATION_SPACE1,BASIS_XI_INTERPOLATION_SPACE1, & 
-      & BASIS_XI_INTERPOLATION_SPACE1/),Err)                         
+    CALL cmfe_Basis_InterpolationXiSet(Basis1,[BASIS_XI_INTERPOLATION_SPACE1,BASIS_XI_INTERPOLATION_SPACE1, & 
+      & BASIS_XI_INTERPOLATION_SPACE1],Err)                         
     IF(BASIS_TYPE1/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis1,(/BASIS_XI_GAUSS_SPACE1,BASIS_XI_GAUSS_SPACE1,BASIS_XI_GAUSS_SPACE1/), & 
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis1,[BASIS_XI_GAUSS_SPACE1,BASIS_XI_GAUSS_SPACE1,BASIS_XI_GAUSS_SPACE1], & 
         & Err)
     ELSE
       CALL cmfe_Basis_QuadratureOrderSet(Basis1,BASIS_XI_GAUSS_SPACE1+1,Err)
@@ -388,17 +388,17 @@ PROGRAM THREEDCOUPLEDLAPLACE
   CALL cmfe_Basis_NumberOfXiSet(Basis2,NUMBER_OF_DIMENSIONS2,Err)
   !Set the basis xi interpolation and number of Gauss points
   IF(NUMBER_OF_DIMENSIONS1==2.AND.NUMBER_OF_DIMENSIONS2==2) THEN
-    CALL cmfe_Basis_InterpolationXiSet(Basis2,(/BASIS_XI_INTERPOLATION_SPACE2,BASIS_XI_INTERPOLATION_SPACE2/),Err)
+    CALL cmfe_Basis_InterpolationXiSet(Basis2,[BASIS_XI_INTERPOLATION_SPACE2,BASIS_XI_INTERPOLATION_SPACE2],Err)
     IF(BASIS_TYPE2/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis2,(/BASIS_XI_GAUSS_SPACE2,BASIS_XI_GAUSS_SPACE2/),Err)
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis2,[BASIS_XI_GAUSS_SPACE2,BASIS_XI_GAUSS_SPACE2],Err)
     ELSE
       CALL cmfe_Basis_QuadratureOrderSet(Basis2,BASIS_XI_GAUSS_SPACE2+1,Err)
     ENDIF
   ELSE IF(NUMBER_OF_DIMENSIONS1==3.AND.NUMBER_OF_DIMENSIONS2==3) THEN
-    CALL cmfe_Basis_InterpolationXiSet(Basis2,(/BASIS_XI_INTERPOLATION_SPACE2,BASIS_XI_INTERPOLATION_SPACE2, & 
-      & BASIS_XI_INTERPOLATION_SPACE2/),Err)                         
+    CALL cmfe_Basis_InterpolationXiSet(Basis2,[BASIS_XI_INTERPOLATION_SPACE2,BASIS_XI_INTERPOLATION_SPACE2, & 
+      & BASIS_XI_INTERPOLATION_SPACE2],Err)                         
     IF(BASIS_TYPE2/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis2,(/BASIS_XI_GAUSS_SPACE2,BASIS_XI_GAUSS_SPACE2,BASIS_XI_GAUSS_SPACE2/), & 
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis2,[BASIS_XI_GAUSS_SPACE2,BASIS_XI_GAUSS_SPACE2,BASIS_XI_GAUSS_SPACE2], & 
         & Err)
     ELSE
       CALL cmfe_Basis_QuadratureOrderSet(Basis2,BASIS_XI_GAUSS_SPACE2+1,Err)
@@ -494,7 +494,7 @@ PROGRAM THREEDCOUPLEDLAPLACE
   CALL cmfe_Basis_NumberOfXiSet(InterfaceBasis,NUMBER_OF_DIMENSIONS_INTERFACE,Err)
   !Set the basis xi interpolation and number of Gauss points
   IF(NUMBER_OF_DIMENSIONS1==3.AND.NUMBER_OF_DIMENSIONS2==3.AND.NUMBER_OF_DIMENSIONS_INTERFACE==2) THEN
-    CALL cmfe_Basis_InterpolationXiSet(InterfaceBasis,(/BASIS_XI_INTERPOLATION_INTERFACE,BASIS_XI_INTERPOLATION_INTERFACE/),Err)
+    CALL cmfe_Basis_InterpolationXiSet(InterfaceBasis,[BASIS_XI_INTERPOLATION_INTERFACE,BASIS_XI_INTERPOLATION_INTERFACE],Err)
 
 ! ! ! TEST TEST TEST
 
@@ -503,7 +503,7 @@ PROGRAM THREEDCOUPLEDLAPLACE
 
 
     IF(BASIS_TYPE_INTERFACE/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(InterfaceBasis,(/BASIS_XI_GAUSS_INTERFACE,BASIS_XI_GAUSS_INTERFACE/),Err)
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(InterfaceBasis,[BASIS_XI_GAUSS_INTERFACE,BASIS_XI_GAUSS_INTERFACE],Err)
     ELSE
       CALL cmfe_Basis_QuadratureOrderSet(InterfaceBasis,BASIS_XI_GAUSS_INTERFACE+1,Err)
     ENDIF
@@ -528,8 +528,8 @@ PROGRAM THREEDCOUPLEDLAPLACE
   CALL cmfe_Basis_TypeSet(InterfaceMappingBasis,BASIS_TYPE_INTERFACE,Err)
   CALL cmfe_Basis_NumberOfXiSet(InterfaceMappingBasis,NUMBER_OF_DIMENSIONS_INTERFACE,Err)
   IF(NUMBER_OF_DIMENSIONS1==3.AND.NUMBER_OF_DIMENSIONS2==3.AND.NUMBER_OF_DIMENSIONS_INTERFACE==2) THEN
-    CALL cmfe_Basis_InterpolationXiSet(InterfaceMappingBasis,(/BASIS_XI_INTERPOLATION_INTERFACE, &
-      & BASIS_XI_INTERPOLATION_INTERFACE/),Err)
+    CALL cmfe_Basis_InterpolationXiSet(InterfaceMappingBasis,[BASIS_XI_INTERPOLATION_INTERFACE, &
+      & BASIS_XI_INTERPOLATION_INTERFACE],Err)
 
 ! ! ! TEST TEST TEST
 
@@ -538,7 +538,7 @@ PROGRAM THREEDCOUPLEDLAPLACE
 
 
     IF(BASIS_TYPE_INTERFACE/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(InterfaceMappingBasis,(/BASIS_XI_GAUSS_INTERFACE,BASIS_XI_GAUSS_INTERFACE/),Err)
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(InterfaceMappingBasis,[BASIS_XI_GAUSS_INTERFACE,BASIS_XI_GAUSS_INTERFACE],Err)
     ELSE
       CALL cmfe_Basis_QuadratureOrderSet(InterfaceMappingBasis,BASIS_XI_GAUSS_INTERFACE+1,Err)
     ENDIF
@@ -589,7 +589,7 @@ PROGRAM THREEDCOUPLEDLAPLACE
   PRINT *, ' == >> CREATING INTERFACE MESHES CONNECTIVITY << == '
   CALL cmfe_InterfaceMeshConnectivity_Initialise(InterfaceMeshConnectivity,Err)
   CALL cmfe_InterfaceMeshConnectivity_CreateStart(Interface,InterfaceMesh,InterfaceMeshConnectivity,Err)
-  CALL cmfe_InterfaceMeshConnectivity_SetBasis(InterfaceMeshConnectivity,InterfaceMappingBasis,Err)
+  CALL cmfe_InterfaceMeshConnectivity_BasisSet(InterfaceMeshConnectivity,InterfaceMappingBasis,Err)
 
   DO ic_idx=1,CMX%NUMBER_OF_COUPLINGS
     !Map the interface element to the elements in mesh 1

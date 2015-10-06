@@ -1,6 +1,6 @@
 !> \file
 !> \author Kumar Mithraratne
-!> \brief This is an example program to solve a finite elasticity equation using openCMISS calls.
+!> \brief This is an example program to solve a finite elasticity equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -16,7 +16,7 @@
 !> License for the specific language governing rights and limitations
 !> under the License.
 !>
-!> The Original Code is openCMISS
+!> The Original Code is OpenCMISS
 !>
 !> The Initial Developer of the Original Code is University of Auckland,
 !> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -40,7 +40,7 @@
 !>
 
 !> \example FiniteElasticity/MixedBoundaryConditions/src/MixedBoundaryConditionsExample.f90
-!! Example program to solve a finite elasticity equation using openCMISS calls.
+!! Example program to solve a finite elasticity equation using OpenCMISS calls.
 !! \par Latest Builds:
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/MixedBoundaryConditions/build-intel'>Linux Intel Build</a>
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/MixedBoundaryConditions/build-gnu'>Linux GNU Build</a>
@@ -49,7 +49,7 @@
 !> Main program
 PROGRAM MIXEDBOUNDARYCONDITIONSEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 #ifdef WIN32
@@ -57,10 +57,6 @@ PROGRAM MIXEDBOUNDARYCONDITIONSEXAMPLE
 #endif
 
   IMPLICIT NONE
-
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(cmfe_FieldType) :: EquationsSetField
-
 
   !Test program parameters
 
@@ -72,8 +68,9 @@ PROGRAM MIXEDBOUNDARYCONDITIONSEXAMPLE
   INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=1
   INTEGER(CMFEIntg), PARAMETER :: FieldGeometryUserNumber=1
   INTEGER(CMFEIntg), PARAMETER :: FieldFibreUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumber=4
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=3
+  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialUserNumber=4
+  INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumber=5
   INTEGER(CMFEIntg), PARAMETER :: EquationSetUserNumber=1
   INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=1
 
@@ -95,7 +92,7 @@ PROGRAM MIXEDBOUNDARYCONDITIONSEXAMPLE
   TYPE(cmfe_DecompositionType) :: Decomposition
   TYPE(cmfe_EquationsType) :: Equations
   TYPE(cmfe_EquationsSetType) :: EquationsSet
-  TYPE(cmfe_FieldType) :: GeometricField,FibreField,MaterialField,DependentField
+  TYPE(cmfe_FieldType) :: GeometricField,EquationsSetField,FibreField,MaterialField,DependentField
   TYPE(cmfe_FieldsType) :: Fields
   TYPE(cmfe_ProblemType) :: Problem
   TYPE(cmfe_RegionType) :: Region,WorldRegion
@@ -114,8 +111,7 @@ PROGRAM MIXEDBOUNDARYCONDITIONSEXAMPLE
   INTEGER(CMFEIntg) :: Err
 
 #ifdef WIN32
-  !Initialise QuickWin
-  QUICKWIN_WINDOW_CONFIG%TITLE="General Output" !Window title
+  !Initialise QuickWin QUICKWIN_WINDOW_CONFIG%TITLE="General Output" !Window title
   QUICKWIN_WINDOW_CONFIG%NUMTEXTROWS=-1 !Max possible number of rows
   QUICKWIN_WINDOW_CONFIG%MODE=QWIN$SCROLLDOWN
   !Set the window parameters
@@ -130,7 +126,7 @@ PROGRAM MIXEDBOUNDARYCONDITIONSEXAMPLE
   CALL cmfe_ErrorHandlingModeSet(CMFE_ERRORS_TRAP_ERROR,Err)
 
   !Set all diganostic levels on for testing
-  CALL cmfe_DiagnosticsSetOn(CMFE_FROM_DIAG_TYPE,(/1,2,3,4,5/),"Diagnostics",(/"PROBLEM_RESIDUAL_EVALUATE"/),Err)
+  CALL cmfe_DiagnosticsSetOn(CMFE_FROM_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["PROBLEM_RESIDUAL_EVALUATE"],Err)
 
   !Get the number of computational nodes and this computational node number
   CALL cmfe_ComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -178,7 +174,7 @@ PROGRAM MIXEDBOUNDARYCONDITIONSEXAMPLE
   !Define elements
   CALL cmfe_MeshElements_Initialise(Elements,Err)
   CALL cmfe_MeshElements_CreateStart(Mesh,MeshComponentNumber,Basis,Elements,Err)
-  CALL cmfe_MeshElements_NodesSet(Elements,1,(/1,2,3,4,5,6,7,8/),Err)
+  CALL cmfe_MeshElements_NodesSet(Elements,1,[1,2,3,4,5,6,7,8],Err)
   CALL cmfe_MeshElements_CreateFinish(Elements,Err)
   !finish mesh creation
   CALL cmfe_Mesh_CreateFinish(Mesh,Err)
@@ -263,11 +259,10 @@ PROGRAM MIXEDBOUNDARYCONDITIONSEXAMPLE
   CALL cmfe_Field_CreateFinish(FibreField,Err)
 
   !Create the equations_set
-    CALL cmfe_Field_Initialise(EquationsSetField,Err)
-CALL cmfe_EquationsSet_CreateStart(EquationSetUserNumber,Region,FibreField,[CMFE_EQUATIONS_SET_ELASTICITY_CLASS, &
-  & CMFE_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMFE_EQUATIONS_SET_MOONEY_RIVLIN_SUBTYPE],EquationsSetFieldUserNumber, &
-  & EquationsSetField,EquationsSet,Err)
-  
+  CALL cmfe_Field_Initialise(EquationsSetField,Err)
+  CALL cmfe_EquationsSet_CreateStart(EquationSetUserNumber,Region,FibreField,[CMFE_EQUATIONS_SET_ELASTICITY_CLASS, &
+    & CMFE_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMFE_EQUATIONS_SET_MOONEY_RIVLIN_SUBTYPE],EquationsSetFieldUserNumber, &
+    & EquationsSetField,EquationsSet,Err)
   CALL cmfe_EquationsSet_CreateFinish(EquationsSet,Err)
 
   !Create the dependent field

@@ -47,63 +47,63 @@
 #================================================================================================================================
 
 # Set program variables
-EquationsSetFieldUserNumberStree          = 1336
-EquationsSetFieldUserNumberCharacteristic = 1337
-EquationsSetFieldUserNumberNavierStokes   = 1338
-EquationsSetFieldUserNumberAdvection      = 1339
 
-CoordinateSystemUserNumber = 1
-BasisUserNumberSpace       = 2
-BasisUserNumberTime        = 3
-RegionUserNumber           = 4
-RegionUserNumber2          = 5
-MeshUserNumber             = 6
-MeshUserNumber2            = 7
-DecompositionUserNumber    = 8
-DecompositionUserNumber2   = 9
-GeometricFieldUserNumber   = 10
-GeometricFieldUserNumber2  = 11
-DependentFieldUserNumber   = 12
-DependentFieldUserNumber2  = 13
-DependentFieldUserNumber3  = 14
-MaterialsFieldUserNumber   = 15
-MaterialsFieldUserNumber2  = 16
-IndependentFieldUserNumber = 17
-EquationsSetUserNumberStree          = 18
-EquationsSetUserNumberCharacteristic = 19
-EquationsSetUserNumberNavierStokes   = 20
-EquationsSetUserNumberAdvection      = 21
-ProblemUserNumber                    = 22
-CellMLUserNumber                     = 23
-CellMLModelsFieldUserNumber          = 24
-CellMLStateFieldUserNumber           = 25
-CellMLIntermediateFieldUserNumber    = 26
-CellMLParametersFieldUserNumber      = 27
-MaterialsFieldUserNumberCellML       = 28
-AnalyticFieldUserNumber              = 29
+CoordinateSystemUserNumber                = 1
+BasisUserNumberSpace                      = 2
+BasisUserNumberTime                       = 3
+RegionUserNumber                          = 4
+RegionUserNumber2                         = 5
+MeshUserNumber                            = 6
+MeshUserNumber2                           = 7
+DecompositionUserNumber                   = 8
+DecompositionUserNumber2                  = 9
+GeometricFieldUserNumber                  = 10
+GeometricFieldUserNumber2                 = 11
+EquationsSetFieldUserNumberStree          = 12
+EquationsSetFieldUserNumberCharacteristic = 13
+EquationsSetFieldUserNumberNavierStokes   = 14
+EquationsSetFieldUserNumberAdvection      = 15
+DependentFieldUserNumber                  = 16
+DependentFieldUserNumber2                 = 17
+DependentFieldUserNumber3                 = 18
+MaterialsFieldUserNumber                  = 19
+MaterialsFieldUserNumber2                 = 20
+IndependentFieldUserNumber                = 21
+EquationsSetUserNumberStree               = 22
+EquationsSetUserNumberCharacteristic      = 23
+EquationsSetUserNumberNavierStokes        = 24
+EquationsSetUserNumberAdvection           = 25
+ProblemUserNumber                         = 26
+CellMLUserNumber                          = 27
+CellMLModelsFieldUserNumber               = 28
+CellMLStateFieldUserNumber                = 29
+CellMLIntermediateFieldUserNumber         = 30
+CellMLParametersFieldUserNumber           = 31
+MaterialsFieldUserNumberCellML            = 32
+AnalyticFieldUserNumber                   = 33
 # Solver user numbers
-SolverDAEUserNumber            = 1
-SolverStreeUserNumber          = 1
-SolverCharacteristicUserNumber = 2
-SolverNavierStokesUserNumber   = 3
-SolverAdvectionUserNumber      = 4
+SolverDAEUserNumber                       = 1
+SolverStreeUserNumber                     = 1
+SolverCharacteristicUserNumber            = 2
+SolverNavierStokesUserNumber              = 3
+SolverAdvectionUserNumber                 = 4
 # Materials constants
-MaterialsFieldUserNumberMu    = 1
-MaterialsFieldUserNumberRho   = 2
-MaterialsFieldUserNumberAlpha = 3
-MaterialsFieldUserNumberPext  = 4
-MaterialsFieldUserNumberLs    = 5
-MaterialsFieldUserNumberTs    = 6
-MaterialsFieldUserNumberMs    = 7
-MaterialsFieldUserNumberG0    = 8
-MaterialsFieldUserNumberD     = 1
+MaterialsFieldUserNumberMu                = 1
+MaterialsFieldUserNumberRho               = 2
+MaterialsFieldUserNumberAlpha             = 3
+MaterialsFieldUserNumberPext              = 4
+MaterialsFieldUserNumberLs                = 5
+MaterialsFieldUserNumberTs                = 6
+MaterialsFieldUserNumberMs                = 7
+MaterialsFieldUserNumberG0                = 8
+MaterialsFieldUserNumberD                 = 1
 # Materials variables
-MaterialsFieldUserNumberA0    = 1
-MaterialsFieldUserNumberE     = 2
-MaterialsFieldUserNumberH     = 3
+MaterialsFieldUserNumberA0                = 1
+MaterialsFieldUserNumberE                 = 2
+MaterialsFieldUserNumberH                 = 3
 
 #================================================================================================================================
-#  Initialise OpenCMISS-Iron
+#  Initialise OpenCMISS
 #================================================================================================================================
 
 # Import the libraries (OpenCMISS,python,numpy,scipy)
@@ -387,52 +387,52 @@ couplingTolerance1D0D = 0.001
 if (RCRBoundaries or Heart):
     if (coupledAdvection):
         # Navier-Stokes solver
-        EquationsSetSubtype = iron.EquationsSetSubtypes.Coupled1D0DAdv_NAVIER_STOKES
+        EquationsSetSubtype = iron.EquationsSetSubtypes.COUPLED1D0D_ADV_NAVIER_STOKES
         # Characteristic solver
-        EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.Coupled1D0D_CHARACTERISTIC
+        EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.CHARACTERISTIC
         # Advection solver
         EquationsSetAdvectionSubtype = iron.EquationsSetSubtypes.ADVECTION
-        ProblemSubtype = iron.ProblemSubTypes.Coupled1D0DAdv_NAVIER_STOKES
+        ProblemSubtype = iron.ProblemSubtypes.COUPLED1D0D_ADV_NAVIER_STOKES
     else:
         # Navier-Stokes solver
-        EquationsSetSubtype = iron.EquationsSetSubtypes.Coupled1D0D_NAVIER_STOKES
+        EquationsSetSubtype = iron.EquationsSetSubtypes.COUPLED1D0D_NAVIER_STOKES
         # Characteristic solver
-        EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.Coupled1D0D_CHARACTERISTIC
-        ProblemSubtype = iron.ProblemSubTypes.Coupled1D0D_NAVIER_STOKES
+        EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.CHARACTERISTIC
+        ProblemSubtype = iron.ProblemSubtypes.COUPLED1D0D_ADV_NAVIER_STOKES
 elif (streeBoundaries):
     if (coupledAdvection):
         # Navier-Stokes solver
-        EquationsSetSubtype = iron.EquationsSetSubtypes.Coupled1D0DAdv_NAVIER_STOKES
+        EquationsSetSubtype = iron.EquationsSetSubtypes.COUPLED1D0D_ADV_NAVIER_STOKES
         # Characteristic solver
-        EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.Coupled1D0D_CHARACTERISTIC
+        EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.CHARACTERISTIC
         # Stree solver
-        EquationsSetStreeSubtype = iron.EquationsSetSubtypes.Stree1D0DAdv
+        EquationsSetStreeSubtype = iron.EquationsSetSubtypes.STREE1D0D_ADV
         # Advection solver
         EquationsSetAdvectionSubtype = iron.EquationsSetSubtypes.ADVECTION
-        ProblemSubtype = iron.ProblemSubTypes.Stree1D0DAdv_NAVIER_STOKES
+        ProblemSubtype = iron.ProblemSubtypes.Stree1D0DAdv_NAVIER_STOKES
     else:
         # Navier-Stokes solver
         EquationsSetSubtype = iron.EquationsSetSubtypes.Coupled1D0D_NAVIER_STOKES
         # Characteristic solver
-        EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.Coupled1D0D_CHARACTERISTIC
+        EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.CHARACTERISTIC
         # Stree solver
-        EquationsSetStreeSubtype = iron.EquationsSetSubtypes.Stree1D0D
-        ProblemSubtype = iron.ProblemSubTypes.Stree1D0D_NAVIER_STOKES
+        EquationsSetStreeSubtype = iron.EquationsSetSubtypes.STREE1D0D
+        ProblemSubtype = iron.ProblemSubtypes.Stree1D0D_NAVIER_STOKES
 else:
     if (coupledAdvection):
         # Navier-Stokes solver
         EquationsSetSubtype = iron.EquationsSetSubtypes.OnedTransientAdv_NAVIER_STOKES
         # Characteristic solver
-        EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.Coupled1D0D_CHARACTERISTIC
+        EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.CHARACTERISTIC
         # Advection solver
         EquationsSetAdvectionSubtype = iron.EquationsSetSubtypes.ADVECTION
-        ProblemSubtype = iron.ProblemSubTypes.OnedTransientAdv_NAVIER_STOKES
+        ProblemSubtype = iron.ProblemSubtypes.TRANSIENT1D_ADV_NAVIER_STOKES
     else:
         # Navier-Stokes solver
-        EquationsSetSubtype = iron.EquationsSetSubtypes.OnedTransient_NAVIER_STOKES
+        EquationsSetSubtype = iron.EquationsSetSubtypes.TRANSIENT1D_NAVIER_STOKES
         # Characteristic solver
-        EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.Coupled1D0D_CHARACTERISTIC
-        ProblemSubtype = iron.ProblemSubTypes.OnedTransient_NAVIER_STOKES
+        EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.CHARACTERISTIC
+        ProblemSubtype = iron.ProblemSubtypes.TRANSIENT1D_NAVIER_STOKES
 
 #================================================================================================================================
 #  Coordinate System
@@ -712,18 +712,22 @@ if (streeBoundaries):
 EquationsSetCharacteristic = iron.EquationsSet()
 EquationsSetFieldCharacteristic = iron.Field()
 # Set the equations set to be a static nonlinear problem
+CharacteristicEquationsSetSpecification = [iron.EquationsSetClasses.FLUID_MECHANICS,
+					iron.EquationsSetTypes.CHARACTERISTIC_EQUATION,
+					EquationsSetCharacteristicSubtype]
 EquationsSetCharacteristic.CreateStart(EquationsSetUserNumberCharacteristic,Region,GeometricField,
-    iron.EquationsSetClasses.FLUID_MECHANICS,iron.EquationsSetTypes.CHARACTERISTIC_EQUATION,
-     EquationsSetCharacteristicSubtype,EquationsSetFieldUserNumberCharacteristic,EquationsSetFieldCharacteristic)
+    CharacteristicEquationsSetSpecification,EquationsSetFieldUserNumberCharacteristic,EquationsSetFieldCharacteristic)
 EquationsSetCharacteristic.CreateFinish()
 
 # Create the equations set for NAVIER-STOKES
 EquationsSetNavierStokes = iron.EquationsSet()
 EquationsSetFieldNavierStokes = iron.Field()
 # Set the equations set to be a dynamic nonlinear problem
+NavierStokesEquationsSetSpecification = [iron.EquationsSetClasses.FLUID_MECHANICS,
+				      iron.EquationsSetTypes.NAVIER_STOKES_EQUATION,
+				      EquationsSetSubtype]
 EquationsSetNavierStokes.CreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField,
-    iron.EquationsSetClasses.FLUID_MECHANICS,iron.EquationsSetTypes.NAVIER_STOKES_EQUATION,
-     EquationsSetSubtype,EquationsSetFieldUserNumberNavierStokes,EquationsSetFieldNavierStokes)
+    NavierStokesEquationsSetSpecification,EquationsSetFieldUserNumberNavierStokes,EquationsSetFieldNavierStokes)
 EquationsSetNavierStokes.CreateFinish()
 
 #------------------
@@ -733,9 +737,11 @@ if (coupledAdvection):
     EquationsSetAdvection = iron.EquationsSet()
     EquationsSetFieldAdvection = iron.Field()
     # Set the equations set to be a dynamic linear problem
+    AdvectionEquationsSetSpecification = [iron.EquationsSetClasses.CLASSICAL_FIELD,
+    				       iron.EquationsSetTypes.ADVECTION_EQUATION,
+				       EquationsSetAdvectionSubtype]
     EquationsSetAdvection.CreateStart(EquationsSetUserNumberAdvection,Region,GeometricField,
-        iron.EquationsSetClasses.CLASSICAL_FIELD,iron.EquationsSetTypes.ADVECTION_EQUATION,
-         EquationsSetAdvectionSubtype,EquationsSetFieldUserNumberAdvection,EquationsSetFieldAdvection)
+        AdvectionEquationsSetSpecification,EquationsSetFieldUserNumberAdvection,EquationsSetFieldAdvection)
     EquationsSetAdvection.CreateFinish()
 
 #================================================================================================================================
@@ -1023,7 +1029,7 @@ if (ProgressDiagnostics):
     print " == >> ANALYTIC FIELD << == "
 
 AnalyticFieldNavierStokes = iron.Field()
-EquationsSetNavierStokes.AnalyticCreateStart(iron.NavierStokesAnalyticFunctionTypes.FlowrateAorta,AnalyticFieldUserNumber,
+EquationsSetNavierStokes.AnalyticCreateStart(iron.NavierStokesAnalyticFunctionTypes.FLOWRATE_AORTA,AnalyticFieldUserNumber,
  AnalyticFieldNavierStokes) # SplintFromFile,FlowrateAorta,FlowrateOlufsen
 AnalyticFieldNavierStokes.VariableLabelSet(iron.FieldVariableTypes.U,'Input Flow')
 EquationsSetNavierStokes.AnalyticCreateFinish()
@@ -1270,9 +1276,10 @@ if (ProgressDiagnostics):
 
 # Start the creation of a problem.
 Problem = iron.Problem()
-Problem.CreateStart(ProblemUserNumber)
-Problem.SpecificationSet(iron.ProblemClasses.FLUID_MECHANICS,
- iron.ProblemTypes.NAVIER_STOKES_EQUATION,ProblemSubtype)    
+ProblemSpecification = [iron.ProblemClasses.FLUID_MECHANICS,
+		     iron.ProblemTypes.NAVIER_STOKES_EQUATION,
+		     ProblemSubtype]
+Problem.CreateStart(ProblemUserNumber,ProblemSpecification)
 Problem.CreateFinish()
 
 #================================================================================================================================

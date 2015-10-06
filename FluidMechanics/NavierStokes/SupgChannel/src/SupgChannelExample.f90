@@ -56,7 +56,7 @@ PROGRAM SupgChannel
 
   !PROGRAM LIBRARIES
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE FIELDML_API
   USE MPI
 
@@ -73,21 +73,18 @@ PROGRAM SupgChannel
 
   IMPLICIT NONE
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(cmfe_FieldType) :: EquationsSetField
-
-
   !Test program parameters
   INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
   INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=3
   INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=4
   INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldUserNumberNavierStokes=8
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberNavierStokes=9
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=10
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=6
+  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=7
+  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=8
+  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldUserNumberNavierStokes=9
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberNavierStokes=10
+  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=11
 
   INTEGER(CMFEIntg), PARAMETER :: DomainUserNumber=2
   INTEGER(CMFEIntg), PARAMETER :: SolverNavierStokesUserNumber=1
@@ -168,11 +165,9 @@ PROGRAM SupgChannel
   TYPE(cmfe_DecompositionType) :: Decomposition
   !Field types
   TYPE(cmfe_FieldType) :: GeometricField
+  TYPE(cmfe_FieldType) :: EquationsSetField
   TYPE(cmfe_FieldType) :: DependentField
   TYPE(cmfe_FieldType) :: MaterialsField
-
-
-
   !Boundary conditions
   TYPE(cmfe_BoundaryConditionsType) :: BoundaryConditionsNavierStokes
   !Equations sets

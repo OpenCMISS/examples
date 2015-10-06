@@ -49,7 +49,7 @@
 !> Main program
 PROGRAM STATICADVECTIONDIFFUSIONSUPGEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 
@@ -58,10 +58,6 @@ PROGRAM STATICADVECTIONDIFFUSIONSUPGEXAMPLE
 #endif
 
   IMPLICIT NONE
-
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(cmfe_FieldType) :: EquationsSetField
-
 
   !Test program parameters
 
@@ -77,14 +73,15 @@ PROGRAM STATICADVECTIONDIFFUSIONSUPGEXAMPLE
   INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
   INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
   INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=11
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=10
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=11
+  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=12
   INTEGER(CMFEIntg), PARAMETER :: ControlLoopNode=0
-  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldUserNumber=12
-  INTEGER(CMFEIntg), PARAMETER :: AnalyticFieldUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: SourceFieldUserNumber=14
+  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldUserNumber=13
+  INTEGER(CMFEIntg), PARAMETER :: AnalyticFieldUserNumber=14
+  INTEGER(CMFEIntg), PARAMETER :: SourceFieldUserNumber=15
 
 
   !Program types
@@ -104,7 +101,7 @@ PROGRAM STATICADVECTIONDIFFUSIONSUPGEXAMPLE
   TYPE(cmfe_DecompositionType) :: Decomposition
   TYPE(cmfe_EquationsType) :: Equations
   TYPE(cmfe_EquationsSetType) :: EquationsSet
-  TYPE(cmfe_FieldType) :: GeometricField,DependentField,MaterialsField,IndependentField,AnalyticField,SourceField
+  TYPE(cmfe_FieldType) :: GeometricField,EquationsSetField,DependentField,MaterialsField,IndependentField,AnalyticField,SourceField
   TYPE(cmfe_FieldsType) :: Fields
   TYPE(cmfe_GeneratedMeshType) :: GeneratedMesh  
   TYPE(cmfe_MeshType) :: Mesh
@@ -154,70 +151,70 @@ PROGRAM STATICADVECTIONDIFFUSIONSUPGEXAMPLE
   CALL MPI_BCAST(NUMBER_GLOBAL_Z_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
   CALL MPI_BCAST(NUMBER_OF_DOMAINS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
 
-    !Start the creation of a new RC coordinate system
-    CALL cmfe_CoordinateSystem_Initialise(CoordinateSystem,Err)
-    CALL cmfe_CoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
-    IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-      !Set the coordinate system to be 2D
-      CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystem,2,Err)
-    ELSE
-      !Set the coordinate system to be 3D
-      CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystem,3,Err)
-    ENDIF
-    !Finish the creation of the coordinate system
-    CALL cmfe_CoordinateSystem_CreateFinish(CoordinateSystem,Err)
-
-
-    !Start the creation of the region
-    CALL cmfe_Region_Initialise(Region,Err)
-    CALL cmfe_Region_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
-    !Set the regions coordinate system to the 2D RC coordinate system that we have created
-    CALL cmfe_Region_CoordinateSystemSet(Region,CoordinateSystem,Err)
-    !Finish the creation of the region
-    CALL cmfe_Region_CreateFinish(Region,Err)
-
-    !Start the creation of a basis (default is trilinear lagrange)
-    CALL cmfe_Basis_Initialise(Basis,Err)
-    CALL cmfe_Basis_CreateStart(BasisUserNumber,Basis,Err)
-    IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-      !Set the basis to be a bilinear Lagrange basis
-      CALL cmfe_Basis_NumberOfXiSet(Basis,2,Err)
-    ELSE
-      !Set the basis to be a trilinear Lagrange basis
-      CALL cmfe_Basis_NumberOfXiSet(Basis,3,Err)
-    ENDIF
-    !Finish the creation of the basis
-    CALL cmfe_Basis_CreateFinish(BASIS,Err)
-
-    !Start the creation of a generated mesh in the region
-    CALL cmfe_GeneratedMesh_Initialise(GeneratedMesh,Err)
-    CALL cmfe_GeneratedMesh_CreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
-    !Set up a regular x*y*z mesh
-    CALL cmfe_GeneratedMesh_TypeSet(GeneratedMesh,CMFE_GENERATED_MESH_REGULAR_MESH_TYPE,Err)
-    !Set the default basis
-    CALL cmfe_GeneratedMesh_BasisSet(GeneratedMesh,Basis,Err)   
-    !Define the mesh on the region
-    IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-      CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,(/WIDTH,HEIGHT/),Err)
-      CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS/),Err)
-    ELSE
-      CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,(/WIDTH,HEIGHT,LENGTH/),Err)
-      CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
-        & NUMBER_GLOBAL_Z_ELEMENTS/),Err)
-    ENDIF    
-    !Finish the creation of a generated mesh in the region
-    CALL cmfe_Mesh_Initialise(Mesh,Err)
-    CALL cmfe_GeneratedMesh_CreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
-
-    !Create a decomposition
-    CALL cmfe_Decomposition_Initialise(Decomposition,Err)
-    CALL cmfe_Decomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
-    !Set the decomposition to be a general decomposition with the specified number of domains
-    CALL cmfe_Decomposition_TypeSet(Decomposition,CMFE_DECOMPOSITION_CALCULATED_TYPE,Err)
-    CALL cmfe_Decomposition_NumberOfDomainsSet(Decomposition,NUMBER_OF_DOMAINS,Err)
-    !Finish the decomposition
-    CALL cmfe_Decomposition_CreateFinish(Decomposition,Err)
-
+  !Start the creation of a new RC coordinate system
+  CALL cmfe_CoordinateSystem_Initialise(CoordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+    !Set the coordinate system to be 2D
+    CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystem,2,Err)
+  ELSE
+    !Set the coordinate system to be 3D
+    CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystem,3,Err)
+  ENDIF
+  !Finish the creation of the coordinate system
+  CALL cmfe_CoordinateSystem_CreateFinish(CoordinateSystem,Err)
+  
+  
+  !Start the creation of the region
+  CALL cmfe_Region_Initialise(Region,Err)
+  CALL cmfe_Region_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  !Set the regions coordinate system to the 2D RC coordinate system that we have created
+  CALL cmfe_Region_CoordinateSystemSet(Region,CoordinateSystem,Err)
+  !Finish the creation of the region
+  CALL cmfe_Region_CreateFinish(Region,Err)
+  
+  !Start the creation of a basis (default is trilinear lagrange)
+  CALL cmfe_Basis_Initialise(Basis,Err)
+  CALL cmfe_Basis_CreateStart(BasisUserNumber,Basis,Err)
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+    !Set the basis to be a bilinear Lagrange basis
+    CALL cmfe_Basis_NumberOfXiSet(Basis,2,Err)
+  ELSE
+    !Set the basis to be a trilinear Lagrange basis
+    CALL cmfe_Basis_NumberOfXiSet(Basis,3,Err)
+  ENDIF
+  !Finish the creation of the basis
+  CALL cmfe_Basis_CreateFinish(BASIS,Err)
+  
+  !Start the creation of a generated mesh in the region
+  CALL cmfe_GeneratedMesh_Initialise(GeneratedMesh,Err)
+  CALL cmfe_GeneratedMesh_CreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
+  !Set up a regular x*y*z mesh
+  CALL cmfe_GeneratedMesh_TypeSet(GeneratedMesh,CMFE_GENERATED_MESH_REGULAR_MESH_TYPE,Err)
+  !Set the default basis
+  CALL cmfe_GeneratedMesh_BasisSet(GeneratedMesh,Basis,Err)   
+  !Define the mesh on the region
+  IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
+    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[WIDTH,HEIGHT],Err)
+    CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS],Err)
+  ELSE
+    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[WIDTH,HEIGHT,LENGTH],Err)
+    CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
+      & NUMBER_GLOBAL_Z_ELEMENTS],Err)
+  ENDIF
+  !Finish the creation of a generated mesh in the region
+  CALL cmfe_Mesh_Initialise(Mesh,Err)
+  CALL cmfe_GeneratedMesh_CreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
+  
+  !Create a decomposition
+  CALL cmfe_Decomposition_Initialise(Decomposition,Err)
+  CALL cmfe_Decomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
+  !Set the decomposition to be a general decomposition with the specified number of domains
+  CALL cmfe_Decomposition_TypeSet(Decomposition,CMFE_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL cmfe_Decomposition_NumberOfDomainsSet(Decomposition,NUMBER_OF_DOMAINS,Err)
+  !Finish the decomposition
+  CALL cmfe_Decomposition_CreateFinish(Decomposition,Err)
+  
   !Start to create a default (geometric) field on the region
   CALL cmfe_Field_Initialise(GeometricField,Err)
   CALL cmfe_Field_CreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
@@ -233,9 +230,9 @@ PROGRAM STATICADVECTIONDIFFUSIONSUPGEXAMPLE
   CALL cmfe_Field_CreateFinish(GeometricField,Err)
 
        
-    !Update the geometric field parameters
-    CALL cmfe_GeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
-!  ENDIF
+  !Update the geometric field parameters
+  CALL cmfe_GeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
+  !  ENDIF
 
   !IF(.NOT.ASSOCIATED(GEOMETRIC_FIELD)) GEOMETRIC_FIELD=>REGION%FIELDS%FIELDS(1)%PTR
   
@@ -398,16 +395,16 @@ PROGRAM STATICADVECTIONDIFFUSIONSUPGEXAMPLE
   CALL cmfe_SolverEquations_EquationsSetAdd(SolverEquations,EquationsSet,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
   CALL cmfe_Problem_SolverEquationsCreateFinish(Problem,Err)
-CALL cmfe_BoundaryConditions_Initialise(BoundaryConditions,Err)
-CALL cmfe_SolverEquations_BoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
-CALL cmfe_SolverEquations_BoundaryConditionsAnalytic(SolverEquations,Err)
-CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
-
+  CALL cmfe_BoundaryConditions_Initialise(BoundaryConditions,Err)
+  CALL cmfe_SolverEquations_BoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+  CALL cmfe_SolverEquations_BoundaryConditionsAnalytic(SolverEquations,Err)
+  CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
+  
   !Solve the problem
   CALL cmfe_Problem_Solve(Problem,Err)
 
  !Output Analytic analysis
-  Call cmfe_AnalyticAnalysisOutput(DependentField,"StaticAdvectionDiffusionSUPGAnalytics",Err)
+  Call cmfe_AnalyticAnalysis_Output(DependentField,"StaticAdvectionDiffusionSUPGAnalytics",Err)
 
   EXPORT_FIELD=.TRUE.
   IF(EXPORT_FIELD) THEN

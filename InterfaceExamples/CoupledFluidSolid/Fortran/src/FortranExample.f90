@@ -49,7 +49,7 @@
 !> Main program
 PROGRAM FortranExample
 
-  USE OpenCMISS_Fe
+  USE OpenCMISS_Iron
   USE MPI
 
 #ifdef WIN32
@@ -340,15 +340,15 @@ PROGRAM FortranExample
   MaximumIterations=100000000 !default: 100000
   MaxFunctionEvaluations=100000
   RestartValue=30 !default: 30
-  LinesearchAlpha=1.0_CMISSDP
+  LinesearchAlpha=1.0_CMFEDP
   MovingMeshParameterK=1.0 !default
-  DynamicSolver_Theta=1.0_CMISSDP
-  StartTime=0.0_CMISSDP
-  StopTime=2000.0_CMISSDP
-  TimeStepSize=1.0_CMISSDP
+  DynamicSolver_Theta=1.0_CMFEDP
+  StartTime=0.0_CMFEDP
+  StopTime=2000.0_CMFEDP
+  TimeStepSize=1.0_CMFEDP
   IF(MaterialSpecification==Plate2D) THEN
-    StopTime=0.1_CMISSDP
-    TimeStepSize=0.05_CMISSDP
+    StopTime=0.1_CMFEDP
+    TimeStepSize=0.05_CMFEDP
   ENDIF
   
   !Material properties
@@ -360,25 +360,25 @@ PROGRAM FortranExample
   YoungsModulus=2.3E4! Pa
   PoissonsRatio=0.49
   !Neo-Hookean material law
-  ShearModulus=YoungsModulus/(2.0_CMISSDP*(1.0_CMISSDP+PoissonsRatio)) ! N/m2
-  BulkModulus=YoungsModulus/(3.0_CMISSDP*(1.0_CMISSDP-2.0_CMISSDP*PoissonsRatio))
-  !MooneyRivlin1=0.5_CMISSDP*ShearModulus ! N/m2
-  MooneyRivlin1=0.0595_CMISSDP
-  MooneyRivlin2=0.0_CMISSDP
+  ShearModulus=YoungsModulus/(2.0_CMFEDP*(1.0_CMFEDP+PoissonsRatio)) ! N/m2
+  BulkModulus=YoungsModulus/(3.0_CMFEDP*(1.0_CMFEDP-2.0_CMFEDP*PoissonsRatio))
+  !MooneyRivlin1=0.5_CMFEDP*ShearModulus ! N/m2
+  MooneyRivlin1=0.0595_CMFEDP
+  MooneyRivlin2=0.0_CMFEDP
    
   !Set geometric dimension n gravity
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
     NumberOfDimensions=2
     ALLOCATE(Gravity(NumberOfDimensions))
-    Gravity(:)=[0.0_CMISSDP,9.81_CMISSDP] ! m/s2
+    Gravity(:)=[0.0_CMFEDP,9.81_CMFEDP] ! m/s2
   CASE(Plate3D)
     NumberOfDimensions=3
     CheckWithoutInterfaceCondition=.FALSE.!if set to true we remove all Lagrange field dofs by setting them as zero dirichlet BC
     IF(CheckWithoutInterfaceCondition) THEN
       GravityFlag=.TRUE.
       ALLOCATE(Gravity(NumberOfDimensions))
-      Gravity(:)=[0.0_CMISSDP,9.81_CMISSDP,0.0_CMISSDP] ! m/s2
+      Gravity(:)=[0.0_CMFEDP,9.81_CMFEDP,0.0_CMFEDP] ! m/s2
     ENDIF
   END SELECT
     
@@ -2158,7 +2158,7 @@ PROGRAM FortranExample
   !Finialise CMISS
   CALL cmfe_Finalise(Err)
 
-  e=etime(t)/60.0_CMISSSP
+  e=etime(t)/60.0_CMFEDP
   PRINT *, "Program successfully completed in ",e," minutes."
   
   STOP

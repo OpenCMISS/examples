@@ -57,7 +57,7 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
 
   !PROGRAM LIBRARIES
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE FLUID_MECHANICS_IO_ROUTINES
   USE MPI
 
@@ -73,10 +73,6 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
 
   IMPLICIT NONE
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(cmfe_FieldType) :: EquationsSetField
-
-
   !Test program parameters
 
   INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -84,12 +80,13 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=3
   INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=4
   INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumberNavierStokes=6
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokes=7
-  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldUserNumberNavierStokes=8
-  INTEGER(CMFEIntg), PARAMETER :: AnalyticFieldUserNumberNavierStokes=9
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberNavierStokes=10
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=11
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=6
+  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumberNavierStokes=7
+  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokes=8
+  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldUserNumberNavierStokes=9
+  INTEGER(CMFEIntg), PARAMETER :: AnalyticFieldUserNumberNavierStokes=10
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberNavierStokes=11
+  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=12
 
   INTEGER(CMFEIntg), PARAMETER :: DomainUserNumber=2
   INTEGER(CMFEIntg), PARAMETER :: SolverNavierStokesUserNumber=1
@@ -193,6 +190,7 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   TYPE(cmfe_FieldsType) :: Fields
   !Field types
   TYPE(cmfe_FieldType) :: GeometricField
+  TYPE(cmfe_FieldType) :: EquationsSetField
   TYPE(cmfe_FieldType) :: DependentFieldNavierStokes
   TYPE(cmfe_FieldType) :: MaterialsFieldNavierStokes
   TYPE(cmfe_FieldType) :: AnalyticFieldNavierStokes
@@ -395,17 +393,17 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   CALL cmfe_Basis_NumberOfXiSet(BasisSpace,NUMBER_OF_DIMENSIONS,Err)
   !Set the basis xi interpolation and number of Gauss points
   IF(NUMBER_OF_DIMENSIONS==2) THEN
-    CALL cmfe_Basis_InterpolationXiSet(BasisSpace,(/BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE/),Err)
+    CALL cmfe_Basis_InterpolationXiSet(BasisSpace,[BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE],Err)
     IF(BASIS_TYPE/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace,(/BASIS_GAUSS_SPACE,BASIS_GAUSS_SPACE/),Err)
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace,[BASIS_GAUSS_SPACE,BASIS_GAUSS_SPACE],Err)
     ELSE
       CALL cmfe_Basis_QuadratureOrderSet(BasisSpace,BASIS_GAUSS_SPACE+1,Err)
     ENDIF
   ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-    CALL cmfe_Basis_InterpolationXiSet(BasisSpace,(/BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE, & 
-      & BASIS_XI_INTERPOLATION_SPACE/),Err)                         
+    CALL cmfe_Basis_InterpolationXiSet(BasisSpace,[BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE, & 
+      & BASIS_XI_INTERPOLATION_SPACE],Err)                         
     IF(BASIS_TYPE/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace,(/BASIS_GAUSS_SPACE,BASIS_GAUSS_SPACE,BASIS_GAUSS_SPACE/), & 
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace,[BASIS_GAUSS_SPACE,BASIS_GAUSS_SPACE,BASIS_GAUSS_SPACE], & 
         & Err)
     ELSE
       CALL cmfe_Basis_QuadratureOrderSet(BasisSpace,BASIS_GAUSS_SPACE+1,Err)
@@ -428,18 +426,18 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
     CALL cmfe_Basis_NumberOfXiSet(BasisVelocity,NUMBER_OF_DIMENSIONS,Err)
     !Set the basis xi interpolation and number of Gauss points
     IF(NUMBER_OF_DIMENSIONS==2) THEN
-      CALL cmfe_Basis_InterpolationXiSet(BasisVelocity,(/BASIS_XI_INTERPOLATION_VELOCITY,BASIS_XI_INTERPOLATION_VELOCITY/),Err)
+      CALL cmfe_Basis_InterpolationXiSet(BasisVelocity,[BASIS_XI_INTERPOLATION_VELOCITY,BASIS_XI_INTERPOLATION_VELOCITY],Err)
       IF(BASIS_TYPE/=CMFE_BASIS_SIMPLEX_TYPE) THEN 
-        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisVelocity,(/BASIS_GAUSS_VELOCITY,BASIS_GAUSS_VELOCITY/),Err)
+        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisVelocity,[BASIS_GAUSS_VELOCITY,BASIS_GAUSS_VELOCITY],Err)
       ELSE
         CALL cmfe_Basis_QuadratureOrderSet(BasisVelocity,BASIS_GAUSS_VELOCITY+1,Err)
       ENDIF
     ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-      CALL cmfe_Basis_InterpolationXiSet(BasisVelocity,(/BASIS_XI_INTERPOLATION_VELOCITY,BASIS_XI_INTERPOLATION_VELOCITY, & 
-        & BASIS_XI_INTERPOLATION_VELOCITY/),Err)                         
+      CALL cmfe_Basis_InterpolationXiSet(BasisVelocity,[BASIS_XI_INTERPOLATION_VELOCITY,BASIS_XI_INTERPOLATION_VELOCITY, & 
+        & BASIS_XI_INTERPOLATION_VELOCITY],Err)                         
       IF(BASIS_TYPE/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisVelocity,(/BASIS_GAUSS_VELOCITY,BASIS_GAUSS_VELOCITY, & 
-          & BASIS_GAUSS_VELOCITY/),Err)
+        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisVelocity,[BASIS_GAUSS_VELOCITY,BASIS_GAUSS_VELOCITY, & 
+          & BASIS_GAUSS_VELOCITY],Err)
       ELSE
         CALL cmfe_Basis_QuadratureOrderSet(BasisVelocity,BASIS_GAUSS_VELOCITY+1,Err)
       ENDIF
@@ -464,18 +462,18 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
     CALL cmfe_Basis_NumberOfXiSet(BasisPressure,NUMBER_OF_DIMENSIONS,Err)
     !Set the basis xi interpolation and number of Gauss points
     IF(NUMBER_OF_DIMENSIONS==2) THEN
-      CALL cmfe_Basis_InterpolationXiSet(BasisPressure,(/BASIS_XI_INTERPOLATION_PRESSURE,BASIS_XI_INTERPOLATION_PRESSURE/),Err)
+      CALL cmfe_Basis_InterpolationXiSet(BasisPressure,[BASIS_XI_INTERPOLATION_PRESSURE,BASIS_XI_INTERPOLATION_PRESSURE],Err)
       IF(BASIS_TYPE/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisPressure,(/BASIS_GAUSS_PRESSURE,BASIS_GAUSS_PRESSURE/),Err)
+        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisPressure,[BASIS_GAUSS_PRESSURE,BASIS_GAUSS_PRESSURE],Err)
       ELSE
         CALL cmfe_Basis_QuadratureOrderSet(BasisPressure,BASIS_GAUSS_PRESSURE+1,Err)
       ENDIF
     ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-      CALL cmfe_Basis_InterpolationXiSet(BasisPressure,(/BASIS_XI_INTERPOLATION_PRESSURE,BASIS_XI_INTERPOLATION_PRESSURE, & 
-        & BASIS_XI_INTERPOLATION_PRESSURE/),Err)                         
+      CALL cmfe_Basis_InterpolationXiSet(BasisPressure,[BASIS_XI_INTERPOLATION_PRESSURE,BASIS_XI_INTERPOLATION_PRESSURE, & 
+        & BASIS_XI_INTERPOLATION_PRESSURE],Err)                         
       IF(BASIS_TYPE/=CMFE_BASIS_SIMPLEX_TYPE) THEN
-        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisPressure,(/BASIS_GAUSS_PRESSURE,BASIS_GAUSS_PRESSURE, & 
-          & BASIS_GAUSS_PRESSURE/),Err)
+        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisPressure,[BASIS_GAUSS_PRESSURE,BASIS_GAUSS_PRESSURE, & 
+          & BASIS_GAUSS_PRESSURE],Err)
       ELSE
         CALL cmfe_Basis_QuadratureOrderSet(BasisPressure,BASIS_GAUSS_PRESSURE+1,Err)
       ENDIF

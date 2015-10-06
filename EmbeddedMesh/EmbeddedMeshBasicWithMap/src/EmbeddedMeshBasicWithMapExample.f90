@@ -19,7 +19,7 @@
 !> License for the specific language governing rights and limitations
 !> under the License.
 !>
-!> The Original Code is openCMISS
+!> The Original Code is OpenCMISS
 !>
 !> The Initial Developer of the Original Code is University of Auckland,
 !> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -45,12 +45,10 @@
 !> Main program
 PROGRAM EMBEDDEDMESHEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
   IMPLICIT NONE
-
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
   
   !Test program parameters
 
@@ -72,7 +70,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   INTEGER(CMFEIntg), PARAMETER :: DecompositionTwoUserNumber=11
   INTEGER(CMFEIntg), PARAMETER :: GeometricFieldOneUserNumber=13
   INTEGER(CMFEIntg), PARAMETER :: GeometricFieldTwoUserNumber=14
-  !INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
   INTEGER(CMFEIntg), PARAMETER :: DependentFieldOneUserNumber=15
   INTEGER(CMFEIntg), PARAMETER :: DependentFieldTwoUserNumber=16
   !INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=10
@@ -110,7 +108,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   REAL(CMFEDP) :: MaximumIterationUpdateSet=0.4_CMFEDP !default is 0.5
   INTEGER(CMFEIntg) :: NumberOfClosestElementsSet=3 !default is 2/4/8 for 1/2/3 dimensional projection 
   INTEGER(CMFEIntg) :: ProjectionTypeSet=CMFE_DATA_PROJECTION_ALL_ELEMENTS_PROJECTION_TYPE !same as default
-  REAL(CMFEDP) :: StartingXiSet(3)=(/0.5_CMFEDP,0.5_CMFEDP,0.5_CMFEDP/) !default is 0.5
+  REAL(CMFEDP) :: StartingXiSet(3)=[0.5_CMFEDP,0.5_CMFEDP,0.5_CMFEDP] !default is 0.5
   REAL(CMFEDP) :: AbsoluteToleranceGet
   REAL(CMFEDP) :: RelativeToleranceGet
   INTEGER(CMFEIntg) :: MaximumNumberOfIterationsGet
@@ -157,16 +155,16 @@ PROGRAM EMBEDDEDMESHEXAMPLE
  !======================================
   !Intialise data points
 
-!   DataPointValues(1,:)=(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/)
-!   DataPointValues(2,:)=(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/)  
-!   DataPointValues(3,:)=(/1.0_CMFEDP,1.0_CMFEDP,1.0_CMFEDP/)
-!   DataPointValues(4,:)=(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/)  
-!   DataPointValues(5,:)=(/1.0_CMFEDP,1.0_CMFEDP,1.0_CMFEDP/)
-!   DataPointValues(6,:)=(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/)  
-!   DataPointValues(7,:)=(/0.5_CMFEDP,0.5_CMFEDP,0.5_CMFEDP/)
-!   DataPointValues(8,:)=(/0.5_CMFEDP,0.5_CMFEDP,0.0_CMFEDP/)  
- DataPointValues(1,:)= (/0.5_CMFEDP,0.5_CMFEDP,0.5_CMFEDP/)
- DataPointValues(2,:)= (/0.8_CMFEDP,0.6_CMFEDP,0.7_CMFEDP/)
+!   DataPointValues(1,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP]
+!   DataPointValues(2,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP]  
+!   DataPointValues(3,:)=[1.0_CMFEDP,1.0_CMFEDP,1.0_CMFEDP]
+!   DataPointValues(4,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP]  
+!   DataPointValues(5,:)=[1.0_CMFEDP,1.0_CMFEDP,1.0_CMFEDP]
+!   DataPointValues(6,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP]  
+!   DataPointValues(7,:)=[0.5_CMFEDP,0.5_CMFEDP,0.5_CMFEDP]
+!   DataPointValues(8,:)=[0.5_CMFEDP,0.5_CMFEDP,0.0_CMFEDP]  
+ DataPointValues(1,:)= [0.5_CMFEDP,0.5_CMFEDP,0.5_CMFEDP]
+ DataPointValues(2,:)= [0.8_CMFEDP,0.6_CMFEDP,0.7_CMFEDP]
 !================================================================================  
   
 
@@ -209,13 +207,13 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   CALL cmfe_Basis_CreateStart(BasisOneUserNumber,Basis1,Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
     CALL cmfe_Basis_NumberOfXiSet(Basis1,2,Err)
-    CALL cmfe_Basis_InterpolationXiSet(Basis1,(/1,1/),Err)
-    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis1,(/2,2/),Err) 
+    CALL cmfe_Basis_InterpolationXiSet(Basis1,[1,1],Err)
+    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis1,[2,2],Err) 
   ELSE
     !Set the basis to be a trilinear Lagrange basis
     CALL cmfe_Basis_NumberOfXiSet(Basis1,3,Err)
-    CALL cmfe_Basis_InterpolationXiSet(Basis1,(/1,1,1/),Err)
-    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis1,(/2,2,2/),Err) 
+    CALL cmfe_Basis_InterpolationXiSet(Basis1,[1,1,1],Err)
+    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis1,[2,2,2],Err) 
   ENDIF
   !Finish the creation of the basis
   CALL cmfe_Basis_CreateFinish(Basis1,Err)
@@ -331,13 +329,13 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   IF(NUMBER_GLOBAL_Z_ELEMENTS_2==0) THEN
     !Set the basis to be a bilinear Lagrange basis
     CALL cmfe_Basis_NumberOfXiSet(Basis2,2,Err)
-    CALL cmfe_Basis_InterpolationXiSet(Basis2,(/1,1/),Err)
-    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis2,(/3,3/),Err) 
+    CALL cmfe_Basis_InterpolationXiSet(Basis2,[1,1],Err)
+    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis2,[3,3],Err) 
   ELSE
     !Set the basis to be a trilinear Lagrange basis
     CALL cmfe_Basis_NumberOfXiSet(Basis2,3,Err)
-        CALL cmfe_Basis_InterpolationXiSet(Basis2,(/1,1,1/),Err)
-    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis2,(/3,3,3/),Err) 
+    CALL cmfe_Basis_InterpolationXiSet(Basis2,[1,1,1],Err)
+    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis2,[3,3,3],Err) 
   ENDIF
   !Finish the creation of the basis
   CALL cmfe_Basis_CreateFinish(Basis2,Err)
@@ -415,41 +413,41 @@ PROGRAM EMBEDDEDMESHEXAMPLE
    DO node_idx=1,NumberOfNodes2
    CALL cmfe_Field_ParameterSetGetNode(DependentField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,node_idx,1, &
      & value,Err)
-   WRITE(*,*) 'The values at the nodes for field 2 before',value
-   ENDDO
-
-  !Start creating an embedded mesh
+   WRITE(*,*) 'The values at the nodes for field 2 before',VALUE
+ ENDDO
+ 
+ !Start creating an embedded mesh
   CALL cmfe_MeshEmbedding_Initialise(MeshEmbedding,Err)
   
   CALL cmfe_MeshEmbedding_Create(MeshEmbedding, FirstMesh, SecondMesh, Err)
   
-   Allocate(ParentXiCoords(NumberofComponents,NumberOfNodes1)) 
-   DO node_idx = 1,NumberofNodes1
-   DO dim_idx = 1,NumberOfComponents
-   CALL cmfe_Field_ParameterSetGetNode(GeometricField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1, &
-     & node_idx,dim_idx,value,Err)
-   ParentXiCoords(dim_idx,node_idx) = value
-   ENDDO
-   ENDDO
-
-  ! Get the positions of the child nodes
-  Allocate(ChildXiCoords(NumberofComponents,NumberOfNodes2)) 
-    DO node_idx = 1,NumberofNodes2
+  ALLOCATE(ParentXiCoords(NumberofComponents,NumberOfNodes1)) 
+  DO node_idx = 1,NumberofNodes1
     DO dim_idx = 1,NumberOfComponents
-    CALL cmfe_Field_ParameterSetGetNode(GeometricField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1, &
-      & node_idx,dim_idx,value,Err)
-     ChildXiCoords(dim_idx,node_idx) = value
+      CALL cmfe_Field_ParameterSetGetNode(GeometricField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1, &
+        & node_idx,dim_idx,VALUE,Err)
+      ParentXiCoords(dim_idx,node_idx) = VALUE
     ENDDO
+  ENDDO
+  
+  ! Get the positions of the child nodes
+  ALLOCATE(ChildXiCoords(NumberofComponents,NumberOfNodes2)) 
+  DO node_idx = 1,NumberofNodes2
+    DO dim_idx = 1,NumberOfComponents
+      CALL cmfe_Field_ParameterSetGetNode(GeometricField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1, &
+        & node_idx,dim_idx,VALUE,Err)
+      ChildXiCoords(dim_idx,node_idx) = VALUE
     ENDDO
+  ENDDO
 
     
-    Allocate(NodeNumbers(NumberofNodes1))
-    Allocate(NodeNumbers1(NumberofNodes1))
-    Allocate(NodeNumbers2(NumberofNodes2))
-
-   CALL cmfe_Mesh_NumberOfElementsGet(RegionOneUserNumber,MeshOneUserNumber,NumberOfElements,Err)
-   CALL cmfe_Mesh_NumberOfElementsGet(RegionTwoUserNumber,MeshTwoUserNumber,NumberOfElements2,Err)
-   !Preprocessing step:
+  ALLOCATE(NodeNumbers(NumberofNodes1))
+  ALLOCATE(NodeNumbers1(NumberofNodes1))
+  ALLOCATE(NodeNumbers2(NumberofNodes2))
+  
+  CALL cmfe_Mesh_NumberOfElementsGet(RegionOneUserNumber,MeshOneUserNumber,NumberOfElements,Err)
+  CALL cmfe_Mesh_NumberOfElementsGet(RegionTwoUserNumber,MeshTwoUserNumber,NumberOfElements2,Err)
+  !Preprocessing step:
 
 !   By each element 
     counts = 1

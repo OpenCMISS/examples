@@ -48,7 +48,7 @@
 !> Main program
 PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS_Iron
 
 #ifdef WIN32
   USE IFQWIN
@@ -147,7 +147,7 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
   !Set the basis to be a linear Lagrange basis
   CALL cmfe_Basis_NumberOfXiSet(Basis,1,Err)
   !Finish the creation of the basis
-  CALL cmfe_Basis_CreateFinish(BASIS,Err)
+  CALL cmfe_Basis_CreateFinish(Basis,Err)
   
   !Start the creation of a generated mesh in the region
   CALL cmfe_GeneratedMesh_Initialise(GeneratedMesh,Err)
@@ -290,7 +290,7 @@ PROGRAM DIFFUSIONEXPONENTIALSOURCEEXAMPLE
   !Output Analytic analysis
   !CALL cmfe_EquationsSet_AnalyticTimeSet(EquationsSet,END_TIME,Err)
   !CALL cmfe_EquationsSet_AnalyticEvaluate(EquationsSet,Err)
-  CALL cmfe_AnalyticAnalysisOutput(DependentField,"DiffusionExponentialSourceAnalytic",Err)
+  CALL cmfe_AnalyticAnalysis_Output(DependentField,"DiffusionExponentialSourceAnalytic",Err)
 
   !Output fields
   CALL cmfe_Fields_Initialise(Fields,Err)

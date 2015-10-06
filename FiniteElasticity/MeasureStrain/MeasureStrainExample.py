@@ -18,7 +18,7 @@
 #> License for the specific language governing rights and limitations
 #> under the License.
 #>
-#> The Original Code is openCMISS
+#> The Original Code is OpenCMISS
 #>
 #> The Initial Developer of the Original Code is University of Auckland,
 #> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -49,7 +49,7 @@
 from __future__ import print_function
 
 import numpy as np
-from opencmiss import CMISS as iron
+from opencmiss import iron
 
 
 # Problem parameters:
@@ -129,10 +129,11 @@ generatedMesh.GeometricParametersCalculate(geometricField)
 # Create the equations_set
 equationsSetField = iron.Field()
 equationsSet = iron.EquationsSet()
+equationsSetSpecification = [iron.EquationsSetClasses.ELASTICITY,
+                             iron.EquationsSetTypes.FINITE_ELASTICITY,
+                             constitutiveRelation]
 equationsSet.CreateStart(equationsSetUserNumber, region, geometricField,
-    iron.EquationsSetClasses.ELASTICITY,
-    iron.EquationsSetTypes.FINITE_ELASTICITY,
-    constitutiveRelation, equationsSetFieldUserNumber, equationsSetField)
+    equationsSetSpecification, equationsSetFieldUserNumber, equationsSetField)
 equationsSet.CreateFinish()
 
 # Create default materials field
@@ -235,5 +236,5 @@ gaussPointNumber = 1
 componentNumber = 4
 gaussPointStrain = strainField.ParameterSetGetGaussPoint(
         iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES,
-        elementNumber, gaussPointNumber, componentNumber)
+        gaussPointNumber, elementNumber, componentNumber)
 assert(abs(gaussPointStrain - E[1, 1]) < 1.0e-10)
