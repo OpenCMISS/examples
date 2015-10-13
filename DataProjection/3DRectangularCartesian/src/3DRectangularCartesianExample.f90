@@ -1,6 +1,6 @@
 !> \file
 !> \author Tim Wu
-!> \brief This is an example program to solve 3D data points embedding in 3D cartesian elements using openCMISS calls.
+!> \brief This is an example program to solve 3D data points embedding in 3D cartesian elements using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -16,7 +16,7 @@
 !> License for the specific language governing rights and limitations
 !> under the License.
 !>
-!> The Original Code is openCMISS
+!> The Original Code is OpenCMISS
 !>
 !> The Initial Developer of the Original Code is University of Auckland,
 !> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -42,7 +42,8 @@
 PROGRAM DataProjection3DRectangularCartesian
 
   USE MPI
-  USE OPENCMISS
+  USE OpenCMISS
+  USE OpenCMISS_Iron
 
 #ifdef WIN32
   USE IFQWIN
@@ -59,7 +60,7 @@ PROGRAM DataProjection3DRectangularCartesian
   INTEGER(CMISSIntg),PARAMETER :: FieldUserNumber=1  
   INTEGER(CMISSIntg),PARAMETER :: MeshUserNumber=1
   INTEGER(CMISSIntg),PARAMETER :: RegionUserNumber=1
-  REAL(CMISSDP), PARAMETER :: CoordinateSystemOrigin(3)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/)  
+  REAL(CMISSRP), PARAMETER :: CoordinateSystemOrigin(3)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP]  
 
   !Program variables
   INTEGER(CMISSIntg) :: MeshComponentNumber=1
@@ -70,8 +71,8 @@ PROGRAM DataProjection3DRectangularCartesian
   INTEGER(CMISSIntg) :: NumberOfDomains=1 !NumberOfDomains=2 for parallel processing, need to set up MPI
   INTEGER(CMISSIntg) :: NumberOfNodes
   INTEGER(CMISSIntg) :: NumberOfXi=3
-  INTEGER(CMISSIntg) :: BasisInterpolation(3)=(/CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION,CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION, &
-    & CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION/)
+  INTEGER(CMISSIntg) :: BasisInterpolation(3)=[CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION,CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION, &
+    & CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION]
   INTEGER(CMISSIntg) :: WorldCoordinateSystemUserNumber
   INTEGER(CMISSIntg) :: WorldRegionUserNumber
   
@@ -79,13 +80,13 @@ PROGRAM DataProjection3DRectangularCartesian
   INTEGER(CMISSIntg) :: FieldNumberOfComponents=3 
   
   INTEGER(CMISSIntg) :: data_point_idx,elem_idx,ver_idx,der_idx,node_idx,comp_idx
-  REAL(CMISSDP), DIMENSION(5,3) :: DataPointValues !(number_of_data_points,dimension)
-  REAL(CMISSDP), DIMENSION(5) :: DataPointProjectionDistance !(number_of_data_points)
+  REAL(CMISSRP), DIMENSION(5,3) :: DataPointValues !(number_of_data_points,dimension)
+  REAL(CMISSRP), DIMENSION(5) :: DataPointProjectionDistance !(number_of_data_points)
   INTEGER(CMISSIntg), DIMENSION(5) :: DataPointProjectionElementNumber !(number_of_data_points)
   INTEGER(CMISSIntg), DIMENSION(5) :: DataPointProjectionExitTag !(number_of_data_points)
-  REAL(CMISSDP), DIMENSION(5,3) :: DataPointProjectionXi !(number_of_data_points,MeshDimensions)  
+  REAL(CMISSRP), DIMENSION(5,3) :: DataPointProjectionXi !(number_of_data_points,MeshDimensions)  
   INTEGER(CMISSIntg), DIMENSION(1,8) :: ElementUserNodes  
-  REAL(CMISSDP), DIMENSION(8,8,3) :: FieldValues
+  REAL(CMISSRP), DIMENSION(8,8,3) :: FieldValues
         
 #ifdef WIN32
   !Quickwin type
@@ -113,93 +114,93 @@ PROGRAM DataProjection3DRectangularCartesian
 #endif
     
   !Intialise 5 data points
-  DataPointValues(1,:)=(/0.1_CMISSDP,0.8_CMISSDP,1.0_CMISSDP/)
-  DataPointValues(2,:)=(/0.5_CMISSDP,0.5_CMISSDP,0.5_CMISSDP/)  
-  DataPointValues(3,:)=(/0.2_CMISSDP,0.5_CMISSDP,0.5_CMISSDP/)  
-  DataPointValues(4,:)=(/0.9_CMISSDP,0.6_CMISSDP,0.9_CMISSDP/)
-  DataPointValues(5,:)=(/0.3_CMISSDP,0.3_CMISSDP,0.3_CMISSDP/)
+  DataPointValues(1,:)=[0.1_CMISSRP,0.8_CMISSRP,1.0_CMISSRP]
+  DataPointValues(2,:)=[0.5_CMISSRP,0.5_CMISSRP,0.5_CMISSRP]  
+  DataPointValues(3,:)=[0.2_CMISSRP,0.5_CMISSRP,0.5_CMISSRP]  
+  DataPointValues(4,:)=[0.9_CMISSRP,0.6_CMISSRP,0.9_CMISSRP]
+  DataPointValues(5,:)=[0.3_CMISSRP,0.3_CMISSRP,0.3_CMISSRP]
   NumberOfDataPoints=SIZE(DataPointValues,1)
   
   !Intialise 1 element
-  ElementUserNodes(1,:)=(/1,2,3,4,5,6,7,8/)     
+  ElementUserNodes(1,:)=[1,2,3,4,5,6,7,8]     
   MeshNumberOfElements=SIZE(ElementUserNodes,1)
   
   !Intialise 8 nodes for the element
-  FieldValues(1,1,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !no der, node 1
-  FieldValues(2,1,:)=(/1.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 der, node 1
-  FieldValues(3,1,:)=(/0.0_CMISSDP,1.0_CMISSDP,0.0_CMISSDP/) !s2 der, node 1  
-  FieldValues(4,1,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s2 der, node 1    
-  FieldValues(5,1,:)=(/0.0_CMISSDP,0.0_CMISSDP,1.0_CMISSDP/) !s3 der, node 1
-  FieldValues(6,1,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s3 der, node 1  
-  FieldValues(7,1,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s2 s3 der, node 1    
-  FieldValues(8,1,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s2 s3 der, node 1    
+  FieldValues(1,1,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !no der, node 1
+  FieldValues(2,1,:)=[1.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 der, node 1
+  FieldValues(3,1,:)=[0.0_CMISSRP,1.0_CMISSRP,0.0_CMISSRP] !s2 der, node 1  
+  FieldValues(4,1,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 der, node 1    
+  FieldValues(5,1,:)=[0.0_CMISSRP,0.0_CMISSRP,1.0_CMISSRP] !s3 der, node 1
+  FieldValues(6,1,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s3 der, node 1  
+  FieldValues(7,1,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s2 s3 der, node 1    
+  FieldValues(8,1,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 s3 der, node 1    
   
-  FieldValues(1,2,:)=(/1.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !no der, node 2
-  FieldValues(2,2,:)=(/1.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 der, node 2
-  FieldValues(3,2,:)=(/0.0_CMISSDP,1.0_CMISSDP,0.0_CMISSDP/) !s2 der, node 2  
-  FieldValues(4,2,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s2 der, node 2    
-  FieldValues(5,2,:)=(/0.0_CMISSDP,0.0_CMISSDP,1.0_CMISSDP/) !s3 der, node 2
-  FieldValues(6,2,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s3 der, node 2  
-  FieldValues(7,2,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s2 s3 der, node 2    
-  FieldValues(8,2,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s2 s3 der, node 2     
+  FieldValues(1,2,:)=[1.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !no der, node 2
+  FieldValues(2,2,:)=[1.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 der, node 2
+  FieldValues(3,2,:)=[0.0_CMISSRP,1.0_CMISSRP,0.0_CMISSRP] !s2 der, node 2  
+  FieldValues(4,2,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 der, node 2    
+  FieldValues(5,2,:)=[0.0_CMISSRP,0.0_CMISSRP,1.0_CMISSRP] !s3 der, node 2
+  FieldValues(6,2,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s3 der, node 2  
+  FieldValues(7,2,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s2 s3 der, node 2    
+  FieldValues(8,2,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 s3 der, node 2     
   
-  FieldValues(1,3,:)=(/0.0_CMISSDP,1.0_CMISSDP,0.0_CMISSDP/) !no der, node 3
-  FieldValues(2,3,:)=(/1.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 der, node 3
-  FieldValues(3,3,:)=(/0.0_CMISSDP,1.0_CMISSDP,0.0_CMISSDP/) !s2 der, node 3  
-  FieldValues(4,3,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s2 der, node 3    
-  FieldValues(5,3,:)=(/0.0_CMISSDP,0.0_CMISSDP,1.0_CMISSDP/) !s3 der, node 3
-  FieldValues(6,3,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s3 der, node 3  
-  FieldValues(7,3,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s2 s3 der, node 3    
-  FieldValues(8,3,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s2 s3 der, node 3
+  FieldValues(1,3,:)=[0.0_CMISSRP,1.0_CMISSRP,0.0_CMISSRP] !no der, node 3
+  FieldValues(2,3,:)=[1.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 der, node 3
+  FieldValues(3,3,:)=[0.0_CMISSRP,1.0_CMISSRP,0.0_CMISSRP] !s2 der, node 3  
+  FieldValues(4,3,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 der, node 3    
+  FieldValues(5,3,:)=[0.0_CMISSRP,0.0_CMISSRP,1.0_CMISSRP] !s3 der, node 3
+  FieldValues(6,3,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s3 der, node 3  
+  FieldValues(7,3,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s2 s3 der, node 3    
+  FieldValues(8,3,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 s3 der, node 3
   
-  FieldValues(1,4,:)=(/1.0_CMISSDP,1.0_CMISSDP,0.0_CMISSDP/) !no der, node 4
-  FieldValues(2,4,:)=(/1.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 der, node 4
-  FieldValues(3,4,:)=(/0.0_CMISSDP,1.0_CMISSDP,0.0_CMISSDP/) !s2 der, node 4  
-  FieldValues(4,4,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s2 der, node 4    
-  FieldValues(5,4,:)=(/0.0_CMISSDP,0.0_CMISSDP,1.0_CMISSDP/) !s3 der, node 4
-  FieldValues(6,4,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s3 der, node 4  
-  FieldValues(7,4,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s2 s3 der, node 4    
-  FieldValues(8,4,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s2 s3 der, node 4
+  FieldValues(1,4,:)=[1.0_CMISSRP,1.0_CMISSRP,0.0_CMISSRP] !no der, node 4
+  FieldValues(2,4,:)=[1.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 der, node 4
+  FieldValues(3,4,:)=[0.0_CMISSRP,1.0_CMISSRP,0.0_CMISSRP] !s2 der, node 4  
+  FieldValues(4,4,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 der, node 4    
+  FieldValues(5,4,:)=[0.0_CMISSRP,0.0_CMISSRP,1.0_CMISSRP] !s3 der, node 4
+  FieldValues(6,4,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s3 der, node 4  
+  FieldValues(7,4,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s2 s3 der, node 4    
+  FieldValues(8,4,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 s3 der, node 4
   
-  FieldValues(1,5,:)=(/0.0_CMISSDP,0.0_CMISSDP,1.0_CMISSDP/) !no der, node 5
-  FieldValues(2,5,:)=(/1.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 der, node 5
-  FieldValues(3,5,:)=(/0.0_CMISSDP,1.0_CMISSDP,0.0_CMISSDP/) !s2 der, node 5  
-  FieldValues(4,5,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s2 der, node 5    
-  FieldValues(5,5,:)=(/0.0_CMISSDP,0.0_CMISSDP,1.0_CMISSDP/) !s3 der, node 5
-  FieldValues(6,5,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s3 der, node 5  
-  FieldValues(7,5,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s2 s3 der, node 5    
-  FieldValues(8,5,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s2 s3 der, node 5    
+  FieldValues(1,5,:)=[0.0_CMISSRP,0.0_CMISSRP,1.0_CMISSRP] !no der, node 5
+  FieldValues(2,5,:)=[1.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 der, node 5
+  FieldValues(3,5,:)=[0.0_CMISSRP,1.0_CMISSRP,0.0_CMISSRP] !s2 der, node 5  
+  FieldValues(4,5,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 der, node 5    
+  FieldValues(5,5,:)=[0.0_CMISSRP,0.0_CMISSRP,1.0_CMISSRP] !s3 der, node 5
+  FieldValues(6,5,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s3 der, node 5  
+  FieldValues(7,5,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s2 s3 der, node 5    
+  FieldValues(8,5,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 s3 der, node 5    
   
-  FieldValues(1,6,:)=(/1.0_CMISSDP,0.0_CMISSDP,1.0_CMISSDP/) !no der, node 6
-  FieldValues(2,6,:)=(/1.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 der, node 6
-  FieldValues(3,6,:)=(/0.0_CMISSDP,1.0_CMISSDP,0.0_CMISSDP/) !s2 der, node 6  
-  FieldValues(4,6,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s2 der, node 6    
-  FieldValues(5,6,:)=(/0.0_CMISSDP,0.0_CMISSDP,1.0_CMISSDP/) !s3 der, node 6
-  FieldValues(6,6,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s3 der, node 6  
-  FieldValues(7,6,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s2 s3 der, node 6    
-  FieldValues(8,6,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s2 s3 der, node 6     
+  FieldValues(1,6,:)=[1.0_CMISSRP,0.0_CMISSRP,1.0_CMISSRP] !no der, node 6
+  FieldValues(2,6,:)=[1.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 der, node 6
+  FieldValues(3,6,:)=[0.0_CMISSRP,1.0_CMISSRP,0.0_CMISSRP] !s2 der, node 6  
+  FieldValues(4,6,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 der, node 6    
+  FieldValues(5,6,:)=[0.0_CMISSRP,0.0_CMISSRP,1.0_CMISSRP] !s3 der, node 6
+  FieldValues(6,6,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s3 der, node 6  
+  FieldValues(7,6,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s2 s3 der, node 6    
+  FieldValues(8,6,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 s3 der, node 6     
   
-  FieldValues(1,7,:)=(/0.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP/) !no der, node 7
-  FieldValues(2,7,:)=(/1.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 der, node 7
-  FieldValues(3,7,:)=(/0.0_CMISSDP,1.0_CMISSDP,0.0_CMISSDP/) !s2 der, node 7  
-  FieldValues(4,7,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s2 der, node 7    
-  FieldValues(5,7,:)=(/0.0_CMISSDP,0.0_CMISSDP,1.0_CMISSDP/) !s3 der, node 7
-  FieldValues(6,7,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s3 der, node 7  
-  FieldValues(7,7,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s2 s3 der, node 7    
-  FieldValues(8,7,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s2 s3 der, node 7
+  FieldValues(1,7,:)=[0.0_CMISSRP,1.0_CMISSRP,1.0_CMISSRP] !no der, node 7
+  FieldValues(2,7,:)=[1.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 der, node 7
+  FieldValues(3,7,:)=[0.0_CMISSRP,1.0_CMISSRP,0.0_CMISSRP] !s2 der, node 7  
+  FieldValues(4,7,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 der, node 7    
+  FieldValues(5,7,:)=[0.0_CMISSRP,0.0_CMISSRP,1.0_CMISSRP] !s3 der, node 7
+  FieldValues(6,7,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s3 der, node 7  
+  FieldValues(7,7,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s2 s3 der, node 7    
+  FieldValues(8,7,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 s3 der, node 7
   
-  FieldValues(1,8,:)=(/1.0_CMISSDP,1.0_CMISSDP,1.0_CMISSDP/) !no der, node 8
-  FieldValues(2,8,:)=(/1.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 der, node 8
-  FieldValues(3,8,:)=(/0.0_CMISSDP,1.0_CMISSDP,0.0_CMISSDP/) !s2 der, node 8  
-  FieldValues(4,8,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s2 der, node 8    
-  FieldValues(5,8,:)=(/0.0_CMISSDP,0.0_CMISSDP,1.0_CMISSDP/) !s3 der, node 8
-  FieldValues(6,8,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s3 der, node 8  
-  FieldValues(7,8,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s2 s3 der, node 8    
-  FieldValues(8,8,:)=(/0.0_CMISSDP,0.0_CMISSDP,0.0_CMISSDP/) !s1 s2 s3 der, node 8
+  FieldValues(1,8,:)=[1.0_CMISSRP,1.0_CMISSRP,1.0_CMISSRP] !no der, node 8
+  FieldValues(2,8,:)=[1.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 der, node 8
+  FieldValues(3,8,:)=[0.0_CMISSRP,1.0_CMISSRP,0.0_CMISSRP] !s2 der, node 8  
+  FieldValues(4,8,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 der, node 8    
+  FieldValues(5,8,:)=[0.0_CMISSRP,0.0_CMISSRP,1.0_CMISSRP] !s3 der, node 8
+  FieldValues(6,8,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s3 der, node 8  
+  FieldValues(7,8,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s2 s3 der, node 8    
+  FieldValues(8,8,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 s3 der, node 8
   NumberOfNodes=SIZE(FieldValues,2)
   
   !Intialise cmiss
-  CALL CMISSInitialise(WorldCoordinateSystemUserNumber,WorldRegionUserNumber,Err)
+  CALL cmfe_Initialise(WorldCoordinateSystemUserNumber,WorldRegionUserNumber,Err)
   !Broadcast the number of Elements in the X & Y directions and the number of partitions to the other computational nodes
   CALL MPI_BCAST(NUMBER_GLOBAL_X_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
   CALL MPI_BCAST(NUMBER_GLOBAL_Y_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
@@ -208,73 +209,73 @@ PROGRAM DataProjection3DRectangularCartesian
 
   !=========================================================================================================================
   !Create RC coordinate system
-  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,Err)
-  CALL CMISSCoordinateSystem_TypeSet(CoordinateSystemUserNumber,CMISS_COORDINATE_RECTANGULAR_CARTESIAN_TYPE,Err)
-  CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystemUserNumber,CoordinateSystemDimension,Err)
-  CALL CMISSCoordinateSystem_OriginSet(CoordinateSystemUserNumber,CoordinateSystemOrigin,Err)
-  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystemUserNumber,Err) 
+  CALL cmfe_CoordinateSystem_CreateStart(CoordinateSystemUserNumber,Err)
+  CALL cmfe_CoordinateSystem_TypeSet(CoordinateSystemUserNumber,CMFE_COORDINATE_RECTANGULAR_CARTESIAN_TYPE,Err)
+  CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystemUserNumber,CoordinateSystemDimension,Err)
+  CALL cmfe_CoordinateSystem_OriginSet(CoordinateSystemUserNumber,CoordinateSystemOrigin,Err)
+  CALL cmfe_CoordinateSystem_CreateFinish(CoordinateSystemUserNumber,Err) 
 
   !=========================================================================================================================
   !Create Region and set CS to newly created 3D RC CS
-  CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegionUserNumber,Err)
-  CALL CMISSRegion_CoordinateSystemSet(RegionUserNumber,CoordinateSystemUserNumber,Err)
-  CALL CMISSRegion_CreateFinish(RegionUserNumber,Err)
+  CALL cmfe_Region_CreateStart(RegionUserNumber,WorldRegionUserNumber,Err)
+  CALL cmfe_Region_CoordinateSystemSet(RegionUserNumber,CoordinateSystemUserNumber,Err)
+  CALL cmfe_Region_CreateFinish(RegionUserNumber,Err)
     
   !=========================================================================================================================
   !Create Data Points and set the values
-  CALL CMISSDataPoints_CreateStart(RegionUserNumber,SIZE(DataPointValues,1),Err)
+  CALL cmfe_DataPoints_CreateStart(RegionUserNumber,SIZE(DataPointValues,1),Err)
   DO data_point_idx=1,NumberOfDataPoints
-    CALL CMISSDataPoints_ValuesSet(RegionUserNumber,data_point_idx,DataPointValues(data_point_idx,:),Err)     
+    CALL cmfe_DataPoints_ValuesSet(RegionUserNumber,data_point_idx,DataPointValues(data_point_idx,:),Err)     
   ENDDO
-  CALL CMISSDataPoints_CreateFinish(RegionUserNumber,Err)  
+  CALL cmfe_DataPoints_CreateFinish(RegionUserNumber,Err)  
   !=========================================================================================================================
   !Define basis function - 1D cubic hermite
-  CALL CMISSBasis_CreateStart(BasisUserNumber,Err)
-  CALL CMISSBasis_TypeSet(BasisUserNumber,CMISS_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
-  CALL CMISSBasis_NumberOfXiSet(BasisUserNumber,NumberOfXi,Err)
-  CALL CMISSBasis_InterpolationXiSet(BasisUserNumber,BasisInterpolation,Err)
-  CALL CMISSBasis_CreateFinish(BasisUserNumber,Err)  
+  CALL cmfe_Basis_CreateStart(BasisUserNumber,Err)
+  CALL cmfe_Basis_TypeSet(BasisUserNumber,CMFE_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
+  CALL cmfe_Basis_NumberOfXiSet(BasisUserNumber,NumberOfXi,Err)
+  CALL cmfe_Basis_InterpolationXiSet(BasisUserNumber,BasisInterpolation,Err)
+  CALL cmfe_Basis_CreateFinish(BasisUserNumber,Err)  
   !=========================================================================================================================
   !Create a mesh
-  CALL CMISSMesh_CreateStart(MeshUserNumber,RegionUserNumber,MeshDimensions,Err)
-  CALL CMISSMesh_NumberOfComponentsSet(RegionUserNumber,MeshUserNumber,MeshNumberOfComponents,Err)
-  CALL CMISSMesh_NumberOfElementsSet(RegionUserNumber,MeshUserNumber,MeshNumberOfElements,Err)
+  CALL cmfe_Mesh_CreateStart(MeshUserNumber,RegionUserNumber,MeshDimensions,Err)
+  CALL cmfe_Mesh_NumberOfComponentsSet(RegionUserNumber,MeshUserNumber,MeshNumberOfComponents,Err)
+  CALL cmfe_Mesh_NumberOfElementsSet(RegionUserNumber,MeshUserNumber,MeshNumberOfElements,Err)
   !define nodes for the mesh
-  CALL CMISSNodes_CreateStart(RegionUserNumber,NumberOfNodes,Err)
-  CALL CMISSNodes_CreateFinish(RegionUserNumber,Err)  
+  CALL cmfe_Nodes_CreateStart(RegionUserNumber,NumberOfNodes,Err)
+  CALL cmfe_Nodes_CreateFinish(RegionUserNumber,Err)  
   !define elements for the mesh
-  CALL CMISSMeshElements_CreateStart(RegionUserNumber,MeshUserNumber,MeshComponentNumber,BasisUserNumber,Err)
+  CALL cmfe_MeshElements_CreateStart(RegionUserNumber,MeshUserNumber,MeshComponentNumber,BasisUserNumber,Err)
   Do elem_idx=1,MeshNumberOfElements
-    CALL CMISSMeshElements_NodesSet(RegionUserNumber,MeshUserNumber,MeshComponentNumber,elem_idx,ElementUserNodes(elem_idx,:),Err)
+    CALL cmfe_MeshElements_NodesSet(RegionUserNumber,MeshUserNumber,MeshComponentNumber,elem_idx,ElementUserNodes(elem_idx,:),Err)
   ENDDO
-  CALL CMISSMeshElements_CreateFinish(RegionUserNumber,MeshUserNumber,MeshComponentNumber,Err)
-  CALL CMISSMesh_CreateFinish(RegionUserNumber,MeshUserNumber,Err)
+  CALL cmfe_MeshElements_CreateFinish(RegionUserNumber,MeshUserNumber,MeshComponentNumber,Err)
+  CALL cmfe_Mesh_CreateFinish(RegionUserNumber,MeshUserNumber,Err)
   !=========================================================================================================================
   !Create a mesh decomposition 
-  CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,RegionUserNumber,MeshUserNumber,Err)
-  CALL CMISSDecomposition_TypeSet(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
-  CALL CMISSDecomposition_NumberOfDomainsSet(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,NumberOfDomains,Err)
-  CALL CMISSDecomposition_CreateFinish(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,Err)
+  CALL cmfe_Decomposition_CreateStart(DecompositionUserNumber,RegionUserNumber,MeshUserNumber,Err)
+  CALL cmfe_Decomposition_TypeSet(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,CMFE_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL cmfe_Decomposition_NumberOfDomainsSet(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,NumberOfDomains,Err)
+  CALL cmfe_Decomposition_CreateFinish(RegionUserNumber,MeshUserNumber,DecompositionUserNumber,Err)
   
   !=========================================================================================================================
   !Create a field to put the geometry
-  CALL CMISSField_CreateStart(FieldUserNumber,RegionUserNumber,Err)
-  CALL CMISSField_MeshDecompositionSet(RegionUserNumber,FieldUserNumber,MeshUserNumber,DecompositionUserNumber,Err)
-  CALL CMISSField_TypeSet(RegionUserNumber,FieldUserNumber,CMISS_FIELD_GEOMETRIC_TYPE,Err)
-  CALL CMISSField_NumberOfVariablesSet(RegionUserNumber,FieldUserNumber,FieldNumberOfVariables,Err)
-  CALL CMISSField_NumberOfComponentsSet(RegionUserNumber,FieldUserNumber,CMISS_FIELD_U_VARIABLE_TYPE,FieldNumberOfComponents,Err)
-  CALL CMISSField_ComponentMeshComponentSet(RegionUserNumber,FieldUserNumber,CMISS_FIELD_U_VARIABLE_TYPE,1,1,Err)
+  CALL cmfe_Field_CreateStart(FieldUserNumber,RegionUserNumber,Err)
+  CALL cmfe_Field_MeshDecompositionSet(RegionUserNumber,FieldUserNumber,MeshUserNumber,DecompositionUserNumber,Err)
+  CALL cmfe_Field_TypeSet(RegionUserNumber,FieldUserNumber,CMFE_FIELD_GEOMETRIC_TYPE,Err)
+  CALL cmfe_Field_NumberOfVariablesSet(RegionUserNumber,FieldUserNumber,FieldNumberOfVariables,Err)
+  CALL cmfe_Field_NumberOfComponentsSet(RegionUserNumber,FieldUserNumber,CMFE_FIELD_U_VARIABLE_TYPE,FieldNumberOfComponents,Err)
+  CALL cmfe_Field_ComponentMeshComponentSet(RegionUserNumber,FieldUserNumber,CMFE_FIELD_U_VARIABLE_TYPE,1,1,Err)
 !  DO xi=1,NumberOfXi
     
 !  ENDDO !xi    
-  CALL CMISSField_CreateFinish(RegionUserNumber,FieldUserNumber,Err)
+  CALL cmfe_Field_CreateFinish(RegionUserNumber,FieldUserNumber,Err)
   !node 1
   ver_idx=1 ! version number
   DO der_idx=1,SIZE(FieldValues,1)
     DO node_idx=1,SIZE(FieldValues,2)
       DO comp_idx=1,SIZE(FieldValues,3)
-        CALL CMISSField_ParameterSetUpdateNode(RegionUserNumber,FieldUserNumber,CMISS_FIELD_U_VARIABLE_TYPE, &
-          & CMISS_FIELD_VALUES_SET_TYPE, &
+        CALL cmfe_Field_ParameterSetUpdateNode(RegionUserNumber,FieldUserNumber,CMFE_FIELD_U_VARIABLE_TYPE, &
+          & CMFE_FIELD_VALUES_SET_TYPE, &
           & ver_idx,der_idx,node_idx,comp_idx,FieldValues(der_idx,node_idx,comp_idx),Err)
       ENDDO
     ENDDO
@@ -282,30 +283,31 @@ PROGRAM DataProjection3DRectangularCartesian
   
   !=========================================================================================================================
   !Create a data projection
-  CALL CMISSDataProjection_CreateStart(DataProjectionUserNumber,RegionUserNumber,MeshUserNumber,RegionUserNumber,Err)
-  CALL CMISSDataProjection_ProjectionTypeSet(DataProjectionUserNumber,RegionUserNumber, &
-    & CMISS_DATA_PROJECTION_ALL_ELEMENTS_PROJECTION_TYPE,Err) !Set to element projection for data points embedding. The default is boundary/surface projection.
-  CALL CMISSDataProjection_CreateFinish(DataProjectionUserNumber,RegionUserNumber,Err)
+  CALL cmfe_DataProjection_CreateStart(DataProjectionUserNumber,RegionUserNumber,MeshUserNumber,RegionUserNumber,Err)
+  CALL cmfe_DataProjection_ProjectionTypeSet(DataProjectionUserNumber,RegionUserNumber, &
+    & CMFE_DATA_PROJECTION_ALL_ELEMENTS_PROJECTION_TYPE,Err) !Set to element projection for data points embedding. The default is boundary/surface projection.
+  CALL cmfe_DataProjection_CreateFinish(DataProjectionUserNumber,RegionUserNumber,Err)
   
   !=========================================================================================================================
   !Start data projection
-  CALL CMISSDataProjection_ProjectionEvaluate(dataProjectionUserNumber,RegionUserNumber,FieldUserNumber,RegionUserNumber,Err)
+  CALL cmfe_DataProjection_DataPointsProjectionEvaluate(dataProjectionUserNumber,RegionUserNumber,FieldUserNumber, &
+    & RegionUserNumber,Err)
 
   !Retrieve projection results
   DO data_point_idx=1,NumberOfDataPoints
-    CALL CMISSDataProjection_ResultDistanceGet(RegionUserNumber,DataProjectionUserNumber,data_point_idx, &
+    CALL cmfe_DataProjection_ResultDistanceGet(RegionUserNumber,DataProjectionUserNumber,data_point_idx, &
       & DataPointProjectionDistance(data_point_idx),Err)
-    CALL CMISSDataProjection_ResultElementNumberGet(RegionUserNumber,DataProjectionUserNumber,data_point_idx, &
+    CALL cmfe_DataProjection_ResultElementNumberGet(RegionUserNumber,DataProjectionUserNumber,data_point_idx, &
       & DataPointProjectionElementNumber(data_point_idx),Err)
-    CALL CMISSDataProjection_ResultExitTagGet(RegionUserNumber,DataProjectionUserNumber,data_point_idx, &
+    CALL cmfe_DataProjection_ResultExitTagGet(RegionUserNumber,DataProjectionUserNumber,data_point_idx, &
       & DataPointProjectionExitTag(data_point_idx),Err)
-    CALL CMISSDataProjection_ResultXiGet(RegionUserNumber,DataProjectionUserNumber,data_point_idx, &
+    CALL cmfe_DataProjection_ResultXiGet(RegionUserNumber,DataProjectionUserNumber,data_point_idx, &
       & DataPointProjectionXi(data_point_idx,:),Err)
   ENDDO  
   
   !=========================================================================================================================
   !Finishing program
-  CALL CMISSFinalise(Err)
+  CALL cmfe_Finalise(Err)
   WRITE(*,'(A)') "Program successfully completed."
   STOP  
   

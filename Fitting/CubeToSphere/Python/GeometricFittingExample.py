@@ -18,7 +18,7 @@
 #> License for the specific language governing rights and limitations
 #> under the License.
 #>
-#> The Original Code is openCMISS
+#> The Original Code is OpenCMISS
 #>
 #> The Initial Developer of the Original Code is University of Auckland,
 #> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -42,7 +42,7 @@
 #>
 
 #> \example /Fitting/GeometricFitting/GeometricFittingExample.py
-## Example script to fit a generated cube mesh to a sphere using openCMISS calls in python.
+## Example script to fit a generated cube mesh to a sphere using OpenCMISS calls in python.
 ## \par Latest Builds:
 #<
 
@@ -57,7 +57,7 @@ import math
 import random
 
 # Intialise OpenCMISS
-from opencmiss import CMISS
+from opencmiss import iron
 
 def writeExdataFile(filename,dataPointLocations,offset):
     "Writes data points to an exdata file"
@@ -159,18 +159,18 @@ zeroTolerance = 0.00001
     problemUserNumber) = range(1,18)
 
 # Get the computational nodes information
-numberOfComputationalNodes = CMISS.ComputationalNumberOfNodesGet()
-computationalNodeNumber = CMISS.ComputationalNodeNumberGet()
+numberOfComputationalNodes = iron.ComputationalNumberOfNodesGet()
+computationalNodeNumber = iron.ComputationalNodeNumberGet()
 
 # Create a RC coordinate system
-coordinateSystem = CMISS.CoordinateSystem()
+coordinateSystem = iron.CoordinateSystem()
 coordinateSystem.CreateStart(coordinateSystemUserNumber)
 coordinateSystem.dimension = numberOfDimensions
 coordinateSystem.CreateFinish()
 
 # Create a region
-region = CMISS.Region()
-region.CreateStart(regionUserNumber,CMISS.WorldRegion)
+region = iron.Region()
+region.CreateStart(regionUserNumber,iron.WorldRegion)
 region.label = "FittingRegion"
 region.coordinateSystem = coordinateSystem
 region.CreateFinish()
@@ -184,30 +184,30 @@ for dimension in range(numberOfDimensions):
     numberOfElements = numberOfElements*meshResolution[dimension]
 
 # Create a lagrange basis
-basis = CMISS.Basis()
+basis = iron.Basis()
 basis.CreateStart(basisUserNumber)
-basis.type = CMISS.BasisTypes.LAGRANGE_HERMITE_TP
+basis.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
 basis.numberOfXi = numberOfDimensions
 if hermite:
-    basis.interpolationXi = [CMISS.BasisInterpolationSpecifications.CUBIC_HERMITE]*numberOfDimensions
+    basis.interpolationXi = [iron.BasisInterpolationSpecifications.CUBIC_HERMITE]*numberOfDimensions
 else:
-    basis.interpolationXi = [CMISS.BasisInterpolationSpecifications.LINEAR_LAGRANGE]*numberOfDimensions
+    basis.interpolationXi = [iron.BasisInterpolationSpecifications.LINEAR_LAGRANGE]*numberOfDimensions
 
 basis.quadratureNumberOfGaussXi = [numberOfGaussXi]*numberOfDimensions
 basis.CreateFinish()
 
 if (exfileMesh):
     # Read previous mesh
-    mesh = CMISS.Mesh()
+    mesh = iron.Mesh()
     mesh.CreateStart(meshUserNumber, region, numberOfDimensions)
     mesh.NumberOfComponentsSet(1)
     mesh.NumberOfElementsSet(exelem.num_elements)
     # Define nodes for the mesh
-    nodes = CMISS.Nodes()
+    nodes = iron.Nodes()
     nodes.CreateStart(region, exnode.num_nodes)
     nodes.CreateFinish()
     # Define elements for the mesh
-    elements = CMISS.MeshElements()
+    elements = iron.MeshElements()
     meshComponentNumber = 1
     elements.CreateStart(mesh, meshComponentNumber, basis)
     for elem in exelem.elements:
@@ -216,21 +216,21 @@ if (exfileMesh):
     mesh.CreateFinish()
 else:
     # Create a generated mesh
-    generatedMesh = CMISS.GeneratedMesh()
+    generatedMesh = iron.GeneratedMesh()
     generatedMesh.CreateStart(generatedMeshUserNumber,region)
-    generatedMesh.type = CMISS.GeneratedMeshTypes.REGULAR
+    generatedMesh.type = iron.GeneratedMeshTypes.REGULAR
     generatedMesh.basis = [basis]
     generatedMesh.extent = meshDimensions
     generatedMesh.origin = meshOrigin
 
     generatedMesh.numberOfElements = meshResolution
-    mesh = CMISS.Mesh()
+    mesh = iron.Mesh()
     generatedMesh.CreateFinish(meshUserNumber,mesh)
 
 # Create a decomposition for the mesh
-decomposition = CMISS.Decomposition()
+decomposition = iron.Decomposition()
 decomposition.CreateStart(decompositionUserNumber,mesh)
-decomposition.type = CMISS.DecompositionTypes.CALCULATED
+decomposition.type = iron.DecompositionTypes.CALCULATED
 decomposition.numberOfDomains = numberOfComputationalNodes
 decomposition.CreateFinish()
 
@@ -239,16 +239,16 @@ decomposition.CreateFinish()
 #=================================================================
 
 # Create a field for the geometry
-geometricField = CMISS.Field()
+geometricField = iron.Field()
 geometricField.CreateStart(geometricFieldUserNumber,region)
 geometricField.meshDecomposition = decomposition
 for dimension in range(numberOfDimensions):
-    geometricField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,dimension+1,1)
-geometricField.ScalingTypeSet(CMISS.FieldScalingTypes.UNIT)
+    geometricField.ComponentMeshComponentSet(iron.FieldVariableTypes.U,dimension+1,1)
+geometricField.ScalingTypeSet(iron.FieldScalingTypes.UNIT)
 geometricField.CreateFinish()
 
 # Get nodes
-nodes = CMISS.Nodes()
+nodes = iron.Nodes()
 region.NodesGet(nodes)
 numberOfNodes = nodes.numberOfNodes
 
@@ -256,7 +256,7 @@ numberOfNodes = nodes.numberOfNodes
 if (exfileMesh):
     # Read the geometric field from the exnode file
     geometricField.ParameterSetUpdateStart(
-            CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES)
+            iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES)
     for node_num in range(1, exnode.num_nodes + 1):
         version = 1
         derivative = 1
@@ -264,17 +264,17 @@ if (exfileMesh):
             component_name = ["x", "y", "z"][component - 1]
             value = exnode.node_value("Coordinate", component_name, node_num, derivative)
             geometricField.ParameterSetUpdateNode(
-                    CMISS.FieldVariableTypes.U,
-                    CMISS.FieldParameterSetTypes.VALUES,
+                    iron.FieldVariableTypes.U,
+                    iron.FieldParameterSetTypes.VALUES,
                     version, derivative, node_num, component, value)
     geometricField.ParameterSetUpdateFinish(
-            CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES)
+            iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES)
 else:
     # Create undeformed geometry from the generated mesh
     generatedMesh.GeometricParametersCalculate(geometricField)
     # Export undeformed mesh geometry
     print("Writing undeformed geometry")
-    fields = CMISS.Fields()
+    fields = iron.Fields()
     fields.CreateRegion(region)
     fields.NodesExport("UndeformedGeometry","FORTRAN")
     fields.ElementsExport("UndeformedGeometry","FORTRAN")
@@ -285,7 +285,7 @@ else:
 #=================================================================
 
 # Create the data points
-dataPoints = CMISS.DataPoints()
+dataPoints = iron.DataPoints()
 dataPoints.CreateStart(region,numberOfDataPoints)
 
 localNumberOfDataPoints = 0
@@ -326,13 +326,13 @@ writeExdataFile("DataPoints.part"+str(computationalNodeNumber)+".exdata",dataPoi
 
 print("Projecting data points onto geometric field")
 # Set up data projection
-dataProjection = CMISS.DataProjection()
+dataProjection = iron.DataProjection()
 dataProjection.CreateStart(dataProjectionUserNumber,dataPoints,mesh)
-dataProjection.projectionType = CMISS.DataProjectionProjectionTypes.ALL_ELEMENTS
+dataProjection.projectionType = iron.DataProjectionProjectionTypes.ALL_ELEMENTS
 dataProjection.CreateFinish()
 
 # Evaluate data projection based on geometric field
-dataProjection.ProjectionEvaluate(geometricField)
+dataProjection.DataPointsProjectionEvaluate(geometricField)
 # Create mesh topology for data projection
 mesh.TopologyDataPointsCalculateProjection(dataProjection)
 # Create decomposition topology for data projection
@@ -373,13 +373,13 @@ print("Projection complete")
 #=================================================================
 
 # Create vector fitting equations set
-equationsSetField = CMISS.Field()
-equationsSet = CMISS.EquationsSet()
+equationsSetField = iron.Field()
+equationsSet = iron.EquationsSet()
+equationsSetSpecification = [iron.EquationsSetClasses.FITTING,
+                             iron.EquationsSetTypes.DATA_FITTING_EQUATION,
+                             iron.EquationsSetSubtypes.DATA_POINT_VECTOR_STATIC_FITTING]
 equationsSet.CreateStart(equationsSetUserNumber,region,geometricField,
-        CMISS.EquationsSetClasses.FITTING,
-        CMISS.EquationsSetTypes.DATA_FITTING_EQUATION,
-        CMISS.EquationsSetSubtypes.DATA_POINT_VECTOR_STATIC_FITTING,
-        equationsSetFieldUserNumber, equationsSetField)
+        equationsSetSpecification, equationsSetFieldUserNumber, equationsSetField)
 equationsSet.CreateFinish()
 
 #=================================================================
@@ -387,35 +387,35 @@ equationsSet.CreateFinish()
 #=================================================================
 
 # Create dependent field (will be deformed fitted values based on data point locations)
-dependentField = CMISS.Field()
+dependentField = iron.Field()
 equationsSet.DependentCreateStart(dependentFieldUserNumber,dependentField)
-dependentField.VariableLabelSet(CMISS.FieldVariableTypes.U,"Dependent")
-dependentField.ScalingTypeSet(CMISS.FieldScalingTypes.UNIT)
+dependentField.VariableLabelSet(iron.FieldVariableTypes.U,"Dependent")
+dependentField.ScalingTypeSet(iron.FieldScalingTypes.UNIT)
 equationsSet.DependentCreateFinish()
 # Initialise dependent field
-dependentField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,0.0)
+dependentField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,0.0)
 
 # Initialise dependent field to undeformed geometric field
 for component in range (1,numberOfDimensions+1):
-    geometricField.ParametersToFieldParametersComponentCopy(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
-                                                            component, dependentField, CMISS.FieldVariableTypes.U,
-                                                            CMISS.FieldParameterSetTypes.VALUES, component)
+    geometricField.ParametersToFieldParametersComponentCopy(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                                                            component, dependentField, iron.FieldVariableTypes.U,
+                                                            iron.FieldParameterSetTypes.VALUES, component)
 
 #=================================================================
 # Independent Field
 #=================================================================
 
 # Create data point field (independent field, with vector values stored at the data points)
-independentField = CMISS.Field()
+independentField = iron.Field()
 equationsSet.IndependentCreateStart(independentFieldUserNumber,independentField)
-independentField.VariableLabelSet(CMISS.FieldVariableTypes.U,"data point vector")
-independentField.VariableLabelSet(CMISS.FieldVariableTypes.V,"data point weight")
+independentField.VariableLabelSet(iron.FieldVariableTypes.U,"data point vector")
+independentField.VariableLabelSet(iron.FieldVariableTypes.V,"data point weight")
 independentField.DataProjectionSet(dataProjection)
 equationsSet.IndependentCreateFinish()
 # Initialise data point vector field to 0
-independentField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,0.0)
+independentField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,0.0)
 # Initialise data point weight field to 1
-independentField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.V,CMISS.FieldParameterSetTypes.VALUES,1,1.0)
+independentField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.V,iron.FieldParameterSetTypes.VALUES,1,1.0)
 
 # loop over each element's data points and set independent field values to data point locations on surface of the sphere
 for element in range(numberOfElements):
@@ -432,31 +432,31 @@ for element in range(numberOfElements):
                 componentId = component + 1
                 dataPointNumberIndex = dataPointNumber - 1
                 value = dataList[component]
-                independentField.ParameterSetUpdateElementDataPointDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,elementId,dataPointId,componentId,value)
+                independentField.ParameterSetUpdateElementDataPointDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elementId,dataPointId,componentId,value)
 
 #=================================================================
 # Material Field
 #=================================================================
 
 # Create material field (Sobolev parameters)
-materialField = CMISS.Field()
+materialField = iron.Field()
 equationsSet.MaterialsCreateStart(materialFieldUserNumber,materialField)
-materialField.VariableLabelSet(CMISS.FieldVariableTypes.U,"Smoothing Parameters")
+materialField.VariableLabelSet(iron.FieldVariableTypes.U,"Smoothing Parameters")
 equationsSet.MaterialsCreateFinish()
 
 # Set kappa and tau - Sobolev smoothing parameters
-materialField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,tau)
-materialField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,2,kappa)
+materialField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,tau)
+materialField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,2,kappa)
 
 #=================================================================
 # Equations
 #=================================================================
 
 # Create equations
-equations = CMISS.Equations()
+equations = iron.Equations()
 equationsSet.EquationsCreateStart(equations)
-equations.sparsityType = CMISS.EquationsSparsityTypes.FULL
-equations.outputType = CMISS.EquationsOutputTypes.NONE
+equations.sparsityType = iron.EquationsSparsityTypes.FULL
+equations.outputType = iron.EquationsOutputTypes.NONE
 equationsSet.EquationsCreateFinish()
 
 #=================================================================
@@ -464,11 +464,11 @@ equationsSet.EquationsCreateFinish()
 #=================================================================
 
 # Create fitting problem
-problem = CMISS.Problem()
-problem.CreateStart(problemUserNumber)
-problem.SpecificationSet(CMISS.ProblemClasses.FITTING,
-        CMISS.ProblemTypes.DATA_FITTING,
-        CMISS.ProblemSubTypes.DATA_POINT_VECTOR_STATIC_FITTING)
+problem = iron.Problem()
+problemSpecification = [iron.ProblemClasses.FITTING,
+                        iron.ProblemTypes.DATA_FITTING,
+                        iron.ProblemSubtypes.DATA_POINT_VECTOR_STATIC_FITTING]
+problem.CreateStart(problemUserNumber, problemSpecification)
 problem.CreateFinish()
 
 # Create control loops
@@ -476,23 +476,23 @@ problem.ControlLoopCreateStart()
 problem.ControlLoopCreateFinish()
 
 # Create problem solver
-solver = CMISS.Solver()
+solver = iron.Solver()
 problem.SolversCreateStart()
-problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],1,solver)
-solver.outputType = CMISS.SolverOutputTypes.NONE # NONE / MATRIX
-solver.linearType = CMISS.LinearSolverTypes.ITERATIVE
-solver.LibraryTypeSet(CMISS.SolverLibraries.UMFPACK) # UMFPACK/SUPERLU
+problem.SolverGet([iron.ControlLoopIdentifiers.NODE],1,solver)
+solver.outputType = iron.SolverOutputTypes.NONE # NONE / MATRIX
+solver.linearType = iron.LinearSolverTypes.ITERATIVE
+solver.LibraryTypeSet(iron.SolverLibraries.UMFPACK) # UMFPACK/SUPERLU
 solver.linearIterativeAbsoluteTolerance = 1.0E-10
 solver.linearIterativeRelativeTolerance = 1.0E-05
 problem.SolversCreateFinish()
 
 # Create solver equations and add equations set to solver equations
-solver = CMISS.Solver()
-solverEquations = CMISS.SolverEquations()
+solver = iron.Solver()
+solverEquations = iron.SolverEquations()
 problem.SolverEquationsCreateStart()
-problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],1,solver)
+problem.SolverGet([iron.ControlLoopIdentifiers.NODE],1,solver)
 solver.SolverEquationsGet(solverEquations)
-solverEquations.sparsityType = CMISS.SolverEquationsSparsityTypes.FULL
+solverEquations.sparsityType = iron.SolverEquationsSparsityTypes.FULL
 equationsSetIndex = solverEquations.EquationsSetAdd(equationsSet)
 problem.SolverEquationsCreateFinish()
 
@@ -501,7 +501,7 @@ problem.SolverEquationsCreateFinish()
 #=================================================================
 
 # Create boundary conditions and set first and last nodes to 0.0 and 1.0
-boundaryConditions = CMISS.BoundaryConditions()
+boundaryConditions = iron.BoundaryConditions()
 solverEquations.BoundaryConditionsCreateStart(boundaryConditions)
 
 version = 1
@@ -516,9 +516,9 @@ if (fixInterior):
             geometricValue = numpy.zeros((numberOfDimensions))
             for component in range(numberOfDimensions):
                 componentId = component+1
-                geometricValue[component]=geometricField.ParameterSetGetNodeDP(CMISS.FieldVariableTypes.U,
-                                                                               CMISS.FieldParameterSetTypes.VALUES,
-                                                                               1,CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV,
+                geometricValue[component]=geometricField.ParameterSetGetNodeDP(iron.FieldVariableTypes.U,
+                                                                               iron.FieldParameterSetTypes.VALUES,
+                                                                               1,iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV,
                                                                                nodeId,componentId)
 
             derivList = []
@@ -561,12 +561,12 @@ if (fixInterior):
 
             for globalDeriv in derivList: 
                 for component in range(1,numberOfDimensions+1):
-                    value=geometricField.ParameterSetGetNodeDP(CMISS.FieldVariableTypes.U,
-                                                               CMISS.FieldParameterSetTypes.VALUES,
+                    value=geometricField.ParameterSetGetNodeDP(iron.FieldVariableTypes.U,
+                                                               iron.FieldParameterSetTypes.VALUES,
                                                                version,globalDeriv,nodeId,component)
-                    boundaryConditions.SetNode(dependentField,CMISS.FieldVariableTypes.U,
+                    boundaryConditions.SetNode(dependentField,iron.FieldVariableTypes.U,
                                                version,globalDeriv,nodeId,component,
-                                               CMISS.BoundaryConditionsTypes.FIXED,value)
+                                               iron.BoundaryConditionsTypes.FIXED,value)
 
 solverEquations.BoundaryConditionsCreateFinish()
 
@@ -582,11 +582,11 @@ for iteration in range (1,numberOfIterations+1):
 
     # Copy dependent field to geometric 
     for component in range(1,numberOfDimensions+1):
-        dependentField.ParametersToFieldParametersComponentCopy(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,component,geometricField,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,component)
+        dependentField.ParametersToFieldParametersComponentCopy(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,component,geometricField,iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,component)
 
     # Export fields
     print("Writing deformed geometry")
-    fields = CMISS.Fields()
+    fields = iron.Fields()
     fields.CreateRegion(region)
     fields.NodesExport("DeformedGeometry" + str(iteration),"FORTRAN")
     fields.ElementsExport("DeformedGeometry" + str(iteration),"FORTRAN")
@@ -594,4 +594,4 @@ for iteration in range (1,numberOfIterations+1):
 
 #-----------------------------------------------------------------
 
-CMISS.Finalise()
+iron.Finalise()

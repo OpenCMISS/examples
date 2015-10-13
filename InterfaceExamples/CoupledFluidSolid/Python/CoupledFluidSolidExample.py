@@ -145,16 +145,16 @@ InterpolationTypeInterface = InterpolationTypeDisplacement
 # Import the libraries (OpenCMISS,python,numpy,scipy)
 import numpy,csv,time,sys,os,pdb
 sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
-from opencmiss import CMISS
+from opencmiss import iron
 
 # Diagnostics
-#CMISS.DiagnosticsSetOn(CMISS.DiagnosticTypes.ALL,[1,2,3,4,5],"Diagnostics",[""])
-#CMISS.ErrorHandlingModeSet(CMISS.ErrorHandlingModes.TRAP_ERROR)
-#CMISS.OutputSetOn("Testing")
+#iron.DiagnosticsSetOn(iron.DiagnosticTypes.ALL,[1,2,3,4,5],"Diagnostics",[""])
+#iron.ErrorHandlingModeSet(iron.ErrorHandlingModes.TRAP_ERROR)
+#iron.OutputSetOn("Testing")
 
 # Get the computational nodes info
-NumberOfComputationalNodes = CMISS.ComputationalNumberOfNodesGet()
-ComputationalNodeNumber    = CMISS.ComputationalNodeNumberGet()
+NumberOfComputationalNodes = iron.ComputationalNumberOfNodesGet()
+ComputationalNodeNumber    = iron.ComputationalNodeNumberGet()
         
 #================================================================================================================================
 #  Initial Data & Default Values
@@ -170,12 +170,12 @@ InitialFieldMovingMesh.append(0.0)
 InitialFieldMovingMesh.append(0.0)
 InitialFieldMovingMesh.append(0.0)
 # (NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
-LinearSolverMovingMesh_OutputType=CMISS.SolverOutputTypes.NONE
-DynamicSolver_OutputType=CMISS.SolverOutputTypes.NONE
-LinearSolver_OutputType=CMISS.SolverOutputTypes.NONE
-NonlinearSolver_OutputType=CMISS.SolverOutputTypes.NONE
+LinearSolverMovingMesh_OutputType=iron.SolverOutputTypes.NONE
+DynamicSolver_OutputType=iron.SolverOutputTypes.NONE
+LinearSolver_OutputType=iron.SolverOutputTypes.NONE
+NonlinearSolver_OutputType=iron.SolverOutputTypes.NONE
 # (NoOutput/TimingOutput/MatrixOutput/ElementOutput)
-EquationsNavierStokesOutput=CMISS.SolverOutputTypes.NONE
+EquationsNavierStokesOutput=iron.SolverOutputTypes.NONE
 # Set result output parameter
 OutputFrequency = 1
 
@@ -907,21 +907,21 @@ if (SetupOutput):
 # Create a RC coordinate system for the solid region
 if (ExampleFileProgressDiagnostics):
     print " == >> SOLID COORDINATE SYSTEM << == "
-SolidCoordinateSystem = CMISS.CoordinateSystem()
+SolidCoordinateSystem = iron.CoordinateSystem()
 SolidCoordinateSystem.CreateStart(SolidCoordinateSystemUserNumber)
 SolidCoordinateSystem.DimensionSet(NumberOfDimensions)
 SolidCoordinateSystem.CreateFinish()
 # Create a RC coordinate system for the fluid region
 if (ExampleFileProgressDiagnostics):
     print " == >> FLUID COORDINATE SYSTEM << == "
-FluidCoordinateSystem = CMISS.CoordinateSystem()
+FluidCoordinateSystem = iron.CoordinateSystem()
 FluidCoordinateSystem.CreateStart(FluidCoordinateSystemUserNumber)
 FluidCoordinateSystem.DimensionSet(NumberOfDimensions)
 FluidCoordinateSystem.CreateFinish()
 # Create a RC coordinate system for the interface region
 if (ExampleFileProgressDiagnostics):
     print " == >> INTERFACE COORDINATE SYSTEM << == "
-InterfaceCoordinateSystem = CMISS.CoordinateSystem()
+InterfaceCoordinateSystem = iron.CoordinateSystem()
 InterfaceCoordinateSystem.CreateStart(InterfaceCoordinateSystemUserNumber)
 InterfaceCoordinateSystem.DimensionSet(NumberOfDimensions)
 InterfaceCoordinateSystem.CreateFinish()
@@ -933,16 +933,16 @@ InterfaceCoordinateSystem.CreateFinish()
 # Create a solid region
 if (ExampleFileProgressDiagnostics):
     print " == >> SOLID REGION << == "
-Region1 = CMISS.Region()
-Region1.CreateStart(SolidRegionUserNumber,CMISS.WorldRegion)
+Region1 = iron.Region()
+Region1.CreateStart(SolidRegionUserNumber,iron.WorldRegion)
 Region1.label = "SolidRegion"
 Region1.coordinateSystem = SolidCoordinateSystem
 Region1.CreateFinish()
 # Create a fluid region
 if (ExampleFileProgressDiagnostics):
     print " == >> FLUID REGION << == "
-Region2 = CMISS.Region()
-Region2.CreateStart(FluidRegionUserNumber,CMISS.WorldRegion)
+Region2 = iron.Region()
+Region2.CreateStart(FluidRegionUserNumber,iron.WorldRegion)
 Region2.label = "FluidRegion"
 Region2.coordinateSystem = FluidCoordinateSystem
 Region2.CreateFinish()
@@ -955,23 +955,23 @@ Region2.CreateFinish()
 if (ExampleFileProgressDiagnostics):
     print " == >> BASIS FOR SOLID: DISPLACEMENT, HYDROSTATIC PRESSURE << == "
 # Create a basis for the dependent field variable displacement
-BasisDisplacement = CMISS.Basis()
+BasisDisplacement = iron.Basis()
 BasisDisplacement.CreateStart(BasisDisplacementUserNumber)
 if (InterpolationTypeDisplacement == 1 or InterpolationTypeDisplacement == 2 or 
     InterpolationTypeDisplacement == 3 or InterpolationTypeDisplacement == 4):
-    BasisDisplacement.type = CMISS.BasisTypes.LAGRANGE_HERMITE_TP
+    BasisDisplacement.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
 elif (InterpolationTypeDisplacement == 7 or InterpolationTypeDisplacement == 8 or 
       InterpolationTypeDisplacement == 9):
-    BasisDisplacement.type = CMISS.BasisTypes.SIMPLEX_TYPE
-if (InterpolationTypeDisplacement == CMISS.BasisInterpolationSpecifications.LINEAR_LAGRANGE):
+    BasisDisplacement.type = iron.BasisTypes.SIMPLEX_TYPE
+if (InterpolationTypeDisplacement == iron.BasisInterpolationSpecifications.LINEAR_LAGRANGE):
     NumberOfGaussXi = 2
     PressureMeshComponent = 1
-elif(InterpolationTypeDisplacement == CMISS.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE):
+elif(InterpolationTypeDisplacement == iron.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE):
     NumberOfGaussXi = 3
     PressureMeshComponent = 2
     InterpolationTypeHydrostaticPressure = 1
-elif(InterpolationTypeDisplacement == CMISS.BasisInterpolationSpecifications.CUBIC_LAGRANGE or
-     InterpolationTypeDisplacement == CMISS.BasisInterpolationSpecifications.CUBIC_HERMITE):
+elif(InterpolationTypeDisplacement == iron.BasisInterpolationSpecifications.CUBIC_LAGRANGE or
+     InterpolationTypeDisplacement == iron.BasisInterpolationSpecifications.CUBIC_HERMITE):
     NumberOfGaussXi = 4
     PressureMeshComponent = 2
     InterpolationTypeHydrostaticPressure = 2
@@ -995,14 +995,14 @@ BasisDisplacement.CreateFinish()
 # Use the displacement basis as a space basis
 BasisSpaceSolid = BasisDisplacement
 # Create a basis for the dependent field variable hydrostatic pressure
-BasisHydrostaticPressure = CMISS.Basis()
+BasisHydrostaticPressure = iron.Basis()
 BasisHydrostaticPressure.CreateStart(BasisHydrostaticPressureUserNumber)
 if (InterpolationTypeHydrostaticPressure == 1 or InterpolationTypeHydrostaticPressure == 2 or 
     InterpolationTypeHydrostaticPressure == 3 or InterpolationTypeHydrostaticPressure == 4):
-    BasisHydrostaticPressure.type = CMISS.BasisTypes.LAGRANGE_HERMITE_TP
+    BasisHydrostaticPressure.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
 elif (InterpolationTypeHydrostaticPressure == 7 or InterpolationTypeHydrostaticPressure == 8 or 
       InterpolationTypeHydrostaticPressure == 9):
-    BasisHydrostaticPressure.type = CMISS.BasisTypes.SIMPLEX
+    BasisHydrostaticPressure.type = iron.BasisTypes.SIMPLEX
 BasisHydrostaticPressure.numberOfXi = NumberOfDimensions
 if (NumberOfDimensions == 2):
     BasisHydrostaticPressure.interpolationXi = [InterpolationTypeHydrostaticPressure,
@@ -1025,14 +1025,14 @@ if (ExampleFileProgressDiagnostics):
     print " == >> BASIS FOR FLUID: SPACE, VELOCITY, PRESSURE << == "
 # Create a basis for the fluid domain
 MeshNumberOfComponents = 1
-BasisSpaceFluid = CMISS.Basis()
+BasisSpaceFluid = iron.Basis()
 BasisSpaceFluid.CreateStart(BasisSpaceFluidUserNumber)
 if (InterpolationTypeSpace == 1 or InterpolationTypeSpace == 2 or 
     InterpolationTypeSpace == 3 or InterpolationTypeSpace == 4):
-    BasisSpaceFluid.type = CMISS.BasisTypes.LAGRANGE_HERMITE_TP
+    BasisSpaceFluid.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
 elif (InterpolationTypeSpace == 7 or InterpolationTypeSpace == 8 or 
       InterpolationTypeSpace == 9):
-    BasisSpaceFluid.type = CMISS.BasisTypes.SIMPLEX
+    BasisSpaceFluid.type = iron.BasisTypes.SIMPLEX
 if (InterpolationTypeSpace == 2):
     NumberOfGaussXiSpace = 3
 BasisSpaceFluid.numberOfXi = NumberOfDimensions
@@ -1054,9 +1054,9 @@ if (InterpolationTypeVelocity == InterpolationTypeSpace):
     BasisVelocity = BasisSpaceFluid
 else:
     MeshNumberOfComponents = MeshNumberOfComponents+1
-    BasisVelocity = CMISS.Basis()
+    BasisVelocity = iron.Basis()
     BasisVelocity.CreateStart(BasisVelocityUserNumber)
-    BasisVelocity.type = CMISS.BasisTypes.CMISS_BASIS_LAGRANGE_HERMITE_TP_TYPE
+    BasisVelocity.type = iron.BasisTypes.CMISS_BASIS_LAGRANGE_HERMITE_TP_TYPE
     NumberOfGaussXiVelocity = 3
     BasisVelocity.numberOfXi = NumberOfDimensions
     if (NumberOfDimensions == 2):
@@ -1080,9 +1080,9 @@ elif (InterpolationTypePressure == InterpolationTypeVelocity):
 else:
     MeshNumberOfComponents = MeshNumberOfComponents+1
     NumberOfGaussXiPressure = 3
-    BasisPressure = CMISS.Basis()
+    BasisPressure = iron.Basis()
     BasisPressure.CreateStart(BasisPressureUserNumber)
-    BasisPressure.type = CMISS.BasisTypes.LAGRANGE_HERMITE_TP
+    BasisPressure.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
     BasisPressure.numberOfXi = NumberOfDimensions
     if (NumberOfDimensions == 2):
         BasisPressure.interpolationXi = [InterpolationTypePressure,
@@ -1106,18 +1106,18 @@ else:
 if (ExampleFileProgressDiagnostics):
     print " == >> SOLID MESH << == "
 # Start the creation of mesh nodes
-SolidNodes = CMISS.Nodes()
+SolidNodes = iron.Nodes()
 SolidNodes.CreateStart(Region1,NumberOfSolidNodes)
 SolidNodes.CreateFinish()
 
-Mesh1 = CMISS.Mesh()
+Mesh1 = iron.Mesh()
 Mesh1.CreateStart(SolidMeshUserNumber,Region1,NumberOfDimensions)
 Mesh1.NumberOfElementsSet(NumberOfSolidElements)
 Mesh1.NumberOfComponentsSet(2)
 
-SolidMeshElementsSpace               = CMISS.MeshElements()
-SolidMeshElementsDisplacement        = CMISS.MeshElements()
-SolidMeshElementsHydrostaticPressure = CMISS.MeshElements()
+SolidMeshElementsSpace               = iron.MeshElements()
+SolidMeshElementsDisplacement        = iron.MeshElements()
+SolidMeshElementsHydrostaticPressure = iron.MeshElements()
 
 Mesh1ComponentNumberSpace               = 1
 Mesh1ComponentNumberDisplacement        = 1
@@ -1157,18 +1157,18 @@ Mesh1.CreateFinish()
 if (ExampleFileProgressDiagnostics):
     print " == >> FLUID MESH << == "
 # Start the creation of mesh nodes
-FluidNodes = CMISS.Nodes()
+FluidNodes = iron.Nodes()
 FluidNodes.CreateStart(Region2,NumberOfFluidNodes)
 FluidNodes.CreateFinish()
 
-Mesh2 = CMISS.Mesh()
+Mesh2 = iron.Mesh()
 Mesh2.CreateStart(FluidMeshUserNumber,Region2,NumberOfDimensions)
 Mesh2.NumberOfElementsSet(NumberOfFluidElements)
 Mesh2.NumberOfComponentsSet(2)
 
-FluidMeshElementsSpace    = CMISS.MeshElements()
-FluidMeshElementsVelocity = CMISS.MeshElements()
-FluidMeshElementsPressure = CMISS.MeshElements()
+FluidMeshElementsSpace    = iron.MeshElements()
+FluidMeshElementsVelocity = iron.MeshElements()
+FluidMeshElementsPressure = iron.MeshElements()
 
 Mesh2ComponentNumberSpace        = 1
 FluidMeshComponentNumberVelocity = 1
@@ -1209,8 +1209,8 @@ Mesh2.CreateFinish()
 # Create an interface between the two meshes
 if (ExampleFileProgressDiagnostics):
     print " == >> INTERFACE << == "
-Interface1 = CMISS.Interface()
-Interface1.CreateStart(InterfaceUserNumber,CMISS.WorldRegion)
+Interface1 = iron.Interface()
+Interface1.CreateStart(InterfaceUserNumber,iron.WorldRegion)
 Interface1.LabelSet("Interface1")
 # Add in the two meshes
 Interface1.MeshAdd(Mesh1)
@@ -1221,27 +1221,27 @@ Interface1.CreateFinish()
 # Create a (bi)-quadratic-Lagrange basis (3D: faces // 2D: lines)
 if (ExampleFileProgressDiagnostics):
     print " == >> INTERFACE BASIS << == "
-InterfaceBasis1 = CMISS.Basis()
+InterfaceBasis1 = iron.Basis()
 InterfaceBasis1.CreateStart(InterfaceBasisUserNumber)
 InterfaceBasis1.NumberOfXiSet(NumberOfDimensions-1)
 if (NumberOfDimensions == 2):
-    InterfaceBasis1.interpolationXi = [CMISS.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE]
+    InterfaceBasis1.interpolationXi = [iron.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE]
 else:
-    InterfaceBasis1.interpolationXi = [CMISS.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE,
-                                       CMISS.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE]
+    InterfaceBasis1.interpolationXi = [iron.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE,
+                                       iron.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE]
 InterfaceBasis1.CreateFinish()
 
 # Create a (bi)-quadratic-Lagrange basis for the interface mapping (3D: faces // 2D: lines)
 if (ExampleFileProgressDiagnostics):
     print " == >> INTERFACE MAPPING BASIS << == "
-InterfaceMappingBasis1 = CMISS.Basis()
+InterfaceMappingBasis1 = iron.Basis()
 InterfaceMappingBasis1.CreateStart(InterfaceMappingBasisUserNumber)
 InterfaceMappingBasis1.NumberOfXiSet(NumberOfDimensions-1)
 if (NumberOfDimensions == 2):
-    InterfaceMappingBasis1.interpolationXi = [CMISS.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE]
+    InterfaceMappingBasis1.interpolationXi = [iron.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE]
 else:
-    InterfaceMappingBasis1.interpolationXi = [CMISS.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE,
-                                              CMISS.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE]
+    InterfaceMappingBasis1.interpolationXi = [iron.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE,
+                                              iron.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE]
 InterfaceMappingBasis1.CreateFinish()
   
 #================================================================================================================================
@@ -1251,16 +1251,16 @@ InterfaceMappingBasis1.CreateFinish()
 # Create an interface mesh
 if (ExampleFileProgressDiagnostics):
     print " == >> INTERFACE MESH << == "
-InterfaceNodes = CMISS.Nodes()
+InterfaceNodes = iron.Nodes()
 InterfaceNodes.CreateStartInterface(Interface1,NumberOfInterfaceNodes)
 InterfaceNodes.CreateFinish()
 
-InterfaceMesh1 = CMISS.Mesh()
+InterfaceMesh1 = iron.Mesh()
 InterfaceMesh1.CreateStartInterface(InterfaceMeshUserNumber,Interface1,NumberOfDimensions-1)
 InterfaceMesh1.NumberOfElementsSet(NumberOfInterfaceElements)
 InterfaceMesh1.NumberOfComponentsSet(1)
 
-InterfaceMeshElements = CMISS.MeshElements()
+InterfaceMeshElements = iron.MeshElements()
 InterfaceMeshComponentNumber = 1
 InterfaceMeshElements.CreateStart(InterfaceMesh1,InterfaceMeshComponentNumber,InterfaceBasis1)
 for ElementIndex in range(1,NumberOfInterfaceElements+1):
@@ -1276,7 +1276,7 @@ InterfaceMesh1.CreateFinish()
 # Couple the interface meshes
 if (ExampleFileProgressDiagnostics):
     print " == >> INTERFACE MESH CONNECTIVITY << == "
-InterfaceMeshConnectivity1 = CMISS.InterfaceMeshConnectivity()
+InterfaceMeshConnectivity1 = iron.InterfaceMeshConnectivity()
 InterfaceMeshConnectivity1.CreateStart(Interface1,InterfaceMesh1)
 InterfaceMeshConnectivity1.BasisSet(InterfaceMappingBasis1)
 
@@ -1328,9 +1328,9 @@ InterfaceMeshConnectivity1.CreateFinish()
 # Create a decomposition for the solid mesh
 if (ExampleFileProgressDiagnostics):
     print " == >> SOLID MESH DECOMPOSITION << == "
-SolidDecomposition = CMISS.Decomposition()
+SolidDecomposition = iron.Decomposition()
 SolidDecomposition.CreateStart(SolidDecompositionUserNumber,Mesh1)
-SolidDecomposition.TypeSet(CMISS.DecompositionTypes.CALCULATED)
+SolidDecomposition.TypeSet(iron.DecompositionTypes.CALCULATED)
 SolidDecomposition.NumberOfDomainsSet(NumberOfComputationalNodes)
 SolidDecomposition.CalculateFacesSet(True)
 SolidDecomposition.CreateFinish()
@@ -1338,9 +1338,9 @@ SolidDecomposition.CreateFinish()
 # Create a decomposition for the fluid mesh
 if (ExampleFileProgressDiagnostics):
     print " == >> FLUID MESH DECOMPOSITION << == "
-FluidDecomposition = CMISS.Decomposition()
+FluidDecomposition = iron.Decomposition()
 FluidDecomposition.CreateStart(FluidDecompositionUserNumber,Mesh2)
-FluidDecomposition.TypeSet(CMISS.DecompositionTypes.CALCULATED)
+FluidDecomposition.TypeSet(iron.DecompositionTypes.CALCULATED)
 FluidDecomposition.NumberOfDomainsSet(NumberOfComputationalNodes)
 FluidDecomposition.CalculateFacesSet(True)
 FluidDecomposition.CreateFinish()
@@ -1348,9 +1348,9 @@ FluidDecomposition.CreateFinish()
 # Create a decomposition for the interface mesh
 if (ExampleFileProgressDiagnostics):
     print " == >> INTERFACE DECOMPOSITION << == "
-InterfaceDecomposition = CMISS.Decomposition()
+InterfaceDecomposition = iron.Decomposition()
 InterfaceDecomposition.CreateStart(SolidDecompositionUserNumber,InterfaceMesh1)
-InterfaceDecomposition.TypeSet(CMISS.DecompositionTypes.CALCULATED)
+InterfaceDecomposition.TypeSet(iron.DecompositionTypes.CALCULATED)
 InterfaceDecomposition.NumberOfDomainsSet(NumberOfComputationalNodes)
 InterfaceDecomposition.CreateFinish()
 
@@ -1361,54 +1361,54 @@ InterfaceDecomposition.CreateFinish()
 # Start to create a default (geometric) field on the solid region
 if (ExampleFileProgressDiagnostics):
     print " == >> SOLID MESH GEOMETRIC FIELD << == "
-GeometricField1 = CMISS.Field()
+GeometricField1 = iron.Field()
 GeometricField1.CreateStart(SolidGeometricFieldUserNumber,Region1)
 # Set the decomposition to use
 GeometricField1.meshDecomposition = SolidDecomposition
 # Set the scaling to use
-GeometricField1.ScalingTypeSet(CMISS.FieldScalingTypes.NONE)
-GeometricField1.VariableLabelSet(CMISS.FieldVariableTypes.U,'SolidGF')
+GeometricField1.ScalingTypeSet(iron.FieldScalingTypes.NONE)
+GeometricField1.VariableLabelSet(iron.FieldVariableTypes.U,'SolidGF')
 # Set the domain to be used by the field components.
-GeometricField1.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,Mesh1ComponentNumberSpace)
-GeometricField1.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,2,Mesh1ComponentNumberSpace)
+GeometricField1.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,Mesh1ComponentNumberSpace)
+GeometricField1.ComponentMeshComponentSet(iron.FieldVariableTypes.U,2,Mesh1ComponentNumberSpace)
 if (NumberOfDimensions == 3):
-    GeometricField1.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,3,Mesh1ComponentNumberSpace)
+    GeometricField1.ComponentMeshComponentSet(iron.FieldVariableTypes.U,3,Mesh1ComponentNumberSpace)
 # Finish creating the first field
 GeometricField1.CreateFinish()
 
 # Start to create a default (geometric) field on the fluid region
 if (ExampleFileProgressDiagnostics):
     print " == >> FLUID MESH GEOMETRIC FIELD << == "  
-GeometricField2 = CMISS.Field()
+GeometricField2 = iron.Field()
 GeometricField2.CreateStart(FluidGeometricFieldUserNumber,Region2)
 # Set the decomposition to use
 GeometricField2.MeshDecompositionSet(FluidDecomposition)
 # Set the scaling to use
-GeometricField2.ScalingTypeSet(CMISS.FieldScalingTypes.NONE)
-GeometricField2.VariableLabelSet(CMISS.FieldVariableTypes.U,'FluidGF')
+GeometricField2.ScalingTypeSet(iron.FieldScalingTypes.NONE)
+GeometricField2.VariableLabelSet(iron.FieldVariableTypes.U,'FluidGF')
 # Set the domain to be used by the field components.
-GeometricField2.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,Mesh2ComponentNumberSpace)
-GeometricField2.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,2,Mesh2ComponentNumberSpace)
+GeometricField2.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,Mesh2ComponentNumberSpace)
+GeometricField2.ComponentMeshComponentSet(iron.FieldVariableTypes.U,2,Mesh2ComponentNumberSpace)
 if (NumberOfDimensions == 3):
-    GeometricField2.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,3,Mesh2ComponentNumberSpace)
+    GeometricField2.ComponentMeshComponentSet(iron.FieldVariableTypes.U,3,Mesh2ComponentNumberSpace)
 # Finish creating the second field
 GeometricField2.CreateFinish()
 
 # Start to create a default (geometric) field on the Interface
 if (ExampleFileProgressDiagnostics):
     print " == >> INTERFACE GEOMETRIC FIELD << == "  
-InterfaceGeometricField1 = CMISS.Field()
+InterfaceGeometricField1 = iron.Field()
 InterfaceGeometricField1.CreateStartInterface(InterfaceGeometricFieldUserNumber,Interface1)
 # Set the decomposition to use
 InterfaceGeometricField1.MeshDecompositionSet(InterfaceDecomposition)
 # Set the scaling to use
-InterfaceGeometricField1.ScalingTypeSet(CMISS.FieldScalingTypes.NONE)
-InterfaceGeometricField1.VariableLabelSet(CMISS.FieldVariableTypes.U,'InterfaceGF')
+InterfaceGeometricField1.ScalingTypeSet(iron.FieldScalingTypes.NONE)
+InterfaceGeometricField1.VariableLabelSet(iron.FieldVariableTypes.U,'InterfaceGF')
 # Set the domain to be used by the field components.
-InterfaceGeometricField1.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,InterfaceMeshComponentNumber)
-InterfaceGeometricField1.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,2,InterfaceMeshComponentNumber)
+InterfaceGeometricField1.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,InterfaceMeshComponentNumber)
+InterfaceGeometricField1.ComponentMeshComponentSet(iron.FieldVariableTypes.U,2,InterfaceMeshComponentNumber)
 if (NumberOfDimensions == 3):
-    InterfaceGeometricField1.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,3,InterfaceMeshComponentNumber)
+    InterfaceGeometricField1.ComponentMeshComponentSet(iron.FieldVariableTypes.U,3,InterfaceMeshComponentNumber)
 # Finish creating the first field
 InterfaceGeometricField1.CreateFinish()
 
@@ -1420,28 +1420,28 @@ for NodeIndex in range(1,NumberOfSolidNodes+1):
             Components = [2,3,1]
         else:
             Components = [1,2,0]
-        GeometricField1.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+        GeometricField1.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
                                                  versionIdx,derivIdx,SolidNodeNumbers[NodeIndex-1],
                                                  Components[0],SolidGeometryY[NodeIndex-1])
-        GeometricField1.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+        GeometricField1.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
                                                  versionIdx,derivIdx,SolidNodeNumbers[NodeIndex-1],
                                                  Components[1],SolidGeometryZ[NodeIndex-1])
         if (NumberOfDimensions == 3):
-            GeometricField1.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+            GeometricField1.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
                                                      versionIdx,derivIdx,SolidNodeNumbers[NodeIndex-1],
                                                      Components[2],SolidGeometryX[NodeIndex])
 # Update the geometric field parameters (fluid)
 for NodeIndex in range(1,NumberOfFluidNodes+1):
     NodeDomain = FluidDecomposition.NodeDomainGet(FluidNodeNumbers[NodeIndex-1],Mesh2ComponentNumberSpace)
     if (NodeDomain == ComputationalNodeNumber):
-        GeometricField2.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+        GeometricField2.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
                                                  versionIdx,derivIdx,FluidNodeNumbers[NodeIndex-1],
                                                  Components[0],FluidGeometryY[NodeIndex-1])
-        GeometricField2.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+        GeometricField2.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
                                                  versionIdx,derivIdx,FluidNodeNumbers[NodeIndex-1],
                                                  Components[1],FluidGeometryZ[NodeIndex-1])
         if (NumberOfDimensions == 3):
-            GeometricField2.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+            GeometricField2.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
                                                      versionIdx,derivIdx,FluidNodeNumbers[NodeIndex],
                                                      Components[2],FluidGeometryX[NodeIndex-1])
 # Update the geometric field parameters (interface)
@@ -1449,23 +1449,23 @@ for NodeIndex in range(1,NumberOfInterfaceNodes+1):
     NodeDomain = InterfaceDecomposition.NodeDomainGet(int(InterfaceNodeNumbersForGeometry[NodeIndex-1]),
                                                       InterfaceMeshComponentNumber)
     if (NodeDomain == ComputationalNodeNumber):
-        InterfaceGeometricField1.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+        InterfaceGeometricField1.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
                                                           versionIdx,derivIdx,int(InterfaceNodeNumbersForGeometry[NodeIndex-1]),
                                                           Components[0],InterfaceGeometryY[NodeIndex-1])
-        InterfaceGeometricField1.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+        InterfaceGeometricField1.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
                                                           versionIdx,derivIdx,int(InterfaceNodeNumbersForGeometry[NodeIndex-1]),
                                                           Components[1],InterfaceGeometryZ[NodeIndex-1])
         if (NumberOfDimensions == 3):
-            InterfaceGeometricField1.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+            InterfaceGeometricField1.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
                                                               versionIdx,derivIdx,int(InterfaceNodeNumbersForGeometry[1][NodeIndex-1]),
                                                               Components[2],InterfaceGeometryX[NodeIndex-1])
 
-GeometricField1.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
-GeometricField1.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
-GeometricField2.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
-GeometricField2.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
-InterfaceGeometricField1.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
-InterfaceGeometricField1.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
+GeometricField1.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+GeometricField1.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+GeometricField2.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+GeometricField2.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+InterfaceGeometricField1.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+InterfaceGeometricField1.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
 #================================================================================================================================
 #  Equations Set
@@ -1474,39 +1474,39 @@ InterfaceGeometricField1.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMI
 # Create the equations set for the solid region - Finite Elasticity Mooney-Rivlin
 if (ExampleFileProgressDiagnostics):
     print " == >> SOLID EQUATION SET << == "
-EquationsSetField1 = CMISS.Field()
-SolidEquationsSet = CMISS.EquationsSet()
+EquationsSetField1 = iron.Field()
+SolidEquationsSet = iron.EquationsSet()
+SolidEquationsSetSpecification = [iron.EquationsSetClasses.ELASTICITY,
+                                  iron.EquationsSetTypes.FINITE_ELASTICITY,
+                                  iron.EquationsSetSubtypes.MOONEY_RIVLIN]
 SolidEquationsSet.CreateStart(SolidEquationsSetUserNumber,Region1,GeometricField1,
-                              CMISS.EquationsSetClasses.ELASTICITY,
-                              CMISS.EquationsSetTypes.FINITE_ELASTICITY,
-                              CMISS.EquationsSetSubtypes.MOONEY_RIVLIN,
-                              SolidEquationsSetFieldUserNumber,
+                              SolidEquationsSetSpecification,SolidEquationsSetFieldUserNumber,
                               EquationsSetField1)
 SolidEquationsSet.CreateFinish()
 
 # Create the equations set for the fluid region - ALE Navier-Stokes
 if (ExampleFileProgressDiagnostics):
     print " == >> FLUID EQUATION SET << == "
-EquationsSetField2 = CMISS.Field()
-FluidEquationsSet = CMISS.EquationsSet()
+EquationsSetField2 = iron.Field()
+FluidEquationsSet = iron.EquationsSet()
+FluidEquationsSetSpecification = [iron.EquationsSetClasses.FLUID_MECHANICS,
+                                  iron.EquationsSetTypes.NAVIER_STOKES_EQUATION,
+                                  iron.EquationsSetSubtypes.ALE_NAVIER_STOKES]
 FluidEquationsSet.CreateStart(FluidEquationsSetUserNumber,Region2,GeometricField2,
-                              CMISS.EquationsSetClasses.FLUID_MECHANICS,
-                              CMISS.EquationsSetTypes.NAVIER_STOKES_EQUATION,
-                              CMISS.EquationsSetSubtypes.ALE_NAVIER_STOKES,
-                              FluidEquationsSetFieldUserNumber,
+                              FluidEquationsSetSpecification,FluidEquationsSetFieldUserNumber,
                               EquationsSetField2)
 FluidEquationsSet.CreateFinish()
 
 # Create the equations set for the moving mesh
 if (ExampleFileProgressDiagnostics):
     print " == >> MOVING MESH EQUATION SET << == "
-EquationsSetFieldMovingMesh = CMISS.Field()
-MovingMeshEquationsSet = CMISS.EquationsSet()
+EquationsSetFieldMovingMesh = iron.Field()
+MovingMeshEquationsSet = iron.EquationsSet()
+MovingMeshEquationsSetSpecification = [iron.EquationsSetClasses.CLASSICAL_FIELD,
+                                       iron.EquationsSetTypes.LAPLACE_EQUATION,
+                                       iron.EquationsSetSubtypes.MOVING_MESH_LAPLACE]
 MovingMeshEquationsSet.CreateStart(MovingMeshEquationsSetUserNumber,Region2,GeometricField2,
-                                   CMISS.EquationsSetClasses.CLASSICAL_FIELD,
-                                   CMISS.EquationsSetTypes.LAPLACE_EQUATION,
-                                   CMISS.EquationsSetSubtypes.MOVING_MESH_LAPLACE,
-                                   EquationsSetFieldMovingMeshUserNumber,
+                                   MovingMeshEquationsSetSpecification,EquationsSetFieldMovingMeshUserNumber,
                                    EquationsSetFieldMovingMesh)
 MovingMeshEquationsSet.CreateFinish()
 
@@ -1518,77 +1518,77 @@ MovingMeshEquationsSet.CreateFinish()
 if (ExampleFileProgressDiagnostics):
     print " == >> SOLID DEPENDENT FIELD << == "
 # Create the dependent field
-DependentField1 = CMISS.Field()
+DependentField1 = iron.Field()
 SolidEquationsSet.DependentCreateStart(SolidDependentFieldUserNumber,DependentField1)
-DependentField1.VariableLabelSet(CMISS.FieldVariableTypes.U,'SolidDF')
+DependentField1.VariableLabelSet(iron.FieldVariableTypes.U,'SolidDF')
 for component_idx in range(1,NumberOfDimensions+1):
-    DependentField1.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,component_idx,Mesh1ComponentNumberSpace)
-    DependentField1.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,component_idx,Mesh1ComponentNumberSpace)
-DependentField1.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,NumberOfDimensions+1,PressureMeshComponent)
-DependentField1.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,NumberOfDimensions+1,PressureMeshComponent)
+    DependentField1.ComponentMeshComponentSet(iron.FieldVariableTypes.U,component_idx,Mesh1ComponentNumberSpace)
+    DependentField1.ComponentMeshComponentSet(iron.FieldVariableTypes.DELUDELN,component_idx,Mesh1ComponentNumberSpace)
+DependentField1.ComponentMeshComponentSet(iron.FieldVariableTypes.U,NumberOfDimensions+1,PressureMeshComponent)
+DependentField1.ComponentMeshComponentSet(iron.FieldVariableTypes.DELUDELN,NumberOfDimensions+1,PressureMeshComponent)
 if (PressureMeshComponent == 1):
-    DependentField1.ComponentInterpolationSet(CMISS.FieldVariableTypes.U,NumberOfDimensions+1,
-     CMISS.FieldInterpolationTypes.ELEMENT_BASED)
-    DependentField1.ComponentInterpolationSet(CMISS.FieldVariableTypes.DELUDELN,NumberOfDimensions+1,
-     CMISS.FieldInterpolationTypes.ELEMENT_BASED)
+    DependentField1.ComponentInterpolationSet(iron.FieldVariableTypes.U,NumberOfDimensions+1,
+     iron.FieldInterpolationTypes.ELEMENT_BASED)
+    DependentField1.ComponentInterpolationSet(iron.FieldVariableTypes.DELUDELN,NumberOfDimensions+1,
+     iron.FieldInterpolationTypes.ELEMENT_BASED)
 else:
-    DependentField1.ComponentInterpolationSet(CMISS.FieldVariableTypes.U,NumberOfDimensions+1,
-     CMISS.FieldInterpolationTypes.NODE_BASED)
-    DependentField1.ComponentInterpolationSet(CMISS.FieldVariableTypes.DELUDELN,NumberOfDimensions+1,
-     CMISS.FieldInterpolationTypes.NODE_BASED)
-DependentField1.ScalingTypeSet(CMISS.FieldScalingTypes.NONE)
+    DependentField1.ComponentInterpolationSet(iron.FieldVariableTypes.U,NumberOfDimensions+1,
+     iron.FieldInterpolationTypes.NODE_BASED)
+    DependentField1.ComponentInterpolationSet(iron.FieldVariableTypes.DELUDELN,NumberOfDimensions+1,
+     iron.FieldInterpolationTypes.NODE_BASED)
+DependentField1.ScalingTypeSet(iron.FieldScalingTypes.NONE)
 SolidEquationsSet.DependentCreateFinish()
 
 # Initialise dependent field from undeformed geometry and displacement bcs and set hydrostatic pressure
-GeometricField1.ParametersToFieldParametersComponentCopy(CMISS.FieldVariableTypes.U,
- CMISS.FieldParameterSetTypes.VALUES,1,DependentField1,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1)
-GeometricField1.ParametersToFieldParametersComponentCopy(CMISS.FieldVariableTypes.U,
- CMISS.FieldParameterSetTypes.VALUES,2,DependentField1,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,2)
+GeometricField1.ParametersToFieldParametersComponentCopy(iron.FieldVariableTypes.U,
+ iron.FieldParameterSetTypes.VALUES,1,DependentField1,iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1)
+GeometricField1.ParametersToFieldParametersComponentCopy(iron.FieldVariableTypes.U,
+ iron.FieldParameterSetTypes.VALUES,2,DependentField1,iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,2)
 if (NumberOfDimensions == 3):
-    GeometricField1.ParametersToFieldParametersComponentCopy(CMISS.FieldVariableTypes.U,
-     CMISS.FieldParameterSetTypes.VALUES,3,DependentField1,CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,3)
+    GeometricField1.ParametersToFieldParametersComponentCopy(iron.FieldVariableTypes.U,
+     iron.FieldParameterSetTypes.VALUES,3,DependentField1,iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,3)
      
-DependentField1.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,NumberOfDimensions+1,-MooneyRivlin1)
-DependentField1.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
-DependentField1.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
+DependentField1.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,NumberOfDimensions+1,-MooneyRivlin1)
+DependentField1.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+DependentField1.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
 # Create the equations set dependent field variables for dynamic Navier-Stokes
 if (ExampleFileProgressDiagnostics):
     print " == >> FLUID DEPENDENT FIELD << == "
-DependentField2 = CMISS.Field()
+DependentField2 = iron.Field()
 FluidEquationsSet.DependentCreateStart(FluidDependentFieldUserNumber,DependentField2)
-DependentField2.VariableLabelSet(CMISS.FieldVariableTypes.U,'FluidDF')
+DependentField2.VariableLabelSet(iron.FieldVariableTypes.U,'FluidDF')
 # Set the mesh component to be used by the field components.
 for ComponentNumber in range(1,NumberOfDimensions+1):
-    DependentField2.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,ComponentNumber,Mesh2ComponentNumberSpace)
-    DependentField2.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,ComponentNumber,Mesh2ComponentNumberSpace)
-DependentField2.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,NumberOfDimensions+1,Mesh2ComponentNumberPressure)
-DependentField2.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,NumberOfDimensions+1,Mesh2ComponentNumberPressure)
+    DependentField2.ComponentMeshComponentSet(iron.FieldVariableTypes.U,ComponentNumber,Mesh2ComponentNumberSpace)
+    DependentField2.ComponentMeshComponentSet(iron.FieldVariableTypes.DELUDELN,ComponentNumber,Mesh2ComponentNumberSpace)
+DependentField2.ComponentMeshComponentSet(iron.FieldVariableTypes.U,NumberOfDimensions+1,Mesh2ComponentNumberPressure)
+DependentField2.ComponentMeshComponentSet(iron.FieldVariableTypes.DELUDELN,NumberOfDimensions+1,Mesh2ComponentNumberPressure)
 # Finish the equations set dependent field variables
 FluidEquationsSet.DependentCreateFinish()
 # Initialise dependent field
 for ComponentNumber in range(1,NumberOfDimensions+1):
-    DependentField2.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+    DependentField2.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
                                                 ComponentNumber,InitialFieldNavierStokes[ComponentNumber-1])
 # Initialise pressure component
-DependentField2.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+DependentField2.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
                                             NumberOfDimensions+1,0.1)
      
 # Create the equations set dependent field variables for moving mesh
 if (ExampleFileProgressDiagnostics):
     print " == >> MOVING MESH DEPENDENT FIELD << == "
-DependentFieldMovingMesh = CMISS.Field()
+DependentFieldMovingMesh = iron.Field()
 MovingMeshEquationsSet.DependentCreateStart(DependentFieldMovingMeshUserNumber,DependentFieldMovingMesh)
-DependentFieldMovingMesh.VariableLabelSet(CMISS.FieldVariableTypes.U,'MovingMeshDF')
+DependentFieldMovingMesh.VariableLabelSet(iron.FieldVariableTypes.U,'MovingMeshDF')
 # Set the mesh component to be used by the field components.
 for ComponentNumber in range(1,NumberOfDimensions+1):
-    DependentFieldMovingMesh.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,ComponentNumber,Mesh2ComponentNumberSpace)
-    DependentFieldMovingMesh.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,ComponentNumber,Mesh2ComponentNumberSpace)
+    DependentFieldMovingMesh.ComponentMeshComponentSet(iron.FieldVariableTypes.U,ComponentNumber,Mesh2ComponentNumberSpace)
+    DependentFieldMovingMesh.ComponentMeshComponentSet(iron.FieldVariableTypes.DELUDELN,ComponentNumber,Mesh2ComponentNumberSpace)
 # Finish the equations set dependent field variables
 MovingMeshEquationsSet.DependentCreateFinish()
 # Initialise dependent field moving mesh
 for ComponentNumber in range(1,NumberOfDimensions+1):
-    DependentFieldMovingMesh.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+    DependentFieldMovingMesh.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
                                                          ComponentNumber,InitialFieldMovingMesh[ComponentNumber-1])
      
 #================================================================================================================================
@@ -1598,36 +1598,36 @@ for ComponentNumber in range(1,NumberOfDimensions+1):
 # Create the material field
 if (ExampleFileProgressDiagnostics):
     print " == >> SOLID MATERIAL FIELD << == "
-MaterialField1 = CMISS.Field()
+MaterialField1 = iron.Field()
 SolidEquationsSet.MaterialsCreateStart(SolidMaterialFieldUserNumber,MaterialField1)
-MaterialField1.VariableLabelSet(CMISS.FieldVariableTypes.U,'Material1')
-MaterialField1.VariableLabelSet(CMISS.FieldVariableTypes.V,'SolidDensity')
+MaterialField1.VariableLabelSet(iron.FieldVariableTypes.U,'Material1')
+MaterialField1.VariableLabelSet(iron.FieldVariableTypes.V,'SolidDensity')
 SolidEquationsSet.MaterialsCreateFinish()
 # Set Mooney-Rivlin constants c10 and c01 (default?2.0 and 6.0) respectively
-MaterialField1.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,MooneyRivlin1)
-MaterialField1.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,2,MooneyRivlin2)
-MaterialField1.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.V,CMISS.FieldParameterSetTypes.VALUES,1,SolidDensity)
+MaterialField1.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,MooneyRivlin1)
+MaterialField1.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,2,MooneyRivlin2)
+MaterialField1.ComponentValuesInitialiseDP(iron.FieldVariableTypes.V,iron.FieldParameterSetTypes.VALUES,1,SolidDensity)
 
 # Create the equations set materials field variables for dynamic Navier-Stokes
 if (ExampleFileProgressDiagnostics):
     print " == >> FLUID MATERIAL FIELD << == "
-MaterialField2 = CMISS.Field()
+MaterialField2 = iron.Field()
 FluidEquationsSet.MaterialsCreateStart(FluidMaterialFieldUserNumber,MaterialField2)
 # Finish the equations set materials field variables
 FluidEquationsSet.MaterialsCreateFinish()
-MaterialField2.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+MaterialField2.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
  FluidMaterialFieldComponentMu,FluidDynamicViscosity)
-MaterialField2.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+MaterialField2.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
  FluidMaterialFieldComponentRho,FluidDensity)
 
 # Create the equations set materials field variables for moving mesh
 if (ExampleFileProgressDiagnostics):
     print " == >> MATERIAL FIELD MOVING MESH << == "
-MaterialFieldMovingMesh = CMISS.Field()
+MaterialFieldMovingMesh = iron.Field()
 MovingMeshEquationsSet.MaterialsCreateStart(MaterialFieldMovingMeshUserNumber,MaterialFieldMovingMesh)
 # Finish the equations set materials field variables
 MovingMeshEquationsSet.MaterialsCreateFinish()
-MaterialFieldMovingMesh.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+MaterialFieldMovingMesh.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
  MaterialFieldMovingMeshUserNumberK,MovingMeshParameterK)
     
 #================================================================================================================================
@@ -1638,12 +1638,12 @@ if (GravityFlag):
     if (ExampleFileProgressDiagnostics):
         print " == >> SOURCE FIELD - GRAVITY << == "
     #Create the source field with the gravity vector
-    SourceField1 = CMISS.Field()
+    SourceField1 = iron.Field()
     SolidEquationsSet.SourceCreateStart(SourceFieldUserNumber,SourceField1)
-    SourceField1.ScalingTypeSet(CMISS.FieldScalingTypes.NONE)
+    SourceField1.ScalingTypeSet(iron.FieldScalingTypes.NONE)
     SolidEquationsSet.SourceCreateFinish()
     for component_idx in range(1,NumberOfDimensions+1):
-        SourceField1.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,
+        SourceField1.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
          component_idx,Gravity[component_idx-1])
          
 #================================================================================================================================
@@ -1654,29 +1654,29 @@ if (GravityFlag):
 if (ExampleFileProgressDiagnostics):
     print " == >> FLUID INDEPENDENT FIELD << == "
 # Create the equations set independent field variables for ALE Navier-Stokes
-IndependentField2 = CMISS.Field()
+IndependentField2 = iron.Field()
 FluidEquationsSet.IndependentCreateStart(IndependentField2UserNumber,IndependentField2)
-IndependentField2.VariableLabelSet(CMISS.FieldVariableTypes.U,'FluidInDF')
+IndependentField2.VariableLabelSet(iron.FieldVariableTypes.U,'FluidInDF')
 # Set the mesh component to be used by the field components.
 for ComponentNumber in range(1,NumberOfDimensions+1):
-    IndependentField2.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,ComponentNumber,Mesh2ComponentNumberSpace)
+    IndependentField2.ComponentMeshComponentSet(iron.FieldVariableTypes.U,ComponentNumber,Mesh2ComponentNumberSpace)
 # Finish the equations set independent field variables
 FluidEquationsSet.IndependentCreateFinish()
   
 if (ExampleFileProgressDiagnostics):
     print " == >> INDEPENDENT FIELD MOVING MESH << == "
 # Create the equations set independent field variables for moving mesh
-IndependentFieldMovingMesh = CMISS.Field()
+IndependentFieldMovingMesh = iron.Field()
 MovingMeshEquationsSet.IndependentCreateStart(IndependentFieldMovingMeshUserNumber,IndependentFieldMovingMesh)
-IndependentFieldMovingMesh.VariableLabelSet(CMISS.FieldVariableTypes.U,'MovingMeshInDF')
+IndependentFieldMovingMesh.VariableLabelSet(iron.FieldVariableTypes.U,'MovingMeshInDF')
 # Set the mesh component to be used by the field components.
 for ComponentNumber in range(1,NumberOfDimensions+1):
-    IndependentFieldMovingMesh.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,ComponentNumber,Mesh2ComponentNumberSpace)    
+    IndependentFieldMovingMesh.ComponentMeshComponentSet(iron.FieldVariableTypes.U,ComponentNumber,Mesh2ComponentNumberSpace)    
 # Finish the equations set independent field variables
 MovingMeshEquationsSet.IndependentCreateFinish()
 # Initialise independent field moving mesh
-IndependentFieldMovingMesh.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,
- CMISS.FieldParameterSetTypes.VALUES,IndependentFieldMovingMeshUserNumberK,MovingMeshParameterK)
+IndependentFieldMovingMesh.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,
+ iron.FieldParameterSetTypes.VALUES,IndependentFieldMovingMeshUserNumberK,MovingMeshParameterK)
  
 #================================================================================================================================
 #  Equations
@@ -1685,31 +1685,31 @@ IndependentFieldMovingMesh.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.
 # 1st Equations Set
 if (ExampleFileProgressDiagnostics):
     print " == >> SOLID EQUATIONS << == "
-Equations1 = CMISS.Equations()
+Equations1 = iron.Equations()
 SolidEquationsSet.EquationsCreateStart(Equations1)
-Equations1.sparsityType = CMISS.EquationsSparsityTypes.SPARSE
+Equations1.sparsityType = iron.EquationsSparsityTypes.SPARSE
 # (NONE/TIMING/MATRIX/ELEMENT_MATRIX/NODAL_MATRIX)
-Equations1.outputType = CMISS.EquationsOutputTypes.NONE
+Equations1.outputType = iron.EquationsOutputTypes.NONE
 SolidEquationsSet.EquationsCreateFinish()
 
 # 2nd Equations Set
 if (ExampleFileProgressDiagnostics):
     print " == >> FLUID EQUATIONS << == "
-Equations2 = CMISS.Equations()
+Equations2 = iron.Equations()
 FluidEquationsSet.EquationsCreateStart(Equations2)
-Equations2.sparsityType = CMISS.EquationsSparsityTypes.SPARSE
+Equations2.sparsityType = iron.EquationsSparsityTypes.SPARSE
 # (NONE/TIMING/MATRIX/ELEMENT_MATRIX/NODAL_MATRIX)
-Equations2.outputType = CMISS.EquationsOutputTypes.NONE
+Equations2.outputType = iron.EquationsOutputTypes.NONE
 FluidEquationsSet.EquationsCreateFinish()
 
 # 3rd Equations Set
 if (ExampleFileProgressDiagnostics):
     print " == >> MOVING MESH EQUATIONS << == "
-EquationsMovingMesh = CMISS.Equations()
+EquationsMovingMesh = iron.Equations()
 MovingMeshEquationsSet.EquationsCreateStart(EquationsMovingMesh)
-EquationsMovingMesh.sparsityType = CMISS.EquationsSparsityTypes.SPARSE
+EquationsMovingMesh.sparsityType = iron.EquationsSparsityTypes.SPARSE
 # (NONE/TIMING/MATRIX/ELEMENT_MATRIX/NODAL_MATRIX)
-EquationsMovingMesh.outputType = CMISS.EquationsOutputTypes.NONE
+EquationsMovingMesh.outputType = iron.EquationsOutputTypes.NONE
 MovingMeshEquationsSet.EquationsCreateFinish()
 
 #================================================================================================================================
@@ -1719,40 +1719,40 @@ MovingMeshEquationsSet.EquationsCreateFinish()
 # Create an interface condition between the two meshes
 if (ExampleFileProgressDiagnostics):
     print " == >> INTERFACE CONDITIONS << == "
-InterfaceCondition = CMISS.InterfaceCondition()
+InterfaceCondition = iron.InterfaceCondition()
 InterfaceCondition.CreateStart(InterfaceConditionUserNumber,Interface1,InterfaceGeometricField1)
 # Specify the method for the interface condition
-InterfaceCondition.MethodSet(CMISS.InterfaceConditionMethods.LAGRANGE_MULTIPLIERS)
+InterfaceCondition.MethodSet(iron.InterfaceConditionMethods.LAGRANGE_MULTIPLIERS)
 # Specify the type of interface condition operator
-InterfaceCondition.OperatorSet(CMISS.InterfaceConditionOperators.SOLID_FLUID)
+InterfaceCondition.OperatorSet(iron.InterfaceConditionOperators.SOLID_FLUID)
 # Add in the dependent variables from the equations sets
-InterfaceCondition.DependentVariableAdd(SolidMeshIndex,SolidEquationsSet,CMISS.FieldVariableTypes.U)
-InterfaceCondition.DependentVariableAdd(FluidMeshIndex,FluidEquationsSet,CMISS.FieldVariableTypes.U)
+InterfaceCondition.DependentVariableAdd(SolidMeshIndex,SolidEquationsSet,iron.FieldVariableTypes.U)
+InterfaceCondition.DependentVariableAdd(FluidMeshIndex,FluidEquationsSet,iron.FieldVariableTypes.U)
 # Finish creating the interface condition
 InterfaceCondition.CreateFinish()
 
 # Create the Lagrange multipliers field
 if (ExampleFileProgressDiagnostics):
     print " == >> INTERFACE LAGRANGE FIELD << == "
-LagrangeField1 = CMISS.Field()
+LagrangeField1 = iron.Field()
 InterfaceCondition.LagrangeFieldCreateStart(LagrangeFieldUserNumber,LagrangeField1)
-LagrangeField1.VariableLabelSet(CMISS.FieldVariableTypes.U,"InterfaceLF")
+LagrangeField1.VariableLabelSet(iron.FieldVariableTypes.U,"InterfaceLF")
 # Finish the Lagrange multipliers field
 InterfaceCondition.LagrangeFieldCreateFinish()
 for ComponentNumber in range(1,NumberOfDimensions+1):
-    LagrangeField1.ComponentValuesInitialise(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,ComponentNumber,0.0)
-LagrangeField1.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
-LagrangeField1.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
+    LagrangeField1.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,ComponentNumber,0.0)
+LagrangeField1.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+LagrangeField1.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
 # Create the interface condition equations
 if (ExampleFileProgressDiagnostics):
     print " == >> INTERFACE EQUATIONS << == "
-InterfaceEquations = CMISS.InterfaceEquations()
+InterfaceEquations = iron.InterfaceEquations()
 InterfaceCondition.EquationsCreateStart(InterfaceEquations)
 # Set the interface equations sparsity
-InterfaceEquations.sparsityType = CMISS.EquationsSparsityTypes.SPARSE
+InterfaceEquations.sparsityType = iron.EquationsSparsityTypes.SPARSE
 # Set the interface equations output
-InterfaceEquations.outputType = CMISS.EquationsOutputTypes.NONE
+InterfaceEquations.outputType = iron.EquationsOutputTypes.NONE
 # Finish creating the interface equations
 InterfaceCondition.EquationsCreateFinish()
 
@@ -1763,11 +1763,11 @@ InterfaceCondition.EquationsCreateFinish()
 # Create a problem
 if (ExampleFileProgressDiagnostics):
     print " == >> COUPLED PROBLEM << == "
-CoupledProblem = CMISS.Problem()
-CoupledProblem.CreateStart(CoupledProblemUserNumber)
-CoupledProblem.SpecificationSet(CMISS.ProblemClasses.MULTI_PHYSICS,
-                                CMISS.ProblemTypes.FINITE_ELASTICITY_NAVIER_STOKES,
-                                CMISS.ProblemSubTypes.FINITE_ELASTICITY_NAVIER_STOKES_ALE)    
+CoupledProblem = iron.Problem()
+ProblemSpecification = [iron.ProblemClasses.MULTI_PHYSICS,
+                        iron.ProblemTypes.FINITE_ELASTICITY_NAVIER_STOKES,
+                        iron.ProblemSubtypes.FINITE_ELASTICITY_NAVIER_STOKES_ALE]
+CoupledProblem.CreateStart(CoupledProblemUserNumber,ProblemSpecification)
 CoupledProblem.CreateFinish()
 
 #================================================================================================================================
@@ -1777,9 +1777,9 @@ CoupledProblem.CreateFinish()
 # Create the problem control loop
 if (ExampleFileProgressDiagnostics):
     print " == >> PROBLEM CONTROL LOOP << == "
-ControlLoop = CMISS.ControlLoop()
+ControlLoop = iron.ControlLoop()
 CoupledProblem.ControlLoopCreateStart()
-CoupledProblem.ControlLoopGet([CMISS.ControlLoopIdentifiers.NODE],ControlLoop)
+CoupledProblem.ControlLoopGet([iron.ControlLoopIdentifiers.NODE],ControlLoop)
 ControlLoop.LabelSet('TimeLoop')
 ControlLoop.TimesSet(StartTime,StopTime,TimeStepSize)
 ControlLoop.TimeInputSet(MaterialSpecification)
@@ -1793,24 +1793,24 @@ CoupledProblem.ControlLoopCreateFinish()
 # Create the problem solver
 if (ExampleFileProgressDiagnostics):
     print " == >> PROBLEM SOLVERS << == "
-LinearSolverMovingMesh = CMISS.Solver()
-DynamicSolver = CMISS.Solver()
-NonlinearSolver = CMISS.Solver()
-LinearSolver = CMISS.Solver()
+LinearSolverMovingMesh = iron.Solver()
+DynamicSolver = iron.Solver()
+NonlinearSolver = iron.Solver()
+LinearSolver = iron.Solver()
 
 CoupledProblem.SolversCreateStart()
 # Linear solver for moving mesh
-CoupledProblem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],LinearSolverMovingMeshIndex,LinearSolverMovingMesh)
+CoupledProblem.SolverGet([iron.ControlLoopIdentifiers.NODE],LinearSolverMovingMeshIndex,LinearSolverMovingMesh)
 LinearSolverMovingMesh.OutputTypeSet(LinearSolverMovingMesh_OutputType)
 # Solvers for coupled FiniteElasticity NavierStokes problem
 # Get the dynamic ALE solver
-CoupledProblem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],DynamicSolverIndex,DynamicSolver)
+CoupledProblem.SolverGet([iron.ControlLoopIdentifiers.NODE],DynamicSolverIndex,DynamicSolver)
 DynamicSolver.OutputTypeSet(DynamicSolver_OutputType)
 DynamicSolver.DynamicThetaSet(DynamicSolver_Theta)
 # Get the dynamic nonlinear solver
 DynamicSolver.DynamicNonlinearSolverGet(NonlinearSolver)
-NonlinearSolver.NewtonLineSearchTypeSet(CMISS.NewtonLineSearchTypes.LINEAR)
-NonlinearSolver.NewtonJacobianCalculationTypeSet(CMISS.JacobianCalculationTypes.EQUATIONS) #(.FD/EQUATIONS)
+NonlinearSolver.NewtonLineSearchTypeSet(iron.NewtonLineSearchTypes.LINEAR)
+NonlinearSolver.NewtonJacobianCalculationTypeSet(iron.JacobianCalculationTypes.EQUATIONS) #(.FD/EQUATIONS)
 NonlinearSolver.NewtonMaximumFunctionEvaluationsSet(MaxFunctionEvaluations)
 NonlinearSolver.OutputTypeSet(NonlinearSolver_OutputType)
 NonlinearSolver.NewtonAbsoluteToleranceSet(AbsoluteTolerance)
@@ -1821,13 +1821,13 @@ NonlinearSolver.NewtonLineSearchAlphaSet(LinesearchAlpha)
 NonlinearSolver.NewtonLinearSolverGet(LinearSolver)
 # Choose type of linear solver
 if (False):
-    LinearSolver.LinearTypeSet(CMISS.LinearSolverTypes.ITERATIVE)
+    LinearSolver.LinearTypeSet(iron.LinearSolverTypes.ITERATIVE)
     LinearSolver.LinearIterativeMaximumIterationsSet(MaximumIterations)
     LinearSolver.LinearIterativeDivergenceToleranceSet(DivergenceTolerance)
     LinearSolver.LinearIterativeRelativeToleranceSet(RelativeTolerance)
     LinearSolver.LinearIterativeAbsoluteToleranceSet(AbsoluteTolerance)
 else:
-    LinearSolver.LinearTypeSet(CMISS.LinearSolverTypes.ITERATIVE)
+    LinearSolver.LinearTypeSet(iron.LinearSolverTypes.ITERATIVE)
 LinearSolver.OutputTypeSet(LinearSolver_OutputType)
 # Finish the creation of the problem solver
 CoupledProblem.SolversCreateFinish()
@@ -1839,24 +1839,24 @@ CoupledProblem.SolversCreateFinish()
 # Create the problem solver equations
 if (ExampleFileProgressDiagnostics):
     print " == >> MOVING MESH SOLVER EQUATIONS << == "
-LinearSolverMovingMesh = CMISS.Solver()
-LinearSolverMovingMeshEquations = CMISS.SolverEquations()
+LinearSolverMovingMesh = iron.Solver()
+LinearSolverMovingMeshEquations = iron.SolverEquations()
 CoupledProblem.SolverEquationsCreateStart()
 # Get the linear solver equations
-CoupledProblem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],LinearSolverMovingMeshIndex,LinearSolverMovingMesh)
+CoupledProblem.SolverGet([iron.ControlLoopIdentifiers.NODE],LinearSolverMovingMeshIndex,LinearSolverMovingMesh)
 LinearSolverMovingMesh.SolverEquationsGet(LinearSolverMovingMeshEquations)
-LinearSolverMovingMeshEquations.sparsityType = CMISS.SolverEquationsSparsityTypes.SPARSE
+LinearSolverMovingMeshEquations.sparsityType = iron.SolverEquationsSparsityTypes.SPARSE
 # Add in the equations set
 MovingMeshEquationsSet = LinearSolverMovingMeshEquations.EquationsSetAdd(MovingMeshEquationsSet)
 
 # Get the dynamic solver equations
 if (ExampleFileProgressDiagnostics):
     print " == >> SOLVER EQUATIONS << == "
-DynamicSolver = CMISS.Solver()
-CoupledSolverEquations = CMISS.SolverEquations()
-CoupledProblem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],DynamicSolverIndex,DynamicSolver)
+DynamicSolver = iron.Solver()
+CoupledSolverEquations = iron.SolverEquations()
+CoupledProblem.SolverGet([iron.ControlLoopIdentifiers.NODE],DynamicSolverIndex,DynamicSolver)
 DynamicSolver.SolverEquationsGet(CoupledSolverEquations)
-CoupledSolverEquations.sparsityType = CMISS.SolverEquationsSparsityTypes.SPARSE
+CoupledSolverEquations.sparsityType = iron.SolverEquationsSparsityTypes.SPARSE
 CoupledSolverEquationsSet = CoupledSolverEquations.EquationsSetAdd(SolidEquationsSet)
 CoupledSolverEquationsSet = CoupledSolverEquations.EquationsSetAdd(FluidEquationsSet)
 CoupledSolverEquationsSet = CoupledSolverEquations.InterfaceConditionAdd(InterfaceCondition)
@@ -1874,141 +1874,141 @@ CoupledProblem.SolverEquationsCreateFinish()
 # Start the creation of the equations set boundary conditions
 if (ExampleFileProgressDiagnostics):
     print " == >> BOUNDARY CONDITIONS << == "
-BoundaryConditions = CMISS.BoundaryConditions()
+BoundaryConditions = iron.BoundaryConditions()
 CoupledSolverEquations.BoundaryConditionsCreateStart(BoundaryConditions)
 # No displacement boundary for solid
 for S in range(1,len(NoDisplacementNodes)+1):
     NodeNumber = NoDisplacementNodes[S-1]
     SolidDecomposition.NodeDomainGet(NodeNumber,1)
     if (NodeDomain == ComputationalNodeNumber):
-        BoundaryConditions.AddNode(DependentField1,CMISS.FieldVariableTypes.U,1,1,NodeNumber,1,
-                                   CMISS.BoundaryConditionsTypes.FIXED,0.0)
-        BoundaryConditions.AddNode(DependentField1,CMISS.FieldVariableTypes.U,1,1,NodeNumber,2,
-                                   CMISS.BoundaryConditionsTypes.FIXED,0.0)
+        BoundaryConditions.AddNode(DependentField1,iron.FieldVariableTypes.U,1,1,NodeNumber,1,
+                                   iron.BoundaryConditionsTypes.FIXED,0.0)
+        BoundaryConditions.AddNode(DependentField1,iron.FieldVariableTypes.U,1,1,NodeNumber,2,
+                                   iron.BoundaryConditionsTypes.FIXED,0.0)
         if (NumberOfDimensions == 3):
-            BoundaryConditions.AddNode(DependentField1,CMISS.FieldVariableTypes.U,1,1,NodeNumber,3,
-                                       CMISS.BoundaryConditionsTypes.FIXED,0.0)
+            BoundaryConditions.AddNode(DependentField1,iron.FieldVariableTypes.U,1,1,NodeNumber,3,
+                                       iron.BoundaryConditionsTypes.FIXED,0.0)
 # Set outlet (zero) pressure nodes
 for S in range(1,len(OutletNodes)+1):
     NodeNumber = int(OutletNodes[S-1])
     FluidDecomposition.NodeDomainGet(NodeNumber,1)
     if (NodeDomain == ComputationalNodeNumber):
-        BoundaryConditions.SetNode(DependentField2,CMISS.FieldVariableTypes.U,1,1,NodeNumber,NumberOfDimensions+1,
-                                   CMISS.BoundaryConditionsTypes.FIXED,0.0)
+        BoundaryConditions.SetNode(DependentField2,iron.FieldVariableTypes.U,1,1,NodeNumber,NumberOfDimensions+1,
+                                   iron.BoundaryConditionsTypes.FIXED,0.0)
 # Inlet velocity nodes, small starting velocity in 1st coordinate direction
 for S in range(1,len(InletNodes)+1):
     NodeNumber = int(InletNodes[S-1])
     FluidDecomposition.NodeDomainGet(NodeNumber,1)
     if (NodeDomain == ComputationalNodeNumber):
-        BoundaryConditions.SetNode(DependentField2,CMISS.FieldVariableTypes.U,1,1,NodeNumber,1,
-                                   CMISS.BoundaryConditionsTypes.FIXED,0.0)
-        BoundaryConditions.SetNode(DependentField2,CMISS.FieldVariableTypes.U,1,1,NodeNumber,2,
-                                   CMISS.BoundaryConditionsTypes.FIXED,0.0)
+        BoundaryConditions.SetNode(DependentField2,iron.FieldVariableTypes.U,1,1,NodeNumber,1,
+                                   iron.BoundaryConditionsTypes.FIXED,0.0)
+        BoundaryConditions.SetNode(DependentField2,iron.FieldVariableTypes.U,1,1,NodeNumber,2,
+                                   iron.BoundaryConditionsTypes.FIXED,0.0)
         if (NumberOfDimensions == 3):
-            BoundaryConditions.SetNode(DependentField2,CMISS.FieldVariableTypes.U,1,1,NodeNumber,3,
-                                       CMISS.BoundaryConditionsTypes.FIXED,0.0)
+            BoundaryConditions.SetNode(DependentField2,iron.FieldVariableTypes.U,1,1,NodeNumber,3,
+                                       iron.BoundaryConditionsTypes.FIXED,0.0)
 # Set no-slip BC
 for S in range(1,len(NoSlipNodes)+1):
     NodeNumber = int(NoSlipNodes[S-1])
     FluidDecomposition.NodeDomainGet(NodeNumber,1)
     if (NodeDomain == ComputationalNodeNumber):
-        BoundaryConditions.SetNode(DependentField2,CMISS.FieldVariableTypes.U,1,1,NodeNumber,1,
-                                   CMISS.BoundaryConditionsTypes.FIXED,0.0)
-        BoundaryConditions.SetNode(DependentField2,CMISS.FieldVariableTypes.U,1,1,NodeNumber,2,
-                                   CMISS.BoundaryConditionsTypes.FIXED,0.0)
+        BoundaryConditions.SetNode(DependentField2,iron.FieldVariableTypes.U,1,1,NodeNumber,1,
+                                   iron.BoundaryConditionsTypes.FIXED,0.0)
+        BoundaryConditions.SetNode(DependentField2,iron.FieldVariableTypes.U,1,1,NodeNumber,2,
+                                   iron.BoundaryConditionsTypes.FIXED,0.0)
         if (NumberOfDimensions == 3):
-            BoundaryConditions.SetNode(DependentField2,CMISS.FieldVariableTypes.U,1,1,NodeNumber,3,
-                                       CMISS.BoundaryConditionsTypes.FIXED,0.0)
+            BoundaryConditions.SetNode(DependentField2,iron.FieldVariableTypes.U,1,1,NodeNumber,3,
+                                       iron.BoundaryConditionsTypes.FIXED,0.0)
 # Set slip BC
 for S in range(1,len(SlipNodesTop)+1):
     NodeNumber = int(SlipNodesTop[S-1])
     FluidDecomposition.NodeDomainGet(NodeNumber,1)
     if (NodeDomain == ComputationalNodeNumber):
-        BoundaryConditions.SetNode(DependentField2,CMISS.FieldVariableTypes.U,1,1,NodeNumber,NumberOfDimensions,
-                                   CMISS.BoundaryConditionsTypes.FIXED,0.0)
+        BoundaryConditions.SetNode(DependentField2,iron.FieldVariableTypes.U,1,1,NodeNumber,NumberOfDimensions,
+                                   iron.BoundaryConditionsTypes.FIXED,0.0)
 # Set slip BC
 if (NumberOfDimensions == 3):
     for S in range(1,len(SlipNodesRightLeft)+1):
         NodeNumber = int(SlipNodesRightLeft[S-1])
         FluidDecomposition.NodeDomainGet(NodeNumber,1)
         if (NodeDomain == ComputationalNodeNumber):
-            BoundaryConditions.SetNode(DependentField2,CMISS.FieldVariableTypes.U,1,1,NodeNumber,1,
-                                       CMISS.BoundaryConditionsTypes.FIXED,0.0)
+            BoundaryConditions.SetNode(DependentField2,iron.FieldVariableTypes.U,1,1,NodeNumber,1,
+                                       iron.BoundaryConditionsTypes.FIXED,0.0)
 if (NumberOfDimensions == 2):
     # Remove dof's at nodes where solid displacement and zero velocity is set (first n last interface node)
-    BoundaryConditions.SetNode(LagrangeField1,CMISS.FieldVariableTypes.U,1,1,1,1,
-                               CMISS.BoundaryConditionsTypes.FIXED,0.0)
-    BoundaryConditions.SetNode(LagrangeField1,CMISS.FieldVariableTypes.U,1,1,1,2,
-                               CMISS.BoundaryConditionsTypes.FIXED,0.0)
-    BoundaryConditions.SetNode(LagrangeField1,CMISS.FieldVariableTypes.U,1,1,NumberOfInterfaceNodes,1,
-                               CMISS.BoundaryConditionsTypes.FIXED,0.0)
-    BoundaryConditions.SetNode(LagrangeField1,CMISS.FieldVariableTypes.U,1,1,NumberOfInterfaceNodes,2,
-                               CMISS.BoundaryConditionsTypes.FIXED,0.0)
+    BoundaryConditions.SetNode(LagrangeField1,iron.FieldVariableTypes.U,1,1,1,1,
+                               iron.BoundaryConditionsTypes.FIXED,0.0)
+    BoundaryConditions.SetNode(LagrangeField1,iron.FieldVariableTypes.U,1,1,1,2,
+                               iron.BoundaryConditionsTypes.FIXED,0.0)
+    BoundaryConditions.SetNode(LagrangeField1,iron.FieldVariableTypes.U,1,1,NumberOfInterfaceNodes,1,
+                               iron.BoundaryConditionsTypes.FIXED,0.0)
+    BoundaryConditions.SetNode(LagrangeField1,iron.FieldVariableTypes.U,1,1,NumberOfInterfaceNodes,2,
+                               iron.BoundaryConditionsTypes.FIXED,0.0)
 else:
     if (CheckWithoutInterfaceCondition):
         for S in range(1,len(InterfaceNodeNumbersForGeometry)+1):
             NodeNumber = int(InterfaceNodeNumbersForGeometry[S-1])
             InterfaceDecomposition.NodeDomainGet(NodeNumber,1)
             if (NodeDomain == ComputationalNodeNumber):
-                BoundaryConditions.SetNode(LagrangeField1,CMISS.FieldVariableTypes.U,1,1,NodeNumber,1,
-                                           CMISS.BoundaryConditionsTypes.FIXED,0.0)
-                BoundaryConditions.SetNode(LagrangeField1,CMISS.FieldVariableTypes.U,1,1,NodeNumber,2,
-                                           CMISS.BoundaryConditionsTypes.FIXED,0.0)
-                BoundaryConditions.SetNode(LagrangeField1,CMISS.FieldVariableTypes.U,1,1,NodeNumber,3,
-                                           CMISS.BoundaryConditionsTypes.FIXED,0.0)
+                BoundaryConditions.SetNode(LagrangeField1,iron.FieldVariableTypes.U,1,1,NodeNumber,1,
+                                           iron.BoundaryConditionsTypes.FIXED,0.0)
+                BoundaryConditions.SetNode(LagrangeField1,iron.FieldVariableTypes.U,1,1,NodeNumber,2,
+                                           iron.BoundaryConditionsTypes.FIXED,0.0)
+                BoundaryConditions.SetNode(LagrangeField1,iron.FieldVariableTypes.U,1,1,NodeNumber,3,
+                                           iron.BoundaryConditionsTypes.FIXED,0.0)
     else:
         for S in range(1,len(LagrangeNodes)+1):
             NodeNumber = int(LagrangeNodes[S-1])
             InterfaceDecomposition.NodeDomainGet(NodeNumber,1)
             if (NodeDomain == ComputationalNodeNumber):
-                BoundaryConditions.SetNode(LagrangeField1,CMISS.FieldVariableTypes.U,1,1,NodeNumber,1,
-                                           CMISS.BoundaryConditionsTypes.FIXED,0.0)
-                BoundaryConditions.SetNode(LagrangeField1,CMISS.FieldVariableTypes.U,1,1,NodeNumber,2,
-                                           CMISS.BoundaryConditionsTypes.FIXED,0.0)
-                BoundaryConditions.SetNode(LagrangeField1,CMISS.FieldVariableTypes.U,1,1,NodeNumber,3,
-                                           CMISS.BoundaryConditionsTypes.FIXED,0.0)
+                BoundaryConditions.SetNode(LagrangeField1,iron.FieldVariableTypes.U,1,1,NodeNumber,1,
+                                           iron.BoundaryConditionsTypes.FIXED,0.0)
+                BoundaryConditions.SetNode(LagrangeField1,iron.FieldVariableTypes.U,1,1,NodeNumber,2,
+                                           iron.BoundaryConditionsTypes.FIXED,0.0)
+                BoundaryConditions.SetNode(LagrangeField1,iron.FieldVariableTypes.U,1,1,NodeNumber,3,
+                                           iron.BoundaryConditionsTypes.FIXED,0.0)
 # Finish equations set boundary conditions
 CoupledSolverEquations.BoundaryConditionsCreateFinish()
   
 # Start the creation of the moving mesh boundary conditions
-BoundaryConditionsMovingMesh = CMISS.BoundaryConditions()
+BoundaryConditionsMovingMesh = iron.BoundaryConditions()
 LinearSolverMovingMeshEquations.BoundaryConditionsCreateStart(BoundaryConditionsMovingMesh)
 # Fixed boundary nodes. May be used to move nodes..
 for S in range(1,len(MovedYNodes)+1):
     NodeNumber = int(MovedYNodes[S-1])
     FluidDecomposition.NodeDomainGet(NodeNumber,1)
     if (NodeDomain == ComputationalNodeNumber):
-        BoundaryConditionsMovingMesh.SetNode(DependentFieldMovingMesh,CMISS.FieldVariableTypes.U,1,1,NodeNumber,1,
-                                             CMISS.BoundaryConditionsTypes.FIXED_WALL,0.0)
-        BoundaryConditionsMovingMesh.SetNode(DependentFieldMovingMesh,CMISS.FieldVariableTypes.U,1,1,NodeNumber,2,
-                                             CMISS.BoundaryConditionsTypes.FIXED_WALL,0.0)
+        BoundaryConditionsMovingMesh.SetNode(DependentFieldMovingMesh,iron.FieldVariableTypes.U,1,1,NodeNumber,1,
+                                             iron.BoundaryConditionsTypes.FIXED_WALL,0.0)
+        BoundaryConditionsMovingMesh.SetNode(DependentFieldMovingMesh,iron.FieldVariableTypes.U,1,1,NodeNumber,2,
+                                             iron.BoundaryConditionsTypes.FIXED_WALL,0.0)
         if (NumberOfDimensions == 3):
-            BoundaryConditionsMovingMesh.SetNode(DependentFieldMovingMesh,CMISS.FieldVariableTypes.U,1,1,NodeNumber,3,
-                                                 CMISS.BoundaryConditionsTypes.FIXED_WALL,0.0)
+            BoundaryConditionsMovingMesh.SetNode(DependentFieldMovingMesh,iron.FieldVariableTypes.U,1,1,NodeNumber,3,
+                                                 iron.BoundaryConditionsTypes.FIXED_WALL,0.0)
 # Mesh nodes that are moving wall nodes
 for S in range(1,len(MovedNodes)+1):
     NodeNumber = int(MovedNodes[S-1])
     FluidDecomposition.NodeDomainGet(NodeNumber,1)
     if (NodeDomain == ComputationalNodeNumber):
-        BoundaryConditionsMovingMesh.SetNode(DependentFieldMovingMesh,CMISS.FieldVariableTypes.U,1,1,NodeNumber,1,
-                                             CMISS.BoundaryConditionsTypes.MOVED_WALL,0.0)
-        BoundaryConditionsMovingMesh.SetNode(DependentFieldMovingMesh,CMISS.FieldVariableTypes.U,1,1,NodeNumber,2,
-                                             CMISS.BoundaryConditionsTypes.MOVED_WALL,0.0)
+        BoundaryConditionsMovingMesh.SetNode(DependentFieldMovingMesh,iron.FieldVariableTypes.U,1,1,NodeNumber,1,
+                                             iron.BoundaryConditionsTypes.MOVED_WALL,0.0)
+        BoundaryConditionsMovingMesh.SetNode(DependentFieldMovingMesh,iron.FieldVariableTypes.U,1,1,NodeNumber,2,
+                                             iron.BoundaryConditionsTypes.MOVED_WALL,0.0)
         if (NumberOfDimensions == 3):
-            BoundaryConditionsMovingMesh.SetNode(DependentFieldMovingMesh,CMISS.FieldVariableTypes.U,1,1,NodeNumber,3,
-                                                 CMISS.BoundaryConditionsTypes.MOVED_WALL,0.0)
+            BoundaryConditionsMovingMesh.SetNode(DependentFieldMovingMesh,iron.FieldVariableTypes.U,1,1,NodeNumber,3,
+                                                 iron.BoundaryConditionsTypes.MOVED_WALL,0.0)
 # Mesh nodes that are fixed in space
 for S in range(1,len(FixedNodes)+1):
     NodeNumber = int(FixedNodes[S-1])
     FluidDecomposition.NodeDomainGet(NodeNumber,1)
     if (NodeDomain == ComputationalNodeNumber):
-        BoundaryConditionsMovingMesh.SetNode(DependentFieldMovingMesh,CMISS.FieldVariableTypes.U,1,1,NodeNumber,1,
-                                             CMISS.BoundaryConditionsTypes.FIXED_WALL,0.0)
-        BoundaryConditionsMovingMesh.SetNode(DependentFieldMovingMesh,CMISS.FieldVariableTypes.U,1,1,NodeNumber,2,
-                                             CMISS.BoundaryConditionsTypes.FIXED_WALL,0.0)
+        BoundaryConditionsMovingMesh.SetNode(DependentFieldMovingMesh,iron.FieldVariableTypes.U,1,1,NodeNumber,1,
+                                             iron.BoundaryConditionsTypes.FIXED_WALL,0.0)
+        BoundaryConditionsMovingMesh.SetNode(DependentFieldMovingMesh,iron.FieldVariableTypes.U,1,1,NodeNumber,2,
+                                             iron.BoundaryConditionsTypes.FIXED_WALL,0.0)
         if (NumberOfDimensions == 3):
-            BoundaryConditionsMovingMesh.SetNode(DependentFieldMovingMesh,CMISS.FieldVariableTypes.U,1,1,NodeNumber,3,
-                                                 CMISS.BoundaryConditionsTypes.FIXED_WALL,0.0)
+            BoundaryConditionsMovingMesh.SetNode(DependentFieldMovingMesh,iron.FieldVariableTypes.U,1,1,NodeNumber,3,
+                                                 iron.BoundaryConditionsTypes.FIXED_WALL,0.0)
 # Finish moving mesh boundary conditions
 LinearSolverMovingMeshEquations.BoundaryConditionsCreateFinish()
 

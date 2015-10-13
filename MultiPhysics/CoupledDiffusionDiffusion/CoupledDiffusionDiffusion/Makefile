@@ -62,7 +62,7 @@ endif
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-EXAMPLE_PATH=MultiPhysics/
+EXAMPLE_PATH=MultiPhysics/CoupledDiffusionDiffusion/
 
 EXAMPLE_NAME = CoupledDiffusionDiffusion
 

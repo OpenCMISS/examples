@@ -6,7 +6,7 @@ import sys, os, math
 sys.path.insert(1, os.path.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
 
 # Intialise OpenCMISS
-from opencmiss import CMISS
+from opencmiss import iron
 #DOC-END imports
 
 # Set problem parameters
@@ -57,20 +57,20 @@ cellMLIntermediateFieldUserNumber = 9
 
 #DOC-START parallel information
 # Get the number of computational nodes and this computational node number
-numberOfComputationalNodes = CMISS.ComputationalNumberOfNodesGet()
-computationalNodeNumber = CMISS.ComputationalNodeNumberGet()
+numberOfComputationalNodes = iron.ComputationalNumberOfNodesGet()
+computationalNodeNumber = iron.ComputationalNodeNumberGet()
 #DOC-END parallel information
 
 #DOC-START initialisation
 # Create a 2D rectangular cartesian coordinate system
-coordinateSystem = CMISS.CoordinateSystem()
+coordinateSystem = iron.CoordinateSystem()
 coordinateSystem.CreateStart(coordinateSystemUserNumber)
 coordinateSystem.DimensionSet(2)
 coordinateSystem.CreateFinish()
 
 # Create a region and assign the coordinate system to the region
-region = CMISS.Region()
-region.CreateStart(regionUserNumber,CMISS.WorldRegion)
+region = iron.Region()
+region.CreateStart(regionUserNumber,iron.WorldRegion)
 region.LabelSet("Region")
 region.coordinateSystem = coordinateSystem
 region.CreateFinish()
@@ -78,46 +78,46 @@ region.CreateFinish()
 
 #DOC-START basis
 # Define a bilinear Lagrange basis
-basis = CMISS.Basis()
+basis = iron.Basis()
 basis.CreateStart(basisUserNumber)
-basis.type = CMISS.BasisTypes.LAGRANGE_HERMITE_TP
+basis.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
 basis.numberOfXi = 2
-basis.interpolationXi = [CMISS.BasisInterpolationSpecifications.LINEAR_LAGRANGE]*2
+basis.interpolationXi = [iron.BasisInterpolationSpecifications.LINEAR_LAGRANGE]*2
 basis.quadratureNumberOfGaussXi = [3]*2
 basis.CreateFinish()
 #DOC-END basis
 
 #DOC-START generated mesh
 # Create a generated mesh
-generatedMesh = CMISS.GeneratedMesh()
+generatedMesh = iron.GeneratedMesh()
 generatedMesh.CreateStart(generatedMeshUserNumber,region)
-generatedMesh.type = CMISS.GeneratedMeshTypes.REGULAR
+generatedMesh.type = iron.GeneratedMeshTypes.REGULAR
 generatedMesh.basis = [basis]
 generatedMesh.extent = [width,height]
 generatedMesh.numberOfElements = [numberOfXElements,numberOfYElements]
 
-mesh = CMISS.Mesh()
+mesh = iron.Mesh()
 generatedMesh.CreateFinish(meshUserNumber,mesh)
 #DOC-END generated mesh
 
 #DOC-START decomposition
 # Create a decomposition for the mesh
-decomposition = CMISS.Decomposition()
+decomposition = iron.Decomposition()
 decomposition.CreateStart(decompositionUserNumber,mesh)
-decomposition.type = CMISS.DecompositionTypes.CALCULATED
+decomposition.type = iron.DecompositionTypes.CALCULATED
 decomposition.numberOfDomains = numberOfComputationalNodes
 decomposition.CreateFinish()
 #DOC-END decomposition
 
 #DOC-START geometry
 # Create a field for the geometry
-geometricField = CMISS.Field()
+geometricField = iron.Field()
 geometricField.CreateStart(geometricFieldUserNumber, region)
 geometricField.meshDecomposition = decomposition
-geometricField.TypeSet(CMISS.FieldTypes.GEOMETRIC)
-geometricField.VariableLabelSet(CMISS.FieldVariableTypes.U, "coordinates")
-geometricField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U, 1, linearMeshComponentNumber)
-geometricField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U, 2, linearMeshComponentNumber)
+geometricField.TypeSet(iron.FieldTypes.GEOMETRIC)
+geometricField.VariableLabelSet(iron.FieldVariableTypes.U, "coordinates")
+geometricField.ComponentMeshComponentSet(iron.FieldVariableTypes.U, 1, linearMeshComponentNumber)
+geometricField.ComponentMeshComponentSet(iron.FieldVariableTypes.U, 2, linearMeshComponentNumber)
 geometricField.CreateFinish()
 
 # Set geometry from the generated mesh
@@ -126,40 +126,40 @@ generatedMesh.GeometricParametersCalculate(geometricField)
 
 #DOC-START equations set
 # Create the equations_set
-equationsSetField = CMISS.Field()
-equationsSet = CMISS.EquationsSet()
+equationsSetField = iron.Field()
+equationsSet = iron.EquationsSet()
+equationsSetSpecification = [iron.EquationsSetClasses.BIOELECTRICS,
+        iron.EquationsSetTypes.MONODOMAIN_EQUATION,
+        iron.EquationsSetSubtypes.NONE]
 equationsSet.CreateStart(equationsSetUserNumber, region, geometricField,
-        CMISS.EquationsSetClasses.BIOELECTRICS,
-        CMISS.EquationsSetTypes.MONODOMAIN_EQUATION,
-        CMISS.EquationsSetSubtypes.NONE,
-        equationsSetFieldUserNumber, equationsSetField)
+        equationsSetSpecification, equationsSetFieldUserNumber, equationsSetField)
 equationsSet.CreateFinish()
 #DOC-END equations set
 
 #DOC-START equations set fields
 # Create the dependent Field
-dependentField = CMISS.Field()
+dependentField = iron.Field()
 equationsSet.DependentCreateStart(dependentFieldUserNumber, dependentField)
 equationsSet.DependentCreateFinish()
 
 # Create the materials Field
-materialsField = CMISS.Field()
+materialsField = iron.Field()
 equationsSet.MaterialsCreateStart(materialsFieldUserNumber, materialsField)
 equationsSet.MaterialsCreateFinish()
 
 # Set the materials values
 # Set Am
-materialsField.ComponentValuesInitialise(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,Am)
+materialsField.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,Am)
 # Set Cm
-materialsField.ComponentValuesInitialise(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,2,Cm)
+materialsField.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,2,Cm)
 # Set conductivity
-materialsField.ComponentValuesInitialise(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,3,conductivity)
-materialsField.ComponentValuesInitialise(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,4,conductivity)
+materialsField.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,3,conductivity)
+materialsField.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,4,conductivity)
 #DOC-END equations set fields
 
 #DOC-START create cellml environment
 # Create the CellML environment
-cellML = CMISS.CellML()
+cellML = iron.CellML()
 cellML.CreateStart(cellMLUserNumber, region)
 # Import a Nobel 98 cell model from a file
 noble98Model = cellML.ModelImport("n98.xml")
@@ -192,47 +192,47 @@ cellML.CreateFinish()
 cellML.FieldMapsCreateStart()
 #Now we can set up the field variable component <--> CellML model variable mappings.
 #Map Vm
-cellML.CreateFieldToCellMLMap(dependentField,CMISS.FieldVariableTypes.U,1, CMISS.FieldParameterSetTypes.VALUES,noble98Model,"membrane/V", CMISS.FieldParameterSetTypes.VALUES)
-cellML.CreateCellMLToFieldMap(noble98Model,"membrane/V", CMISS.FieldParameterSetTypes.VALUES,dependentField,CMISS.FieldVariableTypes.U,1,CMISS.FieldParameterSetTypes.VALUES)
+cellML.CreateFieldToCellMLMap(dependentField,iron.FieldVariableTypes.U,1, iron.FieldParameterSetTypes.VALUES,noble98Model,"membrane/V", iron.FieldParameterSetTypes.VALUES)
+cellML.CreateCellMLToFieldMap(noble98Model,"membrane/V", iron.FieldParameterSetTypes.VALUES,dependentField,iron.FieldVariableTypes.U,1,iron.FieldParameterSetTypes.VALUES)
 
 #Finish the creation of CellML <--> OpenCMISS field maps
 cellML.FieldMapsCreateFinish()
 
 # Set the initial Vm values
-dependentField.ComponentValuesInitialise(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1,-92.5)
+dependentField.ComponentValuesInitialise(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1,-92.5)
 #DOC-END map Vm components
 
 #DOC-START define CellML models field
 #Create the CellML models field
-cellMLModelsField = CMISS.Field()
+cellMLModelsField = iron.Field()
 cellML.ModelsFieldCreateStart(cellMLModelsFieldUserNumber, cellMLModelsField)
 cellML.ModelsFieldCreateFinish()
 #DOC-END define CellML models field
 
 #DOC-START define CellML state field
 #Create the CellML state field 
-cellMLStateField = CMISS.Field()
+cellMLStateField = iron.Field()
 cellML.StateFieldCreateStart(cellMLStateFieldUserNumber, cellMLStateField)
 cellML.StateFieldCreateFinish()
 #DOC-END define CellML state field
 
 #DOC-START define CellML parameters and intermediate fields
 #Create the CellML parameters field 
-cellMLParametersField = CMISS.Field()
+cellMLParametersField = iron.Field()
 cellML.ParametersFieldCreateStart(cellMLParametersFieldUserNumber, cellMLParametersField)
 cellML.ParametersFieldCreateFinish()
 
 #  Create the CellML intermediate field 
-cellMLIntermediateField = CMISS.Field()
+cellMLIntermediateField = iron.Field()
 cellML.IntermediateFieldCreateStart(cellMLIntermediateFieldUserNumber, cellMLIntermediateField)
 cellML.IntermediateFieldCreateFinish()
 #DOC-END define CellML parameters and intermediate fields
 
 # Create equations
-equations = CMISS.Equations()
+equations = iron.Equations()
 equationsSet.EquationsCreateStart(equations)
-equations.sparsityType = CMISS.EquationsSparsityTypes.SPARSE
-equations.outputType = CMISS.EquationsOutputTypes.NONE
+equations.sparsityType = iron.EquationsSparsityTypes.SPARSE
+equations.outputType = iron.EquationsOutputTypes.NONE
 equationsSet.EquationsCreateFinish()
 
 # Find the domains of the first and last nodes
@@ -242,58 +242,58 @@ firstNodeDomain = decomposition.NodeDomainGet(firstNodeNumber, 1)
 lastNodeDomain = decomposition.NodeDomainGet(lastNodeNumber, 1)
 
 # Set the stimulus on half the bottom nodes
-stimComponent = cellML.FieldComponentGet(noble98Model, CMISS.CellMLFieldTypes.PARAMETERS, "membrane/IStim")
+stimComponent = cellML.FieldComponentGet(noble98Model, iron.CellMLFieldTypes.PARAMETERS, "membrane/IStim")
 for node in range(1,numberOfXElements/2):
     nodeDomain = decomposition.NodeDomainGet(node,1)
     if nodeDomain == computationalNodeNumber:
-        cellMLParametersField.ParameterSetUpdateNode(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1, node, stimComponent, stimValue)
+        cellMLParametersField.ParameterSetUpdateNode(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1, 1, node, stimComponent, stimValue)
 
 # Set up the gNa gradient
-gNaComponent = cellML.FieldComponentGet(noble98Model, CMISS.CellMLFieldTypes.PARAMETERS, "fast_sodium_current/g_Na")
+gNaComponent = cellML.FieldComponentGet(noble98Model, iron.CellMLFieldTypes.PARAMETERS, "fast_sodium_current/g_Na")
 for node in range(1,lastNodeNumber):
     nodeDomain = decomposition.NodeDomainGet(node,1)
     if nodeDomain == computationalNodeNumber:
-        x = geometricField.ParameterSetGetNode(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1, node, 1)
-        y = geometricField.ParameterSetGetNode(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1, node, 2)
+        x = geometricField.ParameterSetGetNode(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1, 1, node, 1)
+        y = geometricField.ParameterSetGetNode(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1, 1, node, 2)
         distance = math.sqrt(x*x + y*y)/math.sqrt(width*width + height*height)
         gNaValue = 2*(distance + 0.5)*0.3855
-        cellMLParametersField.ParameterSetUpdateNode(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1, node, gNaComponent, gNaValue)
+        cellMLParametersField.ParameterSetUpdateNode(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1, 1, node, gNaComponent, gNaValue)
 
 #DOC-START define monodomain problem
 #Define the problem
-problem = CMISS.Problem()
-problem.CreateStart(problemUserNumber)
-problem.SpecificationSet(CMISS.ProblemClasses.BIOELECTRICS,
-    CMISS.ProblemTypes.MONODOMAIN_EQUATION,
-    CMISS.ProblemSubTypes.MONODOMAIN_GUDUNOV_SPLIT)
+problem = iron.Problem()
+problemSpecification = [iron.ProblemClasses.BIOELECTRICS,
+    iron.ProblemTypes.MONODOMAIN_EQUATION,
+    iron.ProblemSubtypes.MONODOMAIN_GUDUNOV_SPLIT]
+problem.CreateStart(problemUserNumber, problemSpecification)
 problem.CreateFinish()
 #DOC-END define monodomain problem
 
 #Create the problem control loop
 problem.ControlLoopCreateStart()
-controlLoop = CMISS.ControlLoop()
-problem.ControlLoopGet([CMISS.ControlLoopIdentifiers.NODE],controlLoop)
+controlLoop = iron.ControlLoop()
+problem.ControlLoopGet([iron.ControlLoopIdentifiers.NODE],controlLoop)
 controlLoop.TimesSet(0.0,stimStop,pdeTimeStep)
-controlLoop.OutputTypeSet(CMISS.ControlLoopOutputTypes.TIMING)
+controlLoop.OutputTypeSet(iron.ControlLoopOutputTypes.TIMING)
 controlLoop.TimeOutputSet(outputFrequency)
 problem.ControlLoopCreateFinish()
 
 #Create the problem solvers
-daeSolver = CMISS.Solver()
-dynamicSolver = CMISS.Solver()
+daeSolver = iron.Solver()
+dynamicSolver = iron.Solver()
 problem.SolversCreateStart()
 # Get the first DAE solver
-problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],1,daeSolver)
+problem.SolverGet([iron.ControlLoopIdentifiers.NODE],1,daeSolver)
 daeSolver.DAETimeStepSet(odeTimeStep)
-daeSolver.OutputTypeSet(CMISS.SolverOutputTypes.NONE)
+daeSolver.OutputTypeSet(iron.SolverOutputTypes.NONE)
 # Get the second dynamic solver for the parabolic problem
-problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],2,dynamicSolver)
-dynamicSolver.OutputTypeSet(CMISS.SolverOutputTypes.NONE)
+problem.SolverGet([iron.ControlLoopIdentifiers.NODE],2,dynamicSolver)
+dynamicSolver.OutputTypeSet(iron.SolverOutputTypes.NONE)
 problem.SolversCreateFinish()
 
 #DOC-START define CellML solver
 #Create the problem solver CellML equations
-cellMLEquations = CMISS.CellMLEquations()
+cellMLEquations = iron.CellMLEquations()
 problem.CellMLEquationsCreateStart()
 daeSolver.CellMLEquationsGet(cellMLEquations)
 cellmlIndex = cellMLEquations.CellMLAdd(cellML)
@@ -301,15 +301,15 @@ problem.CellMLEquationsCreateFinish()
 #DOC-END define CellML solver
 
 #Create the problem solver PDE equations
-solverEquations = CMISS.SolverEquations()
+solverEquations = iron.SolverEquations()
 problem.SolverEquationsCreateStart()
 dynamicSolver.SolverEquationsGet(solverEquations)
-solverEquations.sparsityType = CMISS.SolverEquationsSparsityTypes.SPARSE
+solverEquations.sparsityType = iron.SolverEquationsSparsityTypes.SPARSE
 equationsSetIndex = solverEquations.EquationsSetAdd(equationsSet)
 problem.SolverEquationsCreateFinish()
 
 # Prescribe any boundary conditions 
-boundaryConditions = CMISS.BoundaryConditions()
+boundaryConditions = iron.BoundaryConditions()
 solverEquations.BoundaryConditionsCreateStart(boundaryConditions)
 solverEquations.BoundaryConditionsCreateFinish()
 
@@ -320,7 +320,7 @@ problem.Solve()
 for node in range(1,numberOfXElements/2):
     nodeDomain = decomposition.NodeDomainGet(node,1)
     if nodeDomain == computationalNodeNumber:
-        cellMLParametersField.ParameterSetUpdateNode(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1, node, stimComponent, 0.0)
+        cellMLParametersField.ParameterSetUpdateNode(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1, 1, node, stimComponent, 0.0)
 
 #Set the time loop from stimStop to timeStop
 controlLoop.TimesSet(stimStop,timeStop,pdeTimeStep)
@@ -329,7 +329,7 @@ controlLoop.TimesSet(stimStop,timeStop,pdeTimeStep)
 problem.Solve()
 
 # Export the results, here we export them as standard exnode, exelem files
-fields = CMISS.Fields()
+fields = iron.Fields()
 fields.CreateRegion(region)
 fields.NodesExport("Monodomain","FORTRAN")
 fields.ElementsExport("Monodomain","FORTRAN")

@@ -12,7 +12,7 @@
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
 
-from opencmiss import CMISS
+from opencmiss import iron
 import numpy
 import math
 # =================================================================================#
@@ -21,22 +21,22 @@ def BasicSetUp(regionUserNumber, coordinateSystemUserNumber):
     # diagnostics. These are oft-repeated commands.
 
     # Set up diagnostics/debug
-    #CMISS.DiagnosticsSetOn(CMISS.DiagnosticTypes.IN,[1,2,3,4,5],
+    #iron.DiagnosticsSetOn(iron.DiagnosticTypes.IN,[1,2,3,4,5],
                            #"Diagnostics",["DOMAIN_MAPPINGS_LOCAL_FROM_GLOBAL_CALCULATE"])
 
     # Get computational node information for parallel computing
-    numberOfComputationalNodes = CMISS.ComputationalNumberOfNodesGet()
-    computationalNodeNumber = CMISS.ComputationalNodeNumberGet()
+    numberOfComputationalNodes = iron.ComputationalNumberOfNodesGet()
+    computationalNodeNumber = iron.ComputationalNodeNumberGet()
 
     # Set up 3D RC coordinate system
-    coordinateSystem = CMISS.CoordinateSystem()
+    coordinateSystem = iron.CoordinateSystem()
     coordinateSystem.CreateStart(coordinateSystemUserNumber)
     coordinateSystem.dimension = 3
     coordinateSystem.CreateFinish()
 
     # Create world region
-    region = CMISS.Region()
-    region.CreateStart(regionUserNumber, CMISS.WorldRegion)
+    region = iron.Region()
+    region.CreateStart(regionUserNumber, iron.WorldRegion)
     region.label = "Region"
     region.coordinateSystem = coordinateSystem
     region.CreateFinish()
@@ -54,26 +54,26 @@ def BasisFunction(basisUserNumber, numOfXi, option, collapsed):
     # This snippet sets up the basis function depending on the option given.
     if option[0] == 1:
         # Trilinear basis function for interpolation of geometry.
-        basis = CMISS.Basis()
+        basis = iron.Basis()
         basis.CreateStart(basisUserNumber)
         basis.numberOfXi = numOfXi
-        basis.type = CMISS.BasisTypes.LAGRANGE_HERMITE_TP
-        basis.interpolationXi = [CMISS.BasisInterpolationSpecifications.LINEAR_LAGRANGE] * numOfXi
+        basis.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
+        basis.interpolationXi = [iron.BasisInterpolationSpecifications.LINEAR_LAGRANGE] * numOfXi
         basis.QuadratureLocalFaceGaussEvaluateSet(True)
         basis.quadratureNumberOfGaussXi = [2] * numOfXi
         basis.CreateFinish()
         # Output for diagnostics
         print "----> Set up trilinear basis functions for geometry, use element based interpolation for pressure <----\n"
         if collapsed:
-            basisCol = CMISS.Basis()
+            basisCol = iron.Basis()
             basisCol.CreateStart(basisUserNumber+1)
             basisCol.numberOfXi = numOfXi
-            basisCol.type = CMISS.BasisTypes.LAGRANGE_HERMITE_TP
-            basisCol.interpolationXi = [CMISS.BasisInterpolationSpecifications.LINEAR_LAGRANGE] * numOfXi
+            basisCol.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
+            basisCol.interpolationXi = [iron.BasisInterpolationSpecifications.LINEAR_LAGRANGE] * numOfXi
             basisCol.QuadratureLocalFaceGaussEvaluateSet(True)
             basisCol.quadratureNumberOfGaussXi = [2] * numOfXi
-            basisCol.CollapsedXiSet([CMISS.BasisXiCollapse.XI_COLLAPSED, CMISS.BasisXiCollapse.COLLAPSED_AT_XI0, CMISS.BasisXiCollapse.NOT_COLLAPSED])
-            #basisCol.CollapsedXiSet([CMISS.BasisXiCollapse.NOT_COLLAPSED, CMISS.BasisXiCollapse.XI_COLLAPSED,CMISS.BasisXiCollapse.COLLAPSED_AT_XI0])
+            basisCol.CollapsedXiSet([iron.BasisXiCollapse.XI_COLLAPSED, iron.BasisXiCollapse.COLLAPSED_AT_XI0, iron.BasisXiCollapse.NOT_COLLAPSED])
+            #basisCol.CollapsedXiSet([iron.BasisXiCollapse.NOT_COLLAPSED, iron.BasisXiCollapse.XI_COLLAPSED,iron.BasisXiCollapse.COLLAPSED_AT_XI0])
             print "---> Set up collapsed basis functions for apical elements"
             basisCol.CreateFinish()
             return basis, basisCol
@@ -81,24 +81,24 @@ def BasisFunction(basisUserNumber, numOfXi, option, collapsed):
     elif option[0] == 2:
         """
         # Trilinear basis function for interpolation hydrostatic pressure
-        linearBasis = CMISS.Basis()
+        linearBasis = iron.Basis()
         linearBasis.CreateStart(basisUserNumber[0])
-        linearBasis.InterpolationXiSet([CMISS.BasisInterpolationSpecifications.LINEAR_LAGRANGE] * numOfXi)
+        linearBasis.InterpolationXiSet([iron.BasisInterpolationSpecifications.LINEAR_LAGRANGE] * numOfXi)
         linearBasis.QuadratureNumberOfGaussXiSet([4] * numOfXi)
         linearBasis.QuadratureLocalFaceGaussEvaluateSet(True)
         linearBasis.CreateFinish()
         """
-        quadBasis = CMISS.Basis()
+        quadBasis = iron.Basis()
         quadBasis.CreateStart(basisUserNumber[0])
-        quadBasis.InterpolationXiSet([CMISS.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE]*numOfXi)
+        quadBasis.InterpolationXiSet([iron.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE]*numOfXi)
         quadBasis.QuadratureNumberOfGaussXiSet([4]*numOfXi)
         quadBasis.QuadratureLocalFaceGaussEvaluateSet(True)
         quadBasis.CreateFinish()
 
         # Tricubic Hermite basis function for interpolation of geometry.
-        cubicBasis = CMISS.Basis()  # For geometry.
+        cubicBasis = iron.Basis()  # For geometry.
         cubicBasis.CreateStart(basisUserNumber[1])
-        cubicBasis.InterpolationXiSet([CMISS.BasisInterpolationSpecifications.CUBIC_HERMITE] * numOfXi)
+        cubicBasis.InterpolationXiSet([iron.BasisInterpolationSpecifications.CUBIC_HERMITE] * numOfXi)
         cubicBasis.QuadratureNumberOfGaussXiSet([4] * numOfXi)
         cubicBasis.QuadratureLocalFaceGaussEvaluateSet(True)
         cubicBasis.CreateFinish()
@@ -111,13 +111,13 @@ def BasisFunction(basisUserNumber, numOfXi, option, collapsed):
 
 #=================================================================================#
 def GeneratedMesh(generatedMeshUserNumber, meshUserNumber, region, bases, dimensions, elements):
-    generatedMesh = CMISS.GeneratedMesh()
+    generatedMesh = iron.GeneratedMesh()
     generatedMesh.CreateStart(generatedMeshUserNumber, region)
-    generatedMesh.TypeSet(CMISS.GeneratedMeshTypes.REGULAR)
+    generatedMesh.TypeSet(iron.GeneratedMeshTypes.REGULAR)
     generatedMesh.BasisSet(bases)
     generatedMesh.ExtentSet(dimensions)
     generatedMesh.NumberOfElementsSet(elements)
-    mesh = CMISS.Mesh()
+    mesh = iron.Mesh()
     generatedMesh.CreateFinish(meshUserNumber, mesh)
 
     return generatedMesh, mesh
@@ -128,9 +128,9 @@ def GeneratedMesh(generatedMeshUserNumber, meshUserNumber, region, bases, dimens
 #=================================================================================#
 def DecompositionSetUp(decompositionUserNumber, mesh, numberOfComputationalNodes):
     # Set up decomposition
-    decomposition = CMISS.Decomposition()
+    decomposition = iron.Decomposition()
     decomposition.CreateStart(decompositionUserNumber, mesh)
-    decomposition.type = CMISS.DecompositionTypes.CALCULATED
+    decomposition.type = iron.DecompositionTypes.CALCULATED
     decomposition.NumberOfDomainsSet(numberOfComputationalNodes)
     decomposition.CalculateFacesSet(True)
     decomposition.CreateFinish()
@@ -145,26 +145,26 @@ def DecompositionSetUp(decompositionUserNumber, mesh, numberOfComputationalNodes
 #=================================================================================#
 def GeometricFieldSetUp(geometricFieldUserNumber, region, decomposition, option):
     # Sets up the geometry field - linear, same interpolation in all 3 directions.
-    geometricField = CMISS.Field()  # Initialise
+    geometricField = iron.Field()  # Initialise
     geometricField.CreateStart(geometricFieldUserNumber, region)
     geometricField.MeshDecompositionSet(decomposition)
-    #geometricField.TypeSet(CMISS.FieldTypes.GEOMETRIC)
-    geometricField.VariableLabelSet(CMISS.FieldVariableTypes.U, "Geometry")
+    #geometricField.TypeSet(iron.FieldTypes.GEOMETRIC)
+    geometricField.VariableLabelSet(iron.FieldVariableTypes.U, "Geometry")
     #geometricField.NumberOfVariablesSet(1)
-    #geometricField.NumberOfComponentsSet(CMISS.FieldVariableTypes.U, 3)
+    #geometricField.NumberOfComponentsSet(iron.FieldVariableTypes.U, 3)
 
     # Always use the first mesh component for geometry.
     #for i in [1, 2, 3]:
-        #geometricField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U, i, 1)
+        #geometricField.ComponentMeshComponentSet(iron.FieldVariableTypes.U, i, 1)
 
     if option[0] == 2:
         # Tricubic Hermite
         if option[1] == 1:
-            geometricField.ScalingTypeSet(CMISS.FieldScalingTypes.UNIT)
+            geometricField.ScalingTypeSet(iron.FieldScalingTypes.UNIT)
             # Output for diagnostics
             print "----> Set up tricubic Hermite geometric field with unit scaling <----\n"
         elif option[1] == 2:
-            geometricField.ScalingTypeSet(CMISS.FieldScalingTypes.ARITHMETIC_MEAN)
+            geometricField.ScalingTypeSet(iron.FieldScalingTypes.ARITHMETIC_MEAN)
             # Output for diagnostics
             print "----> Set up tricubic Hermite geometric field with arithmetic mean scaling <----\n"
 
@@ -179,25 +179,25 @@ def GeometricFieldSetUp(geometricFieldUserNumber, region, decomposition, option)
 def GeometricFieldInitialise(xNodes, yNodes, zNodes, geometricField, numNodes, option):
     # Initialise nodal values.
     for node, value in enumerate(xNodes, 1):
-        geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1,
-                                                CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, 1, value)
+        geometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1,
+                                                iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, 1, value)
     for node, value in enumerate(yNodes, 1):
-        geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1,
-                                                CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, 2, value)
+        geometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1,
+                                                iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, 2, value)
     for node, value in enumerate(zNodes, 1):
-        geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1,
-                                                CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, 3, value)
+        geometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1,
+                                                iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, 3, value)
 
     # Initialise first derivatives.
     if option[0] == 2:
 
         for node in range(numNodes):
-            geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1,
-                                                    CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S1, node + 1, 1, max(xNodes))
-            geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1,
-                                                    CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S2, node + 1, 2, max(yNodes))
-            geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1,
-                                                    CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S3, node + 1, 3, max(zNodes))
+            geometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1,
+                                                    iron.GlobalDerivativeConstants.GLOBAL_DERIV_S1, node + 1, 1, max(xNodes))
+            geometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1,
+                                                    iron.GlobalDerivativeConstants.GLOBAL_DERIV_S2, node + 1, 2, max(yNodes))
+            geometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1,
+                                                    iron.GlobalDerivativeConstants.GLOBAL_DERIV_S3, node + 1, 3, max(zNodes))
 
     # Output
     print "----> Initialised geometric nodal values <----\n"
@@ -209,7 +209,7 @@ def GeometricFieldInitialise(xNodes, yNodes, zNodes, geometricField, numNodes, o
 
 #=================================================================================#
 def GeometricFieldExport(region, filename):
-    exportField = CMISS.Fields()
+    exportField = iron.Fields()
     exportField.CreateRegion(region)
     exportField.NodesExport(filename, "FORTRAN")
     exportField.ElementsExport(filename, "FORTRAN")
@@ -297,48 +297,48 @@ def ExtractNodesElements(filename):
 #=================================================================================#
 def FibreFieldSetUp(fibreFieldUserNumber, region, decomposition, geometricField, option, microstructure, inputNodes):
     # Sets up the fibre field.
-    fibreField = CMISS.Field()
+    fibreField = iron.Field()
     fibreField.CreateStart(fibreFieldUserNumber, region)
-    fibreField.TypeSet(CMISS.FieldTypes.FIBRE)
+    fibreField.TypeSet(iron.FieldTypes.FIBRE)
     fibreField.MeshDecompositionSet(decomposition)
     fibreField.GeometricFieldSet(geometricField)
-    fibreField.VariableLabelSet(CMISS.FieldVariableTypes.U, "Fibre")
+    fibreField.VariableLabelSet(iron.FieldVariableTypes.U, "Fibre")
 
     if option[0] == 1:
         fibreField.NumberOfVariablesSet(1)
-        fibreField.NumberOfComponentsSet(CMISS.FieldVariableTypes.U, 3)
+        fibreField.NumberOfComponentsSet(iron.FieldVariableTypes.U, 3)
         if microstructure == 1:
             for component in [1, 2, 3]:
-                fibreField.ComponentInterpolationSet(CMISS.FieldVariableTypes.U, component,
-                                                     CMISS.FieldInterpolationTypes.CONSTANT)
+                fibreField.ComponentInterpolationSet(iron.FieldVariableTypes.U, component,
+                                                     iron.FieldInterpolationTypes.CONSTANT)
         elif microstructure == 2:
             for component in [1, 2, 3]:
-                fibreField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U, component, 1)
+                fibreField.ComponentMeshComponentSet(iron.FieldVariableTypes.U, component, 1)
 
 
     elif option[0] == 2:
         # Tricubic Hermite interpolation
         #fibreField.NumberOfVariablesSet(1)
-        #fibreField.NumberOfComponentsSet(CMISS.FieldVariableTypes.U, 3)
+        #fibreField.NumberOfComponentsSet(iron.FieldVariableTypes.U, 3)
 
         if option[1] == 1:
-            fibreField.ScalingTypeSet(CMISS.FieldScalingTypes.UNIT)
+            fibreField.ScalingTypeSet(iron.FieldScalingTypes.UNIT)
             # Output
             print "----> Set up tricubic hermite fibre field with unit scaling <----\n"
         elif option[1] == 2:
-            fibreField.ScalingTypeSet(CMISS.FieldScalingTypes.ARITHMETIC_MEAN)
+            fibreField.ScalingTypeSet(iron.FieldScalingTypes.ARITHMETIC_MEAN)
             # Output
             print "----> Set up tricubic hermite fibre field with arithmetic mean scaling <----\n"
 
         if microstructure == 1:
             # Homogeneous fibre field.
             for component in [1, 2, 3]:
-                fibreField.ComponentInterpolationSet(CMISS.FieldVariableTypes.U, component,
-                                                     CMISS.FieldInterpolationTypes.CONSTANT)
+                fibreField.ComponentInterpolationSet(iron.FieldVariableTypes.U, component,
+                                                     iron.FieldInterpolationTypes.CONSTANT)
         elif microstructure == 2:
             # Heterogeneous fibre field using linear interpolation.
             for component in [1, 2, 3]:
-                fibreField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U, component, 1)
+                fibreField.ComponentMeshComponentSet(iron.FieldVariableTypes.U, component, 1)
 
     fibreField.CreateFinish()
 
@@ -351,8 +351,8 @@ def FibreFieldSetUp(fibreFieldUserNumber, region, decomposition, geometricField,
                 angle = inputNodes.node_values("fibers", component_name, n)
                 angle = float(angle[0])
                 angle = angle*math.pi/180
-                fibreField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES,
-                                                    1, CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV, n,
+                fibreField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES,
+                                                    1, iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, n,
                                                     component, angle)
         print "----> Initialised heterogeneous fibre angles <----\n"
     return fibreField
@@ -363,27 +363,27 @@ def FibreFieldSetUp(fibreFieldUserNumber, region, decomposition, geometricField,
 #=================================================================================#
 def MaterialFieldSetUpAuto(materialFieldUserNumber, equationsSet, params, cellMLOption):
     # Sets up material field, and apply field to mesh component.
-    materialField = CMISS.Field()
+    materialField = iron.Field()
     equationsSet.MaterialsCreateStart(materialFieldUserNumber, materialField)
-    materialField.VariableLabelSet(CMISS.FieldVariableTypes.U, "Material")
+    materialField.VariableLabelSet(iron.FieldVariableTypes.U, "Material")
     if cellMLOption[0]:
         print "----> CellML Material Field using gauss point interpolation <----\n"
         for component, param in enumerate(params, 1):
-            materialField.ComponentInterpolationSet(CMISS.FieldVariableTypes.U, component,
-                                                    CMISS.FieldInterpolationTypes.GAUSS_POINT_BASED)
+            materialField.ComponentInterpolationSet(iron.FieldVariableTypes.U, component,
+                                                    iron.FieldInterpolationTypes.GAUSS_POINT_BASED)
     """
     else:
         print "----> Material Field using constant interpolation <----\n"
         for component, param in enumerate(params, 1):
-            materialField.ComponentInterpolationSet(CMISS.FieldVariableTypes.U, component,
-                                                    CMISS.FieldInterpolationTypes.CONSTANT)
+            materialField.ComponentInterpolationSet(iron.FieldVariableTypes.U, component,
+                                                    iron.FieldInterpolationTypes.CONSTANT)
     """
     materialField.CreateFinish()
 
     #########################################################################
     # Initialise parameter values.
     for component, param in enumerate(params, 1):
-        materialField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES,
+        materialField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES,
                                                   component, param)
 
     # Output
@@ -396,42 +396,42 @@ def MaterialFieldSetUpAuto(materialFieldUserNumber, equationsSet, params, cellML
 #=================================================================================#
 def MaterialFieldSetUp(materialFieldUserNumber, region, decomposition, geometricField, params, option, cellMLOption):
     # Sets up material field, and apply field to mesh component.
-    materialField = CMISS.Field()
+    materialField = iron.Field()
     materialField.CreateStart(materialFieldUserNumber, region)
-    materialField.TypeSet(CMISS.FieldTypes.MATERIAL)
+    materialField.TypeSet(iron.FieldTypes.MATERIAL)
     materialField.MeshDecompositionSet(decomposition)
     materialField.GeometricFieldSet(geometricField)
-    materialField.VariableLabelSet(CMISS.FieldVariableTypes.U, "Material")
+    materialField.VariableLabelSet(iron.FieldVariableTypes.U, "Material")
     materialField.NumberOfVariablesSet(1)
-    materialField.NumberOfComponentsSet(CMISS.FieldVariableTypes.U,len(params))
-    materialField.ScalingTypeSet(CMISS.FieldScalingTypes.ARITHMETIC_MEAN)
+    materialField.NumberOfComponentsSet(iron.FieldVariableTypes.U,len(params))
+    materialField.ScalingTypeSet(iron.FieldScalingTypes.ARITHMETIC_MEAN)
 
     if cellMLOption[0]:
         print "----> CellML Material Field using gauss point interpolation <----\n"
         for component, param in enumerate(params, 1):
-            materialField.ComponentInterpolationSet(CMISS.FieldVariableTypes.U, component,
-                                                    CMISS.FieldInterpolationTypes.GAUSS_POINT_BASED)
+            materialField.ComponentInterpolationSet(iron.FieldVariableTypes.U, component,
+                                                    iron.FieldInterpolationTypes.GAUSS_POINT_BASED)
     else:
         print "----> Material Field using constant interpolation <----\n"
         for component, param in enumerate(params, 1):
-            materialField.ComponentInterpolationSet(CMISS.FieldVariableTypes.U, component,
-                                                    CMISS.FieldInterpolationTypes.CONSTANT)
+            materialField.ComponentInterpolationSet(iron.FieldVariableTypes.U, component,
+                                                    iron.FieldInterpolationTypes.CONSTANT)
 
     if option[0] == 2:
         # Tricubic Hermite
         if option[1] == 1:
-            materialField.ScalingTypeSet(CMISS.FieldScalingTypes.UNIT)
+            materialField.ScalingTypeSet(iron.FieldScalingTypes.UNIT)
         elif option[1] == 2:
-            materialField.ScalingTypeSet(CMISS.FieldScalingTypes.ARITHMETIC_MEAN)
+            materialField.ScalingTypeSet(iron.FieldScalingTypes.ARITHMETIC_MEAN)
     materialField.CreateFinish()
 
     for component, param in enumerate(params, 1):
-        materialField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES,
+        materialField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES,
                                                   component, param)
 
 
-    materialField.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES)
-    materialField.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES)
+    materialField.ParameterSetUpdateStart(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES)
+    materialField.ParameterSetUpdateFinish(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES)
     # Output
     print "----> Initialised " + str(len(params)) + " material parameters <----\n"
     return materialField
@@ -442,59 +442,59 @@ def MaterialFieldSetUp(materialFieldUserNumber, region, decomposition, geometric
 #=================================================================================#
 def DependentFieldSetUp(dependentFieldUserNumber, equationsSet, option, cellMLOption):
     # Standard set up dependent field with first derivatives.
-    dependentField = CMISS.Field()
+    dependentField = iron.Field()
     equationsSet.DependentCreateStart(dependentFieldUserNumber, dependentField)
-    dependentField.VariableLabelSet(CMISS.FieldVariableTypes.U, "Dependent")
+    dependentField.VariableLabelSet(iron.FieldVariableTypes.U, "Dependent")
 
     if cellMLOption[0]:
         print '----> Labelling dependent field strain and stress <----\n'
-        dependentField.VariableLabelSet(CMISS.FieldVariableTypes.U1, "Strain")
-        dependentField.VariableLabelSet(CMISS.FieldVariableTypes.U2, "Stress")
+        dependentField.VariableLabelSet(iron.FieldVariableTypes.U1, "Strain")
+        dependentField.VariableLabelSet(iron.FieldVariableTypes.U2, "Stress")
 
 
     if option[0] == 1:
         # Trilinear
         for i in [1, 2, 3]:
-            dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U, i, 1)
-            dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN, i, 1)
+            dependentField.ComponentMeshComponentSet(iron.FieldVariableTypes.U, i, 1)
+            dependentField.ComponentMeshComponentSet(iron.FieldVariableTypes.DELUDELN, i, 1)
 
-        dependentField.ComponentInterpolationSet(CMISS.FieldVariableTypes.U, 4,
-                                                 CMISS.FieldInterpolationTypes.ELEMENT_BASED)
-        dependentField.ComponentInterpolationSet(CMISS.FieldVariableTypes.DELUDELN, 4,
-                                                 CMISS.FieldInterpolationTypes.ELEMENT_BASED)
+        dependentField.ComponentInterpolationSet(iron.FieldVariableTypes.U, 4,
+                                                 iron.FieldInterpolationTypes.ELEMENT_BASED)
+        dependentField.ComponentInterpolationSet(iron.FieldVariableTypes.DELUDELN, 4,
+                                                 iron.FieldInterpolationTypes.ELEMENT_BASED)
         # Output
         print "----> Use element based interpolation for hydrostatic pressure <----\n"
 
     elif option[0] == 2:
         # Tricubic Hermite
         for i in [1, 2, 3]:
-            dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U, i, 1)
-            dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN, i, 1)
-        dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U, 4, 2)
-        dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN, 4, 2)
+            dependentField.ComponentMeshComponentSet(iron.FieldVariableTypes.U, i, 1)
+            dependentField.ComponentMeshComponentSet(iron.FieldVariableTypes.DELUDELN, i, 1)
+        dependentField.ComponentMeshComponentSet(iron.FieldVariableTypes.U, 4, 2)
+        dependentField.ComponentMeshComponentSet(iron.FieldVariableTypes.DELUDELN, 4, 2)
 
-        dependentField.ComponentInterpolationSet(CMISS.FieldVariableTypes.U, 4,
-                                                 CMISS.FieldInterpolationTypes.NODE_BASED)
-        dependentField.ComponentInterpolationSet(CMISS.FieldVariableTypes.DELUDELN, 4,
-                                                 CMISS.FieldInterpolationTypes.NODE_BASED)
+        dependentField.ComponentInterpolationSet(iron.FieldVariableTypes.U, 4,
+                                                 iron.FieldInterpolationTypes.NODE_BASED)
+        dependentField.ComponentInterpolationSet(iron.FieldVariableTypes.DELUDELN, 4,
+                                                 iron.FieldInterpolationTypes.NODE_BASED)
 
         # Output
         print "----> Interpolate hydrostatic pressure linearly <----\n"
         if option[1] == 1:
-            dependentField.ScalingTypeSet(CMISS.FieldScalingTypes.UNIT)
+            dependentField.ScalingTypeSet(iron.FieldScalingTypes.UNIT)
             # Output
             print "----> Set up dependent field with unit scaling <----\n"
         elif option[1] == 2:
-            dependentField.ScalingTypeSet(CMISS.FieldScalingTypes.ARITHMETIC_MEAN)
+            dependentField.ScalingTypeSet(iron.FieldScalingTypes.ARITHMETIC_MEAN)
             # Output
             print "----> Set up dependent field with arithmetic mean scaling <----\n"
 
     if cellMLOption[0]:
-        #dependentField.NumberOfComponentsSet(CMISS.FieldVariableTypes.U1, 6)
-        #dependentField.NumberOfComponentsSet(CMISS.FieldVariableTypes.U2, 6)
+        #dependentField.NumberOfComponentsSet(iron.FieldVariableTypes.U1, 6)
+        #dependentField.NumberOfComponentsSet(iron.FieldVariableTypes.U2, 6)
         for i in [1,2,3,4,5,6]:
-            dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U1, i, 1)
-            dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U2, i, 1)
+            dependentField.ComponentMeshComponentSet(iron.FieldVariableTypes.U1, i, 1)
+            dependentField.ComponentMeshComponentSet(iron.FieldVariableTypes.U2, i, 1)
 
     equationsSet.DependentCreateFinish()
 
@@ -507,29 +507,29 @@ def DependentFieldSetUp(dependentFieldUserNumber, equationsSet, option, cellMLOp
 def DependentFieldInitialise(dependentField, geometricField, hydroInit):
     # Copy over undeformed geometry to initialise dependent field.
     for i in [1, 2, 3]:
-        CMISS.Field.ParametersToFieldParametersComponentCopy(geometricField, CMISS.FieldVariableTypes.U,
-                                                             CMISS.FieldParameterSetTypes.VALUES, i, dependentField,
-                                                             CMISS.FieldVariableTypes.U,
-                                                             CMISS.FieldParameterSetTypes.VALUES, i)
+        iron.Field.ParametersToFieldParametersComponentCopy(geometricField, iron.FieldVariableTypes.U,
+                                                             iron.FieldParameterSetTypes.VALUES, i, dependentField,
+                                                             iron.FieldVariableTypes.U,
+                                                             iron.FieldParameterSetTypes.VALUES, i)
 
     # Output
     print "----> Initialised dependent field with undeformed geometry <----\n"
 
     # Set hydrostatic pressure initial guess.
-    dependentField.ComponentValuesInitialise(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 4,
+    dependentField.ComponentValuesInitialise(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 4,
                                              hydroInit)
 
-    #dependentField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1,
+    #dependentField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1,
                                             #1, 2, 3, -0.1)
-    #dependentField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1,
+    #dependentField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1,
                                             #1, 4, 3, -0.1)
-    #dependentField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1,
+    #dependentField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1,
                                             #1, 6, 3, -1.1)
-    #dependentField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1,
+    #dependentField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1,
                                             #1, 8,  3,-1.1)
 
-    dependentField.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES)
-    dependentField.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES)
+    dependentField.ParameterSetUpdateStart(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES)
+    dependentField.ParameterSetUpdateFinish(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES)
     # Output
     print "----> Initialised hydrostatic pressure guess of " + str(hydroInit) + " <----\n"
 
@@ -547,7 +547,7 @@ def DependentFieldWarmStart(dependentField, deformedGeomDOFs, deformedHydro):
             for deriv in [1,2,3,4,5,6,7,8]:
                 value = deformedGeomDOFs[component-1,node-1,deriv-1]
                 print '    value: ', value
-                dependentField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1,
+                dependentField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1,
                                                         deriv, node, component, value)
 
 
@@ -557,11 +557,11 @@ def DependentFieldWarmStart(dependentField, deformedGeomDOFs, deformedHydro):
 
     # Set hydrostatic pressure initial guess.
     for node in range(1,numNodes+1):
-        dependentField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1,
+        dependentField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1,
                                                 1, node, 4, deformedHydro[node-1])
 
-    dependentField.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES)
-    dependentField.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES)
+    dependentField.ParameterSetUpdateStart(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES)
+    dependentField.ParameterSetUpdateFinish(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES)
     # Output
     print "----> Initialised warm-start hydrostatic pressure of " + str(deformedHydro) + " <----\n"
 
@@ -571,11 +571,11 @@ def DependentFieldWarmStart(dependentField, deformedGeomDOFs, deformedHydro):
 #=================================================================================#
 def IndependentFieldSetUp(independentFieldUserNumber, equationsSet):
 
-    independentField = CMISS.Field()
+    independentField = iron.Field()
     equationsSet.IndependentCreateStart(independentFieldUserNumber, independentField)
-    independentField.VariableLabelSet(CMISS.FieldVariableTypes.U, "Independent")
-    #independentField.NumberOfComponentsSet(CMISS.FieldVariableTypes.U, 3)
-    #independentField.ComponentInterpolationSet(CMISS.FieldVariableTypes.U, 1, CMISS.FieldInterpolationTypes.ELEMENT_BASED)
+    independentField.VariableLabelSet(iron.FieldVariableTypes.U, "Independent")
+    #independentField.NumberOfComponentsSet(iron.FieldVariableTypes.U, 3)
+    #independentField.ComponentInterpolationSet(iron.FieldVariableTypes.U, 1, iron.FieldInterpolationTypes.ELEMENT_BASED)
     equationsSet.IndependentCreateFinish()
     return independentField, equationsSet
 #=================================================================================#
@@ -583,13 +583,13 @@ def IndependentFieldSetUp(independentFieldUserNumber, equationsSet):
 #=================================================================================#
 def IndependentFieldInitialise(independentField, param):
     print "---> Initialising Indepedent field <----\n"
-    independentField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, param)
+    independentField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1, param)
 
     for component in [2,3]:
-        independentField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, component, 0.0)
+        independentField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, component, 0.0)
 
-    #independentField.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES)
-    #independentField.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES)
+    #independentField.ParameterSetUpdateStart(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES)
+    #independentField.ParameterSetUpdateFinish(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES)
     # Output
     print "----> Initialised contraction of  " + str(param) + " kPa <----\n"
 #=================================================================================#
@@ -707,7 +707,7 @@ def ParseWarmStart(filename):
 def CellMLSetUp(cellMLUserNumber, cellMLModelsFieldUserNumber, cellMLParametersFieldUserNumber,
                 cellMLIntermediateFieldUserNumber, region, materialField, dependentField, parameters, filename, option):
     cellMLModelIndex = 1
-    cellML = CMISS.CellML()
+    cellML = iron.CellML()
     cellML.CreateStart(cellMLUserNumber, region)
     cellML.ModelImport(filename)
     strain = ["E11", "E12", "E13", "E22", "E23", "E33"]
@@ -730,59 +730,59 @@ def CellMLSetUp(cellMLUserNumber, cellMLModelsFieldUserNumber, cellMLParametersF
     # Map the strain from dependentField U1 variable to CellML.
     for component, variable in enumerate(strain, 1):
         #print "----> Mapping strain ", str(variable)+ " to CellML <----\n"
-        cellML.CreateFieldToCellMLMap(dependentField, CMISS.FieldVariableTypes.U1, component,
-                                      CMISS.FieldParameterSetTypes.VALUES, cellMLModelIndex, "equations/" + variable,
-                                      CMISS.FieldParameterSetTypes.VALUES)
+        cellML.CreateFieldToCellMLMap(dependentField, iron.FieldVariableTypes.U1, component,
+                                      iron.FieldParameterSetTypes.VALUES, cellMLModelIndex, "equations/" + variable,
+                                      iron.FieldParameterSetTypes.VALUES)
 
     # Map the material parameters from material field to CellML.
     for component, parameter in enumerate(parameters, 1):
         #print "----> Mapping parameter ", str(parameter)+ " to CellML <----\n"
-        cellML.CreateFieldToCellMLMap(materialField, CMISS.FieldVariableTypes.U, component,
-                                      CMISS.FieldParameterSetTypes.VALUES, cellMLModelIndex, "equations/" + parameter,
-                                      CMISS.FieldParameterSetTypes.VALUES)
+        cellML.CreateFieldToCellMLMap(materialField, iron.FieldVariableTypes.U, component,
+                                      iron.FieldParameterSetTypes.VALUES, cellMLModelIndex, "equations/" + parameter,
+                                      iron.FieldParameterSetTypes.VALUES)
 
     # Map the stress from CellML to dependentFieldU2 variable
     for component, variable in enumerate(stress2PK, 1):
         #print "----> Mapping stress ", str(variable)+ " to CellML <----\n"
-        cellML.CreateCellMLToFieldMap(cellMLModelIndex, "equations/" + variable, CMISS.FieldParameterSetTypes.VALUES,
-                                      dependentField, CMISS.FieldVariableTypes.U2, component,
-                                      CMISS.FieldParameterSetTypes.VALUES)
+        cellML.CreateCellMLToFieldMap(cellMLModelIndex, "equations/" + variable, iron.FieldParameterSetTypes.VALUES,
+                                      dependentField, iron.FieldVariableTypes.U2, component,
+                                      iron.FieldParameterSetTypes.VALUES)
     cellML.FieldMapsCreateFinish()
     print "----> Finished mapping variables to CellML <----\n"
 
     # Create models field for CellML
-    CellMLModelsField = CMISS.Field()
+    CellMLModelsField = iron.Field()
     cellML.ModelsFieldCreateStart(cellMLModelsFieldUserNumber, CellMLModelsField)
     if option[0] == 2:
         # Tricubic Hermite
         if option[1] == 1:
-            CellMLModelsField.ScalingTypeSet(CMISS.FieldScalingTypes.UNIT)
+            CellMLModelsField.ScalingTypeSet(iron.FieldScalingTypes.UNIT)
         elif option[1] == 2:
-            CellMLModelsField.ScalingTypeSet(CMISS.FieldScalingTypes.ARITHMETIC_MEAN)
+            CellMLModelsField.ScalingTypeSet(iron.FieldScalingTypes.ARITHMETIC_MEAN)
     cellML.ModelsFieldCreateFinish()
     print "----> Finished creating models field for CellML <----\n"
     # No need to create a state field since we aren't integrating.
 
     # Create parameters field for CellML, this is used as the strain field.
-    CellMLParametersField = CMISS.Field()
+    CellMLParametersField = iron.Field()
     cellML.ParametersFieldCreateStart(cellMLParametersFieldUserNumber, CellMLParametersField)
     if option[0] == 2:
         # Tricubic Hermite
         if option[1] == 1:
-            CellMLParametersField.ScalingTypeSet(CMISS.FieldScalingTypes.UNIT)
+            CellMLParametersField.ScalingTypeSet(iron.FieldScalingTypes.UNIT)
         elif option[1] == 2:
-            CellMLParametersField.ScalingTypeSet(CMISS.FieldScalingTypes.ARITHMETIC_MEAN)
+            CellMLParametersField.ScalingTypeSet(iron.FieldScalingTypes.ARITHMETIC_MEAN)
     cellML.ParametersFieldCreateFinish()
     print "----> Finished creating parameters field for CellML <----\n"
     # Create intermediate field for CellML, this is used as the stress field.
-    CellMLIntermediateField = CMISS.Field()
+    CellMLIntermediateField = iron.Field()
     cellML.IntermediateFieldCreateStart(cellMLIntermediateFieldUserNumber, CellMLIntermediateField)
     if option[0] == 2:
         # Tricubic Hermite
         if option[1] == 1:
-            CellMLIntermediateField.ScalingTypeSet(CMISS.FieldScalingTypes.UNIT)
+            CellMLIntermediateField.ScalingTypeSet(iron.FieldScalingTypes.UNIT)
         elif option[1] == 2:
-            CellMLIntermediateField.ScalingTypeSet(CMISS.FieldScalingTypes.ARITHMETIC_MEAN)
+            CellMLIntermediateField.ScalingTypeSet(iron.FieldScalingTypes.ARITHMETIC_MEAN)
     cellML.IntermediateFieldCreateFinish()
     print "----> Finished creating intermediate field for CellML <----\n"
 
@@ -792,30 +792,30 @@ def CellMLSetUp(cellMLUserNumber, cellMLModelsFieldUserNumber, cellMLParametersF
 #=================================================================================#
 def StrainFieldSetUp(strainFieldUserNumber, region, decomposition, geometricField, equationsSet, option):
     # Set up strain field for output
-    strainField = CMISS.Field()
+    strainField = iron.Field()
     strainField.CreateStart(strainFieldUserNumber, region)
     strainField.MeshDecompositionSet(decomposition)
-    strainField.TypeSet(CMISS.FieldTypes.GENERAL)
+    strainField.TypeSet(iron.FieldTypes.GENERAL)
     strainField.GeometricFieldSet(geometricField)
-    strainField.DependentTypeSet(CMISS.FieldDependentTypes.DEPENDENT)
-    strainField.VariableTypesSet([CMISS.FieldVariableTypes.U])
-    strainField.VariableLabelSet(CMISS.FieldVariableTypes.U, "Strain")
-    strainField.NumberOfComponentsSet(CMISS.FieldVariableTypes.U, 6)
+    strainField.DependentTypeSet(iron.FieldDependentTypes.DEPENDENT)
+    strainField.VariableTypesSet([iron.FieldVariableTypes.U])
+    strainField.VariableLabelSet(iron.FieldVariableTypes.U, "Strain")
+    strainField.NumberOfComponentsSet(iron.FieldVariableTypes.U, 6)
 
     for component in [1,2,3,4,5,6]:
-        strainField.ComponentInterpolationSet(CMISS.FieldVariableTypes.U, component,
-                                              CMISS.FieldInterpolationTypes.GAUSS_POINT_BASED)
+        strainField.ComponentInterpolationSet(iron.FieldVariableTypes.U, component,
+                                              iron.FieldInterpolationTypes.GAUSS_POINT_BASED)
 
     if option[0]==2:
         if option[1]==1:
-            strainField.ScalingTypeSet(CMISS.FieldScalingTypes.UNIT)
+            strainField.ScalingTypeSet(iron.FieldScalingTypes.UNIT)
         elif option[1]==2:
-            strainField.ScalingTypeSet(CMISS.FieldScalingTypes.UNIT)
+            strainField.ScalingTypeSet(iron.FieldScalingTypes.UNIT)
 
     strainField.CreateFinish()
 
     equationsSet.DerivedCreateStart(strainFieldUserNumber, strainField)
-    equationsSet.DerivedVariableSet(CMISS.EquationsSetDerivedTypes.STRAIN, CMISS.FieldVariableTypes.U)
+    equationsSet.DerivedVariableSet(iron.EquationsSetDerivedTypes.STRAIN, iron.FieldVariableTypes.U)
     equationsSet.DerivedCreateFinish()
 
     return strainField
@@ -834,11 +834,11 @@ def matrixFromSymmetricComponents(components):
 def EquationsSetSetUp(equationsSet):
     # Set up standard options for problem and solvers.
     # Create equations
-    equations = CMISS.Equations()
+    equations = iron.Equations()
     equationsSet.EquationsCreateStart(equations)
-    equations.SparsityTypeSet(CMISS.EquationsSparsityTypes.SPARSE)
-    equations.OutputTypeSet(CMISS.EquationsOutputTypes.NONE)
-    #equations.OutputTypeSet(CMISS.EquationsOutputTypes.MATRIX)
+    equations.SparsityTypeSet(iron.EquationsSparsityTypes.SPARSE)
+    equations.OutputTypeSet(iron.EquationsOutputTypes.NONE)
+    #equations.OutputTypeSet(iron.EquationsOutputTypes.MATRIX)
     equationsSet.EquationsCreateFinish()
 
 #=================================================================================#
@@ -848,24 +848,24 @@ def ProblemSolverSetup(equationsSet,problemUserNumber,maxIter, TOL, cellMLOption
 
     print "----> Set up equations <----\n"
     # Define problem
-    problem = CMISS.Problem()
-    problem.CreateStart(problemUserNumber)
+    problem = iron.Problem()
 
     if cellMLOption[0]:
-        problem.SpecificationSet(CMISS.ProblemClasses.ELASTICITY, CMISS.ProblemTypes.FINITE_ELASTICITY,
-                                 CMISS.ProblemSubTypes.FINITE_ELASTICITY_CELLML)
+        problemSpecification = [iron.ProblemClasses.ELASTICITY, iron.ProblemTypes.FINITE_ELASTICITY,
+                                   iron.ProblemSubtypes.FINITE_ELASTICITY_CELLML]
     else:
-        problem.SpecificationSet(CMISS.ProblemClasses.ELASTICITY, CMISS.ProblemTypes.FINITE_ELASTICITY,
-                                 CMISS.ProblemSubTypes.NONE)
+        problemSpecification = [iron.ProblemClasses.ELASTICITY, iron.ProblemTypes.FINITE_ELASTICITY,
+                                   iron.ProblemSubtypes.NONE]
 
+    problem.CreateStart(problemUserNumber, problemSpecification)
     problem.CreateFinish()
     # Output
     print "----> Set up problem <----\n"
     # Create control loops
     problem.ControlLoopCreateStart()
-    controlLoop = CMISS.ControlLoop()
-    problem.ControlLoopGet([CMISS.ControlLoopIdentifiers.NODE], controlLoop)
-    #controlLoop.TypeSet(CMISS.ProblemControlLoopTypes.WHILE_LOOP)
+    controlLoop = iron.ControlLoop()
+    problem.ControlLoopGet([iron.ControlLoopIdentifiers.NODE], controlLoop)
+    #controlLoop.TypeSet(iron.ProblemControlLoopTypes.WHILE_LOOP)
     #controlLoop.IterationsSet(1,1,1)
     controlLoop.MaximumIterationsSet(maxIter)
     #controlLoop.MaximumIterationsSet(3)
@@ -873,22 +873,22 @@ def ProblemSolverSetup(equationsSet,problemUserNumber,maxIter, TOL, cellMLOption
     # Output
     print "----> Set up control loop <----\n"
     # Create nonlinear numerical solver
-    linearSolver = CMISS.Solver()
-    nonLinearSolver = CMISS.Solver()
+    linearSolver = iron.Solver()
+    nonLinearSolver = iron.Solver()
     problem.SolversCreateStart()
-    problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE], 1, nonLinearSolver)
-    nonLinearSolver.OutputTypeSet(CMISS.SolverOutputTypes.PROGRESS)
-    nonLinearSolver.NewtonJacobianCalculationTypeSet(CMISS.JacobianCalculationTypes.EQUATIONS)
+    problem.SolverGet([iron.ControlLoopIdentifiers.NODE], 1, nonLinearSolver)
+    nonLinearSolver.OutputTypeSet(iron.SolverOutputTypes.PROGRESS)
+    nonLinearSolver.NewtonJacobianCalculationTypeSet(iron.JacobianCalculationTypes.EQUATIONS)
     nonLinearSolver.NewtonAbsoluteToleranceSet(TOL)
-    nonLinearSolver.NewtonConvergenceTestTypeSet(CMISS.NewtonConvergenceTypes.PETSC_DEFAULT)
+    nonLinearSolver.NewtonConvergenceTestTypeSet(iron.NewtonConvergenceTypes.PETSC_DEFAULT)
     nonLinearSolver.NewtonLinearSolverGet(linearSolver)
-    nonLinearSolver.NewtonLineSearchTypeSet(CMISS.NewtonLineSearchTypes.LINEAR)
-    linearSolver.LinearTypeSet(CMISS.LinearSolverTypes.DIRECT)
+    nonLinearSolver.NewtonLineSearchTypeSet(iron.NewtonLineSearchTypes.LINEAR)
+    linearSolver.LinearTypeSet(iron.LinearSolverTypes.DIRECT)
     problem.SolversCreateFinish()
 
     if cellMLOption[0]:
-        cellMLSolver = CMISS.Solver()
-        cellMLEquations = CMISS.CellMLEquations()
+        cellMLSolver = iron.Solver()
+        cellMLEquations = iron.CellMLEquations()
         problem.CellMLEquationsCreateStart()
         nonLinearSolver.NewtonCellMLSolverGet(cellMLSolver)
         cellMLSolver.CellMLEquationsGet(cellMLEquations)
@@ -898,12 +898,12 @@ def ProblemSolverSetup(equationsSet,problemUserNumber,maxIter, TOL, cellMLOption
     # Output
     print "----> Set up linear and nonlinear solvers <----\n"
     # Add solver equations sets which encompass the physics
-    solverEquations = CMISS.SolverEquations()
-    solver = CMISS.Solver()
+    solverEquations = iron.SolverEquations()
+    solver = iron.Solver()
     problem.SolverEquationsCreateStart()
-    problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE], 1, solver)
+    problem.SolverGet([iron.ControlLoopIdentifiers.NODE], 1, solver)
     solver.SolverEquationsGet(solverEquations)
-    solverEquations.SparsityTypeSet(CMISS.SolverEquationsSparsityTypes.SPARSE)
+    solverEquations.SparsityTypeSet(iron.SolverEquationsSparsityTypes.SPARSE)
     equationSetIndex = solverEquations.EquationsSetAdd(equationsSet)
     problem.SolverEquationsCreateFinish()
     # Output
@@ -916,53 +916,53 @@ def ProblemSolverSetup(equationsSet,problemUserNumber,maxIter, TOL, cellMLOption
 def BCCubeSingleFace(solverEquations, dependentField, appliedFace, faceNormal, appliedDirection, increm, optionBC,
                      fixXFace, fixYFace, fixZFace, numNodes, option):
     # Set up
-    boundaryConditions = CMISS.BoundaryConditions()
+    boundaryConditions = iron.BoundaryConditions()
     solverEquations.BoundaryConditionsCreateStart(boundaryConditions)
 
     # Initialise fixed faces node values.
     for node in fixXFace:
-        boundaryConditions.AddNode(dependentField, CMISS.FieldVariableTypes.U, 1,
-                                   CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, 1,
-                                   CMISS.BoundaryConditionsTypes.FIXED, 0.0)
+        boundaryConditions.AddNode(dependentField, iron.FieldVariableTypes.U, 1,
+                                   iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, 1,
+                                   iron.BoundaryConditionsTypes.FIXED, 0.0)
     for node in fixYFace:
-        boundaryConditions.AddNode(dependentField, CMISS.FieldVariableTypes.U, 1,
-                                   CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, 2,
-                                   CMISS.BoundaryConditionsTypes.FIXED, 0.0)
+        boundaryConditions.AddNode(dependentField, iron.FieldVariableTypes.U, 1,
+                                   iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, 2,
+                                   iron.BoundaryConditionsTypes.FIXED, 0.0)
     for node in fixZFace:
-        boundaryConditions.AddNode(dependentField, CMISS.FieldVariableTypes.U, 1,
-                                   CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, 3,
-                                   CMISS.BoundaryConditionsTypes.FIXED, 0.0)
+        boundaryConditions.AddNode(dependentField, iron.FieldVariableTypes.U, 1,
+                                   iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, 3,
+                                   iron.BoundaryConditionsTypes.FIXED, 0.0)
 
     if option[0] == 2:
 
         # Fix derivatives
         if faceNormal == 1:
-            derivFix = [CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S2,
-                        CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S3]
+            derivFix = [iron.GlobalDerivativeConstants.GLOBAL_DERIV_S2,
+                        iron.GlobalDerivativeConstants.GLOBAL_DERIV_S3]
         elif faceNormal == 2:
-            derivFix = [CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S1,
-                        CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S3]
+            derivFix = [iron.GlobalDerivativeConstants.GLOBAL_DERIV_S1,
+                        iron.GlobalDerivativeConstants.GLOBAL_DERIV_S3]
         else:
-            derivFix = [CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S1,
-                        CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S2]
+            derivFix = [iron.GlobalDerivativeConstants.GLOBAL_DERIV_S1,
+                        iron.GlobalDerivativeConstants.GLOBAL_DERIV_S2]
 
         for node in range(1,numNodes+1):
             for j in derivFix:
                 for component in [1,2,3]:
-                    boundaryConditions.AddNode(dependentField, CMISS.FieldVariableTypes.U, 1, j, node,
-                                               component, CMISS.BoundaryConditionsTypes.FIXED, 0.0)
+                    boundaryConditions.AddNode(dependentField, iron.FieldVariableTypes.U, 1, j, node,
+                                               component, iron.BoundaryConditionsTypes.FIXED, 0.0)
 
 
 
         # Fix all second and third derivatives.
         for i in range(1, numNodes + 1):
-            for j in [CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S2,
-                      CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S3,
-                      CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S2_S3,
-                      CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S2_S3]:
+            for j in [iron.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S2,
+                      iron.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S3,
+                      iron.GlobalDerivativeConstants.GLOBAL_DERIV_S2_S3,
+                      iron.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S2_S3]:
                 for k in [1, 2, 3]:
-                    boundaryConditions.AddNode(dependentField, CMISS.FieldVariableTypes.U, 1, j, i, k,
-                                               CMISS.BoundaryConditionsTypes.FIXED, 0.0)
+                    boundaryConditions.AddNode(dependentField, iron.FieldVariableTypes.U, 1, j, i, k,
+                                               iron.BoundaryConditionsTypes.FIXED, 0.0)
 
 
 
@@ -973,26 +973,26 @@ def BCCubeSingleFace(solverEquations, dependentField, appliedFace, faceNormal, a
     if optionBC == 1:
         # Option 1: Compression/extension
         for node in appliedFace:
-            boundaryConditions.AddNode(dependentField, CMISS.FieldVariableTypes.U, 1,
-                                       CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, appliedDirection,
-                                       CMISS.BoundaryConditionsTypes.FIXED, increm)
+            boundaryConditions.AddNode(dependentField, iron.FieldVariableTypes.U, 1,
+                                       iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, appliedDirection,
+                                       iron.BoundaryConditionsTypes.FIXED, increm)
         # Output
         print "----> Implemented compression/extension boundary condition of " + str(increm) + " <----\n"
 
     elif optionBC == 2:
         # Option 2: Force
         for node in appliedFace:
-            boundaryConditions.AddNode(dependentField, CMISS.FieldVariableTypes.DELUDELN, 1,
-                                       CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, appliedDirection,
-                                       CMISS.BoundaryConditionsTypes.FIXED_INCREMENTED, increm)
+            boundaryConditions.AddNode(dependentField, iron.FieldVariableTypes.DELUDELN, 1,
+                                       iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, appliedDirection,
+                                       iron.BoundaryConditionsTypes.FIXED_INCREMENTED, increm)
         # Output
         print "----> Implemented force boundary condition of " + str(increm) + "N <----\n"
     elif optionBC == 3:
         # Option 3: Pressure
         for node in appliedFace:
-            boundaryConditions.AddNode(dependentField, CMISS.FieldVariableTypes.DELUDELN, 1,
-                                       CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, faceNormal,
-                                       CMISS.BoundaryConditionsTypes.PRESSURE_INCREMENTED, increm)
+            boundaryConditions.AddNode(dependentField, iron.FieldVariableTypes.DELUDELN, 1,
+                                       iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, faceNormal,
+                                       iron.BoundaryConditionsTypes.PRESSURE_INCREMENTED, increm)
         # Output
         print "----> Implemented pressure boundary condition of " + str(increm) + " kPa <----\n"
 
@@ -1005,45 +1005,45 @@ def BCCubeSingleFace(solverEquations, dependentField, appliedFace, faceNormal, a
 def BCCantilever(solverEquations, dependentField, appliedFace, faceNormal, appliedDirection, increm, optionBC,
                      fixBackFace, fixedFaceNormal, option):
     # Set up
-    boundaryConditions = CMISS.BoundaryConditions()
+    boundaryConditions = iron.BoundaryConditions()
     solverEquations.BoundaryConditionsCreateStart(boundaryConditions)
 
     # Initialise fixed faces node values.
     for component in [1, 2, 3]:
         for node in fixBackFace:
             for component in [1,2,3]:
-                boundaryConditions.AddNode(dependentField, CMISS.FieldVariableTypes.U, 1,
-                                           CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, component,
-                                           CMISS.BoundaryConditionsTypes.FIXED, 0.0)
+                boundaryConditions.AddNode(dependentField, iron.FieldVariableTypes.U, 1,
+                                           iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, component,
+                                           iron.BoundaryConditionsTypes.FIXED, 0.0)
                 if option[0] == 2:
                     # print 'Node number ', node
 
                     # Fix derivatives
                     if fixedFaceNormal == 1:
                         #print "Fixed back normal is 1. "
-                        derivFix = [CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S2,
-                                    CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S2,
-                                    CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S3,
-                                    CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S3,
-                                    CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S2_S3,
-                                    CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S2_S3]
+                        derivFix = [iron.GlobalDerivativeConstants.GLOBAL_DERIV_S2,
+                                    iron.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S2,
+                                    iron.GlobalDerivativeConstants.GLOBAL_DERIV_S3,
+                                    iron.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S3,
+                                    iron.GlobalDerivativeConstants.GLOBAL_DERIV_S2_S3,
+                                    iron.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S2_S3]
                     elif fixedFaceNormal == 2:
-                        derivFix = [CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S1,
-                                    CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S2,
-                                    CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S3,
-                                    CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S3,
-                                    CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S2_S3,
-                                    CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S2_S3]
+                        derivFix = [iron.GlobalDerivativeConstants.GLOBAL_DERIV_S1,
+                                    iron.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S2,
+                                    iron.GlobalDerivativeConstants.GLOBAL_DERIV_S3,
+                                    iron.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S3,
+                                    iron.GlobalDerivativeConstants.GLOBAL_DERIV_S2_S3,
+                                    iron.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S2_S3]
                     else:
-                        derivFix = [CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S1,
-                                    CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S2,
-                                    CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S2,
-                                    CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S3,
-                                    CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S2_S3,
-                                    CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S2_S3]
+                        derivFix = [iron.GlobalDerivativeConstants.GLOBAL_DERIV_S1,
+                                    iron.GlobalDerivativeConstants.GLOBAL_DERIV_S2,
+                                    iron.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S2,
+                                    iron.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S3,
+                                    iron.GlobalDerivativeConstants.GLOBAL_DERIV_S2_S3,
+                                    iron.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S2_S3]
                     for deriv in derivFix:
-                        boundaryConditions.AddNode(dependentField, CMISS.FieldVariableTypes.U, 1, deriv, node,
-                                                   component, CMISS.BoundaryConditionsTypes.FIXED, 0.0)
+                        boundaryConditions.AddNode(dependentField, iron.FieldVariableTypes.U, 1, deriv, node,
+                                                   component, iron.BoundaryConditionsTypes.FIXED, 0.0)
 
 
     # Output
@@ -1053,18 +1053,18 @@ def BCCantilever(solverEquations, dependentField, appliedFace, faceNormal, appli
     if optionBC == 1:
         # Option 1: Compression/extension
         for node in appliedFace:
-            boundaryConditions.AddNode(dependentField, CMISS.FieldVariableTypes.U, 1,
-                                       CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, appliedDirection,
-                                       CMISS.BoundaryConditionsTypes.FIXED, increm)
+            boundaryConditions.AddNode(dependentField, iron.FieldVariableTypes.U, 1,
+                                       iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, appliedDirection,
+                                       iron.BoundaryConditionsTypes.FIXED, increm)
         # Output
         print "----> Implemented compression/extension boundary condition of " + str(increm) + " <----\n"
 
     elif optionBC == 2:
         # Option 2: Force
         for node in appliedFace:
-            boundaryConditions.AddNode(dependentField, CMISS.FieldVariableTypes.DELUDELN, 1,
-                                       CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, appliedDirection,
-                                       CMISS.BoundaryConditionsTypes.FIXED_INCREMENTED, increm)
+            boundaryConditions.AddNode(dependentField, iron.FieldVariableTypes.DELUDELN, 1,
+                                       iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, appliedDirection,
+                                       iron.BoundaryConditionsTypes.FIXED_INCREMENTED, increm)
         # Output
         print "----> Implemented force boundary condition of " + str(increm) + "N <----\n"
     elif optionBC == 3:
@@ -1072,9 +1072,9 @@ def BCCantilever(solverEquations, dependentField, appliedFace, faceNormal, appli
         print 'Pressure applied on: '
         for node in appliedFace:
             print 'Node ', node
-            boundaryConditions.AddNode(dependentField, CMISS.FieldVariableTypes.DELUDELN, 1,
-                                       CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, faceNormal,
-                                       CMISS.BoundaryConditionsTypes.PRESSURE_INCREMENTED, increm)
+            boundaryConditions.AddNode(dependentField, iron.FieldVariableTypes.DELUDELN, 1,
+                                       iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, faceNormal,
+                                       iron.BoundaryConditionsTypes.PRESSURE_INCREMENTED, increm)
         print 'Face normal ', faceNormal
         # Output
         print "----> Implemented pressure boundary condition of " + str(increm) + " kPa <----\n"
@@ -1088,37 +1088,37 @@ def BCCantilever(solverEquations, dependentField, appliedFace, faceNormal, appli
 def BCEndoPressure(solverEquations, dependentField, endoFace, pressure, basalFace, option):
 
     # Set up
-    boundaryConditions = CMISS.BoundaryConditions()
+    boundaryConditions = iron.BoundaryConditions()
     solverEquations.BoundaryConditionsCreateStart(boundaryConditions)
 
     if option[0] == 1:
-        derivFix = [CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV]
+        derivFix = [iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV]
     else:
-        derivFix = [CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV,
-                CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S1,
-                CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S3,
-                CMISS.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S3]
+        derivFix = [iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV,
+                iron.GlobalDerivativeConstants.GLOBAL_DERIV_S1,
+                iron.GlobalDerivativeConstants.GLOBAL_DERIV_S3,
+                iron.GlobalDerivativeConstants.GLOBAL_DERIV_S1_S3]
 
     # Fix basal nodes and derivatives.
     for component in [1, 2, 3]:
         for node in basalFace:
             for deriv in derivFix:
-                boundaryConditions.AddNode(dependentField, CMISS.FieldVariableTypes.U, 1,
-                                           deriv, node, component,CMISS.BoundaryConditionsTypes.FIXED, 0.0)
+                boundaryConditions.AddNode(dependentField, iron.FieldVariableTypes.U, 1,
+                                           deriv, node, component,iron.BoundaryConditionsTypes.FIXED, 0.0)
 
 
     # Apply pressure BC on endocardial nodes.
     for node in endoFace:
-        boundaryConditions.AddNode(dependentField, CMISS.FieldVariableTypes.DELUDELN, 1,
-                                   CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, 3,
-                                   CMISS.BoundaryConditionsTypes.PRESSURE_INCREMENTED, pressure)
+        boundaryConditions.AddNode(dependentField, iron.FieldVariableTypes.DELUDELN, 1,
+                                   iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, node, 3,
+                                   iron.BoundaryConditionsTypes.PRESSURE_INCREMENTED, pressure)
 
     """
     for component in [1,2,3]:
-        boundaryConditions.ConstrainNodeDofsEqual(dependentField, CMISS.FieldVariableTypes.U, 1,
-                                                  CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV, component, apexEndoNodes)
-        boundaryConditions.ConstrainNodeDofsEqual(dependentField, CMISS.FieldVariableTypes.U, 1,
-                                                  CMISS.GlobalDerivativeConstants.NO_GLOBAL_DERIV, component, apexEpiNodes)
+        boundaryConditions.ConstrainNodeDofsEqual(dependentField, iron.FieldVariableTypes.U, 1,
+                                                  iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, component, apexEndoNodes)
+        boundaryConditions.ConstrainNodeDofsEqual(dependentField, iron.FieldVariableTypes.U, 1,
+                                                  iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV, component, apexEpiNodes)
     """
     solverEquations.BoundaryConditionsCreateFinish()
 
@@ -1128,25 +1128,25 @@ def BCEndoPressure(solverEquations, dependentField, endoFace, pressure, basalFac
 #=================================================================================#
 def SetUpDeformedField(deformedFieldUserNumber, decomposition, region, option):
     # Copy over deformed field.
-    deformedField = CMISS.Field()
+    deformedField = iron.Field()
     deformedField.CreateStart(deformedFieldUserNumber, region)
     deformedField.MeshDecompositionSet(decomposition)
-    deformedField.TypeSet(CMISS.FieldTypes.GEOMETRIC)
-    deformedField.VariableLabelSet(CMISS.FieldVariableTypes.U, "DeformedGeometry")
+    deformedField.TypeSet(iron.FieldTypes.GEOMETRIC)
+    deformedField.VariableLabelSet(iron.FieldVariableTypes.U, "DeformedGeometry")
 
     if option[0] == 1:
         # Trilinear.
         for component in [1, 2, 3]:
-            deformedField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U, component, 1)
-        deformedField.ScalingTypeSet(CMISS.FieldScalingTypes.ARITHMETIC_MEAN)
+            deformedField.ComponentMeshComponentSet(iron.FieldVariableTypes.U, component, 1)
+        deformedField.ScalingTypeSet(iron.FieldScalingTypes.ARITHMETIC_MEAN)
     elif option[0] == 2:
         # Tricubic hermite. Geometry interpolated using cubic hermite basis (2nd mesh component).
         for component in [1, 2, 3]:
-            deformedField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U, component, 1)
+            deformedField.ComponentMeshComponentSet(iron.FieldVariableTypes.U, component, 1)
         if option[1] == 1:
-            deformedField.ScalingTypeSet(CMISS.FieldScalingTypes.UNIT)
+            deformedField.ScalingTypeSet(iron.FieldScalingTypes.UNIT)
         elif option[1] == 2:
-            deformedField.ScalingTypeSet(CMISS.FieldScalingTypes.ARITHMETIC_MEAN)
+            deformedField.ScalingTypeSet(iron.FieldScalingTypes.ARITHMETIC_MEAN)
 
     deformedField.CreateFinish()
 
@@ -1157,14 +1157,14 @@ def SetUpDeformedField(deformedFieldUserNumber, decomposition, region, option):
 def ExportResults(dependentField, deformedField, region, filename):
 
     for component in [1, 2, 3]:
-        dependentField.ParametersToFieldParametersComponentCopy(CMISS.FieldVariableTypes.U,
-                                                                CMISS.FieldParameterSetTypes.VALUES, component,
-                                                                deformedField, CMISS.FieldVariableTypes.U,
-                                                                CMISS.FieldParameterSetTypes.VALUES, component)
+        dependentField.ParametersToFieldParametersComponentCopy(iron.FieldVariableTypes.U,
+                                                                iron.FieldParameterSetTypes.VALUES, component,
+                                                                deformedField, iron.FieldVariableTypes.U,
+                                                                iron.FieldParameterSetTypes.VALUES, component)
     #dependentField.Destroy()
 
     # Export deformation.
-    fields = CMISS.Fields()
+    fields = iron.Fields()
     fields.CreateRegion(region)
     fields.NodesExport(filename, "FORTRAN")
     fields.ElementsExport(filename, "FORTRAN")

@@ -57,7 +57,8 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
 
   !PROGRAM LIBRARIES
 
-  USE OPENCMISS
+  USE OpenCMISS
+  USE OpenCMISS_Iron
   USE FLUID_MECHANICS_IO_ROUTINES
   USE MPI
 
@@ -73,10 +74,6 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
 
   IMPLICIT NONE
 
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(CMISSFieldType) :: EquationsSetField
-
-
   !Test program parameters
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -84,9 +81,9 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=3
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=4
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
-  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberNavierStokes=6
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokes=7
-  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumberNavierStokes=8
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberNavierStokes=7
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokes=8
   INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumberNavierStokes=9
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberNavierStokes=10
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=11
@@ -145,73 +142,73 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   INTEGER(CMISSIntg) :: ANALYTICAL_TYPE
   INTEGER(CMISSIntg) :: INPUT_TYPE
 
-  REAL(CMISSDP) :: INITIAL_FIELD_NAVIER_STOKES(3)
-  REAL(CMISSDP) :: DIVERGENCE_TOLERANCE
-  REAL(CMISSDP) :: RELATIVE_TOLERANCE
-  REAL(CMISSDP) :: ABSOLUTE_TOLERANCE
-  REAL(CMISSDP) :: SOLVER_TOLERANCE
-  REAL(CMISSDP) :: LINESEARCH_ALPHA
-  REAL(CMISSDP) :: MAX_STEP
-  REAL(CMISSDP) :: VALUE
-  REAL(CMISSDP) :: MU_PARAM_NAVIER_STOKES
-  REAL(CMISSDP) :: RHO_PARAM_NAVIER_STOKES
+  REAL(CMISSRP) :: INITIAL_FIELD_NAVIER_STOKES(3)
+  REAL(CMISSRP) :: DIVERGENCE_TOLERANCE
+  REAL(CMISSRP) :: RELATIVE_TOLERANCE
+  REAL(CMISSRP) :: ABSOLUTE_TOLERANCE
+  REAL(CMISSRP) :: SOLVER_TOLERANCE
+  REAL(CMISSRP) :: LINESEARCH_ALPHA
+  REAL(CMISSRP) :: MAX_STEP
+  REAL(CMISSRP) :: VALUE
+  REAL(CMISSRP) :: MU_PARAM_NAVIER_STOKES
+  REAL(CMISSRP) :: RHO_PARAM_NAVIER_STOKES
 
-  REAL(CMISSDP) :: DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME
-  REAL(CMISSDP) :: DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME
-  REAL(CMISSDP) :: DYNAMIC_SOLVER_NAVIER_STOKES_THETA
-  REAL(CMISSDP) :: DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT
+  REAL(CMISSRP) :: DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME
+  REAL(CMISSRP) :: DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME
+  REAL(CMISSRP) :: DYNAMIC_SOLVER_NAVIER_STOKES_THETA
+  REAL(CMISSRP) :: DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT
 
   LOGICAL :: EXPORT_FIELD_IO
   LOGICAL :: LINEAR_SOLVER_NAVIER_STOKES_DIRECT_FLAG
 
-  CHARACTER *15 BUFFER
   CHARACTER *15 OUTPUT_STRING
 
   !CMISS variables
 
   !Regions
-  TYPE(CMISSRegionType) :: Region
-  TYPE(CMISSRegionType) :: WorldRegion
+  TYPE(cmfe_RegionType) :: Region
+  TYPE(cmfe_RegionType) :: WorldRegion
   !Coordinate systems
-  TYPE(CMISSCoordinateSystemType) :: CoordinateSystem
-  TYPE(CMISSCoordinateSystemType) :: WorldCoordinateSystem
+  TYPE(cmfe_CoordinateSystemType) :: CoordinateSystem
+  TYPE(cmfe_CoordinateSystemType) :: WorldCoordinateSystem
   !Basis
-  TYPE(CMISSBasisType) :: BasisSpace
-  TYPE(CMISSBasisType) :: BasisVelocity
-  TYPE(CMISSBasisType) :: BasisPressure
+  TYPE(cmfe_BasisType) :: BasisSpace
+  TYPE(cmfe_BasisType) :: BasisVelocity
+  TYPE(cmfe_BasisType) :: BasisPressure
   !Nodes
-  TYPE(CMISSNodesType) :: Nodes
+  TYPE(cmfe_NodesType) :: Nodes
   !Elements
-  TYPE(CMISSMeshElementsType) :: MeshElementsSpace
-  TYPE(CMISSMeshElementsType) :: MeshElementsVelocity
-  TYPE(CMISSMeshElementsType) :: MeshElementsPressure
+  TYPE(cmfe_MeshElementsType) :: MeshElementsSpace
+  TYPE(cmfe_MeshElementsType) :: MeshElementsVelocity
+  TYPE(cmfe_MeshElementsType) :: MeshElementsPressure
   !Meshes
-  TYPE(CMISSMeshType) :: Mesh
+  TYPE(cmfe_MeshType) :: Mesh
   !Decompositions
-  TYPE(CMISSDecompositionType) :: Decomposition
+  TYPE(cmfe_DecompositionType) :: Decomposition
   !Fields
-  TYPE(CMISSFieldsType) :: Fields
+  TYPE(cmfe_FieldsType) :: Fields
   !Field types
-  TYPE(CMISSFieldType) :: GeometricField
-  TYPE(CMISSFieldType) :: DependentFieldNavierStokes
-  TYPE(CMISSFieldType) :: MaterialsFieldNavierStokes
-  TYPE(CMISSFieldType) :: AnalyticFieldNavierStokes
+  TYPE(cmfe_FieldType) :: GeometricField
+  TYPE(cmfe_FieldType) :: EquationsSetField
+  TYPE(cmfe_FieldType) :: DependentFieldNavierStokes
+  TYPE(cmfe_FieldType) :: MaterialsFieldNavierStokes
+  TYPE(cmfe_FieldType) :: AnalyticFieldNavierStokes
   !Boundary conditions
-   TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsNavierStokes
+   TYPE(cmfe_BoundaryConditionsType) :: BoundaryConditionsNavierStokes
   !Equations sets
-  TYPE(CMISSEquationsSetType) :: EquationsSetNavierStokes
+  TYPE(cmfe_EquationsSetType) :: EquationsSetNavierStokes
   !Equations
-  TYPE(CMISSEquationsType) :: EquationsNavierStokes
+  TYPE(cmfe_EquationsType) :: EquationsNavierStokes
   !Problems
-  TYPE(CMISSProblemType) :: Problem
+  TYPE(cmfe_ProblemType) :: Problem
   !Control loops
-  TYPE(CMISSControlLoopType) :: ControlLoop
+  TYPE(cmfe_ControlLoopType) :: ControlLoop
   !Solvers
-  TYPE(CMISSSolverType) :: DynamicSolverNavierStokes
-  TYPE(CMISSSolverType) :: NonlinearSolverNavierStokes
-  TYPE(CMISSSolverType) :: LinearSolverNavierStokes
+  TYPE(cmfe_SolverType) :: DynamicSolverNavierStokes
+  TYPE(cmfe_SolverType) :: NonlinearSolverNavierStokes
+  TYPE(cmfe_SolverType) :: LinearSolverNavierStokes
   !Solver equations
-  TYPE(CMISSSolverEquationsType) :: SolverEquationsNavierStokes
+  TYPE(cmfe_SolverEquationsType) :: SolverEquationsNavierStokes
 
 #ifdef WIN32
   !Quickwin type
@@ -260,35 +257,35 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   NUMBER_OF_ELEMENT_NODES_VELOCITY=CM%EN_V
   NUMBER_OF_ELEMENT_NODES_PRESSURE=CM%EN_P
   !Set initial values
-  INITIAL_FIELD_NAVIER_STOKES(1)=0.0_CMISSDP
-  INITIAL_FIELD_NAVIER_STOKES(2)=0.0_CMISSDP
-  INITIAL_FIELD_NAVIER_STOKES(3)=0.0_CMISSDP
+  INITIAL_FIELD_NAVIER_STOKES(1)=0.0_CMISSRP
+  INITIAL_FIELD_NAVIER_STOKES(2)=0.0_CMISSRP
+  INITIAL_FIELD_NAVIER_STOKES(3)=0.0_CMISSRP
   !Set material parameters
-  MU_PARAM_NAVIER_STOKES=1.0_CMISSDP
-  RHO_PARAM_NAVIER_STOKES=1.0_CMISSDP 
+  MU_PARAM_NAVIER_STOKES=1.0_CMISSRP
+  RHO_PARAM_NAVIER_STOKES=1.0_CMISSRP 
   !Set interpolation parameters
   BASIS_GAUSS_SPACE=4
   BASIS_GAUSS_VELOCITY=4
   BASIS_GAUSS_PRESSURE=4
   !Set output parameter
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
-  DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISS_SOLVER_NO_OUTPUT
-  NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISS_SOLVER_PROGRESS_OUTPUT
-  LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMISS_SOLVER_NO_OUTPUT
+  DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMFE_SOLVER_NO_OUTPUT
+  NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMFE_SOLVER_PROGRESS_OUTPUT
+  LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE=CMFE_SOLVER_NO_OUTPUT
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
-  EQUATIONS_NAVIER_STOKES_OUTPUT=CMISS_EQUATIONS_NO_OUTPUT
+  EQUATIONS_NAVIER_STOKES_OUTPUT=CMFE_EQUATIONS_NO_OUTPUT
   !Set time parameter
-  DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME=0.0_CMISSDP
-  DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME=1.001_CMISSDP 
-  DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT=0.100_CMISSDP
-  DYNAMIC_SOLVER_NAVIER_STOKES_THETA=1.0_CMISSDP/2.0_CMISSDP
+  DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME=0.0_CMISSRP
+  DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME=1.001_CMISSRP 
+  DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT=0.100_CMISSRP
+  DYNAMIC_SOLVER_NAVIER_STOKES_THETA=1.0_CMISSRP/2.0_CMISSRP
   !Set result output parameter
   DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY=1
   !Set solver parameters
   LINEAR_SOLVER_NAVIER_STOKES_DIRECT_FLAG=.TRUE.
-  RELATIVE_TOLERANCE=1.0E-8_CMISSDP !default: 1.0E-05_CMISSDP
-  ABSOLUTE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-10_CMISSDP
-  SOLVER_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-10_CMISSDP
+  RELATIVE_TOLERANCE=1.0E-8_CMISSRP !default: 1.0E-05_CMISSRP
+  ABSOLUTE_TOLERANCE=1.0E-10_CMISSRP !default: 1.0E-10_CMISSRP
+  SOLVER_TOLERANCE=1.0E-10_CMISSRP !default: 1.0E-10_CMISSRP
   DIVERGENCE_TOLERANCE=1.0E20 !default: 1.0E5
   MAXIMUM_ITERATIONS=100000 !default: 100000
   RESTART_VALUE=3000 !default: 30
@@ -300,12 +297,12 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !
 
   !Different analytical cases
-  ! 1=CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TWO_DIM_1
-  ! 2=CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TWO_DIM_2
-  ! 3=CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TWO_DIM_3
-  ! 4=CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_THREE_DIM_1
-  ! 5=CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_THREE_DIM_2
-  ! 6=CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_THREE_DIM_3
+  ! 1=CMFE_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TWO_DIM_1
+  ! 2=CMFE_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TWO_DIM_2
+  ! 3=CMFE_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TWO_DIM_3
+  ! 4=CMFE_EQUATIONS_SET_NAVIER_STOKES_EQUATION_THREE_DIM_1
+  ! 5=CMFE_EQUATIONS_SET_NAVIER_STOKES_EQUATION_THREE_DIM_2
+  ! 6=CMFE_EQUATIONS_SET_NAVIER_STOKES_EQUATION_THREE_DIM_3
 
 
 ! ! !   WRITE(*,*)'1=POLYNOM, 2=EXP, 3=COS/SIN:'
@@ -325,14 +322,14 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   OUTPUT_STRING="TaylorGreen"
 
 
-  IF(INPUT_TYPE==1.AND.NUMBER_OF_DIMENSIONS==2) ANALYTICAL_TYPE=CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TWO_DIM_1
-  IF(INPUT_TYPE==2.AND.NUMBER_OF_DIMENSIONS==2) ANALYTICAL_TYPE=CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TWO_DIM_2
-  IF(INPUT_TYPE==3.AND.NUMBER_OF_DIMENSIONS==2) ANALYTICAL_TYPE=CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TWO_DIM_3
-  IF(INPUT_TYPE==4.AND.NUMBER_OF_DIMENSIONS==2) ANALYTICAL_TYPE=CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TWO_DIM_4
-  IF(INPUT_TYPE==5.AND.NUMBER_OF_DIMENSIONS==2) ANALYTICAL_TYPE=CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TWO_DIM_5
-  IF(INPUT_TYPE==1.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_THREE_DIM_1
-  IF(INPUT_TYPE==2.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_THREE_DIM_2
-  IF(INPUT_TYPE==3.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_THREE_DIM_3
+  IF(INPUT_TYPE==1.AND.NUMBER_OF_DIMENSIONS==2) ANALYTICAL_TYPE=CMFE_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TWO_DIM_1
+  IF(INPUT_TYPE==2.AND.NUMBER_OF_DIMENSIONS==2) ANALYTICAL_TYPE=CMFE_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TWO_DIM_2
+  IF(INPUT_TYPE==3.AND.NUMBER_OF_DIMENSIONS==2) ANALYTICAL_TYPE=CMFE_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TWO_DIM_3
+  IF(INPUT_TYPE==4.AND.NUMBER_OF_DIMENSIONS==2) ANALYTICAL_TYPE=CMFE_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TWO_DIM_4
+  IF(INPUT_TYPE==5.AND.NUMBER_OF_DIMENSIONS==2) ANALYTICAL_TYPE=CMFE_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TWO_DIM_5
+  IF(INPUT_TYPE==1.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMFE_EQUATIONS_SET_NAVIER_STOKES_EQUATION_THREE_DIM_1
+  IF(INPUT_TYPE==2.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMFE_EQUATIONS_SET_NAVIER_STOKES_EQUATION_THREE_DIM_2
+  IF(INPUT_TYPE==3.AND.NUMBER_OF_DIMENSIONS==3) ANALYTICAL_TYPE=CMFE_EQUATIONS_SET_NAVIER_STOKES_EQUATION_THREE_DIM_3
 
   !
   !================================================================================================================================
@@ -340,7 +337,7 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
 
   !INITIALISE OPENCMISS
 
-  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
+  CALL cmfe_Initialise(WorldCoordinateSystem,WorldRegion,Err)
 
   !
   !================================================================================================================================
@@ -349,12 +346,12 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !COORDINATE SYSTEM
 
   !Start the creation of a new RC coordinate system
-  CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
-  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_Initialise(CoordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   !Set the coordinate system dimension
-  CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystem,NUMBER_OF_DIMENSIONS,Err)
+  CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystem,NUMBER_OF_DIMENSIONS,Err)
   !Finish the creation of the coordinate system
-  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !
   !================================================================================================================================
@@ -363,12 +360,12 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !REGION
 
   !Start the creation of a new region
-  CALL CMISSRegion_Initialise(Region,Err)
-  CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  CALL cmfe_Region_Initialise(Region,Err)
+  CALL cmfe_Region_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
   !Set the regions coordinate system as defined above
-  CALL CMISSRegion_CoordinateSystemSet(Region,CoordinateSystem,Err)
+  CALL cmfe_Region_CoordinateSystemSet(Region,CoordinateSystem,Err)
   !Finish the creation of the region
-  CALL CMISSRegion_CreateFinish(Region,Err)
+  CALL cmfe_Region_CreateFinish(Region,Err)
 
   !
   !================================================================================================================================
@@ -378,65 +375,65 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
 
   !Start the creation of new bases
   MESH_NUMBER_OF_COMPONENTS=1
-  CALL CMISSBasis_Initialise(BasisSpace,Err)
-  CALL CMISSBasis_CreateStart(BASIS_NUMBER_SPACE,BasisSpace,Err)
+  CALL cmfe_Basis_Initialise(BasisSpace,Err)
+  CALL cmfe_Basis_CreateStart(BASIS_NUMBER_SPACE,BasisSpace,Err)
   !Set the basis type (Lagrange/Simplex)
-  CALL CMISSBasis_TypeSet(BasisSpace,BASIS_TYPE,Err)
+  CALL cmfe_Basis_TypeSet(BasisSpace,BASIS_TYPE,Err)
   !Set the basis xi number
-  CALL CMISSBasis_NumberOfXiSet(BasisSpace,NUMBER_OF_DIMENSIONS,Err)
+  CALL cmfe_Basis_NumberOfXiSet(BasisSpace,NUMBER_OF_DIMENSIONS,Err)
   !Set the basis xi interpolation and number of Gauss points
   IF(NUMBER_OF_DIMENSIONS==2) THEN
-    CALL CMISSBasis_InterpolationXiSet(BasisSpace,(/BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE/),Err)
-    IF(BASIS_TYPE/=CMISS_BASIS_SIMPLEX_TYPE) THEN
-      CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisSpace,(/BASIS_GAUSS_SPACE,BASIS_GAUSS_SPACE/),Err)
+    CALL cmfe_Basis_InterpolationXiSet(BasisSpace,[BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE],Err)
+    IF(BASIS_TYPE/=CMFE_BASIS_SIMPLEX_TYPE) THEN
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace,[BASIS_GAUSS_SPACE,BASIS_GAUSS_SPACE],Err)
     ELSE
-      CALL CMISSBasis_QuadratureOrderSet(BasisSpace,BASIS_GAUSS_SPACE+1,Err)
+      CALL cmfe_Basis_QuadratureOrderSet(BasisSpace,BASIS_GAUSS_SPACE+1,Err)
     ENDIF
   ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-    CALL CMISSBasis_InterpolationXiSet(BasisSpace,(/BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE, & 
-      & BASIS_XI_INTERPOLATION_SPACE/),Err)                         
-    IF(BASIS_TYPE/=CMISS_BASIS_SIMPLEX_TYPE) THEN
-      CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisSpace,(/BASIS_GAUSS_SPACE,BASIS_GAUSS_SPACE,BASIS_GAUSS_SPACE/), & 
+    CALL cmfe_Basis_InterpolationXiSet(BasisSpace,[BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE, & 
+      & BASIS_XI_INTERPOLATION_SPACE],Err)                         
+    IF(BASIS_TYPE/=CMFE_BASIS_SIMPLEX_TYPE) THEN
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace,[BASIS_GAUSS_SPACE,BASIS_GAUSS_SPACE,BASIS_GAUSS_SPACE], & 
         & Err)
     ELSE
-      CALL CMISSBasis_QuadratureOrderSet(BasisSpace,BASIS_GAUSS_SPACE+1,Err)
+      CALL cmfe_Basis_QuadratureOrderSet(BasisSpace,BASIS_GAUSS_SPACE+1,Err)
     ENDIF
   ENDIF
   !Finish the creation of the basis
-  CALL CMISSBasis_CreateFinish(BasisSpace,Err)
+  CALL cmfe_Basis_CreateFinish(BasisSpace,Err)
   !Start the creation of another basis
   IF(BASIS_XI_INTERPOLATION_VELOCITY==BASIS_XI_INTERPOLATION_SPACE) THEN
     BasisVelocity=BasisSpace
   ELSE
     MESH_NUMBER_OF_COMPONENTS=MESH_NUMBER_OF_COMPONENTS+1
     !Initialise a new velocity basis
-    CALL CMISSBasis_Initialise(BasisVelocity,Err)
+    CALL cmfe_Basis_Initialise(BasisVelocity,Err)
     !Start the creation of a basis
-    CALL CMISSBasis_CreateStart(BASIS_NUMBER_VELOCITY,BasisVelocity,Err)
+    CALL cmfe_Basis_CreateStart(BASIS_NUMBER_VELOCITY,BasisVelocity,Err)
     !Set the basis type (Lagrange/Simplex)LinearSolverNavierStokes
-    CALL CMISSBasis_TypeSet(BasisVelocity,BASIS_TYPE,Err)
+    CALL cmfe_Basis_TypeSet(BasisVelocity,BASIS_TYPE,Err)
     !Set the basis xi number
-    CALL CMISSBasis_NumberOfXiSet(BasisVelocity,NUMBER_OF_DIMENSIONS,Err)
+    CALL cmfe_Basis_NumberOfXiSet(BasisVelocity,NUMBER_OF_DIMENSIONS,Err)
     !Set the basis xi interpolation and number of Gauss points
     IF(NUMBER_OF_DIMENSIONS==2) THEN
-      CALL CMISSBasis_InterpolationXiSet(BasisVelocity,(/BASIS_XI_INTERPOLATION_VELOCITY,BASIS_XI_INTERPOLATION_VELOCITY/),Err)
-      IF(BASIS_TYPE/=CMISS_BASIS_SIMPLEX_TYPE) THEN 
-        CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisVelocity,(/BASIS_GAUSS_VELOCITY,BASIS_GAUSS_VELOCITY/),Err)
+      CALL cmfe_Basis_InterpolationXiSet(BasisVelocity,[BASIS_XI_INTERPOLATION_VELOCITY,BASIS_XI_INTERPOLATION_VELOCITY],Err)
+      IF(BASIS_TYPE/=CMFE_BASIS_SIMPLEX_TYPE) THEN 
+        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisVelocity,[BASIS_GAUSS_VELOCITY,BASIS_GAUSS_VELOCITY],Err)
       ELSE
-        CALL CMISSBasis_QuadratureOrderSet(BasisVelocity,BASIS_GAUSS_VELOCITY+1,Err)
+        CALL cmfe_Basis_QuadratureOrderSet(BasisVelocity,BASIS_GAUSS_VELOCITY+1,Err)
       ENDIF
     ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-      CALL CMISSBasis_InterpolationXiSet(BasisVelocity,(/BASIS_XI_INTERPOLATION_VELOCITY,BASIS_XI_INTERPOLATION_VELOCITY, & 
-        & BASIS_XI_INTERPOLATION_VELOCITY/),Err)                         
-      IF(BASIS_TYPE/=CMISS_BASIS_SIMPLEX_TYPE) THEN
-        CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisVelocity,(/BASIS_GAUSS_VELOCITY,BASIS_GAUSS_VELOCITY, & 
-          & BASIS_GAUSS_VELOCITY/),Err)
+      CALL cmfe_Basis_InterpolationXiSet(BasisVelocity,[BASIS_XI_INTERPOLATION_VELOCITY,BASIS_XI_INTERPOLATION_VELOCITY, & 
+        & BASIS_XI_INTERPOLATION_VELOCITY],Err)                         
+      IF(BASIS_TYPE/=CMFE_BASIS_SIMPLEX_TYPE) THEN
+        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisVelocity,[BASIS_GAUSS_VELOCITY,BASIS_GAUSS_VELOCITY, & 
+          & BASIS_GAUSS_VELOCITY],Err)
       ELSE
-        CALL CMISSBasis_QuadratureOrderSet(BasisVelocity,BASIS_GAUSS_VELOCITY+1,Err)
+        CALL cmfe_Basis_QuadratureOrderSet(BasisVelocity,BASIS_GAUSS_VELOCITY+1,Err)
       ENDIF
     ENDIF
     !Finish the creation of the basis
-    CALL CMISSBasis_CreateFinish(BasisVelocity,Err)
+    CALL cmfe_Basis_CreateFinish(BasisVelocity,Err)
   ENDIF
   !Start the creation of another basis
   IF(BASIS_XI_INTERPOLATION_PRESSURE==BASIS_XI_INTERPOLATION_SPACE) THEN
@@ -446,33 +443,33 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   ELSE
     MESH_NUMBER_OF_COMPONENTS=MESH_NUMBER_OF_COMPONENTS+1
     !Initialise a new pressure basis
-    CALL CMISSBasis_Initialise(BasisPressure,Err)
+    CALL cmfe_Basis_Initialise(BasisPressure,Err)
     !Start the creation of a basis
-    CALL CMISSBasis_CreateStart(BASIS_NUMBER_PRESSURE,BasisPressure,Err)
+    CALL cmfe_Basis_CreateStart(BASIS_NUMBER_PRESSURE,BasisPressure,Err)
     !Set the basis type (Lagrange/Simplex)
-    CALL CMISSBasis_TypeSet(BasisPressure,BASIS_TYPE,Err)
+    CALL cmfe_Basis_TypeSet(BasisPressure,BASIS_TYPE,Err)
     !Set the basis xi number
-    CALL CMISSBasis_NumberOfXiSet(BasisPressure,NUMBER_OF_DIMENSIONS,Err)
+    CALL cmfe_Basis_NumberOfXiSet(BasisPressure,NUMBER_OF_DIMENSIONS,Err)
     !Set the basis xi interpolation and number of Gauss points
     IF(NUMBER_OF_DIMENSIONS==2) THEN
-      CALL CMISSBasis_InterpolationXiSet(BasisPressure,(/BASIS_XI_INTERPOLATION_PRESSURE,BASIS_XI_INTERPOLATION_PRESSURE/),Err)
-      IF(BASIS_TYPE/=CMISS_BASIS_SIMPLEX_TYPE) THEN
-        CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisPressure,(/BASIS_GAUSS_PRESSURE,BASIS_GAUSS_PRESSURE/),Err)
+      CALL cmfe_Basis_InterpolationXiSet(BasisPressure,[BASIS_XI_INTERPOLATION_PRESSURE,BASIS_XI_INTERPOLATION_PRESSURE],Err)
+      IF(BASIS_TYPE/=CMFE_BASIS_SIMPLEX_TYPE) THEN
+        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisPressure,[BASIS_GAUSS_PRESSURE,BASIS_GAUSS_PRESSURE],Err)
       ELSE
-        CALL CMISSBasis_QuadratureOrderSet(BasisPressure,BASIS_GAUSS_PRESSURE+1,Err)
+        CALL cmfe_Basis_QuadratureOrderSet(BasisPressure,BASIS_GAUSS_PRESSURE+1,Err)
       ENDIF
     ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-      CALL CMISSBasis_InterpolationXiSet(BasisPressure,(/BASIS_XI_INTERPOLATION_PRESSURE,BASIS_XI_INTERPOLATION_PRESSURE, & 
-        & BASIS_XI_INTERPOLATION_PRESSURE/),Err)                         
-      IF(BASIS_TYPE/=CMISS_BASIS_SIMPLEX_TYPE) THEN
-        CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisPressure,(/BASIS_GAUSS_PRESSURE,BASIS_GAUSS_PRESSURE, & 
-          & BASIS_GAUSS_PRESSURE/),Err)
+      CALL cmfe_Basis_InterpolationXiSet(BasisPressure,[BASIS_XI_INTERPOLATION_PRESSURE,BASIS_XI_INTERPOLATION_PRESSURE, & 
+        & BASIS_XI_INTERPOLATION_PRESSURE],Err)                         
+      IF(BASIS_TYPE/=CMFE_BASIS_SIMPLEX_TYPE) THEN
+        CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisPressure,[BASIS_GAUSS_PRESSURE,BASIS_GAUSS_PRESSURE, & 
+          & BASIS_GAUSS_PRESSURE],Err)
       ELSE
-        CALL CMISSBasis_QuadratureOrderSet(BasisPressure,BASIS_GAUSS_PRESSURE+1,Err)
+        CALL cmfe_Basis_QuadratureOrderSet(BasisPressure,BASIS_GAUSS_PRESSURE+1,Err)
       ENDIF
     ENDIF
     !Finish the creation of the basis
-    CALL CMISSBasis_CreateFinish(BasisPressure,Err)
+    CALL cmfe_Basis_CreateFinish(BasisPressure,Err)
   ENDIF
 
   !
@@ -482,39 +479,39 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !MESH
 
   !Start the creation of mesh nodes
-  CALL CMISSNodes_Initialise(Nodes,Err)
-  CALL CMISSNodes_CreateStart(Region,TOTAL_NUMBER_OF_NODES,Nodes,Err)
-  CALL CMISSNodes_CreateFinish(Nodes,Err)
+  CALL cmfe_Nodes_Initialise(Nodes,Err)
+  CALL cmfe_Nodes_CreateStart(Region,TOTAL_NUMBER_OF_NODES,Nodes,Err)
+  CALL cmfe_Nodes_CreateFinish(Nodes,Err)
   !Start the creation of the mesh
-  CALL CMISSMesh_Initialise(Mesh,Err)
-  CALL CMISSMesh_CreateStart(MeshUserNumber,Region,NUMBER_OF_DIMENSIONS,Mesh,Err)
+  CALL cmfe_Mesh_Initialise(Mesh,Err)
+  CALL cmfe_Mesh_CreateStart(MeshUserNumber,Region,NUMBER_OF_DIMENSIONS,Mesh,Err)
   !Set number of mesh elements
-  CALL CMISSMesh_NumberOfElementsSet(Mesh,TOTAL_NUMBER_OF_ELEMENTS,Err)
+  CALL cmfe_Mesh_NumberOfElementsSet(Mesh,TOTAL_NUMBER_OF_ELEMENTS,Err)
   !Set number of mesh components
-  CALL CMISSMesh_NumberOfComponentsSet(Mesh,MESH_NUMBER_OF_COMPONENTS,Err)
+  CALL cmfe_Mesh_NumberOfComponentsSet(Mesh,MESH_NUMBER_OF_COMPONENTS,Err)
   !Specify spatial mesh component
-  CALL CMISSMeshElements_Initialise(MeshElementsSpace,Err)
-  CALL CMISSMeshElements_Initialise(MeshElementsVelocity,Err)
-  CALL CMISSMeshElements_Initialise(MeshElementsPressure,Err)
+  CALL cmfe_MeshElements_Initialise(MeshElementsSpace,Err)
+  CALL cmfe_MeshElements_Initialise(MeshElementsVelocity,Err)
+  CALL cmfe_MeshElements_Initialise(MeshElementsPressure,Err)
   MESH_COMPONENT_NUMBER_SPACE=1
   MESH_COMPONENT_NUMBER_VELOCITY=1
   MESH_COMPONENT_NUMBER_PRESSURE=1
-  CALL CMISSMeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_SPACE,BasisSpace,MeshElementsSpace,Err)
+  CALL cmfe_MeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_SPACE,BasisSpace,MeshElementsSpace,Err)
   DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
-    CALL CMISSMeshElements_NodesSet(MeshElementsSpace,ELEMENT_NUMBER,CM%M(ELEMENT_NUMBER,1:NUMBER_OF_ELEMENT_NODES_SPACE),Err)
+    CALL cmfe_MeshElements_NodesSet(MeshElementsSpace,ELEMENT_NUMBER,CM%M(ELEMENT_NUMBER,1:NUMBER_OF_ELEMENT_NODES_SPACE),Err)
   ENDDO
-  CALL CMISSMeshElements_CreateFinish(MeshElementsSpace,Err)
+  CALL cmfe_MeshElements_CreateFinish(MeshElementsSpace,Err)
   !Specify velocity mesh component
   IF(BASIS_XI_INTERPOLATION_VELOCITY==BASIS_XI_INTERPOLATION_SPACE) THEN
     MeshElementsVelocity=MeshElementsSpace
   ELSE
     MESH_COMPONENT_NUMBER_VELOCITY=MESH_COMPONENT_NUMBER_SPACE+1
-    CALL CMISSMeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_VELOCITY,BasisVelocity,MeshElementsVelocity,Err)
+    CALL cmfe_MeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_VELOCITY,BasisVelocity,MeshElementsVelocity,Err)
     DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
-      CALL CMISSMeshElements_NodesSet(MeshElementsVelocity,ELEMENT_NUMBER,CM%V(ELEMENT_NUMBER, & 
+      CALL cmfe_MeshElements_NodesSet(MeshElementsVelocity,ELEMENT_NUMBER,CM%V(ELEMENT_NUMBER, & 
         & 1:NUMBER_OF_ELEMENT_NODES_VELOCITY),Err)
     ENDDO
-    CALL CMISSMeshElements_CreateFinish(MeshElementsVelocity,Err)
+    CALL cmfe_MeshElements_CreateFinish(MeshElementsVelocity,Err)
   ENDIF
   !Specify pressure mesh component
   IF(BASIS_XI_INTERPOLATION_PRESSURE==BASIS_XI_INTERPOLATION_SPACE) THEN
@@ -525,15 +522,15 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
     MESH_COMPONENT_NUMBER_PRESSURE=MESH_COMPONENT_NUMBER_VELOCITY
   ELSE
     MESH_COMPONENT_NUMBER_PRESSURE=MESH_COMPONENT_NUMBER_VELOCITY+1
-    CALL CMISSMeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_PRESSURE,BasisPressure,MeshElementsPressure,Err)
+    CALL cmfe_MeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_PRESSURE,BasisPressure,MeshElementsPressure,Err)
     DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
-      CALL CMISSMeshElements_NodesSet(MeshElementsPressure,ELEMENT_NUMBER,CM%P(ELEMENT_NUMBER, & 
+      CALL cmfe_MeshElements_NodesSet(MeshElementsPressure,ELEMENT_NUMBER,CM%P(ELEMENT_NUMBER, & 
         & 1:NUMBER_OF_ELEMENT_NODES_PRESSURE),Err)
     ENDDO
-    CALL CMISSMeshElements_CreateFinish(MeshElementsPressure,Err)
+    CALL cmfe_MeshElements_CreateFinish(MeshElementsPressure,Err)
   ENDIF
   !Finish the creation of the mesh
-  CALL CMISSMesh_CreateFinish(Mesh,Err)
+  CALL cmfe_Mesh_CreateFinish(Mesh,Err)
 
   !
   !================================================================================================================================
@@ -542,40 +539,40 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !GEOMETRIC FIELD
 
   !Create a decomposition
-  CALL CMISSDecomposition_Initialise(Decomposition,Err)
-  CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
+  CALL cmfe_Decomposition_Initialise(Decomposition,Err)
+  CALL cmfe_Decomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
-  CALL CMISSDecomposition_TypeSet(Decomposition,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
-  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,DomainUserNumber,Err)
+  CALL cmfe_Decomposition_TypeSet(Decomposition,CMFE_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL cmfe_Decomposition_NumberOfDomainsSet(Decomposition,DomainUserNumber,Err)
   !Finish the decomposition
-  CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
+  CALL cmfe_Decomposition_CreateFinish(Decomposition,Err)
 
   !Start to create a default (geometric) field on the region
-  CALL CMISSField_Initialise(GeometricField,Err)
-  CALL CMISSField_CreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
+  CALL cmfe_Field_Initialise(GeometricField,Err)
+  CALL cmfe_Field_CreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
   !Set the field type
-  CALL CMISSField_TypeSet(GeometricField,CMISS_FIELD_GEOMETRIC_TYPE,Err)
+  CALL cmfe_Field_TypeSet(GeometricField,CMFE_FIELD_GEOMETRIC_TYPE,Err)
   !Set the decomposition to use
-  CALL CMISSField_MeshDecompositionSet(GeometricField,Decomposition,Err)
+  CALL cmfe_Field_MeshDecompositionSet(GeometricField,Decomposition,Err)
   !Set the scaling to use
-  CALL CMISSField_ScalingTypeSet(GeometricField,CMISS_FIELD_NO_SCALING,Err)
+  CALL cmfe_Field_ScalingTypeSet(GeometricField,CMFE_FIELD_NO_SCALING,Err)
   !Set the mesh component to be used by the field components.
   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-    CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
+    CALL cmfe_Field_ComponentMeshComponentSet(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_SPACE,Err)
   ENDDO
   !Finish creating the field
-  CALL CMISSField_CreateFinish(GeometricField,Err)
+  CALL cmfe_Field_CreateFinish(GeometricField,Err)
   !Update the geometric field parameters
   DO NODE_NUMBER=1,NUMBER_OF_NODES_SPACE
     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-      VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)*0.3141592653589793_CMISSDP
-      CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
-        & 1,CMISS_NO_GLOBAL_DERIV,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+      VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)*0.3141592653589793_CMISSRP
+      CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
+        & 1,CMFE_NO_GLOBAL_DERIV,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
   ENDDO
-  CALL CMISSField_ParameterSetUpdateStart(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
-  CALL CMISSField_ParameterSetUpdateFinish(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
+  CALL cmfe_Field_ParameterSetUpdateStart(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
+  CALL cmfe_Field_ParameterSetUpdateFinish(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
 
   !
   !================================================================================================================================
@@ -584,16 +581,16 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !EQUATIONS SETS
 
   !Create the equations set for dynamic Navier-Stokes
-  CALL CMISSEquationsSet_Initialise(EquationsSetNavierStokes,Err)
-  CALL CMISSField_Initialise(EquationsSetField,Err)
-  CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField, &
-    & CMISS_EQUATIONS_SET_FLUID_MECHANICS_CLASS,CMISS_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TYPE,&
-    & CMISS_EQUATIONS_SET_TRANSIENT_NAVIER_STOKES_SUBTYPE, &
-    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSetNavierStokes,Err)
+  CALL cmfe_EquationsSet_Initialise(EquationsSetNavierStokes,Err)
+  CALL cmfe_Field_Initialise(EquationsSetField,Err)
+  CALL cmfe_EquationsSet_CreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField, &
+    & [CMFE_EQUATIONS_SET_FLUID_MECHANICS_CLASS,CMFE_EQUATIONS_SET_NAVIER_STOKES_EQUATION_TYPE, &
+    & CMFE_EQUATIONS_SET_TRANSIENT_NAVIER_STOKES_SUBTYPE],EquationsSetFieldUserNumber,EquationsSetField,EquationsSetNavierStokes, &
+    & Err)
   !Set the equations set to be a dynamic Navier-Stokes problem
   
   !Finish creating the equations set
-  CALL CMISSEquationsSet_CreateFinish(EquationsSetNavierStokes,Err)
+  CALL cmfe_EquationsSet_CreateFinish(EquationsSetNavierStokes,Err)
 
 
   !
@@ -603,27 +600,27 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !DEPENDENT FIELDS
 
   !Create the equations set dependent field variables for dynamic Navier-Stokes
-  CALL CMISSField_Initialise(DependentFieldNavierStokes,Err)
-  CALL CMISSEquationsSet_DependentCreateStart(EquationsSetNavierStokes,DependentFieldUserNumberNavierStokes, & 
+  CALL cmfe_Field_Initialise(DependentFieldNavierStokes,Err)
+  CALL cmfe_EquationsSet_DependentCreateStart(EquationsSetNavierStokes,DependentFieldUserNumberNavierStokes, & 
     & DependentFieldNavierStokes,Err)
   !Set the mesh component to be used by the field components.
   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-    CALL CMISSField_ComponentMeshComponentSet(DependentFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
+    CALL cmfe_Field_ComponentMeshComponentSet(DependentFieldNavierStokes,CMFE_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_VELOCITY,Err)
-    CALL CMISSField_ComponentMeshComponentSet(DependentFieldNavierStokes,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,COMPONENT_NUMBER, & 
+    CALL cmfe_Field_ComponentMeshComponentSet(DependentFieldNavierStokes,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_VELOCITY,Err)
   ENDDO
   COMPONENT_NUMBER=NUMBER_OF_DIMENSIONS+1
-    CALL CMISSField_ComponentMeshComponentSet(DependentFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
+    CALL cmfe_Field_ComponentMeshComponentSet(DependentFieldNavierStokes,CMFE_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_PRESSURE,Err)
-    CALL CMISSField_ComponentMeshComponentSet(DependentFieldNavierStokes,CMISS_FIELD_DELUDELN_VARIABLE_TYPE,COMPONENT_NUMBER, & 
+    CALL cmfe_Field_ComponentMeshComponentSet(DependentFieldNavierStokes,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_PRESSURE,Err)
   !Finish the equations set dependent field variables
-  CALL CMISSEquationsSet_DependentCreateFinish(EquationsSetNavierStokes,Err)
+  CALL cmfe_EquationsSet_DependentCreateFinish(EquationsSetNavierStokes,Err)
 
   !Initialise dependent field
   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-    CALL CMISSField_ComponentValuesInitialise(DependentFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
+    CALL cmfe_Field_ComponentValuesInitialise(DependentFieldNavierStokes,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
       & COMPONENT_NUMBER,INITIAL_FIELD_NAVIER_STOKES(COMPONENT_NUMBER),Err)
   ENDDO
 
@@ -635,14 +632,14 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !MATERIALS FIELDS
 
   !Create the equations set materials field variables for dynamic Navier-Stokes
-  CALL CMISSField_Initialise(MaterialsFieldNavierStokes,Err)
-  CALL CMISSEquationsSet_MaterialsCreateStart(EquationsSetNavierStokes,MaterialsFieldUserNumberNavierStokes, & 
+  CALL cmfe_Field_Initialise(MaterialsFieldNavierStokes,Err)
+  CALL cmfe_EquationsSet_MaterialsCreateStart(EquationsSetNavierStokes,MaterialsFieldUserNumberNavierStokes, & 
     & MaterialsFieldNavierStokes,Err)
   !Finish the equations set materials field variables
-  CALL CMISSEquationsSet_MaterialsCreateFinish(EquationsSetNavierStokes,Err)
-  CALL CMISSField_ComponentValuesInitialise(MaterialsFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
+  CALL cmfe_EquationsSet_MaterialsCreateFinish(EquationsSetNavierStokes,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialsFieldNavierStokes,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
     & MaterialsFieldUserNumberNavierStokesMu,MU_PARAM_NAVIER_STOKES,Err)
-  CALL CMISSField_ComponentValuesInitialise(MaterialsFieldNavierStokes,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, & 
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialsFieldNavierStokes,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
     & MaterialsFieldUserNumberNavierStokesRho,RHO_PARAM_NAVIER_STOKES,Err)
 
   !
@@ -652,16 +649,16 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !ANALYTIC FIELDS
 
   !Create the equations set analytic field variables for static Navier-Stokes
-  CALL CMISSField_Initialise(AnalyticFieldNavierStokes,Err)
+  CALL cmfe_Field_Initialise(AnalyticFieldNavierStokes,Err)
   IF(NUMBER_OF_DIMENSIONS==2) THEN  
-    CALL CMISSEquationsSet_AnalyticCreateStart(EquationsSetNavierStokes,ANALYTICAL_TYPE,AnalyticFieldUserNumberNavierStokes, &
+    CALL cmfe_EquationsSet_AnalyticCreateStart(EquationsSetNavierStokes,ANALYTICAL_TYPE,AnalyticFieldUserNumberNavierStokes, &
       & AnalyticFieldNavierStokes,Err)
   ELSE
-    CALL CMISSEquationsSet_AnalyticCreateStart(EquationsSetNavierStokes,ANALYTICAL_TYPE,AnalyticFieldUserNumberNavierStokes, &
+    CALL cmfe_EquationsSet_AnalyticCreateStart(EquationsSetNavierStokes,ANALYTICAL_TYPE,AnalyticFieldUserNumberNavierStokes, &
       & AnalyticFieldNavierStokes,Err)
   ENDIF
   !Finish the equations set analytic field variables
-  CALL CMISSEquationsSet_AnalyticCreateFinish(EquationsSetNavierStokes,Err)
+  CALL cmfe_EquationsSet_AnalyticCreateFinish(EquationsSetNavierStokes,Err)
 
   !
   !================================================================================================================================
@@ -671,16 +668,16 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
 
 
   !Create the equations set equations
-  CALL CMISSEquations_Initialise(EquationsNavierStokes,Err)
-  CALL CMISSEquationsSet_EquationsCreateStart(EquationsSetNavierStokes,EquationsNavierStokes,Err)
+  CALL cmfe_Equations_Initialise(EquationsNavierStokes,Err)
+  CALL cmfe_EquationsSet_EquationsCreateStart(EquationsSetNavierStokes,EquationsNavierStokes,Err)
   !Set the equations matrices sparsity type
-  CALL CMISSEquations_SparsityTypeSet(EquationsNavierStokes,CMISS_EQUATIONS_SPARSE_MATRICES,Err)
+  CALL cmfe_Equations_SparsityTypeSet(EquationsNavierStokes,CMFE_EQUATIONS_SPARSE_MATRICES,Err)
   !Set the equations lumping type
-  CALL CMISSEquations_LumpingTypeSet(EquationsNavierStokes,CMISS_EQUATIONS_UNLUMPED_MATRICES,Err)
+  CALL cmfe_Equations_LumpingTypeSet(EquationsNavierStokes,CMFE_EQUATIONS_UNLUMPED_MATRICES,Err)
   !Set the equations set output
-  CALL CMISSEquations_OutputTypeSet(EquationsNavierStokes,EQUATIONS_NAVIER_STOKES_OUTPUT,Err)
+  CALL cmfe_Equations_OutputTypeSet(EquationsNavierStokes,EQUATIONS_NAVIER_STOKES_OUTPUT,Err)
   !Finish the equations set equations
-  CALL CMISSEquationsSet_EquationsCreateFinish(EquationsSetNavierStokes,Err)
+  CALL cmfe_EquationsSet_EquationsCreateFinish(EquationsSetNavierStokes,Err)
 
 
   !
@@ -690,25 +687,23 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !PROBLEMS
 
   !Start the creation of a problem.
-  CALL CMISSProblem_Initialise(Problem,Err)
-  CALL CMISSControlLoop_Initialise(ControlLoop,Err)
-  CALL CMISSProblem_CreateStart(ProblemUserNumber,Problem,Err)
-  !Set the problem to be a dynamic Navier-Stokes problem
-  CALL CMISSProblem_SpecificationSet(Problem,CMISS_PROBLEM_FLUID_MECHANICS_CLASS,CMISS_PROBLEM_NAVIER_STOKES_EQUATION_TYPE, &
-    & CMISS_PROBLEM_TRANSIENT_NAVIER_STOKES_SUBTYPE,Err)
+  CALL cmfe_Problem_Initialise(Problem,Err)
+  CALL cmfe_ControlLoop_Initialise(ControlLoop,Err)
+  CALL cmfe_Problem_CreateStart(ProblemUserNumber,[CMFE_PROBLEM_FLUID_MECHANICS_CLASS,CMFE_PROBLEM_NAVIER_STOKES_EQUATION_TYPE, &
+    & CMFE_PROBLEM_TRANSIENT_NAVIER_STOKES_SUBTYPE],Problem,Err)
   !Finish the creation of a problem.
-  CALL CMISSProblem_CreateFinish(Problem,Err)
+  CALL cmfe_Problem_CreateFinish(Problem,Err)
   !Start the creation of the problem control loop
-  CALL CMISSProblem_ControlLoopCreateStart(Problem,Err)
+  CALL cmfe_Problem_ControlLoopCreateStart(Problem,Err)
   !Get the control loop
-  CALL CMISSProblem_ControlLoopGet(Problem,CMISS_CONTROL_LOOP_NODE,ControlLoop,Err)
+  CALL cmfe_Problem_ControlLoopGet(Problem,CMFE_CONTROL_LOOP_NODE,ControlLoop,Err)
   !Set the times
-  CALL CMISSControlLoop_TimesSet(ControlLoop,DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME,DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME, & 
+  CALL cmfe_ControlLoop_TimesSet(ControlLoop,DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME,DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME, & 
     & DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT,Err)
   !Set the output timing
-  CALL CMISSControlLoop_TimeOutputSet(ControlLoop,DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY,Err)
+  CALL cmfe_ControlLoop_TimeOutputSet(ControlLoop,DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY,Err)
   !Finish creating the problem control loop
-  CALL CMISSProblem_ControlLoopCreateFinish(Problem,Err)
+  CALL cmfe_Problem_ControlLoopCreateFinish(Problem,Err)
 
   !
   !================================================================================================================================
@@ -717,46 +712,46 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !SOLVERS
 
   !Start the creation of the problem solvers
-  CALL CMISSSolver_Initialise(DynamicSolverNavierStokes,Err)
-  CALL CMISSSolver_Initialise(NonlinearSolverNavierStokes,Err)
-  CALL CMISSSolver_Initialise(LinearSolverNavierStokes,Err)
-  CALL CMISSProblem_SolversCreateStart(Problem,Err)
+  CALL cmfe_Solver_Initialise(DynamicSolverNavierStokes,Err)
+  CALL cmfe_Solver_Initialise(NonlinearSolverNavierStokes,Err)
+  CALL cmfe_Solver_Initialise(LinearSolverNavierStokes,Err)
+  CALL cmfe_Problem_SolversCreateStart(Problem,Err)
   !Get the dynamic dymamic solver
-  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,SolverNavierStokesUserNumber,DynamicSolverNavierStokes,Err)
+  CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,SolverNavierStokesUserNumber,DynamicSolverNavierStokes,Err)
   !Set the output type
-  CALL CMISSSolver_OutputTypeSet(DynamicSolverNavierStokes,DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE,Err)
+  CALL cmfe_Solver_OutputTypeSet(DynamicSolverNavierStokes,DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE,Err)
   !Set theta
-  CALL CMISSSolver_DynamicThetaSet(DynamicSolverNavierStokes,DYNAMIC_SOLVER_NAVIER_STOKES_THETA,Err)
-!   CALL CMISSSolverDynamicDynamicSet(DynamicSolverNavierStokes,.TRUE.,Err)
+  CALL cmfe_Solver_DynamicThetaSet(DynamicSolverNavierStokes,DYNAMIC_SOLVER_NAVIER_STOKES_THETA,Err)
+!   CALL cmfe_SolverDynamicDynamicSet(DynamicSolverNavierStokes,.TRUE.,Err)
   !Get the dynamic nonlinear solver
-  CALL CMISSSolver_DynamicNonlinearSolverGet(DynamicSolverNavierStokes,NonlinearSolverNavierStokes,Err)
+  CALL cmfe_Solver_DynamicNonlinearSolverGet(DynamicSolverNavierStokes,NonlinearSolverNavierStokes,Err)
   !Set the nonlinear Jacobian type
-  CALL CMISSSolver_NewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMISS_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED, &
+  CALL cmfe_Solver_NewtonJacobianCalculationTypeSet(NonlinearSolverNavierStokes,CMFE_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED, &
     & Err)
   !Set the output type
-  CALL CMISSSolver_OutputTypeSet(NonlinearSolverNavierStokes,NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE,Err)
+  CALL cmfe_Solver_OutputTypeSet(NonlinearSolverNavierStokes,NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE,Err)
   !Set the solver settings
-  CALL CMISSSolver_NewtonAbsoluteToleranceSet(NonlinearSolverNavierStokes,ABSOLUTE_TOLERANCE,Err)
-  CALL CMISSSolver_NewtonRelativeToleranceSet(NonlinearSolverNavierStokes,ABSOLUTE_TOLERANCE,Err)
-  CALL CMISSSolver_NewtonSolutionToleranceSet(NonlinearSolverNavierStokes,ABSOLUTE_TOLERANCE,Err)
+  CALL cmfe_Solver_NewtonAbsoluteToleranceSet(NonlinearSolverNavierStokes,ABSOLUTE_TOLERANCE,Err)
+  CALL cmfe_Solver_NewtonRelativeToleranceSet(NonlinearSolverNavierStokes,ABSOLUTE_TOLERANCE,Err)
+  CALL cmfe_Solver_NewtonSolutionToleranceSet(NonlinearSolverNavierStokes,ABSOLUTE_TOLERANCE,Err)
   !Get the dynamic nonlinear linear solver
-  CALL CMISSSolver_NewtonLinearSolverGet(NonlinearSolverNavierStokes,LinearSolverNavierStokes,Err)
+  CALL cmfe_Solver_NewtonLinearSolverGet(NonlinearSolverNavierStokes,LinearSolverNavierStokes,Err)
   !Set the output type
-  CALL CMISSSolver_OutputTypeSet(LinearSolverNavierStokes,LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE,Err)
+  CALL cmfe_Solver_OutputTypeSet(LinearSolverNavierStokes,LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE,Err)
   !Set the solver settings
   IF(LINEAR_SOLVER_NAVIER_STOKES_DIRECT_FLAG) THEN
-    CALL CMISSSolver_LinearTypeSet(LinearSolverNavierStokes,CMISS_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
-    CALL CMISSSolver_LibraryTypeSet(LinearSolverNavierStokes,CMISS_SOLVER_MUMPS_LIBRARY,Err)
+    CALL cmfe_Solver_LinearTypeSet(LinearSolverNavierStokes,CMFE_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
+    CALL cmfe_Solver_LibraryTypeSet(LinearSolverNavierStokes,CMFE_SOLVER_MUMPS_LIBRARY,Err)
   ELSE
-    CALL CMISSSolver_LinearTypeSet(LinearSolverNavierStokes,CMISS_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
-! ! !     CALL CMISSSolver_LinearIterativeMaximumIterationsSet(LinearSolverNavierStokes,MAXIMUM_ITERATIONS,Err)
-    CALL CMISSSolver_LinearIterativeDivergenceToleranceSet(LinearSolverNavierStokes,DIVERGENCE_TOLERANCE,Err)
-    CALL CMISSSolver_LinearIterativeRelativeToleranceSet(LinearSolverNavierStokes,RELATIVE_TOLERANCE,Err)
-    CALL CMISSSolver_LinearIterativeAbsoluteToleranceSet(LinearSolverNavierStokes,ABSOLUTE_TOLERANCE,Err)
-    CALL CMISSSolver_LinearIterativeGMRESRestartSet(LinearSolverNavierStokes,RESTART_VALUE,Err)
+    CALL cmfe_Solver_LinearTypeSet(LinearSolverNavierStokes,CMFE_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
+! ! !     CALL cmfe_Solver_LinearIterativeMaximumIterationsSet(LinearSolverNavierStokes,MAXIMUM_ITERATIONS,Err)
+    CALL cmfe_Solver_LinearIterativeDivergenceToleranceSet(LinearSolverNavierStokes,DIVERGENCE_TOLERANCE,Err)
+    CALL cmfe_Solver_LinearIterativeRelativeToleranceSet(LinearSolverNavierStokes,RELATIVE_TOLERANCE,Err)
+    CALL cmfe_Solver_LinearIterativeAbsoluteToleranceSet(LinearSolverNavierStokes,ABSOLUTE_TOLERANCE,Err)
+    CALL cmfe_Solver_LinearIterativeGMRESRestartSet(LinearSolverNavierStokes,RESTART_VALUE,Err)
   ENDIF
   !Finish the creation of the problem solver
-  CALL CMISSProblem_SolversCreateFinish(Problem,Err)
+  CALL cmfe_Problem_SolversCreateFinish(Problem,Err)
 
   !
   !================================================================================================================================
@@ -765,18 +760,18 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !SOLVER EQUATIONS
 
   !Start the creation of the problem solver equations
-  CALL CMISSSolver_Initialise(DynamicSolverNavierStokes,Err)
-  CALL CMISSSolverEquations_Initialise(SolverEquationsNavierStokes,Err)
-  CALL CMISSProblem_SolverEquationsCreateStart(Problem,Err)
+  CALL cmfe_Solver_Initialise(DynamicSolverNavierStokes,Err)
+  CALL cmfe_SolverEquations_Initialise(SolverEquationsNavierStokes,Err)
+  CALL cmfe_Problem_SolverEquationsCreateStart(Problem,Err)
   !Get the dynamic solver equations
-  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,SolverNavierStokesUserNumber,DynamicSolverNavierStokes,Err)
-  CALL CMISSSolver_SolverEquationsGet(DynamicSolverNavierStokes,SolverEquationsNavierStokes,Err)
+  CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,SolverNavierStokesUserNumber,DynamicSolverNavierStokes,Err)
+  CALL cmfe_Solver_SolverEquationsGet(DynamicSolverNavierStokes,SolverEquationsNavierStokes,Err)
   !Set the solver equations sparsity
-  CALL CMISSSolverEquations_SparsityTypeSet(SolverEquationsNavierStokes,CMISS_SOLVER_SPARSE_MATRICES,Err)
+  CALL cmfe_SolverEquations_SparsityTypeSet(SolverEquationsNavierStokes,CMFE_SOLVER_SPARSE_MATRICES,Err)
   !Add in the equations set
-  CALL CMISSSolverEquations_EquationsSetAdd(SolverEquationsNavierStokes,EquationsSetNavierStokes,EquationsSetIndex,Err)
+  CALL cmfe_SolverEquations_EquationsSetAdd(SolverEquationsNavierStokes,EquationsSetNavierStokes,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
-  CALL CMISSProblem_SolverEquationsCreateFinish(Problem,Err)
+  CALL cmfe_Problem_SolverEquationsCreateFinish(Problem,Err)
 
   !
   !================================================================================================================================
@@ -785,10 +780,10 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !BOUNDARY CONDITIONS
 
   !Set up the boundary conditions as per the analytic solution
-  CALL CMISSBoundaryConditions_Initialise(BoundaryConditionsNavierStokes,Err)
-  CALL CMISSSolverEquations_BoundaryConditionsCreateStart(SolverEquationsNavierStokes,BoundaryConditionsNavierStokes,Err)
-  CALL CMISSSolverEquations_BoundaryConditionsAnalytic(SolverEquationsNavierStokes,Err)
-  CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquationsNavierStokes,Err)
+  CALL cmfe_BoundaryConditions_Initialise(BoundaryConditionsNavierStokes,Err)
+  CALL cmfe_SolverEquations_BoundaryConditionsCreateStart(SolverEquationsNavierStokes,BoundaryConditionsNavierStokes,Err)
+  CALL cmfe_SolverEquations_BoundaryConditionsAnalytic(SolverEquationsNavierStokes,Err)
+  CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquationsNavierStokes,Err)
 
   !
   !================================================================================================================================
@@ -797,7 +792,7 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !RUN SOLVERS
 
   !Output Analytic analysis
-  CALL CMISSAnalyticAnalysisOutput(DependentFieldNavierStokes,OUTPUT_STRING,Err)
+  CALL cmfe_AnalyticAnalysis_Output(DependentFieldNavierStokes,OUTPUT_STRING,Err)
 
 
   !Turn of PETSc error handling
@@ -805,7 +800,7 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
 
   !Solve the problem
   WRITE(*,'(A)') "Solving problem..."
-  CALL CMISSProblem_Solve(Problem,Err)
+  CALL cmfe_Problem_Solve(Problem,Err)
   WRITE(*,'(A)') "Problem solved!"
 
   !
@@ -815,22 +810,22 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
   !OUTPUT
 
 !   !Output Analytic analysis
-!   CALL CMISSAnalyticAnalysisOutput(DependentFieldNavierStokes,OUTPUT_STRING,Err)
+!   CALL cmfe_AnalyticAnalysisOutput(DependentFieldNavierStokes,OUTPUT_STRING,Err)
 
 
   EXPORT_FIELD_IO=.TRUE.
   IF(EXPORT_FIELD_IO) THEN
     WRITE(*,'(A)') "Exporting fields..."
-    CALL CMISSFields_Initialise(Fields,Err)
-    CALL CMISSFields_Create(Region,Fields,Err)
-    CALL CMISSFields_NodesExport(Fields,"DynamicNavierStokes","FORTRAN",Err)
-    CALL CMISSFields_ElementsExport(Fields,"DynamicNavierStokes","FORTRAN",Err)
-    CALL CMISSFields_Finalise(Fields,Err)
+    CALL cmfe_Fields_Initialise(Fields,Err)
+    CALL cmfe_Fields_Create(Region,Fields,Err)
+    CALL cmfe_Fields_NodesExport(Fields,"DynamicNavierStokes","FORTRAN",Err)
+    CALL cmfe_Fields_ElementsExport(Fields,"DynamicNavierStokes","FORTRAN",Err)
+    CALL cmfe_Fields_Finalise(Fields,Err)
     WRITE(*,'(A)') "Field exported!"
   ENDIF
   
   !Finialise CMISS
-!   CALL CMISSFinalise(Err)
+!   CALL cmfe_Finalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
   

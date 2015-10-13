@@ -1,6 +1,6 @@
 !> \file
 !> \author Chris Bradley
-!> \brief This is an example program to solve an advection-diffusion equation using openCMISS calls.
+!> \brief This is an example program to solve an advection-diffusion equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -16,7 +16,7 @@
 !> License for the specific language governing rights and limitations
 !> under the License.
 !>
-!> The Original Code is openCMISS
+!> The Original Code is OpenCMISS
 !>
 !> The Initial Developer of the Original Code is University of Auckland,
 !> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -40,7 +40,7 @@
 !>
 
 !> \example ClassicalField/AdvectionDiffusion/AdvectionDiffusionIO/src/AdvectionDiffusionIOExample.f90
-!! Example program to solve a diffusion equation using openCMISS calls.
+!! Example program to solve a diffusion equation using OpenCMISS calls.
 !! \par Latest Builds:
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/Diffusion/build-intel'>Linux Intel Build</a>
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/Diffusion/build-gnu'>Linux GNU Build</a>
@@ -55,7 +55,8 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
 
   !PROGRAM LIBRARIES
 
-  USE OPENCMISS
+  USE OpenCMISS
+  USE OpenCMISS_Iron
   USE FLUID_MECHANICS_IO_ROUTINES
   USE MPI
 
@@ -71,10 +72,6 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
 
   IMPLICIT NONE
 
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(CMISSFieldType) :: EquationsSetField
-
-
   !Test program parameters
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
@@ -84,14 +81,15 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
   INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
   INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
   INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberAdvecDiff=8
-  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberAdvecDiff=9
-  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberAdvecDiff=10
-  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberAdvecDiff=9
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberAdvecDiff=10
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberAdvecDiff=11
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=12
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopNode=0
-  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumberAdvecDiff=12
-  !INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=13
-  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumberAdvecDiff=14
+  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumberAdvecDiff=13
+  !INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumberAdvecDiff=15
   INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
 
   !Program types
@@ -136,14 +134,14 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
   INTEGER, ALLOCATABLE, DIMENSION(:):: FIXED_WALL_NODES_ADVECTION_DIFFUSION
   INTEGER, ALLOCATABLE, DIMENSION(:):: INLET_WALL_NODES_ADVECTION_DIFFUSION
 
-  REAL(CMISSDP) :: INITIAL_FIELD_ADVECTION_DIFFUSION(3)
-  REAL(CMISSDP) :: BOUNDARY_CONDITIONS_ADVECTION_DIFFUSION(3)
-  REAL(CMISSDP) :: DIVERGENCE_TOLERANCE
-  REAL(CMISSDP) :: RELATIVE_TOLERANCE
-  REAL(CMISSDP) :: ABSOLUTE_TOLERANCE
-  REAL(CMISSDP) :: LINESEARCH_ALPHA
-  REAL(CMISSDP) :: VALUE
-  REAL(CMISSDP) :: DIFF_COEFF_PARAM_ADVECTION_DIFFUSION(3)
+  REAL(CMISSRP) :: INITIAL_FIELD_ADVECTION_DIFFUSION(3)
+  REAL(CMISSRP) :: BOUNDARY_CONDITIONS_ADVECTION_DIFFUSION(3)
+  REAL(CMISSRP) :: DIVERGENCE_TOLERANCE
+  REAL(CMISSRP) :: RELATIVE_TOLERANCE
+  REAL(CMISSRP) :: ABSOLUTE_TOLERANCE
+  REAL(CMISSRP) :: LINESEARCH_ALPHA
+  REAL(CMISSRP) :: VALUE
+  REAL(CMISSRP) :: DIFF_COEFF_PARAM_ADVECTION_DIFFUSION(3)
 
   LOGICAL :: EXPORT_FIELD_IO
   LOGICAL :: LINEAR_SOLVER_ADVECTION_DIFFUSION_DIRECT_FLAG
@@ -153,45 +151,46 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
   !CMISS variables
 
   !Regions
-  TYPE(CMISSRegionType) :: Region
-  TYPE(CMISSRegionType) :: WorldRegion
+  TYPE(cmfe_RegionType) :: Region
+  TYPE(cmfe_RegionType) :: WorldRegion
   !Coordinate systems
-  TYPE(CMISSCoordinateSystemType) :: CoordinateSystem
-  TYPE(CMISSCoordinateSystemType) :: WorldCoordinateSystem
+  TYPE(cmfe_CoordinateSystemType) :: CoordinateSystem
+  TYPE(cmfe_CoordinateSystemType) :: WorldCoordinateSystem
   !Basis
-  TYPE(CMISSBasisType) :: BasisSpace
-  TYPE(CMISSBasisType) :: BasisConcentration
+  TYPE(cmfe_BasisType) :: BasisSpace
+  TYPE(cmfe_BasisType) :: BasisConcentration
   !Nodes
-  TYPE(CMISSNodesType) :: Nodes
+  TYPE(cmfe_NodesType) :: Nodes
   !Elements
-  TYPE(CMISSMeshElementsType) :: MeshElementsSpace
-  TYPE(CMISSMeshElementsType) :: MeshElementsConcentration
+  TYPE(cmfe_MeshElementsType) :: MeshElementsSpace
+  TYPE(cmfe_MeshElementsType) :: MeshElementsConcentration
   !Meshes
-  TYPE(CMISSMeshType) :: Mesh
+  TYPE(cmfe_MeshType) :: Mesh
   !Decompositions
-  TYPE(CMISSDecompositionType) :: Decomposition
+  TYPE(cmfe_DecompositionType) :: Decomposition
   !Fields
-  TYPE(CMISSFieldsType) :: Fields
+  TYPE(cmfe_FieldsType) :: Fields
   !Field types
-  TYPE(CMISSFieldType) :: GeometricField
-  TYPE(CMISSFieldType) :: DependentFieldAdvecDiff
-  TYPE(CMISSFieldType) :: MaterialsFieldAdvecDiff
-  TYPE(CMISSFieldType) :: IndependentFieldAdvecDiff
-  TYPE(CMISSFieldType) :: SourceFieldAdvecDiff
+  TYPE(cmfe_FieldType) :: GeometricField
+  TYPE(cmfe_FieldType) :: EquationsSetField
+  TYPE(cmfe_FieldType) :: DependentFieldAdvecDiff
+  TYPE(cmfe_FieldType) :: MaterialsFieldAdvecDiff
+  TYPE(cmfe_FieldType) :: IndependentFieldAdvecDiff
+  TYPE(cmfe_FieldType) :: SourceFieldAdvecDiff
   !Boundary conditions
-  TYPE(CMISSBoundaryConditionsType) :: BoundaryConditionsAdvecDiff
+  TYPE(cmfe_BoundaryConditionsType) :: BoundaryConditionsAdvecDiff
   !Equations sets
-  TYPE(CMISSEquationsSetType) :: EquationsSetAdvecDiff
+  TYPE(cmfe_EquationsSetType) :: EquationsSetAdvecDiff
   !Equations
-  TYPE(CMISSEquationsType) :: EquationsAdvecDiff
+  TYPE(cmfe_EquationsType) :: EquationsAdvecDiff
   !Problems
-  TYPE(CMISSProblemType) :: Problem
+  TYPE(cmfe_ProblemType) :: Problem
   !Control loops
-  TYPE(CMISSControlLoopType) :: ControlLoop
+  TYPE(cmfe_ControlLoopType) :: ControlLoop
   !Solvers
-  TYPE(CMISSSolverType) :: SolverAdvecDiff, LinearSolverAdvecDiff
+  TYPE(cmfe_SolverType) :: SolverAdvecDiff, LinearSolverAdvecDiff
   !Solver equations
-  TYPE(CMISSSolverEquationsType) :: SolverEquationsAdvecDiff
+  TYPE(cmfe_SolverEquationsType) :: SolverEquationsAdvecDiff
 
 
 #ifdef WIN32
@@ -222,7 +221,7 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
 
   !INITIALISE OPENCMISS
 
-  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
+  CALL cmfe_Initialise(WorldCoordinateSystem,WorldRegion,Err)
 
   !
   !================================================================================================================================
@@ -246,50 +245,50 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
   NUMBER_OF_ELEMENT_NODES_SPACE=CM%EN_M
   NUMBER_OF_ELEMENT_NODES_CONCENTRATION=CM%EN_V
   !Set initial values
-  INITIAL_FIELD_ADVECTION_DIFFUSION(1)=0.0_CMISSDP
-  INITIAL_FIELD_ADVECTION_DIFFUSION(2)=0.0_CMISSDP
-  INITIAL_FIELD_ADVECTION_DIFFUSION(3)=0.0_CMISSDP
+  INITIAL_FIELD_ADVECTION_DIFFUSION(1)=0.0_CMISSRP
+  INITIAL_FIELD_ADVECTION_DIFFUSION(2)=0.0_CMISSRP
+  INITIAL_FIELD_ADVECTION_DIFFUSION(3)=0.0_CMISSRP
   !Set boundary conditions
   FIXED_WALL_NODES_ADVECTION_DIFFUSION_FLAG=.TRUE.
   INLET_WALL_NODES_ADVECTION_DIFFUSION_FLAG=.FALSE.
   IF(FIXED_WALL_NODES_ADVECTION_DIFFUSION_FLAG) THEN
     NUMBER_OF_FIXED_WALL_NODES_ADVECTION_DIFFUSION=105
     ALLOCATE(FIXED_WALL_NODES_ADVECTION_DIFFUSION(NUMBER_OF_FIXED_WALL_NODES_ADVECTION_DIFFUSION))
-    FIXED_WALL_NODES_ADVECTION_DIFFUSION=(/4,11,12,13,29,33,34,35,47,51,52,53,69,71,83,87,88,89,100,102,103,104,112,114,115, & 
+    FIXED_WALL_NODES_ADVECTION_DIFFUSION=[4,11,12,13,29,33,34,35,47,51,52,53,69,71,83,87,88,89,100,102,103,104,112,114,115, & 
     & 116,126,128,137,141,142,143,154,156,157,158,166,168,169,170,180,182,191,195,196,197,208,210,211, & 
     & 212,220,222,223,224,234,236,245,249,250,251,262,264,265,266,274,276,277,278,288,290,299,303,304, & 
     & 305,316,318,319,320,328,330,331,332,342,344,353,357,358,359,370,372,373,374,382,384,385,386,396, & 
-    & 398,411,412,426,427,438,439,450/)
+    & 398,411,412,426,427,438,439,450]
   ENDIF
   IF(INLET_WALL_NODES_ADVECTION_DIFFUSION_FLAG) THEN
     NUMBER_OF_INLET_WALL_NODES_ADVECTION_DIFFUSION=105
     ALLOCATE(INLET_WALL_NODES_ADVECTION_DIFFUSION(NUMBER_OF_INLET_WALL_NODES_ADVECTION_DIFFUSION))
-    INLET_WALL_NODES_ADVECTION_DIFFUSION=(/4,11,12,13,29,33,34,35,47,51,52,53,69,71,83,87,88,89,100,102,103,104,112,114,115, & 
+    INLET_WALL_NODES_ADVECTION_DIFFUSION=[4,11,12,13,29,33,34,35,47,51,52,53,69,71,83,87,88,89,100,102,103,104,112,114,115, & 
     & 116,126,128,137,141,142,143,154,156,157,158,166,168,169,170,180,182,191,195,196,197,208,210,211, & 
     & 212,220,222,223,224,234,236,245,249,250,251,262,264,265,266,274,276,277,278,288,290,299,303,304, & 
     & 305,316,318,319,320,328,330,331,332,342,344,353,357,358,359,370,372,373,374,382,384,385,386,396, & 
-    & 398,411,412,426,427,438,439,450/)
+    & 398,411,412,426,427,438,439,450]
 
     !Set initial boundary conditions
-    BOUNDARY_CONDITIONS_ADVECTION_DIFFUSION(1)=42.0_CMISSDP
-    BOUNDARY_CONDITIONS_ADVECTION_DIFFUSION(2)=0.0_CMISSDP
-    BOUNDARY_CONDITIONS_ADVECTION_DIFFUSION(3)=0.0_CMISSDP
+    BOUNDARY_CONDITIONS_ADVECTION_DIFFUSION(1)=42.0_CMISSRP
+    BOUNDARY_CONDITIONS_ADVECTION_DIFFUSION(2)=0.0_CMISSRP
+    BOUNDARY_CONDITIONS_ADVECTION_DIFFUSION(3)=0.0_CMISSRP
   ENDIF  !Set material parameters
-  DIFF_COEFF_PARAM_ADVECTION_DIFFUSION(1)=1.0_CMISSDP
-  DIFF_COEFF_PARAM_ADVECTION_DIFFUSION(2)=1.0_CMISSDP
-  DIFF_COEFF_PARAM_ADVECTION_DIFFUSION(3)=1.0_CMISSDP
+  DIFF_COEFF_PARAM_ADVECTION_DIFFUSION(1)=1.0_CMISSRP
+  DIFF_COEFF_PARAM_ADVECTION_DIFFUSION(2)=1.0_CMISSRP
+  DIFF_COEFF_PARAM_ADVECTION_DIFFUSION(3)=1.0_CMISSRP
   !Set interpolation parameters
   BASIS_XI_GAUSS_SPACE=3
   BASIS_XI_GAUSS_CONCENTRATION=3
   !Set output parameter
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
-  LINEAR_SOLVER_ADVECTION_DIFFUSION_OUTPUT_TYPE=CMISS_SOLVER_NO_OUTPUT
+  LINEAR_SOLVER_ADVECTION_DIFFUSION_OUTPUT_TYPE=CMFE_SOLVER_NO_OUTPUT
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
-  EQUATIONS_ADVECTION_DIFFUSION_OUTPUT=CMISS_EQUATIONS_NO_OUTPUT
+  EQUATIONS_ADVECTION_DIFFUSION_OUTPUT=CMFE_EQUATIONS_NO_OUTPUT
   !Set solver parameters
   LINEAR_SOLVER_ADVECTION_DIFFUSION_DIRECT_FLAG=.FALSE.
-  RELATIVE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-05_CMISSDP
-  ABSOLUTE_TOLERANCE=1.0E-10_CMISSDP !default: 1.0E-10_CMISSDP
+  RELATIVE_TOLERANCE=1.0E-10_CMISSRP !default: 1.0E-05_CMISSRP
+  ABSOLUTE_TOLERANCE=1.0E-10_CMISSRP !default: 1.0E-10_CMISSRP
   DIVERGENCE_TOLERANCE=1.0E20 !default: 1.0E5
   MAXIMUM_ITERATIONS=100000 !default: 100000
   RESTART_VALUE=3000 !default: 30
@@ -302,12 +301,12 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
   !COORDINATE SYSTEM
 
   !Start the creation of a new RC coordinate system
-  CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
-  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_Initialise(CoordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   !Set the coordinate system dimension
-  CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystem,NUMBER_OF_DIMENSIONS,Err)
+  CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystem,NUMBER_OF_DIMENSIONS,Err)
   !Finish the creation of the coordinate system
-  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !
   !================================================================================================================================
@@ -316,12 +315,12 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
   !REGION
 
   !Start the creation of a new region
-  CALL CMISSRegion_Initialise(Region,Err)
-  CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  CALL cmfe_Region_Initialise(Region,Err)
+  CALL cmfe_Region_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
   !Set the regions coordinate system as defined above
-  CALL CMISSRegion_CoordinateSystemSet(Region,CoordinateSystem,Err)
+  CALL cmfe_Region_CoordinateSystemSet(Region,CoordinateSystem,Err)
   !Finish the creation of the region
-  CALL CMISSRegion_CreateFinish(Region,Err)
+  CALL cmfe_Region_CreateFinish(Region,Err)
 
   !
   !================================================================================================================================
@@ -331,50 +330,50 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
 
   !Start the creation of new bases
   MESH_NUMBER_OF_COMPONENTS=1
-  CALL CMISSBasis_Initialise(BasisSpace,Err)
-  CALL CMISSBasis_CreateStart(BASIS_NUMBER_SPACE,BasisSpace,Err)
+  CALL cmfe_Basis_Initialise(BasisSpace,Err)
+  CALL cmfe_Basis_CreateStart(BASIS_NUMBER_SPACE,BasisSpace,Err)
   !Set the basis type (Lagrange/Simplex)
-  CALL CMISSBasis_TypeSet(BasisSpace,BASIS_TYPE,Err)
+  CALL cmfe_Basis_TypeSet(BasisSpace,BASIS_TYPE,Err)
   !Set the basis xi number
-  CALL CMISSBasis_NumberOfXiSet(BasisSpace,NUMBER_OF_DIMENSIONS,Err)
+  CALL cmfe_Basis_NumberOfXiSet(BasisSpace,NUMBER_OF_DIMENSIONS,Err)
   !Set the basis xi interpolation and number of Gauss points
   IF(NUMBER_OF_DIMENSIONS==2) THEN
-    CALL CMISSBasis_InterpolationXiSet(BasisSpace,(/BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE/),Err)
-    CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisSpace,(/BASIS_XI_GAUSS_SPACE,BASIS_XI_GAUSS_SPACE/),Err)
+    CALL cmfe_Basis_InterpolationXiSet(BasisSpace,[BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE],Err)
+    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace,[BASIS_XI_GAUSS_SPACE,BASIS_XI_GAUSS_SPACE],Err)
   ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-    CALL CMISSBasis_InterpolationXiSet(BasisSpace,(/BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE, & 
-      & BASIS_XI_INTERPOLATION_SPACE/),Err)                         
-    CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisSpace,(/BASIS_XI_GAUSS_SPACE,BASIS_XI_GAUSS_SPACE,BASIS_XI_GAUSS_SPACE/),Err)
+    CALL cmfe_Basis_InterpolationXiSet(BasisSpace,[BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE, & 
+      & BASIS_XI_INTERPOLATION_SPACE],Err)                         
+    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace,[BASIS_XI_GAUSS_SPACE,BASIS_XI_GAUSS_SPACE,BASIS_XI_GAUSS_SPACE],Err)
   ENDIF
   !Finish the creation of the basis
-  CALL CMISSBasis_CreateFinish(BasisSpace,Err)
+  CALL cmfe_Basis_CreateFinish(BasisSpace,Err)
   !Start the creation of another basis
   IF(BASIS_XI_INTERPOLATION_CONCENTRATION==BASIS_XI_INTERPOLATION_SPACE) THEN
     BasisConcentration=BasisSpace
   ELSE
     MESH_NUMBER_OF_COMPONENTS=MESH_NUMBER_OF_COMPONENTS+1
     !Initialise a new pressure basis
-    CALL CMISSBasis_Initialise(BasisConcentration,Err)
+    CALL cmfe_Basis_Initialise(BasisConcentration,Err)
     !Start the creation of a basis
-    CALL CMISSBasis_CreateStart(BASIS_NUMBER_CONCENTRATION,BasisConcentration,Err)
+    CALL cmfe_Basis_CreateStart(BASIS_NUMBER_CONCENTRATION,BasisConcentration,Err)
     !Set the basis type (Lagrange/Simplex)
-    CALL CMISSBasis_TypeSet(BasisConcentration,BASIS_TYPE,Err)
+    CALL cmfe_Basis_TypeSet(BasisConcentration,BASIS_TYPE,Err)
     !Set the basis xi number
-    CALL CMISSBasis_NumberOfXiSet(BasisConcentration,NUMBER_OF_DIMENSIONS,Err)
+    CALL cmfe_Basis_NumberOfXiSet(BasisConcentration,NUMBER_OF_DIMENSIONS,Err)
     !Set the basis xi interpolation and number of Gauss points
     IF(NUMBER_OF_DIMENSIONS==2) THEN
-      CALL CMISSBasis_InterpolationXiSet(BasisConcentration,(/BASIS_XI_INTERPOLATION_CONCENTRATION, &
-        & BASIS_XI_INTERPOLATION_CONCENTRATION/),Err)
-      CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisConcentration,(/BASIS_XI_GAUSS_CONCENTRATION, &
-        & BASIS_XI_GAUSS_CONCENTRATION/),Err)
+      CALL cmfe_Basis_InterpolationXiSet(BasisConcentration,[BASIS_XI_INTERPOLATION_CONCENTRATION, &
+        & BASIS_XI_INTERPOLATION_CONCENTRATION],Err)
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisConcentration,[BASIS_XI_GAUSS_CONCENTRATION, &
+        & BASIS_XI_GAUSS_CONCENTRATION],Err)
     ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-      CALL CMISSBasis_InterpolationXiSet(BasisConcentration,(/BASIS_XI_INTERPOLATION_CONCENTRATION, & 
-        & BASIS_XI_INTERPOLATION_CONCENTRATION, BASIS_XI_INTERPOLATION_CONCENTRATION/),Err)                         
-      CALL CMISSBasis_QuadratureNumberOfGaussXiSet(BasisConcentration,(/BASIS_XI_GAUSS_CONCENTRATION, & 
-        & BASIS_XI_GAUSS_CONCENTRATION, BASIS_XI_GAUSS_CONCENTRATION/),Err)
+      CALL cmfe_Basis_InterpolationXiSet(BasisConcentration,[BASIS_XI_INTERPOLATION_CONCENTRATION, & 
+        & BASIS_XI_INTERPOLATION_CONCENTRATION, BASIS_XI_INTERPOLATION_CONCENTRATION],Err)                         
+      CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisConcentration,[BASIS_XI_GAUSS_CONCENTRATION, & 
+        & BASIS_XI_GAUSS_CONCENTRATION, BASIS_XI_GAUSS_CONCENTRATION],Err)
     ENDIF
     !Finish the creation of the basis
-    CALL CMISSBasis_CreateFinish(BasisConcentration,Err)
+    CALL cmfe_Basis_CreateFinish(BasisConcentration,Err)
   ENDIF
   !
   !================================================================================================================================
@@ -383,41 +382,41 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
   !MESH
 
   !Start the creation of mesh nodes
-  CALL CMISSNodes_Initialise(Nodes,Err)
-  CALL CMISSMesh_Initialise(Mesh,Err)
-  CALL CMISSNodes_CreateStart(Region,TOTAL_NUMBER_OF_NODES,Nodes,Err)
-  CALL CMISSNodes_CreateFinish(Nodes,Err)
+  CALL cmfe_Nodes_Initialise(Nodes,Err)
+  CALL cmfe_Mesh_Initialise(Mesh,Err)
+  CALL cmfe_Nodes_CreateStart(Region,TOTAL_NUMBER_OF_NODES,Nodes,Err)
+  CALL cmfe_Nodes_CreateFinish(Nodes,Err)
   !Start the creation of the mesh
-  CALL CMISSMesh_CreateStart(MeshUserNumber,Region,NUMBER_OF_DIMENSIONS,Mesh,Err)
+  CALL cmfe_Mesh_CreateStart(MeshUserNumber,Region,NUMBER_OF_DIMENSIONS,Mesh,Err)
   !Set number of mesh elements
-  CALL CMISSMesh_NumberOfElementsSet(Mesh,TOTAL_NUMBER_OF_ELEMENTS,Err)
+  CALL cmfe_Mesh_NumberOfElementsSet(Mesh,TOTAL_NUMBER_OF_ELEMENTS,Err)
   !Set number of mesh components
-  CALL CMISSMesh_NumberOfComponentsSet(Mesh,MESH_NUMBER_OF_COMPONENTS,Err)
+  CALL cmfe_Mesh_NumberOfComponentsSet(Mesh,MESH_NUMBER_OF_COMPONENTS,Err)
   !Specify spatial mesh component
-  CALL CMISSMeshElements_Initialise(MeshElementsSpace,Err)
-  CALL CMISSMeshElements_Initialise(MeshElementsConcentration,Err)
+  CALL cmfe_MeshElements_Initialise(MeshElementsSpace,Err)
+  CALL cmfe_MeshElements_Initialise(MeshElementsConcentration,Err)
   MESH_COMPONENT_NUMBER_SPACE=1
   MESH_COMPONENT_NUMBER_CONCENTRATION=1
-  CALL CMISSMeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_SPACE,BasisSpace,MeshElementsSpace,Err)
+  CALL cmfe_MeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_SPACE,BasisSpace,MeshElementsSpace,Err)
   DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
-    CALL CMISSMeshElements_NodesSet(MeshElementsSpace,ELEMENT_NUMBER,CM%M(ELEMENT_NUMBER,1:NUMBER_OF_ELEMENT_NODES_SPACE),Err)
+    CALL cmfe_MeshElements_NodesSet(MeshElementsSpace,ELEMENT_NUMBER,CM%M(ELEMENT_NUMBER,1:NUMBER_OF_ELEMENT_NODES_SPACE),Err)
   ENDDO
-  CALL CMISSMeshElements_CreateFinish(MeshElementsSpace,Err)
+  CALL cmfe_MeshElements_CreateFinish(MeshElementsSpace,Err)
   !Specify pressure mesh component
   IF(BASIS_XI_INTERPOLATION_CONCENTRATION==BASIS_XI_INTERPOLATION_SPACE) THEN
     MeshElementsConcentration=MeshElementsSpace
     MESH_COMPONENT_NUMBER_CONCENTRATION=MESH_COMPONENT_NUMBER_SPACE
   ELSE
     MESH_COMPONENT_NUMBER_CONCENTRATION=MESH_COMPONENT_NUMBER_SPACE+1
-    CALL CMISSMeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_CONCENTRATION,BasisConcentration,MeshElementsConcentration,Err)
+    CALL cmfe_MeshElements_CreateStart(Mesh,MESH_COMPONENT_NUMBER_CONCENTRATION,BasisConcentration,MeshElementsConcentration,Err)
     DO ELEMENT_NUMBER=1,TOTAL_NUMBER_OF_ELEMENTS
-      CALL CMISSMeshElements_NodesSet(MeshElementsConcentration,ELEMENT_NUMBER,CM%V(ELEMENT_NUMBER, & 
+      CALL cmfe_MeshElements_NodesSet(MeshElementsConcentration,ELEMENT_NUMBER,CM%V(ELEMENT_NUMBER, & 
         & 1:NUMBER_OF_ELEMENT_NODES_CONCENTRATION),Err)
     ENDDO
-    CALL CMISSMeshElements_CreateFinish(MeshElementsConcentration,Err)
+    CALL cmfe_MeshElements_CreateFinish(MeshElementsConcentration,Err)
   ENDIF
   !Finish the creation of the mesh
-  CALL CMISSMesh_CreateFinish(Mesh,Err)
+  CALL cmfe_Mesh_CreateFinish(Mesh,Err)
 
   !
   !================================================================================================================================
@@ -426,40 +425,40 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
   !GEOMETRIC FIELD
 
   !Create a decomposition
-  CALL CMISSDecomposition_Initialise(Decomposition,Err)
-  CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
+  CALL cmfe_Decomposition_Initialise(Decomposition,Err)
+  CALL cmfe_Decomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
-  CALL CMISSDecomposition_TypeSet(Decomposition,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
-  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,DomainUserNumber,Err)
+  CALL cmfe_Decomposition_TypeSet(Decomposition,CMFE_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL cmfe_Decomposition_NumberOfDomainsSet(Decomposition,DomainUserNumber,Err)
   !Finish the decomposition
-  CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
+  CALL cmfe_Decomposition_CreateFinish(Decomposition,Err)
 
   !Start to create a default (geometric) field on the region
-  CALL CMISSField_Initialise(GeometricField,Err)
-  CALL CMISSField_CreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
+  CALL cmfe_Field_Initialise(GeometricField,Err)
+  CALL cmfe_Field_CreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
   !Set the field type
-  CALL CMISSField_TypeSet(GeometricField,CMISS_FIELD_GEOMETRIC_TYPE,Err)
+  CALL cmfe_Field_TypeSet(GeometricField,CMFE_FIELD_GEOMETRIC_TYPE,Err)
   !Set the decomposition to use
-  CALL CMISSField_MeshDecompositionSet(GeometricField,Decomposition,Err)
+  CALL cmfe_Field_MeshDecompositionSet(GeometricField,Decomposition,Err)
   !Set the scaling to use
-  CALL CMISSField_ScalingTypeSet(GeometricField,CMISS_FIELD_NO_SCALING,Err)
+  CALL cmfe_Field_ScalingTypeSet(GeometricField,CMFE_FIELD_NO_SCALING,Err)
   !Set the mesh component to be used by the field components.
   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-    CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
+    CALL cmfe_Field_ComponentMeshComponentSet(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,COMPONENT_NUMBER, & 
       & MESH_COMPONENT_NUMBER_SPACE,Err)
   ENDDO
   !Finish creating the field
-  CALL CMISSField_CreateFinish(GeometricField,Err)
+  CALL cmfe_Field_CreateFinish(GeometricField,Err)
   !Update the geometric field parameters
   DO NODE_NUMBER=1,NUMBER_OF_NODES_SPACE
     DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
       VALUE=CM%N(NODE_NUMBER,COMPONENT_NUMBER)
-      CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,1, & 
-        & CMISS_NO_GLOBAL_DERIV,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
+      CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1, & 
+        & CMFE_NO_GLOBAL_DERIV,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
   ENDDO
-  CALL CMISSField_ParameterSetUpdateStart(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
-  CALL CMISSField_ParameterSetUpdateFinish(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
+  CALL cmfe_Field_ParameterSetUpdateStart(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
+  CALL cmfe_Field_ParameterSetUpdateFinish(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
 
   !
   !================================================================================================================================
@@ -468,15 +467,15 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
   !EQUATIONS SETS
  
   !Create the equations_set
-  CALL CMISSEquationsSet_Initialise(EquationsSetAdvecDiff,Err)
-    CALL CMISSField_Initialise(EquationsSetField,Err)
-  CALL CMISSEquationsSet_CreateStart(EquationsSetUserNumberAdvecDiff,Region,GeometricField, &
-    & CMISS_EQUATIONS_SET_CLASSICAL_FIELD_CLASS,&
-    & CMISS_EQUATIONS_SET_ADVECTION_DIFFUSION_EQUATION_TYPE,CMISS_EQUATIONS_SET_NO_SOURCE_ADVECTION_DIFFUSION_SUBTYPE,& 
-    & EquationsSetFieldUserNumber,EquationsSetField,EquationsSetAdvecDiff,Err)
+  CALL cmfe_EquationsSet_Initialise(EquationsSetAdvecDiff,Err)
+    CALL cmfe_Field_Initialise(EquationsSetField,Err)
+  CALL cmfe_EquationsSet_CreateStart(EquationsSetUserNumberAdvecDiff,Region,GeometricField, &
+    & [CMFE_EQUATIONS_SET_CLASSICAL_FIELD_CLASS,CMFE_EQUATIONS_SET_ADVECTION_DIFFUSION_EQUATION_TYPE, &
+    & CMFE_EQUATIONS_SET_NO_SOURCE_ADVECTION_DIFFUSION_SUBTYPE],EquationsSetFieldUserNumber,EquationsSetField, &
+    & EquationsSetAdvecDiff,Err)
   !Set the equations set to be a standard Laplace problem
   !Finish creating the equations set
-  CALL CMISSEquationsSet_CreateFinish(EquationsSetAdvecDiff,Err)
+  CALL cmfe_EquationsSet_CreateFinish(EquationsSetAdvecDiff,Err)
 
   !
   !================================================================================================================================
@@ -485,10 +484,10 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
   !DEPENDENT FIELDS
 
   !Create the equations set dependent field variables
-  CALL CMISSField_Initialise(DependentFieldAdvecDiff,Err)
-  CALL CMISSEquationsSet_DependentCreateStart(EquationsSetAdvecDiff,DependentFieldUserNumberAdvecDiff,DependentFieldAdvecDiff,Err)
+  CALL cmfe_Field_Initialise(DependentFieldAdvecDiff,Err)
+  CALL cmfe_EquationsSet_DependentCreateStart(EquationsSetAdvecDiff,DependentFieldUserNumberAdvecDiff,DependentFieldAdvecDiff,Err)
   !Finish the equations set dependent field variables
-  CALL CMISSEquationsSet_DependentCreateFinish(EquationsSetAdvecDiff,Err)
+  CALL cmfe_EquationsSet_DependentCreateFinish(EquationsSetAdvecDiff,Err)
 
   !
   !================================================================================================================================
@@ -497,10 +496,10 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
   !MATERIALS FIELDS
 
   !Create the equations set material field variables
-  CALL CMISSField_Initialise(MaterialsFieldAdvecDiff,Err)
-  CALL CMISSEquationsSet_MaterialsCreateStart(EquationsSetAdvecDiff,MaterialsFieldUserNumberAdvecDiff,MaterialsFieldAdvecDiff,Err)
+  CALL cmfe_Field_Initialise(MaterialsFieldAdvecDiff,Err)
+  CALL cmfe_EquationsSet_MaterialsCreateStart(EquationsSetAdvecDiff,MaterialsFieldUserNumberAdvecDiff,MaterialsFieldAdvecDiff,Err)
   !Finish the equations set dependent field variables
-  CALL CMISSEquationsSet_MaterialsCreateFinish(EquationsSetAdvecDiff,Err)
+  CALL cmfe_EquationsSet_MaterialsCreateFinish(EquationsSetAdvecDiff,Err)
 
   !
   !================================================================================================================================
@@ -510,11 +509,11 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
 
 
   !Create the equations set source field variables
-!   CALL CMISSField_Initialise(SourceFieldAdvecDiff,Err)
-!   CALL CMISSEquationsSet_SourceCreateStart(EquationsSetAdvecDiff,SourceFieldUserNumberAdvecDiff,SourceFieldAdvecDiff,Err)
-!   CALL CMISSField_ComponentInterpolationSet(SourceFieldAdvecDiff,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_NODE_BASED_INTERPOLATION,Err)
+!   CALL cmfe_Field_Initialise(SourceFieldAdvecDiff,Err)
+!   CALL cmfe_EquationsSet_SourceCreateStart(EquationsSetAdvecDiff,SourceFieldUserNumberAdvecDiff,SourceFieldAdvecDiff,Err)
+!   CALL cmfe_Field_ComponentInterpolationSet(SourceFieldAdvecDiff,CMFE_FIELD_U_VARIABLE_TYPE,1,CMFE_FIELD_NODE_BASED_INTERPOLATION,Err)
 !   !Finish the equations set dependent field variables
-!   CALL CMISSEquationsSet_SourceCreateFinish(EquationsSetAdvecDiff,Err)
+!   CALL cmfe_EquationsSet_SourceCreateFinish(EquationsSetAdvecDiff,Err)
 
 
   !
@@ -523,23 +522,23 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
 
   !INDEPENDENT FIELDS
 
- ! CALL CMISSField_ParameterSetDataGet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,GEOMETRIC_PARAMETERS,Err)
+ ! CALL cmfe_Field_ParameterSetDataGet(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,GEOMETRIC_PARAMETERS,Err)
 
 
   !Create the equations set independent field variables
-  CALL CMISSField_Initialise(IndependentFieldAdvecDiff,Err)
-  CALL CMISSEquationsSet_IndependentCreateStart(EquationsSetAdvecDiff,IndependentFieldUserNumberAdvecDiff, &
+  CALL cmfe_Field_Initialise(IndependentFieldAdvecDiff,Err)
+  CALL cmfe_EquationsSet_IndependentCreateStart(EquationsSetAdvecDiff,IndependentFieldUserNumberAdvecDiff, &
     & IndependentFieldAdvecDiff,Err)
 !   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-!   CALL CMISSField_ComponentInterpolationSet(IndependentField,CMISS_FIELD_U_VARIABLE_TYPE,1,CMISS_FIELD_NODE_BASED_INTERPOLATION,Err) 
-!   CALL CMISSField_ComponentInterpolationSet(IndependentField,CMISS_FIELD_U_VARIABLE_TYPE,2,CMISS_FIELD_NODE_BASED_INTERPOLATION,Err)
+!   CALL cmfe_Field_ComponentInterpolationSet(IndependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,CMFE_FIELD_NODE_BASED_INTERPOLATION,Err) 
+!   CALL cmfe_Field_ComponentInterpolationSet(IndependentField,CMFE_FIELD_U_VARIABLE_TYPE,2,CMFE_FIELD_NODE_BASED_INTERPOLATION,Err)
 !   ENDIF
   !Set the mesh component to be used by the field components.
-  CALL CMISSField_ComponentMeshComponentSet(IndependentFieldAdvecDiff,CMISS_FIELD_U_VARIABLE_TYPE,MESH_COMPONENT_NUMBER_SPACE, & 
+  CALL cmfe_Field_ComponentMeshComponentSet(IndependentFieldAdvecDiff,CMFE_FIELD_U_VARIABLE_TYPE,MESH_COMPONENT_NUMBER_SPACE, & 
     & MESH_COMPONENT_NUMBER_CONCENTRATION,Err)
 
   !Finish the equations set dependent field variables
-  CALL CMISSEquationsSet_IndependentCreateFinish(EquationsSetAdvecDiff,Err)
+  CALL cmfe_EquationsSet_IndependentCreateFinish(EquationsSetAdvecDiff,Err)
  
   !
   !================================================================================================================================
@@ -550,40 +549,38 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
 
 
   !Create the equations set equations
-  CALL CMISSEquations_Initialise(EquationsAdvecDiff,Err)
-  CALL CMISSEquationsSet_EquationsCreateStart(EquationsSetAdvecDiff,EquationsAdvecDiff,Err)
+  CALL cmfe_Equations_Initialise(EquationsAdvecDiff,Err)
+  CALL cmfe_EquationsSet_EquationsCreateStart(EquationsSetAdvecDiff,EquationsAdvecDiff,Err)
   !Set the equations matrices sparsity type
-  CALL CMISSEquations_SparsityTypeSet(EquationsAdvecDiff,CMISS_EQUATIONS_SPARSE_MATRICES,Err)
+  CALL cmfe_Equations_SparsityTypeSet(EquationsAdvecDiff,CMFE_EQUATIONS_SPARSE_MATRICES,Err)
   !Set the equations set output
-  CALL CMISSEquations_OutputTypeSet(EquationsAdvecDiff,EQUATIONS_ADVECTION_DIFFUSION_OUTPUT,Err)
-  !CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_NO_OUTPUT,Err)
-  !CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_TIMING_OUTPUT,Err)
-  !CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_MATRIX_OUTPUT,Err)
-  !CALL CMISSEquations_OutputTypeSet(Equations,CMISS_EQUATIONS_ELEMENT_MATRIX_OUTPUT,Err)
+  CALL cmfe_Equations_OutputTypeSet(EquationsAdvecDiff,EQUATIONS_ADVECTION_DIFFUSION_OUTPUT,Err)
+  !CALL cmfe_Equations_OutputTypeSet(Equations,CMFE_EQUATIONS_NO_OUTPUT,Err)
+  !CALL cmfe_Equations_OutputTypeSet(Equations,CMFE_EQUATIONS_TIMING_OUTPUT,Err)
+  !CALL cmfe_Equations_OutputTypeSet(Equations,CMFE_EQUATIONS_MATRIX_OUTPUT,Err)
+  !CALL cmfe_Equations_OutputTypeSet(Equations,CMFE_EQUATIONS_ELEMENT_MATRIX_OUTPUT,Err)
   !Finish the equations set equations
-  CALL CMISSEquationsSet_EquationsCreateFinish(EquationsSetAdvecDiff,Err)
+  CALL cmfe_EquationsSet_EquationsCreateFinish(EquationsSetAdvecDiff,Err)
 
   !
   !================================================================================================================================
   !
 
   !Start the creation of a problem.
-  CALL CMISSProblem_Initialise(Problem,Err)
-  CALL CMISSControlLoop_Initialise(ControlLoop,Err)
-  CALL CMISSProblem_CreateStart(ProblemUserNumber,Problem,Err)
-  !Set the problem to be a No Source Diffusion problem
-  CALL CMISSProblem_SpecificationSet(Problem,CMISS_PROBLEM_CLASSICAL_FIELD_CLASS,CMISS_PROBLEM_ADVECTION_DIFFUSION_EQUATION_TYPE, &
-    & CMISS_PROBLEM_NO_SOURCE_ADVECTION_DIFFUSION_SUBTYPE,Err)
+  CALL cmfe_Problem_Initialise(Problem,Err)
+  CALL cmfe_ControlLoop_Initialise(ControlLoop,Err)
+  CALL cmfe_Problem_CreateStart(ProblemUserNumber,[CMFE_PROBLEM_CLASSICAL_FIELD_CLASS, &
+    & CMFE_PROBLEM_ADVECTION_DIFFUSION_EQUATION_TYPE,CMFE_PROBLEM_NO_SOURCE_ADVECTION_DIFFUSION_SUBTYPE],Problem,Err)
   !Finish the creation of a problem.
-  CALL CMISSProblem_CreateFinish(Problem,Err)
+  CALL cmfe_Problem_CreateFinish(Problem,Err)
   !Start the creation of the problem control loop
-  CALL CMISSProblem_ControlLoopCreateStart(Problem,Err)
+  CALL cmfe_Problem_ControlLoopCreateStart(Problem,Err)
   !Get the control loop
-  CALL CMISSProblem_ControlLoopGet(Problem,ControlLoopNode,ControlLoop,Err)
+  CALL cmfe_Problem_ControlLoopGet(Problem,ControlLoopNode,ControlLoop,Err)
   !Set the times
-  CALL CMISSControlLoop_TimesSet(ControlLoop,0.0_CMISSDP,0.3_CMISSDP,0.1_CMISSDP,Err)
+  CALL cmfe_ControlLoop_TimesSet(ControlLoop,0.0_CMISSRP,0.3_CMISSRP,0.1_CMISSRP,Err)
   !Finish creating the problem control loop
-  CALL CMISSProblem_ControlLoopCreateFinish(Problem,Err)
+  CALL cmfe_Problem_ControlLoopCreateFinish(Problem,Err)
 
   !
   !================================================================================================================================
@@ -599,19 +596,19 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
 ! !   CALL SOLVER_LINEAR_DIRECT_TYPE_SET(LINEAR_SOLVER,SOLVER_DIRECT_MUMPS,ERR,ERROR,*999) 
 ! 
 
-  CALL CMISSSolver_Initialise(SolverAdvecDiff,Err)
-  CALL CMISSSolver_Initialise(LinearSolverAdvecDiff,Err)
-  CALL CMISSProblem_SolversCreateStart(Problem,Err)
-  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,SolverAdvecDiff,Err)
-  !CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_NO_OUTPUT,Err)
-  !CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
-  !CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_TIMING_OUTPUT,Err)
-  !CALL CMISSSolver_OutputTypeSet(Solver,CMISS_SOLVER_SOLVER_OUTPUT,Err)
-  CALL CMISSSolver_OutputTypeSet(SolverAdvecDiff,CMISS_SOLVER_PROGRESS_OUTPUT,Err)
-  CALL CMISSSolver_DynamicLinearSolverGet(SolverAdvecDiff,LinearSolverAdvecDiff,Err)
-  CALL CMISSSolver_LinearIterativeMaximumIterationsSet(LinearSolverAdvecDiff,300,Err)
+  CALL cmfe_Solver_Initialise(SolverAdvecDiff,Err)
+  CALL cmfe_Solver_Initialise(LinearSolverAdvecDiff,Err)
+  CALL cmfe_Problem_SolversCreateStart(Problem,Err)
+  CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,1,SolverAdvecDiff,Err)
+  !CALL cmfe_Solver_OutputTypeSet(Solver,CMFE_SOLVER_NO_OUTPUT,Err)
+  !CALL cmfe_Solver_OutputTypeSet(Solver,CMFE_SOLVER_PROGRESS_OUTPUT,Err)
+  !CALL cmfe_Solver_OutputTypeSet(Solver,CMFE_SOLVER_TIMING_OUTPUT,Err)
+  !CALL cmfe_Solver_OutputTypeSet(Solver,CMFE_SOLVER_SOLVER_OUTPUT,Err)
+  CALL cmfe_Solver_OutputTypeSet(SolverAdvecDiff,CMFE_SOLVER_PROGRESS_OUTPUT,Err)
+  CALL cmfe_Solver_DynamicLinearSolverGet(SolverAdvecDiff,LinearSolverAdvecDiff,Err)
+  CALL cmfe_Solver_LinearIterativeMaximumIterationsSet(LinearSolverAdvecDiff,300,Err)
   !Finish the creation of the problem solver
-  CALL CMISSProblem_SolversCreateFinish(Problem,Err)
+  CALL cmfe_Problem_SolversCreateFinish(Problem,Err)
 
   !
   !================================================================================================================================
@@ -619,19 +616,19 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
   !SOLVER EQUATIONS
 
   !Create the problem solver equations
-  CALL CMISSSolver_Initialise(SolverAdvecDiff,Err)
-  CALL CMISSSolverEquations_Initialise(SolverEquationsAdvecDiff,Err)
-  CALL CMISSProblem_SolverEquationsCreateStart(Problem,Err)
+  CALL cmfe_Solver_Initialise(SolverAdvecDiff,Err)
+  CALL cmfe_SolverEquations_Initialise(SolverEquationsAdvecDiff,Err)
+  CALL cmfe_Problem_SolverEquationsCreateStart(Problem,Err)
   !Get the solve equations
-  CALL CMISSProblem_SolverGet(Problem,CMISS_CONTROL_LOOP_NODE,1,SolverAdvecDiff,Err)
-  CALL CMISSSolver_SolverEquationsGet(SolverAdvecDiff,SolverEquationsAdvecDiff,Err)
+  CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,1,SolverAdvecDiff,Err)
+  CALL cmfe_Solver_SolverEquationsGet(SolverAdvecDiff,SolverEquationsAdvecDiff,Err)
   !Set the solver equations sparsity
-  CALL CMISSSolverEquations_SparsityTypeSet(SolverEquationsAdvecDiff,CMISS_SOLVER_SPARSE_MATRICES,Err)
-  !CALL CMISSSolverEquations_SparsityTypeSet(SolverEquations,CMISS_SOLVER_FULL_MATRICES,Err)  
+  CALL cmfe_SolverEquations_SparsityTypeSet(SolverEquationsAdvecDiff,CMFE_SOLVER_SPARSE_MATRICES,Err)
+  !CALL cmfe_SolverEquations_SparsityTypeSet(SolverEquations,CMFE_SOLVER_FULL_MATRICES,Err)  
   !Add in the equations set
-  CALL CMISSSolverEquations_EquationsSetAdd(SolverEquationsAdvecDiff,EquationsSetAdvecDiff,EquationsSetIndex,Err)
+  CALL cmfe_SolverEquations_EquationsSetAdd(SolverEquationsAdvecDiff,EquationsSetAdvecDiff,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
-  CALL CMISSProblem_SolverEquationsCreateFinish(Problem,Err)
+  CALL cmfe_Problem_SolverEquationsCreateFinish(Problem,Err)
 
   !
   !================================================================================================================================
@@ -640,17 +637,17 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
  !BOUNDARY CONDITIONS
 
   !Start the creation of the equations set boundary conditions for Poisson
-  CALL CMISSBoundaryConditions_Initialise(BoundaryConditionsAdvecDiff,Err)
-  CALL CMISSSolverEquations_BoundaryConditionsCreateStart(SolverEquationsAdvecDiff,BoundaryConditionsAdvecDiff,Err)
+  CALL cmfe_BoundaryConditions_Initialise(BoundaryConditionsAdvecDiff,Err)
+  CALL cmfe_SolverEquations_BoundaryConditionsCreateStart(SolverEquationsAdvecDiff,BoundaryConditionsAdvecDiff,Err)
   !Set fixed wall nodes
   IF(FIXED_WALL_NODES_ADVECTION_DIFFUSION_FLAG) THEN
     DO NODE_COUNTER=1,NUMBER_OF_FIXED_WALL_NODES_ADVECTION_DIFFUSION
       NODE_NUMBER=FIXED_WALL_NODES_ADVECTION_DIFFUSION(NODE_COUNTER)
-      CONDITION=CMISS_BOUNDARY_CONDITION_FIXED
+      CONDITION=CMFE_BOUNDARY_CONDITION_FIXED
 !       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-        VALUE=0.1_CMISSDP
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsAdvecDiff,DependentFieldAdvecDiff,CMISS_FIELD_U_VARIABLE_TYPE, &
-          & CMISS_NO_GLOBAL_DERIV,1, &
+        VALUE=0.1_CMISSRP
+        CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsAdvecDiff,DependentFieldAdvecDiff,CMFE_FIELD_U_VARIABLE_TYPE, &
+          & CMFE_NO_GLOBAL_DERIV,1, &
           & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONCENTRATION,CONDITION,VALUE,Err)
 !       ENDDO
     ENDDO
@@ -659,17 +656,17 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
   IF(INLET_WALL_NODES_ADVECTION_DIFFUSION_FLAG) THEN
     DO NODE_COUNTER=1,NUMBER_OF_INLET_WALL_NODES_ADVECTION_DIFFUSION
       NODE_NUMBER=INLET_WALL_NODES_ADVECTION_DIFFUSION(NODE_COUNTER)
-      CONDITION=CMISS_BOUNDARY_CONDITION_FIXED
+      CONDITION=CMFE_BOUNDARY_CONDITION_FIXED
 !       DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-        VALUE=0.1_CMISSDP
-        CALL CMISSBoundaryConditions_SetNode(BoundaryConditionsAdvecDiff,DependentFieldAdvecDiff,CMISS_FIELD_U_VARIABLE_TYPE, &
-          & CMISS_NO_GLOBAL_DERIV,1, &
+        VALUE=0.1_CMISSRP
+        CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsAdvecDiff,DependentFieldAdvecDiff,CMFE_FIELD_U_VARIABLE_TYPE, &
+          & CMFE_NO_GLOBAL_DERIV,1, &
           & NODE_NUMBER,MESH_COMPONENT_NUMBER_CONCENTRATION,CONDITION,VALUE,Err)
 !       ENDDO
     ENDDO
   ENDIF
   !Finish the creation of the equations set boundary conditions
-  CALL CMISSSolverEquations_BoundaryConditionsCreateFinish(SolverEquationsAdvecDiff,Err)
+  CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquationsAdvecDiff,Err)
 
   !
   !================================================================================================================================
@@ -682,7 +679,7 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
 
   !Solve the problem
   WRITE(*,'(A)') "Solving problem..."
-  CALL CMISSProblem_Solve(Problem,Err)
+  CALL cmfe_Problem_Solve(Problem,Err)
   WRITE(*,'(A)') "Problem solved!"
 
   !
@@ -694,17 +691,17 @@ PROGRAM ADVECTIONDIFFUSIONIO_BCSEXAMPLE
   EXPORT_FIELD_IO=.TRUE.
   IF(EXPORT_FIELD_IO) THEN
     WRITE(*,'(A)') "Exporting fields..."
-    CALL CMISSFields_Initialise(Fields,Err)
-    CALL CMISSFields_Create(Region,Fields,Err)
-    CALL CMISSFields_NodesExport(Fields,"AdvectionDiffusionIO_BCs","FORTRAN",Err)
-    CALL CMISSFields_ElementsExport(Fields,"AdvectionDiffusionIO_BCs","FORTRAN",Err)
-    CALL CMISSFields_Finalise(Fields,Err)
+    CALL cmfe_Fields_Initialise(Fields,Err)
+    CALL cmfe_Fields_Create(Region,Fields,Err)
+    CALL cmfe_Fields_NodesExport(Fields,"AdvectionDiffusionIO_BCs","FORTRAN",Err)
+    CALL cmfe_Fields_ElementsExport(Fields,"AdvectionDiffusionIO_BCs","FORTRAN",Err)
+    CALL cmfe_Fields_Finalise(Fields,Err)
     WRITE(*,'(A)') "Field exported!"
   ENDIF
   
 
   !Finialise CMISS
-  !CALL CMISSFinalise(Err)
+  !CALL cmfe_Finalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
   

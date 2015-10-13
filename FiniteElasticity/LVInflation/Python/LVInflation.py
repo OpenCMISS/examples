@@ -2,7 +2,7 @@
 
 #> \file
 #> \author Zhinuo Jenny Wang, 
-#> \brief This is an example script to solve a finite elasticity equation using openCMISS calls in python.
+#> \brief This is an example script to solve a finite elasticity equation using OpenCMISS calls in python.
 #>
 #> \section LICENSE
 #>
@@ -18,7 +18,7 @@
 #> License for the specific language governing rights and limitations
 #> under the License.
 #>
-#> The Original Code is openCMISS
+#> The Original Code is OpenCMISS
 #>
 #> The Initial Developer of the Original Code is University of Auckland,
 #> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -42,7 +42,7 @@
 #>
 
 #> \example FiniteElasticity/UniAxialExtension/src/UniAxialExtensionExample.py
-## Example script to solve a finite elasticity equation using openCMISS calls in python.
+## Example script to solve a finite elasticity equation using OpenCMISS calls in python.
 ## \par Latest Builds:
 ## \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/UniAxialExtension/build-intel'>Linux Intel Build</a>
 ## \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/UniAxialExtension/build-gnu'>Linux GNU Build</a>
@@ -125,17 +125,17 @@ for i in range(0, elems[2]):
 [linearBasis, colBasis] = BasisFunction(linearBasisUserNumber, numOfXi, option, collapsed=True)
 
 # Set up mesh
-mesh = CMISS.Mesh()
+mesh = iron.Mesh()
 mesh.CreateStart(meshUserNumber, region, numOfXi)
 mesh.NumberOfComponentsSet(1)
 mesh.NumberOfElementsSet(inputElems.num_elements)
 
-nodes = CMISS.Nodes()
+nodes = iron.Nodes()
 nodes.CreateStart(region, inputNodes.num_nodes)
 nodes.CreateFinish()
 
 # Linear lagrange component
-linearElem = CMISS.MeshElements()
+linearElem = iron.MeshElements()
 linearElem.CreateStart(mesh, 1, linearBasis)
 for elem in inputElems.elements:
     for i in range(1, elems[2]+1):
@@ -158,7 +158,7 @@ decomposition = DecompositionSetUp(decompositionUserNumber, mesh, numOfCompNodes
 geometricField = GeometricFieldSetUp(geometricFieldUserNumber, region, decomposition, option)
 
 # Update the geometric field parameters manually
-geometricField.ParameterSetUpdateStart(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
+geometricField.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
 def ExtractNodeCoords(nodes, field_name):
     coords = []
@@ -181,7 +181,7 @@ for node_num in range(1, inputNodes.num_nodes+1):
     coord = []
     for component in [1,2,3]:
         value = all_nodes[node_num-1][component-1]
-        geometricField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U, CMISS.FieldParameterSetTypes.VALUES, 1, 1,
+        geometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U, iron.FieldParameterSetTypes.VALUES, 1, 1,
                                                 node_num, component, value)
     coord = all_nodes[node_num-1]
     if coord[2] >= 5:
@@ -225,7 +225,7 @@ for i in range(0, inputNodes.num_nodes):
         eval_node_num.append(i+1)
 #print eval_node_num
 
-geometricField.ParameterSetUpdateFinish(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES)
+geometricField.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
     
 # Export undeformed geometry.
 GeometricFieldExport(region, "LVInflation_trilinear_undeformed_"+str(elems[2])+"-"+str(elems[1])+"-"+str(elems[0]))
@@ -240,10 +240,12 @@ materialField = MaterialFieldSetUp(materialFieldUserNumber, region, decompositio
                                    cellMLOption)
 
 # Set up equations set
-equationsSetField = CMISS.Field()  # Equations are also in a field
-equationsSet = CMISS.EquationsSet()  # Initialise an equation set.
-equationsSet.CreateStart(equationsSetUserNumber, region, fibreField, CMISS.EquationsSetClasses.ELASTICITY,
-                         CMISS.EquationsSetTypes.FINITE_ELASTICITY, CMISS.EquationsSetSubtypes.TRANSVERSE_ISOTROPIC_GUCCIONE,
+equationsSetField = iron.Field()  # Equations are also in a field
+equationsSet = iron.EquationsSet()  # Initialise an equation set.
+equationsSetSpecification = [iron.EquationsSetClasses.ELASTICITY,
+                             iron.EquationsSetTypes.FINITE_ELASTICITY, 
+                             iron.EquationsSetSubtypes.TRANSVERSE_ISOTROPIC_GUCCIONE]
+equationsSet.CreateStart(equationsSetUserNumber, region, fibreField, equationsSetSpecification,
                          equationsSetFieldUserNumber, equationsSetField)
 equationsSet.CreateFinish()
 print "----> Set up equations set <---\n"

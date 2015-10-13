@@ -47,7 +47,7 @@
 ## constrained so that the end remains oriented in the y-z plane.
 #<
 
-from opencmiss import CMISS as iron
+from opencmiss import iron
 
 # Problem parameters:
 density = 9.0e-4  # in g mm^-3
@@ -135,10 +135,11 @@ generatedMesh.GeometricParametersCalculate(geometricField)
 # Create the equations_set
 equationsSetField = iron.Field()
 equationsSet = iron.EquationsSet()
-equationsSet.CreateStart(equationsSetUserNumber, region, geometricField,
-    iron.EquationsSetClasses.ELASTICITY,
+equationsSetSpecification = [iron.EquationsSetClasses.ELASTICITY,
     iron.EquationsSetTypes.FINITE_ELASTICITY,
-    constitutiveRelation, equationsSetFieldUserNumber, equationsSetField)
+    constitutiveRelation]
+equationsSet.CreateStart(equationsSetUserNumber, region, geometricField,
+                         equationsSetSpecification, equationsSetFieldUserNumber, equationsSetField)
 equationsSet.CreateFinish()
 
 # Create default materials field
@@ -189,10 +190,10 @@ equationsSet.EquationsCreateFinish()
 
 # Define the problem
 problem = iron.Problem()
-problem.CreateStart(problemUserNumber)
-problem.SpecificationSet(iron.ProblemClasses.ELASTICITY,
+problemSpecification = [iron.ProblemClasses.ELASTICITY,
         iron.ProblemTypes.FINITE_ELASTICITY,
-        iron.ProblemSubTypes.NONE)
+        iron.ProblemSubtypes.NONE]
+problem.CreateStart(problemUserNumber, problemSpecification)
 problem.CreateFinish()
 
 # Create the problem control loop
