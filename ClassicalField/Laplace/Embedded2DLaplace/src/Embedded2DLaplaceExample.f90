@@ -43,9 +43,9 @@
 !> Main program
 PROGRAM Embedded2DLaplaceExample 
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
-
 
 #ifdef WIN32
   USE IFQWIN
@@ -55,28 +55,28 @@ PROGRAM Embedded2DLaplaceExample
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: HEIGHT=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=2.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: LENGTH=3.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: HEIGHT=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=2.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: LENGTH=3.0_CMISSRP
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=11
  
   !Program types
   
   !Program variables
 
-  INTEGER(CMFEIntg) :: numberOfArguments,argumentLength,status
-  INTEGER(CMFEIntg) :: numberGlobalXElements,numberGlobalYElements
+  INTEGER(CMISSIntg) :: numberOfArguments,argumentLength,status
+  INTEGER(CMISSIntg) :: numberGlobalXElements,numberGlobalYElements
   CHARACTER(LEN=255) :: commandArgument,filename
 
   !CMISS variables
@@ -99,11 +99,11 @@ PROGRAM Embedded2DLaplaceExample
   
   !Generic CMISS variables
   
-  INTEGER(CMFEIntg) :: numberOfComputationalNodes,computationalNodeNumber
-  INTEGER(CMFEIntg) :: equationsSetIndex
-  INTEGER(CMFEIntg) :: firstNodeNumber,lastNodeNumber
-  INTEGER(CMFEIntg) :: firstNodeDomain,lastNodeDomain
-  INTEGER(CMFEIntg) :: err
+  INTEGER(CMISSIntg) :: numberOfComputationalNodes,computationalNodeNumber
+  INTEGER(CMISSIntg) :: equationsSetIndex
+  INTEGER(CMISSIntg) :: firstNodeNumber,lastNodeNumber
+  INTEGER(CMISSIntg) :: firstNodeDomain,lastNodeDomain
+  INTEGER(CMISSIntg) :: err
   
   numberOfArguments = COMMAND_ARGUMENT_COUNT()
   IF(numberOfArguments >= 2) THEN
@@ -175,7 +175,7 @@ PROGRAM Embedded2DLaplaceExample
   !Define the mesh on the region
   CALL cmfe_GeneratedMesh_ExtentSet(generatedMesh,[WIDTH,HEIGHT,LENGTH],err)
   CALL cmfe_GeneratedMesh_NumberOfElementsSet(generatedMesh,[numberGlobalXElements,numberGlobalYElements],err)
-  CALL cmfe_GeneratedMesh_BaseVectorsSet(generatedMesh,RESHAPE([WIDTH,HEIGHT,LENGTH,1.0_CMFEDP,1.0_CMFEDP,1.0_CMFEDP],[3,2]),err)
+  CALL cmfe_GeneratedMesh_BaseVectorsSet(generatedMesh,RESHAPE([WIDTH,HEIGHT,LENGTH,1.0_CMISSRP,1.0_CMISSRP,1.0_CMISSRP],[3,2]),err)
   !Finish the creation of a generated mesh in the region
   CALL cmfe_Mesh_Initialise(mesh,err)
   CALL cmfe_GeneratedMesh_CreateFinish(generatedMesh,MeshUserNumber,mesh,err)
@@ -228,7 +228,7 @@ PROGRAM Embedded2DLaplaceExample
   CALL cmfe_EquationsSet_DependentCreateFinish(equationsSet,err)
 
   !Initialise the field with an initial guess
-  CALL cmfe_Field_ComponentValuesInitialise(dependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.5_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(dependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.5_CMISSRP, &
     & err)
 
   !Create the equations set equations
@@ -290,11 +290,11 @@ PROGRAM Embedded2DLaplaceExample
   !Set the first node to 0.0 and the last node to 1.0
   IF(firstNodeDomain==computationalNodeNumber) THEN
     CALL cmfe_BoundaryConditions_SetNode(boundaryConditions,dependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,firstNodeNumber,1, &
-      & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,err)
+      & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,err)
   ENDIF
   IF(lastNodeDomain==computationalNodeNumber) THEN
     CALL cmfe_BoundaryConditions_SetNode(boundaryConditions,dependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,lastNodeNumber,1, &
-      & CMFE_BOUNDARY_CONDITION_FIXED,1.0_CMFEDP,err)
+      & CMFE_BOUNDARY_CONDITION_FIXED,1.0_CMISSRP,err)
   ENDIF
   !Finish the creation of the equations set boundary conditions
   CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(solverEquations,err)

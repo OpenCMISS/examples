@@ -46,7 +46,8 @@
 !> Main program
 PROGRAM COUPLEDCANTILEVER
 
-  USE OPENCMISS
+  USE OpenCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 #ifdef WIN32
@@ -62,56 +63,56 @@ PROGRAM COUPLEDCANTILEVER
   !force: N
   !mass: kg
 
-  REAL(CMFEDP), PARAMETER :: Height=0.045_CMFEDP
-  REAL(CMFEDP), PARAMETER :: Width=0.065_CMFEDP
-  REAL(CMFEDP), PARAMETER :: Length=0.045_CMFEDP
-  INTEGER(CMFEIntg), PARAMETER :: GeometricInterpolationType=CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION
-  INTEGER(CMFEIntg), PARAMETER :: PressureInterpolationType=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfGaussXi=3
-  REAL(CMFEDP), PARAMETER :: Density=1.0E3_CMFEDP
-  REAL(CMFEDP), PARAMETER :: FluidDensity=1.0E3_CMFEDP
-  REAL(CMFEDP), PARAMETER :: Gravity(3)=[0.0_CMFEDP,0.0_CMFEDP,-9.81_CMFEDP]
-  INTEGER(CMFEIntg) :: Increments=4
-  REAL(CMFEDP) :: FluidPressureBC=500.0_CMFEDP
-  REAL (CMFEDP) :: C0=2.5E3_CMFEDP
-  REAL (CMFEDP) :: C1=2.0_CMFEDP
-  REAL (CMFEDP) :: C2=0.1_CMFEDP
-  REAL (CMFEDP) :: permeability=1.0E-3_CMFEDP
-  REAL (CMFEDP) :: porosity=0.2_CMFEDP
+  REAL(CMISSRP), PARAMETER :: Height=0.045_CMISSRP
+  REAL(CMISSRP), PARAMETER :: Width=0.065_CMISSRP
+  REAL(CMISSRP), PARAMETER :: Length=0.045_CMISSRP
+  INTEGER(CMISSIntg), PARAMETER :: GeometricInterpolationType=CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION
+  INTEGER(CMISSIntg), PARAMETER :: PressureInterpolationType=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfGaussXi=3
+  REAL(CMISSRP), PARAMETER :: Density=1.0E3_CMISSRP
+  REAL(CMISSRP), PARAMETER :: FluidDensity=1.0E3_CMISSRP
+  REAL(CMISSRP), PARAMETER :: Gravity(3)=[0.0_CMISSRP,0.0_CMISSRP,-9.81_CMISSRP]
+  INTEGER(CMISSIntg) :: Increments=4
+  REAL(CMISSRP) :: FluidPressureBC=500.0_CMISSRP
+  REAL (CMISSRP) :: C0=2.5E3_CMISSRP
+  REAL (CMISSRP) :: C1=2.0_CMISSRP
+  REAL (CMISSRP) :: C2=0.1_CMISSRP
+  REAL (CMISSRP) :: permeability=1.0E-3_CMISSRP
+  REAL (CMISSRP) :: porosity=0.2_CMISSRP
 
-  INTEGER(CMFEIntg) :: NumberGlobalXElements=3
-  INTEGER(CMFEIntg) :: NumberGlobalYElements=2
-  INTEGER(CMFEIntg) :: NumberGlobalZElements=2
+  INTEGER(CMISSIntg) :: NumberGlobalXElements=3
+  INTEGER(CMISSIntg) :: NumberGlobalYElements=2
+  INTEGER(CMISSIntg) :: NumberGlobalZElements=2
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: GeometricBasisUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: PressureBasisUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: GeometricMeshComponent=2
-  INTEGER(CMFEIntg), PARAMETER :: PressureMeshComponent=1
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: FieldSourceUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: SolidEquationsSetFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: FluidEquationsSetFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: FluidEquationsSetUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: SolidEquationsSetUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: GeometricBasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: PressureBasisUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: GeometricMeshComponent=2
+  INTEGER(CMISSIntg), PARAMETER :: PressureMeshComponent=1
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: FieldSourceUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: SolidEquationsSetFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: FluidEquationsSetFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: FluidEquationsSetUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: SolidEquationsSetUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
   !Program variables
 
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: NodeNumber,NodeDomain,node_idx,component_idx
-  INTEGER(CMFEIntg),ALLOCATABLE :: LeftSurfaceNodes(:),PressureLeftSurfaceNodes(:)
-  INTEGER(CMFEIntg) :: LeftNormalXi
-  REAL(CMFEDP) :: Value
-  INTEGER(CMFEIntg) :: NumberOfArguments,ArgumentLength,ArgStatus
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: NodeNumber,NodeDomain,node_idx,component_idx
+  INTEGER(CMISSIntg),ALLOCATABLE :: LeftSurfaceNodes(:),PressureLeftSurfaceNodes(:)
+  INTEGER(CMISSIntg) :: LeftNormalXi
+  REAL(CMISSRP) :: Value
+  INTEGER(CMISSIntg) :: NumberOfArguments,ArgumentLength,ArgStatus
   CHARACTER(LEN=255) :: CommandArgument
 
   !CMISS variables
@@ -123,7 +124,7 @@ PROGRAM COUPLEDCANTILEVER
   TYPE(cmfe_EquationsType) :: SolidEquations,FluidEquations
   TYPE(cmfe_EquationsSetType) :: SolidEquationsSet,FluidEquationsSet
   TYPE(cmfe_FieldType) :: GeometricField,FibreField,MaterialField,DependentField, &
-      & SourceField,SolidEquationsSetField,FluidEquationsSetField
+    & SourceField,SolidEquationsSetField,FluidEquationsSetField
   TYPE(cmfe_FieldsType) :: Fields
   TYPE(cmfe_GeneratedMeshType) :: GeneratedMesh
   TYPE(cmfe_ProblemType) :: Problem
@@ -133,7 +134,7 @@ PROGRAM COUPLEDCANTILEVER
   TYPE(cmfe_ControlLoopType) :: ControlLoop
 
   !Generic CMISS variables
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: Err
 
 #ifdef WIN32
   !Quickwin type
@@ -324,20 +325,20 @@ PROGRAM COUPLEDCANTILEVER
   CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,C1,Err)
   CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,C2,Err)
   CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4, &
-    & (1.0_CMFEDP-porosity),Err)
+    & (1.0_CMISSRP-porosity),Err)
   !Solid density
   CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,Density,Err)
 
   !Permeability tensor
   CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,permeability, &
     & Err)
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,0.0_CMISSRP, &
     & Err)
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,0.0_CMISSRP, &
     & Err)
   CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4,permeability, &
     & Err)
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,5,0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,5,0.0_CMISSRP, &
     & Err)
   CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,6,permeability, &
     & Err)
@@ -402,8 +403,8 @@ PROGRAM COUPLEDCANTILEVER
   CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,1,Solver,Err)
   CALL cmfe_Solver_OutputTypeSet(Solver,CMFE_SOLVER_PROGRESS_OUTPUT,Err)
   CALL cmfe_Solver_NewtonJacobianCalculationTypeSet(Solver,CMFE_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)
-  CALL cmfe_Solver_NewtonAbsoluteToleranceSet(Solver,1.0E-6_CMFEDP,Err)
-  CALL cmfe_Solver_NewtonRelativeToleranceSet(Solver,1.0E-7_CMFEDP,Err)
+  CALL cmfe_Solver_NewtonAbsoluteToleranceSet(Solver,1.0E-6_CMISSRP,Err)
+  CALL cmfe_Solver_NewtonRelativeToleranceSet(Solver,1.0E-7_CMISSRP,Err)
   CALL cmfe_Solver_NewtonMaximumIterationsSet(Solver,200,Err)
   CALL cmfe_Solver_NewtonLinearSolverGet(Solver,LinearSolver,Err)
   CALL cmfe_Solver_LinearTypeSet(LinearSolver,CMFE_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)

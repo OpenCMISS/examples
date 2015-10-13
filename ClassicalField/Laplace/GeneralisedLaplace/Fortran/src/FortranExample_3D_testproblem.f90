@@ -48,6 +48,7 @@
 !> Main program
 PROGRAM GENERALISEDLAPLACEEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 
@@ -59,49 +60,49 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: WIDTH=1.0_CMFEDP   ! x-direction
-  REAL(CMFEDP), PARAMETER :: HEIGHT=1.0_CMFEDP  ! y-direction
-  REAL(CMFEDP), PARAMETER :: LENGTH=1.0_CMFEDP  ! z-direction
+  REAL(CMISSRP), PARAMETER :: WIDTH=1.0_CMISSRP   ! x-direction
+  REAL(CMISSRP), PARAMETER :: HEIGHT=1.0_CMISSRP  ! y-direction
+  REAL(CMISSRP), PARAMETER :: LENGTH=1.0_CMISSRP  ! z-direction
   
-  REAL(CMFEDP), PARAMETER :: PI=4.0_CMFEDP*DATAN(1.0_CMFEDP)
+  REAL(CMISSRP), PARAMETER :: PI=4.0_CMISSRP*DATAN(1.0_CMISSRP)
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=12
   
-  INTEGER(CMFEIntg), PARAMETER :: FibreFieldUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: FibreFieldNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FibreFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: FibreFieldNumberOfVariables=1
   
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=11
   
-  INTEGER(CMFEIntg), PARAMETER :: DerivativeUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: DerivativeUserNumber=1
  
   !Program types
   
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, &
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, &
     & INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI,node_idx,component_idx,TotalNumberOfNodes
-  INTEGER(CMFEIntg) :: FibreFieldNumberOfComponents  
-!  REAL(CMFEDP) :: SIGMA11,SIGMA22,SIGMA12,X,Y,VALUE
-!  REAL(CMFEDP) :: ANALYTICAL_SOL_X_Y,CALCULATED_SOLUTION_X_Y,NODAL_ERROR,TOTAL_ERROR_SQUARED,DX,DY,ERROR_L2
-  REAL(CMFEDP) :: FibreFieldAngle(3)
+  INTEGER(CMISSIntg) :: FibreFieldNumberOfComponents  
+!  REAL(CMISSRP) :: SIGMA11,SIGMA22,SIGMA12,X,Y,VALUE
+!  REAL(CMISSRP) :: ANALYTICAL_SOL_X_Y,CALCULATED_SOLUTION_X_Y,NODAL_ERROR,TOTAL_ERROR_SQUARED,DX,DY,ERROR_L2
+  REAL(CMISSRP) :: FibreFieldAngle(3)
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT,Filename
   
-!  INTEGER(CMFEIntg),ALLOCATABLE :: FrontSurfaceNodes(:)
-!  INTEGER(CMFEIntg),ALLOCATABLE :: LeftSurfaceNodes(:)
-!  INTEGER(CMFEIntg),ALLOCATABLE :: RightSurfaceNodes(:)
-!  INTEGER(CMFEIntg),ALLOCATABLE :: BackSurfaceNodes(:)
-!  INTEGER(CMFEIntg) :: FrontNormalXi,LeftNormalXi,RightNormalXi,BackNormalXi
+!  INTEGER(CMISSIntg),ALLOCATABLE :: FrontSurfaceNodes(:)
+!  INTEGER(CMISSIntg),ALLOCATABLE :: LeftSurfaceNodes(:)
+!  INTEGER(CMISSIntg),ALLOCATABLE :: RightSurfaceNodes(:)
+!  INTEGER(CMISSIntg),ALLOCATABLE :: BackSurfaceNodes(:)
+!  INTEGER(CMISSIntg) :: FrontNormalXi,LeftNormalXi,RightNormalXi,BackNormalXi
 
   !CMISS variables
 
@@ -129,11 +130,11 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   
   !Generic CMISS variables
   
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: FirstNodeNumber,LastNodeNumber,NodeNumber
-  INTEGER(CMFEIntg) :: FirstNodeDomain,LastNodeDomain,NodeDomain
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber,NodeNumber
+  INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain,NodeDomain
+  INTEGER(CMISSIntg) :: Err
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -341,13 +342,13 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   !          entry in Angle(3) means rotated around x-axis => no change
   ! 45° equivalent to pi/4, 90° equivalent to pi/2
   
-!  FibreFieldAngle=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP]
+!  FibreFieldAngle=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP]
 
-  FibreFieldAngle=[PI/4,0.0_CMFEDP,PI/4]
-!  FibreFieldAngle=[0.0_CMFEDP,PI/4,0.0_CMFEDP]
-!  FibreFieldAngle=[0.0_CMFEDP,0.0_CMFEDP,PI/4]
+  FibreFieldAngle=[PI/4,0.0_CMISSRP,PI/4]
+!  FibreFieldAngle=[0.0_CMISSRP,PI/4,0.0_CMISSRP]
+!  FibreFieldAngle=[0.0_CMISSRP,0.0_CMISSRP,PI/4]
 
-!  FibreFieldAngle=[PI/2,0.0_CMFEDP,0.0_CMFEDP]
+!  FibreFieldAngle=[PI/2,0.0_CMISSRP,0.0_CMISSRP]
 
   DO node_idx=1,TotalNumberOfNodes
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
@@ -393,24 +394,24 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   !Set material parameters
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 1,0.5_CMFEDP,Err)  ! 11
+      & 1,0.5_CMISSRP,Err)  ! 11
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 2,0.1_CMFEDP,Err)  ! 22
+      & 2,0.1_CMISSRP,Err)  ! 22
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 3,0.0_CMFEDP,Err)  ! 12=21
+      & 3,0.0_CMISSRP,Err)  ! 12=21
   ELSE
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 1,0.5_CMFEDP,Err)  ! 11
+      & 1,0.5_CMISSRP,Err)  ! 11
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 2,0.1_CMFEDP,Err)  ! 22
+      & 2,0.1_CMISSRP,Err)  ! 22
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 3,0.1_CMFEDP,Err)  ! 33
+      & 3,0.1_CMISSRP,Err)  ! 33
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 4,0.0_CMFEDP,Err)  ! 12=21
+      & 4,0.0_CMISSRP,Err)  ! 12=21
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 5,0.0_CMFEDP,Err)  ! 23=32
+      & 5,0.0_CMISSRP,Err)  ! 23=32
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 6,0.0_CMFEDP,Err)  !13=31
+      & 6,0.0_CMISSRP,Err)  !13=31
   ENDIF   
   
   !Update the geometric field parameters
@@ -435,7 +436,7 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   CALL cmfe_EquationsSet_DependentCreateFinish(EquationsSet,Err)
 
   !Initialise the field with an initial guess
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.5_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.5_CMISSRP, &
     & Err)
 
   !Create the equations set material field variables
@@ -480,8 +481,8 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   !CALL cmfe_Solver_OutputTypeSet(Solver,CMFE_SOLVER_MATRIX_OUTPUT,Err)
   
 !  CALL cmfe_Solver_LinearTypeSet(Solver,CMFE_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
-!  CALL cmfe_Solver_LinearIterativeAbsoluteToleranceSet(Solver,1.0E-12_CMFEDP,Err)
-!  CALL cmfe_Solver_LinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMFEDP,Err)
+!  CALL cmfe_Solver_LinearIterativeAbsoluteToleranceSet(Solver,1.0E-12_CMISSRP,Err)
+!  CALL cmfe_Solver_LinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMISSRP,Err)
 !  CALL cmfe_Solver_LinearIterativeTypeSet(Solver,CMFE_SOLVER_ITERATIVE_BiCGSTAB,Err)
 !!  CALL cmfe_Solver_LinearIterativeTypeSet(Solver,CMFE_SOLVER_ITERATIVE_CONJUGATE_GRADIENT,Err)
 !!  !CALL cmfe_Solver_LinearIterativeTypeSet(Solver,CMFE_SOLVER_ITERATIVE_GMRES,Err)
@@ -524,11 +525,11 @@ PROGRAM GENERALISEDLAPLACEEXAMPLE
   CALL cmfe_Decomposition_NodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
   IF(FirstNodeDomain==ComputationalNodeNumber) THEN
     CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,FirstNodeNumber,1, &
-      & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+      & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
   ENDIF
   IF(LastNodeDomain==ComputationalNodeNumber) THEN
     CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,LastNodeNumber,1, &
-      & CMFE_BOUNDARY_CONDITION_FIXED,1.0_CMFEDP,Err)
+      & CMFE_BOUNDARY_CONDITION_FIXED,1.0_CMISSRP,Err)
   ENDIF
   
   !Finish the creation of the equations set boundary conditions

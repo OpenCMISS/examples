@@ -49,6 +49,7 @@
 !> Main program
 PROGRAM QUADRATICELLIPSOIDCOSTAREADINEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 
@@ -60,86 +61,86 @@ PROGRAM QUADRATICELLIPSOIDCOSTAREADINEXAMPLE
 
   !Test program parameters
   
-  REAL(CMFEDP) :: PI=3.14159_CMFEDP
-  REAL(CMFEDP) :: LONG_AXIS=2.0_CMFEDP
-  REAL(CMFEDP) :: SHORT_AXIS=1.0_CMFEDP
-  REAL(CMFEDP) :: WALL_THICKNESS=0.5_CMFEDP
-  REAL(CMFEDP) :: CUTOFF_ANGLE=1.5708_CMFEDP
-  REAL(CMFEDP) :: FIBRE_SLOPE_ENDO=1.73205_CMFEDP !Slope of fibres in endocardium = 60 degrees
-  REAL(CMFEDP) :: FIBRE_SLOPE_EPI=-3.4641_CMFEDP !Slope of fibres in endocardium = -60 degrees 
-  REAL(CMFEDP) :: SHEET_SLOPE_BASE_ENDO=1.0_CMFEDP !Slope of sheet at base endocardium 
-  !REAL(CMFEDP), PARAMETER :: COSTA_PARAMS (1:7) =  [ 0.2, 30.0, 12.0, 14.0, 14.0, 10.0, 18.0 ]
-  !REAL(CMFEDP), DIMENSION(:),ALLOCATABLE :: COSTA_PARAMS ! =  [ 0.2, 30.0, 12.0, 14.0, 14.0, 10.0, 18.0 ] ! a bff bfs bfn bss bsn bnn
-  REAL(CMFEDP) :: COSTA_PARAMS (1:7)
-  REAL(CMFEDP), PARAMETER :: INNER_PRESSURE=2.0_CMFEDP  !Positive is compressive
-  REAL(CMFEDP), PARAMETER :: OUTER_PRESSURE=0.0_CMFEDP  !Positive is compressive
+  REAL(CMISSRP) :: PI=3.14159_CMISSRP
+  REAL(CMISSRP) :: LONG_AXIS=2.0_CMISSRP
+  REAL(CMISSRP) :: SHORT_AXIS=1.0_CMISSRP
+  REAL(CMISSRP) :: WALL_THICKNESS=0.5_CMISSRP
+  REAL(CMISSRP) :: CUTOFF_ANGLE=1.5708_CMISSRP
+  REAL(CMISSRP) :: FIBRE_SLOPE_ENDO=1.73205_CMISSRP !Slope of fibres in endocardium = 60 degrees
+  REAL(CMISSRP) :: FIBRE_SLOPE_EPI=-3.4641_CMISSRP !Slope of fibres in endocardium = -60 degrees 
+  REAL(CMISSRP) :: SHEET_SLOPE_BASE_ENDO=1.0_CMISSRP !Slope of sheet at base endocardium 
+  !REAL(CMISSRP), PARAMETER :: COSTA_PARAMS (1:7) =  [ 0.2, 30.0, 12.0, 14.0, 14.0, 10.0, 18.0 ]
+  !REAL(CMISSRP), DIMENSION(:),ALLOCATABLE :: COSTA_PARAMS ! =  [ 0.2, 30.0, 12.0, 14.0, 14.0, 10.0, 18.0 ] ! a bff bfs bfn bss bsn bnn
+  REAL(CMISSRP) :: COSTA_PARAMS (1:7)
+  REAL(CMISSRP), PARAMETER :: INNER_PRESSURE=2.0_CMISSRP  !Positive is compressive
+  REAL(CMISSRP), PARAMETER :: OUTER_PRESSURE=0.0_CMISSRP  !Positive is compressive
 
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS=4  ! X ==NUMBER_GLOBAL_CIRCUMFERENTIAL_ELEMENTS
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_Y_ELEMENTS=4  ! Y ==NUMBER_GLOBAL_LONGITUDINAL_ELEMENTS
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_Z_ELEMENTS=1  ! Z ==NUMBER_GLOBAL_TRANSMURAL_ELEMENTS
-  INTEGER(CMFEIntg) :: NumberOfDomains
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS=4  ! X ==NUMBER_GLOBAL_CIRCUMFERENTIAL_ELEMENTS
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_Y_ELEMENTS=4  ! Y ==NUMBER_GLOBAL_LONGITUDINAL_ELEMENTS
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_Z_ELEMENTS=1  ! Z ==NUMBER_GLOBAL_TRANSMURAL_ELEMENTS
+  INTEGER(CMISSIntg) :: NumberOfDomains
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfSpatialCoordinates=3
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: QuadraticBasisUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: QuadraticCollapsedBasisUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: LinearBasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: LinearCollapsedBasisUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: DerivativeUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfSpatialCoordinates=3
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: QuadraticBasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: QuadraticCollapsedBasisUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: LinearBasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: LinearCollapsedBasisUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: DerivativeUserNumber=1
   
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfMeshDimensions=3
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfXiCoordinates=3
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfMeshComponents=2
-  INTEGER(CMFEIntg), PARAMETER :: QuadraticMeshComponentNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: LinearMeshComponentNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: TotalNumberOfElements=1
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshDimensions=3
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfXiCoordinates=3
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshComponents=2
+  INTEGER(CMISSIntg), PARAMETER :: QuadraticMeshComponentNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: LinearMeshComponentNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: TotalNumberOfElements=1
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreNumberOfComponents=3
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialNumberOfComponents=7
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfComponents=7
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfVariables=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfComponents=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfVariables=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponents=4
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationSetUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
   !Program types
 
 
   !Program variables
 
-  INTEGER(CMFEIntg) :: MPI_IERROR
-  INTEGER(CMFEIntg) :: EquationsSetIndex  
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  REAL(CMFEDP) :: FibreFieldAngle(3) 
-  REAL(CMFEDP) :: nu,theta,omega,XI3,XI3delta,XI2delta, zero
-  INTEGER(CMFEIntg) ::i,j,k,component_idx,node_idx,TOTAL_NUMBER_NODES_XI(3)
+  INTEGER(CMISSIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: EquationsSetIndex  
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  REAL(CMISSRP) :: FibreFieldAngle(3) 
+  REAL(CMISSRP) :: nu,theta,omega,XI3,XI3delta,XI2delta, zero
+  INTEGER(CMISSIntg) ::i,j,k,component_idx,node_idx,TOTAL_NUMBER_NODES_XI(3)
   !For grabbing surfaces
-  INTEGER(CMFEIntg) :: InnerNormalXi,OuterNormalXi,TopNormalXi
-  INTEGER(CMFEIntg), ALLOCATABLE :: InnerSurfaceNodes(:)
-  INTEGER(CMFEIntg), ALLOCATABLE :: OuterSurfaceNodes(:)
-  INTEGER(CMFEIntg), ALLOCATABLE :: TopSurfaceNodes(:)
-  INTEGER(CMFEIntg), ALLOCATABLE :: G(:)
-  INTEGER(CMFEIntg) :: NotCornerNode, CornerNode, NumberOfCornerNodes, gn, CorrectNodeNumber,TotalNumberOfNodes
-  INTEGER(CMFEIntg) :: NN,NODE,NodeDomain
-  REAL(CMFEDP) :: XCoord,YCoord,ZCoord
+  INTEGER(CMISSIntg) :: InnerNormalXi,OuterNormalXi,TopNormalXi
+  INTEGER(CMISSIntg), ALLOCATABLE :: InnerSurfaceNodes(:)
+  INTEGER(CMISSIntg), ALLOCATABLE :: OuterSurfaceNodes(:)
+  INTEGER(CMISSIntg), ALLOCATABLE :: TopSurfaceNodes(:)
+  INTEGER(CMISSIntg), ALLOCATABLE :: G(:)
+  INTEGER(CMISSIntg) :: NotCornerNode, CornerNode, NumberOfCornerNodes, gn, CorrectNodeNumber,TotalNumberOfNodes
+  INTEGER(CMISSIntg) :: NN,NODE,NodeDomain
+  REAL(CMISSRP) :: XCoord,YCoord,ZCoord
   LOGICAL :: X_FIXED,Y_FIXED,X_OKAY,Y_OKAY
-  INTEGER(CMFEIntg) :: PARAMETERSETNR
+  INTEGER(CMISSIntg) :: PARAMETERSETNR
   !CMISS variables
 
   TYPE(cmfe_BasisType) :: QuadraticBasis,QuadraticCollapsedBasis,LinearBasis,LinearCollapsedBasis
@@ -164,7 +165,7 @@ PROGRAM QUADRATICELLIPSOIDCOSTAREADINEXAMPLE
 #endif
 
   !Generic CMISS variables
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: Err
   CHARACTER(len=20) :: HEIGHT, WIDTH, WALL, CUTOFF,X_ELEM,Y_ELEM,Z_ELEM
   CHARACTER(len=20) :: FIBRE_ENDO, FIBRE_EPI, SHEET_ENDO_SLOPE
   CHARACTER(len=20) :: COSTA_1, COSTA_2, COSTA_3, COSTA_4, COSTA_5, COSTA_6, COSTA_7
@@ -241,7 +242,7 @@ PROGRAM QUADRATICELLIPSOIDCOSTAREADINEXAMPLE
   CALL cmfe_CoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   CALL cmfe_CoordinateSystem_TypeSet(CoordinateSystem,CMFE_COORDINATE_RECTANGULAR_CARTESIAN_TYPE,Err)
   CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystem,NumberOfSpatialCoordinates,Err)
-  CALL cmfe_CoordinateSystem_OriginSet(CoordinateSystem,[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP],Err)
+  CALL cmfe_CoordinateSystem_OriginSet(CoordinateSystem,[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP],Err)
   CALL cmfe_CoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Create a region and assign the CS to the region
@@ -443,8 +444,8 @@ PROGRAM QUADRATICELLIPSOIDCOSTAREADINEXAMPLE
   CALL cmfe_Field_CreateFinish(MaterialField,Err)
 
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively.
-  !CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0_CMFEDP,Err)
-  !CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,6.0_CMFEDP,Err)
+  !CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0_CMISSRP,Err)
+  !CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,6.0_CMISSRP,Err)
   !Set Costa material parameters
   DO I=1,7
    CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,I, &
@@ -501,7 +502,7 @@ PROGRAM QUADRATICELLIPSOIDCOSTAREADINEXAMPLE
   CALL cmfe_Field_ParametersToFieldParametersComponentCopy(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
     & 3,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,Err)
   CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4, &
-    & -14.0_CMFEDP, &
+    & -14.0_CMISSRP, &
     & Err)
 
   !Define the problem
@@ -609,13 +610,13 @@ PROGRAM QUADRATICELLIPSOIDCOSTAREADINEXAMPLE
       CALL cmfe_Field_ParameterSetGetNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,NODE,2, &
         & YCoord, &
         & Err)
-      IF(ABS(XCoord)<1.0E-6_CMFEDP) THEN
+      IF(ABS(XCoord)<1.0E-6_CMISSRP) THEN
         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NODE,1, &
           & CMFE_BOUNDARY_CONDITION_FIXED,XCoord,Err)
         WRITE(*,*) "FIXING NODE",NODE,"IN X DIRECTION"
         X_FIXED=.TRUE.
       ENDIF
-      IF(ABS(YCoord)<1.0E-6_CMFEDP) THEN
+      IF(ABS(YCoord)<1.0E-6_CMISSRP) THEN
         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NODE,2, &
           & CMFE_BOUNDARY_CONDITION_FIXED,YCoord,Err)
         WRITE(*,*) "FIXING NODE",NODE,"IN Y DIRECTION"

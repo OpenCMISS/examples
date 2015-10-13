@@ -49,6 +49,7 @@
 !> Main program
 PROGRAM LINEARTETEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 
@@ -60,49 +61,49 @@ PROGRAM LINEARTETEXAMPLE
 
   !Test program parameters
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfSpatialCoordinates=3
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfSpatialCoordinates=3
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
 
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfXiCoordinates=3
-  INTEGER(CMFEIntg), PARAMETER :: TotalNumberOfNodes=4
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfMeshDimensions=3
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfMeshComponents=1
-  INTEGER(CMFEIntg), PARAMETER :: TotalNumberOfElements=1
-  INTEGER(CMFEIntg), PARAMETER :: MeshComponentNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfXiCoordinates=3
+  INTEGER(CMISSIntg), PARAMETER :: TotalNumberOfNodes=4
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshDimensions=3
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshComponents=1
+  INTEGER(CMISSIntg), PARAMETER :: TotalNumberOfElements=1
+  INTEGER(CMISSIntg), PARAMETER :: MeshComponentNumber=1
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreNumberOfComponents=3
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialNumberOfComponents=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfComponents=2
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfVariables=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfComponents=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfVariables=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponents=4
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationSetUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
   !Program types
 
 
   !Program variables
 
-  INTEGER(CMFEIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
-  INTEGER(CMFEIntg) :: MPI_IERROR
-  INTEGER(CMFEIntg) :: EquationsSetIndex  
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
+  INTEGER(CMISSIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: EquationsSetIndex  
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
 
   !CMISS variables
 
@@ -122,7 +123,7 @@ PROGRAM LINEARTETEXAMPLE
   TYPE(cmfe_NodesType) :: Nodes
   TYPE(cmfe_MeshElementsType) :: Elements
 
-  !REAL(CMFEDP), POINTER :: FieldData(:)
+  !REAL(CMISSRP), POINTER :: FieldData(:)
 
 #ifdef WIN32
   !Quickwin type
@@ -131,7 +132,7 @@ PROGRAM LINEARTETEXAMPLE
 #endif
 
   !Generic CMISS variables
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: Err
 
 #ifdef WIN32
   !Initialise QuickWin
@@ -174,7 +175,7 @@ PROGRAM LINEARTETEXAMPLE
   CALL cmfe_CoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   CALL cmfe_CoordinateSystem_TypeSet(CoordinateSystem,CMFE_COORDINATE_RECTANGULAR_CARTESIAN_TYPE,Err)
   CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystem,NumberOfSpatialCoordinates,Err)
-  CALL cmfe_CoordinateSystem_OriginSet(CoordinateSystem,[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP],Err)
+  CALL cmfe_CoordinateSystem_OriginSet(CoordinateSystem,[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP],Err)
   CALL cmfe_CoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Create a region and assign the CS to the region
@@ -232,32 +233,32 @@ PROGRAM LINEARTETEXAMPLE
 
   !node 1
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,1,1, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,1,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,1,3, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   !node 2
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,2,1, &
-    & 1.0_CMFEDP,Err)
+    & 1.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,2,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,2,3, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   !node 3
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,3,1, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,3,2, &
-    & 1.0_CMFEDP,Err)
+    & 1.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,3,3, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   !node 4
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,4,1, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,4,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,4,3, &
-    & 1.0_CMFEDP,Err)
+    & 1.0_CMISSRP,Err)
 
   !Create a fibre field and attach it to the geometric field  
   CALL cmfe_Field_Initialise(FibreField,Err)
@@ -285,8 +286,8 @@ PROGRAM LINEARTETEXAMPLE
   CALL cmfe_Field_CreateFinish(MaterialField,Err)
 
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively.
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0_CMFEDP,Err)
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,6.0_CMFEDP,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0_CMISSRP,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,6.0_CMISSRP,Err)
 
   !Create a dependent field with two variables and four components
   CALL cmfe_Field_Initialise(DependentField,Err)
@@ -338,7 +339,7 @@ PROGRAM LINEARTETEXAMPLE
     & 2,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,Err)
   CALL cmfe_Field_ParametersToFieldParametersComponentCopy(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
     & 3,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,Err)
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4,-8.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4,-8.0_CMISSRP, &
     & Err)
 
   !Define the problem
@@ -379,38 +380,38 @@ PROGRAM LINEARTETEXAMPLE
   !Fix nodes 1,3,4 at x=0 and nodes 2 at x=1.1
   CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,1,1, &
     & CMFE_BOUNDARY_CONDITION_FIXED, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,2,1, &
     & CMFE_BOUNDARY_CONDITION_FIXED, &
-    & 1.1_CMFEDP,Err)
+    & 1.1_CMISSRP,Err)
   CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,3,1, &
     & CMFE_BOUNDARY_CONDITION_FIXED, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,4,1, &
     & CMFE_BOUNDARY_CONDITION_FIXED, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
 
   !Fix nodes 1,2,4 at y=0
   CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,1,2, &
     & CMFE_BOUNDARY_CONDITION_FIXED, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,2,2, &
     & CMFE_BOUNDARY_CONDITION_FIXED, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,4,2, &
     & CMFE_BOUNDARY_CONDITION_FIXED, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
 
   !Fix nodes 1,2,3 at z=0
   CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,1,3, &
     & CMFE_BOUNDARY_CONDITION_FIXED, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,2,3, &
     & CMFE_BOUNDARY_CONDITION_FIXED, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,3,3, &
     & CMFE_BOUNDARY_CONDITION_FIXED, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
 
   CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
 

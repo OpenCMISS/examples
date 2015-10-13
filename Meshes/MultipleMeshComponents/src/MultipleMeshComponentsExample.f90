@@ -49,7 +49,8 @@
 !> Main program
 PROGRAM MULTIPLEMESHCOMPONENTSEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 #ifdef WIN32
@@ -61,38 +62,38 @@ PROGRAM MULTIPLEMESHCOMPONENTSEXAMPLE
   !----------------------------------------------------------------------------------------
   !----------------------------------------------------------------------------------------
   !Change "NumberOfXiCoordinates" to switch between 1/2/3D meshes
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfXiCoordinates=2
-  INTEGER(CMFEIntg), PARAMETER :: FirstBasisInterpolation=CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION
-  INTEGER(CMFEIntg), PARAMETER :: SecondBasisInterpolation=CMFE_BASIS_CUBIC_LAGRANGE_INTERPOLATION
-  INTEGER(CMFEIntg), PARAMETER :: NumberGlobalXElements=2
-  INTEGER(CMFEIntg), PARAMETER :: NumberGlobalYElements=2
-  INTEGER(CMFEIntg), PARAMETER :: NumberGlobalZElements=2
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfXiCoordinates=2
+  INTEGER(CMISSIntg), PARAMETER :: FirstBasisInterpolation=CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION
+  INTEGER(CMISSIntg), PARAMETER :: SecondBasisInterpolation=CMFE_BASIS_CUBIC_LAGRANGE_INTERPOLATION
+  INTEGER(CMISSIntg), PARAMETER :: NumberGlobalXElements=2
+  INTEGER(CMISSIntg), PARAMETER :: NumberGlobalYElements=2
+  INTEGER(CMISSIntg), PARAMETER :: NumberGlobalZElements=2
   !----------------------------------------------------------------------------------------
   !----------------------------------------------------------------------------------------
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: LENGTH=100.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=100.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: HEIGHT=100.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: LENGTH=100.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=100.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: HEIGHT=100.0_CMISSRP
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: Basis1UserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: Basis2UserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=17
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=19
-  INTEGER(CMFEIntg), PARAMETER :: SecondFieldUserNumber=20
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: Basis1UserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: Basis2UserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=17
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=19
+  INTEGER(CMISSIntg), PARAMETER :: SecondFieldUserNumber=20
 
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfSpatialCoordinates=3
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfSpatialCoordinates=3
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
 
   !Program variables
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber,NumberOfDomains
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber,NumberOfDomains
 
   !CMISS variables
 
@@ -115,7 +116,7 @@ PROGRAM MULTIPLEMESHCOMPONENTSEXAMPLE
 #endif
 
   !Generic CMISS variables
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: Err
 
 
 #ifdef WIN32
@@ -148,7 +149,7 @@ PROGRAM MULTIPLEMESHCOMPONENTSEXAMPLE
   CALL cmfe_CoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   CALL cmfe_CoordinateSystem_TypeSet(CoordinateSystem,CMFE_COORDINATE_RECTANGULAR_CARTESIAN_TYPE,Err)
   CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystem,NumberOfSpatialCoordinates,Err)
-  CALL cmfe_CoordinateSystem_OriginSet(CoordinateSystem,[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP],Err)
+  CALL cmfe_CoordinateSystem_OriginSet(CoordinateSystem,[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP],Err)
   CALL cmfe_CoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Start the creation of the first region
@@ -215,13 +216,13 @@ PROGRAM MULTIPLEMESHCOMPONENTSEXAMPLE
   CALL cmfe_GeneratedMesh_TypeSet(GeneratedMesh,CMFE_GENERATED_MESH_REGULAR_MESH_TYPE,Err)
   !Set the default basis
   CALL cmfe_GeneratedMesh_BasisSet(GeneratedMesh,BasisTypes,Err)
-  CALL cmfe_GeneratedMesh_OriginSet(GeneratedMesh,[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP],Err)
+  CALL cmfe_GeneratedMesh_OriginSet(GeneratedMesh,[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP],Err)
   SELECT CASE(NumberOfXiCoordinates)
   CASE(1)
-    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[LENGTH,0.0_CMFEDP,0.0_CMFEDP],Err)
+    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[LENGTH,0.0_CMISSRP,0.0_CMISSRP],Err)
     CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements],Err)
   CASE(2)
-    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[LENGTH,WIDTH,0.0_CMFEDP],Err)
+    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[LENGTH,WIDTH,0.0_CMISSRP],Err)
   CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NumberGlobalXElements, &
     & NumberGlobalYElements],Err)
   CASE(3)
@@ -275,7 +276,7 @@ PROGRAM MULTIPLEMESHCOMPONENTSEXAMPLE
   CALL cmfe_Field_ComponentMeshComponentSet(SecondField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,Err)
   !Finish creating the field
   CALL cmfe_Field_CreateFinish(SecondField,Err)
-  CALL cmfe_Field_ComponentValuesInitialise(SecondField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.0_CMFEDP,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(SecondField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.0_CMISSRP,Err)
 
   !Update the geometric field parameters for the first field
   CALL cmfe_GeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)

@@ -48,6 +48,7 @@
 !> Main program
 PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 
@@ -58,47 +59,44 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
 
   IMPLICIT NONE
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(cmfe_FieldType) :: EquationsSetField
-
-
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: HEIGHT=7.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=20.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: LENGTH=3.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: HEIGHT=7.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=20.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: LENGTH=3.0_CMISSRP
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=11 
-  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumber=13
 
   !Program types
   
   !Program variables
-  INTEGER(CMFEIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT
 
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, N, D, NA
-  INTEGER(CMFEIntg) :: NUMBER_OF_DOMAINS
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, N, D, NA
+  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
   
-  INTEGER(CMFEIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: MPI_IERROR
 
   LOGICAL :: EXPORT_FIELD
 
 
-  REAL(CMFEDP) :: START_TIME = 0.0, END_TIME = 100.0, DT = 0.1, DX=0.2, ACTIV_R = 1.5+1e-6   ! ms ms ms mm mm
-  REAL(CMFEDP), PARAMETER  :: FiberD = 0.095298372513562, TransverseD = 0.0125758411473; ! TODO CORRECT
+  REAL(CMISSRP) :: START_TIME = 0.0, END_TIME = 100.0, DT = 0.1, DX=0.2, ACTIV_R = 1.5+1e-6   ! ms ms ms mm mm
+  REAL(CMISSRP), PARAMETER  :: FiberD = 0.095298372513562, TransverseD = 0.0125758411473; ! TODO CORRECT
 
-  REAL(CMFEDP) :: x,y,z,activ, activmax
+  REAL(CMISSRP) :: x,y,z,activ, activmax
 
   !CMISS variables
 
@@ -108,7 +106,7 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
   TYPE(cmfe_DecompositionType) :: Decomposition
   TYPE(cmfe_EquationsType) :: Equations
   TYPE(cmfe_EquationsSetType) :: EquationsSet
-  TYPE(cmfe_FieldType) :: GeometricField,DependentField,MaterialsField,IndependentField
+  TYPE(cmfe_FieldType) :: GeometricField,EquationsSetField, DependentField,MaterialsField,IndependentField
   TYPE(cmfe_FieldsType) :: Fields
   TYPE(cmfe_GeneratedMeshType) :: GeneratedMesh  
   TYPE(cmfe_MeshType) :: Mesh
@@ -126,9 +124,9 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
   
   !Generic CMISS variables
   
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: Err
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -303,13 +301,13 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
     & Err)
 
   ! fiber direction unit vector
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4,1.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4,1.0_CMISSRP, &
     & Err)
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,5,0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,5,0.0_CMISSRP, &
     & Err)
   IF(NUMBER_GLOBAL_Z_ELEMENTS/=0) THEN
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,6, &
-      & 0.0_CMFEDP, &
+      & 0.0_CMISSRP, &
       & Err)
   END IF
 
@@ -430,8 +428,8 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
 
 contains
 
-INTEGER(CMFEIntg) FUNCTION ROUND(X)
-  REAL(CMFEDP), INTENT(IN) :: X
+INTEGER(CMISSIntg) FUNCTION ROUND(X)
+  REAL(CMISSRP), INTENT(IN) :: X
   ROUND = INT(X+0.5)
   RETURN
 END FUNCTION ROUND

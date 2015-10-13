@@ -47,7 +47,7 @@
 PROGRAM FortranExample
 
   ! Libraries
-
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE FLUID_MECHANICS_IO_ROUTINES
   USE MPI
@@ -63,119 +63,119 @@ PROGRAM FortranExample
   !Test program parameters
   !================================================================================================================================
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumberNavierStokes=6
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumberCharacteristic=7
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberNavierStokes=11
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberCharacteristic=12
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: Basis_Lagrange_Hermite_TP_Type=1
-  INTEGER(CMFEIntg), PARAMETER :: Basis_Quadratic_Lagrange_Interpolation=2
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberNavierStokes=6
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberCharacteristic=7
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberNavierStokes=11
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberCharacteristic=12
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: Basis_Lagrange_Hermite_TP_Type=1
+  INTEGER(CMISSIntg), PARAMETER :: Basis_Quadratic_Lagrange_Interpolation=2
 
-  INTEGER(CMFEIntg), PARAMETER :: CellMLUserNumber=14
-  INTEGER(CMFEIntg), PARAMETER :: CellMLModelsFieldUserNumber=15
-  INTEGER(CMFEIntg), PARAMETER :: CellMLStateFieldUserNumber=16
-  INTEGER(CMFEIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=17
-  INTEGER(CMFEIntg), PARAMETER :: CellMLParametersFieldUserNumber=18
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberCellML=19
+  INTEGER(CMISSIntg), PARAMETER :: CellMLUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: CellMLModelsFieldUserNumber=15
+  INTEGER(CMISSIntg), PARAMETER :: CellMLStateFieldUserNumber=16
+  INTEGER(CMISSIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=17
+  INTEGER(CMISSIntg), PARAMETER :: CellMLParametersFieldUserNumber=18
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberCellML=19
 
-  INTEGER(CMFEIntg), PARAMETER :: DomainUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberMu=1
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberRho=2
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberK=3
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberAs=4
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberRe=5
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberFr=6
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberSt=7
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberA0=8
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberE=9
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberH0=10
+  INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberMu=1
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberRho=2
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberK=3
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberAs=4
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberRe=5
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberFr=6
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberSt=7
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberA0=8
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberE=9
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberH0=10
 
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_OF_DIMENSIONS
+  INTEGER(CMISSIntg) :: NUMBER_OF_DIMENSIONS
   
-  INTEGER(CMFEIntg) :: BASIS_TYPE
-  INTEGER(CMFEIntg) :: BASIS_NUMBER_SPACE
-  INTEGER(CMFEIntg) :: BASIS_NUMBER_VELOCITY
-  INTEGER(CMFEIntg) :: BASIS_NUMBER_AREA
-  INTEGER(CMFEIntg) :: BASIS_XI_GAUSS_SPACE
-  INTEGER(CMFEIntg) :: BASIS_XI_GAUSS_VELOCITY
-  INTEGER(CMFEIntg) :: BASIS_XI_GAUSS_AREA
-  INTEGER(CMFEIntg) :: BASIS_XI_INTERPOLATION_SPACE
-  INTEGER(CMFEIntg) :: BASIS_XI_INTERPOLATION_VELOCITY
-  INTEGER(CMFEIntg) :: BASIS_XI_INTERPOLATION_AREA
-  INTEGER(CMFEIntg) :: MESH_NUMBER_OF_COMPONENTS
-  INTEGER(CMFEIntg) :: MESH_COMPONENT_NUMBER_SPACE
-  INTEGER(CMFEIntg) :: MESH_COMPONENT_NUMBER_VELOCITY
-  INTEGER(CMFEIntg) :: MESH_COMPONENT_NUMBER_AREA
-  INTEGER(CMFEIntg) :: NUMBER_OF_NODES_SPACE
-  INTEGER(CMFEIntg) :: NUMBER_OF_NODES_VELOCITY
-  INTEGER(CMFEIntg) :: NUMBER_OF_NODES_AREA
-  INTEGER(CMFEIntg) :: NUMBER_OF_ELEMENT_NODES_SPACE
-  INTEGER(CMFEIntg) :: NUMBER_OF_ELEMENT_NODES_VELOCITY
-  INTEGER(CMFEIntg) :: NUMBER_OF_ELEMENT_NODES_AREA
-  INTEGER(CMFEIntg) :: TOTAL_NUMBER_OF_NODES
-  INTEGER(CMFEIntg) :: TOTAL_NUMBER_OF_ELEMENTS
-  INTEGER(CMFEIntg) :: MAXIMUM_ITERATIONS
-  INTEGER(CMFEIntg) :: RESTART_VALUE
+  INTEGER(CMISSIntg) :: BASIS_TYPE
+  INTEGER(CMISSIntg) :: BASIS_NUMBER_SPACE
+  INTEGER(CMISSIntg) :: BASIS_NUMBER_VELOCITY
+  INTEGER(CMISSIntg) :: BASIS_NUMBER_AREA
+  INTEGER(CMISSIntg) :: BASIS_XI_GAUSS_SPACE
+  INTEGER(CMISSIntg) :: BASIS_XI_GAUSS_VELOCITY
+  INTEGER(CMISSIntg) :: BASIS_XI_GAUSS_AREA
+  INTEGER(CMISSIntg) :: BASIS_XI_INTERPOLATION_SPACE
+  INTEGER(CMISSIntg) :: BASIS_XI_INTERPOLATION_VELOCITY
+  INTEGER(CMISSIntg) :: BASIS_XI_INTERPOLATION_AREA
+  INTEGER(CMISSIntg) :: MESH_NUMBER_OF_COMPONENTS
+  INTEGER(CMISSIntg) :: MESH_COMPONENT_NUMBER_SPACE
+  INTEGER(CMISSIntg) :: MESH_COMPONENT_NUMBER_VELOCITY
+  INTEGER(CMISSIntg) :: MESH_COMPONENT_NUMBER_AREA
+  INTEGER(CMISSIntg) :: NUMBER_OF_NODES_SPACE
+  INTEGER(CMISSIntg) :: NUMBER_OF_NODES_VELOCITY
+  INTEGER(CMISSIntg) :: NUMBER_OF_NODES_AREA
+  INTEGER(CMISSIntg) :: NUMBER_OF_ELEMENT_NODES_SPACE
+  INTEGER(CMISSIntg) :: NUMBER_OF_ELEMENT_NODES_VELOCITY
+  INTEGER(CMISSIntg) :: NUMBER_OF_ELEMENT_NODES_AREA
+  INTEGER(CMISSIntg) :: TOTAL_NUMBER_OF_NODES
+  INTEGER(CMISSIntg) :: TOTAL_NUMBER_OF_ELEMENTS
+  INTEGER(CMISSIntg) :: MAXIMUM_ITERATIONS
+  INTEGER(CMISSIntg) :: RESTART_VALUE
 
-  INTEGER(CMFEIntg) :: EQUATIONS_NAVIER_STOKES_OUTPUT
-  INTEGER(CMFEIntg) :: COMPONENT_NUMBER
-  INTEGER(CMFEIntg) :: CONDITION,i
+  INTEGER(CMISSIntg) :: EQUATIONS_NAVIER_STOKES_OUTPUT
+  INTEGER(CMISSIntg) :: COMPONENT_NUMBER
+  INTEGER(CMISSIntg) :: CONDITION,i
 
-  INTEGER(CMFEIntg) :: DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY
-  INTEGER(CMFEIntg) :: DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE
-  INTEGER(CMFEIntg) :: NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE
-  INTEGER(CMFEIntg) :: LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY
+  INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE
 
-  REAL(CMFEDP) :: BOUNDARY_CONDITIONS_NAVIER_STOKES(2)
-  REAL(CMFEDP) :: DIVERGENCE_TOLERANCE
-  REAL(CMFEDP) :: RELATIVE_TOLERANCE
-  REAL(CMFEDP) :: ABSOLUTE_TOLERANCE
-  REAL(CMFEDP) :: LINESEARCH_ALPHA
-  REAL(CMFEDP) :: VALUE1
-  REAL(CMFEDP) :: MU_PARAM_NAVIER_STOKES
-  REAL(CMFEDP) :: RHO_PARAM_NAVIER_STOKES
-  REAL(CMFEDP) :: E_PARAM_NAVIER_STOKES(13)
-  REAL(CMFEDP) :: H0_PARAM_NAVIER_STOKES(13)
-  REAL(CMFEDP) :: A0_PARAM(13),Q1,A1,Ts,As,Qs,Xs,St,Fr,Re,Bs,K
-  REAL(CMFEDP) :: Q2,Q3,A2,A3
-  REAL(CMFEDP) :: resistanceProximal,resistanceDistal,capacitance
-  REAL(CMFEDP) :: pCellML,pPrevious,pVesselWall,pExternal,qPrevious
-  REAL(CMFEDP) :: length, position
-  REAL(CMFEDP) :: VALUE,X,Y,Z
+  REAL(CMISSRP) :: BOUNDARY_CONDITIONS_NAVIER_STOKES(2)
+  REAL(CMISSRP) :: DIVERGENCE_TOLERANCE
+  REAL(CMISSRP) :: RELATIVE_TOLERANCE
+  REAL(CMISSRP) :: ABSOLUTE_TOLERANCE
+  REAL(CMISSRP) :: LINESEARCH_ALPHA
+  REAL(CMISSRP) :: VALUE1
+  REAL(CMISSRP) :: MU_PARAM_NAVIER_STOKES
+  REAL(CMISSRP) :: RHO_PARAM_NAVIER_STOKES
+  REAL(CMISSRP) :: E_PARAM_NAVIER_STOKES(13)
+  REAL(CMISSRP) :: H0_PARAM_NAVIER_STOKES(13)
+  REAL(CMISSRP) :: A0_PARAM(13),Q1,A1,Ts,As,Qs,Xs,St,Fr,Re,Bs,K
+  REAL(CMISSRP) :: Q2,Q3,A2,A3
+  REAL(CMISSRP) :: resistanceProximal,resistanceDistal,capacitance
+  REAL(CMISSRP) :: pCellML,pPrevious,pVesselWall,pExternal,qPrevious
+  REAL(CMISSRP) :: length, position
+  REAL(CMISSRP) :: VALUE,X,Y,Z
 
-  REAL(CMFEDP) :: DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME
-  REAL(CMFEDP) :: DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME
-  REAL(CMFEDP) :: DYNAMIC_SOLVER_NAVIER_STOKES_THETA
-  REAL(CMFEDP) :: DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT
+  REAL(CMISSRP) :: DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME
+  REAL(CMISSRP) :: DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME
+  REAL(CMISSRP) :: DYNAMIC_SOLVER_NAVIER_STOKES_THETA
+  REAL(CMISSRP) :: DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT
 
-  INTEGER(CMFEIntg) :: pCellMLComponent,pPreviousComponent,pVesselWallComponent,pExternalComponent,qPreviousComponent
-  INTEGER(CMFEIntg) :: modelIndex,numberOfCellmlModels
-  INTEGER(CMFEIntg) :: EquationsSetSubtype
-  INTEGER(CMFEIntg) :: EquationsSetCharacteristicSubtype
-  INTEGER(CMFEIntg) :: ProblemSubtype
-  INTEGER(CMFEIntg) :: coupledNodeNumber,coupledNodeNumber1,coupledNodeNumber2
-  INTEGER(CMFEIntg) :: resistanceComponent,numberOfCoordinateDimensions
-  INTEGER(CMFEIntg) :: nodeIdx,versionIdx,componentIdx,normalWave
-  INTEGER(CMFEIntg) :: numberOfNodes
+  INTEGER(CMISSIntg) :: pCellMLComponent,pPreviousComponent,pVesselWallComponent,pExternalComponent,qPreviousComponent
+  INTEGER(CMISSIntg) :: modelIndex,numberOfCellmlModels
+  INTEGER(CMISSIntg) :: EquationsSetSubtype
+  INTEGER(CMISSIntg) :: EquationsSetCharacteristicSubtype
+  INTEGER(CMISSIntg) :: ProblemSubtype
+  INTEGER(CMISSIntg) :: coupledNodeNumber,coupledNodeNumber1,coupledNodeNumber2
+  INTEGER(CMISSIntg) :: resistanceComponent,numberOfCoordinateDimensions
+  INTEGER(CMISSIntg) :: nodeIdx,versionIdx,componentIdx,normalWave
+  INTEGER(CMISSIntg) :: numberOfNodes
 
   LOGICAL :: LINEAR_SOLVER_NAVIER_STOKES_DIRECT_FLAG
   LOGICAL :: OUTLET_WALL_NODES_NAVIER_STOKES_FLAG
   LOGICAL :: INLET_WALL_NODES_NAVIER_STOKES_FLAG
   LOGICAL :: cellmlFlag,windkesselFlag,mixedFlag
 
-  INTEGER(CMFEIntg) :: SolverDaeUserNumber
-  INTEGER(CMFEIntg) :: SolverCharacteristicUserNumber
-  INTEGER(CMFEIntg) :: SolverNavierStokesUserNumber
+  INTEGER(CMISSIntg) :: SolverDaeUserNumber
+  INTEGER(CMISSIntg) :: SolverCharacteristicUserNumber
+  INTEGER(CMISSIntg) :: SolverNavierStokesUserNumber
 
   !CMISS variables
 
@@ -245,13 +245,13 @@ PROGRAM FortranExample
 #endif
   
   !Generic CMISS variables
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: NodeDomain,BoundaryNodeDomain
-  INTEGER(CMFEIntg) :: CellMLIndex
-  INTEGER(CMFEIntg) :: CellMLModelIndex,CellMLModelIndex1,CellMLModelIndex2
-  INTEGER(CMFEIntg) :: WindkesselModelIndex
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: NodeDomain,BoundaryNodeDomain
+  INTEGER(CMISSIntg) :: CellMLIndex
+  INTEGER(CMISSIntg) :: CellMLModelIndex,CellMLModelIndex1,CellMLModelIndex2
+  INTEGER(CMISSIntg) :: WindkesselModelIndex
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: Err
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -331,55 +331,55 @@ PROGRAM FortranExample
   NUMBER_OF_ELEMENT_NODES_AREA=TOTAL_NUMBER_OF_ELEMENTS
 
   !Set material parameters
-  MU_PARAM_NAVIER_STOKES=0.0035_CMFEDP !Mu(Pa.s)
-  RHO_PARAM_NAVIER_STOKES=1050.0_CMFEDP !Rho(kg/m3)
-  E_PARAM_NAVIER_STOKES(:)=0.8E+6_CMFEDP !Elasticity(Pa)
-  H0_PARAM_NAVIER_STOKES(:)=0.5E-3_CMFEDP !Wall Thickness(m)
+  MU_PARAM_NAVIER_STOKES=0.0035_CMISSRP !Mu(Pa.s)
+  RHO_PARAM_NAVIER_STOKES=1050.0_CMISSRP !Rho(kg/m3)
+  E_PARAM_NAVIER_STOKES(:)=0.8E+6_CMISSRP !Elasticity(Pa)
+  H0_PARAM_NAVIER_STOKES(:)=0.5E-3_CMISSRP !Wall Thickness(m)
   DO i=1,5
-    A0_PARAM(i)=19.6e-6_CMFEDP  !Wall Area(m2)
+    A0_PARAM(i)=19.6e-6_CMISSRP  !Wall Area(m2)
   ENDDO
   DO i=6,13
-    A0_PARAM(i)=12.8e-6_CMFEDP
+    A0_PARAM(i)=12.8e-6_CMISSRP
   ENDDO
 
   !Reference Values
-  Qs=10.0e-6_CMFEDP !(m3/s)
-  As=19.6e-6_CMFEDP !(m2)
-!  As=100e-6_CMFEDP !(m2)
-  Xs=0.1_CMFEDP     !(m)
-  Ts=0.1_CMFEDP     !(s)
-  K=4.0_CMFEDP/3.0_CMFEDP  !Parabolic Flow Section
+  Qs=10.0e-6_CMISSRP !(m3/s)
+  As=19.6e-6_CMISSRP !(m2)
+!  As=100e-6_CMISSRP !(m2)
+  Xs=0.1_CMISSRP     !(m)
+  Ts=0.1_CMISSRP     !(s)
+  K=4.0_CMISSRP/3.0_CMISSRP  !Parabolic Flow Section
 !  Bs=(4.0*1.7725*E_PARAM_NAVIER_STOKES*H0_PARAM_NAVIER_STOKES)/(3.0*As)2
-!  Bs=((4.0_CMFEDP)*(3.1416_CMFEDP**(0.5_CMFEDP))*E_PARAM_NAVIER_STOKES(1)*H0_PARAM_NAVIER_STOKES(1))/((3.0_CMFEDP)*As)
+!  Bs=((4.0_CMISSRP)*(3.1416_CMISSRP**(0.5_CMISSRP))*E_PARAM_NAVIER_STOKES(1)*H0_PARAM_NAVIER_STOKES(1))/((3.0_CMISSRP)*As)
   St=(As*Xs)/(Ts*Qs)
-!  Fr=((As**(2.5_CMFEDP))/(Qs**2))*(Bs/((2.0_CMFEDP)*RHO_PARAM_NAVIER_STOKES))
-  Fr=((As**2.5_CMFEDP)/(Qs**2.0_CMFEDP))/(2.0_CMFEDP*RHO_PARAM_NAVIER_STOKES)
-  Re=8.0_CMFEDP*3.1416_CMFEDP*MU_PARAM_NAVIER_STOKES*Xs/(Qs*RHO_PARAM_NAVIER_STOKES)
+!  Fr=((As**(2.5_CMISSRP))/(Qs**2))*(Bs/((2.0_CMISSRP)*RHO_PARAM_NAVIER_STOKES))
+  Fr=((As**2.5_CMISSRP)/(Qs**2.0_CMISSRP))/(2.0_CMISSRP*RHO_PARAM_NAVIER_STOKES)
+  Re=8.0_CMISSRP*3.1416_CMISSRP*MU_PARAM_NAVIER_STOKES*Xs/(Qs*RHO_PARAM_NAVIER_STOKES)
 
-  ! Qs=1.0_CMFEDP
-  ! As=1.0_CMFEDP
-  ! Xs=1.0_CMFEDP
-  ! Ts=1.0_CMFEDP
-  ! K=4.0_CMFEDP/3.0_CMFEDP  !Parabolic Flow Section
+  ! Qs=1.0_CMISSRP
+  ! As=1.0_CMISSRP
+  ! Xs=1.0_CMISSRP
+  ! Ts=1.0_CMISSRP
+  ! K=4.0_CMISSRP/3.0_CMISSRP  !Parabolic Flow Section
   ! St=(As*Xs)/(Ts*Qs)
-  ! Fr=1.0_CMFEDP
-  ! Re=1.0_CMFEDP
+  ! Fr=1.0_CMISSRP
+  ! Re=1.0_CMISSRP
 
   !Set initial condition
-  Q1=7.0_CMFEDP
-  Q2=3.5_CMFEDP
-  Q3=3.5_CMFEDP
+  Q1=7.0_CMISSRP
+  Q2=3.5_CMISSRP
+  Q3=3.5_CMISSRP
 
-  A1=1.0_CMFEDP
-  A2=0.653_CMFEDP
-  A3=0.653_CMFEDP
+  A1=1.0_CMISSRP
+  A2=0.653_CMISSRP
+  A3=0.653_CMISSRP
 
   OUTLET_WALL_NODES_NAVIER_STOKES_FLAG=.TRUE.
   INLET_WALL_NODES_NAVIER_STOKES_FLAG=.TRUE.
 
   IF(INLET_WALL_NODES_NAVIER_STOKES_FLAG) THEN
     !Set initial boundary conditions
-    BOUNDARY_CONDITIONS_NAVIER_STOKES(1)=1.0_CMFEDP
+    BOUNDARY_CONDITIONS_NAVIER_STOKES(1)=1.0_CMISSRP
   ENDIF
 
   IF(OUTLET_WALL_NODES_NAVIER_STOKES_FLAG) THEN
@@ -404,17 +404,17 @@ PROGRAM FortranExample
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
   EQUATIONS_NAVIER_STOKES_OUTPUT=CMFE_EQUATIONS_NO_OUTPUT
   !Set time parameter
-  DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME=0.0_CMFEDP
-!  DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME=10.00001_CMFEDP
-  DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME=1.00000001_CMFEDP
-  DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT=0.001_CMFEDP
-  DYNAMIC_SOLVER_NAVIER_STOKES_THETA=1.0_CMFEDP/2.0_CMFEDP
+  DYNAMIC_SOLVER_NAVIER_STOKES_START_TIME=0.0_CMISSRP
+!  DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME=10.00001_CMISSRP
+  DYNAMIC_SOLVER_NAVIER_STOKES_STOP_TIME=1.00000001_CMISSRP
+  DYNAMIC_SOLVER_NAVIER_STOKES_TIME_INCREMENT=0.001_CMISSRP
+  DYNAMIC_SOLVER_NAVIER_STOKES_THETA=1.0_CMISSRP/2.0_CMISSRP
   !Set result output parameter
   DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY=1
   !Set solver parameters
   LINEAR_SOLVER_NAVIER_STOKES_DIRECT_FLAG=.FALSE.
-  RELATIVE_TOLERANCE=1.0E-5_CMFEDP !default: 1.0E-05_CMFEDP
-  ABSOLUTE_TOLERANCE=1.0E-10_CMFEDP !default: 1.0E-10_CMFEDP
+  RELATIVE_TOLERANCE=1.0E-5_CMISSRP !default: 1.0E-05_CMISSRP
+  ABSOLUTE_TOLERANCE=1.0E-10_CMISSRP !default: 1.0E-10_CMISSRP
   DIVERGENCE_TOLERANCE=1.0E20 !default: 1.0E5
   MAXIMUM_ITERATIONS=10000 !default: 100000
   RESTART_VALUE=300 !default: 30
@@ -601,9 +601,9 @@ PROGRAM FortranExample
   CALL cmfe_Field_CreateFinish(GeometricField,Err)
 
   !Default values to 0
-  X=0.0_CMFEDP
-  Y=0.0_CMFEDP
-  Z=0.0_CMFEDP
+  X=0.0_CMISSRP
+  Y=0.0_CMISSRP
+  Z=0.0_CMISSRP
   DO nodeIdx=1,NUMBER_OF_NODES_SPACE
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,nodeIdx,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
@@ -616,11 +616,11 @@ PROGRAM FortranExample
   ENDDO
 
   !parent vessel
-  X=-0.5_CMFEDP
-  Y=0.0_CMFEDP
-  Z=0.0_CMFEDP
+  X=-0.5_CMISSRP
+  Y=0.0_CMISSRP
+  Z=0.0_CMISSRP
   DO nodeIdx=1,5
-    X=X+0.5_CMFEDP
+    X=X+0.5_CMISSRP
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,nodeIdx,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
@@ -642,8 +642,8 @@ PROGRAM FortranExample
   ENDDO
 
   DO nodeIdx=6,7
-    X=X+0.5_CMFEDP
-    Y=Y+0.5_CMFEDP
+    X=X+0.5_CMISSRP
+    Y=Y+0.5_CMISSRP
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,nodeIdx,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
@@ -654,7 +654,7 @@ PROGRAM FortranExample
   ENDDO
 
   DO nodeIdx=10,11
-    X=X+0.5_CMFEDP
+    X=X+0.5_CMISSRP
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,nodeIdx,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
@@ -664,11 +664,11 @@ PROGRAM FortranExample
     ENDIF
   ENDDO
 
-  X=2.0_CMFEDP
-  Y=0.0_CMFEDP
+  X=2.0_CMISSRP
+  Y=0.0_CMISSRP
   DO nodeIdx=8,9
-    X=X+0.5_CMFEDP
-    Y=Y-0.5_CMFEDP
+    X=X+0.5_CMISSRP
+    Y=Y-0.5_CMISSRP
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,nodeIdx,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
@@ -679,7 +679,7 @@ PROGRAM FortranExample
   ENDDO
 
   DO nodeIdx=12,13
-    X=X+0.5_CMFEDP
+    X=X+0.5_CMISSRP
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,nodeIdx,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
@@ -827,7 +827,7 @@ PROGRAM FortranExample
       & versionIdx,CMFE_NO_GLOBAL_DERIV,nodeIdx,componentIdx,VALUE,Err)
     !Initialize dependent characteristic field W (V_type) to 0
     nodeIdx=5
-    VALUE=0.0_CMFEDP
+    VALUE=0.0_CMISSRP
     DO componentIdx=1,2
       DO versionIdx=1,3
         CALL cmfe_Field_ParameterSetUpdateNode(DependentFieldNavierStokes,CMFE_FIELD_V_VARIABLE_TYPE, &
@@ -909,8 +909,8 @@ PROGRAM FortranExample
     !-------------------------------------------------------------------------------------------------------------------  
 
     !User defined variable values (feel free to change these- already initialised to 0 otherwise)
-    pVesselWall=0.0_CMFEDP
-    pExternal=0.0_CMFEDP
+    pVesselWall=0.0_CMISSRP
+    pExternal=0.0_CMISSRP
 
     ! Set values at coupled node 1
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,coupledNodeNumber1,1,NodeDomain,Err)
@@ -959,13 +959,13 @@ PROGRAM FortranExample
     componentIdx=1 ! Incoming normal
     ! 1 inlet/parent from element 2
     versionIdx=1
-    VALUE=1.0_CMFEDP
+    VALUE=1.0_CMISSRP
     CALL cmfe_Field_ParameterSetUpdateNode(IndependentFieldNavierStokes,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
        & versionIdx,CMFE_NO_GLOBAL_DERIV,nodeIdx,componentIdx,VALUE,Err)
 
     ! 2 outlet/daughters from elements 3 and 4
     componentIdx=2 ! outgoing
-    VALUE=-1.0_CMFEDP
+    VALUE=-1.0_CMISSRP
     DO versionIdx=2,3
       CALL cmfe_Field_ParameterSetUpdateNode(IndependentFieldNavierStokes,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
         & versionIdx,CMFE_NO_GLOBAL_DERIV,nodeIdx,componentIdx,VALUE,Err)
@@ -977,7 +977,7 @@ PROGRAM FortranExample
     ! Incoming normals for 11,13
     nodeIdx=11
     componentIdx=1
-    VALUE=1.0_CMFEDP
+    VALUE=1.0_CMISSRP
     versionIdx=1
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,nodeIdx,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
@@ -995,7 +995,7 @@ PROGRAM FortranExample
     ! Outgoing normals for 11,13
     nodeIdx=11
     componentIdx=2
-    VALUE=-1.0_CMFEDP
+    VALUE=-1.0_CMISSRP
     versionIdx=1
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,nodeIdx,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
@@ -1112,7 +1112,7 @@ PROGRAM FortranExample
         ELSE IF(nodeIdx == coupledNodeNumber2) THEN        
           CellMLModelIndex = CellMLModelIndex2
         ELSE
-          CellMLModelIndex = 0_CMFEIntg
+          CellMLModelIndex = 0_CMISSIntg
         ENDIF
         CALL cmfe_Decomposition_NodeDomainGet(Decomposition,nodeIdx,1,NodeDomain,Err)
         IF(NodeDomain==ComputationalNodeNumber) THEN
@@ -1142,8 +1142,8 @@ PROGRAM FortranExample
     CALL cmfe_CellML_IntermediateFieldCreateFinish(CellML,Err)
 
     ! Initialise pCellML (and previous pCellML coupling iteration values) values to 0 at the outlet nodes
-    pCellML=0.0_CMFEDP
-    pPrevious=0.0_CMFEDP
+    pCellML=0.0_CMISSRP
+    pPrevious=0.0_CMISSRP
 
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,coupledNodeNumber1,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN

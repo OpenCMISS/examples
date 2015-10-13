@@ -56,6 +56,7 @@ PROGRAM SupgChannel
 
   !PROGRAM LIBRARIES
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE FIELDML_API
   USE MPI
@@ -74,26 +75,26 @@ PROGRAM SupgChannel
   IMPLICIT NONE
 
   !Test program parameters
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldUserNumberNavierStokes=9
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberNavierStokes=10
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumberNavierStokes=9
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberNavierStokes=10
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=11
 
-  INTEGER(CMFEIntg), PARAMETER :: DomainUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: SolverNavierStokesUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberMu=1
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberRho=2
+  INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: SolverNavierStokesUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberMu=1
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberRho=2
 
-  INTEGER(CMFEIntg), PARAMETER :: basisNumberBiquadratic=1
-  INTEGER(CMFEIntg), PARAMETER :: basisNumberBilinear=2
-  INTEGER(CMFEIntg), PARAMETER :: gaussQuadrature(2) = [2,2]
+  INTEGER(CMISSIntg), PARAMETER :: basisNumberBiquadratic=1
+  INTEGER(CMISSIntg), PARAMETER :: basisNumberBilinear=2
+  INTEGER(CMISSIntg), PARAMETER :: gaussQuadrature(2) = [2,2]
 
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: inputFilename = "input/BlockChannel.xml"
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputDirectory = "output"
@@ -103,42 +104,42 @@ PROGRAM SupgChannel
 
   !Program variables
 
-  INTEGER(CMFEIntg) :: maximumIterations
-  INTEGER(CMFEIntg) :: restartValue
-  INTEGER(CMFEIntg) :: numberOfFixedWallNodes
-  INTEGER(CMFEIntg) :: numberOfInletNodes
+  INTEGER(CMISSIntg) :: maximumIterations
+  INTEGER(CMISSIntg) :: restartValue
+  INTEGER(CMISSIntg) :: numberOfFixedWallNodes
+  INTEGER(CMISSIntg) :: numberOfInletNodes
 
-  INTEGER(CMFEIntg) :: equationsOutputType
-  INTEGER(CMFEIntg) :: componentNumber
-  INTEGER(CMFEIntg) :: nodeNumber
-  INTEGER(CMFEIntg) :: i
-  INTEGER(CMFEIntg) :: condition
+  INTEGER(CMISSIntg) :: equationsOutputType
+  INTEGER(CMISSIntg) :: componentNumber
+  INTEGER(CMISSIntg) :: nodeNumber
+  INTEGER(CMISSIntg) :: i
+  INTEGER(CMISSIntg) :: condition
 
   INTEGER, ALLOCATABLE, DIMENSION(:):: fixedWallNodes
   INTEGER, ALLOCATABLE, DIMENSION(:):: inletNodes
 
-  INTEGER(CMFEIntg) :: dynamicSolverOutputFrequency
-  INTEGER(CMFEIntg) :: dynamicSolverOutputType
-  INTEGER(CMFEIntg) :: nonlinearSolverOutputType
-  INTEGER(CMFEIntg) :: linearSolverOutputType
+  INTEGER(CMISSIntg) :: dynamicSolverOutputFrequency
+  INTEGER(CMISSIntg) :: dynamicSolverOutputType
+  INTEGER(CMISSIntg) :: nonlinearSolverOutputType
+  INTEGER(CMISSIntg) :: linearSolverOutputType
 
-  INTEGER(CMFEIntg) :: EquationsSetSubtype
-  INTEGER(CMFEIntg) :: ProblemSubtype
+  INTEGER(CMISSIntg) :: EquationsSetSubtype
+  INTEGER(CMISSIntg) :: ProblemSubtype
 
-  REAL(CMFEDP) :: initialConditions(2)
-  REAL(CMFEDP) :: inletBoundaryConditions(2)
-  REAL(CMFEDP) :: divergenceTolerance
-  REAL(CMFEDP) :: relativeTolerance
-  REAL(CMFEDP) :: absoluteTolerance
-  REAL(CMFEDP) :: linesearchAlpha
-  REAL(CMFEDP) :: VALUE
-  REAL(CMFEDP) :: viscosity
-  REAL(CMFEDP) :: density
+  REAL(CMISSRP) :: initialConditions(2)
+  REAL(CMISSRP) :: inletBoundaryConditions(2)
+  REAL(CMISSRP) :: divergenceTolerance
+  REAL(CMISSRP) :: relativeTolerance
+  REAL(CMISSRP) :: absoluteTolerance
+  REAL(CMISSRP) :: linesearchAlpha
+  REAL(CMISSRP) :: VALUE
+  REAL(CMISSRP) :: viscosity
+  REAL(CMISSRP) :: density
 
-  REAL(CMFEDP) :: dynamicSolverStartTime
-  REAL(CMFEDP) :: dynamicSolverStopTime
-  REAL(CMFEDP) :: dynamicSolverTheta
-  REAL(CMFEDP) :: dynamicSolverTimeIncrement
+  REAL(CMISSRP) :: dynamicSolverStartTime
+  REAL(CMISSRP) :: dynamicSolverStopTime
+  REAL(CMISSRP) :: dynamicSolverTheta
+  REAL(CMISSRP) :: dynamicSolverTimeIncrement
 
   LOGICAL :: directLinearSolverFlag
   LOGICAL :: fixedWallNodesFlag
@@ -187,8 +188,8 @@ PROGRAM SupgChannel
 
   !FieldML parsing variables
   TYPE(cmfe_FieldMLIOType) :: fieldmlInfo, outputInfo
-  INTEGER(CMFEIntg) :: typeHandle
-  INTEGER(CMFEIntg) :: coordinateCount
+  INTEGER(CMISSIntg) :: typeHandle
+  INTEGER(CMISSIntg) :: coordinateCount
 
 #ifdef WIN32
   !Quickwin type
@@ -198,9 +199,9 @@ PROGRAM SupgChannel
   
   !Generic CMISS variables
 
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber,BoundaryNodeDomain
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber,BoundaryNodeDomain
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: Err
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -224,18 +225,18 @@ PROGRAM SupgChannel
   supgFlag=.TRUE.
 
   !Set initial values
-  initialConditions(1)=0.0_CMFEDP
-  initialConditions(2)=0.0_CMFEDP
+  initialConditions(1)=0.0_CMISSRP
+  initialConditions(2)=0.0_CMISSRP
   !Set default boundary conditions
-  inletBoundaryConditions(1)=1.0_CMFEDP
-  inletBoundaryConditions(2)=0.0_CMFEDP
+  inletBoundaryConditions(1)=1.0_CMISSRP
+  inletBoundaryConditions(2)=0.0_CMISSRP
   fixedWallNodesFlag=.FALSE.
   inletNodesFlag=.FALSE.
   !Initialize calc faces
   calculateFacesFlag=.FALSE.
   !Set material parameters
-  viscosity=0.01_CMFEDP
-  density=1.0_CMFEDP
+  viscosity=0.01_CMISSRP
+  density=1.0_CMISSRP
 
   !Set output types
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
@@ -246,16 +247,16 @@ PROGRAM SupgChannel
   equationsOutputType=CMFE_EQUATIONS_NO_OUTPUT
 
   !Set dynamic solver parameters
-  dynamicSolverStartTime=0.0_CMFEDP
-  dynamicSolverStopTime=10.0001_CMFEDP 
-  dynamicSolverTimeIncrement=0.1_CMFEDP
-  dynamicSolverTheta=1.0_CMFEDP
+  dynamicSolverStartTime=0.0_CMISSRP
+  dynamicSolverStopTime=10.0001_CMISSRP 
+  dynamicSolverTimeIncrement=0.1_CMISSRP
+  dynamicSolverTheta=1.0_CMISSRP
   !Set result output parameter (e.g. 1 for every step, 5 for every 5 steps, etc)
   dynamicSolverOutputFrequency=10
   !Set solver parameters
   directLinearSolverFlag=.TRUE.
-  relativeTolerance=1.0E-5_CMFEDP !default: 1.0E-05_CMFEDP
-  absoluteTolerance=1.0E-6_CMFEDP !default: 1.0E-10_CMFEDP
+  relativeTolerance=1.0E-5_CMISSRP !default: 1.0E-05_CMISSRP
+  absoluteTolerance=1.0E-6_CMISSRP !default: 1.0E-10_CMISSRP
   divergenceTolerance=1.0E5 !default: 1.0E5
   maximumIterations=100000 !default: 100000
   restartValue=300 !default: 30
@@ -659,7 +660,7 @@ PROGRAM SupgChannel
       CALL cmfe_Decomposition_NodeDomainGet(Decomposition,nodeNumber,1,BoundaryNodeDomain,Err)
       IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
         DO componentNumber=1,coordinateCount
-          VALUE=0.0_CMFEDP
+          VALUE=0.0_CMISSRP
           CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsNavierStokes,DependentField, &
             & CMFE_FIELD_U_VARIABLE_TYPE,1,CMFE_NO_GLOBAL_DERIV,nodeNumber,componentNumber,condition,VALUE,Err)
         ENDDO

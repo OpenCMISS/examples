@@ -40,13 +40,14 @@
 !>
 
 !> \example ClassicalField/Poisson/AnalyticNonlinearPoisson/src/NonlinearPoissonExample.f90
-!! Example program to solve a nonlinear Poisson equation using openCMISS calls.
+!! Example program to solve a nonlinear Poisson equation using OpenCMISS calls.
 !! \htmlinclude ClassicalField/Poisson/AnalyticNonlinearPoisson/history.html
 !<
 
 !> Main program
 PROGRAM NONLINEARPOISSONEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 
@@ -58,30 +59,30 @@ PROGRAM NONLINEARPOISSONEXAMPLE
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: HEIGHT=0.5_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=0.5_CMFEDP
-  REAL(CMFEDP), PARAMETER :: LENGTH=1.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: HEIGHT=0.5_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=0.5_CMISSRP
+  REAL(CMISSRP), PARAMETER :: LENGTH=1.0_CMISSRP
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: AnalyticFieldUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=12
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=13
 
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_DIMENSIONS,INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
-  INTEGER(CMFEIntg) :: component_idx
-  INTEGER(CMFEIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
+  INTEGER(CMISSIntg) :: NUMBER_DIMENSIONS,INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
+  INTEGER(CMISSIntg) :: component_idx
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT
 
   LOGICAL :: EXPORT_FIELD
@@ -106,9 +107,9 @@ PROGRAM NONLINEARPOISSONEXAMPLE
 
   !Generic CMISS variables
 
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: Err
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
 
 #ifdef WIN32
   !Quickwin type
@@ -295,7 +296,7 @@ PROGRAM NONLINEARPOISSONEXAMPLE
   CALL cmfe_EquationsSet_DependentCreateFinish(EquationsSet,Err)
 
   !Initialise the field to zero
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.0_CMISSRP, &
     & Err)
 
   !Create the equations set material field variables

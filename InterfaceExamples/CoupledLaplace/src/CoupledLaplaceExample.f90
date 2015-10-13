@@ -49,6 +49,7 @@
 !> Main program
 PROGRAM COUPLEDLAPLACE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   
 #ifdef WIN32
@@ -59,59 +60,59 @@ PROGRAM COUPLEDLAPLACE
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: HEIGHT=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=2.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: LENGTH=3.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: HEIGHT=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=2.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: LENGTH=3.0_CMISSRP
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystem1UserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystem2UserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemInterfaceUserNumber=42
-  INTEGER(CMFEIntg), PARAMETER :: Region1UserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: Region2UserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: Basis1UserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: Basis2UserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: InterfaceBasisUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMesh1UserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMesh2UserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: InterfaceGeneratedMeshUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: Mesh1UserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: Mesh2UserNumber=12
-  INTEGER(CMFEIntg), PARAMETER :: InterfaceMeshUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: Decomposition1UserNumber=14
-  INTEGER(CMFEIntg), PARAMETER :: Decomposition2UserNumber=15
-  INTEGER(CMFEIntg), PARAMETER :: InterfaceDecompositionUserNumber=16
-  INTEGER(CMFEIntg), PARAMETER :: GeometricField1UserNumber=17
-  INTEGER(CMFEIntg), PARAMETER :: GeometricField2UserNumber=18
-  INTEGER(CMFEIntg), PARAMETER :: InterfaceGeometricFieldUserNumber=19
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSet1UserNumber=20
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSet2UserNumber=21
-  INTEGER(CMFEIntg), PARAMETER :: DependentField1UserNumber=22
-  INTEGER(CMFEIntg), PARAMETER :: DependentField2UserNumber=23
-  INTEGER(CMFEIntg), PARAMETER :: InterfaceUserNumber=24
-  INTEGER(CMFEIntg), PARAMETER :: InterfaceConditionUserNumber=25
-  INTEGER(CMFEIntg), PARAMETER :: LagrangeFieldUserNumber=26
-  INTEGER(CMFEIntg), PARAMETER :: CoupledProblemUserNumber=27
-  INTEGER(CMFEIntg), PARAMETER :: InterfaceMappingBasisUserNumber=28
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetField1UserNumber=40
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetField2UserNumber=41
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystem1UserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystem2UserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemInterfaceUserNumber=42
+  INTEGER(CMISSIntg), PARAMETER :: Region1UserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: Region2UserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: Basis1UserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: Basis2UserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: InterfaceBasisUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMesh1UserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMesh2UserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: InterfaceGeneratedMeshUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: Mesh1UserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: Mesh2UserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: InterfaceMeshUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: Decomposition1UserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: Decomposition2UserNumber=15
+  INTEGER(CMISSIntg), PARAMETER :: InterfaceDecompositionUserNumber=16
+  INTEGER(CMISSIntg), PARAMETER :: GeometricField1UserNumber=17
+  INTEGER(CMISSIntg), PARAMETER :: GeometricField2UserNumber=18
+  INTEGER(CMISSIntg), PARAMETER :: InterfaceGeometricFieldUserNumber=19
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSet1UserNumber=20
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSet2UserNumber=21
+  INTEGER(CMISSIntg), PARAMETER :: DependentField1UserNumber=22
+  INTEGER(CMISSIntg), PARAMETER :: DependentField2UserNumber=23
+  INTEGER(CMISSIntg), PARAMETER :: InterfaceUserNumber=24
+  INTEGER(CMISSIntg), PARAMETER :: InterfaceConditionUserNumber=25
+  INTEGER(CMISSIntg), PARAMETER :: LagrangeFieldUserNumber=26
+  INTEGER(CMISSIntg), PARAMETER :: CoupledProblemUserNumber=27
+  INTEGER(CMISSIntg), PARAMETER :: InterfaceMappingBasisUserNumber=28
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetField1UserNumber=40
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetField2UserNumber=41
  
   !Program types
   
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, &
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, &
     & INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI,NUMBER_OF_NODE_XI
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT
 
-  INTEGER(CMFEIntg) :: EquationsSet1Index,EquationsSet2Index
-  INTEGER(CMFEIntg) :: FirstNodeNumber,LastNodeNumber
-  INTEGER(CMFEIntg) :: FirstNodeDomain,LastNodeDomain
-  INTEGER(CMFEIntg) :: InterfaceConditionIndex
-  INTEGER(CMFEIntg) :: Mesh1Index,Mesh2Index
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: y_element_idx,z_element_idx,mesh_local_y_node,mesh_local_z_node
-  REAL(CMFEDP) :: XI2(2),XI3(3)
+  INTEGER(CMISSIntg) :: EquationsSet1Index,EquationsSet2Index
+  INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
+  INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain
+  INTEGER(CMISSIntg) :: InterfaceConditionIndex
+  INTEGER(CMISSIntg) :: Mesh1Index,Mesh2Index
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: y_element_idx,z_element_idx,mesh_local_y_node,mesh_local_z_node
+  REAL(CMISSRP) :: XI2(2),XI3(3)
 
   !CMISS variables
 
@@ -144,7 +145,7 @@ PROGRAM COUPLEDLAPLACE
   
   !Generic CMISS variables
   
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: Err
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -335,12 +336,12 @@ PROGRAM COUPLEDLAPLACE
   CALL cmfe_GeneratedMesh_BasisSet(GeneratedMesh2,Basis2,Err)   
   !Define the mesh on the second region
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    CALL cmfe_GeneratedMesh_OriginSet(GeneratedMesh2,[WIDTH,0.0_CMFEDP],Err)
+    CALL cmfe_GeneratedMesh_OriginSet(GeneratedMesh2,[WIDTH,0.0_CMISSRP],Err)
     CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh2,[WIDTH,HEIGHT],Err)
     CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh2,[NUMBER_GLOBAL_X_ELEMENTS, &
       & NUMBER_GLOBAL_Y_ELEMENTS],Err)
   ELSE
-    CALL cmfe_GeneratedMesh_OriginSet(GeneratedMesh2,[WIDTH,0.0_CMFEDP,0.0_CMFEDP],Err)
+    CALL cmfe_GeneratedMesh_OriginSet(GeneratedMesh2,[WIDTH,0.0_CMISSRP,0.0_CMISSRP],Err)
     CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh2,[WIDTH,HEIGHT,LENGTH],Err)
     CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh2,[NUMBER_GLOBAL_X_ELEMENTS, &
       & NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS],Err)
@@ -405,12 +406,12 @@ PROGRAM COUPLEDLAPLACE
   CALL cmfe_GeneratedMesh_BasisSet(InterfaceGeneratedMesh,InterfaceBasis,Err)   
   !Define the mesh on the interface
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    CALL cmfe_GeneratedMesh_OriginSet(InterfaceGeneratedMesh,[WIDTH,0.0_CMFEDP],Err)
-    CALL cmfe_GeneratedMesh_ExtentSet(InterfaceGeneratedMesh,[0.0_CMFEDP,HEIGHT],Err)
+    CALL cmfe_GeneratedMesh_OriginSet(InterfaceGeneratedMesh,[WIDTH,0.0_CMISSRP],Err)
+    CALL cmfe_GeneratedMesh_ExtentSet(InterfaceGeneratedMesh,[0.0_CMISSRP,HEIGHT],Err)
     CALL cmfe_GeneratedMesh_NumberOfElementsSet(InterfaceGeneratedMesh,[NUMBER_GLOBAL_Y_ELEMENTS],Err)
   ELSE
-    CALL cmfe_GeneratedMesh_OriginSet(InterfaceGeneratedMesh,[WIDTH,0.0_CMFEDP,0.0_CMFEDP],Err)
-    CALL cmfe_GeneratedMesh_ExtentSet(InterfaceGeneratedMesh,[0.0_CMFEDP,HEIGHT,LENGTH],Err)
+    CALL cmfe_GeneratedMesh_OriginSet(InterfaceGeneratedMesh,[WIDTH,0.0_CMISSRP,0.0_CMISSRP],Err)
+    CALL cmfe_GeneratedMesh_ExtentSet(InterfaceGeneratedMesh,[0.0_CMISSRP,HEIGHT,LENGTH],Err)
     CALL cmfe_GeneratedMesh_NumberOfElementsSet(InterfaceGeneratedMesh,[NUMBER_GLOBAL_Y_ELEMENTS, &
       & NUMBER_GLOBAL_Z_ELEMENTS],Err)
   ENDIF    
@@ -438,20 +439,20 @@ PROGRAM COUPLEDLAPLACE
       !Map the interface element to the elements in mesh 1
       CALL cmfe_InterfaceMeshConnectivity_ElementNumberSet(InterfaceMeshConnectivity,y_element_idx,Mesh1Index, &
         y_element_idx*NUMBER_GLOBAL_X_ELEMENTS,Err)
-      XI2 = [ 1.0_CMFEDP, 0.0_CMFEDP ]
+      XI2 = [ 1.0_CMISSRP, 0.0_CMISSRP ]
       CALL cmfe_InterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity,y_element_idx,Mesh1Index, &
         & y_element_idx*NUMBER_GLOBAL_X_ELEMENTS,1,1,XI2,Err)
-      XI2 = [ 1.0_CMFEDP, 1.0_CMFEDP ]
+      XI2 = [ 1.0_CMISSRP, 1.0_CMISSRP ]
       CALL cmfe_InterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity,y_element_idx,Mesh1Index, &
         & y_element_idx*NUMBER_GLOBAL_X_ELEMENTS,2,1,XI2,Err)      
       !Map the interface element to the elements in mesh 2
       CALL cmfe_InterfaceMeshConnectivity_ElementNumberSet(InterfaceMeshConnectivity,y_element_idx,Mesh2Index, &
         & 1+(y_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS,Err)
       DO mesh_local_y_node = 1,NUMBER_OF_NODE_XI-1
-        XI2 = [ 0.0_CMFEDP, REAL(mesh_local_y_node-1,CMFEDP)/REAL(NUMBER_OF_NODE_XI-1,CMFEDP) ]
+        XI2 = [ 0.0_CMISSRP, REAL(mesh_local_y_node-1,CMISSRP)/REAL(NUMBER_OF_NODE_XI-1,CMISSRP) ]
         CALL cmfe_InterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity,y_element_idx,Mesh2Index, &
           & 1+(y_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS,1,1,XI2,Err)
-        XI2 = [ 0.0_CMFEDP, REAL(mesh_local_y_node,CMFEDP)/REAL(NUMBER_OF_NODE_XI-1,CMFEDP) ]
+        XI2 = [ 0.0_CMISSRP, REAL(mesh_local_y_node,CMISSRP)/REAL(NUMBER_OF_NODE_XI-1,CMISSRP) ]
         CALL cmfe_InterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity,y_element_idx,Mesh2Index, &
           & 1+(y_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS,2,1,XI2,Err)
       ENDDO !mesh_local_y_node
@@ -464,22 +465,22 @@ PROGRAM COUPLEDLAPLACE
           & y_element_idx+(z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh1Index, &
           y_element_idx*NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
           & NUMBER_GLOBAL_Y_ELEMENTS,Err)
-        XI3 = [ 1.0_CMFEDP, 0.0_CMFEDP, 0.0_CMFEDP ]
+        XI3 = [ 1.0_CMISSRP, 0.0_CMISSRP, 0.0_CMISSRP ]
         CALL cmfe_InterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
           & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh1Index,y_element_idx* &
           & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
           & NUMBER_GLOBAL_Y_ELEMENTS,1,1,XI3,Err)
-        XI3 = [ 1.0_CMFEDP, 1.0_CMFEDP, 0.0_CMFEDP ]
+        XI3 = [ 1.0_CMISSRP, 1.0_CMISSRP, 0.0_CMISSRP ]
         CALL cmfe_InterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
           & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh1Index,y_element_idx* &
           & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
           & NUMBER_GLOBAL_Y_ELEMENTS,2,1,XI3,Err)
-        XI3 = [ 1.0_CMFEDP, 0.0_CMFEDP, 1.0_CMFEDP ]
+        XI3 = [ 1.0_CMISSRP, 0.0_CMISSRP, 1.0_CMISSRP ]
         CALL cmfe_InterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
           & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh1Index,y_element_idx* &
           & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
           & NUMBER_GLOBAL_Y_ELEMENTS,3,1,XI3,Err)
-        XI3 = [ 1.0_CMFEDP, 1.0_CMFEDP, 1.0_CMFEDP ]
+        XI3 = [ 1.0_CMISSRP, 1.0_CMISSRP, 1.0_CMISSRP ]
         CALL cmfe_InterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
           & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh1Index,y_element_idx* &
           & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
@@ -491,30 +492,30 @@ PROGRAM COUPLEDLAPLACE
           & NUMBER_GLOBAL_Y_ELEMENTS,Err)
         DO mesh_local_y_node = 1,NUMBER_OF_NODE_XI-1
           DO mesh_local_z_node = 1,NUMBER_OF_NODE_XI-1
-            XI3 = [ 0.0_CMFEDP,  &
-              & REAL(mesh_local_y_node-1,CMFEDP)/REAL(NUMBER_OF_NODE_XI-1,CMFEDP), &
-              & REAL(mesh_local_z_node-1,CMFEDP)/REAL(NUMBER_OF_NODE_XI-1,CMFEDP) ]
+            XI3 = [ 0.0_CMISSRP,  &
+              & REAL(mesh_local_y_node-1,CMISSRP)/REAL(NUMBER_OF_NODE_XI-1,CMISSRP), &
+              & REAL(mesh_local_z_node-1,CMISSRP)/REAL(NUMBER_OF_NODE_XI-1,CMISSRP) ]
             CALL cmfe_InterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
               & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,1+(y_element_idx-1)* &
               & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
               & NUMBER_GLOBAL_Y_ELEMENTS,1,1,XI3,Err)
-            XI3 = [ 0.0_CMFEDP,  &
-              & REAL(mesh_local_y_node,CMFEDP)/REAL(NUMBER_OF_NODE_XI-1,CMFEDP), &
-              & REAL(mesh_local_z_node-1,CMFEDP)/REAL(NUMBER_OF_NODE_XI-1,CMFEDP) ]
+            XI3 = [ 0.0_CMISSRP,  &
+              & REAL(mesh_local_y_node,CMISSRP)/REAL(NUMBER_OF_NODE_XI-1,CMISSRP), &
+              & REAL(mesh_local_z_node-1,CMISSRP)/REAL(NUMBER_OF_NODE_XI-1,CMISSRP) ]
             CALL cmfe_InterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
               & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,1+(y_element_idx-1)* &
               & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
               & NUMBER_GLOBAL_Y_ELEMENTS,2,1,XI3,Err)
-            XI3 = [ 0.0_CMFEDP,  &
-              & REAL(mesh_local_y_node-1,CMFEDP)/REAL(NUMBER_OF_NODE_XI-1,CMFEDP), &
-              & REAL(mesh_local_z_node,CMFEDP)/REAL(NUMBER_OF_NODE_XI-1,CMFEDP) ]
+            XI3 = [ 0.0_CMISSRP,  &
+              & REAL(mesh_local_y_node-1,CMISSRP)/REAL(NUMBER_OF_NODE_XI-1,CMISSRP), &
+              & REAL(mesh_local_z_node,CMISSRP)/REAL(NUMBER_OF_NODE_XI-1,CMISSRP) ]
             CALL cmfe_InterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
               & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,1+(y_element_idx-1)* &
               & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
               & NUMBER_GLOBAL_Y_ELEMENTS,3,1,XI3,Err)
-            XI3 = [ 0.0_CMFEDP,  &
-              & REAL(mesh_local_y_node,CMFEDP)/REAL(NUMBER_OF_NODE_XI-1,CMFEDP), &
-              & REAL(mesh_local_z_node,CMFEDP)/REAL(NUMBER_OF_NODE_XI-1,CMFEDP) ]
+            XI3 = [ 0.0_CMISSRP,  &
+              & REAL(mesh_local_y_node,CMISSRP)/REAL(NUMBER_OF_NODE_XI-1,CMISSRP), &
+              & REAL(mesh_local_z_node,CMISSRP)/REAL(NUMBER_OF_NODE_XI-1,CMISSRP) ]
             CALL cmfe_InterfaceMeshConnectivity_ElementXiSet(InterfaceMeshConnectivity,y_element_idx+ &
               & (z_element_idx-1)*NUMBER_GLOBAL_Y_ELEMENTS,Mesh2Index,1+(y_element_idx-1)* &
               & NUMBER_GLOBAL_X_ELEMENTS+(z_element_idx-1)*NUMBER_GLOBAL_X_ELEMENTS* &
@@ -765,7 +766,7 @@ PROGRAM COUPLEDLAPLACE
   CALL cmfe_Decomposition_NodeDomainGet(Decomposition1,FirstNodeNumber,1,FirstNodeDomain,Err)
   IF(FirstNodeDomain==ComputationalNodeNumber) THEN
     CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField1,CMFE_FIELD_U_VARIABLE_TYPE,1,1,FirstNodeNumber,1, &
-      & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+      & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
   ENDIF
   !Set boundary conditions for second dependent field
   !Set the last node to 1.0
@@ -775,7 +776,7 @@ PROGRAM COUPLEDLAPLACE
   CALL cmfe_Decomposition_NodeDomainGet(Decomposition2,LastNodeNumber,1,LastNodeDomain,Err)
   IF(LastNodeDomain==ComputationalNodeNumber) THEN
     CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField2,CMFE_FIELD_U_VARIABLE_TYPE,1,1,LastNodeNumber,1, &
-      & CMFE_BOUNDARY_CONDITION_FIXED,1.0_CMFEDP,Err)
+      & CMFE_BOUNDARY_CONDITION_FIXED,1.0_CMISSRP,Err)
   ENDIF
   CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(CoupledSolverEquations,Err)
 

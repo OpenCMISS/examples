@@ -41,13 +41,14 @@
 !>
 
 !> \example ClassicalField/ReactionDiffusion/CellMLSplitReactionDiffusion1D/src/CellMLSplitReactionDiffusion1DExample.f90
-!! Example program to solve a diffusion equation using openCMISS calls.
+!! Example program to solve a diffusion equation using OpenCMISS calls.
 !! \htmlinclude ClassicalField/ReactionDiffusion/CellMLSplitReactionDiffusion1D/history.html
 !<
 
 !> Main program
 PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 
@@ -59,38 +60,38 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: LENGTH=100.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: LENGTH=100.0_CMISSRP
   
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=12
-  INTEGER(CMFEIntg), PARAMETER :: SourceFieldUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: CellMLUserNumber=14
-  INTEGER(CMFEIntg), PARAMETER :: CellMLModelsFieldUserNumber=15
-  INTEGER(CMFEIntg), PARAMETER :: CellMLStateFieldUserNumber=16
-  INTEGER(CMFEIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=17
-  INTEGER(CMFEIntg), PARAMETER :: CellMLParametersFieldUserNumber=18
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: CellMLUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: CellMLModelsFieldUserNumber=15
+  INTEGER(CMISSIntg), PARAMETER :: CellMLStateFieldUserNumber=16
+  INTEGER(CMISSIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=17
+  INTEGER(CMISSIntg), PARAMETER :: CellMLParametersFieldUserNumber=18
 
   !Program types
   
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS,CONDITION
-  INTEGER(CMFEIntg) :: NUMBER_OF_DOMAINS,NODE_NUMBER,NodeDomain
-  INTEGER(CMFEIntg),DIMENSION(2) :: BCNODES
-  INTEGER(CMFEIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,CONDITION
+  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS,NODE_NUMBER,NodeDomain
+  INTEGER(CMISSIntg),DIMENSION(2) :: BCNODES
+  INTEGER(CMISSIntg) :: MPI_IERROR
   INTEGER :: node
-  REAL(CMFEDP) :: VALUE
-  INTEGER(CMFEIntg) :: constantModelIndex
+  REAL(CMISSRP) :: VALUE
+  INTEGER(CMISSIntg) :: constantModelIndex
 
   !INTEGER(INTG) :: first_global_dof,first_local_dof,first_local_rank,last_global_dof,last_local_dof,last_local_rank,rank_idx
   !INTEGER(INTG) :: EQUATIONS_SET_INDEX
@@ -127,9 +128,9 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   
   !Generic CMISS variables
   
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: EquationsSetIndex,CellMLIndex
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: EquationsSetIndex,CellMLIndex
+  INTEGER(CMISSIntg) :: Err
 
   
 #ifdef WIN32
@@ -244,9 +245,9 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   !Finish the equations set materials field variables
   CALL cmfe_EquationsSet_MaterialsCreateFinish(EquationsSet,Err)
   CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-   & 1,0.5_CMFEDP,Err) !diff coeff in x
+   & 1,0.5_CMISSRP,Err) !diff coeff in x
   CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-   & 2,1.0_CMFEDP,Err) ! storage coefficient
+   & 2,1.0_CMISSRP,Err) ! storage coefficient
 
  
   !Set up source field for reaction diffusion equation set. Note that for the split problem subtype, the source field is not used at all.
@@ -256,7 +257,7 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   !Finish the equations set source field variables
   CALL cmfe_EquationsSet_SourceCreateFinish(EquationsSet,Err)
   CALL cmfe_Field_ComponentValuesInitialise(SourceField,CMFE_FIELD_U_VARIABLE_TYPE, &
-    & CMFE_FIELD_VALUES_SET_TYPE,1,0.0_CMFEDP,Err)
+    & CMFE_FIELD_VALUES_SET_TYPE,1,0.0_CMISSRP,Err)
 
   !Start to set up CellML Fields
 
@@ -301,13 +302,13 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
 
   !set initial value of the dependent field/state variable, ca.
   CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE, &
-    & CMFE_FIELD_VALUES_SET_TYPE,1,0.0_CMFEDP,Err)
+    & CMFE_FIELD_VALUES_SET_TYPE,1,0.0_CMISSRP,Err)
   node=2
   CALL cmfe_Decomposition_NodeDomainGet(Decomposition,node,1,NodeDomain,Err)
   IF(NodeDomain==ComputationalNodeNumber) THEN
     CALL cmfe_Field_ParameterSetUpdateNode(DependentField,CMFE_FIELD_U_VARIABLE_TYPE, &
      & CMFE_FIELD_VALUES_SET_TYPE, &
-     & 1,1,node,1,0.0_CMFEDP,Err) 
+     & 1,1,node,1,0.0_CMISSRP,Err) 
   ENDIF
   !Start the creation of the CellML models field. This field is an integer field that stores which nodes have which cellml model
   CALL cmfe_Field_Initialise(CellMLModelsField,Err)
@@ -318,7 +319,7 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   !The CellMLModelsField is an integer field that stores which model is being used by which node.
   !By default all field parameters have default model value of 1, i.e. the first model. But, this command below is for example purposes
   CALL cmfe_Field_ComponentValuesInitialise(CellMLModelsField,CMFE_FIELD_U_VARIABLE_TYPE, &
-    & CMFE_FIELD_VALUES_SET_TYPE,1,1_CMFEIntg,Err)
+    & CMFE_FIELD_VALUES_SET_TYPE,1,1_CMISSIntg,Err)
 
   !Set up the models field
   !DO N=1,(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
@@ -380,7 +381,7 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   CALL cmfe_ControlLoop_Initialise(ControlLoop,Err)
   CALL cmfe_Problem_ControlLoopGet(Problem,CMFE_CONTROL_LOOP_NODE,ControlLoop,Err)
   !Set the times
-  CALL cmfe_ControlLoop_TimesSet(ControlLoop,0.0_CMFEDP,0.5_CMFEDP,0.01_CMFEDP,Err)
+  CALL cmfe_ControlLoop_TimesSet(ControlLoop,0.0_CMISSRP,0.5_CMISSRP,0.01_CMISSRP,Err)
   CALL cmfe_ControlLoop_OutputTypeSet(ControlLoop,CMFE_CONTROL_LOOP_PROGRESS_OUTPUT,Err)
   !Finish creating the problem control loop
   CALL cmfe_Problem_ControlLoopCreateFinish(Problem,Err)
@@ -392,7 +393,7 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   CALL cmfe_Solver_Initialise(Solver,Err)
   CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,1,Solver,Err)
   CALL cmfe_Solver_DAESolverTypeSet(Solver,CMFE_SOLVER_DAE_EULER,Err)
-  CALL cmfe_Solver_DAETimeStepSet(Solver,0.0000001_CMFEDP,Err)
+  CALL cmfe_Solver_DAETimeStepSet(Solver,0.0000001_CMISSRP,Err)
   CALL cmfe_Solver_OutputTypeSet(Solver,CMFE_SOLVER_MATRIX_OUTPUT,Err)
 
   !Second solver is the dynamic solver for solving the parabolic equation
@@ -400,7 +401,7 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   CALL cmfe_Solver_Initialise(LinearSolver,Err)
   CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,2,Solver,Err)
   !set theta - backward vs forward time step parameter
-  CALL cmfe_Solver_DynamicThetaSet(Solver,1.0_CMFEDP,Err)
+  CALL cmfe_Solver_DynamicThetaSet(Solver,1.0_CMISSRP,Err)
   !CALL cmfe_SolverOutputTypeSet(Solver,CMFE_SOLVER_NO_OUTPUT,Err)
   CALL cmfe_Solver_OutputTypeSet(Solver,CMFE_SOLVER_TIMING_OUTPUT,Err)
   !get the dynamic linear solver from the solver
@@ -418,7 +419,7 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
   CALL cmfe_Solver_Initialise(Solver,Err)
   CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,3,Solver,Err)
   CALL cmfe_Solver_DAESolverTypeSet(Solver,CMFE_SOLVER_DAE_EULER,Err)
-  CALL cmfe_Solver_DAETimeStepSet(Solver,0.0000001_CMFEDP,Err)
+  CALL cmfe_Solver_DAETimeStepSet(Solver,0.0000001_CMISSRP,Err)
   CALL cmfe_Solver_OutputTypeSet(Solver,CMFE_SOLVER_MATRIX_OUTPUT,Err)
   !CALL cmfe_SolverOutputTypeSet(Solver,cmfe_SolverTimingOutput,Err)
   !CALL cmfe_SolverOutputTypeSet(Solver,cmfe_SolverSolverOutput,Err)
@@ -475,14 +476,14 @@ PROGRAM CELLMLSPLITREACTIONDIFFUSION1DEXAMPLE
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NODE_NUMBER,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CONDITION = CMFE_BOUNDARY_CONDITION_FIXED
-      VALUE=1.5_CMFEDP
+      VALUE=1.5_CMISSRP
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField, &
        & CMFE_FIELD_U_VARIABLE_TYPE,1,CMFE_NO_GLOBAL_DERIV, &
        & NODE_NUMBER,1,CONDITION,VALUE,Err)
 
       !Need to set cellml model to zero at the nodes at which value of ca has been fixed.
       CALL cmfe_Field_ParameterSetUpdateNode(CellMLModelsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,&
-       & 1,1,NODE_NUMBER,1,0_CMFEIntg,Err) 
+       & 1,1,NODE_NUMBER,1,0_CMISSIntg,Err) 
     ENDIF
   ENDDO
   CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)

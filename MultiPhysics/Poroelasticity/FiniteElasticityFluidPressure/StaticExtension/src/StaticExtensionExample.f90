@@ -46,7 +46,8 @@
 !> Main program
 PROGRAM POROELASTICITYEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 #ifdef WIN32
@@ -57,61 +58,61 @@ PROGRAM POROELASTICITYEXAMPLE
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: Height=10.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: Width=10.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: Length=10.0_CMFEDP
-  INTEGER(CMFEIntg), PARAMETER :: GeometricInterpolationType=CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION
-  INTEGER(CMFEIntg), PARAMETER :: PressureInterpolationType=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfGaussXi=3
-  INTEGER(CMFEIntg) :: NumberElements
-  INTEGER(CMFEIntg) :: NumberGlobalXElements=2
-  INTEGER(CMFEIntg) :: NumberGlobalYElements=2
-  INTEGER(CMFEIntg) :: NumberGlobalZElements=2
-  REAL(CMFEDP) :: FixedWidth=12.0_CMFEDP
-  REAL(CMFEDP) :: FluidPressureBC=0.5E-3_CMFEDP
-  REAL(CMFEDP) :: FluidPressureBC2=0.0_CMFEDP
-  REAL(CMFEDP) :: InitialPressure
-  INTEGER(CMFEIntg) :: Increments=10
+  REAL(CMISSRP), PARAMETER :: Height=10.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: Width=10.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: Length=10.0_CMISSRP
+  INTEGER(CMISSIntg), PARAMETER :: GeometricInterpolationType=CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION
+  INTEGER(CMISSIntg), PARAMETER :: PressureInterpolationType=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfGaussXi=3
+  INTEGER(CMISSIntg) :: NumberElements
+  INTEGER(CMISSIntg) :: NumberGlobalXElements=2
+  INTEGER(CMISSIntg) :: NumberGlobalYElements=2
+  INTEGER(CMISSIntg) :: NumberGlobalZElements=2
+  REAL(CMISSRP) :: FixedWidth=12.0_CMISSRP
+  REAL(CMISSRP) :: FluidPressureBC=0.5E-3_CMISSRP
+  REAL(CMISSRP) :: FluidPressureBC2=0.0_CMISSRP
+  REAL(CMISSRP) :: InitialPressure
+  INTEGER(CMISSIntg) :: Increments=10
   LOGICAL :: FixRightSide=.TRUE.
-  REAL (CMFEDP) :: K1=2.0E-3_CMFEDP
-  REAL (CMFEDP) :: K2=33.0E-6_CMFEDP
-  REAL (CMFEDP) :: K=2.20E-1_CMFEDP
-  REAL (CMFEDP) :: M=2.18E-1_CMFEDP
-  REAL (CMFEDP) :: b=1.0_CMFEDP
-  REAL (CMFEDP) :: p_0=0.0_CMFEDP
-  REAL (CMFEDP) :: permeability=1.0E-3_CMFEDP
+  REAL (CMISSRP) :: K1=2.0E-3_CMISSRP
+  REAL (CMISSRP) :: K2=33.0E-6_CMISSRP
+  REAL (CMISSRP) :: K=2.20E-1_CMISSRP
+  REAL (CMISSRP) :: M=2.18E-1_CMISSRP
+  REAL (CMISSRP) :: b=1.0_CMISSRP
+  REAL (CMISSRP) :: p_0=0.0_CMISSRP
+  REAL (CMISSRP) :: permeability=1.0E-3_CMISSRP
 
   !Object user numbers
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: GeometricBasisUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: PressureBasisUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: GeometricMeshComponent=2
-  INTEGER(CMFEIntg), PARAMETER :: PressureMeshComponent=1
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: FibreFieldUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: SolidEquationsSetFieldUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: FluidEquationsSetFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: FluidEquationsSetUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: SolidEquationsSetUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: GeometricBasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: PressureBasisUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: GeometricMeshComponent=2
+  INTEGER(CMISSIntg), PARAMETER :: PressureMeshComponent=1
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: FibreFieldUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: SolidEquationsSetFieldUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: FluidEquationsSetFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: FluidEquationsSetUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: SolidEquationsSetUserNumber=2
 
   !Program variables
-  INTEGER(CMFEIntg),ALLOCATABLE :: BottomSurfaceNodes(:),TopSurfaceNodes(:),LeftSurfaceNodes(:), &
+  INTEGER(CMISSIntg),ALLOCATABLE :: BottomSurfaceNodes(:),TopSurfaceNodes(:),LeftSurfaceNodes(:), &
     & RightSurfaceNodes(:),FrontSurfaceNodes(:),BackSurfaceNodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE :: PressureBottomSurfaceNodes(:),PressureTopSurfaceNodes(:),PressureLeftSurfaceNodes(:), &
+  INTEGER(CMISSIntg),ALLOCATABLE :: PressureBottomSurfaceNodes(:),PressureTopSurfaceNodes(:),PressureLeftSurfaceNodes(:), &
     & PressureRightSurfaceNodes(:),PressureFrontSurfaceNodes(:),PressureBackSurfaceNodes(:)
-  INTEGER(CMFEIntg) :: TopNormalXi,LeftNormalXi,RightNormalXi,FrontNormalXi,BackNormalXi,BottomNormalXi
-  INTEGER(CMFEIntg) :: node_idx,NodeNumber,NodeDomain
-  INTEGER(CMFEIntg) :: NumberOfDimensions,component_idx
+  INTEGER(CMISSIntg) :: TopNormalXi,LeftNormalXi,RightNormalXi,FrontNormalXi,BackNormalXi,BottomNormalXi
+  INTEGER(CMISSIntg) :: node_idx,NodeNumber,NodeDomain
+  INTEGER(CMISSIntg) :: NumberOfDimensions,component_idx
   CHARACTER(LEN=255) :: Filename
-  INTEGER(CMFEIntg) :: NumberOfArguments,ArgumentLength,ArgStatus
+  INTEGER(CMISSIntg) :: NumberOfArguments,ArgumentLength,ArgStatus
   CHARACTER(LEN=255) :: CommandArgument
 
   !CMISS variables
@@ -135,9 +136,9 @@ PROGRAM POROELASTICITYEXAMPLE
 
   !Generic CMISS variables
 
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: Err
 
 #ifdef WIN32
   !Quickwin type
@@ -187,7 +188,7 @@ PROGRAM POROELASTICITYEXAMPLE
     NumberGlobalYElements=NumberElements
     NumberGlobalZElements=NumberElements
   ENDIF
-  IF(FixedWidth<1.0E-5_CMFEDP) FixRightSide=.FALSE.
+  IF(FixedWidth<1.0E-5_CMISSRP) FixRightSide=.FALSE.
   WRITE(*,*) "Fluid pressure BC:", FluidPressureBC
   IF (FixRightSide) THEN
     WRITE(*,*) "Fixed width:", FixedWidth
@@ -196,7 +197,7 @@ PROGRAM POROELASTICITYEXAMPLE
   ENDIF
   WRITE(*,*) "Increments:", Increments
   WRITE(*,*) "Elements:", NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
-  InitialPressure=(FluidPressureBC+FluidPressureBC2)*0.5_CMFEDP/REAL(Increments)
+  InitialPressure=(FluidPressureBC+FluidPressureBC2)*0.5_CMISSRP/REAL(Increments)
 
   WRITE(Filename,'(A,"_",I0,"x",I0,"x",I0,"_",I0)') "StaticExtension",NumberGlobalXElements,NumberGlobalYElements, &
     & NumberGlobalZElements,GeometricInterpolationType
@@ -366,24 +367,24 @@ PROGRAM POROELASTICITYEXAMPLE
   CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4,M,Err)
   CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,5,b,Err)
   CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,6,p_0,Err)
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.0_CMFEDP,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.0_CMISSRP,Err)
 
   !Permeability tensor
   CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,permeability, &
     & Err)
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,0.0_CMISSRP, &
     & Err)
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,0.0_CMISSRP, &
     & Err)
   CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4,permeability, &
     & Err)
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,5,0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,5,0.0_CMISSRP, &
     & Err)
   CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,6,permeability, &
     & Err)
   !Density
   CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,7, &
-    & 1000.0_CMFEDP,Err)
+    & 1000.0_CMISSRP,Err)
 
   !Create the equations set equations
   CALL cmfe_Equations_Initialise(FluidEquations,Err)
@@ -431,8 +432,8 @@ PROGRAM POROELASTICITYEXAMPLE
   CALL cmfe_Solver_NewtonJacobianCalculationTypeSet(Solver,CMFE_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)
   CALL cmfe_Solver_NewtonMaximumIterationsSet(Solver,200,Err)
   CALL cmfe_Solver_NewtonMaximumFunctionEvaluationsSet(Solver,10000,Err)
-  CALL cmfe_Solver_NewtonAbsoluteToleranceSet(Solver,1.0E-10_CMFEDP,Err)
-  CALL cmfe_Solver_NewtonRelativeToleranceSet(Solver,1.0E-9_CMFEDP,Err)
+  CALL cmfe_Solver_NewtonAbsoluteToleranceSet(Solver,1.0E-10_CMISSRP,Err)
+  CALL cmfe_Solver_NewtonRelativeToleranceSet(Solver,1.0E-9_CMISSRP,Err)
   CALL cmfe_Solver_NewtonLinearSolverGet(Solver,LinearSolver,Err)
   CALL cmfe_Solver_LinearTypeSet(LinearSolver,CMFE_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
   CALL cmfe_Problem_SolversCreateFinish(Problem,Err)
@@ -486,7 +487,7 @@ PROGRAM POROELASTICITYEXAMPLE
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-        & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+        & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
     ENDIF
   ENDDO
   !Set y=0 nodes to no y displacement
@@ -495,7 +496,7 @@ PROGRAM POROELASTICITYEXAMPLE
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,2, &
-        & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+        & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
     ENDIF
   ENDDO
   !Set z=0 nodes to no z displacement
@@ -504,7 +505,7 @@ PROGRAM POROELASTICITYEXAMPLE
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NodeNumber,GeometricMeshComponent,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,3, &
-        & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+        & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
     ENDIF
   ENDDO
   !Fix right surface nodes

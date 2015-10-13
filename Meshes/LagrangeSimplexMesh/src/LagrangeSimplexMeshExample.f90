@@ -59,10 +59,6 @@ PROGRAM LagrangeSimplexMeshExample
   !Program types
   
   !Program variables
-  
-  INTEGER(CMISSIntg) :: NUMBER_COMPUTATIONAL_NODES
-  INTEGER(CMISSIntg) :: MY_COMPUTATIONAL_NODE_NUMBER
- 
   TYPE(cmfe_BasisType) :: basis1,basis2
   TYPE(cmfe_CoordinateSystemType) :: coordinateSystem,worldCoordinates
   TYPE(cmfe_MeshType) :: mesh
@@ -72,24 +68,14 @@ PROGRAM LagrangeSimplexMeshExample
   TYPE(cmfe_FieldType) :: geometricField
   TYPE(cmfe_FieldsType) :: fields
   TYPE(cmfe_RegionType) :: region,worldRegion
-   
-  LOGICAL :: EXPORT_FIELD
-  TYPE(VARYING_STRING) :: FILE,METHOD
-
-  REAL(SP) :: START_USER_TIME(1),STOP_USER_TIME(1),START_SYSTEM_TIME(1),STOP_SYSTEM_TIME(1)
-  
+     
   !Generic CMISS variables
-  
-  INTEGER(INTG) :: err
-  TYPE(VARYING_STRING) :: error
-
-  INTEGER(INTG) :: DIAG_LEVEL_LIST(5)
-  CHARACTER(LEN=MAXSTRLEN) :: DIAG_ROUTINE_LIST(1),TIMING_ROUTINE_LIST(1)
-
+  INTEGER(CMISSIntg) :: err
+ 
   !Intialise cmiss
-  CALL cmfe_RegionInitialise(worldRegion,err)
-  CALL cmfe_CoordinateSystemInitialise(worldCoordinates,err)
-  CALL cmfe_Initialise(WorldCoordinateSystem,WorldRegion,err)
+  CALL cmfe_Region_Initialise(worldRegion,err)
+  CALL cmfe_CoordinateSystem_Initialise(worldCoordinates,err)
+  CALL cmfe_Initialise(worldCoordinates,WorldRegion,err)
   
   !Start the creation of a new RC coordinate system
   CALL cmfe_CoordinateSystem_Initialise(coordinateSystem,Err)
@@ -103,7 +89,7 @@ PROGRAM LagrangeSimplexMeshExample
   CALL cmfe_Region_Initialise(region,err)
   CALL cmfe_Region_CreateStart(1,worldRegion,region,err)
   !Set the regions coordinate system to the 2D RC coordinate system that we have created
-  CALL cmfe_Region_CoordinateSystemSet(region,coordinateSystem,3rr)
+  CALL cmfe_Region_CoordinateSystemSet(region,coordinateSystem,err)
   !Finish the creation of the region
   CALL cmfe_Region_CreateFinish(region,err)
 
@@ -113,7 +99,7 @@ PROGRAM LagrangeSimplexMeshExample
   !Set the basis to be a 2D basis
   CALL cmfe_Basis_NumberOfXiSet(basis1,2,err)
   !Set the interpolation to be linear-quadratic
-  CALL cmfe_Basis_InterpolationXiSet(Basis,[CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION, &
+  CALL cmfe_Basis_InterpolationXiSet(basis1,[CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION, &
     & CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION],err)
   !Finish the creation of the basis
   CALL cmfe_Basis_CreateFinish(basis1,err)
@@ -150,15 +136,14 @@ PROGRAM LagrangeSimplexMeshExample
   CALL cmfe_MeshElements_Initialise(meshElements,err)
   CALL cmfe_Mesh_CreateStart(1,region,2,mesh,err)
   CALL cmfe_Mesh_NumberOfElementsSet(mesh,2,err)
-  CALL cmfe_MeshElements_CreateStart(mesh,1,basis,meshElements,err)
-  CALL cmfe_MeshElements_ElementNodesSet(1,meshElements,[1,2,5,6,8,9],err)
-  CALL cmfe_MeshElements_ElementBasisSet(2,meshElements,basis2,err)
-  CALL cmfe_MeshElements_ElementNodesSet(2,meshElements,[9,2,4,6,3,7],err)
+  CALL cmfe_MeshElements_CreateStart(mesh,1,basis1,meshElements,err)
+  CALL cmfe_MeshElements_NodesSet(meshElements,1,[1,2,5,6,8,9],err)
+  CALL cmfe_MeshElements_BasisSet(meshElements,2,basis2,err)
+  CALL cmfe_MeshElements_NodesSet(meshElements,2,[9,2,4,6,3,7],err)
   CALL cmfe_MeshElements_CreateFinish(meshElements,err)
   CALL cmfe_Mesh_CreateFinish(mesh,err)
 
   !Create a decomposition for mesh
-  NULLIFY(DECOMPOSITION)
   CALL cmfe_Decomposition_Initialise(decomposition,err)
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL cmfe_Decomposition_CreateStart(1,mesh,decomposition,err)
@@ -182,42 +167,42 @@ PROGRAM LagrangeSimplexMeshExample
   !Set the geometric field values
   !X values
   CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 1,1,1,1,0.0_CMISSDP,err)
+    & 1,1,1,1,0.0_CMISSRP,err)
   CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 1,1,2,1,1.0_CMISSDP,err)
+    & 1,1,2,1,1.0_CMISSRP,err)
   CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 1,1,3,1,1.5_CMISSDP,err)
+    & 1,1,3,1,1.5_CMISSRP,err)
   CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 1,1,4,1,2.0_CMISSDP,err)
+    & 1,1,4,1,2.0_CMISSRP,err)
   CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 1,1,5,1,0.0_CMISSDP,err)
+    & 1,1,5,1,0.0_CMISSRP,err)
   CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 1,1,6,1,1.0_CMISSDP,err)
+    & 1,1,6,1,1.0_CMISSRP,err)
   CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 1,1,7,1,1.5_CMISSDP,err)
+    & 1,1,7,1,1.5_CMISSRP,err)
   CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 1,1,8,1,0.0_CMISSDP,err)
+    & 1,1,8,1,0.0_CMISSRP,err)
   CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 1,1,9,1,1.0_CMISSDP,err)
+    & 1,1,9,1,1.0_CMISSRP,err)
   !Y values
   CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 1,1,1,2,0.0_CMISSDP,err)
+    & 1,1,1,2,0.0_CMISSRP,err)
   CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 1,1,2,2,0.0_CMISSDP,err)
+    & 1,1,2,2,0.0_CMISSRP,err)
   CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 1,1,3,2,0.0_CMISSDP,err)
+    & 1,1,3,2,0.0_CMISSRP,err)
   CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 1,1,4,2,0.0_CMISSDP,err)
+    & 1,1,4,2,0.0_CMISSRP,err)
   CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 1,1,5,2,0.5_CMISSDP,err)
+    & 1,1,5,2,0.5_CMISSRP,err)
   CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 1,1,6,2,0.5_CMISSDP,err)
+    & 1,1,6,2,0.5_CMISSRP,err)
   CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 1,1,7,2,0.5_CMISSDP,err)
+    & 1,1,7,2,0.5_CMISSRP,err)
   CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 1,1,8,2,1.0_CMISSDP,err)
+    & 1,1,8,2,1.0_CMISSRP,err)
   CALL cmfe_Field_ParameterSetUpdateNode(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 1,1,9,2,1.0_CMISSDP,err)
+    & 1,1,9,2,1.0_CMISSRP,err)
 
   CALL cmfe_Field_ParameterSetUpdateStart(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,err)
   CALL cmfe_Field_ParameterSetUpdateFinish(geometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,err)

@@ -47,10 +47,9 @@
 !> Main program
 PROGRAM GENERALISEDBURGERSEXAMPLE
 
-
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
-
 
 #ifdef WIN32
   USE IFQWIN
@@ -64,26 +63,26 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
 
   !Test program parameters
   
-  REAL(CMFEDP), PARAMETER :: LENGTH=3.0_CMFEDP
-  INTEGER(CMFEIntg), PARAMETER :: NUMBER_GLOBAL_X_ELEMENTS=6
-  REAL(CMFEDP), PARAMETER :: START_TIME=0.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: STOP_TIME=0.1_CMFEDP
-  REAL(CMFEDP), PARAMETER :: TIME_INCREMENT=0.01_CMFEDP
+  REAL(CMISSRP), PARAMETER :: LENGTH=3.0_CMISSRP
+  INTEGER(CMISSIntg), PARAMETER :: NUMBER_GLOBAL_X_ELEMENTS=6
+  REAL(CMISSRP), PARAMETER :: START_TIME=0.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: STOP_TIME=0.1_CMISSRP
+  REAL(CMISSRP), PARAMETER :: TIME_INCREMENT=0.01_CMISSRP
     
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=12
-  INTEGER(CMFEIntg), PARAMETER :: AnalyticFieldUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: SolverUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: SolverUserNumber=1
   
   !Program variables
 
@@ -113,9 +112,9 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   
   !Generic CMISS variables
   
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: Err
   LOGICAL :: LINEAR_SOLVER_DIRECT_FLAG
   
 #ifdef WIN32
@@ -255,13 +254,13 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   !Initialise materials field
   !Set A
   CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
-    & 1,1.0_CMFEDP,Err)
+    & 1,1.0_CMISSRP,Err)
   !Set B
   CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
-    & 2,-1.0_CMFEDP,Err)
+    & 2,-1.0_CMISSRP,Err)
   !Set C
   CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
-    & 3,1.0_CMFEDP,Err)
+    & 3,1.0_CMISSRP,Err)
 
   !-----------------------------------------------------------------------------------------------------------
   ! ANALYTIC FIELD
@@ -322,7 +321,7 @@ PROGRAM GENERALISEDBURGERSEXAMPLE
   !Set the output type
   CALL cmfe_Solver_OutputTypeSet(DynamicSolver,CMFE_SOLVER_MATRIX_OUTPUT,Err)
   !Set theta
-  CALL cmfe_Solver_DynamicThetaSet(DynamicSolver,0.5_CMFEDP,Err)
+  CALL cmfe_Solver_DynamicThetaSet(DynamicSolver,0.5_CMISSRP,Err)
 
   !Get the dynamic nonlinear solver
   CALL cmfe_Solver_DynamicNonlinearSolverGet(DynamicSolver,NonlinearSolver,Err)

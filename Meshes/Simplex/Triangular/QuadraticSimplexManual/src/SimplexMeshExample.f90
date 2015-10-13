@@ -1,6 +1,6 @@
 !> \file
 !> \author Chris Bradley
-!> \brief This is an example program which sets up a field which uses a Simplex using openCMISS calls.
+!> \brief This is an example program which sets up a field which uses a Simplex using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -40,7 +40,7 @@
 !>
 
 !> \example SimplexMesh/src/SimplexMeshExample.f90
-!! Example program which sets up a field which uses a Simplex using openCMISS calls.
+!! Example program which sets up a field which uses a Simplex using OpenCMISS calls.
 !! \par Latest Builds:
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/SimplexMesh/build-intel'>Linux Intel Build</a>
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/SimplexMesh/build-gnu'>Linux GNU Build</a>
@@ -49,7 +49,8 @@
 !> Main program
 PROGRAM SIMPLEXMESHEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS
+  USE OpenCMISS_Iron
 
 #ifdef WIN32
   USE IFQWIN
@@ -59,12 +60,12 @@ PROGRAM SIMPLEXMESHEXAMPLE
 
   !Test program parameters
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=6
   
   !Program types
   
@@ -90,7 +91,7 @@ PROGRAM SIMPLEXMESHEXAMPLE
   
   !Generic CMISS variables
   
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: Err
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -108,7 +109,7 @@ PROGRAM SIMPLEXMESHEXAMPLE
 
   CALL cmfe_ErrorHandlingModeSet(CMFE_ERRORS_TRAP_ERROR,Err)
 
-  CALL cmfe_DiagnosticsSetOn(CMFE_IN_DIAG_TYPE,(/1,2,3,4,5/),"Diagnostics",(/"SOLVER_MAPPING_CALCULATE"/),Err)
+  CALL cmfe_DiagnosticsSetOn(CMFE_IN_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["SOLVER_MAPPING_CALCULATE"],Err)
 
  !Start the creation of a new RC coordinate system
   CALL cmfe_CoordinateSystem_Initialise(CoordinateSystem,Err)
@@ -134,8 +135,8 @@ PROGRAM SIMPLEXMESHEXAMPLE
   !Set the basis to be a triangular basis
   CALL cmfe_Basis_NumberOfXiSet(Basis,2,Err)
   !Set the interpolation to be quadratic
-  CALL cmfe_Basis_InterpolationXiSet(Basis,(/CMFE_BASIS_QUADRATIC_SIMPLEX_INTERPOLATION, &
-    & CMFE_BASIS_QUADRATIC_SIMPLEX_INTERPOLATION/),Err)
+  CALL cmfe_Basis_InterpolationXiSet(Basis,[CMFE_BASIS_QUADRATIC_SIMPLEX_INTERPOLATION, &
+    & CMFE_BASIS_QUADRATIC_SIMPLEX_INTERPOLATION],Err)
   !Finish the creation of the basis
   CALL cmfe_Basis_CreateFinish(Basis,Err)
    
@@ -168,9 +169,9 @@ PROGRAM SIMPLEXMESHEXAMPLE
   !Start the creation of the mesh elements 
   CALL cmfe_MeshElements_CreateStart(Mesh,1,Basis,MeshElements,Err)
   !Set the nodes for element 1 
-  CALL cmfe_MeshElements_NodesSet(MeshElements,1,(/1,3,7,2,5,4/),Err)
+  CALL cmfe_MeshElements_NodesSet(MeshElements,1,[1,3,7,2,5,4],Err)
   !Set the nodes for element 2 
-  CALL cmfe_MeshElements_NodesSet(MeshElements,2,(/7,3,9,5,6,8/),Err)
+  CALL cmfe_MeshElements_NodesSet(MeshElements,2,[7,3,9,5,6,8],Err)
   !Finish the creation of the mesh elements
   CALL cmfe_MeshElements_CreateFinish(MeshElements,Err)
 

@@ -1,6 +1,6 @@
 !> \file
 !> \author Christian Michler, Adam Reeve
-!> \brief This is an example program to solve a coupled Finite Elastiticity Darcy equation using openCMISS calls.
+!> \brief This is an example program to solve a coupled Finite Elastiticity Darcy equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -61,8 +61,8 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   !PROGRAM LIBRARIES
 
-  USE OPENCMISS
-!   USE FLUID_MECHANICS_IO_ROUTINES
+  USE OpenCMISS
+  USE OpenCMISS_Iron
   USE IOSTUFF
   USE MPI
 
@@ -80,66 +80,66 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: Y_DIM=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: X_DIM=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: Z_DIM=1.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: Y_DIM=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: X_DIM=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: Z_DIM=1.0_CMISSRP
 
-  INTEGER(CMFEIntg), PARAMETER :: LinearBasisUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: QuadraticBasisUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: CubicBasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: LinearBasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: QuadraticBasisUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: CubicBasisUserNumber=3
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldDarcyUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberDarcy=8
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberDarcy=12
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=14
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumberDarcy=22
-  INTEGER(CMFEIntg), PARAMETER :: SourceFieldDarcyUserNumber=42
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldDarcyUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcy=8
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDarcy=12
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberDarcy=22
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldDarcyUserNumber=42
 
-  INTEGER(CMFEIntg), PARAMETER :: ControlLoopSolidNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: ControlLoopFluidNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: ControlLoopSubiterationNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: SolverSolidIndex=1
-  INTEGER(CMFEIntg), PARAMETER :: SolverDarcyIndex=1
+  INTEGER(CMISSIntg), PARAMETER :: ControlLoopSolidNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: ControlLoopFluidNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: ControlLoopSubiterationNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: SolverSolidIndex=1
+  INTEGER(CMISSIntg), PARAMETER :: SolverDarcyIndex=1
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
 
   !Program types
 
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
 
-!   INTEGER(CMFEIntg) :: MPI_IERROR
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
+!   INTEGER(CMISSIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
 
-  INTEGER(CMFEIntg) :: NUMBER_OF_DIMENSIONS
+  INTEGER(CMISSIntg) :: NUMBER_OF_DIMENSIONS
 
-  INTEGER(CMFEIntg) :: MAXIMUM_ITERATIONS
-  INTEGER(CMFEIntg) :: RESTART_VALUE
+  INTEGER(CMISSIntg) :: MAXIMUM_ITERATIONS
+  INTEGER(CMISSIntg) :: RESTART_VALUE
 
-  INTEGER(CMFEIntg) :: EQUATIONS_DARCY_OUTPUT
-  INTEGER(CMFEIntg) :: COMPONENT_NUMBER, NODE_NUMBER, ELEMENT_NUMBER
+  INTEGER(CMISSIntg) :: EQUATIONS_DARCY_OUTPUT
+  INTEGER(CMISSIntg) :: COMPONENT_NUMBER, NODE_NUMBER, ELEMENT_NUMBER
 
-  INTEGER(CMFEIntg) :: DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY
-  INTEGER(CMFEIntg) :: DYNAMIC_SOLVER_DARCY_OUTPUT_TYPE
-  INTEGER(CMFEIntg) :: LINEAR_SOLVER_DARCY_OUTPUT_TYPE
-  INTEGER(CMFEIntg) :: LINEAR_SOLVER_MAT_PROPERTIES_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY
+  INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_DARCY_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: LINEAR_SOLVER_DARCY_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: LINEAR_SOLVER_MAT_PROPERTIES_OUTPUT_TYPE
 
-  REAL(CMFEDP) :: GEOMETRY_TOLERANCE
-  INTEGER(CMFEIntg) :: BASIS_XI_INTERPOLATION_SOLID
-  REAL(CMFEDP) :: INITIAL_FIELD_DARCY(4)
-  REAL(CMFEDP) :: DIVERGENCE_TOLERANCE
-  REAL(CMFEDP) :: RELATIVE_TOLERANCE
-  REAL(CMFEDP) :: ABSOLUTE_TOLERANCE
-  REAL(CMFEDP) :: LINESEARCH_ALPHA
-  REAL(CMFEDP) :: VALUE
-  REAL(CMFEDP) :: POROSITY_PARAM_DARCY, PERM_OVER_VIS_PARAM_DARCY
-  REAL(CMFEDP) :: INNER_PRESSURE,OUTER_PRESSURE
+  REAL(CMISSRP) :: GEOMETRY_TOLERANCE
+  INTEGER(CMISSIntg) :: BASIS_XI_INTERPOLATION_SOLID
+  REAL(CMISSRP) :: INITIAL_FIELD_DARCY(4)
+  REAL(CMISSRP) :: DIVERGENCE_TOLERANCE
+  REAL(CMISSRP) :: RELATIVE_TOLERANCE
+  REAL(CMISSRP) :: ABSOLUTE_TOLERANCE
+  REAL(CMISSRP) :: LINESEARCH_ALPHA
+  REAL(CMISSRP) :: VALUE
+  REAL(CMISSRP) :: POROSITY_PARAM_DARCY, PERM_OVER_VIS_PARAM_DARCY
+  REAL(CMISSRP) :: INNER_PRESSURE,OUTER_PRESSURE
 
   LOGICAL :: EXPORT_FIELD_IO
   LOGICAL :: LINEAR_SOLVER_DARCY_DIRECT_FLAG
@@ -188,15 +188,15 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   TYPE(cmfe_MeshElementsType),allocatable :: Elements(:)
 
   !Other variables
-  INTEGER(CMFEIntg),ALLOCATABLE,TARGET :: Face1Nodes(:),Face2Nodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE,TARGET :: Face3Nodes(:),Face4Nodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE,TARGET :: Face5Nodes(:),Face6Nodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE,TARGET :: Face7Nodes(:),Face8Nodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE,TARGET :: Face9Nodes(:),Face10Nodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE,TARGET :: Face11Nodes(:),Face12Nodes(:)
-  INTEGER(CMFEIntg) :: FaceXi(6)
-  INTEGER(CMFEIntg) :: NN,NODE,NodeDomain
-  REAL(CMFEDP) :: XCoord,YCoord,ZCoord
+  INTEGER(CMISSIntg),ALLOCATABLE,TARGET :: Face1Nodes(:),Face2Nodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE,TARGET :: Face3Nodes(:),Face4Nodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE,TARGET :: Face5Nodes(:),Face6Nodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE,TARGET :: Face7Nodes(:),Face8Nodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE,TARGET :: Face9Nodes(:),Face10Nodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE,TARGET :: Face11Nodes(:),Face12Nodes(:)
+  INTEGER(CMISSIntg) :: FaceXi(6)
+  INTEGER(CMISSIntg) :: NN,NODE,NodeDomain
+  REAL(CMISSRP) :: XCoord,YCoord,ZCoord
   LOGICAL :: X_FIXED,Y_FIXED,X_OKAY,Y_OKAY
 
 #ifdef WIN32
@@ -207,11 +207,11 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   !Generic CMISS variables
 
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: Err
 
 
-  INTEGER(CMFEIntg) :: DIAG_LEVEL_LIST(5)
+  INTEGER(CMISSIntg) :: DIAG_LEVEL_LIST(5)
 !   CHARACTER(LEN=255) :: DIAG_ROUTINE_LIST(8) !,TIMING_ROUTINE_LIST(1)
   CHARACTER(LEN=255) :: DIAG_ROUTINE_LIST(1) !,TIMING_ROUTINE_LIST(1)
 
@@ -223,45 +223,45 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   !Test program parameters
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometrySolidUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometrySolidNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometrySolidNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometrySolidUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometrySolidNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometrySolidNumberOfComponents=3
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreSolidUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreSolidNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreSolidNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreSolidUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreSolidNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreSolidNumberOfComponents=3
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialSolidUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialSolidNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialSolidNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialSolidUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialSolidNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialSolidNumberOfComponents=3
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentSolidUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentSolidNumberOfVariables=4
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentSolidNumberOfComponents=4
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentFluidNumberOfComponents=4  !(u,v,w,m)
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentSolidUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentSolidNumberOfVariables=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentSolidNumberOfComponents=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentFluidNumberOfComponents=4  !(u,v,w,m)
 
-  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldDarcyUserNumber=15
+  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldDarcyUserNumber=15
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationSetSolidUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldSolidUserNumber=25
+  INTEGER(CMISSIntg), PARAMETER :: EquationSetSolidUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldSolidUserNumber=25
 
-  INTEGER(CMFEIntg), PARAMETER :: SolidDisplMeshComponentNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: SolidLagrMultMeshComponentNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: SolidGeometryMeshComponentNumber=SolidDisplMeshComponentNumber
+  INTEGER(CMISSIntg), PARAMETER :: SolidDisplMeshComponentNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: SolidLagrMultMeshComponentNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: SolidGeometryMeshComponentNumber=SolidDisplMeshComponentNumber
 
-  INTEGER(CMFEIntg), PARAMETER :: DarcyVelMeshComponentNumber=SolidLagrMultMeshComponentNumber
-  INTEGER(CMFEIntg), PARAMETER :: DarcyMassIncreaseMeshComponentNumber=SolidLagrMultMeshComponentNumber
-  INTEGER(CMFEIntg), PARAMETER :: DarcyGeometryMeshComponentNumber=SolidDisplMeshComponentNumber
+  INTEGER(CMISSIntg), PARAMETER :: DarcyVelMeshComponentNumber=SolidLagrMultMeshComponentNumber
+  INTEGER(CMISSIntg), PARAMETER :: DarcyMassIncreaseMeshComponentNumber=SolidLagrMultMeshComponentNumber
+  INTEGER(CMISSIntg), PARAMETER :: DarcyGeometryMeshComponentNumber=SolidDisplMeshComponentNumber
                                    !is set to 'SolidDisplMeshComponentNumber' since this is how the Darcy geometry
                                    !  gets updated
 
   !Program types
   !Program variables
 
-  REAL(CMFEDP) :: DYNAMIC_SOLVER_DARCY_START_TIME
-  REAL(CMFEDP) :: DYNAMIC_SOLVER_DARCY_STOP_TIME
-  REAL(CMFEDP) :: DYNAMIC_SOLVER_DARCY_THETA
-  REAL(CMFEDP) :: DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
+  REAL(CMISSRP) :: DYNAMIC_SOLVER_DARCY_START_TIME
+  REAL(CMISSRP) :: DYNAMIC_SOLVER_DARCY_STOP_TIME
+  REAL(CMISSRP) :: DYNAMIC_SOLVER_DARCY_THETA
+  REAL(CMISSRP) :: DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
 
   !CMISS variables
 
@@ -274,11 +274,11 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   TYPE(cmfe_SolverType) :: SolverSolid
   TYPE(cmfe_SolverEquationsType) :: SolverEquationsSolid
 
-  INTEGER(CMFEIntg),allocatable :: surface_lin_inner(:),surface_lin_outer(:),surface_lin_base(:)
-  INTEGER(CMFEIntg),allocatable :: surface_quad_inner(:),surface_quad_outer(:),surface_quad_base(:)
+  INTEGER(CMISSIntg),allocatable :: surface_lin_inner(:),surface_lin_outer(:),surface_lin_base(:)
+  INTEGER(CMISSIntg),allocatable :: surface_quad_inner(:),surface_quad_outer(:),surface_quad_base(:)
 
-  INTEGER(CMFEIntg),allocatable :: ElementUserNodes(:)
-  INTEGER(CMFEIntg) :: NUMBER_USER_ELEMENT_NODES
+  INTEGER(CMISSIntg),allocatable :: ElementUserNodes(:)
+  INTEGER(CMISSIntg) :: NUMBER_USER_ELEMENT_NODES
 
   !End - Program variables and types (finite elasticity part)
 
@@ -315,15 +315,15 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 !   BASIS_XI_INTERPOLATION_SOLID=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
   BASIS_XI_INTERPOLATION_SOLID=CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION
   !Set geometric tolerance
-  GEOMETRY_TOLERANCE = 1.0E-12_CMFEDP
+  GEOMETRY_TOLERANCE = 1.0E-12_CMISSRP
   !Set initial values
-  INITIAL_FIELD_DARCY(1)=0.0_CMFEDP
-  INITIAL_FIELD_DARCY(2)=0.0_CMFEDP
-  INITIAL_FIELD_DARCY(3)=0.0_CMFEDP
-  INITIAL_FIELD_DARCY(4)=0.0_CMFEDP
+  INITIAL_FIELD_DARCY(1)=0.0_CMISSRP
+  INITIAL_FIELD_DARCY(2)=0.0_CMISSRP
+  INITIAL_FIELD_DARCY(3)=0.0_CMISSRP
+  INITIAL_FIELD_DARCY(4)=0.0_CMISSRP
   !Set material parameters
-  POROSITY_PARAM_DARCY=0.1_CMFEDP
-  PERM_OVER_VIS_PARAM_DARCY=1.0_CMFEDP
+  POROSITY_PARAM_DARCY=0.1_CMISSRP
+  PERM_OVER_VIS_PARAM_DARCY=1.0_CMISSRP
   !Set output parameter
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
   DYNAMIC_SOLVER_DARCY_OUTPUT_TYPE=CMFE_SOLVER_PROGRESS_OUTPUT
@@ -332,20 +332,20 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   EQUATIONS_DARCY_OUTPUT=CMFE_EQUATIONS_NO_OUTPUT
 
   !Set time parameter
-  DYNAMIC_SOLVER_DARCY_START_TIME=1.0E-3_CMFEDP
-  DYNAMIC_SOLVER_DARCY_TIME_INCREMENT=1.0e-3_CMFEDP
-  DYNAMIC_SOLVER_DARCY_STOP_TIME=10_CMFEIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
-  DYNAMIC_SOLVER_DARCY_THETA=1.0_CMFEDP !2.0_CMFEDP/3.0_CMFEDP
+  DYNAMIC_SOLVER_DARCY_START_TIME=1.0E-3_CMISSRP
+  DYNAMIC_SOLVER_DARCY_TIME_INCREMENT=1.0e-3_CMISSRP
+  DYNAMIC_SOLVER_DARCY_STOP_TIME=10_CMISSIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
+  DYNAMIC_SOLVER_DARCY_THETA=1.0_CMISSRP !2.0_CMISSRP/3.0_CMISSRP
   !Set result output parameter
   DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY=1
   !Set solver parameters
   LINEAR_SOLVER_DARCY_DIRECT_FLAG=.TRUE.
-  RELATIVE_TOLERANCE=1.0E-10_CMFEDP !default: 1.0E-05_CMFEDP
-  ABSOLUTE_TOLERANCE=1.0E-10_CMFEDP !default: 1.0E-10_CMFEDP
-  DIVERGENCE_TOLERANCE=1.0E5_CMFEDP !default: 1.0E5
-  MAXIMUM_ITERATIONS=10000_CMFEIntg !default: 100000
-  RESTART_VALUE=30_CMFEIntg !default: 30
-  LINESEARCH_ALPHA=1.0_CMFEDP
+  RELATIVE_TOLERANCE=1.0E-10_CMISSRP !default: 1.0E-05_CMISSRP
+  ABSOLUTE_TOLERANCE=1.0E-10_CMISSRP !default: 1.0E-10_CMISSRP
+  DIVERGENCE_TOLERANCE=1.0E5_CMISSRP !default: 1.0E5
+  MAXIMUM_ITERATIONS=10000_CMISSIntg !default: 100000
+  RESTART_VALUE=30_CMISSIntg !default: 30
+  LINESEARCH_ALPHA=1.0_CMISSRP
 
 
   !
@@ -524,13 +524,13 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   !Set material parameters
   CALL cmfe_Field_ComponentValuesInitialise(MaterialFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1, &
-    & 2.0_CMFEDP,Err)
-!   CALL cmfe_Field_ComponentValuesInitialise(MaterialFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0e3_CMFEDP,Err)
+    & 2.0_CMISSRP,Err)
+!   CALL cmfe_Field_ComponentValuesInitialise(MaterialFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0e3_CMISSRP,Err)
   CALL cmfe_Field_ComponentValuesInitialise(MaterialFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2, &
-    & 6.0_CMFEDP,Err)
-!   CALL cmfe_Field_ComponentValuesInitialise(MaterialFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,33.0_CMFEDP,Err)
+    & 6.0_CMISSRP,Err)
+!   CALL cmfe_Field_ComponentValuesInitialise(MaterialFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,33.0_CMISSRP,Err)
   CALL cmfe_Field_ComponentValuesInitialise(MaterialFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3, &
-    & 10.0_CMFEDP,Err)
+    & 10.0_CMISSRP,Err)
 
 
   CALL cmfe_EquationsSet_MaterialsCreateStart(EquationsSetSolid,FieldMaterialSolidUserNumber,MaterialFieldSolid,Err)
@@ -559,8 +559,8 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   CALL cmfe_Field_GeometricFieldSet(DependentFieldSolid,GeometricFieldSolid,Err)
   CALL cmfe_Field_DependentTypeSet(DependentFieldSolid,CMFE_FIELD_DEPENDENT_TYPE,Err)
   CALL cmfe_Field_NumberOfVariablesSet(DependentFieldSolid,FieldDependentSolidNumberOfVariables,Err)
-  CALL cmfe_Field_VariableTypesSet(DependentFieldSolid,(/CMFE_FIELD_U_VARIABLE_TYPE, &
-    & CMFE_FIELD_DELUDELN_VARIABLE_TYPE,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_FIELD_DELVDELN_VARIABLE_TYPE/),Err)
+  CALL cmfe_Field_VariableTypesSet(DependentFieldSolid,[CMFE_FIELD_U_VARIABLE_TYPE, &
+    & CMFE_FIELD_DELUDELN_VARIABLE_TYPE,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_FIELD_DELVDELN_VARIABLE_TYPE],Err)
   CALL cmfe_Field_NumberOfComponentsSet(DependentFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,FieldDependentSolidNumberOfComponents,Err)
   CALL cmfe_Field_NumberOfComponentsSet(DependentFieldSolid,CMFE_FIELD_DELUDELN_VARIABLE_TYPE, &
     & FieldDependentSolidNumberOfComponents,Err)
@@ -652,11 +652,11 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   CALL cmfe_EquationsSet_IndependentCreateFinish(EquationsSetDarcy,Err)
 
   CALL cmfe_Field_ComponentValuesInitialise(IndependentFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ComponentValuesInitialise(IndependentFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ComponentValuesInitialise(IndependentFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
 
   !
   !================================================================================================================================
@@ -682,7 +682,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   NODE_NUMBER = 1
   ELEMENT_NUMBER = 15
   COMPONENT_NUMBER = 4
-  VALUE = 4.2_CMFEDP
+  VALUE = 4.2_CMISSRP
 !   CALL cmfe_Field_ParameterSetUpdateElement(RegionUserNumber,SourceFieldDarcyUserNumber,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
 !     & ELEMENT_NUMBER,COMPONENT_NUMBER,VALUE,Err)
 
@@ -740,7 +740,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
     & CMFE_FIELD_VALUES_SET_TYPE, &
     & 3,DependentFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,Err)
   CALL cmfe_Field_ComponentValuesInitialise(DependentFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4, &
-    & 0.0_CMFEDP, &
+    & 0.0_CMISSRP, &
     & Err)
 
   ! end Solid
@@ -791,7 +791,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   CALL cmfe_Problem_SolversCreateStart(Problem,Err)
 
   ! Solid
-  CALL cmfe_Problem_SolverGet(Problem,(/ControlLoopSubiterationNumber,ControlLoopSolidNumber,CMFE_CONTROL_LOOP_NODE/), &
+  CALL cmfe_Problem_SolverGet(Problem,[ControlLoopSubiterationNumber,ControlLoopSolidNumber,CMFE_CONTROL_LOOP_NODE], &
     & SolverSolidIndex,SolverSolid,Err)
   CALL cmfe_Solver_OutputTypeSet(SolverSolid,CMFE_SOLVER_PROGRESS_OUTPUT,Err)
 !   CALL cmfe_Solver_NewtonJacobianCalculationTypeSet(SolverSolid,CMFE_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,Err)
@@ -809,7 +809,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
 
   !Darcy
-  CALL cmfe_Problem_SolverGet(Problem,(/ControlLoopSubiterationNumber,ControlLoopFluidNumber,CMFE_CONTROL_LOOP_NODE/), &
+  CALL cmfe_Problem_SolverGet(Problem,[ControlLoopSubiterationNumber,ControlLoopFluidNumber,CMFE_CONTROL_LOOP_NODE], &
     & SolverDarcyIndex,DynamicSolverDarcy,Err)
   CALL cmfe_Solver_OutputTypeSet(DynamicSolverDarcy,DYNAMIC_SOLVER_DARCY_OUTPUT_TYPE,Err)
   CALL cmfe_Solver_DynamicThetaSet(DynamicSolverDarcy,DYNAMIC_SOLVER_DARCY_THETA,Err)
@@ -844,14 +844,14 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
   CALL cmfe_Problem_SolverEquationsCreateStart(Problem,Err)
   !
   !Get the finite elasticity solver equations
-  CALL cmfe_Problem_SolverGet(Problem,(/ControlLoopSubiterationNumber,ControlLoopSolidNumber,CMFE_CONTROL_LOOP_NODE/), &
+  CALL cmfe_Problem_SolverGet(Problem,[ControlLoopSubiterationNumber,ControlLoopSolidNumber,CMFE_CONTROL_LOOP_NODE], &
     & SolverSolidIndex,SolverSolid,Err)
   CALL cmfe_Solver_SolverEquationsGet(SolverSolid,SolverEquationsSolid,Err)
   CALL cmfe_SolverEquations_SparsityTypeSet(SolverEquationsSolid,CMFE_SOLVER_SPARSE_MATRICES,Err)
   CALL cmfe_SolverEquations_EquationsSetAdd(SolverEquationsSolid,EquationsSetSolid,EquationsSetIndex,Err)
   !
   !Get the Darcy solver equations
-  CALL cmfe_Problem_SolverGet(Problem,(/ControlLoopSubiterationNumber,ControlLoopFluidNumber,CMFE_CONTROL_LOOP_NODE/), &
+  CALL cmfe_Problem_SolverGet(Problem,[ControlLoopSubiterationNumber,ControlLoopFluidNumber,CMFE_CONTROL_LOOP_NODE], &
     & SolverDarcyIndex,LinearSolverDarcy,Err)
   CALL cmfe_Solver_SolverEquationsGet(LinearSolverDarcy,SolverEquationsDarcy,Err)
   CALL cmfe_SolverEquations_SparsityTypeSet(SolverEquationsDarcy,CMFE_SOLVER_SPARSE_MATRICES,Err)
@@ -871,8 +871,8 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
   !write(*,*)'surface_quad_base = ',surface_quad_base
 
-  INNER_PRESSURE = 0.5_CMFEDP
-  OUTER_PRESSURE = 0.0_CMFEDP
+  INNER_PRESSURE = 0.5_CMISSRP
+  OUTER_PRESSURE = 0.0_CMISSRP
 
   ! ASSIGN BOUNDARY CONDITIONS
   !Fix base of the ellipsoid in z direction
@@ -925,14 +925,14 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
         & XCoord,Err)
       CALL cmfe_Field_ParameterSetGetNode(GeometricFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,NODE,2, &
         & YCoord,Err)
-      IF(ABS(XCoord)<1.0E-6_CMFEDP) THEN
+      IF(ABS(XCoord)<1.0E-6_CMISSRP) THEN
 !       IF(NODE==600) THEN
         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NODE,1, &
           & CMFE_BOUNDARY_CONDITION_FIXED,XCoord,Err)
         WRITE(*,*) "FIXING NODE",NODE,"IN X DIRECTION"
         X_FIXED=.TRUE.
       ENDIF
-      IF(ABS(YCoord)<1.0E-6_CMFEDP) THEN
+      IF(ABS(YCoord)<1.0E-6_CMISSRP) THEN
 !       IF(NODE==584) THEN
         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NODE,2, &
           & CMFE_BOUNDARY_CONDITION_FIXED,YCoord,Err)
@@ -973,7 +973,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
     DO NN=1,SIZE(surface_lin_inner,1)
       NODE_NUMBER = surface_lin_inner(NN)
       COMPONENT_NUMBER = 3
-      VALUE = 1.0_CMFEDP
+      VALUE = 1.0_CMISSRP
       CALL cmfe_Field_ParameterSetUpdateNode(IndependentFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1, &
         & CMFE_NO_GLOBAL_DERIV,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
@@ -987,7 +987,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
     DO NN=1,SIZE(surface_lin_outer,1)
       NODE_NUMBER = surface_lin_outer(NN)
       COMPONENT_NUMBER = 3
-      VALUE = 1.0_CMFEDP
+      VALUE = 1.0_CMISSRP
       CALL cmfe_Field_ParameterSetUpdateNode(IndependentFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1, &
         & CMFE_NO_GLOBAL_DERIV,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
     ENDDO
@@ -999,7 +999,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
     !Set all top surface nodes to Darcy inflow BC
     DO NN=1,SIZE(surface_lin_base,1)
-!       VALUE = +0.0_CMFEDP  ! Mind the sign !
+!       VALUE = +0.0_CMISSRP  ! Mind the sign !
 !       COMPONENT_NUMBER = 3
 !       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentFieldSolid,CMFE_FIELD_V_VARIABLE_TYPE,1,1,surface_lin_base(NN), &
 !         & COMPONENT_NUMBER,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
@@ -1007,7 +1007,7 @@ PROGRAM FINITEELASTICITYDARCYIOEXAMPLE
 
       NODE_NUMBER = surface_lin_base(NN)
       COMPONENT_NUMBER = 2 !normal component index
-      VALUE = 1.0_CMFEDP
+      VALUE = 1.0_CMISSRP
       CALL cmfe_Field_ParameterSetUpdateNode(IndependentFieldDarcy,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1, &
         & CMFE_NO_GLOBAL_DERIV,NODE_NUMBER,COMPONENT_NUMBER,VALUE,Err)
 

@@ -42,6 +42,7 @@
 !> Main program
 PROGRAM ActiveContractionExample
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 
@@ -49,33 +50,33 @@ PROGRAM ActiveContractionExample
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: HEIGHT=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: LENGTH=1.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: HEIGHT=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: LENGTH=1.0_CMISSRP
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: QuadraticBasisUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: LinearBasisUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: FieldGPUserNumber=5 ! temp/test
-  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: QuadraticBasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: LinearBasisUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldGPUserNumber=5 ! temp/test
+  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=7
 
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfMeshComponents=2
-  INTEGER(CMFEIntg), PARAMETER :: QuadraticMeshComponentNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: LinearMeshComponentNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshComponents=2
+  INTEGER(CMISSIntg), PARAMETER :: QuadraticMeshComponentNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: LinearMeshComponentNumber=2
 
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationSetUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
-  REAL(CMFEDP), PARAMETER :: START_TIME = 0.0, END_TIME = 1000.0, DT = 1  ! ms
+  REAL(CMISSRP), PARAMETER :: START_TIME = 0.0, END_TIME = 1000.0, DT = 1  ! ms
 
   LOGICAL, PARAMETER :: TEST_GAUSS_POINT_FIELD = .FALSE.
 
@@ -83,22 +84,22 @@ PROGRAM ActiveContractionExample
 
   !Program variables
 
-  INTEGER(CMFEIntg), PARAMETER, DIMENSION(1:27) :: ROTATE_ELEM = [ 1, 2, 3,10,11,12,19,20,21, &
+  INTEGER(CMISSIntg), PARAMETER, DIMENSION(1:27) :: ROTATE_ELEM = [ 1, 2, 3,10,11,12,19,20,21, &
                                                                   &  4, 5, 6,13,14,15,22,23,24, &  ! swap xi2 and xi3 directions for fiber angle
                                                                   &  7, 8, 9,16,17,18,25,26,27 ]  ! swap xi2 and xi3 directions for fiber angle
 
-  INTEGER(CMFEIntg) :: EquationsSetIndex  
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: D, E, N, I
+  INTEGER(CMISSIntg) :: EquationsSetIndex  
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: D, E, N, I
 
-  REAL(CMFEDP) :: TMP
-  REAL(CMFEDP), DIMENSION(1:7) :: COSTA_PARAMS =  [ 0.2, 30.0, 12.0, 14.0, 14.0, 10.0, 18.0 ] ! a bff bfs bfn bss bsn bnn
+  REAL(CMISSRP) :: TMP
+  REAL(CMISSRP), DIMENSION(1:7) :: COSTA_PARAMS =  [ 0.2, 30.0, 12.0, 14.0, 14.0, 10.0, 18.0 ] ! a bff bfs bfn bss bsn bnn
 
-  INTEGER(CMFEIntg), dimension(:,:), allocatable :: Elements
-  REAL(CMFEDP)     , dimension(:,:), allocatable :: Nodes
-  REAL(CMFEDP)     , dimension(:,:), allocatable :: DirichletConditions
-  REAL(CMFEDP)     , dimension(:,:), allocatable :: Fibers
-  REAL(CMFEDP)     , dimension(:,:), allocatable :: ActivationTimes
+  INTEGER(CMISSIntg), dimension(:,:), allocatable :: Elements
+  REAL(CMISSRP)     , dimension(:,:), allocatable :: Nodes
+  REAL(CMISSRP)     , dimension(:,:), allocatable :: DirichletConditions
+  REAL(CMISSRP)     , dimension(:,:), allocatable :: Fibers
+  REAL(CMISSRP)     , dimension(:,:), allocatable :: ActivationTimes
 
   !CMISS variables
   TYPE(cmfe_BasisType) :: QuadraticBasis, LinearBasis
@@ -119,7 +120,7 @@ PROGRAM ActiveContractionExample
   TYPE(cmfe_ControlLoopType) :: ControlLoop
 
   !Generic CMISS variables
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: Err
 
   !Intialise cmiss
   CALL cmfe_Initialise(WorldCoordinateSystem,WorldRegion,Err)
@@ -270,9 +271,9 @@ PROGRAM ActiveContractionExample
 
   CALL cmfe_Field_CreateFinish(GPfield,Err)
 
-  CALL cmfe_Field_ComponentValuesInitialise(GPfield,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,3.14_CMFEDP,Err) ! init!
-  CALL cmfe_Field_ComponentValuesInitialise(GPfield,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,2.17_CMFEDP,Err) ! init!
-  CALL cmfe_Field_ComponentValuesInitialise(GPfield,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,4.14_CMFEDP,Err) ! set to const
+  CALL cmfe_Field_ComponentValuesInitialise(GPfield,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,3.14_CMISSRP,Err) ! init!
+  CALL cmfe_Field_ComponentValuesInitialise(GPfield,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,2.17_CMISSRP,Err) ! init!
+  CALL cmfe_Field_ComponentValuesInitialise(GPfield,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,4.14_CMISSRP,Err) ! set to const
 
   ! test gauss point field
   D=0;
@@ -323,7 +324,7 @@ CALL cmfe_EquationsSet_CreateStart(EquationSetUserNumber,Region,FibreField,[CMFE
      & COSTA_PARAMS(I),Err)
   END DO
 
-!  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0_CMFEDP,Err) ! activate at time 2. TODO: inhomogeneous
+!  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0_CMISSRP,Err) ! activate at time 2. TODO: inhomogeneous
   ! inhomogeneous activation times from file
   DO E=1,size(Elements,2)
   DO I=1,27
@@ -352,7 +353,7 @@ CALL cmfe_EquationsSet_CreateStart(EquationSetUserNumber,Region,FibreField,[CMFE
     & 2,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,Err)
   CALL cmfe_Field_ParametersToFieldParametersComponentCopy(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
     & 3,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,Err)
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4,-0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4,-0.0_CMISSRP, &
     & Err) ! -8?
 
   !Define the problem
@@ -425,13 +426,13 @@ CALL cmfe_EquationsSet_CreateStart(EquationSetUserNumber,Region,FibreField,[CMFE
 
 contains
   subroutine read_mesh(fp, elements, node_coords, fixed_nodes, fibers)
-    INTEGER(CMFEIntg), intent(in)    :: fp  !< file 'pointer'
-    INTEGER(CMFEIntg), dimension(:,:), allocatable, intent(inout) :: elements !< element topology
-    REAL(CMFEDP)     , dimension(:,:), allocatable, intent(inout) :: node_coords  !< initial positions etc
-    REAL(CMFEDP)     , dimension(:,:), allocatable, intent(inout) :: fixed_nodes  !< dirichlet boundary conditions
-    REAL(CMFEDP)     , dimension(:,:), allocatable, intent(inout) :: fibers       !< unit vectors for fiber dir
+    INTEGER(CMISSIntg), intent(in)    :: fp  !< file 'pointer'
+    INTEGER(CMISSIntg), dimension(:,:), allocatable, intent(inout) :: elements !< element topology
+    REAL(CMISSRP)     , dimension(:,:), allocatable, intent(inout) :: node_coords  !< initial positions etc
+    REAL(CMISSRP)     , dimension(:,:), allocatable, intent(inout) :: fixed_nodes  !< dirichlet boundary conditions
+    REAL(CMISSRP)     , dimension(:,:), allocatable, intent(inout) :: fibers       !< unit vectors for fiber dir
 
-    INTEGER(CMFEIntg) :: number_of_elts, number_of_dims, number_of_fixednodes, maxnodenr, i,j, eltno, nodeno
+    INTEGER(CMISSIntg) :: number_of_elts, number_of_dims, number_of_fixednodes, maxnodenr, i,j, eltno, nodeno
 
     character(len=256) :: desc_str
  
@@ -494,9 +495,9 @@ contains
 
 
   subroutine read_activation_times(fp, activtime)
-    INTEGER(CMFEIntg), intent(in)    :: fp  !< file 'pointer'
-    REAL(CMFEDP), dimension(:,:), allocatable, intent(inout) :: activtime !< elements x 27 array of activation times
-    INTEGER(CMFEIntg)   :: num_elt, num_gp, I
+    INTEGER(CMISSIntg), intent(in)    :: fp  !< file 'pointer'
+    REAL(CMISSRP), dimension(:,:), allocatable, intent(inout) :: activtime !< elements x 27 array of activation times
+    INTEGER(CMISSIntg)   :: num_elt, num_gp, I
     read (fp,*) num_elt, num_gp
     write(*,*) 'reading activation times on ',num_elt,' elements / ',num_gp,' Gauss points'
     allocate( activtime(1:num_elt,1:num_gp))

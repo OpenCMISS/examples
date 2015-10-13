@@ -1,6 +1,6 @@
 !> \file
 !> \author Chris Bradley
-!> \brief This is an example program to solve a diffusion equation using openCMISS calls.
+!> \brief This is an example program to solve a diffusion equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -16,7 +16,7 @@
 !> License for the specific language governing rights and limitations
 !> under the License.
 !>
-!> The Original Code is openCMISS
+!> The Original Code is OpenCMISS
 !>
 !> The Initial Developer of the Original Code is University of Auckland,
 !> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -40,7 +40,7 @@
 !>
 
 !> \example ClassicalField/AdvectionDiffusion/StaticAdvectionDiffusion/src/StaticAdvectionDiffusionExample.f90
-!! Example program to solve a diffusion equation using openCMISS calls.
+!! Example program to solve a diffusion equation using OpenCMISS calls.
 !! \par Latest Builds:
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/Diffusion/build-intel'>Linux Intel Build</a>
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/ClassicalField/Diffusion/build-gnu'>Linux GNU Build</a>
@@ -49,9 +49,9 @@
 !> Main program
 PROGRAM STATICADVECTIONDIFFUSIONSUPGEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
-
 
 #ifdef WIN32
   USE IFQWIN
@@ -61,37 +61,37 @@ PROGRAM STATICADVECTIONDIFFUSIONSUPGEXAMPLE
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: HEIGHT=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=2.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: LENGTH=3.0_CMFEDP 
-  REAL(CMFEDP), POINTER :: GEOMETRIC_PARAMETERS(:)
+  REAL(CMISSRP), PARAMETER :: HEIGHT=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=2.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: LENGTH=3.0_CMISSRP 
+  REAL(CMISSRP), POINTER :: GEOMETRIC_PARAMETERS(:)
   
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=12
-  INTEGER(CMFEIntg), PARAMETER :: ControlLoopNode=0
-  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: AnalyticFieldUserNumber=14
-  INTEGER(CMFEIntg), PARAMETER :: SourceFieldUserNumber=15
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: ControlLoopNode=0
+  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumber=15
 
 
   !Program types
   
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
-  INTEGER(CMFEIntg) :: NUMBER_OF_DOMAINS
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
+  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
   
-  INTEGER(CMFEIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: MPI_IERROR
   
     !CMISS variables
 
@@ -122,9 +122,9 @@ PROGRAM STATICADVECTIONDIFFUSIONSUPGEXAMPLE
   
   !Generic CMISS variables
   
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: FirstNodeNumber,LastNodeNumber
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
+  INTEGER(CMISSIntg) :: Err
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -323,9 +323,9 @@ PROGRAM STATICADVECTIONDIFFUSIONSUPGEXAMPLE
 !     LastNodeNumber=(NUMBER_GLOBAL_X_ELEMENTS+1)*(NUMBER_GLOBAL_Y_ELEMENTS+1)*(NUMBER_GLOBAL_Z_ELEMENTS+1)
 !   ENDIF
 !   CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,CMFE_FIELD_U_VARIABLE_TYPE,1,FirstNodeNumber,1, &
-!     & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+!     & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
 !   CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,1,LastNodeNumber,1, &
-!     & CMFE_BOUNDARY_CONDITION_FIXED,1.0_CMFEDP,Err)
+!     & CMFE_BOUNDARY_CONDITION_FIXED,1.0_CMISSRP,Err)
 !   !Finish the creation of the equations set boundary conditions
 !   CALL cmfe_EquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
 
@@ -354,7 +354,7 @@ PROGRAM STATICADVECTIONDIFFUSIONSUPGEXAMPLE
   !Get the control loop
   !CALL cmfe_Problem_ControlLoopGet(Problem,ControlLoopNode,ControlLoop,Err)
   !Set the times
-  !CALL cmfe_ControlLoop_TimesSet(ControlLoop,0.0_CMFEDP,1.0_CMFEDP,0.1_CMFEDP,Err)
+  !CALL cmfe_ControlLoop_TimesSet(ControlLoop,0.0_CMISSRP,1.0_CMISSRP,0.1_CMISSRP,Err)
   !Finish creating the problem control loop
   CALL cmfe_Problem_ControlLoopCreateFinish(Problem,Err)
 

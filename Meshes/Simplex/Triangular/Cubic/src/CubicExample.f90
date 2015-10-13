@@ -48,7 +48,8 @@
 !> Main program
 PROGRAM CUBICTRIANGLESIMPLEXEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 #ifdef WIN32
@@ -59,24 +60,24 @@ PROGRAM CUBICTRIANGLESIMPLEXEXAMPLE
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: HEIGHT=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=2.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: HEIGHT=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=2.0_CMISSRP
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
  
   !Program types
   
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS
   
-  INTEGER(CMFEIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: MPI_IERROR
 
   !CMISS variables
 
@@ -97,8 +98,8 @@ PROGRAM CUBICTRIANGLESIMPLEXEXAMPLE
   
   !Generic CMISS variables
   
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: Err
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -116,7 +117,7 @@ PROGRAM CUBICTRIANGLESIMPLEXEXAMPLE
 
   CALL cmfe_ErrorHandlingModeSet(CMFE_ERRORS_TRAP_ERROR,Err)
 
-  CALL cmfe_DiagnosticsSetOn(CMFE_IN_DIAG_TYPE,(/1,2,3,4,5/),"Diagnostics",(/"MESH_TOPOLOGY_ELEMENTS_CREATE_FINISH"/),Err)
+  CALL cmfe_DiagnosticsSetOn(CMFE_IN_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["MESH_TOPOLOGY_ELEMENTS_CREATE_FINISH"],Err)
 
   !Get the computational nodes information
   CALL cmfe_ComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -153,8 +154,8 @@ PROGRAM CUBICTRIANGLESIMPLEXEXAMPLE
   !Set the basis to be a triangular basis
   CALL cmfe_Basis_NumberOfXiSet(Basis,2,Err)
   !Set the interpolation to be cubic
-  CALL cmfe_Basis_InterpolationXiSet(Basis,(/CMFE_BASIS_CUBIC_SIMPLEX_INTERPOLATION, &
-    & CMFE_BASIS_CUBIC_SIMPLEX_INTERPOLATION/),Err)
+  CALL cmfe_Basis_InterpolationXiSet(Basis,[CMFE_BASIS_CUBIC_SIMPLEX_INTERPOLATION, &
+    & CMFE_BASIS_CUBIC_SIMPLEX_INTERPOLATION],Err)
   !Finish the creation of the basis
   CALL cmfe_Basis_CreateFinish(Basis,Err)
    
@@ -166,8 +167,8 @@ PROGRAM CUBICTRIANGLESIMPLEXEXAMPLE
   !Set the default basis
   CALL cmfe_GeneratedMesh_BasisSet(GeneratedMesh,Basis,Err)   
   !Define the mesh on the region
-  CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,(/WIDTH,HEIGHT/),Err)
-  CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS/),Err)
+  CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[WIDTH,HEIGHT],Err)
+  CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS],Err)
   !Finish the creation of a generated mesh in the region
   CALL cmfe_Mesh_Initialise(Mesh,Err)
   CALL cmfe_GeneratedMesh_CreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)

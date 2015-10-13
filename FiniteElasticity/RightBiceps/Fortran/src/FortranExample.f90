@@ -49,6 +49,7 @@
 !> Main program
 PROGRAM RIGHTBICEPSACTIVECONTRACTIONEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 
@@ -60,31 +61,31 @@ PROGRAM RIGHTBICEPSACTIVECONTRACTIONEXAMPLE
 
   !Test program parameters
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: PressureBasisUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: EquationSetUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: PressureBasisUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfElements=39
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfNodes=567
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfGaussXi=3
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfElements=39
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfNodes=567
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfGaussXi=3
 
-  INTEGER(CMFEIntg), PARAMETER :: OutputFrequency=1
+  INTEGER(CMISSIntg), PARAMETER :: OutputFrequency=1
 
-  INTEGER(CMFEIntg), DIMENSION(8), PARAMETER :: Entries=[1,3,7,9,19,21,25,27]
+  INTEGER(CMISSIntg), DIMENSION(8), PARAMETER :: Entries=[1,3,7,9,19,21,25,27]
 
-  INTEGER(CMFEIntg), DIMENSION(21), PARAMETER :: TendonTopFixNodes=[35,36,37,38,41,42,43,44,119,120,121,122,139,140,179,180, &
+  INTEGER(CMISSIntg), DIMENSION(21), PARAMETER :: TendonTopFixNodes=[35,36,37,38,41,42,43,44,119,120,121,122,139,140,179,180, &
     & 181,182,199,200,205]
-  INTEGER(CMFEIntg), DIMENSION(21), PARAMETER :: TendonBottomFixNodes=[5,6,7,8,21,22,73,74,89,90,91,92,127,128,149,150,151, &
+  INTEGER(CMISSIntg), DIMENSION(21), PARAMETER :: TendonBottomFixNodes=[5,6,7,8,21,22,73,74,89,90,91,92,127,128,149,150,151, &
     & 152,187,188,208]
 
 
@@ -94,28 +95,28 @@ PROGRAM RIGHTBICEPSACTIVECONTRACTIONEXAMPLE
 
   !Program variables
 
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: NodeNumber,NodeDomain,node_idx
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: NodeNumber,NodeDomain,node_idx
 
-  INTEGER(CMFEIntg) :: FT_1,FT_2,FT_3,FT_4,FT_5,FT_6,FT_7,FT_8,FT_9, &
+  INTEGER(CMISSIntg) :: FT_1,FT_2,FT_3,FT_4,FT_5,FT_6,FT_7,FT_8,FT_9, &
     & FT_10,FT_11,FT_12,FT_13,FT_14,FT_15,FT_16,FT_17,FT_18,FT_19, &
     & FT_20,FT_21,FT_22,FT_23,FT_24,FT_25,FT_26,FT_27
 
-  REAL(CMFEDP) :: x1,x2,x3
-  REAL(CMFEDP) :: VALUE,INIT_PRESSURE
+  REAL(CMISSRP) :: x1,x2,x3
+  REAL(CMISSRP) :: VALUE,INIT_PRESSURE
 
-  INTEGER(CMFEIntg) :: i,j,k,elem_idx
-  INTEGER(CMFEIntg) :: Elem,Node
-  INTEGER(CMFEIntg) :: stat
+  INTEGER(CMISSIntg) :: i,j,k,elem_idx
+  INTEGER(CMISSIntg) :: Elem,Node
+  INTEGER(CMISSIntg) :: stat
   character(len=256) :: filename,string
 
 
-  REAL(CMFEDP), DIMENSION(NumberOfNodes,3) :: AllNodes
-  INTEGER(CMFEIntg), DIMENSION(NumberOfElements,27) :: AllElements
+  REAL(CMISSRP), DIMENSION(NumberOfNodes,3) :: AllNodes
+  INTEGER(CMISSIntg), DIMENSION(NumberOfElements,27) :: AllElements
 
-!  REAL(CMFEDP), DIMENSION(6) :: MAT_FE
-  REAL(CMFEDP), DIMENSION(11) :: MAT_FE
+!  REAL(CMISSRP), DIMENSION(6) :: MAT_FE
+  REAL(CMISSRP), DIMENSION(11) :: MAT_FE
 
   !CMISS variables
   TYPE(cmfe_BasisType) :: Basis, PressureBasis
@@ -143,7 +144,7 @@ PROGRAM RIGHTBICEPSACTIVECONTRACTIONEXAMPLE
 #endif
 
   !Generic CMISS variables
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: Err
 
 #ifdef WIN32
   !Initialise QuickWin
@@ -169,12 +170,12 @@ PROGRAM RIGHTBICEPSACTIVECONTRACTIONEXAMPLE
   !C(11)=P_max...maximum isometric stress
 
   MAT_FE= &
-    & [0.0356_CMFEDP,0.00386_CMFEDP, &
-    & 0.0000000357_CMFEDP,42.6_CMFEDP, &
-    & 2.31_CMFEDP,0.00000115_CMFEDP, &
-    & 7.99_CMFEDP,16.6_CMFEDP, &
-    & 0.0_CMFEDP,1.0_CMFEDP, &
-    & 0.3_CMFEDP]  ! MPa = N/mm^2 = 100 N/cm^2
+    & [0.0356_CMISSRP,0.00386_CMISSRP, &
+    & 0.0000000357_CMISSRP,42.6_CMISSRP, &
+    & 2.31_CMISSRP,0.00000115_CMISSRP, &
+    & 7.99_CMISSRP,16.6_CMISSRP, &
+    & 0.0_CMISSRP,1.0_CMISSRP, &
+    & 0.3_CMISSRP]  ! MPa = N/mm^2 = 100 N/cm^2
 
 
   WRITE(*,*) "Reading file: input/biceps_3D27.dat"
@@ -374,7 +375,7 @@ PROGRAM RIGHTBICEPSACTIVECONTRACTIONEXAMPLE
     & 2,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,Err)
   CALL cmfe_Field_ParametersToFieldParametersComponentCopy(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
     & 3,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,Err)
-  INIT_PRESSURE=-2.0_CMFEDP*MAT_FE(2)-MAT_FE(1)
+  INIT_PRESSURE=-2.0_CMISSRP*MAT_FE(2)-MAT_FE(1)
   CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4, &
     & INIT_PRESSURE,Err)
 
@@ -434,73 +435,73 @@ PROGRAM RIGHTBICEPSACTIVECONTRACTIONEXAMPLE
 
   ! fem group elem  3..4,13..18,20                        --> 50% muscle
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 3,10,0.5_CMFEDP,Err)
+    & 3,10,0.5_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 4,10,0.5_CMFEDP,Err)
+    & 4,10,0.5_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 13,10,0.5_CMFEDP,Err)
+    & 13,10,0.5_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 14,10,0.5_CMFEDP,Err)
+    & 14,10,0.5_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 15,10,0.5_CMFEDP,Err)
+    & 15,10,0.5_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 16,10,0.5_CMFEDP,Err)
+    & 16,10,0.5_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 17,10,0.5_CMFEDP,Err)
+    & 17,10,0.5_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 18,10,0.5_CMFEDP,Err)
+    & 18,10,0.5_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 20,10,0.5_CMFEDP,Err)
+    & 20,10,0.5_CMISSRP,Err)
 
-!  INIT_PRESSURE=0.5_CMFEDP*(-2.0_CMFEDP*MAT_FE(2)-MAT_FE(1))+0.5_CMFEDP*(-2.0_CMFEDP*MAT_FE(6)-MAT_FE(5))
+!  INIT_PRESSURE=0.5_CMISSRP*(-2.0_CMISSRP*MAT_FE(2)-MAT_FE(1))+0.5_CMISSRP*(-2.0_CMISSRP*MAT_FE(6)-MAT_FE(5))
 !  CALL cmfe_Field_ParameterSetUpdateNode(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1, &
 !    & 3,4,INIT_PRESSURE,Err)
 
   ! fem group elem  11..12                                --> 80% muscle
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 11,10,0.8_CMFEDP,Err)
+    & 11,10,0.8_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 12,10,0.8_CMFEDP,Err)
+    & 12,10,0.8_CMISSRP,Err)
 
   ! fem group elem  30..31,37                             --> 99% muscle
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 30,10,0.99_CMFEDP,Err)
+    & 30,10,0.99_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 31,10,0.99_CMFEDP,Err)
+    & 31,10,0.99_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 37,10,0.99_CMFEDP,Err)
+    & 37,10,0.99_CMISSRP,Err)
 
   ! fem group elem  1..2,9..10,19,23                      --> 99.9% muscle
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 1,10,0.999_CMFEDP,Err)
+    & 1,10,0.999_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 2,10,0.999_CMFEDP,Err)
+    & 2,10,0.999_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 9,10,0.999_CMFEDP,Err)
+    & 9,10,0.999_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 10,10,0.999_CMFEDP,Err)
+    & 10,10,0.999_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 19,10,0.999_CMFEDP,Err)
+    & 19,10,0.999_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 23,10,0.999_CMFEDP,Err)
+    & 23,10,0.999_CMISSRP,Err)
 
   ! fem group elem  24..27                                --> 100% soft tissue (all anisotropic contributions = 0)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 24,3,0.0_CMFEDP,Err)
+    & 24,3,0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 24,7,0.0_CMFEDP,Err)
+    & 24,7,0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 25,3,0.0_CMFEDP,Err)
+    & 25,3,0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 25,7,0.0_CMFEDP,Err)
+    & 25,7,0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 26,3,0.0_CMFEDP,Err)
+    & 26,3,0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 26,7,0.0_CMFEDP,Err)
+    & 26,7,0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 27,3,0.0_CMFEDP,Err)
+    & 27,3,0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateElement(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 27,7,0.0_CMFEDP,Err)
+    & 27,7,0.0_CMISSRP,Err)
 
 
   !Create the equations_set
@@ -551,8 +552,8 @@ PROGRAM RIGHTBICEPSACTIVECONTRACTIONEXAMPLE
   CALL cmfe_Solver_NewtonJacobianCalculationTypeSet(Solver,CMFE_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,Err)
   CALL cmfe_Solver_NewtonLinearSolverGet(Solver,LinearSolver,Err)
   CALL cmfe_Solver_LinearTypeSet(LinearSolver,CMFE_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
-  CALL cmfe_Solver_NewtonRelativeToleranceSet(Solver,1.E-6_CMFEDP,Err)
-  CALL cmfe_Solver_NewtonAbsoluteToleranceSet(Solver,1.E-6_CMFEDP,Err)
+  CALL cmfe_Solver_NewtonRelativeToleranceSet(Solver,1.E-6_CMISSRP,Err)
+  CALL cmfe_Solver_NewtonAbsoluteToleranceSet(Solver,1.E-6_CMISSRP,Err)
   CALL cmfe_Solver_NewtonMaximumIterationsSet(Solver,300,Err)
   CALL cmfe_Problem_SolversCreateFinish(Problem,Err)
 
@@ -578,19 +579,19 @@ PROGRAM RIGHTBICEPSACTIVECONTRACTIONEXAMPLE
 
       CALL cmfe_Field_ParameterSetGetNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,& 
         & 1,VALUE,Err)
-      VALUE=VALUE-15.8_CMFEDP
+      VALUE=VALUE-15.8_CMISSRP
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
         & CMFE_BOUNDARY_CONDITION_FIXED_INCREMENTED,VALUE,Err)
 
       CALL cmfe_Field_ParameterSetGetNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,& 
         & 2,VALUE,Err)
-      VALUE=VALUE+5.2_CMFEDP
+      VALUE=VALUE+5.2_CMISSRP
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,2, &
         & CMFE_BOUNDARY_CONDITION_FIXED_INCREMENTED,VALUE,Err)
 
       CALL cmfe_Field_ParameterSetGetNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,& 
         & 3,VALUE,Err)
-      VALUE=VALUE+31.8_CMFEDP
+      VALUE=VALUE+31.8_CMISSRP
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,3, &
         & CMFE_BOUNDARY_CONDITION_FIXED_INCREMENTED,VALUE,Err)
     ENDIF
@@ -604,19 +605,19 @@ PROGRAM RIGHTBICEPSACTIVECONTRACTIONEXAMPLE
 
       CALL cmfe_Field_ParameterSetGetNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,& 
         & 1,VALUE,Err)
-      VALUE=VALUE+10.0_CMFEDP
+      VALUE=VALUE+10.0_CMISSRP
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
         & CMFE_BOUNDARY_CONDITION_FIXED_INCREMENTED,VALUE,Err)
 
       CALL cmfe_Field_ParameterSetGetNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,& 
         & 2,VALUE,Err)
-      VALUE=VALUE+1.0_CMFEDP
+      VALUE=VALUE+1.0_CMISSRP
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,2, &
         & CMFE_BOUNDARY_CONDITION_FIXED_INCREMENTED,VALUE,Err)
 
       CALL cmfe_Field_ParameterSetGetNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,& 
         & 3,VALUE,Err)
-      VALUE=VALUE-17.7_CMFEDP
+      VALUE=VALUE-17.7_CMISSRP
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,3, &
         & CMFE_BOUNDARY_CONDITION_FIXED_INCREMENTED,VALUE,Err)
     ENDIF
@@ -636,7 +637,7 @@ PROGRAM RIGHTBICEPSACTIVECONTRACTIONEXAMPLE
 
   DO i=1,10
   
-    VALUE=REAL(i,CMFEDP)/10.0_CMFEDP
+    VALUE=REAL(i,CMISSRP)/10.0_CMISSRP
     WRITE(*,*) "activation: ", VALUE
 
     !set the activation level

@@ -48,6 +48,7 @@
 !> Main program
 PROGRAM ANALYTIC1DDIFFUSIONEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
 
 #ifdef WIN32
@@ -58,30 +59,30 @@ PROGRAM ANALYTIC1DDIFFUSIONEXAMPLE
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER ::    PI=3.141592653589793238462643383279502884197_CMFEDP
+  REAL(CMISSRP), PARAMETER ::    PI=3.141592653589793238462643383279502884197_CMISSRP
 
-  INTEGER(CMFEIntg), PARAMETER :: NUMBER_GLOBAL_X_ELEMENTS=6
-  REAL(CMFEDP), PARAMETER :: LENGTH=3.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: END_TIME=0.1_CMFEDP
-  REAL(CMFEDP), PARAMETER :: TIME_STEP=0.01_CMFEDP
-  REAL(CMFEDP), PARAMETER :: A=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: B=PI/2.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: C=0.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: K=1.0_CMFEDP
+  INTEGER(CMISSIntg), PARAMETER :: NUMBER_GLOBAL_X_ELEMENTS=6
+  REAL(CMISSRP), PARAMETER :: LENGTH=3.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: END_TIME=0.1_CMISSRP
+  REAL(CMISSRP), PARAMETER :: TIME_STEP=0.01_CMISSRP
+  REAL(CMISSRP), PARAMETER :: A=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: B=PI/2.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: C=0.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: K=1.0_CMISSRP
   
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=12
-  INTEGER(CMFEIntg), PARAMETER :: AnalyticFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=13
   !Program types
   
   !Program variables
@@ -112,8 +113,8 @@ PROGRAM ANALYTIC1DDIFFUSIONEXAMPLE
   
   !Generic CMISS variables
   
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: Err
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -260,7 +261,7 @@ PROGRAM ANALYTIC1DDIFFUSIONEXAMPLE
   !Get the control loop
   CALL cmfe_Problem_ControlLoopGet(Problem,CMFE_CONTROL_LOOP_NODE,ControlLoop,Err)
   !Set the times
-  CALL cmfe_ControlLoop_TimesSet(ControlLoop,0.0_CMFEDP,END_TIME,TIME_STEP,Err)
+  CALL cmfe_ControlLoop_TimesSet(ControlLoop,0.0_CMISSRP,END_TIME,TIME_STEP,Err)
   !Finish creating the problem control loop
   CALL cmfe_Problem_ControlLoopCreateFinish(Problem,Err)
 

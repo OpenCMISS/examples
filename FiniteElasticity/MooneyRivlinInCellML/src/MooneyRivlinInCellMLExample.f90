@@ -49,6 +49,7 @@
 !> Main program
 PROGRAM MOONEYRIVLININCELLMLEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 
@@ -62,83 +63,83 @@ PROGRAM MOONEYRIVLININCELLMLEXAMPLE
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  INTEGER(CMFEIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT!,Filename
-!  INTEGER(CMFEIntg), PARAMETER :: NumberOfElementsInEachDirection=10
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldAutoCreate=1 ! 1=yes   0=no
+!  INTEGER(CMISSIntg), PARAMETER :: NumberOfElementsInEachDirection=10
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldAutoCreate=1 ! 1=yes   0=no
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   
-  REAL(CMFEDP), PARAMETER :: HEIGHT=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: LENGTH=1.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: HEIGHT=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: LENGTH=1.0_CMISSRP
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfSpatialCoordinates=3
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: QuadraticBasisUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: LinearBasisUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfSpatialCoordinates=3
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: QuadraticBasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: LinearBasisUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
 
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfMeshDimensions=3
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfXiCoordinates=3
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfMeshComponents=2
-  INTEGER(CMFEIntg), PARAMETER :: QuadraticMeshComponentNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: LinearMeshComponentNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshDimensions=3
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfXiCoordinates=3
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshComponents=2
+  INTEGER(CMISSIntg), PARAMETER :: QuadraticMeshComponentNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: LinearMeshComponentNumber=2
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreNumberOfComponents=3
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialNumberOfComponents=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfComponents=2
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfVariables=4
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfComponentsDisplPress=4
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfComponentsStressStrain=6
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfVariables=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponentsDisplPress=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponentsStressStrain=6
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationSetUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfGaussPoints=3
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfGaussPoints=3
 
-  INTEGER(CMFEIntg), PARAMETER :: CellMLUserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: CellMLModelsFieldUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: CellMLUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: CellMLModelsFieldUserNumber=12
 ! State field is not required!
-!  INTEGER(CMFEIntg), PARAMETER :: CellMLStateFieldUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=14
-  INTEGER(CMFEIntg), PARAMETER :: CellMLParametersFieldUserNumber=15
+!  INTEGER(CMISSIntg), PARAMETER :: CellMLStateFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: CellMLParametersFieldUserNumber=15
 
   !Program types
 
 
   !Program variables
 
-  INTEGER(CMFEIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
-  INTEGER(CMFEIntg) :: MPI_IERROR
-  INTEGER(CMFEIntg) :: EquationsSetIndex  
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
+  INTEGER(CMISSIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: EquationsSetIndex  
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
 
-  INTEGER(CMFEIntg) :: NodeNumber,NodeDomain,node_idx
-  INTEGER(CMFEIntg),ALLOCATABLE :: BottomSurfaceNodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE :: LeftSurfaceNodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE :: RightSurfaceNodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE :: FrontSurfaceNodes(:)
-  INTEGER(CMFEIntg) :: BottomNormalXi,LeftNormalXi,RightNormalXi,FrontNormalXi
+  INTEGER(CMISSIntg) :: NodeNumber,NodeDomain,node_idx
+  INTEGER(CMISSIntg),ALLOCATABLE :: BottomSurfaceNodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE :: LeftSurfaceNodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE :: RightSurfaceNodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE :: FrontSurfaceNodes(:)
+  INTEGER(CMISSIntg) :: BottomNormalXi,LeftNormalXi,RightNormalXi,FrontNormalXi
 
-  INTEGER(CMFEIntg) :: DependentVariableTypes(4)
+  INTEGER(CMISSIntg) :: DependentVariableTypes(4)
   
-  INTEGER(CMFEIntg) :: MooneyRivlinModelIndex
-  INTEGER(CMFEIntg) :: CellMLIndex
+  INTEGER(CMISSIntg) :: MooneyRivlinModelIndex
+  INTEGER(CMISSIntg) :: CellMLIndex
   
 
   !CMISS variables
@@ -173,7 +174,7 @@ PROGRAM MOONEYRIVLININCELLMLEXAMPLE
 #endif
 
   !Generic CMISS variables
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: Err
 
 #ifdef WIN32
   !Initialise QuickWin
@@ -241,7 +242,7 @@ PROGRAM MOONEYRIVLININCELLMLEXAMPLE
   CALL cmfe_CoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   CALL cmfe_CoordinateSystem_TypeSet(CoordinateSystem,CMFE_COORDINATE_RECTANGULAR_CARTESIAN_TYPE,Err)
   CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystem,NumberOfSpatialCoordinates,Err)
-  CALL cmfe_CoordinateSystem_OriginSet(CoordinateSystem,[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP],Err)
+  CALL cmfe_CoordinateSystem_OriginSet(CoordinateSystem,[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP],Err)
   CALL cmfe_CoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Create a region and assign the CS to the region
@@ -343,8 +344,8 @@ PROGRAM MOONEYRIVLININCELLMLEXAMPLE
   CALL cmfe_Field_CreateFinish(MaterialField,Err)
 
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively.
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0_CMFEDP,Err)
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,6.0_CMFEDP,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0_CMISSRP,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,6.0_CMISSRP,Err)
 
   !Create the dependent field with 4 variables and the respective number of components
   !   1   U_Var_Type            4 components: 3 displacement (quad interpol) + 1 pressure (lin interpol))
@@ -543,33 +544,33 @@ PROGRAM MOONEYRIVLININCELLMLEXAMPLE
     & 2,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,Err)
   CALL cmfe_Field_ParametersToFieldParametersComponentCopy(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
     & 3,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,Err)
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4,-8.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4,-8.0_CMISSRP, &
     & Err)
 
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.0_CMISSRP, &
     & Err)
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,0.0_CMISSRP, &
     & Err)
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,0.0_CMISSRP, &
     & Err)
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4,0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4,0.0_CMISSRP, &
     & Err)
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,5,0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,5,0.0_CMISSRP, &
     & Err)
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,6,0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U1_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,6,0.0_CMISSRP, &
     & Err)
 
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U2_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U2_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.0_CMISSRP, &
     & Err)
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U2_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U2_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,0.0_CMISSRP, &
     & Err)
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U2_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U2_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,0.0_CMISSRP, &
     & Err)
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U2_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4,0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U2_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4,0.0_CMISSRP, &
     & Err)
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U2_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,5,0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U2_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,5,0.0_CMISSRP, &
     & Err)
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U2_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,6,0.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U2_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,6,0.0_CMISSRP, &
     & Err)
 
   !Define the problem
@@ -631,7 +632,7 @@ PROGRAM MOONEYRIVLININCELLMLEXAMPLE
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-        & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+        & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
     ENDIF
   ENDDO
   !Set x=WIDTH nodes to 10% x displacement
@@ -640,7 +641,7 @@ PROGRAM MOONEYRIVLININCELLMLEXAMPLE
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-        & CMFE_BOUNDARY_CONDITION_FIXED,1.1_CMFEDP*WIDTH,Err)
+        & CMFE_BOUNDARY_CONDITION_FIXED,1.1_CMISSRP*WIDTH,Err)
     ENDIF
   ENDDO
 
@@ -650,7 +651,7 @@ PROGRAM MOONEYRIVLININCELLMLEXAMPLE
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,2, &
-        & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+        & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
     ENDIF
   ENDDO
 
@@ -660,7 +661,7 @@ PROGRAM MOONEYRIVLININCELLMLEXAMPLE
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,3, &
-        & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+        & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
     ENDIF
   ENDDO
 

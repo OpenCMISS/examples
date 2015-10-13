@@ -45,6 +45,7 @@
 !> Main program
 PROGRAM EMBEDDEDMESHEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 
@@ -52,57 +53,57 @@ PROGRAM EMBEDDEDMESHEXAMPLE
 
    !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: HEIGHT=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: LENGTH=1.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: HEIGHT=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: LENGTH=1.0_CMISSRP
  
   
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionOneUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: RegionTwoUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: BasisOneUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: BasisTwoUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshOneUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshTwoUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: MeshOneUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: MeshTwoUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionOneUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionTwoUserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldOneUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldTwoUserNumber=14
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldOneUserNumber=15
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldTwoUserNumber=16
-  !INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=10
-  !INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfComponents=2
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionOneUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: RegionTwoUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: BasisOneUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: BasisTwoUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshOneUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshTwoUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: MeshOneUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: MeshTwoUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionOneUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionTwoUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldOneUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldTwoUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldOneUserNumber=15
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldTwoUserNumber=16
+  !INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=10
+  !INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponents=2
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, &
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, &
     & INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS_2,NUMBER_GLOBAL_Y_ELEMENTS_2,NUMBER_GLOBAL_Z_ELEMENTS_2, &
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS_2,NUMBER_GLOBAL_Y_ELEMENTS_2,NUMBER_GLOBAL_Z_ELEMENTS_2, &
     & INTERPOLATION_TYPE_2,NUMBER_OF_GAUSS_XI_2
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT,Filename
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: Err
 
    !Other variables
-  INTEGER(CMFEIntg) :: NumberofNodes1,NumberofNodes2,NumberOfElements,dim_idx,node_idx, &
+  INTEGER(CMISSIntg) :: NumberofNodes1,NumberofNodes2,NumberOfElements,dim_idx,node_idx, &
     & NumberOfComponents,elem_idx,elem_idx2,NodeCount,gauss_idx,ineach,counts!,NodeNumbers(8),NodeNumbers1(8)
-!  INTEGER(CMFEIntg) :: NodeElem(2,8)!,ElemArray(2)
-!  REAL(CMFEDP) :: ChildXiCoords(3,12),ParentXiCoords(3,8)
-!  REAL(CMFEDP) :: C1(8),C2(4)
-  INTEGER(CMFEIntg) :: node_idx2,NumberOfElements2,GaussPointNumber,NGP
+!  INTEGER(CMISSIntg) :: NodeElem(2,8)!,ElemArray(2)
+!  REAL(CMISSRP) :: ChildXiCoords(3,12),ParentXiCoords(3,8)
+!  REAL(CMISSRP) :: C1(8),C2(4)
+  INTEGER(CMISSIntg) :: node_idx2,NumberOfElements2,GaussPointNumber,NGP
 
   !Allocatable
-   INTEGER(CMFEIntg), DIMENSION(:), ALLOCATABLE :: NodeNumbers, NodeNumbers1,NodeNumbers2,ElemArray
-   INTEGER(CMFEIntg), DIMENSION(:,:), ALLOCATABLE :: NodeElem
-   REAL(CMFEDP), DIMENSION(:), ALLOCATABLE :: C1,C2
-   REAL(CMFEDP), ALLOCATABLE :: ChildXiCoords(:,:),ParentXiCoords(:,:), Coords(:,:)
-!   REAL(CMFEDP), POINTER :: GEOMETRIC_PARAMETERS(:)
-   REAL(CMFEDP) :: X, Y, Z, FieldValue,value
+   INTEGER(CMISSIntg), DIMENSION(:), ALLOCATABLE :: NodeNumbers, NodeNumbers1,NodeNumbers2,ElemArray
+   INTEGER(CMISSIntg), DIMENSION(:,:), ALLOCATABLE :: NodeElem
+   REAL(CMISSRP), DIMENSION(:), ALLOCATABLE :: C1,C2
+   REAL(CMISSRP), ALLOCATABLE :: ChildXiCoords(:,:),ParentXiCoords(:,:), Coords(:,:)
+!   REAL(CMISSRP), POINTER :: GEOMETRIC_PARAMETERS(:)
+   REAL(CMISSRP) :: X, Y, Z, FieldValue,value
   !CMISS variables
 
   TYPE(cmfe_BasisType) :: Basis1,Basis2
@@ -249,7 +250,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   CALL cmfe_Field_CreateFinish(DependentField1,Err)
 
   !Initialise the field with an initial guess
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.5_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.5_CMISSRP, &
     & Err)
 
   !Field value with a function x^2 + y^2 + z^2
@@ -371,7 +372,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   CALL cmfe_Field_CreateFinish(DependentField2,Err)
 
   !Initialise the field with an initial guess
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.1_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.1_CMISSRP, &
     & Err)
  
    CALL cmfe_Nodes_NumberOfNodesGet(RegionTwoUserNumber,NumberOfNodes2,Err)

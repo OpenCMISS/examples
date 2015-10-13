@@ -49,7 +49,8 @@
 PROGRAM ANALYTIC_LINEAR_ELASTICITYEXAMPLE
 
   USE MPI
-  USE OPENCMISS
+  USE OpenCMISS
+  USE OpenCMISS_Iron
   USE TEST_FRAMEWORK_ROUTINES
 
 #ifdef WIN32
@@ -58,41 +59,35 @@ PROGRAM ANALYTIC_LINEAR_ELASTICITYEXAMPLE
 
   IMPLICIT NONE
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(cmfe_FieldType) :: EquationsSetField
-
-
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: ORIGIN(3)=(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/)
-  REAL(CMFEDP), PARAMETER :: LENGTH=20.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=20.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: HEIGHT=5.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: ORIGIN(3)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP]
+  REAL(CMISSRP), PARAMETER :: LENGTH=20.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=20.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: HEIGHT=5.0_CMISSRP
 
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfDomains=1
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfDomains=1
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber = 1
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber = 1
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfVariables=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfVariables=2
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfVariables=1
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldAnalyticUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldAnalyticUserNumber=4
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationSetUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=1
-
-  REAL(CMFEDP), PARAMETER ::   ZERO = 0.0_CMFEDP
+  INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
   !Program types
 
@@ -106,7 +101,7 @@ PROGRAM ANALYTIC_LINEAR_ELASTICITYEXAMPLE
 #endif
 
   !Generic CMISS variables
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: Err
 
 #ifdef WIN32
   !Initialise QuickWin
@@ -127,7 +122,7 @@ PROGRAM ANALYTIC_LINEAR_ELASTICITYEXAMPLE
   WRITE(*,'(A)') "Program starting."
 
   !Set all diganostic levels on for testing
-  !CALL cmfe_DiagnosticsSetOn(CMFE_FROM_DIAG_TYPE,(/1,2,3,4,5/),"Diagnostics",(/"PROBLEM_FINITE_ELEMENT_CALCULATE"/),Err)
+  !CALL cmfe_DiagnosticsSetOn(CMFE_FROM_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["PROBLEM_FINITE_ELEMENT_CALCULATE"],Err)
 
   CALL ANALYTIC_LINEAR_ELASTICITY_TESTCASE_LINEAR_LAGRANGE_EXPORT(1,0,0,"LinearLagrange")
   CALL ANALYTIC_LINEAR_ELASTICITY_TESTCASE_LINEAR_LAGRANGE_EXPORT(1,1,0,"BiLinearLagrange")
@@ -150,9 +145,9 @@ CONTAINS
     & NumberGlobalZElements,OutputFilename)
 
     !Argument variables
-    INTEGER(CMFEIntg), INTENT(IN) :: NumberGlobalXElements !<initial number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NumberGlobalYElements !<final number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NumberGlobalZElements !<increment interval number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NumberGlobalXElements !<initial number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NumberGlobalYElements !<final number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NumberGlobalZElements !<increment interval number of elements per axis
     CHARACTER(LEN=*), INTENT(IN) :: OutputFilename !<The Error condition string
     !Local Variables
     TYPE(cmfe_FieldType) :: DependentField
@@ -160,7 +155,7 @@ CONTAINS
     CALL ANALYTIC_LINEAR_ELASTICITY_GENERIC(NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements, &
       & CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION,DependentField)
 
-    CALL cmfe_AnalyticAnalysisOutput(DependentField,OutputFilename,Err)
+    CALL cmfe_AnalyticAnalysis_Output(DependentField,OutputFilename,Err)
     
     CALL ANALYTIC_LINEAR_ELASTICITY_GENERIC_CLEAN(CoordinateSystemUserNumber,RegionUserNumber,BasisUserNumber, &
       & GeneratedMeshUserNumber,ProblemUserNumber)
@@ -175,9 +170,9 @@ CONTAINS
     & NumberGlobalZElements,OutputFilename)
 
     !Argument variables
-    INTEGER(CMFEIntg), INTENT(IN) :: NumberGlobalXElements !<initial number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NumberGlobalYElements !<final number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NumberGlobalZElements !<increment interval number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NumberGlobalXElements !<initial number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NumberGlobalYElements !<final number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NumberGlobalZElements !<increment interval number of elements per axis
     CHARACTER(LEN=*), INTENT(IN) :: OutputFilename !<The Error condition string
     !Local Variables
     TYPE(cmfe_FieldType) :: DependentField
@@ -185,7 +180,7 @@ CONTAINS
     CALL ANALYTIC_LINEAR_ELASTICITY_GENERIC(NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements, &
       & CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION,DependentField)
 
-    CALL cmfe_AnalyticAnalysisOutput(DependentField,OutputFilename,Err)
+    CALL cmfe_AnalyticAnalysis_Output(DependentField,OutputFilename,Err)
     
     CALL ANALYTIC_LINEAR_ELASTICITY_GENERIC_CLEAN(CoordinateSystemUserNumber,RegionUserNumber,BasisUserNumber, &
       & GeneratedMeshUserNumber,ProblemUserNumber)
@@ -200,9 +195,9 @@ CONTAINS
     & NumberGlobalZElements,OutputFilename)
 
     !Argument variables
-    INTEGER(CMFEIntg), INTENT(IN) :: NumberGlobalXElements !<initial number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NumberGlobalYElements !<final number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NumberGlobalZElements !<increment interval number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NumberGlobalXElements !<initial number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NumberGlobalYElements !<final number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NumberGlobalZElements !<increment interval number of elements per axis
     CHARACTER(LEN=*), INTENT(IN) :: OutputFilename !<The Error condition string
     !Local Variables
     TYPE(cmfe_FieldType) :: DependentField
@@ -210,7 +205,7 @@ CONTAINS
     CALL ANALYTIC_LINEAR_ELASTICITY_GENERIC(NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements, &
       & CMFE_BASIS_CUBIC_LAGRANGE_INTERPOLATION,DependentField)
 
-    CALL cmfe_AnalyticAnalysisOutput(DependentField,OutputFilename,Err)
+    CALL cmfe_AnalyticAnalysis_Output(DependentField,OutputFilename,Err)
     
     CALL ANALYTIC_LINEAR_ELASTICITY_GENERIC_CLEAN(CoordinateSystemUserNumber,RegionUserNumber,BasisUserNumber, &
       & GeneratedMeshUserNumber,ProblemUserNumber)
@@ -224,19 +219,19 @@ CONTAINS
   SUBROUTINE ANALYTIC_LINEAR_ELASTICITY_GENERIC(NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements, &
     & InterpolationSpecifications,DependentField)
     !Argument variables 
-    INTEGER(CMFEIntg), INTENT(IN) :: NumberGlobalXElements !<number of elements on x axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NumberGlobalYElements !<number of elements on y axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NumberGlobalZElements !<number of elements on z axis
-    INTEGER(CMFEIntg), INTENT(IN) :: InterpolationSpecifications !<the interpolation specifications
+    INTEGER(CMISSIntg), INTENT(IN) :: NumberGlobalXElements !<number of elements on x axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NumberGlobalYElements !<number of elements on y axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NumberGlobalZElements !<number of elements on z axis
+    INTEGER(CMISSIntg), INTENT(IN) :: InterpolationSpecifications !<the interpolation specifications
     TYPE(cmfe_FieldType) :: DependentField
 
     !Program variables
-    REAL(CMFEDP) :: MeshDimensions(3),MaterialParameters(6)
-    INTEGER(CMFEIntg) :: AnalyticFunction,Interpolation(3),NumberOfGaussPoints(3),EquationSetSubtype
-    INTEGER(CMFEIntg) :: FieldGeometryNumberOfComponents,FieldDependentNumberOfComponents,NumberOfElements(3)
-    INTEGER(CMFEIntg) :: MPI_IERROR
-    INTEGER(CMFEIntg) :: EquationsSetIndex,FieldComponentIndex,FieldMaterialNumberOfComponents,NumberOfXi
-    INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+    REAL(CMISSRP) :: MeshDimensions(3),MaterialParameters(6)
+    INTEGER(CMISSIntg) :: AnalyticFunction,Interpolation(3),NumberOfGaussPoints(3),EquationSetSubtype
+    INTEGER(CMISSIntg) :: FieldGeometryNumberOfComponents,FieldDependentNumberOfComponents,NumberOfElements(3)
+    INTEGER(CMISSIntg) :: MPI_IERROR
+    INTEGER(CMISSIntg) :: EquationsSetIndex,FieldComponentIndex,FieldMaterialNumberOfComponents,NumberOfXi
+    INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
 
     !CMISS variables
 
@@ -246,7 +241,7 @@ CONTAINS
     TYPE(cmfe_DecompositionType) :: Decomposition
     TYPE(cmfe_EquationsType) :: Equations
     TYPE(cmfe_EquationsSetType) :: EquationsSet
-    TYPE(cmfe_FieldType) :: AnalyticField,GeometricField,MaterialField
+    TYPE(cmfe_FieldType) :: AnalyticField,EquationsSetField,GeometricField,MaterialField
     TYPE(cmfe_MeshType) :: Mesh
     TYPE(cmfe_ProblemType) :: Problem
     TYPE(cmfe_RegionType) :: Region
@@ -260,26 +255,26 @@ CONTAINS
       AnalyticFunction=CMFE_EQUATIONS_SET_LINEAR_ELASTICITY_ONE_DIM_1
       !Prescribe material properties Area,E1
       FieldMaterialNumberOfComponents = 2 !Young's Modulus & Poisson's Ratio
-      MaterialParameters = (/WIDTH*HEIGHT,10.0E3_CMFEDP,0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/)
+      MaterialParameters = [WIDTH*HEIGHT,10.0E3_CMISSRP,0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP]
     ELSEIF (NumberGlobalZElements == 0) THEN
       NumberOfXi = 2
       EquationSetSubtype = CMFE_EQUATIONS_SET_TWO_DIMENSIONAL_PLANE_STRESS_SUBTYPE
       AnalyticFunction=CMFE_EQUATIONS_SET_LINEAR_ELASTICITY_TWO_DIM_1
       !Prescribe material properties h,E1,v12
       FieldMaterialNumberOfComponents = 3 !Young's Modulus & Poisson's Ratio
-      MaterialParameters = (/HEIGHT,10.0E3_CMFEDP,0.3_CMFEDP,0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/)
+      MaterialParameters = [HEIGHT,10.0E3_CMISSRP,0.3_CMISSRP,0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP]
     ELSE
       NumberOfXi = 3
       EquationSetSubtype = CMFE_EQUATIONS_SET_THREE_DIMENSIONAL_SUBTYPE
       AnalyticFunction=CMFE_EQUATIONS_SET_LINEAR_ELASTICITY_THREE_DIM_1
       !Prescribe material properties E1,E2,E3 & v13,v23,v12
       FieldMaterialNumberOfComponents = 6 !Young's Modulus & Poisson's Ratio
-      MaterialParameters = (/10.0E3_CMFEDP,10.0E3_CMFEDP,10.0E3_CMFEDP,0.3_CMFEDP,0.3_CMFEDP,0.3_CMFEDP/)
+      MaterialParameters = [10.0E3_CMISSRP,10.0E3_CMISSRP,10.0E3_CMISSRP,0.3_CMISSRP,0.3_CMISSRP,0.3_CMISSRP]
     ENDIF
-    Interpolation = (/InterpolationSpecifications,InterpolationSpecifications,InterpolationSpecifications/)
-    NumberOfElements = (/NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements/)
-    MeshDimensions = (/LENGTH,WIDTH,HEIGHT/)
-    NumberOfGaussPoints = (/4,4,4/)
+    Interpolation = [InterpolationSpecifications,InterpolationSpecifications,InterpolationSpecifications]
+    NumberOfElements = [NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements]
+    MeshDimensions = [LENGTH,WIDTH,HEIGHT]
+    NumberOfGaussPoints = [4,4,4]
     FieldGeometryNumberOfComponents=NumberOfXi
     FieldDependentNumberOfComponents=NumberOfXi
 
@@ -388,9 +383,10 @@ CONTAINS
 
     !Create a Elasticity Class, Linear Elasticity type, no subtype, EquationsSet
     CALL cmfe_EquationsSet_Initialise(EquationsSet,Err)
-      CALL cmfe_Field_Initialise(EquationsSetField,Err)
-CALL cmfe_EquationsSet_CreateStart(EquationSetUserNumber,Region,GeometricField,[CMFE_EQUATIONS_SET_ELASTICITY_CLASS, &
-  & CMFE_EQUATIONS_SET_LINEAR_ELASTICITY_TYPE,EquationSetSubtype],EquationsSetFieldUserNumber,EquationsSetField,EquationsSet,Err)
+    CALL cmfe_Field_Initialise(EquationsSetField,Err)
+    CALL cmfe_EquationsSet_CreateStart(EquationSetUserNumber,Region,GeometricField,[CMFE_EQUATIONS_SET_ELASTICITY_CLASS, &
+      & CMFE_EQUATIONS_SET_LINEAR_ELASTICITY_TYPE,EquationSetSubtype],EquationsSetFieldUserNumber,EquationsSetField, &
+      & EquationsSet,Err)
     
     CALL cmfe_EquationsSet_CreateFinish(EquationsSet,Err)
 
@@ -484,11 +480,11 @@ CALL cmfe_EquationsSet_CreateStart(EquationSetUserNumber,Region,GeometricField,[
     & GeneratedMeshUserNumber,ProblemUserNumber)
 
     !Argument variables
-    INTEGER(CMFEIntg), INTENT(IN) :: CoordinateSystemUserNumber
-    INTEGER(CMFEIntg), INTENT(IN) :: RegionUserNumber
-    INTEGER(CMFEIntg), INTENT(IN) :: BasisUserNumber
-    INTEGER(CMFEIntg), INTENT(IN) :: GeneratedMeshUserNumber
-    INTEGER(CMFEIntg), INTENT(IN) :: ProblemUserNumber
+    INTEGER(CMISSIntg), INTENT(IN) :: CoordinateSystemUserNumber
+    INTEGER(CMISSIntg), INTENT(IN) :: RegionUserNumber
+    INTEGER(CMISSIntg), INTENT(IN) :: BasisUserNumber
+    INTEGER(CMISSIntg), INTENT(IN) :: GeneratedMeshUserNumber
+    INTEGER(CMISSIntg), INTENT(IN) :: ProblemUserNumber
 
     CALL cmfe_Problem_Destroy(ProblemUserNumber,Err)
     CALL cmfe_GeneratedMesh_Destroy(RegionUserNumber,GeneratedMeshUserNumber,Err)

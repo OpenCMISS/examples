@@ -49,6 +49,7 @@
 PROGRAM ANALYTICLAPLACEEXAMPLE
 
   USE MPI
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE TEST_FRAMEWORK_ROUTINES
 
@@ -60,10 +61,10 @@ PROGRAM ANALYTICLAPLACEEXAMPLE
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: ORIGIN(2)=[-3.141592653579_CMFEDP/2.0_CMFEDP, -3.141592653579_CMFEDP/2.0_CMFEDP]
-  REAL(CMFEDP), PARAMETER :: HEIGHT=2.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=2.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: LENGTH=2.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: ORIGIN(2)=[-3.141592653579_CMISSRP/2.0_CMISSRP, -3.141592653579_CMISSRP/2.0_CMISSRP]
+  REAL(CMISSRP), PARAMETER :: HEIGHT=2.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=2.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: LENGTH=2.0_CMISSRP
 
   !Program types
 
@@ -72,7 +73,7 @@ PROGRAM ANALYTICLAPLACEEXAMPLE
   TYPE(cmfe_RegionType) :: WORLD_REGION
   TYPE(cmfe_CoordinateSystemType) :: WorldCoordinateSystem
 
-  INTEGER(CMFEIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS,INTERPOLATION
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS,INTERPOLATION
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT
 
 #ifdef WIN32
@@ -82,7 +83,7 @@ PROGRAM ANALYTICLAPLACEEXAMPLE
 #endif
 
   !Generic CMISS variables
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: Err
 
 #ifdef WIN32
   !Initialise QuickWin
@@ -150,9 +151,9 @@ CONTAINS
     & NUMBER_GLOBAL_Z_ELEMENTS)
 
     !Argument variables
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_X_ELEMENTS !<initial number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_Y_ELEMENTS !<final number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_Z_ELEMENTS !<increment interval number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_X_ELEMENTS !<initial number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Y_ELEMENTS !<final number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Z_ELEMENTS !<increment interval number of elements per axis
     !Local Variables
     TYPE(cmfe_FieldType) :: FIELD
 
@@ -175,9 +176,9 @@ CONTAINS
     & NUMBER_GLOBAL_Z_ELEMENTS)
 
     !Argument variables
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_X_ELEMENTS !<initial number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_Y_ELEMENTS !<final number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_Z_ELEMENTS !<increment interval number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_X_ELEMENTS !<initial number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Y_ELEMENTS !<final number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Z_ELEMENTS !<increment interval number of elements per axis
     !Local Variables
     TYPE(cmfe_FieldType) :: FIELD
 
@@ -200,9 +201,9 @@ CONTAINS
     & NUMBER_GLOBAL_Z_ELEMENTS)
 
     !Argument variables
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_X_ELEMENTS !<initial number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_Y_ELEMENTS !<final number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_Z_ELEMENTS !<increment interval number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_X_ELEMENTS !<initial number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Y_ELEMENTS !<final number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Z_ELEMENTS !<increment interval number of elements per axis
     !Local Variables
     TYPE(cmfe_FieldType) :: FIELD
 
@@ -225,19 +226,19 @@ CONTAINS
     & NUMBER_OF_ELEMENTS_XI_END,NUMBER_OF_ELEMENTS_XI_INTERVAL)
   
     !Argument variables
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_START !<initial number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_END !<final number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_INTERVAL !<increment interval number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_START !<initial number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_END !<final number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_INTERVAL !<increment interval number of elements per axis
     !Local Variables
-    REAL(CMFEDP) :: VALUE
-    REAL(CMFEDP), ALLOCATABLE :: X_VALUES(:),Y_VALUES(:)
+    REAL(CMISSRP) :: VALUE
+    REAL(CMISSRP), ALLOCATABLE :: X_VALUES(:),Y_VALUES(:)
     
     CALL ANALYTICLAPLACE_GENERIC_CONVERGENCE(NUMBER_OF_ELEMENTS_XI_START,NUMBER_OF_ELEMENTS_XI_END, &
       & NUMBER_OF_ELEMENTS_XI_INTERVAL,7,X_VALUES,Y_VALUES)
     
     CALL TEST_FRAMEWORK_GRADIENT_VALUE_GET(X_VALUES,Y_VALUES,VALUE)
 
-    CALL TEST_FRAMEWORK_ASSERT_EQUALS(2.0_CMFEDP,VALUE,0.5_CMFEDP,ERR)
+    CALL TEST_FRAMEWORK_ASSERT_EQUALS(2.0_CMISSRP,VALUE,0.5_CMISSRP,ERR)
     
     WRITE(*,'(A)') "Analytic Laplace Example Testcase 1 - bilinear Simplex has successfully completed."
     
@@ -252,19 +253,19 @@ CONTAINS
     & NUMBER_OF_ELEMENTS_XI_END,NUMBER_OF_ELEMENTS_XI_INTERVAL)
   
     !Argument variables
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_START !<initial number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_END !<final number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_INTERVAL !<increment interval number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_START !<initial number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_END !<final number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_INTERVAL !<increment interval number of elements per axis
     !Local Variables
-    REAL(CMFEDP) :: VALUE
-    REAL(CMFEDP), ALLOCATABLE :: X_VALUES(:),Y_VALUES(:)
+    REAL(CMISSRP) :: VALUE
+    REAL(CMISSRP), ALLOCATABLE :: X_VALUES(:),Y_VALUES(:)
     
     CALL ANALYTICLAPLACE_GENERIC_CONVERGENCE(NUMBER_OF_ELEMENTS_XI_START,NUMBER_OF_ELEMENTS_XI_END, &
       & NUMBER_OF_ELEMENTS_XI_INTERVAL,1,X_VALUES,Y_VALUES)
     
     CALL TEST_FRAMEWORK_GRADIENT_VALUE_GET(X_VALUES,Y_VALUES,VALUE)
 
-    CALL TEST_FRAMEWORK_ASSERT_EQUALS(2.0_CMFEDP,VALUE,0.5_CMFEDP,ERR)
+    CALL TEST_FRAMEWORK_ASSERT_EQUALS(2.0_CMISSRP,VALUE,0.5_CMISSRP,ERR)
     
     WRITE(*,'(A)') "Analytic Laplace Example Testcase 2 - bilinear Lagrange has successfully completed."
     
@@ -279,12 +280,12 @@ CONTAINS
     & NUMBER_OF_ELEMENTS_XI_END,NUMBER_OF_ELEMENTS_XI_INTERVAL)
   
     !Argument variables
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_START !<initial number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_END !<final number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_INTERVAL !<increment interval number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_START !<initial number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_END !<final number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_INTERVAL !<increment interval number of elements per axis
     !Local Variables
-    REAL(CMFEDP) :: VALUE
-    REAL(CMFEDP), ALLOCATABLE :: X_VALUES(:),Y_VALUES(:)
+    REAL(CMISSRP) :: VALUE
+    REAL(CMISSRP), ALLOCATABLE :: X_VALUES(:),Y_VALUES(:)
 
     !Note INTERPOLATION_SPECIFICATIONS of 4 is Cubic Hermite
     CALL ANALYTICLAPLACE_GENERIC_CONVERGENCE(NUMBER_OF_ELEMENTS_XI_START,NUMBER_OF_ELEMENTS_XI_END, &
@@ -292,7 +293,7 @@ CONTAINS
     
     CALL TEST_FRAMEWORK_GRADIENT_VALUE_GET(X_VALUES,Y_VALUES,VALUE)
     !This test is superconvergent so look for a slope of 5 rather than 4. Should really test >= 4
-    CALL TEST_FRAMEWORK_ASSERT_EQUALS(5.0_CMFEDP,VALUE,1.0_CMFEDP,Err)
+    CALL TEST_FRAMEWORK_ASSERT_EQUALS(5.0_CMISSRP,VALUE,1.0_CMISSRP,Err)
     IF (Err/=0) THEN
       WRITE(*,'(A,F6.3)') "Analytic Laplace Example Testcase 3 - bicubic Hermite failure: Convergence should be around 4.0" &
         & //", but it was ", VALUE
@@ -310,15 +311,15 @@ CONTAINS
     & NUMBER_OF_ELEMENTS_XI_INTERVAL,INTERPOLATION_SPECIFICATIONS,X_VALUES,Y_VALUES)
   
     !Argument variables 
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_START !<initial number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_END !<final number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_INTERVAL !<increment interval number of elements per axis
-    INTEGER(CMFEIntg), INTENT(IN) :: INTERPOLATION_SPECIFICATIONS !<interpolation specifications
-    REAL(CMFEDP), ALLOCATABLE :: X_VALUES(:),Y_VALUES(:)
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_START !<initial number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_END !<final number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_OF_ELEMENTS_XI_INTERVAL !<increment interval number of elements per axis
+    INTEGER(CMISSIntg), INTENT(IN) :: INTERPOLATION_SPECIFICATIONS !<interpolation specifications
+    REAL(CMISSRP), ALLOCATABLE :: X_VALUES(:),Y_VALUES(:)
     !Local Variables
-    REAL(CMFEDP) :: VALUE
+    REAL(CMISSRP) :: VALUE
     
-    INTEGER(CMFEIntg) :: i
+    INTEGER(CMISSIntg) :: i
     TYPE(cmfe_FieldType) :: FIELD
     
     ALLOCATE(X_VALUES((NUMBER_OF_ELEMENTS_XI_END-NUMBER_OF_ELEMENTS_XI_START)/NUMBER_OF_ELEMENTS_XI_INTERVAL+1),STAT=ERR)
@@ -345,16 +346,16 @@ CONTAINS
   SUBROUTINE ANALYTICLAPLACE_GENERIC(NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, &
     & INTERPOLATION_SPECIFICATIONS,DEPENDENT_FIELD)
     !Argument variables 
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_X_ELEMENTS !<number of elements on x axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_Y_ELEMENTS !<number of elements on y axis
-    INTEGER(CMFEIntg), INTENT(IN) :: NUMBER_GLOBAL_Z_ELEMENTS !<number of elements on z axis
-    INTEGER(CMFEIntg), INTENT(IN) :: INTERPOLATION_SPECIFICATIONS !<the interpolation specifications
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_X_ELEMENTS !<number of elements on x axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Y_ELEMENTS !<number of elements on y axis
+    INTEGER(CMISSIntg), INTENT(IN) :: NUMBER_GLOBAL_Z_ELEMENTS !<number of elements on z axis
+    INTEGER(CMISSIntg), INTENT(IN) :: INTERPOLATION_SPECIFICATIONS !<the interpolation specifications
     TYPE(cmfe_FieldType) :: DEPENDENT_FIELD
     !Local Variables
-    INTEGER(CMFEIntg) :: NUMBER_OF_DOMAINS
-    INTEGER(CMFEIntg) :: MPI_IERROR
-    INTEGER(CMFEIntg) :: ANALYTIC_FUNCTION
-    INTEGER(CMFEIntg) :: EquationsSetIndex
+    INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
+    INTEGER(CMISSIntg) :: MPI_IERROR
+    INTEGER(CMISSIntg) :: ANALYTIC_FUNCTION
+    INTEGER(CMISSIntg) :: EquationsSetIndex
 
     TYPE(cmfe_BasisType) :: Basis
     TYPE(cmfe_CoordinateSystemType) :: CoordinateSystem
@@ -536,8 +537,8 @@ CONTAINS
     CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,1,Solver,Err)
     !Set solver to direct type
     CALL cmfe_Solver_LinearTypeSet(Solver,CMFE_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
-    CALL cmfe_Solver_LinearIterativeAbsoluteToleranceSet(Solver,1.0E-12_CMFEDP,Err)
-    CALL cmfe_Solver_LinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMFEDP,Err)
+    CALL cmfe_Solver_LinearIterativeAbsoluteToleranceSet(Solver,1.0E-12_CMISSRP,Err)
+    CALL cmfe_Solver_LinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMISSRP,Err)
     !CALL cmfe_Solver_LinearTypeSet(Solver,CMFE_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
     !CALL cmfe_Solver_LibraryTypeSet(Solver,CMFE_SOLVER_MUMPS_LIBRARY,Err)
     !Finish the creation of the problem solver
@@ -573,11 +574,11 @@ CONTAINS
     & ProblemUserNumber)
 
     !Argument variables
-    INTEGER(CMFEIntg), INTENT(IN) :: CoordinateSystemUserNumber
-    INTEGER(CMFEIntg), INTENT(IN) :: RegionUserNumber
-    INTEGER(CMFEIntg), INTENT(IN) :: BasisUserNumber
-    INTEGER(CMFEIntg), INTENT(IN) :: GeneratedMeshUserNumber
-    INTEGER(CMFEIntg), INTENT(IN) :: ProblemUserNumber
+    INTEGER(CMISSIntg), INTENT(IN) :: CoordinateSystemUserNumber
+    INTEGER(CMISSIntg), INTENT(IN) :: RegionUserNumber
+    INTEGER(CMISSIntg), INTENT(IN) :: BasisUserNumber
+    INTEGER(CMISSIntg), INTENT(IN) :: GeneratedMeshUserNumber
+    INTEGER(CMISSIntg), INTENT(IN) :: ProblemUserNumber
 
     CALL cmfe_Problem_Destroy(ProblemUserNumber,Err)
     CALL cmfe_GeneratedMesh_Destroy(RegionUserNumber,GeneratedMeshUserNumber,Err)

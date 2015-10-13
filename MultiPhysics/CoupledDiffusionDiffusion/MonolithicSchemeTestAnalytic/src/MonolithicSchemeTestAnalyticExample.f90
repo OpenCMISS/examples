@@ -1,6 +1,6 @@
 !> \file
 !> \authors Andrew Cookson
-!> \brief This is an example program to solve coupled multi-compartment diffusion equations in monolithic scheme using openCMISS calls.
+!> \brief This is an example program to solve coupled multi-compartment diffusion equations in monolithic scheme using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -63,7 +63,8 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 
   !PROGRAM LIBRARIES
 
-  USE OPENCMISS
+  USE OpenCMISS
+  USE OpenCMISS_Iron
   USE FIELDML_OUTPUT_ROUTINES
   USE FIELDML_UTIL_ROUTINES
   USE FIELDML_API
@@ -84,108 +85,108 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: HEIGHT=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: LENGTH=3.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: HEIGHT=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: LENGTH=3.0_CMISSRP
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=9
-  INTEGER(CMFEIntg) :: MaterialsFieldUserNumberDiffusion
-!   INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberDiffusionTwo=10
-!   INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberDiffusionThree=11
-  INTEGER(CMFEIntg) :: SourceFieldUserNumberDiffusion
-!   INTEGER(CMFEIntg), PARAMETER :: SourceFieldUserNumberDiffusionTwo=16
-!   INTEGER(CMFEIntg), PARAMETER :: SourceFieldUserNumberDiffusionThree=17
-  INTEGER(CMFEIntg) :: EquationsSetUserNumberDiffusion
-  INTEGER(CMFEIntg) :: AnalyticFieldUserNumberDiffusion
-!   INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberDiffusionTwo=13
-!   INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberDiffusionThree=14
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=20
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=9
+  INTEGER(CMISSIntg) :: MaterialsFieldUserNumberDiffusion
+!   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDiffusionTwo=10
+!   INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDiffusionThree=11
+  INTEGER(CMISSIntg) :: SourceFieldUserNumberDiffusion
+!   INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumberDiffusionTwo=16
+!   INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumberDiffusionThree=17
+  INTEGER(CMISSIntg) :: EquationsSetUserNumberDiffusion
+  INTEGER(CMISSIntg) :: AnalyticFieldUserNumberDiffusion
+!   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDiffusionTwo=13
+!   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDiffusionThree=14
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=20
 !!!!!!!!!!!!!!!!!!!EQUATIONS FIELD PARAMETERS
-  INTEGER(CMFEIntg), PARAMETER :: EquationsFieldDiffusionOne=33
-  INTEGER(CMFEIntg), PARAMETER :: EquationsFieldDiffusionTwo=34
-  INTEGER(CMFEIntg), PARAMETER :: EquationsFieldDiffusionThree=35
+  INTEGER(CMISSIntg), PARAMETER :: EquationsFieldDiffusionOne=33
+  INTEGER(CMISSIntg), PARAMETER :: EquationsFieldDiffusionTwo=34
+  INTEGER(CMISSIntg), PARAMETER :: EquationsFieldDiffusionThree=35
 
 
 
 
 
-  INTEGER(CMFEIntg) :: EquationsSetFieldUserNumberDiffusion
-  INTEGER(CMFEIntg) :: icompartment,Ncompartments,num_var
+  INTEGER(CMISSIntg) :: EquationsSetFieldUserNumberDiffusion
+  INTEGER(CMISSIntg) :: icompartment,Ncompartments,num_var
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  INTEGER(CMFEIntg), PARAMETER :: DomainUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfUserDomains=1
-  INTEGER(CMFEIntg), PARAMETER :: SolverDiffusionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfUserDomains=1
+  INTEGER(CMISSIntg), PARAMETER :: SolverDiffusionUserNumber=1
   !Program types
 
   TYPE(EXPORT_CONTAINER):: CM
 
   !Program variables
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
-  INTEGER(CMFEIntg) :: NUMBER_OF_DOMAINS
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
+  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
 
-  INTEGER(CMFEIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: MPI_IERROR
 
-  INTEGER(CMFEIntg) :: NUMBER_OF_DIMENSIONS
+  INTEGER(CMISSIntg) :: NUMBER_OF_DIMENSIONS
 
-  INTEGER(CMFEIntg) :: NUMBER_OF_COMPARTMENTS
+  INTEGER(CMISSIntg) :: NUMBER_OF_COMPARTMENTS
   
-  INTEGER(CMFEIntg) :: BASIS_TYPE
-  INTEGER(CMFEIntg) :: BASIS_NUMBER_GEOMETRY
-  INTEGER(CMFEIntg) :: BASIS_NUMBER_CONC_ONE
-  INTEGER(CMFEIntg) :: BASIS_NUMBER_CONC_TWO
-  INTEGER(CMFEIntg) :: BASIS_NUMBER_CONC_THREE
-  INTEGER(CMFEIntg) :: BASIS_XI_GAUSS_GEOMETRY
-  INTEGER(CMFEIntg) :: BASIS_XI_GAUSS_CONC_ONE
-  INTEGER(CMFEIntg) :: BASIS_XI_GAUSS_CONC_TWO
-  INTEGER(CMFEIntg) :: BASIS_XI_GAUSS_CONC_THREE
-  INTEGER(CMFEIntg) :: BASIS_XI_INTERPOLATION_GEOMETRY
-  INTEGER(CMFEIntg) :: BASIS_XI_INTERPOLATION_CONC_ONE
-  INTEGER(CMFEIntg) :: BASIS_XI_INTERPOLATION_CONC_TWO
-  INTEGER(CMFEIntg) :: BASIS_XI_INTERPOLATION_CONC_THREE
-  INTEGER(CMFEIntg) :: MESH_NUMBER_OF_COMPONENTS,MESH_NUMBER_OF_ALL_COMPONENTS
-  INTEGER(CMFEIntg) :: MESH_COMPONENT_NUMBER_GEOMETRY
-  INTEGER(CMFEIntg) :: MESH_COMPONENT_NUMBER_CONC_ONE
-  INTEGER(CMFEIntg) :: MESH_COMPONENT_NUMBER_CONC_TWO
-  INTEGER(CMFEIntg) :: MESH_COMPONENT_NUMBER_CONC_THREE
-  INTEGER(CMFEIntg) :: NUMBER_OF_NODES_GEOMETRY
-  INTEGER(CMFEIntg) :: NUMBER_OF_NODES_CONC_ONE
-  INTEGER(CMFEIntg) :: NUMBER_OF_NODES_CONC_TWO
-  INTEGER(CMFEIntg) :: NUMBER_OF_NODES_CONC_THREE
-  INTEGER(CMFEIntg) :: NUMBER_OF_ELEMENT_NODES_GEOMETRY
-  INTEGER(CMFEIntg) :: NUMBER_OF_ELEMENT_NODES_CONC_ONE
-  INTEGER(CMFEIntg) :: NUMBER_OF_ELEMENT_NODES_CONC_TWO
-  INTEGER(CMFEIntg) :: NUMBER_OF_ELEMENT_NODES_CONC_THREE
-  INTEGER(CMFEIntg) :: TOTAL_NUMBER_OF_NODES,TOTAL_NUMBER_OF_ALL_NODES
-  INTEGER(CMFEIntg) :: TOTAL_NUMBER_OF_ELEMENTS
-  INTEGER(CMFEIntg) :: MAXIMUM_ITERATIONS
-  INTEGER(CMFEIntg) :: RESTART_VALUE
-  INTEGER(CMFEIntg) :: NUMBER_OF_FIXED_WALL_NODES_DIFFUSION_ONE
-  INTEGER(CMFEIntg) :: NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE
-  INTEGER(CMFEIntg) :: NUMBER_OF_FIXED_WALL_NODES_DIFFUSION_TWO
-  INTEGER(CMFEIntg) :: NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO
-  INTEGER(CMFEIntg) :: NUMBER_OF_FIXED_WALL_NODES_DIFFUSION_THREE
-  INTEGER(CMFEIntg) :: NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE
-  INTEGER(CMFEIntg) :: EQUATIONS_DIFFUSION_OUTPUT
-  INTEGER(CMFEIntg) :: EQUATIONS_DIFFUSION_TWO_OUTPUT
-  INTEGER(CMFEIntg) :: EQUATIONS_DIFFUSION_THREE_OUTPUT
-  INTEGER(CMFEIntg) :: COMPONENT_NUMBER
-  INTEGER(CMFEIntg) :: NODE_NUMBER
-  INTEGER(CMFEIntg) :: ELEMENT_NUMBER
-  INTEGER(CMFEIntg) :: NODE_COUNTER
-  INTEGER(CMFEIntg) :: CONDITION
+  INTEGER(CMISSIntg) :: BASIS_TYPE
+  INTEGER(CMISSIntg) :: BASIS_NUMBER_GEOMETRY
+  INTEGER(CMISSIntg) :: BASIS_NUMBER_CONC_ONE
+  INTEGER(CMISSIntg) :: BASIS_NUMBER_CONC_TWO
+  INTEGER(CMISSIntg) :: BASIS_NUMBER_CONC_THREE
+  INTEGER(CMISSIntg) :: BASIS_XI_GAUSS_GEOMETRY
+  INTEGER(CMISSIntg) :: BASIS_XI_GAUSS_CONC_ONE
+  INTEGER(CMISSIntg) :: BASIS_XI_GAUSS_CONC_TWO
+  INTEGER(CMISSIntg) :: BASIS_XI_GAUSS_CONC_THREE
+  INTEGER(CMISSIntg) :: BASIS_XI_INTERPOLATION_GEOMETRY
+  INTEGER(CMISSIntg) :: BASIS_XI_INTERPOLATION_CONC_ONE
+  INTEGER(CMISSIntg) :: BASIS_XI_INTERPOLATION_CONC_TWO
+  INTEGER(CMISSIntg) :: BASIS_XI_INTERPOLATION_CONC_THREE
+  INTEGER(CMISSIntg) :: MESH_NUMBER_OF_COMPONENTS,MESH_NUMBER_OF_ALL_COMPONENTS
+  INTEGER(CMISSIntg) :: MESH_COMPONENT_NUMBER_GEOMETRY
+  INTEGER(CMISSIntg) :: MESH_COMPONENT_NUMBER_CONC_ONE
+  INTEGER(CMISSIntg) :: MESH_COMPONENT_NUMBER_CONC_TWO
+  INTEGER(CMISSIntg) :: MESH_COMPONENT_NUMBER_CONC_THREE
+  INTEGER(CMISSIntg) :: NUMBER_OF_NODES_GEOMETRY
+  INTEGER(CMISSIntg) :: NUMBER_OF_NODES_CONC_ONE
+  INTEGER(CMISSIntg) :: NUMBER_OF_NODES_CONC_TWO
+  INTEGER(CMISSIntg) :: NUMBER_OF_NODES_CONC_THREE
+  INTEGER(CMISSIntg) :: NUMBER_OF_ELEMENT_NODES_GEOMETRY
+  INTEGER(CMISSIntg) :: NUMBER_OF_ELEMENT_NODES_CONC_ONE
+  INTEGER(CMISSIntg) :: NUMBER_OF_ELEMENT_NODES_CONC_TWO
+  INTEGER(CMISSIntg) :: NUMBER_OF_ELEMENT_NODES_CONC_THREE
+  INTEGER(CMISSIntg) :: TOTAL_NUMBER_OF_NODES,TOTAL_NUMBER_OF_ALL_NODES
+  INTEGER(CMISSIntg) :: TOTAL_NUMBER_OF_ELEMENTS
+  INTEGER(CMISSIntg) :: MAXIMUM_ITERATIONS
+  INTEGER(CMISSIntg) :: RESTART_VALUE
+  INTEGER(CMISSIntg) :: NUMBER_OF_FIXED_WALL_NODES_DIFFUSION_ONE
+  INTEGER(CMISSIntg) :: NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE
+  INTEGER(CMISSIntg) :: NUMBER_OF_FIXED_WALL_NODES_DIFFUSION_TWO
+  INTEGER(CMISSIntg) :: NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO
+  INTEGER(CMISSIntg) :: NUMBER_OF_FIXED_WALL_NODES_DIFFUSION_THREE
+  INTEGER(CMISSIntg) :: NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE
+  INTEGER(CMISSIntg) :: EQUATIONS_DIFFUSION_OUTPUT
+  INTEGER(CMISSIntg) :: EQUATIONS_DIFFUSION_TWO_OUTPUT
+  INTEGER(CMISSIntg) :: EQUATIONS_DIFFUSION_THREE_OUTPUT
+  INTEGER(CMISSIntg) :: COMPONENT_NUMBER
+  INTEGER(CMISSIntg) :: NODE_NUMBER
+  INTEGER(CMISSIntg) :: ELEMENT_NUMBER
+  INTEGER(CMISSIntg) :: NODE_COUNTER
+  INTEGER(CMISSIntg) :: CONDITION
 
-  INTEGER(CMFEIntg) :: LINEAR_SOLVER_DIFFUSION_OUTPUT_FREQUENCY
-  INTEGER(CMFEIntg) :: LINEAR_SOLVER_DIFFUSION_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: LINEAR_SOLVER_DIFFUSION_OUTPUT_FREQUENCY
+  INTEGER(CMISSIntg) :: LINEAR_SOLVER_DIFFUSION_OUTPUT_TYPE
 
 
-  REAL(CMFEDP) :: DOMAIN_X1, DOMAIN_X2, DOMAIN_Y1, DOMAIN_Y2, DOMAIN_Z1, DOMAIN_Z2
-  REAL(CMFEDP) :: GEOMETRY_TOLERANCE
+  REAL(CMISSRP) :: DOMAIN_X1, DOMAIN_X2, DOMAIN_Y1, DOMAIN_Y2, DOMAIN_Z1, DOMAIN_Z2
+  REAL(CMISSRP) :: GEOMETRY_TOLERANCE
 
   INTEGER, ALLOCATABLE, DIMENSION(:):: FIXED_WALL_NODES_DIFFUSION_ONE
   INTEGER, ALLOCATABLE, DIMENSION(:):: INLET_WALL_NODES_DIFFUSION_ONE
@@ -194,21 +195,21 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   INTEGER, ALLOCATABLE, DIMENSION(:):: FIXED_WALL_NODES_DIFFUSION_THREE
   INTEGER, ALLOCATABLE, DIMENSION(:):: INLET_WALL_NODES_DIFFUSION_THREE
 
-  REAL(CMFEDP) :: INITIAL_FIELD_DIFFUSION_ONE
-  REAL(CMFEDP) :: INITIAL_FIELD_DIFFUSION_TWO
-  REAL(CMFEDP) :: INITIAL_FIELD_DIFFUSION_THREE
-  REAL(CMFEDP) :: BOUNDARY_CONDITIONS_DIFFUSION_ONE
-  REAL(CMFEDP) :: BOUNDARY_CONDITIONS_DIFFUSION_TWO
-  REAL(CMFEDP) :: BOUNDARY_CONDITIONS_DIFFUSION_THREE
-  REAL(CMFEDP) :: DIVERGENCE_TOLERANCE
-  REAL(CMFEDP) :: RELATIVE_TOLERANCE
-  REAL(CMFEDP) :: ABSOLUTE_TOLERANCE
-  REAL(CMFEDP) :: LINESEARCH_ALPHA
-  REAL(CMFEDP) :: VALUE
+  REAL(CMISSRP) :: INITIAL_FIELD_DIFFUSION_ONE
+  REAL(CMISSRP) :: INITIAL_FIELD_DIFFUSION_TWO
+  REAL(CMISSRP) :: INITIAL_FIELD_DIFFUSION_THREE
+  REAL(CMISSRP) :: BOUNDARY_CONDITIONS_DIFFUSION_ONE
+  REAL(CMISSRP) :: BOUNDARY_CONDITIONS_DIFFUSION_TWO
+  REAL(CMISSRP) :: BOUNDARY_CONDITIONS_DIFFUSION_THREE
+  REAL(CMISSRP) :: DIVERGENCE_TOLERANCE
+  REAL(CMISSRP) :: RELATIVE_TOLERANCE
+  REAL(CMISSRP) :: ABSOLUTE_TOLERANCE
+  REAL(CMISSRP) :: LINESEARCH_ALPHA
+  REAL(CMISSRP) :: VALUE
 
-  REAL(CMFEDP) :: LINEAR_SOLVER_DIFFUSION_START_TIME
-  REAL(CMFEDP) :: LINEAR_SOLVER_DIFFUSION_STOP_TIME
-  REAL(CMFEDP) :: LINEAR_SOLVER_DIFFUSION_TIME_INCREMENT
+  REAL(CMISSRP) :: LINEAR_SOLVER_DIFFUSION_START_TIME
+  REAL(CMISSRP) :: LINEAR_SOLVER_DIFFUSION_STOP_TIME
+  REAL(CMISSRP) :: LINEAR_SOLVER_DIFFUSION_TIME_INCREMENT
 
   LOGICAL :: EXPORT_FIELD_IO
   LOGICAL :: LINEAR_SOLVER_DIFFUSION_DIRECT_FLAG
@@ -274,23 +275,23 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 #endif
   
   !Generic CMISS variables
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: EquationsSetIndexTwo
-  INTEGER(CMFEIntg) :: EquationsSetIndexThree
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: EquationsSetIndexTwo
+  INTEGER(CMISSIntg) :: EquationsSetIndexThree
+  INTEGER(CMISSIntg) :: Err
 
 
   !Array containing the field variable types that will be used (for ease of incorporating inside a loop)
-  INTEGER(CMFEIntg), ALLOCATABLE, DIMENSION(:) :: VariableTypes
-  REAL(CMFEDP), ALLOCATABLE, DIMENSION(:,:) :: CouplingCoeffs
+  INTEGER(CMISSIntg), ALLOCATABLE, DIMENSION(:) :: VariableTypes
+  REAL(CMISSRP), ALLOCATABLE, DIMENSION(:,:) :: CouplingCoeffs
 
-  INTEGER(CMFEIntg) :: DIAG_LEVEL_LIST(5)
+  INTEGER(CMISSIntg) :: DIAG_LEVEL_LIST(5)
 !   CHARACTER(LEN=255) :: DIAG_ROUTINE_LIST(8) !,TIMING_ROUTINE_LIST(1)
   CHARACTER(LEN=255) :: DIAG_ROUTINE_LIST(1) !,TIMING_ROUTINE_LIST(1)
  
-  INTEGER(CMFEIntg) :: TotalNumberOfSolidNodes
-!   INTEGER(CMFEIntg) :: NumberOfSolidMeshComponents
+  INTEGER(CMISSIntg) :: TotalNumberOfSolidNodes
+!   INTEGER(CMISSIntg) :: NumberOfSolidMeshComponents
   !
   !--------------------------------------------------------------------------------------------------------------------------------
   !
@@ -301,7 +302,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: outputFilename = "MonolithicMultiCompDiffusion.xml"
   CHARACTER(KIND=C_CHAR,LEN=*), PARAMETER :: basename = "monolithic_multicomp_diffusion"
 
-  TYPE(FieldmlInfoType) :: fieldmlInfo
+  TYPE(cmfe_FieldmlIOType) :: fieldmlInfo
 
 
 
@@ -347,47 +348,47 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   NUMBER_OF_ELEMENT_NODES_CONC_ONE=CM%EN_V
   NUMBER_OF_ELEMENT_NODES_CONC_TWO=CM%EN_P
 !   !Set domain dimensions
-!   DOMAIN_X1 =  0.0_CMFEDP
-!   DOMAIN_X2 =  1.0_CMFEDP
-!   DOMAIN_Y1 =  0.0_CMFEDP
-!   DOMAIN_Y2 =  1.0_CMFEDP
-!   DOMAIN_Z1 =  0.0_CMFEDP
-!   DOMAIN_Z2 =  1.0_CMFEDP
+!   DOMAIN_X1 =  0.0_CMISSRP
+!   DOMAIN_X2 =  1.0_CMISSRP
+!   DOMAIN_Y1 =  0.0_CMISSRP
+!   DOMAIN_Y2 =  1.0_CMISSRP
+!   DOMAIN_Z1 =  0.0_CMISSRP
+!   DOMAIN_Z2 =  1.0_CMISSRP
 !   !Set geometric tolerance
-!   GEOMETRY_TOLERANCE = 1.0E-12_CMFEDP
+!   GEOMETRY_TOLERANCE = 1.0E-12_CMISSRP
 !   !Set initial values
-!   INITIAL_FIELD_DIFFUSION_ONE=1.0_CMFEDP
-!   INITIAL_FIELD_DIFFUSION_TWO=1.0_CMFEDP
-!   INITIAL_FIELD_DIFFUSION_THREE=1.0_CMFEDP
+!   INITIAL_FIELD_DIFFUSION_ONE=1.0_CMISSRP
+!   INITIAL_FIELD_DIFFUSION_TWO=1.0_CMISSRP
+!   INITIAL_FIELD_DIFFUSION_THREE=1.0_CMISSRP
 !   !Set initial boundary conditions
 !   INLET_WALL_NODES_DIFFUSION_ONE_FLAG=.TRUE.
 !   IF(INLET_WALL_NODES_DIFFUSION_ONE_FLAG) THEN
 !     NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE=36
 !     ALLOCATE(INLET_WALL_NODES_DIFFUSION_ONE(NUMBER_OF_INLET_WALL_NODES_DIFFUSION_ONE))
-!     INLET_WALL_NODES_DIFFUSION_ONE=(/191,155,119,83,23,21,192,156,120,84,24,22,&
-!      & 198,162,126,90,36,35,204,168,132,96,48,47,210,174,138,102,60,59,216,180,144,108,72,71/)
+!     INLET_WALL_NODES_DIFFUSION_ONE=[191,155,119,83,23,21,192,156,120,84,24,22,&
+!      & 198,162,126,90,36,35,204,168,132,96,48,47,210,174,138,102,60,59,216,180,144,108,72,71]
 !     !Set initial boundary conditions
-!     BOUNDARY_CONDITIONS_DIFFUSION_ONE=1.0_CMFEDP
+!     BOUNDARY_CONDITIONS_DIFFUSION_ONE=1.0_CMISSRP
 !   ENDIF  !Set material parameters
 ! 
 !   INLET_WALL_NODES_DIFFUSION_TWO_FLAG=.TRUE.
 !   IF(INLET_WALL_NODES_DIFFUSION_TWO_FLAG) THEN
 !     NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO=36
 !     ALLOCATE(INLET_WALL_NODES_DIFFUSION_TWO(NUMBER_OF_INLET_WALL_NODES_DIFFUSION_TWO))
-!     INLET_WALL_NODES_DIFFUSION_TWO=(/191,155,119,83,23,21,192,156,120,84,24,22,&
-!      & 198,162,126,90,36,35,204,168,132,96,48,47,210,174,138,102,60,59,216,180,144,108,72,71/)
+!     INLET_WALL_NODES_DIFFUSION_TWO=[191,155,119,83,23,21,192,156,120,84,24,22,&
+!      & 198,162,126,90,36,35,204,168,132,96,48,47,210,174,138,102,60,59,216,180,144,108,72,71]
 !     !Set initial boundary conditions
-!     BOUNDARY_CONDITIONS_DIFFUSION_TWO=1.0_CMFEDP
+!     BOUNDARY_CONDITIONS_DIFFUSION_TWO=1.0_CMISSRP
 !   ENDIF  !Set material parameters
 ! 
 !   INLET_WALL_NODES_DIFFUSION_THREE_FLAG=.TRUE.
 !   IF(INLET_WALL_NODES_DIFFUSION_THREE_FLAG) THEN
 !     NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE=36
 !     ALLOCATE(INLET_WALL_NODES_DIFFUSION_THREE(NUMBER_OF_INLET_WALL_NODES_DIFFUSION_THREE))
-!     INLET_WALL_NODES_DIFFUSION_THREE=(/191,155,119,83,23,21,192,156,120,84,24,22,&
-!      & 198,162,126,90,36,35,204,168,132,96,48,47,210,174,138,102,60,59,216,180,144,108,72,71/)
+!     INLET_WALL_NODES_DIFFUSION_THREE=[191,155,119,83,23,21,192,156,120,84,24,22,&
+!      & 198,162,126,90,36,35,204,168,132,96,48,47,210,174,138,102,60,59,216,180,144,108,72,71]
 !     !Set initial boundary conditions
-!     BOUNDARY_CONDITIONS_DIFFUSION_THREE=1.0_CMFEDP
+!     BOUNDARY_CONDITIONS_DIFFUSION_THREE=1.0_CMISSRP
 !   ENDIF  !Set material parameters
 
   !Get the computational nodes information
@@ -430,24 +431,24 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   EQUATIONS_DIFFUSION_TWO_OUTPUT=CMFE_EQUATIONS_NO_OUTPUT
   EQUATIONS_DIFFUSION_THREE_OUTPUT=CMFE_EQUATIONS_NO_OUTPUT
   !Set time parameter
-  LINEAR_SOLVER_DIFFUSION_START_TIME=0.0_CMFEDP
-  LINEAR_SOLVER_DIFFUSION_STOP_TIME=0.3000001_CMFEDP 
-  LINEAR_SOLVER_DIFFUSION_TIME_INCREMENT=0.005_CMFEDP
+  LINEAR_SOLVER_DIFFUSION_START_TIME=0.0_CMISSRP
+  LINEAR_SOLVER_DIFFUSION_STOP_TIME=0.3000001_CMISSRP 
+  LINEAR_SOLVER_DIFFUSION_TIME_INCREMENT=0.005_CMISSRP
   !Set result output parameter
   LINEAR_SOLVER_DIFFUSION_OUTPUT_FREQUENCY=1
   !Set solver parameters
   LINEAR_SOLVER_DIFFUSION_DIRECT_FLAG=.FALSE.
 
-  RELATIVE_TOLERANCE=1.0E-10_CMFEDP !default: 1.0E-05_CMFEDP
-  ABSOLUTE_TOLERANCE=1.0E-10_CMFEDP !default: 1.0E-10_CMFEDP
-  DIVERGENCE_TOLERANCE=1.0E5_CMFEDP !default: 1.0E5
-  MAXIMUM_ITERATIONS=10000_CMFEIntg !default: 100000
-  RESTART_VALUE=30_CMFEIntg !default: 30
-  LINESEARCH_ALPHA=1.0_CMFEDP
+  RELATIVE_TOLERANCE=1.0E-10_CMISSRP !default: 1.0E-05_CMISSRP
+  ABSOLUTE_TOLERANCE=1.0E-10_CMISSRP !default: 1.0E-10_CMISSRP
+  DIVERGENCE_TOLERANCE=1.0E5_CMISSRP !default: 1.0E5
+  MAXIMUM_ITERATIONS=10000_CMISSIntg !default: 100000
+  RESTART_VALUE=30_CMISSIntg !default: 30
+  LINESEARCH_ALPHA=1.0_CMISSRP
 
 
-  icompartment =1_CMFEIntg
-  Ncompartments=2_CMFEIntg
+  icompartment =1_CMISSIntg
+  Ncompartments=2_CMISSIntg
   !
   !================================================================================================================================
   !
@@ -516,13 +517,13 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   CALL cmfe_Basis_NumberOfXiSet(BasisGeometry,NUMBER_OF_DIMENSIONS,Err)
   !Set the basis xi interpolation and number of Gauss points
   IF(NUMBER_OF_DIMENSIONS==2) THEN
-    CALL cmfe_Basis_InterpolationXiSet(BasisGeometry,(/BASIS_XI_INTERPOLATION_GEOMETRY,BASIS_XI_INTERPOLATION_GEOMETRY/),Err)
-    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisGeometry,(/BASIS_XI_GAUSS_GEOMETRY,BASIS_XI_GAUSS_GEOMETRY/),Err)
+    CALL cmfe_Basis_InterpolationXiSet(BasisGeometry,[BASIS_XI_INTERPOLATION_GEOMETRY,BASIS_XI_INTERPOLATION_GEOMETRY],Err)
+    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisGeometry,[BASIS_XI_GAUSS_GEOMETRY,BASIS_XI_GAUSS_GEOMETRY],Err)
   ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-    CALL cmfe_Basis_InterpolationXiSet(BasisGeometry,(/BASIS_XI_INTERPOLATION_GEOMETRY,BASIS_XI_INTERPOLATION_GEOMETRY, & 
-      & BASIS_XI_INTERPOLATION_GEOMETRY/),Err)                         
-    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisGeometry,(/BASIS_XI_GAUSS_GEOMETRY,BASIS_XI_GAUSS_GEOMETRY, &
-      & BASIS_XI_GAUSS_GEOMETRY/),Err)
+    CALL cmfe_Basis_InterpolationXiSet(BasisGeometry,[BASIS_XI_INTERPOLATION_GEOMETRY,BASIS_XI_INTERPOLATION_GEOMETRY, & 
+      & BASIS_XI_INTERPOLATION_GEOMETRY],Err)                         
+    CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisGeometry,[BASIS_XI_GAUSS_GEOMETRY,BASIS_XI_GAUSS_GEOMETRY, &
+      & BASIS_XI_GAUSS_GEOMETRY],Err)
   ENDIF
   !Finish the creation of the basis
   CALL cmfe_Basis_CreateFinish(BasisGeometry,Err)
@@ -542,13 +543,13 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 !     CALL cmfe_Basis_NumberOfXiSet(BasisConcOne,NUMBER_OF_DIMENSIONS,Err)
 !     !Set the basis xi interpolation and number of Gauss points
 !     IF(NUMBER_OF_DIMENSIONS==2) THEN
-!       CALL cmfe_Basis_InterpolationXiSet(BasisConcOne,(/BASIS_XI_INTERPOLATION_CONC_ONE,BASIS_XI_INTERPOLATION_CONC_ONE/),Err)
-!       CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisConcOne,(/BASIS_XI_GAUSS_CONC_ONE,BASIS_XI_GAUSS_CONC_ONE/),Err)
+!       CALL cmfe_Basis_InterpolationXiSet(BasisConcOne,[BASIS_XI_INTERPOLATION_CONC_ONE,BASIS_XI_INTERPOLATION_CONC_ONE],Err)
+!       CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisConcOne,[BASIS_XI_GAUSS_CONC_ONE,BASIS_XI_GAUSS_CONC_ONE],Err)
 !     ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-!       CALL cmfe_Basis_InterpolationXiSet(BasisConcOne,(/BASIS_XI_INTERPOLATION_CONC_ONE,BASIS_XI_INTERPOLATION_CONC_ONE, & 
-!         & BASIS_XI_INTERPOLATION_CONC_ONE/),Err)                         
-!       CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisConcOne,(/BASIS_XI_GAUSS_CONC_ONE,BASIS_XI_GAUSS_CONC_ONE, & 
-!         & BASIS_XI_GAUSS_CONC_ONE/),Err)
+!       CALL cmfe_Basis_InterpolationXiSet(BasisConcOne,[BASIS_XI_INTERPOLATION_CONC_ONE,BASIS_XI_INTERPOLATION_CONC_ONE, & 
+!         & BASIS_XI_INTERPOLATION_CONC_ONE],Err)                         
+!       CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisConcOne,[BASIS_XI_GAUSS_CONC_ONE,BASIS_XI_GAUSS_CONC_ONE, & 
+!         & BASIS_XI_GAUSS_CONC_ONE],Err)
 !     ENDIF
 !     !Finish the creation of the basis
 !     CALL cmfe_Basis_CreateFinish(BasisConcOne,Err)
@@ -571,13 +572,13 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 !     CALL cmfe_Basis_NumberOfXiSet(BasisConcTwo,NUMBER_OF_DIMENSIONS,Err)
 !     !Set the basis xi interpolation and number of Gauss points
 !     IF(NUMBER_OF_DIMENSIONS==2) THEN
-!       CALL cmfe_Basis_InterpolationXiSet(BasisConcTwo,(/BASIS_XI_INTERPOLATION_CONC_TWO,BASIS_XI_INTERPOLATION_CONC_TWO/),Err)
-!       CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisConcTwo,(/BASIS_XI_GAUSS_CONC_TWO,BASIS_XI_GAUSS_CONC_TWO/),Err)
+!       CALL cmfe_Basis_InterpolationXiSet(BasisConcTwo,[BASIS_XI_INTERPOLATION_CONC_TWO,BASIS_XI_INTERPOLATION_CONC_TWO],Err)
+!       CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisConcTwo,[BASIS_XI_GAUSS_CONC_TWO,BASIS_XI_GAUSS_CONC_TWO],Err)
 !     ELSE IF(NUMBER_OF_DIMENSIONS==3) THEN
-!       CALL cmfe_Basis_InterpolationXiSet(BasisConcTwo,(/BASIS_XI_INTERPOLATION_CONC_TWO,BASIS_XI_INTERPOLATION_CONC_TWO, & 
-!         & BASIS_XI_INTERPOLATION_CONC_TWO/),Err)                         
-!       CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisConcTwo,(/BASIS_XI_GAUSS_CONC_TWO,BASIS_XI_GAUSS_CONC_TWO, & 
-!         & BASIS_XI_GAUSS_CONC_TWO/),Err)
+!       CALL cmfe_Basis_InterpolationXiSet(BasisConcTwo,[BASIS_XI_INTERPOLATION_CONC_TWO,BASIS_XI_INTERPOLATION_CONC_TWO, & 
+!         & BASIS_XI_INTERPOLATION_CONC_TWO],Err)                         
+!       CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisConcTwo,[BASIS_XI_GAUSS_CONC_TWO,BASIS_XI_GAUSS_CONC_TWO, & 
+!         & BASIS_XI_GAUSS_CONC_TWO],Err)
 !     ENDIF
 !     !Finish the creation of the basis
 !     CALL cmfe_Basis_CreateFinish(BasisConcTwo,Err)
@@ -676,12 +677,12 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   CALL cmfe_GeneratedMesh_BasisSet(GeneratedMesh,BasisGeometry,Err)   
   !Define the mesh on the region
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
-    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,(/WIDTH,HEIGHT/),Err)
-    CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS/),Err)
+    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[WIDTH,HEIGHT],Err)
+    CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS],Err)
   ELSE
-    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,(/WIDTH,HEIGHT,LENGTH/),Err)
-    CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
-      & NUMBER_GLOBAL_Z_ELEMENTS/),Err)
+    CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[WIDTH,HEIGHT,LENGTH],Err)
+    CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS, &
+      & NUMBER_GLOBAL_Z_ELEMENTS],Err)
   ENDIF
   !Finish the creation of a generated mesh in the region
   CALL cmfe_Mesh_Initialise(Mesh,Err)
@@ -736,8 +737,8 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   !EQUATIONS SETS - USING NEW ARGUMENTS TO ALLOW FOR MULTI-COMPARTMENT MODELS
   DO icompartment = 1,Ncompartments
 
-    EquationsSetFieldUserNumberDiffusion = 100_CMFEIntg+icompartment
-    EquationsSetUserNumberDiffusion = 200_CMFEIntg+icompartment
+    EquationsSetFieldUserNumberDiffusion = 100_CMISSIntg+icompartment
+    EquationsSetUserNumberDiffusion = 200_CMISSIntg+icompartment
     CALL cmfe_Field_Initialise(EquationsSetFieldDiffusion(icompartment),Err)
     CALL cmfe_EquationsSet_Initialise(EquationsSetDiffusion(icompartment),Err)
     CALL cmfe_EquationsSet_CreateStart(EquationsSetUserNumberDiffusion,Region,GeometricField, &
@@ -813,7 +814,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   ! INITIALISE DEPENDENT FIELDS
 !   !Initialise dependent field (concentration one components)
 !   CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
-!     & 1,1.0_CMFEDP,Err)
+!     & 1,1.0_CMISSRP,Err)
 
 !   !Initialise dependent field (concentration two components)
 !   CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U2_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
@@ -829,69 +830,69 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   !
   ALLOCATE(CouplingCoeffs(Ncompartments,Ncompartments))
   IF(Ncompartments==2)THEN
-!     CouplingCoeffs(1,1)=1.0E-01_CMFEDP
-! !     CouplingCoeffs(1,2)=-1.0E-04_CMFEDP
-! !     CouplingCoeffs(2,1)=-1.0E-04_CMFEDP
-!     CouplingCoeffs(1,2)=1.0E-01_CMFEDP
-!     CouplingCoeffs(2,1)=1.0E-01_CMFEDP
-!     CouplingCoeffs(2,2)=1.0E-01_CMFEDP
-    CouplingCoeffs(1,1)=1.0E-01_CMFEDP
-    CouplingCoeffs(1,2)=1.0E-01_CMFEDP
-    CouplingCoeffs(2,1)=1.0E-01_CMFEDP
-    CouplingCoeffs(2,2)=1.0E-01_CMFEDP
+!     CouplingCoeffs(1,1)=1.0E-01_CMISSRP
+! !     CouplingCoeffs(1,2)=-1.0E-04_CMISSRP
+! !     CouplingCoeffs(2,1)=-1.0E-04_CMISSRP
+!     CouplingCoeffs(1,2)=1.0E-01_CMISSRP
+!     CouplingCoeffs(2,1)=1.0E-01_CMISSRP
+!     CouplingCoeffs(2,2)=1.0E-01_CMISSRP
+    CouplingCoeffs(1,1)=1.0E-01_CMISSRP
+    CouplingCoeffs(1,2)=1.0E-01_CMISSRP
+    CouplingCoeffs(2,1)=1.0E-01_CMISSRP
+    CouplingCoeffs(2,2)=1.0E-01_CMISSRP
   ELSE IF(Ncompartments==3)THEN
-    CouplingCoeffs(1,1)=1.0E-02_CMFEDP
-    CouplingCoeffs(1,2)=1.0E-02_CMFEDP
-    CouplingCoeffs(1,3)=0.0E-02_CMFEDP
-    CouplingCoeffs(2,1)=1.0E-02_CMFEDP
-    CouplingCoeffs(2,2)=2.0E-02_CMFEDP
-    CouplingCoeffs(2,3)=1.0E-02_CMFEDP
-    CouplingCoeffs(3,1)=0.0E-02_CMFEDP
-    CouplingCoeffs(3,2)=1.0E-02_CMFEDP
-    CouplingCoeffs(3,3)=1.0E-02_CMFEDP
+    CouplingCoeffs(1,1)=1.0E-02_CMISSRP
+    CouplingCoeffs(1,2)=1.0E-02_CMISSRP
+    CouplingCoeffs(1,3)=0.0E-02_CMISSRP
+    CouplingCoeffs(2,1)=1.0E-02_CMISSRP
+    CouplingCoeffs(2,2)=2.0E-02_CMISSRP
+    CouplingCoeffs(2,3)=1.0E-02_CMISSRP
+    CouplingCoeffs(3,1)=0.0E-02_CMISSRP
+    CouplingCoeffs(3,2)=1.0E-02_CMISSRP
+    CouplingCoeffs(3,3)=1.0E-02_CMISSRP
   ELSE IF(Ncompartments==4)THEN
-    CouplingCoeffs(1,1)=0.0E-02_CMFEDP
-    CouplingCoeffs(1,2)=0.0E-02_CMFEDP
-    CouplingCoeffs(1,3)=0.0E-02_CMFEDP
-    CouplingCoeffs(1,4)=0.0E-02_CMFEDP
-    CouplingCoeffs(2,1)=0.0E-02_CMFEDP
-    CouplingCoeffs(2,2)=0.0E-02_CMFEDP
-    CouplingCoeffs(2,3)=0.0E-02_CMFEDP
-    CouplingCoeffs(2,4)=0.0E-02_CMFEDP
-    CouplingCoeffs(3,1)=0.0E-02_CMFEDP
-    CouplingCoeffs(3,2)=0.0E-02_CMFEDP
-    CouplingCoeffs(3,3)=0.0E-02_CMFEDP
-    CouplingCoeffs(3,4)=0.0E-02_CMFEDP
-    CouplingCoeffs(4,1)=0.0E-02_CMFEDP
-    CouplingCoeffs(4,2)=0.0E-02_CMFEDP
-    CouplingCoeffs(4,3)=0.0E-02_CMFEDP
-    CouplingCoeffs(4,4)=0.0E-02_CMFEDP
+    CouplingCoeffs(1,1)=0.0E-02_CMISSRP
+    CouplingCoeffs(1,2)=0.0E-02_CMISSRP
+    CouplingCoeffs(1,3)=0.0E-02_CMISSRP
+    CouplingCoeffs(1,4)=0.0E-02_CMISSRP
+    CouplingCoeffs(2,1)=0.0E-02_CMISSRP
+    CouplingCoeffs(2,2)=0.0E-02_CMISSRP
+    CouplingCoeffs(2,3)=0.0E-02_CMISSRP
+    CouplingCoeffs(2,4)=0.0E-02_CMISSRP
+    CouplingCoeffs(3,1)=0.0E-02_CMISSRP
+    CouplingCoeffs(3,2)=0.0E-02_CMISSRP
+    CouplingCoeffs(3,3)=0.0E-02_CMISSRP
+    CouplingCoeffs(3,4)=0.0E-02_CMISSRP
+    CouplingCoeffs(4,1)=0.0E-02_CMISSRP
+    CouplingCoeffs(4,2)=0.0E-02_CMISSRP
+    CouplingCoeffs(4,3)=0.0E-02_CMISSRP
+    CouplingCoeffs(4,4)=0.0E-02_CMISSRP
   ELSE IF(Ncompartments==5)THEN
-    CouplingCoeffs(1,1)=0.0E-02_CMFEDP
-    CouplingCoeffs(1,2)=0.0E-02_CMFEDP
-    CouplingCoeffs(1,3)=0.0E-02_CMFEDP
-    CouplingCoeffs(1,4)=0.0E-02_CMFEDP
-    CouplingCoeffs(1,5)=0.0E-02_CMFEDP
-    CouplingCoeffs(2,1)=0.0E-02_CMFEDP
-    CouplingCoeffs(2,2)=0.0E-02_CMFEDP
-    CouplingCoeffs(2,3)=0.0E-02_CMFEDP
-    CouplingCoeffs(2,4)=0.0E-02_CMFEDP
-    CouplingCoeffs(2,5)=0.0E-02_CMFEDP
-    CouplingCoeffs(3,1)=0.0E-02_CMFEDP
-    CouplingCoeffs(3,2)=0.0E-02_CMFEDP
-    CouplingCoeffs(3,3)=0.0E-02_CMFEDP
-    CouplingCoeffs(3,4)=0.0E-02_CMFEDP
-    CouplingCoeffs(3,5)=0.0E-02_CMFEDP
-    CouplingCoeffs(4,1)=0.0E-02_CMFEDP
-    CouplingCoeffs(4,2)=0.0E-02_CMFEDP
-    CouplingCoeffs(4,3)=0.0E-02_CMFEDP
-    CouplingCoeffs(4,4)=0.0E-02_CMFEDP
-    CouplingCoeffs(4,5)=0.0E-02_CMFEDP
-    CouplingCoeffs(5,1)=0.0E-02_CMFEDP
-    CouplingCoeffs(5,2)=0.0E-02_CMFEDP
-    CouplingCoeffs(5,3)=0.0E-02_CMFEDP
-    CouplingCoeffs(5,4)=0.0E-02_CMFEDP
-    CouplingCoeffs(5,5)=0.0E-02_CMFEDP
+    CouplingCoeffs(1,1)=0.0E-02_CMISSRP
+    CouplingCoeffs(1,2)=0.0E-02_CMISSRP
+    CouplingCoeffs(1,3)=0.0E-02_CMISSRP
+    CouplingCoeffs(1,4)=0.0E-02_CMISSRP
+    CouplingCoeffs(1,5)=0.0E-02_CMISSRP
+    CouplingCoeffs(2,1)=0.0E-02_CMISSRP
+    CouplingCoeffs(2,2)=0.0E-02_CMISSRP
+    CouplingCoeffs(2,3)=0.0E-02_CMISSRP
+    CouplingCoeffs(2,4)=0.0E-02_CMISSRP
+    CouplingCoeffs(2,5)=0.0E-02_CMISSRP
+    CouplingCoeffs(3,1)=0.0E-02_CMISSRP
+    CouplingCoeffs(3,2)=0.0E-02_CMISSRP
+    CouplingCoeffs(3,3)=0.0E-02_CMISSRP
+    CouplingCoeffs(3,4)=0.0E-02_CMISSRP
+    CouplingCoeffs(3,5)=0.0E-02_CMISSRP
+    CouplingCoeffs(4,1)=0.0E-02_CMISSRP
+    CouplingCoeffs(4,2)=0.0E-02_CMISSRP
+    CouplingCoeffs(4,3)=0.0E-02_CMISSRP
+    CouplingCoeffs(4,4)=0.0E-02_CMISSRP
+    CouplingCoeffs(4,5)=0.0E-02_CMISSRP
+    CouplingCoeffs(5,1)=0.0E-02_CMISSRP
+    CouplingCoeffs(5,2)=0.0E-02_CMISSRP
+    CouplingCoeffs(5,3)=0.0E-02_CMISSRP
+    CouplingCoeffs(5,4)=0.0E-02_CMISSRP
+    CouplingCoeffs(5,5)=0.0E-02_CMISSRP
   ELSE
     write(*,*) "Can't initialise coupling coefficients array."
   ENDIF
@@ -931,7 +932,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 
    !create the equations set source field variables for both equations sets 
   DO icompartment = 1,Ncompartments
-    SourceFieldUserNumberDiffusion=700_CMFEIntg+icompartment
+    SourceFieldUserNumberDiffusion=700_CMISSIntg+icompartment
     CALL cmfe_Field_Initialise(SourceFieldDiffusion(icompartment),Err)
     CALL cmfe_EquationsSet_SourceCreateStart(EquationsSetDiffusion(icompartment),SourceFieldUserNumberDiffusion,&
          & SourceFieldDiffusion(icompartment),Err)
@@ -940,7 +941,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
 
   !Create the equations set analytic field variables
   DO icompartment = 1,Ncompartments
-    AnalyticFieldUserNumberDiffusion=900_CMFEIntg+icompartment
+    AnalyticFieldUserNumberDiffusion=900_CMISSIntg+icompartment
     CALL cmfe_Field_Initialise(AnalyticFieldDiffusion(icompartment),Err)
 
     CALL cmfe_EquationsSet_AnalyticCreateStart(EquationsSetDiffusion(icompartment), &
@@ -1061,7 +1062,7 @@ PROGRAM MONOLITHICSCHEMETESTFIELDMLEXAMPLE
   !
   !OUTPUT
 
-  Call cmfe_AnalyticAnalysisOutput(DependentField,"MultiCompDiffusionAnalytics_2Comp_2D_x40_y40_L_T1",Err)
+  Call cmfe_AnalyticAnalysis_Output(DependentField,"MultiCompDiffusionAnalytics_2Comp_2D_x40_y40_L_T1",Err)
 
 
   EXPORT_FIELD_IO=.TRUE.

@@ -49,6 +49,7 @@
 !> Main program
 PROGRAM SIMPLESHEAREXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 
@@ -58,52 +59,52 @@ PROGRAM SIMPLESHEAREXAMPLE
 
   IMPLICIT NONE
 
-  REAL(CMFEDP) :: VALUE
+  REAL(CMISSRP) :: VALUE
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: HEIGHT=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: LENGTH=1.0_CMFEDP
-  INTEGER(CMFEIntg), PARAMETER :: InterpolationType=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
-!  INTEGER(CMFEIntg), PARAMETER :: InterpolationType=CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION
-  INTEGER(CMFEIntg), PARAMETER :: PressureInterpolationType=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
+  REAL(CMISSRP), PARAMETER :: HEIGHT=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: LENGTH=1.0_CMISSRP
+  INTEGER(CMISSIntg), PARAMETER :: InterpolationType=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
+!  INTEGER(CMISSIntg), PARAMETER :: InterpolationType=CMFE_BASIS_QUADRATIC_LAGRANGE_INTERPOLATION
+  INTEGER(CMISSIntg), PARAMETER :: PressureInterpolationType=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
 !  LOGICAL, PARAMETER :: UsePressureBasis=.TRUE.
   LOGICAL, PARAMETER :: UsePressureBasis=.FALSE.
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfGaussXi=3
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfGaussXi=3
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: PressureBasisUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: EquationSetUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: PressureBasisUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
   !Program types
 
   !Program variables
 
-  INTEGER(CMFEIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: NodeNumber,NodeDomain,node_idx
-  INTEGER(CMFEIntg),ALLOCATABLE :: LeftSurfaceNodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE :: RightSurfaceNodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE :: FrontSurfaceNodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE :: BackSurfaceNodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE :: BottomSurfaceNodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE :: TopSurfaceNodes(:)
-  INTEGER(CMFEIntg) :: LeftNormalXi,RightNormalXi,FrontNormalXi,BackNormalXi,BottomNormalXi,TopNormalXi
+  INTEGER(CMISSIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: NodeNumber,NodeDomain,node_idx
+  INTEGER(CMISSIntg),ALLOCATABLE :: LeftSurfaceNodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE :: RightSurfaceNodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE :: FrontSurfaceNodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE :: BackSurfaceNodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE :: BottomSurfaceNodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE :: TopSurfaceNodes(:)
+  INTEGER(CMISSIntg) :: LeftNormalXi,RightNormalXi,FrontNormalXi,BackNormalXi,BottomNormalXi,TopNormalXi
 
-  INTEGER(CMFEIntg), PARAMETER :: NUMBER_OF_COMPONENTS = 3 !nearly incompressible
+  INTEGER(CMISSIntg), PARAMETER :: NUMBER_OF_COMPONENTS = 3 !nearly incompressible
 
   !CMISS variables
   TYPE(cmfe_BasisType) :: Basis, PressureBasis
@@ -128,7 +129,7 @@ PROGRAM SIMPLESHEAREXAMPLE
 #endif
 
   !Generic CMISS variables
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: Err
 
 #ifdef WIN32
   !Initialise QuickWin
@@ -323,10 +324,10 @@ PROGRAM SIMPLESHEAREXAMPLE
   CALL cmfe_EquationsSet_MaterialsCreateFinish(EquationsSet,Err)
 
   !Set Mooney-Rivlin constants c10 and c01 to 0.5 and 0.0 respectively. Third value is kappa (bulk modulus ???)
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.5_CMFEDP,Err)
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,0.0_CMFEDP,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.5_CMISSRP,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,0.0_CMISSRP,Err)
   CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 3,10000.0_CMFEDP,Err)
+    & 3,10000.0_CMISSRP,Err)
 
   !Create the equations set equations
   CALL cmfe_Equations_Initialise(Equations,Err)
@@ -394,7 +395,7 @@ PROGRAM SIMPLESHEAREXAMPLE
       CALL cmfe_Field_ParameterSetGetNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,1,&
         & VALUE,Err)
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-        & CMFE_BOUNDARY_CONDITION_FIXED,VALUE+0.1_CMFEDP*WIDTH,Err)
+        & CMFE_BOUNDARY_CONDITION_FIXED,VALUE+0.1_CMISSRP*WIDTH,Err)
       ! y-direction
       CALL cmfe_Field_ParameterSetGetNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,2,&
         & VALUE,Err)

@@ -42,7 +42,8 @@
 !> Main program
 PROGRAM ONEDCUBICHERMITEEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 #ifdef WIN32
@@ -53,20 +54,20 @@ PROGRAM ONEDCUBICHERMITEEXAMPLE
 
   !Test program parameters
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: GeometricField1UserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeometricField2UserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: GeometricField3UserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: GeometricField4UserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: GeometricField1UserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeometricField2UserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: GeometricField3UserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: GeometricField4UserNumber=9
 
-  REAL(CMFEDP), PARAMETER :: PI=3.141592653589793238462643383279502884197_CMFEDP
-  REAL(CMFEDP), PARAMETER :: Half = 1.0_CMFEDP/SQRT(2.0_CMFEDP)
-  REAL(CMFEDP), PARAMETER :: OneThird = COS(PI/3.0_CMFEDP)
-  REAL(CMFEDP), PARAMETER :: TwoThird = SIN(PI/3.0_CMFEDP)
+  REAL(CMISSRP), PARAMETER :: PI=3.141592653589793238462643383279502884197_CMISSRP
+  REAL(CMISSRP), PARAMETER :: Half = 1.0_CMISSRP/SQRT(2.0_CMISSRP)
+  REAL(CMISSRP), PARAMETER :: OneThird = COS(PI/3.0_CMISSRP)
+  REAL(CMISSRP), PARAMETER :: TwoThird = SIN(PI/3.0_CMISSRP)
  
   !Program types
   
@@ -92,8 +93,8 @@ PROGRAM ONEDCUBICHERMITEEXAMPLE
   
   !Generic CMISS variables
   
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: Err
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -223,34 +224,34 @@ PROGRAM ONEDCUBICHERMITEEXAMPLE
   !Set the geometric field values for geometric field 1
   !Node 1
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,1,1, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,1,1,Half,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,1,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,1,2,Half,Err)
   !Node 2
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,2,1, &
-    & 1.0_CMFEDP,Err)
+    & 1.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,2,1,Half,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,2,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,2,2,-Half,Err)
   !Node 3
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,3,1, &
-    & 3.0_CMFEDP,Err)
+    & 3.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,3,1,OneThird, &
     & Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,3,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,3,2,TwoThird, &
     & Err)
   !Node 4
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,4,1, &
-    & 7.0_CMFEDP,Err)
+    & 7.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,4,1,OneThird, &
     & Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,4,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,4,2, &
     & -TwoThird, &
     & Err)
@@ -258,34 +259,34 @@ PROGRAM ONEDCUBICHERMITEEXAMPLE
   !Set the geometric field values for geometric field 2
   !Node 1
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,1,1, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,1,1,Half,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,1,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,1,2,Half,Err)
   !Node 2
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,2,1, &
-    & 1.0_CMFEDP,Err)
+    & 1.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,2,1,Half,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,2,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,2,2,-Half,Err)
   !Node 3
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,3,1, &
-    & 3.0_CMFEDP,Err)
+    & 3.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,3,1,OneThird, &
     & Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,3,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,3,2,TwoThird, &
     & Err)
   !Node 4
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,4,1, &
-    & 7.0_CMFEDP,Err)
+    & 7.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,4,1,OneThird, &
     & Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,4,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,4,2, &
     & -TwoThird, &
     & Err)
@@ -293,34 +294,34 @@ PROGRAM ONEDCUBICHERMITEEXAMPLE
   !Set the geometric field values for geometric field 3
   !Node 1
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField3,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,1,1, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField3,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,1,1,Half,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField3,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,1,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField3,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,1,2,Half,Err)
   !Node 2
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField3,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,2,1, &
-    & 1.0_CMFEDP,Err)
+    & 1.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField3,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,2,1,Half,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField3,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,2,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField3,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,2,2,-Half,Err)
   !Node 3
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField3,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,3,1, &
-    & 3.0_CMFEDP,Err)
+    & 3.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField3,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,3,1,OneThird, &
     & Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField3,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,3,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField3,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,3,2,TwoThird, &
     & Err)
   !Node 4
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField3,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,4,1, &
-    & 7.0_CMFEDP,Err)
+    & 7.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField3,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,4,1,OneThird, &
     & Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField3,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,4,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField3,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,4,2, &
     & -TwoThird, &
     & Err)
@@ -328,34 +329,34 @@ PROGRAM ONEDCUBICHERMITEEXAMPLE
   !Set the geometric field values for geometric field 4
   !Node 1
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField4,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,1,1, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField4,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,1,1,Half,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField4,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,1,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField4,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,1,2,Half,Err)
   !Node 2
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField4,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,2,1, &
-    & 1.0_CMFEDP,Err)
+    & 1.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField4,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,2,1,Half,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField4,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,2,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField4,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,2,2,-Half,Err)
   !Node 3
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField4,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,3,1, &
-    & 3.0_CMFEDP,Err)
+    & 3.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField4,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,3,1,OneThird, &
     & Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField4,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,3,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField4,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,3,2,TwoThird, &
     & Err)
   !Node 4
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField4,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,4,1, &
-    & 7.0_CMFEDP,Err)
+    & 7.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField4,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,4,1,OneThird, &
     & Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField4,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,4,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField4,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2,4,2, &
     & -TwoThird, &
     & Err)

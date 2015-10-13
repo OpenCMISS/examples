@@ -1,6 +1,6 @@
 !> \file
 !> \author Christian Michler, Adam Reeve
-!> \brief This is an example program to solve a coupled Finite Elastiticity Darcy equation using openCMISS calls.
+!> \brief This is an example program to solve a coupled Finite Elastiticity Darcy equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -61,7 +61,8 @@ PROGRAM INCOMPELASTDRIVENDARCYANALYTICDARCYEXAMPLE
 
   !PROGRAM LIBRARIES
 
-  USE OPENCMISS
+  USE OpenCMISS
+  USE OpenCMISS_Iron
   USE FLUID_MECHANICS_IO_ROUTINES
   USE MPI
 
@@ -79,46 +80,46 @@ PROGRAM INCOMPELASTDRIVENDARCYANALYTICDARCYEXAMPLE
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: HEIGHT=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: LENGTH=1.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: HEIGHT=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: LENGTH=1.0_CMISSRP
 
-  INTEGER(CMFEIntg), PARAMETER :: LinearBasisUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: QuadraticBasisUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: CubicBasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: LinearBasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: QuadraticBasisUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: CubicBasisUserNumber=3
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumberDarcy=6
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumberMatProperties=42
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberDarcy=8
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberMatProperties=9
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberDarcy=12
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberMatProperties=13
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=14
-  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldUserNumberSolid=15
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumberDarcy=22
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumberMatProperties=23
-  INTEGER(CMFEIntg), PARAMETER :: AnalyticFieldUserNumberDarcy=27
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberDarcy=6
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberMatProperties=42
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcy=8
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberMatProperties=9
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberDarcy=12
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberMatProperties=13
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumberSolid=15
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberDarcy=22
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberMatProperties=23
+  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumberDarcy=27
 
 
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfDomains=1
-  INTEGER(CMFEIntg), PARAMETER :: ControlLoopSolidNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: ControlLoopFluidNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: ControlLoopSubiterationNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: SolverSolidIndex=1
-  INTEGER(CMFEIntg), PARAMETER :: SolverMatPropertiesIndex=1
-  INTEGER(CMFEIntg), PARAMETER :: SolverDarcyIndex=2
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPorosity=1
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPermOverVis=2
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberMatPropertiesPorosity=1
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberMatPropertiesPermOverVis=2
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfDomains=1
+  INTEGER(CMISSIntg), PARAMETER :: ControlLoopSolidNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: ControlLoopFluidNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: ControlLoopSubiterationNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: SolverSolidIndex=1
+  INTEGER(CMISSIntg), PARAMETER :: SolverMatPropertiesIndex=1
+  INTEGER(CMISSIntg), PARAMETER :: SolverDarcyIndex=2
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPorosity=1
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberDarcyPermOverVis=2
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberMatPropertiesPorosity=1
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberMatPropertiesPermOverVis=2
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
 
   !Program types
 
@@ -126,44 +127,44 @@ PROGRAM INCOMPELASTDRIVENDARCYANALYTICDARCYEXAMPLE
 
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
-  INTEGER(CMFEIntg) :: NUMBER_OF_DOMAINS
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
+  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
 
-  INTEGER(CMFEIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: MPI_IERROR
 
-  INTEGER(CMFEIntg) :: NUMBER_OF_DIMENSIONS
+  INTEGER(CMISSIntg) :: NUMBER_OF_DIMENSIONS
 
-  INTEGER(CMFEIntg) :: MAXIMUM_ITERATIONS
-  INTEGER(CMFEIntg) :: RESTART_VALUE
+  INTEGER(CMISSIntg) :: MAXIMUM_ITERATIONS
+  INTEGER(CMISSIntg) :: RESTART_VALUE
 
-  INTEGER(CMFEIntg) :: EQUATIONS_DARCY_OUTPUT
-  INTEGER(CMFEIntg) :: EQUATIONS_MAT_PROPERTIES_OUTPUT
-  INTEGER(CMFEIntg) :: COMPONENT_NUMBER
-  INTEGER(CMFEIntg) :: NODE_NUMBER
-  INTEGER(CMFEIntg) :: ELEMENT_NUMBER
-  INTEGER(CMFEIntg) :: CONDITION
+  INTEGER(CMISSIntg) :: EQUATIONS_DARCY_OUTPUT
+  INTEGER(CMISSIntg) :: EQUATIONS_MAT_PROPERTIES_OUTPUT
+  INTEGER(CMISSIntg) :: COMPONENT_NUMBER
+  INTEGER(CMISSIntg) :: NODE_NUMBER
+  INTEGER(CMISSIntg) :: ELEMENT_NUMBER
+  INTEGER(CMISSIntg) :: CONDITION
 
-  INTEGER(CMFEIntg) :: DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY
-  INTEGER(CMFEIntg) :: DYNAMIC_SOLVER_DARCY_OUTPUT_TYPE
-  INTEGER(CMFEIntg) :: LINEAR_SOLVER_DARCY_OUTPUT_TYPE
-  INTEGER(CMFEIntg) :: LINEAR_SOLVER_MAT_PROPERTIES_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY
+  INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_DARCY_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: LINEAR_SOLVER_DARCY_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: LINEAR_SOLVER_MAT_PROPERTIES_OUTPUT_TYPE
 
-  REAL(CMFEDP) :: COORD_X, COORD_Y, COORD_Z
-  REAL(CMFEDP) :: DOMAIN_X1, DOMAIN_X2, DOMAIN_Y1, DOMAIN_Y2, DOMAIN_Z1, DOMAIN_Z2
-  REAL(CMFEDP) :: GEOMETRY_TOLERANCE
-  INTEGER(CMFEIntg) :: EDGE_COUNT
-  INTEGER(CMFEIntg) :: NUMBER_OF_COMPONENTS_DEPENDENT_FIELD_MAT_PROPERTIES
-  INTEGER(CMFEIntg) :: BASIS_XI_INTERPOLATION_SOLID
-  REAL(CMFEDP) :: INITIAL_FIELD_DARCY(4)
-  REAL(CMFEDP) :: INITIAL_FIELD_MAT_PROPERTIES(3)
-  REAL(CMFEDP) :: INITIAL_FIELD_SOLID(4)
-  REAL(CMFEDP) :: DIVERGENCE_TOLERANCE
-  REAL(CMFEDP) :: RELATIVE_TOLERANCE
-  REAL(CMFEDP) :: ABSOLUTE_TOLERANCE
-  REAL(CMFEDP) :: LINESEARCH_ALPHA
-  REAL(CMFEDP) :: VALUE
-  REAL(CMFEDP) :: POROSITY_PARAM_MAT_PROPERTIES, PERM_OVER_VIS_PARAM_MAT_PROPERTIES
-  REAL(CMFEDP) :: POROSITY_PARAM_DARCY, PERM_OVER_VIS_PARAM_DARCY
+  REAL(CMISSRP) :: COORD_X, COORD_Y, COORD_Z
+  REAL(CMISSRP) :: DOMAIN_X1, DOMAIN_X2, DOMAIN_Y1, DOMAIN_Y2, DOMAIN_Z1, DOMAIN_Z2
+  REAL(CMISSRP) :: GEOMETRY_TOLERANCE
+  INTEGER(CMISSIntg) :: EDGE_COUNT
+  INTEGER(CMISSIntg) :: NUMBER_OF_COMPONENTS_DEPENDENT_FIELD_MAT_PROPERTIES
+  INTEGER(CMISSIntg) :: BASIS_XI_INTERPOLATION_SOLID
+  REAL(CMISSRP) :: INITIAL_FIELD_DARCY(4)
+  REAL(CMISSRP) :: INITIAL_FIELD_MAT_PROPERTIES(3)
+  REAL(CMISSRP) :: INITIAL_FIELD_SOLID(4)
+  REAL(CMISSRP) :: DIVERGENCE_TOLERANCE
+  REAL(CMISSRP) :: RELATIVE_TOLERANCE
+  REAL(CMISSRP) :: ABSOLUTE_TOLERANCE
+  REAL(CMISSRP) :: LINESEARCH_ALPHA
+  REAL(CMISSRP) :: VALUE
+  REAL(CMISSRP) :: POROSITY_PARAM_MAT_PROPERTIES, PERM_OVER_VIS_PARAM_MAT_PROPERTIES
+  REAL(CMISSRP) :: POROSITY_PARAM_DARCY, PERM_OVER_VIS_PARAM_DARCY
 
   LOGICAL :: EXPORT_FIELD_IO
   LOGICAL :: LINEAR_SOLVER_DARCY_DIRECT_FLAG
@@ -235,11 +236,11 @@ PROGRAM INCOMPELASTDRIVENDARCYANALYTICDARCYEXAMPLE
 
   !Generic CMISS variables
 
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: Err
 
 
-  INTEGER(CMFEIntg) :: DIAG_LEVEL_LIST(5)
+  INTEGER(CMISSIntg) :: DIAG_LEVEL_LIST(5)
 !   CHARACTER(LEN=255) :: DIAG_ROUTINE_LIST(8) !,TIMING_ROUTINE_LIST(1)
   CHARACTER(LEN=255) :: DIAG_ROUTINE_LIST(1) !,TIMING_ROUTINE_LIST(1)
 
@@ -253,43 +254,43 @@ PROGRAM INCOMPELASTDRIVENDARCYANALYTICDARCYEXAMPLE
 
   !Test program parameters
 
-  INTEGER(CMFEIntg) :: BASIS_NUMBER_SOLID
+  INTEGER(CMISSIntg) :: BASIS_NUMBER_SOLID
 
-  INTEGER(CMFEIntg) :: TotalNumberOfSolidNodes
-  INTEGER(CMFEIntg) :: SolidMeshComponenetNumber
-  INTEGER(CMFEIntg) :: SolidPressureMeshComponenetNumber
+  INTEGER(CMISSIntg) :: TotalNumberOfSolidNodes
+  INTEGER(CMISSIntg) :: SolidMeshComponenetNumber
+  INTEGER(CMISSIntg) :: SolidPressureMeshComponenetNumber
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometrySolidUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometrySolidNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometrySolidNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometrySolidUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometrySolidNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometrySolidNumberOfComponents=3
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreSolidUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreSolidNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreSolidNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreSolidUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreSolidNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreSolidNumberOfComponents=3
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialSolidUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialSolidNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialSolidNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialSolidUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialSolidNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialSolidNumberOfComponents=3
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentSolidUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentSolidNumberOfVariables=4
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentSolidNumberOfComponents=4
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentFluidNumberOfComponents=4  !(u,v,w,m)
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentSolidUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentSolidNumberOfVariables=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentSolidNumberOfComponents=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentFluidNumberOfComponents=4  !(u,v,w,m)
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationSetSolidUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldSolidUserNumber=25
+  INTEGER(CMISSIntg), PARAMETER :: EquationSetSolidUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldSolidUserNumber=25
 
-  INTEGER(CMFEIntg), PARAMETER :: DisplacementMeshComponentNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: PressureMeshComponentNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: DisplacementMeshComponentNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: PressureMeshComponentNumber=2
 
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=32
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=32
   !Program types
   !Program variables
 
-  REAL(CMFEDP) :: DYNAMIC_SOLVER_DARCY_START_TIME
-  REAL(CMFEDP) :: DYNAMIC_SOLVER_DARCY_STOP_TIME
-  REAL(CMFEDP) :: DYNAMIC_SOLVER_DARCY_THETA
-  REAL(CMFEDP) :: DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
+  REAL(CMISSRP) :: DYNAMIC_SOLVER_DARCY_START_TIME
+  REAL(CMISSRP) :: DYNAMIC_SOLVER_DARCY_STOP_TIME
+  REAL(CMISSRP) :: DYNAMIC_SOLVER_DARCY_THETA
+  REAL(CMISSRP) :: DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
 
   !CMISS variables
 
@@ -339,23 +340,23 @@ PROGRAM INCOMPELASTDRIVENDARCYANALYTICDARCYEXAMPLE
   !CALL FLUID_MECHANICS_IO_READ_CMHEART(CM,Err)
   BASIS_XI_INTERPOLATION_SOLID=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
   !Set geometric tolerance
-  GEOMETRY_TOLERANCE = 1.0E-12_CMFEDP
+  GEOMETRY_TOLERANCE = 1.0E-12_CMISSRP
   !Set initial values
-  INITIAL_FIELD_DARCY(1)=0.0_CMFEDP
-  INITIAL_FIELD_DARCY(2)=0.0_CMFEDP
-  INITIAL_FIELD_DARCY(3)=0.0_CMFEDP
-  INITIAL_FIELD_DARCY(4)=0.0_CMFEDP
-  INITIAL_FIELD_MAT_PROPERTIES(1)=0.0_CMFEDP
-  INITIAL_FIELD_MAT_PROPERTIES(2)=0.0_CMFEDP
-  INITIAL_FIELD_MAT_PROPERTIES(3)=0.0_CMFEDP
-!   INITIAL_FIELD_SOLID(1)=1.0_CMFEDP
-!   INITIAL_FIELD_SOLID(2)=1.0_CMFEDP
-!   INITIAL_FIELD_SOLID(3)=1.0_CMFEDP
-!   INITIAL_FIELD_SOLID(4)=1.0_CMFEDP
+  INITIAL_FIELD_DARCY(1)=0.0_CMISSRP
+  INITIAL_FIELD_DARCY(2)=0.0_CMISSRP
+  INITIAL_FIELD_DARCY(3)=0.0_CMISSRP
+  INITIAL_FIELD_DARCY(4)=0.0_CMISSRP
+  INITIAL_FIELD_MAT_PROPERTIES(1)=0.0_CMISSRP
+  INITIAL_FIELD_MAT_PROPERTIES(2)=0.0_CMISSRP
+  INITIAL_FIELD_MAT_PROPERTIES(3)=0.0_CMISSRP
+!   INITIAL_FIELD_SOLID(1)=1.0_CMISSRP
+!   INITIAL_FIELD_SOLID(2)=1.0_CMISSRP
+!   INITIAL_FIELD_SOLID(3)=1.0_CMISSRP
+!   INITIAL_FIELD_SOLID(4)=1.0_CMISSRP
   !Set material parameters
-  POROSITY_PARAM_DARCY=0.1_CMFEDP
-  PERM_OVER_VIS_PARAM_DARCY=1.0e-1_CMFEDP
-!   PERM_OVER_VIS_PARAM_DARCY=0.1_CMFEDP
+  POROSITY_PARAM_DARCY=0.1_CMISSRP
+  PERM_OVER_VIS_PARAM_DARCY=1.0e-1_CMISSRP
+!   PERM_OVER_VIS_PARAM_DARCY=0.1_CMISSRP
   POROSITY_PARAM_MAT_PROPERTIES=POROSITY_PARAM_DARCY
   PERM_OVER_VIS_PARAM_MAT_PROPERTIES=PERM_OVER_VIS_PARAM_DARCY
   !Set output parameter
@@ -368,22 +369,22 @@ PROGRAM INCOMPELASTDRIVENDARCYANALYTICDARCYEXAMPLE
   EQUATIONS_MAT_PROPERTIES_OUTPUT=CMFE_EQUATIONS_NO_OUTPUT
 
   !Set time parameter
-  DYNAMIC_SOLVER_DARCY_START_TIME=0.0_CMFEDP
-!   DYNAMIC_SOLVER_DARCY_STOP_TIME=0.03_CMFEDP
-  DYNAMIC_SOLVER_DARCY_TIME_INCREMENT=1.0e-2_CMFEDP
-  DYNAMIC_SOLVER_DARCY_STOP_TIME=2_CMFEIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
-  DYNAMIC_SOLVER_DARCY_THETA=1.0_CMFEDP !2.0_CMFEDP/3.0_CMFEDP
+  DYNAMIC_SOLVER_DARCY_START_TIME=0.0_CMISSRP
+!   DYNAMIC_SOLVER_DARCY_STOP_TIME=0.03_CMISSRP
+  DYNAMIC_SOLVER_DARCY_TIME_INCREMENT=1.0e-2_CMISSRP
+  DYNAMIC_SOLVER_DARCY_STOP_TIME=2_CMISSIntg * DYNAMIC_SOLVER_DARCY_TIME_INCREMENT
+  DYNAMIC_SOLVER_DARCY_THETA=1.0_CMISSRP !2.0_CMISSRP/3.0_CMISSRP
   !Set result output parameter
   DYNAMIC_SOLVER_DARCY_OUTPUT_FREQUENCY=1
   !Set solver parameters
   LINEAR_SOLVER_MAT_PROPERTIES_DIRECT_FLAG=.TRUE.
   LINEAR_SOLVER_DARCY_DIRECT_FLAG=.TRUE.
-  RELATIVE_TOLERANCE=1.0E-10_CMFEDP !default: 1.0E-05_CMFEDP
-  ABSOLUTE_TOLERANCE=1.0E-10_CMFEDP !default: 1.0E-10_CMFEDP
-  DIVERGENCE_TOLERANCE=1.0E5_CMFEDP !default: 1.0E5
-  MAXIMUM_ITERATIONS=10000_CMFEIntg !default: 100000
-  RESTART_VALUE=30_CMFEIntg !default: 30
-  LINESEARCH_ALPHA=1.0_CMFEDP
+  RELATIVE_TOLERANCE=1.0E-10_CMISSRP !default: 1.0E-05_CMISSRP
+  ABSOLUTE_TOLERANCE=1.0E-10_CMISSRP !default: 1.0E-10_CMISSRP
+  DIVERGENCE_TOLERANCE=1.0E5_CMISSRP !default: 1.0E5
+  MAXIMUM_ITERATIONS=10000_CMISSIntg !default: 100000
+  RESTART_VALUE=30_CMISSIntg !default: 30
+  LINESEARCH_ALPHA=1.0_CMISSRP
 
 
   !
@@ -626,14 +627,10 @@ PROGRAM INCOMPELASTDRIVENDARCYANALYTICDARCYEXAMPLE
   !Create the equations set for deformation-dependent material properties
   CALL cmfe_Field_Initialise(EquationsSetFieldMatProperties,Err)
   CALL cmfe_EquationsSet_Initialise(EquationsSetMatProperties,Err)
-!   CALL cmfe_EquationsSet_CreateStart(EquationsSetUserNumberMatProperties,Region,GeometricField, &
-  & [CMFE_EQUATIONS_SET_FITTING_CLASS,CALL cmfe_EquationsSet_CreateStart(EquationsSetUserNumberMatProperties,Region], &
-  & GeometricField,CMFE_EQUATIONS_SET_FITTING_CLASS,CMFE_EQUATIONS_SET_DATA_FITTING_EQUATION_TYPE, &
-  & CMFE_EQUATIONS_SET_MAT_PROP_INRIA_MODEL_DATA_FITTING_SUBTYPE,EquationsSetFieldUserNumberMatProperties, &
-  & EquationsSetFieldMatProperties,EquationsSetMatProperties,Err)
-  !Set the equations set to be a deformation-dependent material properties problem
-!   CALL cmfe_EquationsSet_SpecificationSet(EquationsSetMatProperties,CMFE_EQUATIONS_SET_FITTING_CLASS, &
-!     & CMFE_EQUATIONS_SET_DATA_FITTING_EQUATION_TYPE,CMFE_EQUATIONS_SET_MAT_PROP_INRIA_MODEL_DATA_FITTING_SUBTYPE,Err)
+  CALL cmfe_EquationsSet_CreateStart(EquationsSetUserNumberMatProperties,Region,GeometricField, &
+    &[CMFE_EQUATIONS_SET_FITTING_CLASS,CMFE_EQUATIONS_SET_DATA_FITTING_EQUATION_TYPE, &
+    & CMFE_EQUATIONS_SET_MAT_PROP_INRIA_MODEL_DATA_FITTING_SUBTYPE],EquationsSetFieldUserNumberMatProperties, &
+    & EquationsSetFieldMatProperties,EquationsSetMatProperties,Err)
   !Finish creating the equations set
   CALL cmfe_EquationsSet_CreateFinish(EquationsSetMatProperties,Err)
 
@@ -647,8 +644,6 @@ PROGRAM INCOMPELASTDRIVENDARCYANALYTICDARCYEXAMPLE
   CALL cmfe_EquationsSet_CreateStart(EquationSetSolidUserNumber,Region,FibreFieldSolid,[CMFE_EQUATIONS_SET_ELASTICITY_CLASS, &
     & CMFE_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMFE_EQUATIONS_SET_INCOMPRESS_ELASTICITY_DRIVEN_DARCY_SUBTYPE], &
     & EquationsSetFieldSolidUserNumber,EquationsSetFieldSolid,EquationsSetSolid,Err)
-!   CALL cmfe_EquationsSet_SpecificationSet(EquationsSetSolid,CMFE_EQUATIONS_SET_ELASTICITY_CLASS, &
-!     & CMFE_EQUATIONS_SET_FINITE_ELASTICITY_TYPE,CMFE_EQUATIONS_SET_INCOMPRESS_ELASTICITY_DRIVEN_DARCY_SUBTYPE,Err)
   CALL cmfe_EquationsSet_CreateFinish(EquationsSetSolid,Err)
 
   ! end Solid
@@ -674,13 +669,13 @@ PROGRAM INCOMPELASTDRIVENDARCYANALYTICDARCYEXAMPLE
 
   !Set material parameters
   CALL cmfe_Field_ComponentValuesInitialise(MaterialFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1, &
-    & 1.0_CMFEDP,Err)
-!   CALL cmfe_Field_ComponentValuesInitialise(MaterialFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0e3_CMFEDP,Err)
+    & 1.0_CMISSRP,Err)
+!   CALL cmfe_Field_ComponentValuesInitialise(MaterialFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0e3_CMISSRP,Err)
   CALL cmfe_Field_ComponentValuesInitialise(MaterialFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2, &
-    & 1.0_CMFEDP,Err)
-!   CALL cmfe_Field_ComponentValuesInitialise(MaterialFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,33.0_CMFEDP,Err)
+    & 1.0_CMISSRP,Err)
+!   CALL cmfe_Field_ComponentValuesInitialise(MaterialFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,33.0_CMISSRP,Err)
   CALL cmfe_Field_ComponentValuesInitialise(MaterialFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3, &
-    & 10.0_CMFEDP,Err)
+    & 10.0_CMISSRP,Err)
 
   CALL cmfe_EquationsSet_MaterialsCreateStart(EquationsSetSolid,FieldMaterialSolidUserNumber,MaterialFieldSolid,Err)
   CALL cmfe_EquationsSet_MaterialsCreateFinish(EquationsSetSolid,Err)
@@ -932,7 +927,7 @@ PROGRAM INCOMPELASTDRIVENDARCYANALYTICDARCYEXAMPLE
   CALL cmfe_Field_ParametersToFieldParametersComponentCopy(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
     & 3,DependentFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,Err)
   CALL cmfe_Field_ComponentValuesInitialise(DependentFieldSolid,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4, &
-    & 0.0_CMFEDP, &
+    & 0.0_CMISSRP, &
     & Err)
 
   ! end Solid
@@ -1109,99 +1104,99 @@ PROGRAM INCOMPELASTDRIVENDARCYANALYTICDARCYEXAMPLE
 !   !--- BCs on normal velocity only
 !   CONDITION = CMFE_BOUNDARY_CONDITION_MOVED_WALL
 ! 
-!   IF( CM%D==2_CMFEIntg ) THEN !CM%D = number of dimensions, ie 2D
-!     DO NODE_NUMBER=1_CMFEIntg,NUMBER_OF_NODES_GEOMETRY
-!       COORD_X = CM%N(NODE_NUMBER,1_CMFEIntg)
-!       COORD_Y = CM%N(NODE_NUMBER,2_CMFEIntg)
+!   IF( CM%D==2_CMISSIntg ) THEN !CM%D = number of dimensions, ie 2D
+!     DO NODE_NUMBER=1_CMISSIntg,NUMBER_OF_NODES_GEOMETRY
+!       COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
+!       COORD_Y = CM%N(NODE_NUMBER,2_CMISSIntg)
 ! 
 !       IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
 !         !x-velocity
-!         VALUE = 1.0_CMFEDP
+!         VALUE = 1.0_CMISSRP
 !         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentField,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-!           & NODE_NUMBER,1_CMFEIntg,CONDITION,VALUE,Err)
+!           & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
 !       END IF
 !       !
 !       IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
 !         !x-velocity
-!         VALUE = 1.0_CMFEDP
+!         VALUE = 1.0_CMISSRP
 !         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentField,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-!           & NODE_NUMBER,1_CMFEIntg,CONDITION,VALUE,Err)
+!           & NODE_NUMBER,1_CMISSIntg,CONDITION,VALUE,Err)
 !       END IF
 !       !
 !       IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
 !         !y-velocity
-!         VALUE = 2.0_CMFEDP
+!         VALUE = 2.0_CMISSRP
 !         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentField,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-!           & NODE_NUMBER,2_CMFEIntg,CONDITION,VALUE,Err)
+!           & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
 !       END IF
 !       !
 !       IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
 !         !y-velocity
-!         VALUE = 2.0_CMFEDP
+!         VALUE = 2.0_CMISSRP
 !         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentField,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-!           & NODE_NUMBER,2_CMFEIntg,CONDITION,VALUE,Err)
+!           & NODE_NUMBER,2_CMISSIntg,CONDITION,VALUE,Err)
 !       END IF
 !     END DO
-!   ELSE IF( CM%D==3_CMFEIntg ) THEN ! 3D geometry
-!     DO NODE_NUMBER=1_CMFEIntg,NUMBER_OF_NODES_GEOMETRY  !What if different number of nodes geometry and velocity ?
-!       COORD_X = CM%N(NODE_NUMBER,1_CMFEIntg)
-!       COORD_Y = CM%N(NODE_NUMBER,2_CMFEIntg)
-!       COORD_Z = CM%N(NODE_NUMBER,3_CMFEIntg)
+!   ELSE IF( CM%D==3_CMISSIntg ) THEN ! 3D geometry
+!     DO NODE_NUMBER=1_CMISSIntg,NUMBER_OF_NODES_GEOMETRY  !What if different number of nodes geometry and velocity ?
+!       COORD_X = CM%N(NODE_NUMBER,1_CMISSIntg)
+!       COORD_Y = CM%N(NODE_NUMBER,2_CMISSIntg)
+!       COORD_Z = CM%N(NODE_NUMBER,3_CMISSIntg)
 ! 
 !       IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
 ! !         !x-velocity: F L U I D ( V Variable type )
-! !         VALUE = 10.0_CMFEDP
+! !         VALUE = 10.0_CMISSRP
 ! !         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,,DependentFieldCMISSFieldVVariableType,CMFE_NO_GLOBAL_DERIV, &
-! ! !           & NODE_NUMBER,4_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err) !BC on pressure component
-! ! !           & NODE_NUMBER,1_CMFEIntg,CMFE_BOUNDARY_CONDITION_MOVED_WALL,VALUE,Err) !inflow
-! !           & NODE_NUMBER,1_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err) !time-dependent inflow
+! ! !           & NODE_NUMBER,4_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err) !BC on pressure component
+! ! !           & NODE_NUMBER,1_CMISSIntg,CMFE_BOUNDARY_CONDITION_MOVED_WALL,VALUE,Err) !inflow
+! !           & NODE_NUMBER,1_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err) !time-dependent inflow
 ! 
 ! !         !x-position: S O L I D ( U Variable Type)
-! ! !         VALUE = 1.0_CMFEDP * DOMAIN_X1
+! ! !         VALUE = 1.0_CMISSRP * DOMAIN_X1
 ! !         VALUE = COORD_X
 ! !         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-! !           & NODE_NUMBER,1_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+! !           & NODE_NUMBER,1_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 ! 
-! !         EDGE_COUNT = 0_CMFEIntg
-! !         IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) EDGE_COUNT = EDGE_COUNT + 1_CMFEIntg
-! !         IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) EDGE_COUNT = EDGE_COUNT + 1_CMFEIntg
-! !         IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) ) EDGE_COUNT = EDGE_COUNT + 1_CMFEIntg
-! !         IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) EDGE_COUNT = EDGE_COUNT + 1_CMFEIntg
+! !         EDGE_COUNT = 0_CMISSIntg
+! !         IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) EDGE_COUNT = EDGE_COUNT + 1_CMISSIntg
+! !         IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) EDGE_COUNT = EDGE_COUNT + 1_CMISSIntg
+! !         IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) ) EDGE_COUNT = EDGE_COUNT + 1_CMISSIntg
+! !         IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) EDGE_COUNT = EDGE_COUNT + 1_CMISSIntg
 ! ! 
-! !         IF(EDGE_COUNT == 2_CMFEIntg) THEN !it is a corner node
+! !         IF(EDGE_COUNT == 2_CMISSIntg) THEN !it is a corner node
 ! !           VALUE = COORD_Y
 ! !           CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-! !             & NODE_NUMBER,2_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+! !             & NODE_NUMBER,2_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 ! ! 
 ! !           VALUE = COORD_Z
 ! !           CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-! !             & NODE_NUMBER,3_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+! !             & NODE_NUMBER,3_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 ! !         END IF
 !       END IF
 !       !
 !       IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
 ! !         !x-velocity: F L U I D
-! !         VALUE = 10.0_CMFEDP
+! !         VALUE = 10.0_CMISSRP
 ! !         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentField,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-! ! !           & NODE_NUMBER,4_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err) !BC on pressure component
-! ! !           & NODE_NUMBER,1_CMFEIntg,CMFE_BOUNDARY_CONDITION_MOVED_WALL,VALUE,Err) !impermeable wall, zero flux
-! !           & NODE_NUMBER,1_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err) !impermeable wall, zero flux
+! ! !           & NODE_NUMBER,4_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err) !BC on pressure component
+! ! !           & NODE_NUMBER,1_CMISSIntg,CMFE_BOUNDARY_CONDITION_MOVED_WALL,VALUE,Err) !impermeable wall, zero flux
+! !           & NODE_NUMBER,1_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err) !impermeable wall, zero flux
 ! 
 ! !         !x-position: S O L I D
 ! !         VALUE = COORD_X
 ! !         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1, &
-! !           & NODE_NUMBER,1_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+! !           & NODE_NUMBER,1_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 ! !         
 ! !         !Fix point 1
 ! !         IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
 ! !           IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) THEN
 ! !             VALUE = COORD_Y
 ! !             CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-! !               & NODE_NUMBER,2_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+! !               & NODE_NUMBER,2_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 ! ! 
 ! !             VALUE = COORD_Z
 ! !             CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-! !               & NODE_NUMBER,3_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+! !               & NODE_NUMBER,3_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 ! !           END IF
 ! !         END IF
 ! !         !(Fix) point 2
@@ -1209,7 +1204,7 @@ PROGRAM INCOMPELASTDRIVENDARCYANALYTICDARCYEXAMPLE
 ! !           IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) THEN
 ! !             VALUE = COORD_Z
 ! !             CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-! !               & NODE_NUMBER,3_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+! !               & NODE_NUMBER,3_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 ! !           END IF
 ! !         END IF
 ! !         !(Fix) point 3
@@ -1217,7 +1212,7 @@ PROGRAM INCOMPELASTDRIVENDARCYANALYTICDARCYEXAMPLE
 ! !           IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) ) THEN
 ! !             VALUE = COORD_Y
 ! !             CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-! !               & NODE_NUMBER,2_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+! !               & NODE_NUMBER,2_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 ! !           END IF
 ! !         END IF
 ! 
@@ -1226,78 +1221,78 @@ PROGRAM INCOMPELASTDRIVENDARCYANALYTICDARCYEXAMPLE
 !       !
 !       IF( (ABS(COORD_Y-DOMAIN_Y1) < GEOMETRY_TOLERANCE) ) THEN
 ! !         !y-velocity: F L U I D
-! !         VALUE = 0.0_CMFEDP
+! !         VALUE = 0.0_CMISSRP
 ! !         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentField,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-! !           & NODE_NUMBER,2_CMFEIntg,CMFE_BOUNDARY_CONDITION_MOVED_WALL,VALUE,Err)
+! !           & NODE_NUMBER,2_CMISSIntg,CMFE_BOUNDARY_CONDITION_MOVED_WALL,VALUE,Err)
 ! ! 
 ! !         !y-position: S O L I D
-! !         VALUE = 1.0_CMFEDP * DOMAIN_Y1
+! !         VALUE = 1.0_CMISSRP * DOMAIN_Y1
 ! !         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-! ! !           & NODE_NUMBER,2_CMFEIntg,CMFE_BOUNDARY_CONDITION_MOVED_WALL_INCREMENTED,VALUE,Err)
-! !           & NODE_NUMBER,2_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+! ! !           & NODE_NUMBER,2_CMISSIntg,CMFE_BOUNDARY_CONDITION_MOVED_WALL_INCREMENTED,VALUE,Err)
+! !           & NODE_NUMBER,2_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 !       END IF
 !       !
 !       IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
 ! !         !y-velocity: F L U I D
-! !         VALUE = 0.0_CMFEDP
+! !         VALUE = 0.0_CMISSRP
 ! !         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentField,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-! !           & NODE_NUMBER,2_CMFEIntg,CMFE_BOUNDARY_CONDITION_MOVED_WALL,VALUE,Err)
+! !           & NODE_NUMBER,2_CMISSIntg,CMFE_BOUNDARY_CONDITION_MOVED_WALL,VALUE,Err)
 ! ! 
 ! ! !         !y-position: S O L I D
-! ! !         VALUE = 1.1_CMFEDP * DOMAIN_Y2
+! ! !         VALUE = 1.1_CMISSRP * DOMAIN_Y2
 ! ! !         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1, &
-! ! !           & NODE_NUMBER,2_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+! ! !           & NODE_NUMBER,2_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 !       END IF
 !       !
 !       IF( (ABS(COORD_Z-DOMAIN_Z1) < GEOMETRY_TOLERANCE) ) THEN
 !         !z-velocity: F L U I D
 !         !mass-correction: F L U I D
-!         VALUE = 0.1_CMFEDP
+!         VALUE = 0.1_CMISSRP
 !         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentField,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-! !           & NODE_NUMBER,3_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
-! !           & NODE_NUMBER,3_CMFEIntg,CMFE_BOUNDARY_CONDITION_CORRECTION_MASS_INCREASE,VALUE,Err)
-! !           & NODE_NUMBER,4_CMFEIntg,CMFE_BOUNDARY_CONDITION_CORRECTION_MASS_INCREASE,VALUE,Err)
-!           & NODE_NUMBER,4_CMFEIntg,CMFE_BOUNDARY_CONDITION_FREE,VALUE,Err)
+! !           & NODE_NUMBER,3_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+! !           & NODE_NUMBER,3_CMISSIntg,CMFE_BOUNDARY_CONDITION_CORRECTION_MASS_INCREASE,VALUE,Err)
+! !           & NODE_NUMBER,4_CMISSIntg,CMFE_BOUNDARY_CONDITION_CORRECTION_MASS_INCREASE,VALUE,Err)
+!           & NODE_NUMBER,4_CMISSIntg,CMFE_BOUNDARY_CONDITION_FREE,VALUE,Err)
 ! 
 ! !         !z-position: S O L I D
-! !         VALUE = 1.0_CMFEDP * DOMAIN_Z1
+! !         VALUE = 1.0_CMISSRP * DOMAIN_Z1
 ! !         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-! !           & NODE_NUMBER,3_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+! !           & NODE_NUMBER,3_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 !       END IF
 !       !
 !       IF( (ABS(COORD_Z-DOMAIN_Z2) < GEOMETRY_TOLERANCE) ) THEN
 ! !         !z-velocity: F L U I D
-! !         VALUE = 0.0_CMFEDP
+! !         VALUE = 0.0_CMISSRP
 ! !         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsDarcy,DependentField,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-! !           & NODE_NUMBER,3_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+! !           & NODE_NUMBER,3_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 ! 
 ! !         VALUE = COORD_X
 ! !         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1, &
-! !           & NODE_NUMBER,1_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+! !           & NODE_NUMBER,1_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 ! ! 
 ! !         VALUE = COORD_Y
 ! !         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-! !           & NODE_NUMBER,2_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+! !           & NODE_NUMBER,2_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 ! ! 
 ! !         VALUE = COORD_Z
 ! !         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-! !           & NODE_NUMBER,3_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+! !           & NODE_NUMBER,3_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 ! 
 !         !x-position: S O L I D
 !         VALUE = COORD_Z
 !         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1, &
-!           & NODE_NUMBER,3_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+!           & NODE_NUMBER,3_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 !         
 !         !Fix point 1
 !         IF( (ABS(COORD_Y-DOMAIN_Y2) < GEOMETRY_TOLERANCE) ) THEN
 !           IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
 !             VALUE = COORD_Y
 !             CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-!               & NODE_NUMBER,2_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+!               & NODE_NUMBER,2_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 ! 
 !             VALUE = COORD_X
 !             CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-!               & NODE_NUMBER,1_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+!               & NODE_NUMBER,1_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 !           END IF
 !         END IF
 !         !(Fix) point 2
@@ -1305,7 +1300,7 @@ PROGRAM INCOMPELASTDRIVENDARCYANALYTICDARCYEXAMPLE
 !           IF( (ABS(COORD_X-DOMAIN_X2) < GEOMETRY_TOLERANCE) ) THEN
 !             VALUE = COORD_X
 !             CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-!               & NODE_NUMBER,1_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+!               & NODE_NUMBER,1_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 !           END IF
 !         END IF
 !         !(Fix) point 3
@@ -1313,7 +1308,7 @@ PROGRAM INCOMPELASTDRIVENDARCYANALYTICDARCYEXAMPLE
 !           IF( (ABS(COORD_X-DOMAIN_X1) < GEOMETRY_TOLERANCE) ) THEN
 !             VALUE = COORD_Y
 !             CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsSolid,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_NO_GLOBAL_DERIV, &
-!               & NODE_NUMBER,2_CMFEIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
+!               & NODE_NUMBER,2_CMISSIntg,CMFE_BOUNDARY_CONDITION_FIXED,VALUE,Err)
 !           END IF
 !         END IF
 ! 

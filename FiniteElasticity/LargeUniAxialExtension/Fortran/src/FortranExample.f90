@@ -49,6 +49,7 @@
 !> Main program
 PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 
@@ -60,42 +61,42 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: HEIGHT=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: LENGTH=1.0_CMFEDP
-  INTEGER(CMFEIntg), PARAMETER :: InterpolationType=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
-  INTEGER(CMFEIntg), PARAMETER :: PressureInterpolationType=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
+  REAL(CMISSRP), PARAMETER :: HEIGHT=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: LENGTH=1.0_CMISSRP
+  INTEGER(CMISSIntg), PARAMETER :: InterpolationType=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
+  INTEGER(CMISSIntg), PARAMETER :: PressureInterpolationType=CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION
   LOGICAL, PARAMETER :: UsePressureBasis=.FALSE.
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfGaussXi=2
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfGaussXi=2
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: PressureBasisUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: EquationSetUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: PressureBasisUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
   !Program types
 
   !Program variables
 
-  INTEGER(CMFEIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
-  INTEGER(CMFEIntg) :: EquationsSetIndex,NumberOfComponents
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: NodeNumber,NodeDomain,node_idx
-  INTEGER(CMFEIntg),ALLOCATABLE :: BottomSurfaceNodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE :: LeftSurfaceNodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE :: RightSurfaceNodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE :: FrontSurfaceNodes(:)
-  INTEGER(CMFEIntg) :: BottomNormalXi,LeftNormalXi,RightNormalXi,BackNormalXi
+  INTEGER(CMISSIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
+  INTEGER(CMISSIntg) :: EquationsSetIndex,NumberOfComponents
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: NodeNumber,NodeDomain,node_idx
+  INTEGER(CMISSIntg),ALLOCATABLE :: BottomSurfaceNodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE :: LeftSurfaceNodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE :: RightSurfaceNodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE :: FrontSurfaceNodes(:)
+  INTEGER(CMISSIntg) :: BottomNormalXi,LeftNormalXi,RightNormalXi,BackNormalXi
 
   !CMISS variables
   TYPE(cmfe_BasisType) :: Basis, PressureBasis
@@ -121,7 +122,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
 #endif
 
   !Generic CMISS variables
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: Err
 
 #ifdef WIN32
   !Initialise QuickWin
@@ -306,8 +307,8 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
   CALL cmfe_EquationsSet_MaterialsCreateFinish(EquationsSet,Err)
 
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively.
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0_CMFEDP,Err)
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,6.0_CMFEDP,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0_CMISSRP,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,6.0_CMISSRP,Err)
 
   !Create the equations set equations
   CALL cmfe_Equations_Initialise(Equations,Err)
@@ -323,7 +324,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
     & 2,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,Err)
   CALL cmfe_Field_ParametersToFieldParametersComponentCopy(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
     & 3,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,Err)
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4,-8.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4,-8.0_CMISSRP, &
     & Err)
 
   !Define the problem
@@ -376,7 +377,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-        & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+        & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
     ENDIF
   ENDDO
 
@@ -385,7 +386,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-        & CMFE_BOUNDARY_CONDITION_FIXED_INCREMENTED,1.1_CMFEDP*WIDTH,Err)
+        & CMFE_BOUNDARY_CONDITION_FIXED_INCREMENTED,1.1_CMISSRP*WIDTH,Err)
     ENDIF
   ENDDO
 
@@ -395,7 +396,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,2, &
-        & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+        & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
     ENDIF
   ENDDO
 
@@ -405,7 +406,7 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,3, &
-        & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+        & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
     ENDIF
   ENDDO
 
@@ -417,13 +418,13 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
       IF(NodeDomain==ComputationalNodeNumber) THEN
         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1, &
           & CMFE_GLOBAL_DERIV_S2, &
-          & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+          & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1, &
           & CMFE_GLOBAL_DERIV_S3, &
-          & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+          & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1, &
           & CMFE_GLOBAL_DERIV_S2_S3, &
-          & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+          & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
       ENDIF
     ENDDO
     DO node_idx=1,SIZE(RightSurfaceNodes,1)
@@ -432,13 +433,13 @@ PROGRAM LARGEUNIAXIALEXTENSIONEXAMPLE
       IF(NodeDomain==ComputationalNodeNumber) THEN
         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1, &
           & CMFE_GLOBAL_DERIV_S2, &
-          & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+          & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1, &
           & CMFE_GLOBAL_DERIV_S3, &
-          & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+          & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1, &
           & CMFE_GLOBAL_DERIV_S2_S3, &
-          & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+          & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
       ENDIF
     ENDDO
   ENDIF

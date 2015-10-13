@@ -50,6 +50,7 @@
 !> Main program
 PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 !  USE CONSTANTS   !for pi
@@ -63,58 +64,58 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
 !--------------------------------------------------------------------------------------------------------------------------------
   !Test program parameters
 
-!  REAL(CMFEDP), PARAMETER :: WIDTH=6.0_CMFEDP   ! x-direction
-!  REAL(CMFEDP), PARAMETER :: HEIGHT=1.9_CMFEDP  ! y-direction
-!!  REAL(CMFEDP), PARAMETER :: LENGTH=1.8_CMFEDP  ! z-direction, muscle plus fat/skin
-!  REAL(CMFEDP), PARAMETER :: LENGTH=0.8_CMFEDP  ! z-direction, only muscle
+!  REAL(CMISSRP), PARAMETER :: WIDTH=6.0_CMISSRP   ! x-direction
+!  REAL(CMISSRP), PARAMETER :: HEIGHT=1.9_CMISSRP  ! y-direction
+!!  REAL(CMISSRP), PARAMETER :: LENGTH=1.8_CMISSRP  ! z-direction, muscle plus fat/skin
+!  REAL(CMISSRP), PARAMETER :: LENGTH=0.8_CMISSRP  ! z-direction, only muscle
 !   <-- not needed here (only for generated mesh)
   
-  REAL(CMFEDP), PARAMETER :: PI=4.0_CMFEDP*DATAN(1.0_CMFEDP)
+  REAL(CMISSRP), PARAMETER :: PI=4.0_CMISSRP*DATAN(1.0_CMISSRP)
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfMeshComponents=1
-  INTEGER(CMFEIntg), PARAMETER :: MeshComponentNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshComponents=1
+  INTEGER(CMISSIntg), PARAMETER :: MeshComponentNumber=1
       
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=12
-  INTEGER(CMFEIntg), PARAMETER :: SourceFieldUserNumber=14  
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumber=14  
   
-  INTEGER(CMFEIntg), PARAMETER :: FibreFieldUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: FibreFieldNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FibreFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: FibreFieldNumberOfVariables=1
   
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=11
   
-  INTEGER(CMFEIntg), PARAMETER :: DerivativeUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: DerivativeUserNumber=1
 
 !------------------------------------------------------------------------- 
   !Program types
   
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE
-  INTEGER(CMFEIntg) :: NumberOfMeshDimensions
-  INTEGER(CMFEIntg) :: TotalNumberOfElements,TotalNumberOfNodes,TotalNumberOfElementsMuscle,TotalNumberOfNodesMuscle
-  INTEGER(CMFEIntg) :: INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI
-  INTEGER(CMFEIntg) :: node_idx,component_idx,elem_idx
-  INTEGER(CMFEIntg) :: FibreFieldNumberOfComponents
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS_MUSCLE
+  INTEGER(CMISSIntg) :: NumberOfMeshDimensions
+  INTEGER(CMISSIntg) :: TotalNumberOfElements,TotalNumberOfNodes,TotalNumberOfElementsMuscle,TotalNumberOfNodesMuscle
+  INTEGER(CMISSIntg) :: INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI
+  INTEGER(CMISSIntg) :: node_idx,component_idx,elem_idx
+  INTEGER(CMISSIntg) :: FibreFieldNumberOfComponents
 
-  REAL(CMFEDP) :: FibreFieldAngle(3)
-  INTEGER(CMFEIntg) :: time,dt
+  REAL(CMISSRP) :: FibreFieldAngle(3)
+  INTEGER(CMISSIntg) :: time,dt
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT,Filename
   CHARACTER(LEN=255) :: name_part1,name_part3,numberstring,exnodefile,filename_results
 
-  INTEGER(CMFEIntg),DIMENSION(:,:),ALLOCATABLE :: ElemTopology
-  REAL(CMFEDP),DIMENSION(:,:),ALLOCATABLE :: NodeCoords,NodeCoordsMuscle
+  INTEGER(CMISSIntg),DIMENSION(:,:),ALLOCATABLE :: ElemTopology
+  REAL(CMISSRP),DIMENSION(:,:),ALLOCATABLE :: NodeCoords,NodeCoordsMuscle
   
-  INTEGER(CMFEIntg) :: clck_counts_beg, clck_counts_begloop, clck_counts_int1, clck_counts_int2, clck_counts_end, clck_rate
+  INTEGER(CMISSIntg) :: clck_counts_beg, clck_counts_begloop, clck_counts_int1, clck_counts_int2, clck_counts_end, clck_rate
 
 !-------------------------------------------------------------------------
   !CMISS variables
@@ -143,11 +144,11 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   
   !Generic CMISS variables
   
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: FirstNodeNumber,LastNodeNumber,NodeNumber
-  INTEGER(CMFEIntg) :: FirstNodeDomain,LastNodeDomain,NodeDomain
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber,NodeNumber
+  INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain,NodeDomain
+  INTEGER(CMISSIntg) :: Err
   
   CALL SYSTEM_CLOCK (clck_counts_beg, clck_rate)
   !WRITE(*,*) 'begin:', clck_counts_beg
@@ -479,8 +480,8 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   !          entry in Angle(3) means rotated around x-axis => no change
   ! 45° equivalent to pi/4, 90° equivalent to pi/2
   
-!  FibreFieldAngle=[PI/4.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP]
-  FibreFieldAngle=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP]
+!  FibreFieldAngle=[PI/4.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP]
+  FibreFieldAngle=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP]
 
   DO component_idx=1,FibreFieldNumberOfComponents
     CALL cmfe_Field_ComponentValuesInitialise(FibreField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,component_idx, &
@@ -558,54 +559,54 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
     ! sigma_i
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 1,8.93E-6_CMFEDP,Err)  ! 11
+      & 1,8.93E-6_CMISSRP,Err)  ! 11
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-!      & 2,8.93E-6_CMFEDP,Err)  ! 22
-      & 2,0.893E-6_CMFEDP,Err)  ! 22  
+!      & 2,8.93E-6_CMISSRP,Err)  ! 22
+      & 2,0.893E-6_CMISSRP,Err)  ! 22  
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 3,0.0_CMFEDP,Err)  ! 12=21
+      & 3,0.0_CMISSRP,Err)  ! 12=21
     ! sigma_e
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 4,6.7E-6_CMFEDP,Err)  ! 11
+      & 4,6.7E-6_CMISSRP,Err)  ! 11
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 5,6.7E-6_CMFEDP,Err)  ! 22      
+      & 5,6.7E-6_CMISSRP,Err)  ! 22      
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 6,0.0_CMFEDP,Err)  ! 12=21      
+      & 6,0.0_CMISSRP,Err)  ! 12=21      
   ELSE
     ! sigma_i 
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 1,8.93E-6_CMFEDP,Err)  ! 11
-!      & 1,0.3E-6_CMFEDP,Err)  ! 11
+      & 1,8.93E-6_CMISSRP,Err)  ! 11
+!      & 1,0.3E-6_CMISSRP,Err)  ! 11
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-!      & 2,8.93E-6_CMFEDP,Err)  ! 22
-      & 2,0.893E-6_CMFEDP,Err)  ! 22
-!      & 2,0.0_CMFEDP,Err)  ! 22      
+!      & 2,8.93E-6_CMISSRP,Err)  ! 22
+      & 2,0.893E-6_CMISSRP,Err)  ! 22
+!      & 2,0.0_CMISSRP,Err)  ! 22      
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-!      & 3,8.93E-6_CMFEDP,Err)  ! 33
-      & 3,0.893E-6_CMFEDP,Err)  ! 33
-!      & 3,0.0E-6_CMFEDP,Err)  ! 33
+!      & 3,8.93E-6_CMISSRP,Err)  ! 33
+      & 3,0.893E-6_CMISSRP,Err)  ! 33
+!      & 3,0.0E-6_CMISSRP,Err)  ! 33
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 4,0.0_CMFEDP,Err)  ! 12=21
+      & 4,0.0_CMISSRP,Err)  ! 12=21
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 5,0.0_CMFEDP,Err)  ! 23=32
+      & 5,0.0_CMISSRP,Err)  ! 23=32
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 6,0.0_CMFEDP,Err)  !13=31
+      & 6,0.0_CMISSRP,Err)  !13=31
     ! sigma_e 
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 7,6.7E-6_CMFEDP,Err)  ! 11
-!      & 7,2.2E-6_CMFEDP,Err)  ! 11
+      & 7,6.7E-6_CMISSRP,Err)  ! 11
+!      & 7,2.2E-6_CMISSRP,Err)  ! 11
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 8,6.7E-6_CMFEDP,Err)  ! 22
-!      & 8,2.2E-6_CMFEDP,Err)  ! 22
+      & 8,6.7E-6_CMISSRP,Err)  ! 22
+!      & 8,2.2E-6_CMISSRP,Err)  ! 22
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 9,6.7E-6_CMFEDP,Err)  ! 33
-!      & 9,2.2E-6_CMFEDP,Err)  ! 33
+      & 9,6.7E-6_CMISSRP,Err)  ! 33
+!      & 9,2.2E-6_CMISSRP,Err)  ! 33
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 10,0.0_CMFEDP,Err)  ! 12=21
+      & 10,0.0_CMISSRP,Err)  ! 12=21
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 11,0.0_CMFEDP,Err)  ! 23=32
+      & 11,0.0_CMISSRP,Err)  ! 23=32
     CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 12,0.0_CMFEDP,Err)  !13=31    
+      & 12,0.0_CMISSRP,Err)  !13=31    
   ENDIF
   
   !On fat/skin-layer elements, material parameters are changed 
@@ -614,45 +615,45 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
     IF(NUMBER_GLOBAL_Z_ELEMENTS==0) THEN
       !sigma_i --> set to 0          
       CALL cmfe_Field_ParameterSetUpdateElement(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-        & elem_idx,1,0.0_CMFEDP,Err)
+        & elem_idx,1,0.0_CMISSRP,Err)
       CALL cmfe_Field_ParameterSetUpdateElement(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-        & elem_idx,2,0.0_CMFEDP,Err)
+        & elem_idx,2,0.0_CMISSRP,Err)
       CALL cmfe_Field_ParameterSetUpdateElement(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-        & elem_idx,3,0.0_CMFEDP,Err)
+        & elem_idx,3,0.0_CMISSRP,Err)
       !sigma_e=sigma, literature value for fat/skin:
       CALL cmfe_Field_ParameterSetUpdateElement(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-        & elem_idx,4,0.4E-6_CMFEDP,Err)
+        & elem_idx,4,0.4E-6_CMISSRP,Err)
       CALL cmfe_Field_ParameterSetUpdateElement(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-        & elem_idx,5,0.4E-6_CMFEDP,Err)
+        & elem_idx,5,0.4E-6_CMISSRP,Err)
       CALL cmfe_Field_ParameterSetUpdateElement(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-        & elem_idx,6,0.0_CMFEDP,Err)
+        & elem_idx,6,0.0_CMISSRP,Err)
     ELSE
       !sigma_i --> set to 0          
       CALL cmfe_Field_ParameterSetUpdateElement(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-        & elem_idx,1,0.0_CMFEDP,Err)
+        & elem_idx,1,0.0_CMISSRP,Err)
       CALL cmfe_Field_ParameterSetUpdateElement(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-        & elem_idx,2,0.0_CMFEDP,Err)
+        & elem_idx,2,0.0_CMISSRP,Err)
       CALL cmfe_Field_ParameterSetUpdateElement(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-        & elem_idx,3,0.0_CMFEDP,Err)
+        & elem_idx,3,0.0_CMISSRP,Err)
       CALL cmfe_Field_ParameterSetUpdateElement(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-        & elem_idx,4,0.0_CMFEDP,Err)
+        & elem_idx,4,0.0_CMISSRP,Err)
       CALL cmfe_Field_ParameterSetUpdateElement(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-        & elem_idx,5,0.0_CMFEDP,Err)
+        & elem_idx,5,0.0_CMISSRP,Err)
       CALL cmfe_Field_ParameterSetUpdateElement(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-        & elem_idx,6,0.0_CMFEDP,Err)
+        & elem_idx,6,0.0_CMISSRP,Err)
       !sigma_e=sigma, literature value for fat/skin:
       CALL cmfe_Field_ParameterSetUpdateElement(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-        & elem_idx,7,0.4E-6_CMFEDP,Err)
+        & elem_idx,7,0.4E-6_CMISSRP,Err)
       CALL cmfe_Field_ParameterSetUpdateElement(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-        & elem_idx,8,0.4E-6_CMFEDP,Err)
+        & elem_idx,8,0.4E-6_CMISSRP,Err)
       CALL cmfe_Field_ParameterSetUpdateElement(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-        & elem_idx,9,0.4E-6_CMFEDP,Err)
+        & elem_idx,9,0.4E-6_CMISSRP,Err)
       CALL cmfe_Field_ParameterSetUpdateElement(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-        & elem_idx,10,0.0_CMFEDP,Err)
+        & elem_idx,10,0.0_CMISSRP,Err)
       CALL cmfe_Field_ParameterSetUpdateElement(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-        & elem_idx,11,0.0_CMFEDP,Err)
+        & elem_idx,11,0.0_CMISSRP,Err)
       CALL cmfe_Field_ParameterSetUpdateElement(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-        & elem_idx,12,0.0_CMFEDP,Err)            
+        & elem_idx,12,0.0_CMISSRP,Err)            
     ENDIF
   ENDDO !elem_idx
 
@@ -676,7 +677,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
 
   !initialise source values to -82.0  (leave like that for fat/skin, then RHS = 0 as divergence of a constant)
   CALL cmfe_Field_ComponentValuesInitialise(SourceField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & 1,-82.0_CMFEDP,Err)
+      & 1,-82.0_CMISSRP,Err)
 
   !the value of Vm for each node (in muscle) will be specified in the time-loop around cmfe_Problem_Solve at the bottom
   !of this file as Vm will change with time and should be updated
@@ -715,7 +716,7 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   CALL cmfe_Field_CreateFinish(DependentField,Err)
   
   !Initialise the field with an initial guess
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.5_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.5_CMISSRP, &
     & Err)  
 
 !-------------------------------------------------------------------------
@@ -797,8 +798,8 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   !CALL cmfe_Solver_OutputTypeSet(Solver,CMFE_SOLVER_MATRIX_OUTPUT,Err)
   
 !  CALL cmfe_Solver_LinearTypeSet(Solver,CMFE_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
-!  CALL cmfe_Solver_LinearIterativeAbsoluteToleranceSet(Solver,1.0E-12_CMFEDP,Err)
-!  CALL cmfe_Solver_LinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMFEDP,Err)
+!  CALL cmfe_Solver_LinearIterativeAbsoluteToleranceSet(Solver,1.0E-12_CMISSRP,Err)
+!  CALL cmfe_Solver_LinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMISSRP,Err)
 !  CALL cmfe_Solver_LinearIterativeTypeSet(Solver,CMFE_SOLVER_ITERATIVE_BiCGSTAB,Err)
 !!  CALL cmfe_Solver_LinearIterativeTypeSet(Solver,CMFE_SOLVER_ITERATIVE_CONJUGATE_GRADIENT,Err)
 !!  !CALL cmfe_Solver_LinearIterativeTypeSet(Solver,CMFE_SOLVER_ITERATIVE_GMRES,Err)
@@ -849,11 +850,11 @@ PROGRAM EXTRACELLULARBIDOMAINEXAMPLE
   CALL cmfe_Decomposition_NodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
 !  IF(FirstNodeDomain==ComputationalNodeNumber) THEN
 !    CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,FirstNodeNumber,1, &
-!      & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+!      & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
 !  ENDIF
   IF(LastNodeDomain==ComputationalNodeNumber) THEN
     CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,LastNodeNumber,1, &
-      & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+      & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
   ENDIF
   
   !Finish the creation of the equations set boundary conditions
@@ -987,12 +988,12 @@ CONTAINS
   !-------------------------------------------------------------------------------------- 
 
 !  SUBROUTINE READ_ELEMENTNODES(fp,totalnumberofelements,elemtopology)
-!    INTEGER(CMFEIntg), INTENT(IN)    :: fp  !< file 'pointer'
-!    INTEGER(CMFEIntg), INTENT(IN)    :: totalnumberofelements !< total number of elements, needed for array size    
-!    INTEGER(CMFEIntg), DIMENSION(:,:), ALLOCATABLE, INTENT(INOUT) :: elemtopology !< element topology, array with rows 
+!    INTEGER(CMISSIntg), INTENT(IN)    :: fp  !< file 'pointer'
+!    INTEGER(CMISSIntg), INTENT(IN)    :: totalnumberofelements !< total number of elements, needed for array size    
+!    INTEGER(CMISSIntg), DIMENSION(:,:), ALLOCATABLE, INTENT(INOUT) :: elemtopology !< element topology, array with rows 
 !                                                                      !that contain element number and corresponding nodes
-!    INTEGER(CMFEIntg) :: elemnr,n1,n2,n3,n4,n5,n6,n7,n8
-!    INTEGER(CMFEIntg) :: k,j
+!    INTEGER(CMISSIntg) :: elemnr,n1,n2,n3,n4,n5,n6,n7,n8
+!    INTEGER(CMISSIntg) :: k,j
 !    
 !    !select correct size of array depending on 2d/3d and linear/quadratic s.f.
 !    !ALLOCATE(elemtopology(totalnumberofelements,5)) !2d,linear - 4
@@ -1021,12 +1022,12 @@ CONTAINS
   !-------------------------------------------------------------------------------------- 
 
   SUBROUTINE CREATE_MESH(n_elem_x,n_elem_y,n_elem_z,totalnumberofelements,elemtopology)
-    INTEGER(CMFEIntg), INTENT(IN) :: n_elem_x,n_elem_y,n_elem_z    !< total number of elements in each direction
-    INTEGER(CMFEIntg), INTENT(IN) :: totalnumberofelements     !< total number of elements    
-    INTEGER(CMFEIntg), DIMENSION(:,:), ALLOCATABLE, INTENT(INOUT) :: elemtopology !< element topology, array with rows 
+    INTEGER(CMISSIntg), INTENT(IN) :: n_elem_x,n_elem_y,n_elem_z    !< total number of elements in each direction
+    INTEGER(CMISSIntg), INTENT(IN) :: totalnumberofelements     !< total number of elements    
+    INTEGER(CMISSIntg), DIMENSION(:,:), ALLOCATABLE, INTENT(INOUT) :: elemtopology !< element topology, array with rows 
                                                                       !that contain element number and corresponding nodes
-    INTEGER(CMFEIntg) :: n_nodes_x,n_fibres_y,n_fibres_z,idx_x,idx_y,idx_z                                                     
-    INTEGER(CMFEIntg) :: elemnr=0,n1,n2,n3,n4,n5,n6,n7,n8
+    INTEGER(CMISSIntg) :: n_nodes_x,n_fibres_y,n_fibres_z,idx_x,idx_y,idx_z                                                     
+    INTEGER(CMISSIntg) :: elemnr=0,n1,n2,n3,n4,n5,n6,n7,n8
 
     ALLOCATE(elemtopology(totalnumberofelements,9)) !3d,linear - 8
   
@@ -1058,17 +1059,17 @@ CONTAINS
   !--------------------------------------------------------------------------------------
   
   SUBROUTINE READ_EXNODE(fp,totalnumberofnodes,nodecoords)
-    INTEGER(CMFEIntg), INTENT(IN)    :: fp  !< file 'pointer'
-    INTEGER(CMFEIntg), INTENT(IN)    :: totalnumberofnodes !< total number of nodes, needed for array size
-    REAL(CMFEDP), DIMENSION(totalnumberofnodes,4), INTENT(INOUT) :: nodecoords !< nodal coordinates and Vm, array with rows
+    INTEGER(CMISSIntg), INTENT(IN)    :: fp  !< file 'pointer'
+    INTEGER(CMISSIntg), INTENT(IN)    :: totalnumberofnodes !< total number of nodes, needed for array size
+    REAL(CMISSRP), DIMENSION(totalnumberofnodes,4), INTENT(INOUT) :: nodecoords !< nodal coordinates and Vm, array with rows
                                                                       !that contain (node number), corresponding coordinates 
                                                                       !and source value Vm for that node
     
-!    REAL(CMFEDP), DIMENSION(:,:), ALLOCATABLE, INTENT(INOUT) :: nodecoords !< nodal coordinates and Vm, array with rows 
+!    REAL(CMISSRP), DIMENSION(:,:), ALLOCATABLE, INTENT(INOUT) :: nodecoords !< nodal coordinates and Vm, array with rows 
                                                                       !that contain (node number), corresponding coordinates 
                                                                       !and source value Vm for that node
-    REAL(CMFEDP) :: geoM1Dx,mat1,mat2,mat3,Vm,dVmdt,geoM3Dx,geoM3Dy,geoM3Dz
-    INTEGER(CMFEIntg) :: iost,k,j,nodenr
+    REAL(CMISSRP) :: geoM1Dx,mat1,mat2,mat3,Vm,dVmdt,geoM3Dx,geoM3Dy,geoM3Dz
+    INTEGER(CMISSIntg) :: iost,k,j,nodenr
     CHARACTER(len=256) :: str1
 
 !    !select correct size of array depending on 2d/3d
@@ -1076,7 +1077,7 @@ CONTAINS
 !    ALLOCATE(nodecoords(totalnumberofnodes,4)) !3d
     
     nodenr=0
-    nodecoords=0.0_CMFEDP
+    nodecoords=0.0_CMISSRP
     
     ReadLoopNode: DO
       READ(fp,*,IOSTAT=iost) str1 !read data line by line

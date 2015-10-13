@@ -42,6 +42,7 @@
 PROGRAM DataProjection1DRectangularCartesian
 
   USE MPI
+  USE OpenCMISS
   USE OpenCMISS_Iron
 
 #ifdef WIN32
@@ -51,56 +52,56 @@ PROGRAM DataProjection1DRectangularCartesian
   IMPLICIT NONE
 
   !Program parameters
-  INTEGER(CMFEIntg),PARAMETER :: BasisUserNumber=1  
-  INTEGER(CMFEIntg),PARAMETER :: CoordinateSystemDimension=3
-  INTEGER(CMFEIntg),PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg),PARAMETER :: DecompositionUserNumber=1
-  INTEGER(CMFEIntg),PARAMETER :: DataProjectionUserNumber=1
-  INTEGER(CMFEIntg),PARAMETER :: FieldUserNumber=1  
-  INTEGER(CMFEIntg),PARAMETER :: MeshUserNumber=1
-  INTEGER(CMFEIntg),PARAMETER :: RegionUserNumber=1
+  INTEGER(CMISSIntg),PARAMETER :: BasisUserNumber=1  
+  INTEGER(CMISSIntg),PARAMETER :: CoordinateSystemDimension=3
+  INTEGER(CMISSIntg),PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg),PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMISSIntg),PARAMETER :: DataProjectionUserNumber=1
+  INTEGER(CMISSIntg),PARAMETER :: FieldUserNumber=1  
+  INTEGER(CMISSIntg),PARAMETER :: MeshUserNumber=1
+  INTEGER(CMISSIntg),PARAMETER :: RegionUserNumber=1
 
-  REAL(CMFEDP), PARAMETER :: CoordinateSystemOrigin(3)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP]
+  REAL(CMISSRP), PARAMETER :: CoordinateSystemOrigin(3)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP]
   
   !Program types
 
   !Program variables   
-  INTEGER(CMFEIntg) :: MeshComponentNumber=1
-  INTEGER(CMFEIntg) :: MeshDimensions=1
-  INTEGER(CMFEIntg) :: MeshNumberOfElements
-  INTEGER(CMFEIntg) :: MeshNumberOfComponents=1
-  INTEGER(CMFEIntg) :: NumberOfDomains=2
-  INTEGER(CMFEIntg) :: NumberOfNodes
-  INTEGER(CMFEIntg) :: NumberOfXi=1
-  INTEGER(CMFEIntg) :: BasisInterpolation(1)=[CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION]
-  INTEGER(CMFEIntg) :: WorldCoordinateSystemUserNumber
-  INTEGER(CMFEIntg) :: WorldRegionUserNumber
+  INTEGER(CMISSIntg) :: MeshComponentNumber=1
+  INTEGER(CMISSIntg) :: MeshDimensions=1
+  INTEGER(CMISSIntg) :: MeshNumberOfElements
+  INTEGER(CMISSIntg) :: MeshNumberOfComponents=1
+  INTEGER(CMISSIntg) :: NumberOfDomains=2
+  INTEGER(CMISSIntg) :: NumberOfNodes
+  INTEGER(CMISSIntg) :: NumberOfXi=1
+  INTEGER(CMISSIntg) :: BasisInterpolation(1)=[CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION]
+  INTEGER(CMISSIntg) :: WorldCoordinateSystemUserNumber
+  INTEGER(CMISSIntg) :: WorldRegionUserNumber
   
-  INTEGER(CMFEIntg) :: FieldNumberOfVariables=1
-  INTEGER(CMFEIntg) :: FieldNumberOfComponents=3
+  INTEGER(CMISSIntg) :: FieldNumberOfVariables=1
+  INTEGER(CMISSIntg) :: FieldNumberOfComponents=3
   
 
-  INTEGER(CMFEIntg) :: np,el,xi,ver_idx,der_idx,node_idx,comp_idx
+  INTEGER(CMISSIntg) :: np,el,xi,ver_idx,der_idx,node_idx,comp_idx
     
-  REAL(CMFEDP), DIMENSION(5,3) :: DataPointValues !(number_of_data_points,dimension)
-  INTEGER(CMFEIntg), DIMENSION(5,2) :: ElementUserNodes  
-  REAL(CMFEDP), DIMENSION(2,6,3) :: FieldValues
+  REAL(CMISSRP), DIMENSION(5,3) :: DataPointValues !(number_of_data_points,dimension)
+  INTEGER(CMISSIntg), DIMENSION(5,2) :: ElementUserNodes  
+  REAL(CMISSRP), DIMENSION(2,6,3) :: FieldValues
   
   !Test variables
-  REAL(CMFEDP) :: AbsoluteToleranceSet=1.0E-10_CMFEDP !default is 1.0E-8
-  REAL(CMFEDP) :: RelativeToleranceSet=1.0E-6_CMFEDP !default is 1.0E-8
-  INTEGER(CMFEIntg) :: MaximumNumberOfIterationsSet=30 !default is 25
-  REAL(CMFEDP) :: MaximumIterationUpdateSet=0.4_CMFEDP !default is 0.5
-  INTEGER(CMFEIntg) :: NumberOfClosestElementsSet=3 !default is 2/4/8 for 1/2/3 dimensional projection 
-  INTEGER(CMFEIntg) :: ProjectionTypeSet=CMFE_DATA_PROJECTION_ALL_ELEMENTS_PROJECTION_TYPE !same as default
-  REAL(CMFEDP) :: StartingXiSet(1)=[0.4_CMFEDP] !default is 0.5
-  REAL(CMFEDP) :: AbsoluteToleranceGet
-  REAL(CMFEDP) :: RelativeToleranceGet
-  INTEGER(CMFEIntg) :: MaximumNumberOfIterationsGet
-  REAL(CMFEDP) :: MaximumIterationUpdateGet
-  INTEGER(CMFEIntg) :: NumberOfClosestElementsGet
-  INTEGER(CMFEIntg) :: ProjectionTypeGet
-  REAL(CMFEDP), ALLOCATABLE :: StartingXiGet(:)
+  REAL(CMISSRP) :: AbsoluteToleranceSet=1.0E-10_CMISSRP !default is 1.0E-8
+  REAL(CMISSRP) :: RelativeToleranceSet=1.0E-6_CMISSRP !default is 1.0E-8
+  INTEGER(CMISSIntg) :: MaximumNumberOfIterationsSet=30 !default is 25
+  REAL(CMISSRP) :: MaximumIterationUpdateSet=0.4_CMISSRP !default is 0.5
+  INTEGER(CMISSIntg) :: NumberOfClosestElementsSet=3 !default is 2/4/8 for 1/2/3 dimensional projection 
+  INTEGER(CMISSIntg) :: ProjectionTypeSet=CMFE_DATA_PROJECTION_ALL_ELEMENTS_PROJECTION_TYPE !same as default
+  REAL(CMISSRP) :: StartingXiSet(1)=[0.4_CMISSRP] !default is 0.5
+  REAL(CMISSRP) :: AbsoluteToleranceGet
+  REAL(CMISSRP) :: RelativeToleranceGet
+  INTEGER(CMISSIntg) :: MaximumNumberOfIterationsGet
+  REAL(CMISSRP) :: MaximumIterationUpdateGet
+  INTEGER(CMISSIntg) :: NumberOfClosestElementsGet
+  INTEGER(CMISSIntg) :: ProjectionTypeGet
+  REAL(CMISSRP), ALLOCATABLE :: StartingXiGet(:)
 #ifdef WIN32
   !Quickwin type
   LOGICAL :: QUICKWIN_STATUS=.FALSE.
@@ -108,12 +109,12 @@ PROGRAM DataProjection1DRectangularCartesian
 #endif
 
   !Generic CMISS and MPI variables
-  INTEGER(CMFEIntg) :: Err
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS=1 !<number of elements on x axis
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_Y_ELEMENTS=1 !<number of elements on y axis
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_Z_ELEMENTS=1 !<number of elements on z axis  
-  INTEGER(CMFEIntg) :: NUMBER_OF_DOMAINS=1      
-  INTEGER(CMFEIntg) :: MPI_IERROR  
+  INTEGER(CMISSIntg) :: Err
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS=1 !<number of elements on x axis
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_Y_ELEMENTS=1 !<number of elements on y axis
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_Z_ELEMENTS=1 !<number of elements on z axis  
+  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS=1      
+  INTEGER(CMISSIntg) :: MPI_IERROR  
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -127,11 +128,11 @@ PROGRAM DataProjection1DRectangularCartesian
 #endif
     
   !Intialise data points
-  DataPointValues(1,:)=[20.5_CMFEDP,1.8_CMFEDP,0.0_CMFEDP]
-  DataPointValues(2,:)=[33.2_CMFEDP,-4.8_CMFEDP,0.0_CMFEDP]  
-  DataPointValues(3,:)=[9.6_CMFEDP,10.0_CMFEDP,0.0_CMFEDP]  
-  DataPointValues(4,:)=[50.0_CMFEDP,-3.0_CMFEDP,6.0_CMFEDP]  
-  DataPointValues(5,:)=[44.0_CMFEDP,10.0_CMFEDP,18.6_CMFEDP]  
+  DataPointValues(1,:)=[20.5_CMISSRP,1.8_CMISSRP,0.0_CMISSRP]
+  DataPointValues(2,:)=[33.2_CMISSRP,-4.8_CMISSRP,0.0_CMISSRP]  
+  DataPointValues(3,:)=[9.6_CMISSRP,10.0_CMISSRP,0.0_CMISSRP]  
+  DataPointValues(4,:)=[50.0_CMISSRP,-3.0_CMISSRP,6.0_CMISSRP]  
+  DataPointValues(5,:)=[44.0_CMISSRP,10.0_CMISSRP,18.6_CMISSRP]  
   
   ElementUserNodes(1,:)=[1,2]
   ElementUserNodes(2,:)=[2,3]
@@ -139,23 +140,23 @@ PROGRAM DataProjection1DRectangularCartesian
   ElementUserNodes(4,:)=[4,5]
   ElementUserNodes(5,:)=[5,6]        
   
-  FieldValues(1,1,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !no der, node 1
-  FieldValues(2,1,:)=[10.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !first der, node 1
+  FieldValues(1,1,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !no der, node 1
+  FieldValues(2,1,:)=[10.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !first der, node 1
   
-  FieldValues(1,2,:)=[10.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !no der, node 2
-  FieldValues(2,2,:)=[10.0_CMFEDP,-10.0_CMFEDP,0.0_CMFEDP] !first der, node 2
+  FieldValues(1,2,:)=[10.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !no der, node 2
+  FieldValues(2,2,:)=[10.0_CMISSRP,-10.0_CMISSRP,0.0_CMISSRP] !first der, node 2
   
-  FieldValues(1,3,:)=[20.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !no der, node 3
-  FieldValues(2,3,:)=[10.0_CMFEDP,20.0_CMFEDP,0.0_CMFEDP] !first der, node 3
+  FieldValues(1,3,:)=[20.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !no der, node 3
+  FieldValues(2,3,:)=[10.0_CMISSRP,20.0_CMISSRP,0.0_CMISSRP] !first der, node 3
   
-  FieldValues(1,4,:)=[30.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !no der, node 4
-  FieldValues(2,4,:)=[10.0_CMFEDP,10.0_CMFEDP,0.0_CMFEDP] !first der, node 4
+  FieldValues(1,4,:)=[30.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !no der, node 4
+  FieldValues(2,4,:)=[10.0_CMISSRP,10.0_CMISSRP,0.0_CMISSRP] !first der, node 4
   
-  FieldValues(1,5,:)=[40.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !no der, node 5
-  FieldValues(2,5,:)=[10.0_CMFEDP,-15.0_CMFEDP,0.0_CMFEDP] !first der, node 5
+  FieldValues(1,5,:)=[40.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !no der, node 5
+  FieldValues(2,5,:)=[10.0_CMISSRP,-15.0_CMISSRP,0.0_CMISSRP] !first der, node 5
   
-  FieldValues(1,6,:)=[50.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !no der, node 6
-  FieldValues(2,6,:)=[10.0_CMFEDP,-5.0_CMFEDP,0.0_CMFEDP] !first der, node 6
+  FieldValues(1,6,:)=[50.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !no der, node 6
+  FieldValues(2,6,:)=[10.0_CMISSRP,-5.0_CMISSRP,0.0_CMISSRP] !first der, node 6
   
   !Intialise cmiss
   CALL cmfe_Initialise(WorldCoordinateSystemUserNumber,WorldRegionUserNumber,Err)

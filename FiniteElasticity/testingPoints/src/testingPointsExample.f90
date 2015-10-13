@@ -49,6 +49,7 @@
 !> Main program
 PROGRAM TESTINGPOINTSEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 
@@ -64,64 +65,64 @@ PROGRAM TESTINGPOINTSEXAMPLE
   CHARACTER(LEN=256) :: ARG_DIM, ARG_ELEM, ARG_BASIS_1,ARG_BASIS_2, ARG_LEVEL, ARG
 
   !\todo: don't hard code, read in + default
-  REAL(CMFEDP), PARAMETER :: INNER_PRESSURE=0.1_CMFEDP !Positive is compressive
-  REAL(CMFEDP), PARAMETER :: OUTER_PRESSURE=0.0_CMFEDP !Positive is compressive
-  REAL(CMFEDP), PARAMETER :: LAMBDA=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: TSI=0.0_CMFEDP    !Not yet working. Leave at 0
-  REAL(CMFEDP), PARAMETER :: INNER_RAD=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: OUTER_RAD=1.2_CMFEDP
-  REAL(CMFEDP), PARAMETER :: HEIGHT=2.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: C1=2.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: C2=6.0_CMFEDP
-  INTEGER(CMFEIntg), PARAMETER ::   NumberGlobalXElements=1 !\todo: don't hardcode
-  INTEGER(CMFEIntg), PARAMETER ::   NumberGlobalYElements=4
-  INTEGER(CMFEIntg), PARAMETER ::   NumberGlobalZElements=1
+  REAL(CMISSRP), PARAMETER :: INNER_PRESSURE=0.1_CMISSRP !Positive is compressive
+  REAL(CMISSRP), PARAMETER :: OUTER_PRESSURE=0.0_CMISSRP !Positive is compressive
+  REAL(CMISSRP), PARAMETER :: LAMBDA=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: TSI=0.0_CMISSRP    !Not yet working. Leave at 0
+  REAL(CMISSRP), PARAMETER :: INNER_RAD=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: OUTER_RAD=1.2_CMISSRP
+  REAL(CMISSRP), PARAMETER :: HEIGHT=2.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: C1=2.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: C2=6.0_CMISSRP
+  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalXElements=1 !\todo: don't hardcode
+  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalYElements=4
+  INTEGER(CMISSIntg), PARAMETER ::   NumberGlobalZElements=1
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfSpatialCoordinates=3
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: LinearBasisUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: QuadraticBasisUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: CubicBasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfSpatialCoordinates=3
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: LinearBasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: QuadraticBasisUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: CubicBasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
 
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfMeshDimensions=3
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfXiCoordinates=3
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfMeshComponents=2
-  INTEGER(CMFEIntg), PARAMETER :: DisplacementMeshComponentNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: PressureMeshComponentNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshDimensions=3
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfXiCoordinates=3
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshComponents=2
+  INTEGER(CMISSIntg), PARAMETER :: DisplacementMeshComponentNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: PressureMeshComponentNumber=2
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreNumberOfComponents=3
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialNumberOfComponents=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfComponents=2
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfVariables=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfComponents=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfVariables=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponents=4
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldAnalyticUserNumber=1337
+  INTEGER(CMISSIntg), PARAMETER :: FieldAnalyticUserNumber=1337
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationSetUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
   !Program types
 
 
   !Program variables
-  INTEGER(CMFEIntg) :: MPI_IERROR
-  INTEGER(CMFEIntg) :: EquationsSetIndex  
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: EquationsSetIndex  
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
 
   !CMISS variables
 
@@ -145,15 +146,15 @@ PROGRAM TESTINGPOINTSEXAMPLE
   TYPE(cmfe_ControlLoopType) :: ControlLoop
 
   !Other variables
-  INTEGER(CMFEIntg) :: NN
+  INTEGER(CMISSIntg) :: NN
   LOGICAL :: X_FIXED,Y_FIXED, X_OKAY,Y_OKAY
 
-  INTEGER(CMFEIntg),ALLOCATABLE :: TopSurfaceNodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE :: BottomSurfaceNodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE :: InnerSurfaceNodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE :: OuterSurfaceNodes(:)
-  INTEGER(CMFEIntg) :: TopNormalXi,BottomNormalXi,InnerNormalXi,OuterNormalXi
-  REAL(CMFEDP) :: xValue,yValue,deformedHeight
+  INTEGER(CMISSIntg),ALLOCATABLE :: TopSurfaceNodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE :: BottomSurfaceNodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE :: InnerSurfaceNodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE :: OuterSurfaceNodes(:)
+  INTEGER(CMISSIntg) :: TopNormalXi,BottomNormalXi,InnerNormalXi,OuterNormalXi
+  REAL(CMISSRP) :: xValue,yValue,deformedHeight
 
 #ifdef WIN32
   !Quickwin type
@@ -162,7 +163,7 @@ PROGRAM TESTINGPOINTSEXAMPLE
 #endif
 
   !Generic CMISS variables
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: Err
 
 #ifdef WIN32
   !Initialise QuickWin
@@ -247,7 +248,7 @@ PROGRAM TESTINGPOINTSEXAMPLE
   CALL cmfe_CoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   CALL cmfe_CoordinateSystem_TypeSet(CoordinateSystem,CMFE_COORDINATE_RECTANGULAR_CARTESIAN_TYPE,Err)
   CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystem,NumberOfSpatialCoordinates,Err)
-  CALL cmfe_CoordinateSystem_OriginSet(CoordinateSystem,[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP],Err)
+  CALL cmfe_CoordinateSystem_OriginSet(CoordinateSystem,[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP],Err)
   CALL cmfe_CoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Create a region and assign the CS to the region
@@ -314,7 +315,7 @@ PROGRAM TESTINGPOINTSEXAMPLE
   CALL cmfe_GeneratedMesh_CreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
 
   !Create a decomposition
-  CALL cmfe_RandomSeedsSet(0_CMFEIntg,Err) !To keep the automatic decomposition same each time
+  CALL cmfe_RandomSeedsSet(0_CMISSIntg,Err) !To keep the automatic decomposition same each time
   CALL cmfe_Decomposition_Initialise(Decomposition,Err)
   CALL cmfe_Decomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Automatic decomposition
@@ -451,7 +452,7 @@ PROGRAM TESTINGPOINTSEXAMPLE
   CALL cmfe_Field_ParametersToFieldParametersComponentCopy(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
     & 3,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,Err)
   CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4, &
-    & -14.0_CMFEDP, &
+    & -14.0_CMISSRP, &
     & Err)
 
   !Define the problem
@@ -536,7 +537,7 @@ PROGRAM TESTINGPOINTSEXAMPLE
     DO NN=1,SIZE(BottomSurfaceNodes,1)
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
         & BottomSurfaceNodes(NN), &
-        & 3,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+        & 3,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
       IF(Err/=0) WRITE(*,*) "ERROR WHILE ASSIGNING FIXED CONDITION TO NODE", BottomSurfaceNodes(NN)
     ENDDO
 
@@ -546,22 +547,22 @@ PROGRAM TESTINGPOINTSEXAMPLE
     DO NN=1,SIZE(BottomSurfaceNodes,1)
       CALL cmfe_Field_ParameterSetGetNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1, &
         & 1,BottomSurfaceNodes(NN),1,xValue,Err)
-      IF(abs(xValue)<1e-5_CMFEDP) THEN
+      IF(abs(xValue)<1e-5_CMISSRP) THEN
         !Constrain it in x direction
         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
           & BottomSurfaceNodes(NN), &
           & 1, &
-          & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+          & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
         X_FIXED=.TRUE.
       ENDIF
       CALL cmfe_Field_ParameterSetGetNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1, &
         & 1,BottomSurfaceNodes(NN),2,yValue,Err)
-      IF(abs(yValue)<1e-5_CMFEDP) THEN
+      IF(abs(yValue)<1e-5_CMISSRP) THEN
         !Constrain it in y direction
         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
           & BottomSurfaceNodes(NN), &
           & 2, &
-          & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+          & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
         Y_FIXED=.TRUE.
       ENDIF
     ENDDO
@@ -608,7 +609,7 @@ PROGRAM TESTINGPOINTSEXAMPLE
     !Local variables
     CHARACTER(LEN=LEN_TRIM(ARG_TYPE)) :: ARG_TYPE_UPPER
     CHARACTER(LEN=256) :: WORD,WORD_UPPER,ARGOUT
-    INTEGER(CMFEIntg) :: NARGS,I,LENG,WORD_LENG
+    INTEGER(CMISSIntg) :: NARGS,I,LENG,WORD_LENG
 
     NARGS=iargc()
     LENG=LEN_TRIM(ARG_TYPE) !STRING TO LOOK FOR
@@ -638,7 +639,7 @@ PROGRAM TESTINGPOINTSEXAMPLE
   SUBROUTINE LOWER_CASE(UWORD,LWORD)
     CHARACTER(LEN=*),INTENT(IN) :: UWORD
     CHARACTER(LEN=LEN(UWORD)),INTENT(OUT) :: LWORD
-    INTEGER(CMFEIntg) ::I,IC,NLEN
+    INTEGER(CMISSIntg) ::I,IC,NLEN
 
     NLEN = LEN_TRIM(UWORD)
     LWORD=UWORD
@@ -652,7 +653,7 @@ PROGRAM TESTINGPOINTSEXAMPLE
   SUBROUTINE UPPER_CASE(LWORD,UWORD)
     CHARACTER(LEN=*),INTENT(IN) :: LWORD
     CHARACTER(LEN=LEN(LWORD)),INTENT(OUT) :: UWORD
-    INTEGER(CMFEIntg) ::I,IC,NLEN
+    INTEGER(CMISSIntg) ::I,IC,NLEN
 
     NLEN = LEN_TRIM(LWORD)
     UWORD=LWORD

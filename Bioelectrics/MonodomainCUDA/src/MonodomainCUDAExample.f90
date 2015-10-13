@@ -51,6 +51,7 @@
 !> Main program
 PROGRAM MONODOMAINCUDAEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
   USE ISO_C_BINDING
@@ -61,43 +62,40 @@ PROGRAM MONODOMAINCUDAEXAMPLE
 
   IMPLICIT NONE
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  TYPE(cmfe_FieldType) :: EquationsSetField
-
-
   !Test program parameters
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: SourceFieldUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: CellMLUserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: CellMLModelsFieldUserNumber=12
-  INTEGER(CMFEIntg), PARAMETER :: CellMLStateFieldUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=14
-  INTEGER(CMFEIntg), PARAMETER :: CellMLParametersFieldUserNumber=15
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=16
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=17
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
-  INTEGER(CMFEIntg), PARAMETER :: MeshComponentNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfMeshDimensions=3
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfMeshComponents=1
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfXiCoordinates=3
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: CellMLUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: CellMLModelsFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: CellMLStateFieldUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=15
+  INTEGER(CMISSIntg), PARAMETER :: CellMLParametersFieldUserNumber=16
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=17
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=18
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: MeshComponentNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshDimensions=3
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshComponents=1
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfXiCoordinates=3
 
   !Program types
   
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_OF_DOMAINS, ERROR
+  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS, ERROR
   ! 4 nodes per tetrahedral element
-  INTEGER(CMFEIntg), PARAMETER :: NODES_PER_ELEMENT=4
-  INTEGER(CMFEIntg) :: NODE_SET(NODES_PER_ELEMENT)
+  INTEGER(CMISSIntg), PARAMETER :: NODES_PER_ELEMENT=4
+  INTEGER(CMISSIntg) :: NODE_SET(NODES_PER_ELEMENT)
 
   ! C Pointer
   TYPE(C_PTR) :: NODE_COORDINATES_C
@@ -109,13 +107,13 @@ PROGRAM MONODOMAINCUDAEXAMPLE
 
   INTEGER(C_INT) :: NUMBER_OF_NODES,NUMBER_OF_ELEMENTS
 
-  INTEGER(CMFEIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: MPI_IERROR
 
   LOGICAL :: EXPORT_FIELD
 
-  INTEGER(CMFEIntg) :: N,M,INDEX
+  INTEGER(CMISSIntg) :: N,M,INDEX
 
-  INTEGER(CMFEIntg) :: LRdModelIndex
+  INTEGER(CMISSIntg) :: LRdModelIndex
 
   !CMISS variables
 
@@ -128,7 +126,7 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   TYPE(cmfe_DecompositionType) :: Decomposition
   TYPE(cmfe_EquationsType) :: Equations
   TYPE(cmfe_EquationsSetType) :: EquationsSet
-  TYPE(cmfe_FieldType) :: GeometricField,DependentField,MaterialsField,SourceField
+  TYPE(cmfe_FieldType) :: GeometricField,EquationsSetField,DependentField,MaterialsField,SourceField
   TYPE(cmfe_FieldType) :: CellMLModelsField,CellMLStateField,CellMLIntermediateField,CellMLParametersField
   TYPE(cmfe_FieldsType) :: Fields
   TYPE(cmfe_MeshType) :: Mesh
@@ -147,11 +145,11 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   
    !Generic CMISS variables
   
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: EquationsSetIndex,CellMLIndex
-  INTEGER(CMFEIntg) :: FirstNodeNumber
-  INTEGER(CMFEIntg) :: FirstNodeDomain
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: EquationsSetIndex,CellMLIndex
+  INTEGER(CMISSIntg) :: FirstNodeNumber
+  INTEGER(CMISSIntg) :: FirstNodeDomain
+  INTEGER(CMISSIntg) :: Err
 
 #ifdef WIN32
   !Initialise QuickWin
@@ -198,8 +196,8 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   CALL cmfe_Basis_CreateStart(BasisUserNumber,Basis,Err)
   CALL cmfe_Basis_TypeSet(Basis,CMFE_BASIS_SIMPLEX_TYPE,Err)
   CALL cmfe_Basis_NumberOfXiSet(Basis,NumberOfXiCoordinates,Err)
-  CALL cmfe_Basis_InterpolationXiSet(Basis,(/CMFE_BASIS_LINEAR_SIMPLEX_INTERPOLATION, &
-    & CMFE_BASIS_LINEAR_SIMPLEX_INTERPOLATION,CMFE_BASIS_LINEAR_SIMPLEX_INTERPOLATION/),Err)
+  CALL cmfe_Basis_InterpolationXiSet(Basis,[CMFE_BASIS_LINEAR_SIMPLEX_INTERPOLATION, &
+    & CMFE_BASIS_LINEAR_SIMPLEX_INTERPOLATION,CMFE_BASIS_LINEAR_SIMPLEX_INTERPOLATION],Err)
   CALL cmfe_Basis_CreateFinish(Basis,Err)
 
 
@@ -283,13 +281,13 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   CALL cmfe_EquationsSet_MaterialsCreateFinish(EquationsSet,Err)
 
   CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1, &
-    & 20.00_CMFEDP, &
+    & 20.00_CMISSRP, &
     & Err)
   CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2, &
-    & 20.00_CMFEDP, &
+    & 20.00_CMISSRP, &
     & Err)
   CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3, &
-    & 20.00_CMFEDP, &
+    & 20.00_CMISSRP, &
     & Err)
 
   !Create the equations set source field variables
@@ -304,8 +302,8 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   ! and import LRd from a file
   !CALL cmfe_CellML_ModelImport(CellML,"LRd.xml",LRdModelIndex,Err)
   CALL cmfe_CellML_ModelImport(CellML,"FHN.xml",LRdModelIndex,Err)
- !CALL cmfe_DiagnosticsSetOn(CMFE_IN_DIAG_TYPE,(/1,2,3,4,5/),"",(/"CELLML_CREATE_FIELD_TO_CELLML_MAP_C", &
-   !& "CELLML_CREATE_CELLML_TO_FIELD_MAP_C"/),Err)
+ !CALL cmfe_DiagnosticsSetOn(CMFE_IN_DIAG_TYPE,[1,2,3,4,5],"",["CELLML_CREATE_FIELD_TO_CELLML_MAP_C", &
+   !& "CELLML_CREATE_CELLML_TO_FIELD_MAP_C"],Err)
   ! Now we have imported all the models we are able to specify which variables from the model we want:
   !   - to set from this side
   CALL cmfe_CellML_VariableSetAsKnown(CellML,LRdModelIndex,"Main/I",Err)
@@ -336,7 +334,7 @@ PROGRAM MONODOMAINCUDAEXAMPLE
 
   !todo - get vm initialial value.
   CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1, &
-    & -92.50_CMFEDP,Err)
+    & -92.50_CMISSRP,Err)
 
   !Start the creation of the CellML models field
   CALL cmfe_Field_Initialise(CellMLModelsField,Err)
@@ -354,7 +352,7 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   !END DO
   !CALL cmfe_Field_ParameterSetUpdateStart(CellMLModelsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
   !CALL cmfe_Field_ParameterSetUpdateFinish(CellMLModelsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
-  !CALL cmfe_Field_ComponentValuesInitialise(CellMLModelsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2_CMFEIntg,Err)
+  !CALL cmfe_Field_ComponentValuesInitialise(CellMLModelsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2_CMISSIntg,Err)
 
   !Start the creation of the CellML state field
   CALL cmfe_Field_Initialise(CellMLStateField,Err)
@@ -387,20 +385,9 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   !Finish the equations set equations
   CALL cmfe_EquationsSet_EquationsCreateFinish(EquationsSet,Err)
 
-  !Start the creation of the equations set boundary conditions
-  CALL cmfe_BoundaryConditions_Initialise(BoundaryConditions,Err)
-  CALL cmfe_EquationsSetBoundaryConditionsCreateStart(EquationsSet,BoundaryConditions,Err)
-  !Set the first 3175 nodes to flux of 0.0
-  DO N=1,3175
-    CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,1,1,N,1, &
-      & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
-  ENDDO
-  !Finish the creation of the equations set boundary conditions
-  CALL cmfe_EquationsSetBoundaryConditionsCreateFinish(EquationsSet,Err)
-
   !Set the Stimulus at node 1
   CALL cmfe_Field_ParameterSetUpdateNode(CellMLParametersField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,4000,1, &
-    & -10.0_CMFEDP,Err)
+    & -10.0_CMISSRP,Err)
 
   !Start the creation of a problem.
   CALL cmfe_Problem_Initialise(Problem,Err)
@@ -416,7 +403,7 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   CALL cmfe_ControlLoop_Initialise(ControlLoop,Err)
   CALL cmfe_Problem_ControlLoopGet(Problem,CMFE_CONTROL_LOOP_NODE,ControlLoop,Err)
   !Set the times
-  CALL cmfe_ControlLoop_TimesSet(ControlLoop,0.0_CMFEDP,0.10_CMFEDP,0.01_CMFEDP,Err)
+  CALL cmfe_ControlLoop_TimesSet(ControlLoop,0.0_CMISSRP,0.10_CMISSRP,0.01_CMISSRP,Err)
   !Set the output
   !CALL cmfe_ControlLoop_OutputTypeSet(ControlLoop,CMFE_CONTROL_LOOP_TIMING_OUTPUT,Err)
   !Finish creating the problem control loop
@@ -427,7 +414,7 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   !Get the first (DAE) solver
   CALL cmfe_Solver_Initialise(Solver,Err)
   CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,1,Solver,Err)
-  CALL cmfe_Solver_DAETimeStepSet(Solver,0.00001_CMFEDP,Err)
+  CALL cmfe_Solver_DAETimeStepSet(Solver,0.00001_CMISSRP,Err)
   CALL cmfe_Solver_DAESolverTypeSet(Solver,CMFE_SOLVER_DAE_EXTERNAL,Err)
   CALL cmfe_Solver_OutputTypeSet(Solver,CMFE_SOLVER_NO_OUTPUT,Err)
   !CALL cmfe_Solver_OutputTypeSet(Solver,CMFE_SOLVER_PROGRESS_OUTPUT,Err)
@@ -473,16 +460,27 @@ PROGRAM MONODOMAINCUDAEXAMPLE
   !Finish the creation of the problem solver equations
   CALL cmfe_Problem_SolverEquationsCreateFinish(Problem,Err)
 
+ !Start the creation of the boundary conditions
+  CALL cmfe_BoundaryConditions_Initialise(BoundaryConditions,Err)
+  CALL cmfe_SolverEquations_BoundaryConditionsCreateStart(SolverEquations,BoundaryConditions,Err)
+  !Set the first 3175 nodes to flux of 0.0
+  DO N=1,3175
+    CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,1,1,N,1, &
+      & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
+  ENDDO
+  !Finish the creation of the boundary conditions
+  CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
+
   !Solve the problem for the first 100 ms
   CALL cmfe_Problem_Solve(Problem,Err)
 
   !Now turn the stimulus off
   !Set the Stimulus at node 1
   CALL cmfe_Field_ParameterSetUpdateNode(CellMLParametersField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,4000,1, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
 
   !Set the time loop for another 900 ms
-  CALL cmfe_ControlLoop_TimesSet(ControlLoop,0.1_CMFEDP,1.00_CMFEDP,0.01_CMFEDP,Err)
+  CALL cmfe_ControlLoop_TimesSet(ControlLoop,0.1_CMISSRP,1.00_CMISSRP,0.01_CMISSRP,Err)
 
   !Solve the problem for the next 900 ms
   CALL cmfe_Problem_Solve(Problem,Err)

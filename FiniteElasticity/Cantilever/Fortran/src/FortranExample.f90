@@ -40,7 +40,7 @@
 !>
 
 !> \example FiniteElasticity/Cantilever/src/CantileverExample.f90
-!! Example program to solve a finite elasticity equation using openCMISS calls.
+!! Example program to solve a finite elasticity equation using OpenCMISS calls.
 !! \par Latest Builds:
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/Cantilever/build-intel'>Linux Intel Build</a>
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/Cantilever/build-gnu'>Linux GNU Build</a>
@@ -49,6 +49,7 @@
 !> Main program
 PROGRAM CANTILEVEREXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 
@@ -59,42 +60,42 @@ PROGRAM CANTILEVEREXAMPLE
   IMPLICIT NONE
 
   !Test program parameters
-  REAL(CMFEDP), PARAMETER :: Width=60.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: Length=40.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: Height=40.0_CMFEDP
-  INTEGER(CMFEIntg) :: DisplacementInterpolationType
-  INTEGER(CMFEIntg) :: PressureInterpolationType
-  INTEGER(CMFEIntg) :: PressureMeshComponent
-  INTEGER(CMFEIntg) :: NumberOfGaussXi
-  INTEGER(CMFEIntg) :: ScalingType
-  REAL(CMFEDP), PARAMETER :: Density=9.0E-4_CMFEDP !in g mm^-3
-  REAL(CMFEDP), PARAMETER :: Gravity(3)=[0.0_CMFEDP,0.0_CMFEDP,-9.8_CMFEDP] !in m s^-2
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfLoadIncrements=2
+  REAL(CMISSRP), PARAMETER :: Width=60.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: Length=40.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: Height=40.0_CMISSRP
+  INTEGER(CMISSIntg) :: DisplacementInterpolationType
+  INTEGER(CMISSIntg) :: PressureInterpolationType
+  INTEGER(CMISSIntg) :: PressureMeshComponent
+  INTEGER(CMISSIntg) :: NumberOfGaussXi
+  INTEGER(CMISSIntg) :: ScalingType
+  REAL(CMISSRP), PARAMETER :: Density=9.0E-4_CMISSRP !in g mm^-3
+  REAL(CMISSRP), PARAMETER :: Gravity(3)=[0.0_CMISSRP,0.0_CMISSRP,-9.8_CMISSRP] !in m s^-2
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfLoadIncrements=2
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: DisplacementBasisUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: PressureBasisUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: FieldSourceUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: EquationSetUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: DisplacementBasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: PressureBasisUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldSourceUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
   !Program variables
-  INTEGER(CMFEIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: NodeNumber,NodeDomain,node_idx,component_idx,deriv_idx
-  INTEGER(CMFEIntg),ALLOCATABLE :: LeftSurfaceNodes(:)
-  INTEGER(CMFEIntg) :: LeftNormalXi
-  INTEGER(CMFEIntg) :: NumberOfArguments,ArgumentLength,ArgStatus
+  INTEGER(CMISSIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: NodeNumber,NodeDomain,node_idx,component_idx,deriv_idx
+  INTEGER(CMISSIntg),ALLOCATABLE :: LeftSurfaceNodes(:)
+  INTEGER(CMISSIntg) :: LeftNormalXi
+  INTEGER(CMISSIntg) :: NumberOfArguments,ArgumentLength,ArgStatus
   CHARACTER(LEN=255) :: CommandArgument
 
   !CMISS variables
@@ -115,7 +116,7 @@ PROGRAM CANTILEVEREXAMPLE
   TYPE(cmfe_ControlLoopType) :: ControlLoop
 
   !Generic CMISS variables
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: Err
 
 #ifdef WIN32
   !Quickwin type
@@ -345,8 +346,8 @@ PROGRAM CANTILEVEREXAMPLE
   CALL cmfe_EquationsSet_MaterialsCreateFinish(EquationsSet,Err)
 
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0_CMFEDP,Err)
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,6.0_CMFEDP,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0_CMISSRP,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,6.0_CMISSRP,Err)
   CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,Density,Err)
 
   !Create the source field with the gravity vector
@@ -374,7 +375,7 @@ PROGRAM CANTILEVEREXAMPLE
   CALL cmfe_Field_ParametersToFieldParametersComponentCopy(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
     & 3,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,Err)
   CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4, &
-    & -14.0_CMFEDP,Err)
+    & -14.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateStart(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
   CALL cmfe_Field_ParameterSetUpdateFinish(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
 
@@ -425,12 +426,12 @@ PROGRAM CANTILEVEREXAMPLE
     IF(NodeDomain==ComputationalNodeNumber) THEN
       DO component_idx=1,3
         CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber, &
-          & component_idx,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+          & component_idx,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
         IF(DisplacementInterpolationType==CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION) THEN
           DO deriv_idx=3,8
             CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,deriv_idx, &
               & NodeNumber, &
-              & component_idx,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+              & component_idx,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
           ENDDO
         ENDIF
       ENDDO

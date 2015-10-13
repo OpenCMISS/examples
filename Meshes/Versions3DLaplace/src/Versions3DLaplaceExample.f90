@@ -48,7 +48,8 @@
 !> Main program
 PROGRAM VERSIONS3DLAPLACE
 
-  USE OPENCMISS
+  USE OpenCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 
@@ -60,37 +61,35 @@ PROGRAM VERSIONS3DLAPLACE
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER ::   ZERO = 0.0_CMFEDP
-  REAL(CMFEDP), PARAMETER ::   ONE = 1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER ::   A = 1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER ::   B = 1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER ::   C = 0.70710678118654746_CMFEDP
+  REAL(CMISSRP), PARAMETER ::   ZERO = 0.0_CMISSRP
+  REAL(CMISSRP), PARAMETER ::   ONE = 1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER ::   C = 0.70710678118654746_CMISSRP
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfXiCoordinates=3
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfMeshComponents=3
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: Basis1UserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: Basis2UserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: Basis3UserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: TotalNumberOfNodes=8
-  INTEGER(CMFEIntg), PARAMETER :: TotalNumberOfElements=2
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: MeshComponent1UserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: MeshComponent2UserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: MeshComponent3UserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfXiCoordinates=3
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: Basis1UserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: Basis2UserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: Basis3UserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: TotalNumberOfNodes=8
+  INTEGER(CMISSIntg), PARAMETER :: TotalNumberOfElements=2
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: MeshComponent1UserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: MeshComponent2UserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: MeshComponent3UserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
  
   !Program types
   
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_OF_DOMAINS
+  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
   
   LOGICAL :: EXPORT_FIELD
 
@@ -120,10 +119,10 @@ PROGRAM VERSIONS3DLAPLACE
   
   !Generic CMISS variables
   
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: FirstNodeNumber,LastNodeNumber
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
+  INTEGER(CMISSIntg) :: Err
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -177,8 +176,8 @@ PROGRAM VERSIONS3DLAPLACE
   CALL cmfe_Basis_CreateStart(Basis1UserNumber,Basis(1),Err)
   CALL cmfe_Basis_TypeSet(Basis(1),CMFE_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
   CALL cmfe_Basis_NumberOfXiSet(Basis(1),NumberOfXiCoordinates,Err)
-  CALL cmfe_Basis_InterpolationXiSet(Basis(1),(/CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION,CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION, &
-	& CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION/),Err)
+  CALL cmfe_Basis_InterpolationXiSet(Basis(1),[CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION,CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION, &
+	& CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION],Err)
   CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis(1),([4,4,4]),Err)
   CALL cmfe_Basis_CreateFinish(Basis(1),Err)
 
@@ -186,8 +185,8 @@ PROGRAM VERSIONS3DLAPLACE
   CALL cmfe_Basis_CreateStart(Basis2UserNumber,Basis(2),Err)
   CALL cmfe_Basis_TypeSet(Basis(2),CMFE_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
   CALL cmfe_Basis_NumberOfXiSet(Basis(2),NumberOfXiCoordinates,Err)
-  CALL cmfe_Basis_InterpolationXiSet(Basis(2),(/CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION,CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION, &
-	& CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION/),Err)
+  CALL cmfe_Basis_InterpolationXiSet(Basis(2),[CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION,CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION, &
+	& CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION],Err)
   CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis(2),([4,4,4]),Err)
   CALL cmfe_Basis_CreateFinish(Basis(2),Err)
 
@@ -195,8 +194,8 @@ PROGRAM VERSIONS3DLAPLACE
   CALL cmfe_Basis_CreateStart(Basis3UserNumber,Basis(3),Err)
   CALL cmfe_Basis_TypeSet(Basis(3),CMFE_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
   CALL cmfe_Basis_NumberOfXiSet(Basis(3),NumberOfXiCoordinates,Err)
-  CALL cmfe_Basis_InterpolationXiSet(Basis(3),(/CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION,CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION, &
-	& CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION/),Err)
+  CALL cmfe_Basis_InterpolationXiSet(Basis(3),[CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION,CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION, &
+	& CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION],Err)
   CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis(3),([4,4,4]),Err)
   CALL cmfe_Basis_CreateFinish(Basis(3),Err)
    
@@ -579,7 +578,7 @@ PROGRAM VERSIONS3DLAPLACE
   CALL cmfe_EquationsSet_DependentCreateFinish(EquationsSet,Err)
 
   !Initialise the field with an initial guess
-  !CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.5_CMFEDP,Err)
+  !CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.5_CMISSRP,Err)
 
   !Create the equations set equations
   CALL cmfe_Equations_Initialise(Equations,Err)
@@ -617,8 +616,8 @@ PROGRAM VERSIONS3DLAPLACE
   !CALL cmfe_Solver_OutputTypeSet(Solver,CMFE_SOLVER_SOLVER_OUTPUT,Err)
   CALL cmfe_Solver_OutputTypeSet(Solver,CMFE_SOLVER_MATRIX_OUTPUT,Err)
   CALL cmfe_Solver_LinearTypeSet(Solver,CMFE_SOLVER_LINEAR_ITERATIVE_SOLVE_TYPE,Err)
-  CALL cmfe_Solver_LinearIterativeAbsoluteToleranceSet(Solver,1.0E-12_CMFEDP,Err)
-  CALL cmfe_Solver_LinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMFEDP,Err)
+  CALL cmfe_Solver_LinearIterativeAbsoluteToleranceSet(Solver,1.0E-12_CMISSRP,Err)
+  CALL cmfe_Solver_LinearIterativeRelativeToleranceSet(Solver,1.0E-12_CMISSRP,Err)
   !CALL cmfe_Solver_LinearTypeSet(Solver,CMFE_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,Err)
   CALL cmfe_Solver_LibraryTypeSet(Solver,CMFE_SOLVER_MUMPS_LIBRARY,Err)
   !Finish the creation of the problem solver
@@ -646,9 +645,9 @@ PROGRAM VERSIONS3DLAPLACE
   FirstNodeNumber=1
   LastNodeNumber=8
   CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,FirstNodeNumber,1, &
-    & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+    & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
   CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,LastNodeNumber,1, &
-    & CMFE_BOUNDARY_CONDITION_FIXED,1.0_CMFEDP,Err)
+    & CMFE_BOUNDARY_CONDITION_FIXED,1.0_CMISSRP,Err)
   !Finish the creation of the equations set boundary conditions
   CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
 

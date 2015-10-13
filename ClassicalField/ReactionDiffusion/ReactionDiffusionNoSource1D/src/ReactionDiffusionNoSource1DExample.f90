@@ -41,13 +41,14 @@
 !>
 
 !> \example ClassicalField/ReactionDiffusion/ReactionDiffusionNoSource1D/src/ReactionDiffusionNoSource1DExample.f90
-!! Example program to solve a diffusion equation using openCMISS calls.
+!! Example program to solve a diffusion equation using OpenCMISS calls.
 !! \htmlinclude ClassicalField/ReactionDiffusion/ReactionDiffusionNoSource1D/history.html
 !<
 
 !> Main program
 PROGRAM REACTIONDIFFUSIONNOSOURCE1DEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 
@@ -59,32 +60,32 @@ PROGRAM REACTIONDIFFUSIONNOSOURCE1DEXAMPLE
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: LENGTH=5.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: LENGTH=5.0_CMISSRP
   
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=12
-  INTEGER(CMFEIntg), PARAMETER :: SourceFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumber=13
 
   !Program types
   
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS,CONDITION
-  INTEGER(CMFEIntg) :: NUMBER_OF_DOMAINS,NODE_NUMBER
-  INTEGER(CMFEIntg),DIMENSION(2) :: BCNODES
-  INTEGER(CMFEIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,CONDITION
+  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS,NODE_NUMBER
+  INTEGER(CMISSIntg),DIMENSION(2) :: BCNODES
+  INTEGER(CMISSIntg) :: MPI_IERROR
   INTEGER :: node
-  REAL(CMFEDP) :: VALUE
+  REAL(CMISSRP) :: VALUE
   
   !CMISS variables
 
@@ -114,9 +115,9 @@ PROGRAM REACTIONDIFFUSIONNOSOURCE1DEXAMPLE
   
   !Generic CMISS variables
   
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: Err
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -230,10 +231,10 @@ PROGRAM REACTIONDIFFUSIONNOSOURCE1DEXAMPLE
   CALL cmfe_EquationsSet_MaterialsCreateFinish(EquationsSet,Err)
   CALL cmfe_Field_ComponentValuesInitialise(RegionUserNumber, MaterialsFieldUserNumber, & 
    & CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-   & 1,0.5_CMFEDP,Err) !diff coeff in x
+   & 1,0.5_CMISSRP,Err) !diff coeff in x
   CALL cmfe_Field_ComponentValuesInitialise(RegionUserNumber, MaterialsFieldUserNumber, & 
    & CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-   & 2,1.0_CMFEDP,Err) !storage coeff
+   & 2,1.0_CMISSRP,Err) !storage coeff
 
   !Set up source field for reaction diffusion equation set. Setting source field to be zero for this test
   CALL cmfe_Field_Initialise(SourceField,Err)
@@ -242,11 +243,11 @@ PROGRAM REACTIONDIFFUSIONNOSOURCE1DEXAMPLE
   CALL cmfe_EquationsSet_SourceCreateFinish(EquationsSet,Err)
   CALL cmfe_Field_ComponentValuesInitialise(RegionUserNumber,SourceFieldUserNumber, &
     & CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
-    & 1,0.0_CMFEDP,Err)
+    & 1,0.0_CMISSRP,Err)
 
   CALL cmfe_Field_ParameterSetUpdateNode(RegionUserNumber, SourceFieldUserNumber, &
     & CMFE_FIELD_U_VARIABLE_TYPE, &
-    & CMFE_FIELD_VALUES_SET_TYPE, 1,1,2,1,0.0_CMFEDP,Err) !source = 0.0 at node 2
+    & CMFE_FIELD_VALUES_SET_TYPE, 1,1,2,1,0.0_CMISSRP,Err) !source = 0.0 at node 2
  
   !Create the equations set equations
   CALL cmfe_Equations_Initialise(Equations,Err)
@@ -274,7 +275,7 @@ PROGRAM REACTIONDIFFUSIONNOSOURCE1DEXAMPLE
   CALL cmfe_ControlLoop_Initialise(ControlLoop,Err)
   CALL cmfe_Problem_ControlLoopGet(Problem,CMFE_CONTROL_LOOP_NODE,ControlLoop,Err)
   !Set the times
-  CALL cmfe_ControlLoop_TimesSet(ControlLoop,0.0_CMFEDP,0.50_CMFEDP,0.01_CMFEDP,Err)
+  CALL cmfe_ControlLoop_TimesSet(ControlLoop,0.0_CMISSRP,0.50_CMISSRP,0.01_CMISSRP,Err)
   !Finish creating the problem control loop
   CALL cmfe_Problem_ControlLoopCreateFinish(Problem,Err)
 
@@ -284,7 +285,7 @@ PROGRAM REACTIONDIFFUSIONNOSOURCE1DEXAMPLE
   CALL cmfe_Problem_SolversCreateStart(Problem,Err)
   CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,1,Solver,Err)
   !set theta - backward vs forward time step parameter
-  CALL cmfe_Solver_DynamicThetaSet(Solver,1.0_CMFEDP,Err)
+  CALL cmfe_Solver_DynamicThetaSet(Solver,1.0_CMISSRP,Err)
   !CALL cmfe_SolverOutputTypeSet(Solver,cmfe_SolverNoOutput,Err)
   CALL cmfe_Solver_OutputTypeSet(Solver,CMFE_SOLVER_PROGRESS_OUTPUT,Err)
   CALL cmfe_Solver_OutputTypeSet(Solver,CMFE_SOLVER_TIMING_OUTPUT,Err)
@@ -325,7 +326,7 @@ PROGRAM REACTIONDIFFUSIONNOSOURCE1DEXAMPLE
   DO node=1,2
     NODE_NUMBER = BCNODES(node)
     CONDITION = CMFE_BOUNDARY_CONDITION_FIXED
-    VALUE=1.5_CMFEDP
+    VALUE=1.5_CMISSRP
     CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions, &
      & DependentField, CMFE_FIELD_U_VARIABLE_TYPE, 1, &
      & CMFE_NO_GLOBAL_DERIV, &

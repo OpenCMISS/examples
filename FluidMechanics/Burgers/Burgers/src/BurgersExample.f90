@@ -47,9 +47,9 @@
 !> Main program
 PROGRAM BURGERSEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
-
 
 #ifdef WIN32
   USE IFQWIN
@@ -63,60 +63,60 @@ PROGRAM BURGERSEXAMPLE
 
   !Test program parameters
   
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=12
-  INTEGER(CMFEIntg), PARAMETER :: ControlLoopNode=0
-  INTEGER(CMFEIntg), PARAMETER :: AnalyticFieldUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: SolverUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: ControlLoopNode=0
+  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: SolverUserNumber=1
   
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS
-  INTEGER(CMFEIntg) :: NUMBER_OF_DOMAINS
-  INTEGER(CMFEIntg) :: COMPONENT_NUMBER
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS
+  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
+  INTEGER(CMISSIntg) :: COMPONENT_NUMBER
 
-  INTEGER(CMFEIntg) :: MAXIMUM_ITERATIONS
-  INTEGER(CMFEIntg) :: RESTART_VALUE
+  INTEGER(CMISSIntg) :: MAXIMUM_ITERATIONS
+  INTEGER(CMISSIntg) :: RESTART_VALUE
   
-  INTEGER(CMFEIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: MPI_IERROR
 
-  INTEGER(CMFEIntg) :: NONLINEAR_SOLVER_OUTPUT_TYPE
-  INTEGER(CMFEIntg) :: LINEAR_SOLVER_OUTPUT_TYPE
-  INTEGER(CMFEIntg) :: DYNAMIC_SOLVER_OUTPUT_TYPE
-  INTEGER(CMFEIntg) :: EQUATIONS_OUTPUT
+  INTEGER(CMISSIntg) :: NONLINEAR_SOLVER_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: LINEAR_SOLVER_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: EQUATIONS_OUTPUT
 
-  REAL(CMFEDP) :: DIVERGENCE_TOLERANCE
-  REAL(CMFEDP) :: RELATIVE_TOLERANCE
-  REAL(CMFEDP) :: ABSOLUTE_TOLERANCE
-  REAL(CMFEDP) :: LINESEARCH_ALPHA
+  REAL(CMISSRP) :: DIVERGENCE_TOLERANCE
+  REAL(CMISSRP) :: RELATIVE_TOLERANCE
+  REAL(CMISSRP) :: ABSOLUTE_TOLERANCE
+  REAL(CMISSRP) :: LINESEARCH_ALPHA
 
   LOGICAL :: LINEAR_SOLVER_DIRECT_FLAG
 
-  INTEGER(CMFEIntg) :: DYNAMIC_SOLVER_OUTPUT_FREQUENCY
-  REAL(CMFEDP) :: DYNAMIC_SOLVER_START_TIME
-  REAL(CMFEDP) :: DYNAMIC_SOLVER_STOP_TIME
-  REAL(CMFEDP) :: DYNAMIC_SOLVER_THETA
-  REAL(CMFEDP) :: DYNAMIC_SOLVER_TIME_INCREMENT
+  INTEGER(CMISSIntg) :: DYNAMIC_SOLVER_OUTPUT_FREQUENCY
+  REAL(CMISSRP) :: DYNAMIC_SOLVER_START_TIME
+  REAL(CMISSRP) :: DYNAMIC_SOLVER_STOP_TIME
+  REAL(CMISSRP) :: DYNAMIC_SOLVER_THETA
+  REAL(CMISSRP) :: DYNAMIC_SOLVER_TIME_INCREMENT
 
-  REAL(CMFEDP) :: NU_PARAM
-  REAL(CMFEDP) :: LENGTH
+  REAL(CMISSRP) :: NU_PARAM
+  REAL(CMISSRP) :: LENGTH
 
-  INTEGER(CMFEIntg) :: NODE_NUMBER
-  INTEGER(CMFEIntg) :: ELEMENT_NUMBER
-  INTEGER(CMFEIntg) :: NODE_COUNTER
-  INTEGER(CMFEIntg) :: CONDITION
+  INTEGER(CMISSIntg) :: NODE_NUMBER
+  INTEGER(CMISSIntg) :: ELEMENT_NUMBER
+  INTEGER(CMISSIntg) :: NODE_COUNTER
+  INTEGER(CMISSIntg) :: CONDITION
 
-  INTEGER(CMFEIntg) :: FirstNodeNumber,LastNodeNumber,FirstNodeDomain,LastNodeDomain
+  INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber,FirstNodeDomain,LastNodeDomain
   
   !Program types
 
@@ -147,9 +147,9 @@ PROGRAM BURGERSEXAMPLE
   
   !Generic CMISS variables
   
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber,BoundaryNodeDomain
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber,BoundaryNodeDomain
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: Err
 
   
 #ifdef WIN32
@@ -179,9 +179,9 @@ PROGRAM BURGERSEXAMPLE
   NUMBER_OF_DOMAINS=NumberOfComputationalNodes
 
   ! Set viscous coefficient
-  NU_PARAM = 1.0_CMFEDP
+  NU_PARAM = 1.0_CMISSRP
   ! Set length of domain
-  LENGTH = 1.0_CMFEDP
+  LENGTH = 1.0_CMISSRP
 
   !Set output parameters
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
@@ -192,15 +192,15 @@ PROGRAM BURGERSEXAMPLE
   EQUATIONS_OUTPUT=CMFE_EQUATIONS_NO_OUTPUT
 
   !Set time parameter
-  DYNAMIC_SOLVER_START_TIME=0.0_CMFEDP
-  DYNAMIC_SOLVER_STOP_TIME=5.0_CMFEDP 
-  DYNAMIC_SOLVER_TIME_INCREMENT=1.0_CMFEDP
-  DYNAMIC_SOLVER_THETA=1.0_CMFEDP
+  DYNAMIC_SOLVER_START_TIME=0.0_CMISSRP
+  DYNAMIC_SOLVER_STOP_TIME=5.0_CMISSRP 
+  DYNAMIC_SOLVER_TIME_INCREMENT=1.0_CMISSRP
+  DYNAMIC_SOLVER_THETA=1.0_CMISSRP
 
   !Set solver parameters
   LINEAR_SOLVER_DIRECT_FLAG=.FALSE.
-  RELATIVE_TOLERANCE=1.0E-6_CMFEDP !default: 1.0E-05_CMFEDP
-  ABSOLUTE_TOLERANCE=1.0E-6_CMFEDP !default: 1.0E-10_CMFEDP
+  RELATIVE_TOLERANCE=1.0E-6_CMISSRP !default: 1.0E-05_CMISSRP
+  ABSOLUTE_TOLERANCE=1.0E-6_CMISSRP !default: 1.0E-10_CMISSRP
   DIVERGENCE_TOLERANCE=1.0E5 !default: 1.0E5
   MAXIMUM_ITERATIONS=100000 !default: 100000
   RESTART_VALUE=3000 !default: 30
@@ -321,7 +321,7 @@ PROGRAM BURGERSEXAMPLE
   CALL cmfe_EquationsSet_DependentCreateFinish(EquationsSet,Err)
   !Initialise dependent field
   CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, & 
-    & COMPONENT_NUMBER,0.0_CMFEDP,Err)
+    & COMPONENT_NUMBER,0.0_CMISSRP,Err)
 
   !-----------------------------------------------------------------------------------------------------------
   ! MATERIALS FIELD
@@ -467,12 +467,12 @@ PROGRAM BURGERSEXAMPLE
   IF(FirstNodeDomain==ComputationalNodeNumber) THEN
     CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1, &
       & CMFE_NO_GLOBAL_DERIV,FirstNodeNumber,COMPONENT_NUMBER,CMFE_BOUNDARY_CONDITION_FIXED, &
-      & 1.0_CMFEDP,Err)
+      & 1.0_CMISSRP,Err)
   ENDIF
   IF(LastNodeDomain==ComputationalNodeNumber) THEN
     CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1, &
       & CMFE_NO_GLOBAL_DERIV,LastNodeNumber,COMPONENT_NUMBER,CMFE_BOUNDARY_CONDITION_FIXED, &
-      & 0.0_CMFEDP,Err)
+      & 0.0_CMISSRP,Err)
   ENDIF
   CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
   !-----------------------------------------------------------------------------------------------------------

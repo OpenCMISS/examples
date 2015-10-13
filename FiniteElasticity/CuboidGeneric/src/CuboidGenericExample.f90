@@ -40,7 +40,7 @@
 !>
 
 !> \example FiniteElasticity/UniAxialExtension/src/UniAxialExtensionExample.f90
-!! Example program to solve a finite elasticity equation using openCMISS calls.
+!! Example program to solve a finite elasticity equation using OpenCMISS calls.
 !! \par Latest Builds:
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/UniAxialExtension/build-intel'>Linux Intel Build</a>
 !! \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/UniAxialExtension/build-gnu'>Linux GNU Build</a>
@@ -49,6 +49,7 @@
 !> Main program
 PROGRAM CUBOIDGENERICEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 
@@ -60,59 +61,59 @@ PROGRAM CUBOIDGENERICEXAMPLE
 
   !Test program parameters
   CHARACTER(LEN=100),ALLOCATABLE :: ALL_ARGS(:)
-  INTEGER(CMFEIntg) :: Basis1,Basis2
-  REAL(CMFEDP) :: X_LENG,Y_LENG,Z_LENG   ! dimension of cuboid
-  INTEGER(CMFEIntg)  ::   NumberGlobalXElements
-  INTEGER(CMFEIntg)  ::   NumberGlobalYElements
-  INTEGER(CMFEIntg)  ::   NumberGlobalZElements
-  INTEGER(CMFEIntg)  ::   incrementSteps
-  REAL(CMFEDP),ALLOCATABLE :: BC(:,:)
-  REAL(CMFEDP), PARAMETER :: C1=2.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: C2=6.0_CMFEDP
+  INTEGER(CMISSIntg) :: Basis1,Basis2
+  REAL(CMISSRP) :: X_LENG,Y_LENG,Z_LENG   ! dimension of cuboid
+  INTEGER(CMISSIntg)  ::   NumberGlobalXElements
+  INTEGER(CMISSIntg)  ::   NumberGlobalYElements
+  INTEGER(CMISSIntg)  ::   NumberGlobalZElements
+  INTEGER(CMISSIntg)  ::   incrementSteps
+  REAL(CMISSRP),ALLOCATABLE :: BC(:,:)
+  REAL(CMISSRP), PARAMETER :: C1=2.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: C2=6.0_CMISSRP
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfSpatialCoordinates=3
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: LinearBasisUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: QuadraticBasisUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: CubicBasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfSpatialCoordinates=3
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: LinearBasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: QuadraticBasisUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: CubicBasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
 
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfMeshDimensions=3
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfXiCoordinates=3
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfMeshComponents=2
-  INTEGER(CMFEIntg), PARAMETER :: DisplacementMeshComponentNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: PressureMeshComponentNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshDimensions=3
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfXiCoordinates=3
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshComponents=2
+  INTEGER(CMISSIntg), PARAMETER :: DisplacementMeshComponentNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: PressureMeshComponentNumber=2
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfComponents=3
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreNumberOfComponents=3
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialNumberOfComponents=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfComponents=2
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfVariables=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfComponents=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfVariables=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponents=4
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationSetUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
   !Program types
 
 
   !Program variables
-  INTEGER(CMFEIntg) :: MPI_IERROR
-  INTEGER(CMFEIntg) :: EquationsSetIndex  
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: EquationsSetIndex  
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
 
   !CMISS variables
 
@@ -134,12 +135,12 @@ PROGRAM CUBOIDGENERICEXAMPLE
   TYPE(cmfe_ControlLoopType) :: ControlLoop
 
   !Other variables
-  INTEGER(CMFEIntg),ALLOCATABLE,TARGET :: Face1Nodes(:),Face2Nodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE,TARGET :: Face3Nodes(:),Face4Nodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE,TARGET :: Face5Nodes(:),Face6Nodes(:)
-  INTEGER(CMFEIntg),POINTER :: Nodes(:)
-  INTEGER(CMFEIntg) :: FaceXi(6)
-  INTEGER(CMFEIntg) :: I,VariableType
+  INTEGER(CMISSIntg),ALLOCATABLE,TARGET :: Face1Nodes(:),Face2Nodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE,TARGET :: Face3Nodes(:),Face4Nodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE,TARGET :: Face5Nodes(:),Face6Nodes(:)
+  INTEGER(CMISSIntg),POINTER :: Nodes(:)
+  INTEGER(CMISSIntg) :: FaceXi(6)
+  INTEGER(CMISSIntg) :: I,VariableType
 
 #ifdef WIN32
   !Quickwin type
@@ -148,7 +149,7 @@ PROGRAM CUBOIDGENERICEXAMPLE
 #endif
 
   !Generic CMISS variables
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: Err
 
 #ifdef WIN32
   !Initialise QuickWin
@@ -203,7 +204,7 @@ PROGRAM CUBOIDGENERICEXAMPLE
   CALL cmfe_CoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   CALL cmfe_CoordinateSystem_TypeSet(CoordinateSystem,CMFE_COORDINATE_RECTANGULAR_CARTESIAN_TYPE,Err)
   CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystem,NumberOfSpatialCoordinates,Err)
-  CALL cmfe_CoordinateSystem_OriginSet(CoordinateSystem,[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP],Err)
+  CALL cmfe_CoordinateSystem_OriginSet(CoordinateSystem,[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP],Err)
   CALL cmfe_CoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Create a region and assign the CS to the region
@@ -275,7 +276,7 @@ PROGRAM CUBOIDGENERICEXAMPLE
   CALL cmfe_GeneratedMesh_CreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
 
   !Create a decomposition
-  CALL cmfe_RandomSeedsSet(0_CMFEIntg,Err) !To keep the automatic decomposition same each time
+  CALL cmfe_RandomSeedsSet(0_CMISSIntg,Err) !To keep the automatic decomposition same each time
   CALL cmfe_Decomposition_Initialise(Decomposition,Err)
   CALL cmfe_Decomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Automatic decomposition
@@ -391,7 +392,7 @@ PROGRAM CUBOIDGENERICEXAMPLE
   CALL cmfe_Field_ParametersToFieldParametersComponentCopy(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
     & 3,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,Err)
   CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4, &
-    & -14.0_CMFEDP, &
+    & -14.0_CMISSRP, &
     & Err)
 
   !Define the problem
@@ -497,7 +498,7 @@ PROGRAM CUBOIDGENERICEXAMPLE
   SUBROUTINE UPPER_CASE(LWORD,UWORD)
     CHARACTER(LEN=*),INTENT(IN) :: LWORD
     CHARACTER(LEN=LEN(LWORD)),INTENT(OUT) :: UWORD
-    INTEGER(CMFEIntg) ::I,IC,NLEN
+    INTEGER(CMISSIntg) ::I,IC,NLEN
 
     NLEN = LEN_TRIM(LWORD)
     UWORD=LWORD
@@ -513,7 +514,7 @@ PROGRAM CUBOIDGENERICEXAMPLE
     CHARACTER(LEN=100),ALLOCATABLE,INTENT(INOUT) :: ALL_ARGS(:)
     !Local variables
     CHARACTER(LEN=100) :: ARGS(100)
-    INTEGER(CMFEIntg) :: I,REASON
+    INTEGER(CMISSIntg) :: I,REASON
     CHARACTER(LEN=100) :: WORD
 
     ARGS=""
@@ -546,12 +547,12 @@ PROGRAM CUBOIDGENERICEXAMPLE
     CHARACTER(LEN=*), INTENT(IN) :: ALL_ARGS(:)
     CHARACTER(LEN=*), INTENT(IN) :: ARG_TYPE
     CHARACTER(LEN=256), INTENT(OUT), OPTIONAL :: ARG
-    INTEGER(CMFEIntg), INTENT(OUT), OPTIONAL :: ARG_INT
-    REAL(CMFEDP), INTENT(OUT), OPTIONAL :: ARG_DP
+    INTEGER(CMISSIntg), INTENT(OUT), OPTIONAL :: ARG_INT
+    REAL(CMISSRP), INTENT(OUT), OPTIONAL :: ARG_DP
     !Local variables
     CHARACTER(LEN=LEN_TRIM(ARG_TYPE)) :: ARG_TYPE_UPPER
     CHARACTER(LEN=256) :: WORD_UPPER,ARGOUT
-    INTEGER(CMFEIntg) :: NARGS,I,LENG,WORD_LENG
+    INTEGER(CMISSIntg) :: NARGS,I,LENG,WORD_LENG
 
     NARGS=SIZE(ALL_ARGS,1)
     LENG=LEN_TRIM(ARG_TYPE) !STRING TO LOOK FOR
@@ -586,15 +587,15 @@ PROGRAM CUBOIDGENERICEXAMPLE
     TYPE(cmfe_FieldType),INTENT(IN) :: DependentField
     TYPE(cmfe_FieldType),INTENT(IN) :: GeometricField    
     TYPE(cmfe_BoundaryConditionsType),INTENT(INOUT) :: BoundaryConditions
-    INTEGER(CMFEIntg),INTENT(IN) :: VariableType
-    INTEGER(CMFEIntg),INTENT(IN) :: BCType
-    INTEGER(CMFEIntg),INTENT(IN) :: Nodes(:)
-    INTEGER(CMFEIntg),INTENT(IN) :: Component
-    REAL(CMFEDP),INTENT(IN) :: Value
-    INTEGER(CMFEIntg),INTENT(IN) :: ComputationalNodeNumber
+    INTEGER(CMISSIntg),INTENT(IN) :: VariableType
+    INTEGER(CMISSIntg),INTENT(IN) :: BCType
+    INTEGER(CMISSIntg),INTENT(IN) :: Nodes(:)
+    INTEGER(CMISSIntg),INTENT(IN) :: Component
+    REAL(CMISSRP),INTENT(IN) :: Value
+    INTEGER(CMISSIntg),INTENT(IN) :: ComputationalNodeNumber
     !Local variables
-    INTEGER(CMFEIntg) :: i,node,NodeDomain,BCType2
-    REAL(CMFEDP) :: coord
+    INTEGER(CMISSIntg) :: i,node,NodeDomain,BCType2
+    REAL(CMISSRP) :: coord
 
     DO I=1,SIZE(Nodes)
       node=Nodes(I)
@@ -620,10 +621,10 @@ PROGRAM CUBOIDGENERICEXAMPLE
   !> Grabs all specified BC from the command line
   SUBROUTINE GET_BC(ALL_ARGS,BC)
     CHARACTER(LEN=*), INTENT(IN) :: ALL_ARGS(:)
-    REAL(CMFEDP),ALLOCATABLE,INTENT(OUT) :: BC(:,:)
+    REAL(CMISSRP),ALLOCATABLE,INTENT(OUT) :: BC(:,:)
     !Local variable
-    REAL(CMFEDP) :: BCtemp(100,4)
-    INTEGER(CMFEIntg) :: NARG,N,I,J,POS1,POS2
+    REAL(CMISSRP) :: BCtemp(100,4)
+    INTEGER(CMISSIntg) :: NARG,N,I,J,POS1,POS2
     CHARACTER(LEN=100) :: WORD_UPPER
     CHARACTER(LEN=100) :: WORDS(10)
     

@@ -42,6 +42,7 @@
 PROGRAM DataProjection3DRectangularCartesian
 
   USE MPI
+  USE OpenCMISS
   USE OpenCMISS_Iron
 
 #ifdef WIN32
@@ -51,41 +52,41 @@ PROGRAM DataProjection3DRectangularCartesian
   IMPLICIT NONE
 
   !Program parameters
-  INTEGER(CMFEIntg),PARAMETER :: BasisUserNumber=1  
-  INTEGER(CMFEIntg),PARAMETER :: CoordinateSystemDimension=3
-  INTEGER(CMFEIntg),PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg),PARAMETER :: DataProjectionUserNumber=1
-  INTEGER(CMFEIntg),PARAMETER :: DecompositionUserNumber=1
-  INTEGER(CMFEIntg),PARAMETER :: FieldUserNumber=1  
-  INTEGER(CMFEIntg),PARAMETER :: MeshUserNumber=1
-  INTEGER(CMFEIntg),PARAMETER :: RegionUserNumber=1
-  REAL(CMFEDP), PARAMETER :: CoordinateSystemOrigin(3)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP]  
+  INTEGER(CMISSIntg),PARAMETER :: BasisUserNumber=1  
+  INTEGER(CMISSIntg),PARAMETER :: CoordinateSystemDimension=3
+  INTEGER(CMISSIntg),PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg),PARAMETER :: DataProjectionUserNumber=1
+  INTEGER(CMISSIntg),PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMISSIntg),PARAMETER :: FieldUserNumber=1  
+  INTEGER(CMISSIntg),PARAMETER :: MeshUserNumber=1
+  INTEGER(CMISSIntg),PARAMETER :: RegionUserNumber=1
+  REAL(CMISSRP), PARAMETER :: CoordinateSystemOrigin(3)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP]  
 
   !Program variables
-  INTEGER(CMFEIntg) :: MeshComponentNumber=1
-  INTEGER(CMFEIntg) :: NumberOfDataPoints 
-  INTEGER(CMFEIntg) :: MeshDimensions=3
-  INTEGER(CMFEIntg) :: MeshNumberOfElements
-  INTEGER(CMFEIntg) :: MeshNumberOfComponents=1
-  INTEGER(CMFEIntg) :: NumberOfDomains=1 !NumberOfDomains=2 for parallel processing, need to set up MPI
-  INTEGER(CMFEIntg) :: NumberOfNodes
-  INTEGER(CMFEIntg) :: NumberOfXi=3
-  INTEGER(CMFEIntg) :: BasisInterpolation(3)=[CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION,CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION, &
+  INTEGER(CMISSIntg) :: MeshComponentNumber=1
+  INTEGER(CMISSIntg) :: NumberOfDataPoints 
+  INTEGER(CMISSIntg) :: MeshDimensions=3
+  INTEGER(CMISSIntg) :: MeshNumberOfElements
+  INTEGER(CMISSIntg) :: MeshNumberOfComponents=1
+  INTEGER(CMISSIntg) :: NumberOfDomains=1 !NumberOfDomains=2 for parallel processing, need to set up MPI
+  INTEGER(CMISSIntg) :: NumberOfNodes
+  INTEGER(CMISSIntg) :: NumberOfXi=3
+  INTEGER(CMISSIntg) :: BasisInterpolation(3)=[CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION,CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION, &
     & CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION]
-  INTEGER(CMFEIntg) :: WorldCoordinateSystemUserNumber
-  INTEGER(CMFEIntg) :: WorldRegionUserNumber
+  INTEGER(CMISSIntg) :: WorldCoordinateSystemUserNumber
+  INTEGER(CMISSIntg) :: WorldRegionUserNumber
   
-  INTEGER(CMFEIntg) :: FieldNumberOfVariables=1
-  INTEGER(CMFEIntg) :: FieldNumberOfComponents=3 
+  INTEGER(CMISSIntg) :: FieldNumberOfVariables=1
+  INTEGER(CMISSIntg) :: FieldNumberOfComponents=3 
   
-  INTEGER(CMFEIntg) :: data_point_idx,elem_idx,ver_idx,der_idx,node_idx,comp_idx
-  REAL(CMFEDP), DIMENSION(5,3) :: DataPointValues !(number_of_data_points,dimension)
-  REAL(CMFEDP), DIMENSION(5) :: DataPointProjectionDistance !(number_of_data_points)
-  INTEGER(CMFEIntg), DIMENSION(5) :: DataPointProjectionElementNumber !(number_of_data_points)
-  INTEGER(CMFEIntg), DIMENSION(5) :: DataPointProjectionExitTag !(number_of_data_points)
-  REAL(CMFEDP), DIMENSION(5,3) :: DataPointProjectionXi !(number_of_data_points,MeshDimensions)  
-  INTEGER(CMFEIntg), DIMENSION(1,8) :: ElementUserNodes  
-  REAL(CMFEDP), DIMENSION(8,8,3) :: FieldValues
+  INTEGER(CMISSIntg) :: data_point_idx,elem_idx,ver_idx,der_idx,node_idx,comp_idx
+  REAL(CMISSRP), DIMENSION(5,3) :: DataPointValues !(number_of_data_points,dimension)
+  REAL(CMISSRP), DIMENSION(5) :: DataPointProjectionDistance !(number_of_data_points)
+  INTEGER(CMISSIntg), DIMENSION(5) :: DataPointProjectionElementNumber !(number_of_data_points)
+  INTEGER(CMISSIntg), DIMENSION(5) :: DataPointProjectionExitTag !(number_of_data_points)
+  REAL(CMISSRP), DIMENSION(5,3) :: DataPointProjectionXi !(number_of_data_points,MeshDimensions)  
+  INTEGER(CMISSIntg), DIMENSION(1,8) :: ElementUserNodes  
+  REAL(CMISSRP), DIMENSION(8,8,3) :: FieldValues
         
 #ifdef WIN32
   !Quickwin type
@@ -94,12 +95,12 @@ PROGRAM DataProjection3DRectangularCartesian
 #endif
 
   !Generic CMISS and MPI variables
-  INTEGER(CMFEIntg) :: Err
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS=1 !<number of elements on x axis
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_Y_ELEMENTS=1 !<number of elements on y axis
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_Z_ELEMENTS=1 !<number of elements on z axis  
-  INTEGER(CMFEIntg) :: NUMBER_OF_DOMAINS=1      
-  INTEGER(CMFEIntg) :: MPI_IERROR  
+  INTEGER(CMISSIntg) :: Err
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS=1 !<number of elements on x axis
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_Y_ELEMENTS=1 !<number of elements on y axis
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_Z_ELEMENTS=1 !<number of elements on z axis  
+  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS=1      
+  INTEGER(CMISSIntg) :: MPI_IERROR  
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -113,11 +114,11 @@ PROGRAM DataProjection3DRectangularCartesian
 #endif
     
   !Intialise 5 data points
-  DataPointValues(1,:)=[0.1_CMFEDP,0.8_CMFEDP,1.0_CMFEDP]
-  DataPointValues(2,:)=[0.5_CMFEDP,0.5_CMFEDP,0.5_CMFEDP]  
-  DataPointValues(3,:)=[0.2_CMFEDP,0.5_CMFEDP,0.5_CMFEDP]  
-  DataPointValues(4,:)=[0.9_CMFEDP,0.6_CMFEDP,0.9_CMFEDP]
-  DataPointValues(5,:)=[0.3_CMFEDP,0.3_CMFEDP,0.3_CMFEDP]
+  DataPointValues(1,:)=[0.1_CMISSRP,0.8_CMISSRP,1.0_CMISSRP]
+  DataPointValues(2,:)=[0.5_CMISSRP,0.5_CMISSRP,0.5_CMISSRP]  
+  DataPointValues(3,:)=[0.2_CMISSRP,0.5_CMISSRP,0.5_CMISSRP]  
+  DataPointValues(4,:)=[0.9_CMISSRP,0.6_CMISSRP,0.9_CMISSRP]
+  DataPointValues(5,:)=[0.3_CMISSRP,0.3_CMISSRP,0.3_CMISSRP]
   NumberOfDataPoints=SIZE(DataPointValues,1)
   
   !Intialise 1 element
@@ -125,77 +126,77 @@ PROGRAM DataProjection3DRectangularCartesian
   MeshNumberOfElements=SIZE(ElementUserNodes,1)
   
   !Intialise 8 nodes for the element
-  FieldValues(1,1,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !no der, node 1
-  FieldValues(2,1,:)=[1.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 der, node 1
-  FieldValues(3,1,:)=[0.0_CMFEDP,1.0_CMFEDP,0.0_CMFEDP] !s2 der, node 1  
-  FieldValues(4,1,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 der, node 1    
-  FieldValues(5,1,:)=[0.0_CMFEDP,0.0_CMFEDP,1.0_CMFEDP] !s3 der, node 1
-  FieldValues(6,1,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s3 der, node 1  
-  FieldValues(7,1,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s2 s3 der, node 1    
-  FieldValues(8,1,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 s3 der, node 1    
+  FieldValues(1,1,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !no der, node 1
+  FieldValues(2,1,:)=[1.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 der, node 1
+  FieldValues(3,1,:)=[0.0_CMISSRP,1.0_CMISSRP,0.0_CMISSRP] !s2 der, node 1  
+  FieldValues(4,1,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 der, node 1    
+  FieldValues(5,1,:)=[0.0_CMISSRP,0.0_CMISSRP,1.0_CMISSRP] !s3 der, node 1
+  FieldValues(6,1,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s3 der, node 1  
+  FieldValues(7,1,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s2 s3 der, node 1    
+  FieldValues(8,1,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 s3 der, node 1    
   
-  FieldValues(1,2,:)=[1.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !no der, node 2
-  FieldValues(2,2,:)=[1.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 der, node 2
-  FieldValues(3,2,:)=[0.0_CMFEDP,1.0_CMFEDP,0.0_CMFEDP] !s2 der, node 2  
-  FieldValues(4,2,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 der, node 2    
-  FieldValues(5,2,:)=[0.0_CMFEDP,0.0_CMFEDP,1.0_CMFEDP] !s3 der, node 2
-  FieldValues(6,2,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s3 der, node 2  
-  FieldValues(7,2,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s2 s3 der, node 2    
-  FieldValues(8,2,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 s3 der, node 2     
+  FieldValues(1,2,:)=[1.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !no der, node 2
+  FieldValues(2,2,:)=[1.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 der, node 2
+  FieldValues(3,2,:)=[0.0_CMISSRP,1.0_CMISSRP,0.0_CMISSRP] !s2 der, node 2  
+  FieldValues(4,2,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 der, node 2    
+  FieldValues(5,2,:)=[0.0_CMISSRP,0.0_CMISSRP,1.0_CMISSRP] !s3 der, node 2
+  FieldValues(6,2,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s3 der, node 2  
+  FieldValues(7,2,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s2 s3 der, node 2    
+  FieldValues(8,2,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 s3 der, node 2     
   
-  FieldValues(1,3,:)=[0.0_CMFEDP,1.0_CMFEDP,0.0_CMFEDP] !no der, node 3
-  FieldValues(2,3,:)=[1.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 der, node 3
-  FieldValues(3,3,:)=[0.0_CMFEDP,1.0_CMFEDP,0.0_CMFEDP] !s2 der, node 3  
-  FieldValues(4,3,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 der, node 3    
-  FieldValues(5,3,:)=[0.0_CMFEDP,0.0_CMFEDP,1.0_CMFEDP] !s3 der, node 3
-  FieldValues(6,3,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s3 der, node 3  
-  FieldValues(7,3,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s2 s3 der, node 3    
-  FieldValues(8,3,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 s3 der, node 3
+  FieldValues(1,3,:)=[0.0_CMISSRP,1.0_CMISSRP,0.0_CMISSRP] !no der, node 3
+  FieldValues(2,3,:)=[1.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 der, node 3
+  FieldValues(3,3,:)=[0.0_CMISSRP,1.0_CMISSRP,0.0_CMISSRP] !s2 der, node 3  
+  FieldValues(4,3,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 der, node 3    
+  FieldValues(5,3,:)=[0.0_CMISSRP,0.0_CMISSRP,1.0_CMISSRP] !s3 der, node 3
+  FieldValues(6,3,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s3 der, node 3  
+  FieldValues(7,3,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s2 s3 der, node 3    
+  FieldValues(8,3,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 s3 der, node 3
   
-  FieldValues(1,4,:)=[1.0_CMFEDP,1.0_CMFEDP,0.0_CMFEDP] !no der, node 4
-  FieldValues(2,4,:)=[1.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 der, node 4
-  FieldValues(3,4,:)=[0.0_CMFEDP,1.0_CMFEDP,0.0_CMFEDP] !s2 der, node 4  
-  FieldValues(4,4,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 der, node 4    
-  FieldValues(5,4,:)=[0.0_CMFEDP,0.0_CMFEDP,1.0_CMFEDP] !s3 der, node 4
-  FieldValues(6,4,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s3 der, node 4  
-  FieldValues(7,4,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s2 s3 der, node 4    
-  FieldValues(8,4,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 s3 der, node 4
+  FieldValues(1,4,:)=[1.0_CMISSRP,1.0_CMISSRP,0.0_CMISSRP] !no der, node 4
+  FieldValues(2,4,:)=[1.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 der, node 4
+  FieldValues(3,4,:)=[0.0_CMISSRP,1.0_CMISSRP,0.0_CMISSRP] !s2 der, node 4  
+  FieldValues(4,4,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 der, node 4    
+  FieldValues(5,4,:)=[0.0_CMISSRP,0.0_CMISSRP,1.0_CMISSRP] !s3 der, node 4
+  FieldValues(6,4,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s3 der, node 4  
+  FieldValues(7,4,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s2 s3 der, node 4    
+  FieldValues(8,4,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 s3 der, node 4
   
-  FieldValues(1,5,:)=[0.0_CMFEDP,0.0_CMFEDP,1.0_CMFEDP] !no der, node 5
-  FieldValues(2,5,:)=[1.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 der, node 5
-  FieldValues(3,5,:)=[0.0_CMFEDP,1.0_CMFEDP,0.0_CMFEDP] !s2 der, node 5  
-  FieldValues(4,5,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 der, node 5    
-  FieldValues(5,5,:)=[0.0_CMFEDP,0.0_CMFEDP,1.0_CMFEDP] !s3 der, node 5
-  FieldValues(6,5,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s3 der, node 5  
-  FieldValues(7,5,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s2 s3 der, node 5    
-  FieldValues(8,5,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 s3 der, node 5    
+  FieldValues(1,5,:)=[0.0_CMISSRP,0.0_CMISSRP,1.0_CMISSRP] !no der, node 5
+  FieldValues(2,5,:)=[1.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 der, node 5
+  FieldValues(3,5,:)=[0.0_CMISSRP,1.0_CMISSRP,0.0_CMISSRP] !s2 der, node 5  
+  FieldValues(4,5,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 der, node 5    
+  FieldValues(5,5,:)=[0.0_CMISSRP,0.0_CMISSRP,1.0_CMISSRP] !s3 der, node 5
+  FieldValues(6,5,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s3 der, node 5  
+  FieldValues(7,5,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s2 s3 der, node 5    
+  FieldValues(8,5,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 s3 der, node 5    
   
-  FieldValues(1,6,:)=[1.0_CMFEDP,0.0_CMFEDP,1.0_CMFEDP] !no der, node 6
-  FieldValues(2,6,:)=[1.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 der, node 6
-  FieldValues(3,6,:)=[0.0_CMFEDP,1.0_CMFEDP,0.0_CMFEDP] !s2 der, node 6  
-  FieldValues(4,6,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 der, node 6    
-  FieldValues(5,6,:)=[0.0_CMFEDP,0.0_CMFEDP,1.0_CMFEDP] !s3 der, node 6
-  FieldValues(6,6,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s3 der, node 6  
-  FieldValues(7,6,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s2 s3 der, node 6    
-  FieldValues(8,6,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 s3 der, node 6     
+  FieldValues(1,6,:)=[1.0_CMISSRP,0.0_CMISSRP,1.0_CMISSRP] !no der, node 6
+  FieldValues(2,6,:)=[1.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 der, node 6
+  FieldValues(3,6,:)=[0.0_CMISSRP,1.0_CMISSRP,0.0_CMISSRP] !s2 der, node 6  
+  FieldValues(4,6,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 der, node 6    
+  FieldValues(5,6,:)=[0.0_CMISSRP,0.0_CMISSRP,1.0_CMISSRP] !s3 der, node 6
+  FieldValues(6,6,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s3 der, node 6  
+  FieldValues(7,6,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s2 s3 der, node 6    
+  FieldValues(8,6,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 s3 der, node 6     
   
-  FieldValues(1,7,:)=[0.0_CMFEDP,1.0_CMFEDP,1.0_CMFEDP] !no der, node 7
-  FieldValues(2,7,:)=[1.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 der, node 7
-  FieldValues(3,7,:)=[0.0_CMFEDP,1.0_CMFEDP,0.0_CMFEDP] !s2 der, node 7  
-  FieldValues(4,7,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 der, node 7    
-  FieldValues(5,7,:)=[0.0_CMFEDP,0.0_CMFEDP,1.0_CMFEDP] !s3 der, node 7
-  FieldValues(6,7,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s3 der, node 7  
-  FieldValues(7,7,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s2 s3 der, node 7    
-  FieldValues(8,7,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 s3 der, node 7
+  FieldValues(1,7,:)=[0.0_CMISSRP,1.0_CMISSRP,1.0_CMISSRP] !no der, node 7
+  FieldValues(2,7,:)=[1.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 der, node 7
+  FieldValues(3,7,:)=[0.0_CMISSRP,1.0_CMISSRP,0.0_CMISSRP] !s2 der, node 7  
+  FieldValues(4,7,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 der, node 7    
+  FieldValues(5,7,:)=[0.0_CMISSRP,0.0_CMISSRP,1.0_CMISSRP] !s3 der, node 7
+  FieldValues(6,7,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s3 der, node 7  
+  FieldValues(7,7,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s2 s3 der, node 7    
+  FieldValues(8,7,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 s3 der, node 7
   
-  FieldValues(1,8,:)=[1.0_CMFEDP,1.0_CMFEDP,1.0_CMFEDP] !no der, node 8
-  FieldValues(2,8,:)=[1.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 der, node 8
-  FieldValues(3,8,:)=[0.0_CMFEDP,1.0_CMFEDP,0.0_CMFEDP] !s2 der, node 8  
-  FieldValues(4,8,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 der, node 8    
-  FieldValues(5,8,:)=[0.0_CMFEDP,0.0_CMFEDP,1.0_CMFEDP] !s3 der, node 8
-  FieldValues(6,8,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s3 der, node 8  
-  FieldValues(7,8,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s2 s3 der, node 8    
-  FieldValues(8,8,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP] !s1 s2 s3 der, node 8
+  FieldValues(1,8,:)=[1.0_CMISSRP,1.0_CMISSRP,1.0_CMISSRP] !no der, node 8
+  FieldValues(2,8,:)=[1.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 der, node 8
+  FieldValues(3,8,:)=[0.0_CMISSRP,1.0_CMISSRP,0.0_CMISSRP] !s2 der, node 8  
+  FieldValues(4,8,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 der, node 8    
+  FieldValues(5,8,:)=[0.0_CMISSRP,0.0_CMISSRP,1.0_CMISSRP] !s3 der, node 8
+  FieldValues(6,8,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s3 der, node 8  
+  FieldValues(7,8,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s2 s3 der, node 8    
+  FieldValues(8,8,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP] !s1 s2 s3 der, node 8
   NumberOfNodes=SIZE(FieldValues,2)
   
   !Intialise cmiss

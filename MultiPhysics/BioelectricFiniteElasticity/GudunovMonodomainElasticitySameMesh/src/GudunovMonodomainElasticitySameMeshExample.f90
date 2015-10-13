@@ -50,7 +50,8 @@
 !> Main program
 PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
 
-  USE OPENCMISS
+  USE OpenCMISS
+  USE OpenCMISS_Iron
   USE MPI
 
 #ifdef WIN32
@@ -61,132 +62,132 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
 
   !--------------------------------------------------------------------------------------------------------------------------------
   !Test program parameters
-  REAL(CMFEDP), PARAMETER :: tol=1.0E-8_CMFEDP
+  REAL(CMISSRP), PARAMETER :: tol=1.0E-8_CMISSRP
 
   LOGICAL :: independent_field_auto_create=.FALSE.
   LOGICAL :: uniaxial_extension_bc=.FALSE.
 
-  INTEGER(CMFEIntg), PARAMETER :: NUMBER_OF_ELEMENTS=50
+  INTEGER(CMISSIntg), PARAMETER :: NUMBER_OF_ELEMENTS=50
   !all lengths in [cm]
-  REAL(CMFEDP), PARAMETER :: LENGTH= 2.5_CMFEDP ! X-direction
-  REAL(CMFEDP), PARAMETER :: WIDTH= 0.05_CMFEDP ! Y-direction
-  REAL(CMFEDP), PARAMETER :: HEIGHT=0.05_CMFEDP ! Z-direction
+  REAL(CMISSRP), PARAMETER :: LENGTH= 2.5_CMISSRP ! X-direction
+  REAL(CMISSRP), PARAMETER :: WIDTH= 0.05_CMISSRP ! Y-direction
+  REAL(CMISSRP), PARAMETER :: HEIGHT=0.05_CMISSRP ! Z-direction
   
   !all times in [ms]
-  REAL(CMFEDP), PARAMETER :: STIM_STOP=0.05_CMFEDP
-  REAL(CMFEDP), PARAMETER :: TIME_STOP=50.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: STIM_STOP=0.05_CMISSRP
+  REAL(CMISSRP), PARAMETER :: TIME_STOP=50.0_CMISSRP
 
-  REAL(CMFEDP), PARAMETER :: ODE_TIME_STEP=0.00001_CMFEDP
-  REAL(CMFEDP), PARAMETER :: PDE_TIME_STEP=0.0005_CMFEDP
-  REAL(CMFEDP), PARAMETER :: ELASTICITY_TIME_STEP=0.01_CMFEDP
+  REAL(CMISSRP), PARAMETER :: ODE_TIME_STEP=0.00001_CMISSRP
+  REAL(CMISSRP), PARAMETER :: PDE_TIME_STEP=0.0005_CMISSRP
+  REAL(CMISSRP), PARAMETER :: ELASTICITY_TIME_STEP=0.01_CMISSRP
 
-  INTEGER(CMFEIntg), PARAMETER :: OUTPUT_FREQUENCY=2
+  INTEGER(CMISSIntg), PARAMETER :: OUTPUT_FREQUENCY=2
 
   !--------------------------------------------------------------------------------------------------------------------------------
   !stimulation current in [uA/cm^2]
-  REAL(CMFEDP), PARAMETER :: STIM_VALUE=8000.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: STIM_VALUE=8000.0_CMISSRP
   !condctivity in [mS/cm]
-  REAL(CMFEDP), PARAMETER :: CONDUCTIVITY=3.828_CMFEDP
+  REAL(CMISSRP), PARAMETER :: CONDUCTIVITY=3.828_CMISSRP
   !surface area to volume ratio in [cm^-1]
-  REAL(CMFEDP), PARAMETER :: Am=500.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: Am=500.0_CMISSRP
   !membrane capacitance in [uF/cm^2]
-  REAL(CMFEDP), PARAMETER :: Cm=1.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: Cm=1.0_CMISSRP
 
   !--------------------------------------------------------------------------------------------------------------------------------
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfSpatialCoordinates=3
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfSpatialCoordinates=3
 
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
 
-  INTEGER(CMFEIntg), PARAMETER :: QuadraticBasisUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: LinearBasisUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfXiCoordinates=NumberOfSpatialCoordinates
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfGaussPoints=3
+  INTEGER(CMISSIntg), PARAMETER :: QuadraticBasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: LinearBasisUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfXiCoordinates=NumberOfSpatialCoordinates
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfGaussPoints=3
 
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: QuadraticMeshComponentNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: LinearMeshComponentNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: QuadraticMeshComponentNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: LinearMeshComponentNumber=2
 
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryUserNumberFE=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryUserNumberM=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfComponents=NumberOfSpatialCoordinates
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumberFE=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumberM=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfComponents=NumberOfSpatialCoordinates
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldFibreNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldFibreNumberOfComponents=3
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialUserNumberM=4
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialNumberOfVariablesM=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialNumberOfComponentsM=NumberOfSpatialCoordinates+2
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumberM=4
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfVariablesM=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfComponentsM=NumberOfSpatialCoordinates+2
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialUserNumberFE=5
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialNumberOfVariablesFE=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialNumberOfComponentsFE1=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialNumberOfComponentsFE2=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumberFE=5
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfVariablesFE=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfComponentsFE1=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfComponentsFE2=1
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumberM=6
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfVariablesM=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfComponentsM=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumberM=6
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfVariablesM=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponentsM=1
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumberFE=7
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfVariablesFE=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfComponentsFE=NumberOfSpatialCoordinates+1
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumberFE=7
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfVariablesFE=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponentsFE=NumberOfSpatialCoordinates+1
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldIndependentUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: FieldIndependentNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldIndependentNumberOfComponents=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldIndependentUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: FieldIndependentNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldIndependentNumberOfComponents=1
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumberM=9
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumberFE=10
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberM=9
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumberFE=10
 
-  INTEGER(CMFEIntg), PARAMETER :: CellMLUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: CellMLModelsFieldUserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: CellMLStateFieldUserNumber=12
-  INTEGER(CMFEIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: CellMLParametersFieldUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: CellMLUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CellMLModelsFieldUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: CellMLStateFieldUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: CellMLParametersFieldUserNumber=14
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetsUserNumberM=1
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetsUserNumberFE=2
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetsUserNumberM=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetsUserNumberFE=2
 
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
-  INTEGER(CMFEIntg), PARAMETER :: SolverDAEIndex=1
-  INTEGER(CMFEIntg), PARAMETER :: SolverParabolicIndex=2
-  INTEGER(CMFEIntg), PARAMETER :: SolverFEIndex=1
+  INTEGER(CMISSIntg), PARAMETER :: SolverDAEIndex=1
+  INTEGER(CMISSIntg), PARAMETER :: SolverParabolicIndex=2
+  INTEGER(CMISSIntg), PARAMETER :: SolverFEIndex=1
 
-  INTEGER(CMFEIntg), PARAMETER :: ControlLoopMonodomainNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: ControlLoopElasticityNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: ControlLoopMonodomainNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: ControlLoopElasticityNumber=2
   
   !Program types
   
   !Program variables
 
-  INTEGER(CMFEIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
-  INTEGER(CMFEIntg) :: EquationsSetIndexM,EquationsSetIndexFE
-  INTEGER(CMFEIntg) :: CellMLIndex
-  INTEGER(CMFEIntg) :: MPI_IERROR
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: NumberGlobalXElements,NumberGlobalYElements,NumberGlobalZElements
+  INTEGER(CMISSIntg) :: EquationsSetIndexM,EquationsSetIndexFE
+  INTEGER(CMISSIntg) :: CellMLIndex
+  INTEGER(CMISSIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
   
-  INTEGER(CMFEIntg) :: NodeNumber,NodeDomain,node_idx,ComponentNumber
+  INTEGER(CMISSIntg) :: NodeNumber,NodeDomain,node_idx,ComponentNumber
 
-  INTEGER(CMFEIntg),ALLOCATABLE :: BottomSurfaceNodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE :: LeftSurfaceNodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE :: RightSurfaceNodes(:)
-  INTEGER(CMFEIntg),ALLOCATABLE :: FrontSurfaceNodes(:)
-  INTEGER(CMFEIntg) :: BottomNormalXi,LeftNormalXi,RightNormalXi,FrontNormalXi
+  INTEGER(CMISSIntg),ALLOCATABLE :: BottomSurfaceNodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE :: LeftSurfaceNodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE :: RightSurfaceNodes(:)
+  INTEGER(CMISSIntg),ALLOCATABLE :: FrontSurfaceNodes(:)
+  INTEGER(CMISSIntg) :: BottomNormalXi,LeftNormalXi,RightNormalXi,FrontNormalXi
 
   LOGICAL :: EXPORT_FIELD
 
-  INTEGER(CMFEIntg) :: shortenModelIndex
-  INTEGER(CMFEIntg) :: stimcomponent
+  INTEGER(CMISSIntg) :: shortenModelIndex
+  INTEGER(CMISSIntg) :: stimcomponent
 
-  REAL(CMFEDP) :: YVALUE
+  REAL(CMISSRP) :: YVALUE
 
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: Err
 
   !CMISS variables
 
@@ -455,11 +456,11 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
   CALL cmfe_Field_VariableLabelSet(MaterialFieldFE,CMFE_FIELD_V_VARIABLE_TYPE,"Gravity",Err)
   CALL cmfe_Field_CreateFinish(MaterialFieldFE,Err)
   !Set Mooney-Rivlin constants c10 and c01 to 2.0 and 6.0 respectively.
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialFieldFE,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialFieldFE,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0_CMISSRP, &
     & Err)
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialFieldFE,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,6.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialFieldFE,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,6.0_CMISSRP, &
     & Err)
-!  CALL cmfe_Field_ComponentValuesInitialise(MaterialFieldFE,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.0_CMFEDP,Err)
+!  CALL cmfe_Field_ComponentValuesInitialise(MaterialFieldFE,CMFE_FIELD_V_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.0_CMISSRP,Err)
 
   !Create the dependent field for FE with 2 variables and * components 
   !  3-d: 3 displacement (quad interpol), 1 pressure (lin interpol) --> * = 4
@@ -723,7 +724,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
   !Initialise dependent field for monodomain
   !> \todo - get V_m initialial value.
   CALL cmfe_Field_ComponentValuesInitialise(DependentFieldM,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1, &
-    & -79.974_CMFEDP,Err)
+    & -79.974_CMISSRP,Err)
   
   !Initialise dependent field for Finite Elasticity from undeformed geometry and set hydrostatic pressure
   CALL cmfe_Field_ParametersToFieldParametersComponentCopy(GeometricFieldFE,CMFE_FIELD_U_VARIABLE_TYPE, &
@@ -736,7 +737,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
     & CMFE_FIELD_VALUES_SET_TYPE, &
     & 3,DependentFieldFE,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,Err)
   CALL cmfe_Field_ComponentValuesInitialise(DependentFieldFE,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,4, &
-    & -8.0_CMFEDP,Err)
+    & -8.0_CMISSRP,Err)
 
   !--------------------------------------------------------------------------------------------------------------------------------
   !Create the CellML models field
@@ -784,7 +785,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
           & NodeNumber, &
           & 2, &
           & YVALUE,Err)
-        IF(YVALUE .LE. WIDTH/2.0_CMFEDP) CALL cmfe_Field_ParameterSetUpdateNode(CellMLParametersField, &
+        IF(YVALUE .LE. WIDTH/2.0_CMISSRP) CALL cmfe_Field_ParameterSetUpdateNode(CellMLParametersField, &
           & CMFE_FIELD_U_VARIABLE_TYPE, &
           & CMFE_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,stimcomponent,STIM_VALUE,Err)
       CASE(3)
@@ -811,7 +812,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
   CALL cmfe_Problem_ControlLoopGet(Problem,CMFE_CONTROL_LOOP_NODE,ControlLoopMain,Err)
   CALL cmfe_ControlLoop_LabelSet(ControlLoopMain,'MAIN_TIME_LOOP',Err)
   !Loop in time for STIM_STOP with the Stimulus applied.
-  CALL cmfe_ControlLoop_TimesSet(ControlLoopMain,0.0_CMFEDP,STIM_STOP,ELASTICITY_TIME_STEP,Err)
+  CALL cmfe_ControlLoop_TimesSet(ControlLoopMain,0.0_CMISSRP,STIM_STOP,ELASTICITY_TIME_STEP,Err)
   CALL cmfe_ControlLoop_TimeOutputSet(ControlLoopMain,OUTPUT_FREQUENCY,Err)
   CALL cmfe_ControlLoop_OutputTypeSet(ControlLoopMain,CMFE_CONTROL_LOOP_TIMING_OUTPUT,Err)
 
@@ -819,7 +820,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
   CALL cmfe_ControlLoop_Initialise(ControlLoopM,Err)
   CALL cmfe_Problem_ControlLoopGet(Problem,[ControlLoopMonodomainNumber,CMFE_CONTROL_LOOP_NODE],ControlLoopM,Err)
   CALL cmfe_ControlLoop_LabelSet(ControlLoopM,'MONODOMAIN_TIME_LOOP',Err)
-  CALL cmfe_ControlLoop_TimesSet(ControlLoopM,0.0_CMFEDP,ELASTICITY_TIME_STEP,PDE_TIME_STEP,Err)
+  CALL cmfe_ControlLoop_TimesSet(ControlLoopM,0.0_CMISSRP,ELASTICITY_TIME_STEP,PDE_TIME_STEP,Err)
   CALL cmfe_ControlLoop_OutputTypeSet(ControlLoopM,CMFE_CONTROL_LOOP_NO_OUTPUT,Err)
 
   !set the finite elasticity loop (simple type)
@@ -935,7 +936,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
         CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
         IF(NodeDomain==ComputationalNodeNumber) THEN
           CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-            & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+            & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
         ENDIF
       ENDDO
       !Set x=WIDTH nodes to 10% x displacement
@@ -944,7 +945,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
         CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
         IF(NodeDomain==ComputationalNodeNumber) THEN
           CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,1, &
-            & CMFE_BOUNDARY_CONDITION_FIXED,1.1_CMFEDP*LENGTH,Err)
+            & CMFE_BOUNDARY_CONDITION_FIXED,1.1_CMISSRP*LENGTH,Err)
         ENDIF
       ENDDO
       !Set y=0 nodes to no y displacement
@@ -953,7 +954,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
         CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
         IF(NodeDomain==ComputationalNodeNumber) THEN
           CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,2, &
-            & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+            & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
         ENDIF
       ENDDO
       !Set z=0 nodes to no z displacement
@@ -962,7 +963,7 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
         CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NodeNumber,1,NodeDomain,Err)
         IF(NodeDomain==ComputationalNodeNumber) THEN
           CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber,3, &
-            & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+            & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
         ENDIF
       ENDDO
 
@@ -981,10 +982,10 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
               !fix all nodes (0,*,0) in x- and z-direction
               CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
                 & NodeNumber, &
-                & 1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+                & 1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
               CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
                 & NodeNumber, &
-                & ComponentNumber,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+                & ComponentNumber,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
             ENDIF
           ENDDO
         ENDIF
@@ -999,9 +1000,9 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
             & 2,YVALUE,Err)
           IF(YVALUE<tol) THEN
             CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber, &
-              & 2,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+              & 2,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
             CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsFE,DependentFieldFE,CMFE_FIELD_U_VARIABLE_TYPE,1,1,NodeNumber, &
-              & 3,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+              & 3,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
           ENDIF
         ENDIF
       ENDDO
@@ -1034,12 +1035,12 @@ PROGRAM GODUNOVMONODOMAINELASTICITYSAMEMESHEXAMPLE
           & NodeNumber, &
           & 2, &
           & YVALUE,Err)
-        IF(YVALUE .LE. WIDTH/2.0_CMFEDP) CALL cmfe_Field_ParameterSetUpdateNode(CellMLParametersField, &
+        IF(YVALUE .LE. WIDTH/2.0_CMISSRP) CALL cmfe_Field_ParameterSetUpdateNode(CellMLParametersField, &
           & CMFE_FIELD_U_VARIABLE_TYPE, &
-          & CMFE_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,stimcomponent,0.0_CMFEDP,Err)
+          & CMFE_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,stimcomponent,0.0_CMISSRP,Err)
       CASE(3)
         CALL cmfe_Field_ParameterSetUpdateNode(CellMLParametersField,CMFE_FIELD_U_VARIABLE_TYPE, &
-          & CMFE_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,stimcomponent,0.0_CMFEDP,Err)
+          & CMFE_FIELD_VALUES_SET_TYPE,1,1,NodeNumber,stimcomponent,0.0_CMISSRP,Err)
       END SELECT
     ENDIF
   ENDDO

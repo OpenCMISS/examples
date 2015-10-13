@@ -1,6 +1,6 @@
 ! \file
 !> \author Chris Bradley
-!> \brief This is an example program to solve a linear elasticity equation using openCMISS calls.
+!> \brief This is an example program to solve a linear elasticity equation using OpenCMISS calls.
 !>
 !> \section LICENSE
 !>
@@ -40,14 +40,15 @@
 !>
 
 !> \example LinearElasticity/src/LinearElasticityExample.f90
-!! Example program to solve a linear elasticity equation using openCMISS calls.
+!! Example program to solve a linear elasticity equation using OpenCMISS calls.
 !<
 
 !> Main program
 PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
 
   USE MPI
-  USE OPENCMISS
+  USE OpenCMISS
+  USE OpenCMISS_Iron
 
 #ifdef WIN32
   USE IFQWIN
@@ -57,56 +58,56 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: ORIGIN(3)=(/0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP/)
-  REAL(CMFEDP), PARAMETER :: LENGTH=120.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=160.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: ORIGIN(3)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP]
+  REAL(CMISSRP), PARAMETER :: LENGTH=120.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=160.0_CMISSRP
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfSpatialCoordinates=2
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: Basis1UserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: Basis2UserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfSpatialCoordinates=2
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: Basis1UserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: Basis2UserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
 
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfXiCoordinates=2
-  INTEGER(CMFEIntg), PARAMETER :: TotalNumberOfNodes=4
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfMeshDimensions=2
-  INTEGER(CMFEIntg), PARAMETER :: NumberOfMeshComponents=2
-  INTEGER(CMFEIntg), PARAMETER :: TotalNumberOfElements=1
-  INTEGER(CMFEIntg), PARAMETER :: MeshComponent1UserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: MeshComponent2UserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfXiCoordinates=2
+  INTEGER(CMISSIntg), PARAMETER :: TotalNumberOfNodes=4
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshDimensions=2
+  INTEGER(CMISSIntg), PARAMETER :: NumberOfMeshComponents=2
+  INTEGER(CMISSIntg), PARAMETER :: TotalNumberOfElements=1
+  INTEGER(CMISSIntg), PARAMETER :: MeshComponent1UserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: MeshComponent2UserNumber=2
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldGeometryNumberOfComponents=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldGeometryNumberOfComponents=2
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfVariables=2
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfComponents=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfVariables=2
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponents=2
 
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldMaterialNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldMaterialNumberOfComponents=3
 
-  INTEGER(CMFEIntg), PARAMETER :: EquationSetUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: EquationSetUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=4
 
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
 
-  REAL(CMFEDP), PARAMETER ::   ZERO = 0.0_CMFEDP
+  REAL(CMISSRP), PARAMETER ::   ZERO = 0.0_CMISSRP
 
   !Program types
 
 
   !Program variables
 
-  INTEGER(CMFEIntg) :: NumberGlobalXElements,NumberGlobalYElements
-  INTEGER(CMFEIntg) :: MPI_IERROR
-  INTEGER(CMFEIntg) :: EquationsSetIndex  
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: node_idx,component_idx
-  REAL(CMFEDP) :: Value1,Value2
+  INTEGER(CMISSIntg) :: NumberGlobalXElements,NumberGlobalYElements
+  INTEGER(CMISSIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: EquationsSetIndex  
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,NumberOfDomains,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: node_idx,component_idx
+  REAL(CMISSRP) :: Value1,Value2
   LOGICAL :: EXPORT_FIELD
 
   !CMISS variables
@@ -137,7 +138,7 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
 #endif
 
   !Generic CMISS variables
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: Err
 
 #ifdef WIN32
   !Initialise QuickWin
@@ -158,7 +159,7 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
   WRITE(*,'(A)') "Program starting."
 
   !Set all diganostic levels on for testing
-  CALL cmfe_DiagnosticsSetOn(CMFE_FROM_DIAG_TYPE,(/1,2,3,4,5/),"Diagnostics",(/"PROBLEM_FINITE_ELEMENT_CALCULATE"/),Err)
+  CALL cmfe_DiagnosticsSetOn(CMFE_FROM_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["PROBLEM_FINITE_ELEMENT_CALCULATE"],Err)
 
   !Get the number of computational nodes and this computational node number
   CALL cmfe_ComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
@@ -195,20 +196,20 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
   CALL cmfe_Basis_CreateStart(Basis1UserNumber,Basis(1),Err)
   CALL cmfe_Basis_TypeSet(Basis(1),CMFE_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
   CALL cmfe_Basis_NumberOfXiSet(Basis(1),NumberOfXiCoordinates,Err)
-  CALL cmfe_Basis_InterpolationXiSet(Basis(1),(/CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION, &
-    & CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION/), &
+  CALL cmfe_Basis_InterpolationXiSet(Basis(1),[CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION, &
+    & CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION], &
     & Err)
-  CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis(1),(/CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME/),Err)
+  CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis(1),[CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME],Err)
   CALL cmfe_Basis_CreateFinish(Basis(1),Err)
 
   CALL cmfe_Basis_Initialise(Basis(2),Err)
   CALL cmfe_Basis_CreateStart(Basis2UserNumber,Basis(2),Err)
   CALL cmfe_Basis_TypeSet(Basis(2),CMFE_BASIS_LAGRANGE_HERMITE_TP_TYPE,Err)
   CALL cmfe_Basis_NumberOfXiSet(Basis(2),NumberOfXiCoordinates,Err)
-  CALL cmfe_Basis_InterpolationXiSet(Basis(2),(/CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION, &
-    & CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION/), &
+  CALL cmfe_Basis_InterpolationXiSet(Basis(2),[CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION, &
+    & CMFE_BASIS_LINEAR_LAGRANGE_INTERPOLATION], &
     & Err)
-  CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis(2),(/CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME/),Err)
+  CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(Basis(2),[CMFE_BASIS_MID_QUADRATURE_SCHEME,CMFE_BASIS_MID_QUADRATURE_SCHEME],Err)
   CALL cmfe_Basis_CreateFinish(Basis(2),Err)
 
   !Create a mesh
@@ -227,12 +228,12 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
   !Mesh Component 1
   CALL cmfe_MeshElements_Initialise(Elements(1),Err)
   CALL cmfe_MeshElements_CreateStart(Mesh,MeshComponent1UserNumber,Basis(1),Elements(1),Err)
-  CALL cmfe_MeshElements_NodesSet(Elements(1),1,(/1,2,3,4/),Err)
+  CALL cmfe_MeshElements_NodesSet(Elements(1),1,[1,2,3,4],Err)
   CALL cmfe_MeshElements_CreateFinish(Elements(1),Err)
   !Mesh Component 2
   CALL cmfe_MeshElements_Initialise(Elements(2),Err)
   CALL cmfe_MeshElements_CreateStart(Mesh,MeshComponent2UserNumber,Basis(2),Elements(2),Err)
-  CALL cmfe_MeshElements_NodesSet(Elements(2),1,(/1,2,3,4/),Err)
+  CALL cmfe_MeshElements_NodesSet(Elements(2),1,[1,2,3,4],Err)
   CALL cmfe_MeshElements_CreateFinish(Elements(2),Err)
 
   CALL cmfe_Mesh_CreateFinish(Mesh,Err) 
@@ -258,17 +259,17 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
 
   !Set geometric node coordinates (x)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,1,1, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,2,1,LENGTH,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,3,1, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,4,1,LENGTH,Err)
 
   !Set geometric node coordinates (y)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,1,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,2,2, &
-    & 0.0_CMFEDP,Err)
+    & 0.0_CMISSRP,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,3,2,WIDTH,Err)
   CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,4,2,WIDTH,Err)
 
@@ -303,15 +304,15 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
   CALL cmfe_Field_CreateFinish(MaterialField,Err)
 
   !Set isotropic elasticity material parameters - Young's Modulus & Poisson's Ratio, thickness
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.036_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.036_CMISSRP, &
     & Err) !thickness
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,30E6_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2,30E6_CMISSRP, &
     & Err) !E
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,0.25_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,0.25_CMISSRP, &
     & Err) !v
 
 
-  !Create a Elasticity Class, Linear Elasticity type, no subtype, EquationsSet
+  !Create a Elasticity Class, Linear Elasticity type, 2D plane stress subtype, EquationsSet
   CALL cmfe_EquationsSet_Initialise(EquationsSet,Err)
   CALL cmfe_Field_Initialise(EquationsSetField,Err)
   CALL cmfe_EquationsSet_CreateStart(EquationSetUserNumber,Region,GeometricField,[CMFE_EQUATIONS_SET_ELASTICITY_CLASS, &
@@ -397,10 +398,10 @@ PROGRAM LinearElasticity2DExtensionPlaneStressLagrangeBasis
   !Apply force at nodes 2,4 at x=l
   CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,1,1,2,1, &
     & CMFE_BOUNDARY_CONDITION_FIXED, &
-    & -800.0_CMFEDP,Err)
+    & -800.0_CMISSRP,Err)
   CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_DELUDELN_VARIABLE_TYPE,1,1,4,1, &
     & CMFE_BOUNDARY_CONDITION_FIXED, &
-    & -800.0_CMFEDP,Err)
+    & -800.0_CMISSRP,Err)
 
   CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
 

@@ -47,6 +47,7 @@
 !> Main program
 PROGRAM CELLMLFORTRANEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 
@@ -54,48 +55,48 @@ PROGRAM CELLMLFORTRANEXAMPLE
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: HEIGHT=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: LENGTH=3.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: HEIGHT=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: LENGTH=3.0_CMISSRP
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: CellMLUserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: CellMLModelsFieldUserNumber=12
-  INTEGER(CMFEIntg), PARAMETER :: CellMLStateFieldUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=14
-  INTEGER(CMFEIntg), PARAMETER :: CellMLParametersFieldUserNumber=15
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=16
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=17
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: CellMLUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: CellMLModelsFieldUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: CellMLStateFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: CellMLParametersFieldUserNumber=15
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=16
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=17
 
   !Program types
   
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
-  INTEGER(CMFEIntg) :: NUMBER_OF_DOMAINS
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
+  INTEGER(CMISSIntg) :: NUMBER_OF_DOMAINS
   CHARACTER(LEN=255) :: ModelUrl
   
-  INTEGER(CMFEIntg) :: modelIndex,MPI_IERROR
-  INTEGER(CMFEIntg) :: gNacomponent,stimcomponent,node_idx
+  INTEGER(CMISSIntg) :: modelIndex,MPI_IERROR
+  INTEGER(CMISSIntg) :: gNacomponent,stimcomponent,node_idx
 
-  INTEGER(CMFEIntg), PARAMETER :: NUMBER_OF_ELEMENTS=2
+  INTEGER(CMISSIntg), PARAMETER :: NUMBER_OF_ELEMENTS=2
 
-  REAL(CMFEDP) :: X,Y,DISTANCE,gNa_VALUE
+  REAL(CMISSRP) :: X,Y,DISTANCE,gNa_VALUE
   
-  REAL(CMFEDP), PARAMETER :: STIM_VALUE = 100.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: STIM_STOP = 0.10_CMFEDP
-  REAL(CMFEDP), PARAMETER :: TIME_STOP = 1.50_CMFEDP
-  REAL(CMFEDP), PARAMETER :: CONDUCTIVITY = 0.1_CMFEDP
+  REAL(CMISSRP), PARAMETER :: STIM_VALUE = 100.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: STIM_STOP = 0.10_CMISSRP
+  REAL(CMISSRP), PARAMETER :: TIME_STOP = 1.50_CMISSRP
+  REAL(CMISSRP), PARAMETER :: CONDUCTIVITY = 0.1_CMISSRP
 
   !CMISS variables
 
@@ -115,9 +116,9 @@ PROGRAM CELLMLFORTRANEXAMPLE
 
   !Generic CMISS variables
   
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: nodeDomain
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: nodeDomain
+  INTEGER(CMISSIntg) :: Err
 
   !DOC-START get cellml model URL
   ! we want to get the CellML model from the command line
@@ -260,10 +261,10 @@ PROGRAM CELLMLFORTRANEXAMPLE
   
   !Set Am
   CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1, &
-    & 193.6_CMFEDP, Err)
+    & 193.6_CMISSRP, Err)
   !Set Cm
   CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2, &
-    & 0.014651_CMFEDP,Err)
+    & 0.014651_CMISSRP,Err)
   !Set conductivity
   CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,CONDUCTIVITY, &
     & Err)
@@ -319,7 +320,7 @@ PROGRAM CELLMLFORTRANEXAMPLE
 
   !todo - get vm initial value.
   CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1, &
-    & -92.5_CMFEDP, &
+    & -92.5_CMISSRP, &
     & Err)
   
   !DOC-START create CellML fields
@@ -381,8 +382,8 @@ PROGRAM CELLMLFORTRANEXAMPLE
       & X,Err)
     CALL cmfe_Field_ParameterSetGetNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,node_idx,2, &
       & Y,Err)
-    DISTANCE=SQRT(X**2+Y**2)/SQRT(2.0_CMFEDP)
-    gNa_VALUE=2.0_CMFEDP*(DISTANCE+0.5_CMFEDP)*385.5e-3_CMFEDP
+    DISTANCE=SQRT(X**2+Y**2)/SQRT(2.0_CMISSRP)
+    gNa_VALUE=2.0_CMISSRP*(DISTANCE+0.5_CMISSRP)*385.5e-3_CMISSRP
     CALL cmfe_Field_ParameterSetUpdateNode(CellMLParametersField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1, &
       & node_idx, &
       & gNacomponent,gNa_VALUE,Err)

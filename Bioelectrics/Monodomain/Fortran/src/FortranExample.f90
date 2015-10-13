@@ -50,6 +50,7 @@
 !> Main program
 PROGRAM MONODOMAINEXAMPLE
 
+  USE OPENCMISS
   USE OPENCMISS_Iron
   USE MPI
 
@@ -61,53 +62,53 @@ PROGRAM MONODOMAINEXAMPLE
 
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: HEIGHT=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: LENGTH=3.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: HEIGHT=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: LENGTH=3.0_CMISSRP
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: CellMLUserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: CellMLModelsFieldUserNumber=12
-  INTEGER(CMFEIntg), PARAMETER :: CellMLStateFieldUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=14
-  INTEGER(CMFEIntg), PARAMETER :: CellMLParametersFieldUserNumber=15
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=16
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=17
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: CellMLUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: CellMLModelsFieldUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: CellMLStateFieldUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: CellMLIntermediateFieldUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: CellMLParametersFieldUserNumber=15
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=16
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=17
 
   !Program types
   
   !Program variables
-  INTEGER(CMFEIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT,CellmlFile
   LOGICAL :: fileExist
 
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS
 
   LOGICAL :: EXPORT_FIELD
 
-  INTEGER(CMFEIntg) :: n98ModelIndex
+  INTEGER(CMISSIntg) :: n98ModelIndex
 
-  INTEGER(CMFEIntg) :: gNacomponent,stimcomponent,node_idx
+  INTEGER(CMISSIntg) :: gNacomponent,stimcomponent,node_idx
 
-  REAL(CMFEDP) :: X,Y,DISTANCE,gNa_VALUE
+  REAL(CMISSRP) :: X,Y,DISTANCE,gNa_VALUE
   
-  INTEGER(CMFEIntg), PARAMETER :: NUMBER_OF_ELEMENTS=25
-  INTEGER(CMFEIntg) :: OUTPUT_FREQUENCY = 1
-  REAL(CMFEDP), PARAMETER :: STIM_VALUE = 100.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: STIM_STOP = 0.10_CMFEDP
-  REAL(CMFEDP) :: TIME_STOP = 1.50_CMFEDP
-  REAL(CMFEDP), PARAMETER :: ODE_TIME_STEP = 0.00001_CMFEDP
-  REAL(CMFEDP) :: PDE_TIME_STEP = 0.001_CMFEDP
-  REAL(CMFEDP), PARAMETER :: CONDUCTIVITY = 0.1_CMFEDP
+  INTEGER(CMISSIntg), PARAMETER :: NUMBER_OF_ELEMENTS=25
+  INTEGER(CMISSIntg) :: OUTPUT_FREQUENCY = 1
+  REAL(CMISSRP), PARAMETER :: STIM_VALUE = 100.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: STIM_STOP = 0.10_CMISSRP
+  REAL(CMISSRP) :: TIME_STOP = 1.50_CMISSRP
+  REAL(CMISSRP), PARAMETER :: ODE_TIME_STEP = 0.00001_CMISSRP
+  REAL(CMISSRP) :: PDE_TIME_STEP = 0.001_CMISSRP
+  REAL(CMISSRP), PARAMETER :: CONDUCTIVITY = 0.1_CMISSRP
 
   !CMISS variables
   TYPE(cmfe_BasisType) :: Basis
@@ -131,11 +132,11 @@ PROGRAM MONODOMAINEXAMPLE
 
   !Generic CMISS variables
   
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: EquationsSetIndex,CellMLIndex
-  INTEGER(CMFEIntg) :: FirstNodeNumber,LastNodeNumber
-  INTEGER(CMFEIntg) :: FirstNodeDomain,LastNodeDomain,NodeDomain
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: EquationsSetIndex,CellMLIndex
+  INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
+  INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain,NodeDomain
+  INTEGER(CMISSIntg) :: Err
 
 
   ! process command line arguments before getting started.
@@ -288,10 +289,10 @@ PROGRAM MONODOMAINEXAMPLE
   
   !Set Am
   CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1, &
-    & 193.6_CMFEDP,Err)
+    & 193.6_CMISSRP,Err)
   !Set Cm
   CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,2, &
-    & 0.014651_CMFEDP,Err)
+    & 0.014651_CMISSRP,Err)
   !Set conductivity
   CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3, &
     & CONDUCTIVITY,Err)
@@ -336,7 +337,7 @@ PROGRAM MONODOMAINEXAMPLE
 
   !todo - get vm initialial value.
   CALL cmfe_Field_ComponentValuesInitialise(DependentField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1, &
-    & -92.5_CMFEDP,Err)
+    & -92.5_CMISSRP,Err)
   
   !Start the creation of the CellML models field
   CALL cmfe_Field_Initialise(CellMLModelsField,Err)
@@ -406,8 +407,8 @@ PROGRAM MONODOMAINEXAMPLE
         & X,Err)
       CALL cmfe_Field_ParameterSetGetNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1,node_idx,2, &
         & Y,Err)
-      DISTANCE=SQRT(X**2+Y**2)/SQRT(2.0_CMFEDP)
-      gNa_VALUE=2.0_CMFEDP*(DISTANCE+0.5_CMFEDP)*385.5e-3_CMFEDP
+      DISTANCE=SQRT(X**2+Y**2)/SQRT(2.0_CMISSRP)
+      gNa_VALUE=2.0_CMISSRP*(DISTANCE+0.5_CMISSRP)*385.5e-3_CMISSRP
       CALL cmfe_Field_ParameterSetUpdateNode(CellMLParametersField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1, &
         & node_idx,gNacomponent,gNa_VALUE,Err)
     ENDIF
@@ -427,7 +428,7 @@ PROGRAM MONODOMAINEXAMPLE
   CALL cmfe_ControlLoop_Initialise(ControlLoop,Err)
   CALL cmfe_Problem_ControlLoopGet(Problem,CMFE_CONTROL_LOOP_NODE,ControlLoop,Err)
   !Set the times
-  CALL cmfe_ControlLoop_TimesSet(ControlLoop,0.0_CMFEDP,STIM_STOP,PDE_TIME_STEP,Err)
+  CALL cmfe_ControlLoop_TimesSet(ControlLoop,0.0_CMISSRP,STIM_STOP,PDE_TIME_STEP,Err)
   !Set the output
   CALL cmfe_ControlLoop_OutputTypeSet(ControlLoop,CMFE_CONTROL_LOOP_TIMING_OUTPUT,Err)
   !Set the output frequency (0 for no output, n for output every n time steps)
@@ -494,11 +495,11 @@ PROGRAM MONODOMAINEXAMPLE
   !Set the first node to 0.0 and the last node to 1.0
   IF(FirstNodeDomain==ComputationalNodeNumber) THEN
     !CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,FirstNodeNumber,1, &
-    !  & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+    !  & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
   ENDIF
   IF(LastNodeDomain==ComputationalNodeNumber) THEN
     !CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,LastNodeNumber,1, &
-    !  & CMFE_BOUNDARY_CONDITION_FIXED,1.0_CMFEDP,Err)
+    !  & CMFE_BOUNDARY_CONDITION_FIXED,1.0_CMISSRP,Err)
   ENDIF
   !Finish the creation of the equations set boundary conditions
   CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
@@ -512,7 +513,7 @@ PROGRAM MONODOMAINEXAMPLE
     CALL cmfe_Decomposition_NodeDomainGet(Decomposition,node_idx,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_Field_ParameterSetUpdateNode(CellMLParametersField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,1, &
-        & node_idx,stimcomponent,0.0_CMFEDP,Err)
+        & node_idx,stimcomponent,0.0_CMISSRP,Err)
     ENDIF
   ENDDO !node_idx
 

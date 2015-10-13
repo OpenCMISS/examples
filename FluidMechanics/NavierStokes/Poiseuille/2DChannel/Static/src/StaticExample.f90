@@ -49,6 +49,7 @@
 PROGRAM STATICPOISEUILLEEXAMPLE
 
   ! PROGRAM LIBRARIES
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE FLUID_MECHANICS_IO_ROUTINES
   USE MPI
@@ -64,40 +65,40 @@ PROGRAM STATICPOISEUILLEEXAMPLE
 
 !==============================================================
 
-  REAL(CMFEDP), PARAMETER :: HEIGHT=0.5_CMFEDP
-  REAL(CMFEDP), PARAMETER :: LENGTH=10.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: INLET_VELOCITY=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: OUTLET_PRESSURE=0.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: VISCOSITY=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: DENSITY=1.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: HEIGHT=0.5_CMISSRP
+  REAL(CMISSRP), PARAMETER :: LENGTH=10.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: INLET_VELOCITY=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: OUTLET_PRESSURE=0.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: VISCOSITY=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: DENSITY=1.0_CMISSRP
 
 !==============================================================
 
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumberNavierStokes=8
-  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldUserNumberNavierStokes=9
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokes=10
-  INTEGER(CMFEIntg), PARAMETER :: SourceFieldUserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumberNavierStokes=12
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=14
-  INTEGER(CMFEIntg), PARAMETER :: AnalyticFieldUserNumber=15
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumberNavierStokes=8
+  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldUserNumberNavierStokes=9
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokes=10
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumberNavierStokes=12
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=15
 
-  INTEGER(CMFEIntg), PARAMETER :: DomainUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: SolverNavierStokesUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesMu=1
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesRho=2
+  INTEGER(CMISSIntg), PARAMETER :: DomainUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: SolverNavierStokesUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesMu=1
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesRho=2
 
-!  INTEGER(CMFEIntg), PARAMETER :: AnalyticFieldUserNumberNavierStokesMu=1
-!  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesRho=2
-!  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesRho=3
+!  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumberNavierStokesMu=1
+!  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesRho=2
+!  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumberNavierStokesRho=3
 
   !Program types
 
@@ -105,71 +106,71 @@ PROGRAM STATICPOISEUILLEEXAMPLE
 
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_DIMENSIONS,INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS
-  INTEGER(CMFEIntg) :: component_idx
-  INTEGER(CMFEIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
-  REAL(CMFEDP) :: POSITION,TOTAL_LENGTH
+  INTEGER(CMISSIntg) :: NUMBER_DIMENSIONS,INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS
+  INTEGER(CMISSIntg) :: component_idx
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
+  REAL(CMISSRP) :: POSITION,TOTAL_LENGTH
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT
 
-  INTEGER(CMFEIntg) :: FirstNodeNumber,LastNodeNumber,FirstNodeDomain,LastNodeDomain
+  INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber,FirstNodeDomain,LastNodeDomain
 
   LOGICAL :: EXPORT_FIELD
 
-  INTEGER(CMFEIntg) :: NUMBER_OF_DIMENSIONS
+  INTEGER(CMISSIntg) :: NUMBER_OF_DIMENSIONS
   
-  INTEGER(CMFEIntg) :: BASIS_TYPE
-  INTEGER(CMFEIntg) :: BASIS_NUMBER_SPACE
-  INTEGER(CMFEIntg) :: BASIS_NUMBER_VELOCITY
-  INTEGER(CMFEIntg) :: BASIS_NUMBER_PRESSURE
-  INTEGER(CMFEIntg) :: BASIS_XI_GAUSS_SPACE
-  INTEGER(CMFEIntg) :: BASIS_XI_GAUSS_VELOCITY
-  INTEGER(CMFEIntg) :: BASIS_XI_GAUSS_PRESSURE
-  INTEGER(CMFEIntg) :: BASIS_XI_INTERPOLATION_SPACE
-  INTEGER(CMFEIntg) :: BASIS_XI_INTERPOLATION_VELOCITY
-  INTEGER(CMFEIntg) :: BASIS_XI_INTERPOLATION_PRESSURE
-  INTEGER(CMFEIntg) :: MESH_NUMBER_OF_COMPONENTS
-  INTEGER(CMFEIntg) :: MESH_COMPONENT_NUMBER_SPACE
-  INTEGER(CMFEIntg) :: MESH_COMPONENT_NUMBER_VELOCITY
-  INTEGER(CMFEIntg) :: MESH_COMPONENT_NUMBER_PRESSURE
-  INTEGER(CMFEIntg) :: NUMBER_OF_NODES_SPACE
-  INTEGER(CMFEIntg) :: NUMBER_OF_NODES_VELOCITY
-  INTEGER(CMFEIntg) :: NUMBER_OF_NODES_PRESSURE
-  INTEGER(CMFEIntg) :: NUMBER_OF_ELEMENT_NODES_SPACE
-  INTEGER(CMFEIntg) :: NUMBER_OF_ELEMENT_NODES_VELOCITY
-  INTEGER(CMFEIntg) :: NUMBER_OF_ELEMENT_NODES_PRESSURE
-  INTEGER(CMFEIntg) :: TOTAL_NUMBER_OF_NODES
-  INTEGER(CMFEIntg) :: TOTAL_NUMBER_OF_ELEMENTS
-  INTEGER(CMFEIntg) :: MAXIMUM_ITERATIONS
-  INTEGER(CMFEIntg) :: RESTART_VALUE
-!   INTEGER(CMFEIntg) :: MPI_IERROR
-  INTEGER(CMFEIntg) :: NUMBER_OF_FIXED_WALL_NODES_NAVIER_STOKES
-  INTEGER(CMFEIntg) :: NUMBER_OF_INLET_NODES_NAVIER_STOKES
-  INTEGER(CMFEIntg) :: NUMBER_OF_OUTLET_NODES_NAVIER_STOKES
+  INTEGER(CMISSIntg) :: BASIS_TYPE
+  INTEGER(CMISSIntg) :: BASIS_NUMBER_SPACE
+  INTEGER(CMISSIntg) :: BASIS_NUMBER_VELOCITY
+  INTEGER(CMISSIntg) :: BASIS_NUMBER_PRESSURE
+  INTEGER(CMISSIntg) :: BASIS_XI_GAUSS_SPACE
+  INTEGER(CMISSIntg) :: BASIS_XI_GAUSS_VELOCITY
+  INTEGER(CMISSIntg) :: BASIS_XI_GAUSS_PRESSURE
+  INTEGER(CMISSIntg) :: BASIS_XI_INTERPOLATION_SPACE
+  INTEGER(CMISSIntg) :: BASIS_XI_INTERPOLATION_VELOCITY
+  INTEGER(CMISSIntg) :: BASIS_XI_INTERPOLATION_PRESSURE
+  INTEGER(CMISSIntg) :: MESH_NUMBER_OF_COMPONENTS
+  INTEGER(CMISSIntg) :: MESH_COMPONENT_NUMBER_SPACE
+  INTEGER(CMISSIntg) :: MESH_COMPONENT_NUMBER_VELOCITY
+  INTEGER(CMISSIntg) :: MESH_COMPONENT_NUMBER_PRESSURE
+  INTEGER(CMISSIntg) :: NUMBER_OF_NODES_SPACE
+  INTEGER(CMISSIntg) :: NUMBER_OF_NODES_VELOCITY
+  INTEGER(CMISSIntg) :: NUMBER_OF_NODES_PRESSURE
+  INTEGER(CMISSIntg) :: NUMBER_OF_ELEMENT_NODES_SPACE
+  INTEGER(CMISSIntg) :: NUMBER_OF_ELEMENT_NODES_VELOCITY
+  INTEGER(CMISSIntg) :: NUMBER_OF_ELEMENT_NODES_PRESSURE
+  INTEGER(CMISSIntg) :: TOTAL_NUMBER_OF_NODES
+  INTEGER(CMISSIntg) :: TOTAL_NUMBER_OF_ELEMENTS
+  INTEGER(CMISSIntg) :: MAXIMUM_ITERATIONS
+  INTEGER(CMISSIntg) :: RESTART_VALUE
+!   INTEGER(CMISSIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: NUMBER_OF_FIXED_WALL_NODES_NAVIER_STOKES
+  INTEGER(CMISSIntg) :: NUMBER_OF_INLET_NODES_NAVIER_STOKES
+  INTEGER(CMISSIntg) :: NUMBER_OF_OUTLET_NODES_NAVIER_STOKES
 
-  INTEGER(CMFEIntg) :: EQUATIONS_NAVIER_STOKES_OUTPUT
-  INTEGER(CMFEIntg) :: COMPONENT_NUMBER
-  INTEGER(CMFEIntg) :: NODE_NUMBER
-  INTEGER(CMFEIntg) :: ELEMENT_NUMBER
-  INTEGER(CMFEIntg) :: NODE_COUNTER
-  INTEGER(CMFEIntg) :: CONDITION
+  INTEGER(CMISSIntg) :: EQUATIONS_NAVIER_STOKES_OUTPUT
+  INTEGER(CMISSIntg) :: COMPONENT_NUMBER
+  INTEGER(CMISSIntg) :: NODE_NUMBER
+  INTEGER(CMISSIntg) :: ELEMENT_NUMBER
+  INTEGER(CMISSIntg) :: NODE_COUNTER
+  INTEGER(CMISSIntg) :: CONDITION
 
-  INTEGER(CMFEIntg) :: LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE
-  INTEGER(CMFEIntg) :: NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE
+  INTEGER(CMISSIntg) :: NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE
 
   INTEGER, ALLOCATABLE, DIMENSION(:):: FIXED_WALL_NODES_NAVIER_STOKES
   INTEGER, ALLOCATABLE, DIMENSION(:):: INLET_NODES_NAVIER_STOKES
   INTEGER, ALLOCATABLE, DIMENSION(:):: OUTLET_NODES_NAVIER_STOKES
 
-  REAL(CMFEDP) :: INITIAL_FIELD_NAVIER_STOKES(2)
-  REAL(CMFEDP) :: BOUNDARY_CONDITIONS_NAVIER_STOKES(2)
-  REAL(CMFEDP) :: DIVERGENCE_TOLERANCE
-  REAL(CMFEDP) :: RELATIVE_TOLERANCE
-  REAL(CMFEDP) :: ABSOLUTE_TOLERANCE
-  REAL(CMFEDP) :: LINESEARCH_ALPHA
-  REAL(CMFEDP) :: VALUE
-  REAL(CMFEDP) :: MU_PARAM_NAVIER_STOKES
-  REAL(CMFEDP) :: RHO_PARAM_NAVIER_STOKES
+  REAL(CMISSRP) :: INITIAL_FIELD_NAVIER_STOKES(2)
+  REAL(CMISSRP) :: BOUNDARY_CONDITIONS_NAVIER_STOKES(2)
+  REAL(CMISSRP) :: DIVERGENCE_TOLERANCE
+  REAL(CMISSRP) :: RELATIVE_TOLERANCE
+  REAL(CMISSRP) :: ABSOLUTE_TOLERANCE
+  REAL(CMISSRP) :: LINESEARCH_ALPHA
+  REAL(CMISSRP) :: VALUE
+  REAL(CMISSRP) :: MU_PARAM_NAVIER_STOKES
+  REAL(CMISSRP) :: RHO_PARAM_NAVIER_STOKES
 
   LOGICAL :: EXPORT_FIELD_IO
   LOGICAL :: LINEAR_SOLVER_NAVIER_STOKES_DIRECT_FLAG
@@ -209,9 +210,9 @@ PROGRAM STATICPOISEUILLEEXAMPLE
 
   !Generic CMISS variables
 
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber,BoundaryNodeDomain
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber,BoundaryNodeDomain
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: Err
 
 #ifdef WIN32
   !Initialise QuickWin
@@ -228,8 +229,8 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   CALL cmfe_Initialise(WorldCoordinateSystem,WorldRegion,Err)
 
   !Get the computational nodes information
-  CALL cmfe_Computational_NumberOfNodesGet(NumberOfComputationalNodes,Err)
-  CALL cmfe_Computational_NodeNumberGet(ComputationalNodeNumber,Err)
+  CALL cmfe_ComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
+  CALL cmfe_ComputationalNodeNumberGet(ComputationalNodeNumber,Err)
 
   !-----------------------------------------------------------------------------------------------------------
   !PROBLEM CONTROL PANEL
@@ -253,8 +254,8 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   NUMBER_OF_ELEMENT_NODES_VELOCITY=CM%EN_V
   NUMBER_OF_ELEMENT_NODES_PRESSURE=CM%EN_P
   !Set initial values
-  INITIAL_FIELD_NAVIER_STOKES(1)=0.0_CMFEDP
-  INITIAL_FIELD_NAVIER_STOKES(2)=0.0_CMFEDP
+  INITIAL_FIELD_NAVIER_STOKES(1)=0.0_CMISSRP
+  INITIAL_FIELD_NAVIER_STOKES(2)=0.0_CMISSRP
   !Set boundary conditions
   FIXED_WALL_NODES_NAVIER_STOKES_FLAG=.TRUE.
   INLET_NODES_NAVIER_STOKES_FLAG=.TRUE.
@@ -323,7 +324,7 @@ PROGRAM STATICPOISEUILLEEXAMPLE
 
     !Set boundary conditions
     BOUNDARY_CONDITIONS_NAVIER_STOKES(1)=INLET_VELOCITY
-    BOUNDARY_CONDITIONS_NAVIER_STOKES(2)=0.0_CMFEDP
+    BOUNDARY_CONDITIONS_NAVIER_STOKES(2)=0.0_CMISSRP
   ENDIF
   IF(OUTLET_NODES_NAVIER_STOKES_FLAG) THEN
     NUMBER_OF_OUTLET_NODES_NAVIER_STOKES=4
@@ -345,8 +346,8 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   EQUATIONS_NAVIER_STOKES_OUTPUT=CMFE_EQUATIONS_NO_OUTPUT
   !Set solver parameters
   LINEAR_SOLVER_NAVIER_STOKES_DIRECT_FLAG=.FALSE.
-  RELATIVE_TOLERANCE=1.0E-10_CMFEDP !default: 1.0E-05_CMFEDP
-  ABSOLUTE_TOLERANCE=1.0E-10_CMFEDP !default: 1.0E-10_CMFEDP
+  RELATIVE_TOLERANCE=1.0E-10_CMISSRP !default: 1.0E-05_CMISSRP
+  ABSOLUTE_TOLERANCE=1.0E-10_CMISSRP !default: 1.0E-10_CMISSRP
   DIVERGENCE_TOLERANCE=1.0E20 !default: 1.0E5
   MAXIMUM_ITERATIONS=100000 !default: 100000
   RESTART_VALUE=3000 !default: 30
@@ -390,7 +391,7 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   CALL cmfe_Basis_NumberOfXiSet(BasisSpace,NUMBER_OF_DIMENSIONS,Err)
   !Set the basis xi interpolation and number of Gauss points
   CALL cmfe_Basis_InterpolationXiSet(BasisSpace,[BASIS_XI_INTERPOLATION_SPACE,BASIS_XI_INTERPOLATION_SPACE],Err)
-  CALL cmfe_BasisQuadratureNumberOfGaussXiSet(BasisSpace,[BASIS_XI_GAUSS_SPACE,BASIS_XI_GAUSS_SPACE],Err)
+  CALL cmfe_Basis_QuadratureNumberOfGaussXiSet(BasisSpace,[BASIS_XI_GAUSS_SPACE,BASIS_XI_GAUSS_SPACE],Err)
   !Finish the creation of the basis
   CALL cmfe_Basis_CreateFinish(BasisSpace,Err)
   !Start the creation of another basis
@@ -571,7 +572,7 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   !-----------------------------------------------------------------------------------------------------------
   !Create the equations set dependent field variables for static Navier-Stokes
   CALL cmfe_Field_Initialise(DependentFieldNavierStokes,Err)
-  CALL cmfe_EquationsSetDependentCreateStart(EquationsSetNavierStokes,DependentFieldUserNumberNavierStokes, & 
+  CALL cmfe_EquationsSet_DependentCreateStart(EquationsSetNavierStokes,DependentFieldUserNumberNavierStokes, & 
     & DependentFieldNavierStokes,Err)
   !Set the mesh component to be used by the field components.
   DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
@@ -700,7 +701,7 @@ PROGRAM STATICPOISEUILLEEXAMPLE
     CALL cmfe_Solver_LinearIterativeGMRESRestartSet(LinearSolverNavierStokes,RESTART_VALUE,Err)
   ENDIF
   !Finish the creation of the problem solver
-  CALL cmfe_ProblemSolversCreateFinish(Problem,Err)
+  CALL cmfe_Problem_SolversCreateFinish(Problem,Err)
 
 
   !-----------------------------------------------------------------------------------------------------------
@@ -709,16 +710,16 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   !Start the creation of the problem solver equations
   CALL cmfe_Solver_Initialise(LinearSolverNavierStokes,Err)
   CALL cmfe_SolverEquations_Initialise(SolverEquationsNavierStokes,Err)
-  CALL cmfe_SolverEquations_CreateStart(Problem,Err)
+  CALL cmfe_Problem_SolverEquationsCreateStart(Problem,Err)
   !Get the linear solver equations
-  CALL cmfe_Solver_Get(Problem,CMFE_CONTROL_LOOP_NODE,SolverNavierStokesUserNumber,LinearSolverNavierStokes,Err)
+  CALL cmfe_Problem_SolverGet(Problem,CMFE_CONTROL_LOOP_NODE,SolverNavierStokesUserNumber,LinearSolverNavierStokes,Err)
   CALL cmfe_Solver_SolverEquationsGet(LinearSolverNavierStokes,SolverEquationsNavierStokes,Err)
   !Set the solver equations sparsity
   CALL cmfe_SolverEquations_SparsityTypeSet(SolverEquationsNavierStokes,CMFE_SOLVER_SPARSE_MATRICES,Err)
   !Add in the equations set
   CALL cmfe_SolverEquations_EquationsSetAdd(SolverEquationsNavierStokes,EquationsSetNavierStokes,EquationsSetIndex,Err)
   !Finish the creation of the problem solver equations
-  CALL cmfe_SolverEquations_CreateFinish(Problem,Err)
+  CALL cmfe_Problem_SolverEquationsCreateFinish(Problem,Err)
 
 
   !-----------------------------------------------------------------------------------------------------------
@@ -727,7 +728,7 @@ PROGRAM STATICPOISEUILLEEXAMPLE
   !Start the creation of the equations set boundary conditions for Stokes
   CALL cmfe_BoundaryConditions_Initialise(BoundaryConditionsNavierStokes,Err)
 !  CALL cmfe_EquationsSet_BoundaryConditionsCreateStart(EquationsSetNavierStokes,BoundaryConditionsNavierStokes,Err)
-  CALL cmfe_SolverEquationsBoundaryConditionsCreateStart(SolverEquationsNavierStokes,BoundaryConditionsNavierStokes,Err)
+  CALL cmfe_SolverEquations_BoundaryConditionsCreateStart(SolverEquationsNavierStokes,BoundaryConditionsNavierStokes,Err)
   !Set fixed wall nodes
   IF(FIXED_WALL_NODES_NAVIER_STOKES_FLAG) THEN
     DO NODE_COUNTER=1,NUMBER_OF_FIXED_WALL_NODES_NAVIER_STOKES
@@ -736,8 +737,8 @@ PROGRAM STATICPOISEUILLEEXAMPLE
       CALL cmfe_Decomposition_NodeDomainGet(Decomposition,NODE_NUMBER,1,BoundaryNodeDomain,Err)
       IF(BoundaryNodeDomain==ComputationalNodeNumber) THEN
         DO COMPONENT_NUMBER=1,NUMBER_OF_DIMENSIONS
-          VALUE=0.0_CMFEDP
-          CALL cmfe_BoundaryConditionsSetNode(BoundaryConditionsNavierStokes,DependentFieldNavierStokes, &
+          VALUE=0.0_CMISSRP
+          CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsNavierStokes,DependentFieldNavierStokes, &
             & CMFE_FIELD_U_VARIABLE_TYPE,1,CMFE_NO_GLOBAL_DERIV,NODE_NUMBER,COMPONENT_NUMBER,CONDITION,VALUE,Err)
         ENDDO
       ENDIF
@@ -775,7 +776,7 @@ PROGRAM STATICPOISEUILLEEXAMPLE
 !   ENDIF
 
   !Finish the creation of the equations set boundary conditions
-  CALL cmfe_SolverEquations_BoundaryConditions_CreateFinish(SolverEquationsNavierStokes,Err)
+  CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquationsNavierStokes,Err)
 
   !-----------------------------------------------------------------------------------------------------------
   !SOLVE
@@ -785,7 +786,7 @@ PROGRAM STATICPOISEUILLEEXAMPLE
 
   !Solve the problem
   WRITE(*,'(A)') "Solving problem..."
-  CALL cmfe_ProblemSolve(Problem,Err)
+  CALL cmfe_Problem_Solve(Problem,Err)
   WRITE(*,'(A)') "Problem solved!"
 
 

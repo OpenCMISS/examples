@@ -1,6 +1,7 @@
 MODULE IOSTUFF
   
-  USE OPENCMISS
+  USE OpenCMISS
+  USE OpenCMISS_Iron
   IMPLICIT NONE
 
   CONTAINS
@@ -9,21 +10,21 @@ MODULE IOSTUFF
   !>Reads in a mesh and returns a mesh object. Basically handles all Basis and Mesh creation calls (comment them out entirely)
   SUBROUTINE READ_MESH(Filename,MeshUserNumber,Region, Mesh,Bases,Nodes,Elements)
     character(len=*), intent(in) :: Filename
-    INTEGER(CMFEIntg), intent(in) :: MeshUserNumber
+    INTEGER(CMISSIntg), intent(in) :: MeshUserNumber
     type(cmfe_RegionType), intent(in) :: Region
     type(cmfe_MeshType), intent(inout) :: Mesh
     type(cmfe_BasisType), allocatable, intent(out) :: Bases(:)
     TYPE(cmfe_MeshElementsType), allocatable, intent(out) :: Elements(:)
     TYPE(cmfe_NodesType), intent(out) :: Nodes
     !Local variables
-    INTEGER(CMFEIntg),parameter :: fid=77
+    INTEGER(CMISSIntg),parameter :: fid=77
     character*6, parameter :: MAXFMT='(A255)'
     character(len=255) :: word
-    INTEGER(CMFEIntg) :: NumberOfMeshDimensions,NumberOfMeshComponents
-    INTEGER(CMFEIntg) :: NumberOfNodes,NumberOfElements,NumberOfBases
-    INTEGER(CMFEIntg) :: MeshComponentNumber,MyComputationalNode,i,Err
-    INTEGER(CMFEIntg) :: InterpolationType
-    INTEGER(CMFEIntg) :: compn,basisn,gaussn, basis_order,el(64),lnn
+    INTEGER(CMISSIntg) :: NumberOfMeshDimensions,NumberOfMeshComponents
+    INTEGER(CMISSIntg) :: NumberOfNodes,NumberOfElements,NumberOfBases
+    INTEGER(CMISSIntg) :: MeshComponentNumber,MyComputationalNode,i,Err
+    INTEGER(CMISSIntg) :: InterpolationType
+    INTEGER(CMISSIntg) :: compn,basisn,gaussn, basis_order,el(64),lnn
     
     CALL cmfe_ComputationalNodeNumberGet(MyComputationalNode,Err)
 
@@ -146,12 +147,12 @@ MODULE IOSTUFF
     character(len=*), intent(in) :: Filename
     type(cmfe_FieldType), intent(inout) :: GeometricField
     !Local variables
-    INTEGER(CMFEIntg),parameter :: fid=79
+    INTEGER(CMISSIntg),parameter :: fid=79
     character*6, parameter :: MAXFMT='(A255)'
     character(len=255) :: word
-    INTEGER(CMFEIntg) :: NumberOfNodes,NumberOfCoordinateDimensions
-    INTEGER(CMFEIntg) :: MyComputationalNode,i,j,Err
-    REAL(CMFEDP) :: coord(3)
+    INTEGER(CMISSIntg) :: NumberOfNodes,NumberOfCoordinateDimensions
+    INTEGER(CMISSIntg) :: MyComputationalNode,i,j,Err
+    REAL(CMISSRP) :: coord(3)
 
     ! skipping all dimension, size or otherwise error checks
 
@@ -201,20 +202,20 @@ MODULE IOSTUFF
   !>Reads in a field. Only works for a material field currently, all components using same interpolation. handles full field definition code block.
   SUBROUTINE READ_FIELD(Filename,FieldUserNumber,Region,GeometricField, Field)
     character(len=*), intent(in) :: Filename
-    INTEGER(CMFEIntg), intent(in) :: FieldUserNumber
+    INTEGER(CMISSIntg), intent(in) :: FieldUserNumber
     type(cmfe_RegionType), intent(in) :: Region
     type(cmfe_FieldType), intent(in) :: GeometricField
     type(cmfe_FieldType), intent(out) :: Field
     !Local variables
     TYPE(cmfe_DecompositionType) :: Decomposition
-    INTEGER(CMFEIntg), parameter :: fid=78
+    INTEGER(CMISSIntg), parameter :: fid=78
     character*6, parameter :: MAXFMT='(A255)'
     character(len=255) :: word,field_type,interpolation_type,data_type
-    INTEGER(CMFEIntg) :: NumberOfVariables,NumberOfComponents
-    INTEGER(CMFEIntg) :: varn,mcompn,VariableType,InterpolationType,DataType
-    INTEGER(CMFEIntg) :: MyComputationalNode,i,ind,Err
-    INTEGER(CMFEIntg) :: data_int(100)
-    REAL(CMFEDP) :: data_dp(100)
+    INTEGER(CMISSIntg) :: NumberOfVariables,NumberOfComponents
+    INTEGER(CMISSIntg) :: varn,mcompn,VariableType,InterpolationType,DataType
+    INTEGER(CMISSIntg) :: MyComputationalNode,i,ind,Err
+    INTEGER(CMISSIntg) :: data_int(100)
+    REAL(CMISSRP) :: data_dp(100)
 
     CALL cmfe_ComputationalNodeNumberGet(MyComputationalNode,Err)    
 
@@ -390,12 +391,12 @@ MODULE IOSTUFF
   !>read in a bunch of node indices (which form a surface)
   SUBROUTINE READ_SURFACE(Filename,surface)
     character(len=*), intent(in) :: Filename
-    INTEGER(CMFEIntg), allocatable, intent(inout) :: surface(:)
+    INTEGER(CMISSIntg), allocatable, intent(inout) :: surface(:)
     !Local variables
-    INTEGER(CMFEIntg),parameter :: fid=79
+    INTEGER(CMISSIntg),parameter :: fid=79
     character*6,parameter :: MAXFMT='(A255)'
     character(len=255) :: word
-    INTEGER(CMFEIntg) :: nn,i,MyComputationalNode,Err
+    INTEGER(CMISSIntg) :: nn,i,MyComputationalNode,Err
 
     CALL cmfe_ComputationalNodeNumberGet(MyComputationalNode,Err)
 

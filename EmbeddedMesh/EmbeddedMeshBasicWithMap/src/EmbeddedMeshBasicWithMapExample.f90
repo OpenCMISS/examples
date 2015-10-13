@@ -45,6 +45,7 @@
 !> Main program
 PROGRAM EMBEDDEDMESHEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 
@@ -52,74 +53,74 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   
   !Test program parameters
 
-  REAL(CMFEDP), PARAMETER :: HEIGHT=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: WIDTH=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: LENGTH=1.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: HEIGHT=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: LENGTH=1.0_CMISSRP
  
   
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionOneUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: RegionTwoUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: BasisOneUserNumber=4
-  INTEGER(CMFEIntg), PARAMETER :: BasisTwoUserNumber=5
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshOneUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshTwoUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: MeshOneUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: MeshTwoUserNumber=9
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionOneUserNumber=10
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionTwoUserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldOneUserNumber=13
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldTwoUserNumber=14
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=8
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldOneUserNumber=15
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldTwoUserNumber=16
-  !INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=10
-  !INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=11
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfVariables=1
-  INTEGER(CMFEIntg), PARAMETER :: FieldDependentNumberOfComponents=3
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionOneUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: RegionTwoUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: BasisOneUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: BasisTwoUserNumber=5
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshOneUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshTwoUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: MeshOneUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: MeshTwoUserNumber=9
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionOneUserNumber=10
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionTwoUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldOneUserNumber=13
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldTwoUserNumber=14
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=8
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldOneUserNumber=15
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldTwoUserNumber=16
+  !INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=10
+  !INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=11
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfVariables=1
+  INTEGER(CMISSIntg), PARAMETER :: FieldDependentNumberOfComponents=3
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, &
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS,ARGUMENT_LENGTH,STATUS
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS,NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS, &
     & INTERPOLATION_TYPE,NUMBER_OF_GAUSS_XI
-  INTEGER(CMFEIntg) :: NUMBER_GLOBAL_X_ELEMENTS_2,NUMBER_GLOBAL_Y_ELEMENTS_2,NUMBER_GLOBAL_Z_ELEMENTS_2, &
+  INTEGER(CMISSIntg) :: NUMBER_GLOBAL_X_ELEMENTS_2,NUMBER_GLOBAL_Y_ELEMENTS_2,NUMBER_GLOBAL_Z_ELEMENTS_2, &
     & INTERPOLATION_TYPE_2,NUMBER_OF_GAUSS_XI_2
   CHARACTER(LEN=255) :: COMMAND_ARGUMENT,Filename
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: Err
 
    !Other variables
-  INTEGER(CMFEIntg) :: NumberofNodes1,NumberofNodes2,NumberOfElements,dim_idx,node_idx, &
+  INTEGER(CMISSIntg) :: NumberofNodes1,NumberofNodes2,NumberOfElements,dim_idx,node_idx, &
     & NumberOfComponents,elem_idx,elem_idx2,NodeCount,gauss_idx,ineach,counts
-  INTEGER(CMFEIntg) :: node_idx2,NumberOfElements2,GaussPointNumber,NGP
+  INTEGER(CMISSIntg) :: node_idx2,NumberOfElements2,GaussPointNumber,NGP
 
   !Allocatable
-   INTEGER(CMFEIntg), DIMENSION(:), ALLOCATABLE :: NodeNumbers, NodeNumbers1,NodeNumbers2,ElemArray
-   INTEGER(CMFEIntg), DIMENSION(:,:), ALLOCATABLE :: NodeElem
-   REAL(CMFEDP), DIMENSION(:), ALLOCATABLE :: C1,C2, GC
-   REAL(CMFEDP), ALLOCATABLE :: ChildXiCoords(:,:),ParentXiCoords(:,:), Coords(:,:)
-   REAL(CMFEDP) :: X, Y, Z, FieldValue,value
+   INTEGER(CMISSIntg), DIMENSION(:), ALLOCATABLE :: NodeNumbers, NodeNumbers1,NodeNumbers2,ElemArray
+   INTEGER(CMISSIntg), DIMENSION(:,:), ALLOCATABLE :: NodeElem
+   REAL(CMISSRP), DIMENSION(:), ALLOCATABLE :: C1,C2, GC
+   REAL(CMISSRP), ALLOCATABLE :: ChildXiCoords(:,:),ParentXiCoords(:,:), Coords(:,:)
+   REAL(CMISSRP) :: X, Y, Z, FieldValue,value
   
 !====================================================================================
   !Test variables for data projection
-  REAL(CMFEDP) :: AbsoluteToleranceSet=1.0E-10_CMFEDP !default is 1.0E-8
-  REAL(CMFEDP) :: RelativeToleranceSet=1.0E-6_CMFEDP !default is 1.0E-8
-  INTEGER(CMFEIntg) :: MaximumNumberOfIterationsSet=30 !default is 25
-  REAL(CMFEDP) :: MaximumIterationUpdateSet=0.4_CMFEDP !default is 0.5
-  INTEGER(CMFEIntg) :: NumberOfClosestElementsSet=3 !default is 2/4/8 for 1/2/3 dimensional projection 
-  INTEGER(CMFEIntg) :: ProjectionTypeSet=CMFE_DATA_PROJECTION_ALL_ELEMENTS_PROJECTION_TYPE !same as default
-  REAL(CMFEDP) :: StartingXiSet(3)=[0.5_CMFEDP,0.5_CMFEDP,0.5_CMFEDP] !default is 0.5
-  REAL(CMFEDP) :: AbsoluteToleranceGet
-  REAL(CMFEDP) :: RelativeToleranceGet
-  INTEGER(CMFEIntg) :: MaximumNumberOfIterationsGet
-  REAL(CMFEDP) :: MaximumIterationUpdateGet
-  INTEGER(CMFEIntg) :: NumberOfClosestElementsGet
-  INTEGER(CMFEIntg) :: ProjectionTypeGet
-  REAL(CMFEDP), ALLOCATABLE :: StartingXiGet(:)
+  REAL(CMISSRP) :: AbsoluteToleranceSet=1.0E-10_CMISSRP !default is 1.0E-8
+  REAL(CMISSRP) :: RelativeToleranceSet=1.0E-6_CMISSRP !default is 1.0E-8
+  INTEGER(CMISSIntg) :: MaximumNumberOfIterationsSet=30 !default is 25
+  REAL(CMISSRP) :: MaximumIterationUpdateSet=0.4_CMISSRP !default is 0.5
+  INTEGER(CMISSIntg) :: NumberOfClosestElementsSet=3 !default is 2/4/8 for 1/2/3 dimensional projection 
+  INTEGER(CMISSIntg) :: ProjectionTypeSet=CMFE_DATA_PROJECTION_ALL_ELEMENTS_PROJECTION_TYPE !same as default
+  REAL(CMISSRP) :: StartingXiSet(3)=[0.5_CMISSRP,0.5_CMISSRP,0.5_CMISSRP] !default is 0.5
+  REAL(CMISSRP) :: AbsoluteToleranceGet
+  REAL(CMISSRP) :: RelativeToleranceGet
+  INTEGER(CMISSIntg) :: MaximumNumberOfIterationsGet
+  REAL(CMISSRP) :: MaximumIterationUpdateGet
+  INTEGER(CMISSIntg) :: NumberOfClosestElementsGet
+  INTEGER(CMISSIntg) :: ProjectionTypeGet
+  REAL(CMISSRP), ALLOCATABLE :: StartingXiGet(:)
 
-  REAL(CMFEDP), DIMENSION(2,3) :: DataPointValues!(number_of_data_points,dimension)
-  REAL(CMFEDP), DIMENSION(8) :: ElementNumbers!(number_of_data_points,dimension)
-  INTEGER(CMFEIntg) :: np
+  REAL(CMISSRP), DIMENSION(2,3) :: DataPointValues!(number_of_data_points,dimension)
+  REAL(CMISSRP), DIMENSION(8) :: ElementNumbers!(number_of_data_points,dimension)
+  INTEGER(CMISSIntg) :: np
 
   !CMISS variables
 
@@ -155,16 +156,16 @@ PROGRAM EMBEDDEDMESHEXAMPLE
  !======================================
   !Intialise data points
 
-!   DataPointValues(1,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP]
-!   DataPointValues(2,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP]  
-!   DataPointValues(3,:)=[1.0_CMFEDP,1.0_CMFEDP,1.0_CMFEDP]
-!   DataPointValues(4,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP]  
-!   DataPointValues(5,:)=[1.0_CMFEDP,1.0_CMFEDP,1.0_CMFEDP]
-!   DataPointValues(6,:)=[0.0_CMFEDP,0.0_CMFEDP,0.0_CMFEDP]  
-!   DataPointValues(7,:)=[0.5_CMFEDP,0.5_CMFEDP,0.5_CMFEDP]
-!   DataPointValues(8,:)=[0.5_CMFEDP,0.5_CMFEDP,0.0_CMFEDP]  
- DataPointValues(1,:)= [0.5_CMFEDP,0.5_CMFEDP,0.5_CMFEDP]
- DataPointValues(2,:)= [0.8_CMFEDP,0.6_CMFEDP,0.7_CMFEDP]
+!   DataPointValues(1,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP]
+!   DataPointValues(2,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP]  
+!   DataPointValues(3,:)=[1.0_CMISSRP,1.0_CMISSRP,1.0_CMISSRP]
+!   DataPointValues(4,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP]  
+!   DataPointValues(5,:)=[1.0_CMISSRP,1.0_CMISSRP,1.0_CMISSRP]
+!   DataPointValues(6,:)=[0.0_CMISSRP,0.0_CMISSRP,0.0_CMISSRP]  
+!   DataPointValues(7,:)=[0.5_CMISSRP,0.5_CMISSRP,0.5_CMISSRP]
+!   DataPointValues(8,:)=[0.5_CMISSRP,0.5_CMISSRP,0.0_CMISSRP]  
+ DataPointValues(1,:)= [0.5_CMISSRP,0.5_CMISSRP,0.5_CMISSRP]
+ DataPointValues(2,:)= [0.8_CMISSRP,0.6_CMISSRP,0.7_CMISSRP]
 !================================================================================  
   
 
@@ -282,7 +283,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   CALL cmfe_Field_CreateFinish(DependentField1,Err)
 
   !Initialise the field with an initial guess
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.5_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.5_CMISSRP, &
     & Err)
 
   !Field value with a function x^2 + y^2 + z^2
@@ -404,7 +405,7 @@ PROGRAM EMBEDDEDMESHEXAMPLE
   CALL cmfe_Field_CreateFinish(DependentField2,Err)
 
   !Initialise the field with an initial guess
-  CALL cmfe_Field_ComponentValuesInitialise(DependentField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.1_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(DependentField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,0.1_CMISSRP, &
     & Err)
 
   

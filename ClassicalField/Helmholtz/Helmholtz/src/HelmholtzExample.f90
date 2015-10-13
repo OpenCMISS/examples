@@ -49,6 +49,7 @@
 !> Main program
 PROGRAM HELMHOLTZEXAMPLE
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 
@@ -59,32 +60,32 @@ PROGRAM HELMHOLTZEXAMPLE
   IMPLICIT NONE
 
   !Test program parameters
-  REAL(CMFEDP), PARAMETER :: Height=1.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: Width=2.0_CMFEDP
-  REAL(CMFEDP), PARAMETER :: Length=3.0_CMFEDP
+  REAL(CMISSRP), PARAMETER :: Height=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: Width=2.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: Length=3.0_CMISSRP
 
-  INTEGER(CMFEIntg), PARAMETER :: NumberGlobalXElements = 5
-  INTEGER(CMFEIntg), PARAMETER :: NumberGlobalYElements = 5
-  INTEGER(CMFEIntg), PARAMETER :: NumberGlobalZElements = 0
+  INTEGER(CMISSIntg), PARAMETER :: NumberGlobalXElements = 5
+  INTEGER(CMISSIntg), PARAMETER :: NumberGlobalYElements = 5
+  INTEGER(CMISSIntg), PARAMETER :: NumberGlobalZElements = 0
 
-  INTEGER(CMFEIntg), PARAMETER :: CoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: RegionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: BasisUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: GeneratedMeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: MeshUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: DecompositionUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: GeometricFieldUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
-  INTEGER(CMFEIntg), PARAMETER :: MaterialsFieldUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldUserNumber=3
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: ProblemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: BasisUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: GeneratedMeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: MeshUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: DecompositionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: GeometricFieldUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
+  INTEGER(CMISSIntg), PARAMETER :: MaterialsFieldUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldUserNumber=3
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=1
   
   !Program types
   
   !Program variables
-  INTEGER(CMFEIntg) :: NumberOfDomains
-  INTEGER(CMFEIntg) :: MPI_IERROR
+  INTEGER(CMISSIntg) :: NumberOfDomains
+  INTEGER(CMISSIntg) :: MPI_IERROR
 
   !CMISS variables
   TYPE(cmfe_BasisType) :: Basis
@@ -103,11 +104,11 @@ PROGRAM HELMHOLTZEXAMPLE
   TYPE(cmfe_SolverEquationsType) :: SolverEquations
   
   !Generic CMISS variables
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: EquationsSetIndex
-  INTEGER(CMFEIntg) :: FirstNodeNumber,LastNodeNumber
-  INTEGER(CMFEIntg) :: FirstNodeDomain,LastNodeDomain
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: EquationsSetIndex
+  INTEGER(CMISSIntg) :: FirstNodeNumber,LastNodeNumber
+  INTEGER(CMISSIntg) :: FirstNodeDomain,LastNodeDomain
+  INTEGER(CMISSIntg) :: Err
   
 #ifdef WIN32
   !Quickwin type
@@ -243,7 +244,7 @@ PROGRAM HELMHOLTZEXAMPLE
   CALL cmfe_EquationsSet_MaterialsCreateStart(EquationsSet,MaterialsFieldUserNumber,MaterialsField,Err)
   CALL cmfe_EquationsSet_MaterialsCreateFinish(EquationsSet,Err)
   !Set wave number, k
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0_CMFEDP, &
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,2.0_CMISSRP, &
     & Err)
   
   !Create the equations set equations
@@ -312,11 +313,11 @@ PROGRAM HELMHOLTZEXAMPLE
   CALL cmfe_Decomposition_NodeDomainGet(Decomposition,LastNodeNumber,1,LastNodeDomain,Err)
   IF(FirstNodeDomain==ComputationalNodeNumber) THEN
     CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,FirstNodeNumber,1, &
-      & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+      & CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
   ENDIF
   IF(LastNodeDomain==ComputationalNodeNumber) THEN
     CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,LastNodeNumber,1, &
-      & CMFE_BOUNDARY_CONDITION_FIXED,1.0_CMFEDP,Err)
+      & CMFE_BOUNDARY_CONDITION_FIXED,1.0_CMISSRP,Err)
   ENDIF
   !Finish the creation of the equations set boundary conditions
   CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)

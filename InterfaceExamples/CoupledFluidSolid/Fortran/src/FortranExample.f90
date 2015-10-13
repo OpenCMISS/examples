@@ -49,6 +49,7 @@
 !> Main program
 PROGRAM FortranExample
 
+  USE OpenCMISS
   USE OpenCMISS_Iron
   USE MPI
 
@@ -60,30 +61,30 @@ PROGRAM FortranExample
 
   !Test program parameters==========================================================================================================
   !Material specification
-  INTEGER(CMFEIntg), PARAMETER :: Plate2D=2
-  INTEGER(CMFEIntg), PARAMETER :: Plate3D=3
+  INTEGER(CMISSIntg), PARAMETER :: Plate2D=2
+  INTEGER(CMISSIntg), PARAMETER :: Plate3D=3
   
-  REAL(CMFEDP) :: SolidDensity
-  REAL(CMFEDP), ALLOCATABLE :: Gravity(:)
+  REAL(CMISSRP) :: SolidDensity
+  REAL(CMISSRP), ALLOCATABLE :: Gravity(:)
   
-  INTEGER(CMFEIntg) :: NumberOfFluidNodes
-  INTEGER(CMFEIntg) :: NumberOfFluidElements
-  INTEGER(CMFEIntg) :: NumberOfSolidNodes
-  INTEGER(CMFEIntg) :: NumberOfSolidElements
-  INTEGER(CMFEIntg) :: NumberOfInterfaceNodes
-  INTEGER(CMFEIntg) :: NumberOfInterfaceElements
+  INTEGER(CMISSIntg) :: NumberOfFluidNodes
+  INTEGER(CMISSIntg) :: NumberOfFluidElements
+  INTEGER(CMISSIntg) :: NumberOfSolidNodes
+  INTEGER(CMISSIntg) :: NumberOfSolidElements
+  INTEGER(CMISSIntg) :: NumberOfInterfaceNodes
+  INTEGER(CMISSIntg) :: NumberOfInterfaceElements
   
-  INTEGER(CMFEIntg), ALLOCATABLE :: SolidInterfaceElements(:),FluidInterfaceElements(:)
+  INTEGER(CMISSIntg), ALLOCATABLE :: SolidInterfaceElements(:),FluidInterfaceElements(:)
 
   ! 2D plate variables TODO Share variables for different geometries
-  INTEGER(CMFEIntg), ALLOCATABLE :: SolidNodeNumbers(:),FluidNodeNumbers(:),SolidElementNodes(:,:),FluidElementNodes(:,:), &
+  INTEGER(CMISSIntg), ALLOCATABLE :: SolidNodeNumbers(:),FluidNodeNumbers(:),SolidElementNodes(:,:),FluidElementNodes(:,:), &
     & InterfaceElementNodes(:,:),ConnectedInterfaceNodes(:,:), &
     & InterfaceNodeNumbersForGeometry(:), &
     & NoDisplacementNodes(:),FixedNodes(:),FixedZNodes(:),MovedNodes(:),MovedYNodes(:),InletNodes(:),NoSlipNodes(:), &
     & OutletNodes(:),SlipNodes(:),InterfaceInterfaceNodeInformationNE(:,:),SolidInterfaceNodeInformationNE(:,:), &
     & FluidInterfaceNodeInformationNE(:,:),LagrangeNodes(:),SlipNodesTop(:),SlipNodesRightLeft(:)
 
-  REAL(CMFEDP), ALLOCATABLE :: SolidGeometryX(:),SolidGeometryY(:),SolidGeometryZ(:), &
+  REAL(CMISSRP), ALLOCATABLE :: SolidGeometryX(:),SolidGeometryY(:),SolidGeometryZ(:), &
     & FluidGeometryX(:),FluidGeometryY(:),FluidGeometryZ(:), &
     & InterfaceGeometryX(:),InterfaceGeometryY(:),InterfaceGeometryZ(:), &
     & SolidXi2(:,:),SolidXi3(:,:),FluidXi2(:,:),FluidXi3(:,:), &
@@ -92,128 +93,128 @@ PROGRAM FortranExample
   !variables for timing
   REAL :: e,t(2)
   
-  INTEGER(CMFEIntg), PARAMETER :: SolidCoordinateSystemUserNumber=1
-  INTEGER(CMFEIntg), PARAMETER :: FluidCoordinateSystemUserNumber=2
-  INTEGER(CMFEIntg), PARAMETER :: InterfaceCoordinateSystemUserNumber=4
+  INTEGER(CMISSIntg), PARAMETER :: SolidCoordinateSystemUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: FluidCoordinateSystemUserNumber=2
+  INTEGER(CMISSIntg), PARAMETER :: InterfaceCoordinateSystemUserNumber=4
   
-  INTEGER(CMFEIntg), PARAMETER :: SolidRegionUserNumber=6
-  INTEGER(CMFEIntg), PARAMETER :: FluidRegionUserNumber=7
-  INTEGER(CMFEIntg), PARAMETER :: InterfaceUserNumber=40
+  INTEGER(CMISSIntg), PARAMETER :: SolidRegionUserNumber=6
+  INTEGER(CMISSIntg), PARAMETER :: FluidRegionUserNumber=7
+  INTEGER(CMISSIntg), PARAMETER :: InterfaceUserNumber=40
   
-  INTEGER(CMFEIntg), PARAMETER :: SolidMeshUserNumber=19
-  INTEGER(CMFEIntg), PARAMETER :: FluidMeshUserNumber=20
-  INTEGER(CMFEIntg), PARAMETER :: InterfaceMeshUserNumber=22
-  INTEGER(CMFEIntg), PARAMETER :: MovingMeshUserNumber=107
+  INTEGER(CMISSIntg), PARAMETER :: SolidMeshUserNumber=19
+  INTEGER(CMISSIntg), PARAMETER :: FluidMeshUserNumber=20
+  INTEGER(CMISSIntg), PARAMETER :: InterfaceMeshUserNumber=22
+  INTEGER(CMISSIntg), PARAMETER :: MovingMeshUserNumber=107
   
-  INTEGER(CMFEIntg), PARAMETER :: SolidDecompositionUserNumber=24
-  INTEGER(CMFEIntg), PARAMETER :: FluidDecompositionUserNumber=25
-  INTEGER(CMFEIntg), PARAMETER :: InterfaceDecompositionUserNumber=27
+  INTEGER(CMISSIntg), PARAMETER :: SolidDecompositionUserNumber=24
+  INTEGER(CMISSIntg), PARAMETER :: FluidDecompositionUserNumber=25
+  INTEGER(CMISSIntg), PARAMETER :: InterfaceDecompositionUserNumber=27
   
-  INTEGER(CMFEIntg), PARAMETER :: SolidGeometricFieldUserNumber=29
-  INTEGER(CMFEIntg), PARAMETER :: FluidGeometricFieldUserNumber=30
-  INTEGER(CMFEIntg), PARAMETER :: InterfaceGeometricFieldUserNumber=32
+  INTEGER(CMISSIntg), PARAMETER :: SolidGeometricFieldUserNumber=29
+  INTEGER(CMISSIntg), PARAMETER :: FluidGeometricFieldUserNumber=30
+  INTEGER(CMISSIntg), PARAMETER :: InterfaceGeometricFieldUserNumber=32
   
-  INTEGER(CMFEIntg), PARAMETER :: SolidEquationsSetUserNumber=34
-  INTEGER(CMFEIntg), PARAMETER :: FluidEquationsSetUserNumber=35
-  INTEGER(CMFEIntg), PARAMETER :: InterfaceConditionUserNumber=42
+  INTEGER(CMISSIntg), PARAMETER :: SolidEquationsSetUserNumber=34
+  INTEGER(CMISSIntg), PARAMETER :: FluidEquationsSetUserNumber=35
+  INTEGER(CMISSIntg), PARAMETER :: InterfaceConditionUserNumber=42
   
-  INTEGER(CMFEIntg), PARAMETER :: SolidDependentFieldUserNumber=37
-  INTEGER(CMFEIntg), PARAMETER :: FluidDependentFieldUserNumber=38
-  INTEGER(CMFEIntg), PARAMETER :: LagrangeFieldUserNumber=44
+  INTEGER(CMISSIntg), PARAMETER :: SolidDependentFieldUserNumber=37
+  INTEGER(CMISSIntg), PARAMETER :: FluidDependentFieldUserNumber=38
+  INTEGER(CMISSIntg), PARAMETER :: LagrangeFieldUserNumber=44
   
-  INTEGER(CMFEIntg), PARAMETER :: CoupledProblemUserNumber=46
+  INTEGER(CMISSIntg), PARAMETER :: CoupledProblemUserNumber=46
   
-  INTEGER(CMFEIntg), PARAMETER :: SolidEquationsSetFieldUserNumber=49
-  INTEGER(CMFEIntg), PARAMETER :: FluidEquationsSetFieldUserNumber=50
+  INTEGER(CMISSIntg), PARAMETER :: SolidEquationsSetFieldUserNumber=49
+  INTEGER(CMISSIntg), PARAMETER :: FluidEquationsSetFieldUserNumber=50
   
   !======
-  INTEGER(CMFEIntg), PARAMETER :: BasisSpaceSolidUserNumber=100
-  INTEGER(CMFEIntg), PARAMETER :: BasisDisplacementUserNumber=101
-  INTEGER(CMFEIntg), PARAMETER :: BasisHydrostaticPressureUserNumber=102
-  INTEGER(CMFEIntg), PARAMETER :: BasisSpaceFluidUserNumber=103
-  INTEGER(CMFEIntg), PARAMETER :: BasisVelocityUserNumber=104
-  INTEGER(CMFEIntg), PARAMETER :: BasisPressureUserNumber=105
-  INTEGER(CMFEIntg), PARAMETER :: InterfaceBasisUserNumber=12
-  INTEGER(CMFEIntg), PARAMETER :: InterfaceMappingBasisUserNumber=47
+  INTEGER(CMISSIntg), PARAMETER :: BasisSpaceSolidUserNumber=100
+  INTEGER(CMISSIntg), PARAMETER :: BasisDisplacementUserNumber=101
+  INTEGER(CMISSIntg), PARAMETER :: BasisHydrostaticPressureUserNumber=102
+  INTEGER(CMISSIntg), PARAMETER :: BasisSpaceFluidUserNumber=103
+  INTEGER(CMISSIntg), PARAMETER :: BasisVelocityUserNumber=104
+  INTEGER(CMISSIntg), PARAMETER :: BasisPressureUserNumber=105
+  INTEGER(CMISSIntg), PARAMETER :: InterfaceBasisUserNumber=12
+  INTEGER(CMISSIntg), PARAMETER :: InterfaceMappingBasisUserNumber=47
   
-  INTEGER(CMFEIntg), PARAMETER :: FibreFieldUserNumber=106
-  INTEGER(CMFEIntg), PARAMETER :: MovingMeshFieldUserNumber=108
-  INTEGER(CMFEIntg), PARAMETER :: MovingMeshEquationsSetUserNumber=109
-  INTEGER(CMFEIntg), PARAMETER :: FluidMaterialFieldUserNumber=117
-  INTEGER(CMFEIntg), PARAMETER :: SolidMaterialFieldUserNumber=110
-  INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldMovingMeshUserNumber=111
-  INTEGER(CMFEIntg), PARAMETER :: SourceFieldUserNumber=112
+  INTEGER(CMISSIntg), PARAMETER :: FibreFieldUserNumber=106
+  INTEGER(CMISSIntg), PARAMETER :: MovingMeshFieldUserNumber=108
+  INTEGER(CMISSIntg), PARAMETER :: MovingMeshEquationsSetUserNumber=109
+  INTEGER(CMISSIntg), PARAMETER :: FluidMaterialFieldUserNumber=117
+  INTEGER(CMISSIntg), PARAMETER :: SolidMaterialFieldUserNumber=110
+  INTEGER(CMISSIntg), PARAMETER :: EquationsSetFieldMovingMeshUserNumber=111
+  INTEGER(CMISSIntg), PARAMETER :: SourceFieldUserNumber=112
   
-  INTEGER(CMFEIntg), PARAMETER :: DynamicSolverIndex=1
-  INTEGER(CMFEIntg), PARAMETER :: LinearSolverMovingMeshIndex=2
+  INTEGER(CMISSIntg), PARAMETER :: DynamicSolverIndex=1
+  INTEGER(CMISSIntg), PARAMETER :: LinearSolverMovingMeshIndex=2
   
-  INTEGER(CMFEIntg), PARAMETER :: FluidMaterialFieldComponentMu=1
-  INTEGER(CMFEIntg), PARAMETER :: FluidMaterialFieldComponentRho=2
-  INTEGER(CMFEIntg), PARAMETER :: MaterialFieldMovingMeshUserNumberK=1
-  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldMovingMeshUserNumberK=1
-  INTEGER(CMFEIntg), PARAMETER :: DependentFieldMovingMeshUserNumber=118
-  INTEGER(CMFEIntg), PARAMETER :: MaterialFieldMovingMeshUserNumber=119
-  INTEGER(CMFEIntg), PARAMETER :: IndependentField2UserNumber=120
-  INTEGER(CMFEIntg), PARAMETER :: IndependentFieldMovingMeshUserNumber=121
-  INTEGER(CMFEIntg), PARAMETER :: LinearSolverMovingMeshEquationsUserNumber=122
+  INTEGER(CMISSIntg), PARAMETER :: FluidMaterialFieldComponentMu=1
+  INTEGER(CMISSIntg), PARAMETER :: FluidMaterialFieldComponentRho=2
+  INTEGER(CMISSIntg), PARAMETER :: MaterialFieldMovingMeshUserNumberK=1
+  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldMovingMeshUserNumberK=1
+  INTEGER(CMISSIntg), PARAMETER :: DependentFieldMovingMeshUserNumber=118
+  INTEGER(CMISSIntg), PARAMETER :: MaterialFieldMovingMeshUserNumber=119
+  INTEGER(CMISSIntg), PARAMETER :: IndependentField2UserNumber=120
+  INTEGER(CMISSIntg), PARAMETER :: IndependentFieldMovingMeshUserNumber=121
+  INTEGER(CMISSIntg), PARAMETER :: LinearSolverMovingMeshEquationsUserNumber=122
   
   !Program types
   
   !Program variables
 
-  INTEGER(CMFEIntg) :: NUMBER_OF_ARGUMENTS
-  INTEGER(CMFEIntg) :: InterpolationTypeInterface,NumberOfGaussXi,NUMBER_OF_NODE_XI,NumberOfDimensions,component_idx, &
+  INTEGER(CMISSIntg) :: NUMBER_OF_ARGUMENTS
+  INTEGER(CMISSIntg) :: InterpolationTypeInterface,NumberOfGaussXi,NUMBER_OF_NODE_XI,NumberOfDimensions,component_idx, &
     & NumberOfGaussXiSpace,NumberOfGaussXiVelocity,NumberOfGaussXiPressure,arraySize
 
-  INTEGER(CMFEIntg) :: SolidEquationsSetIndex=1
-  INTEGER(CMFEIntg) :: FluidEquationsSetIndex=2
-  INTEGER(CMFEIntg) :: InterfaceConditionIndex=1
-  INTEGER(CMFEIntg) :: SolidMeshIndex=1
-  INTEGER(CMFEIntg) :: FluidMeshIndex=2
-  INTEGER(CMFEIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
-  INTEGER(CMFEIntg) :: PressureMeshComponent
-  INTEGER(CMFEIntg) :: FluidMeshComponentNumberVelocity,ComponentNumber
+  INTEGER(CMISSIntg) :: SolidEquationsSetIndex=1
+  INTEGER(CMISSIntg) :: FluidEquationsSetIndex=2
+  INTEGER(CMISSIntg) :: InterfaceConditionIndex=1
+  INTEGER(CMISSIntg) :: SolidMeshIndex=1
+  INTEGER(CMISSIntg) :: FluidMeshIndex=2
+  INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber
+  INTEGER(CMISSIntg) :: PressureMeshComponent
+  INTEGER(CMISSIntg) :: FluidMeshComponentNumberVelocity,ComponentNumber
   
-  INTEGER(CMFEIntg) :: OutputFrequency
-  INTEGER(CMFEIntg) :: DynamicSolver_OutputType
-  INTEGER(CMFEIntg) :: NonlinearSolver_OutputType
-  INTEGER(CMFEIntg) :: LinearSolver_OutputType
-  INTEGER(CMFEIntg) :: LinearSolverMovingMesh_OutputType
-  INTEGER(CMFEIntg) :: MaximumIterations,MaxFunctionEvaluations
-  INTEGER(CMFEIntg) :: RestartValue
+  INTEGER(CMISSIntg) :: OutputFrequency
+  INTEGER(CMISSIntg) :: DynamicSolver_OutputType
+  INTEGER(CMISSIntg) :: NonlinearSolver_OutputType
+  INTEGER(CMISSIntg) :: LinearSolver_OutputType
+  INTEGER(CMISSIntg) :: LinearSolverMovingMesh_OutputType
+  INTEGER(CMISSIntg) :: MaximumIterations,MaxFunctionEvaluations
+  INTEGER(CMISSIntg) :: RestartValue
   
-  INTEGER(CMFEIntg) :: EquationsNavierStokesOutput,InterfaceMeshComponentNumber,InterpolationTypeDisplacement, &
+  INTEGER(CMISSIntg) :: EquationsNavierStokesOutput,InterfaceMeshComponentNumber,InterpolationTypeDisplacement, &
     & InterpolationTypeHydrostaticPressure,InterpolationTypePressure,InterpolationTypeSpace,InterpolationTypeVelocity, &
     & MovingMeshEquationsSetIndex,Mesh1ComponentNumberDisplacement,Mesh1ComponentNumberHydrostaticPressure, &
     & Mesh1ComponentNumberSpace,Components(3),NodeDomain,Mesh2ComponentNumberPressure,Mesh2ComponentNumberSpace, &
     & MeshNumberOfComponents
   
   ! LOOP INTEGERS
-  INTEGER(CMFEIntg) :: NodeNumber,S,ElementIndex,NodeIndex,MaterialSpecification,LocalNodeIndex
+  INTEGER(CMISSIntg) :: NodeNumber,S,ElementIndex,NodeIndex,MaterialSpecification,LocalNodeIndex
   
   !check below for units
-  REAL(CMFEDP) :: XI2(2),XI3(3)
-  REAL(CMFEDP) :: MovingMeshParameterK
-  REAL(CMFEDP) :: FluidDynamicViscosity
-  REAL(CMFEDP) :: FluidDensity
-  REAL(CMFEDP) :: YoungsModulus
-  REAL(CMFEDP) :: PoissonsRatio
-  REAL(CMFEDP) :: ShearModulus
-  REAL(CMFEDP) :: BulkModulus
-  REAL(CMFEDP) :: MooneyRivlin1
-  REAL(CMFEDP) :: MooneyRivlin2
+  REAL(CMISSRP) :: XI2(2),XI3(3)
+  REAL(CMISSRP) :: MovingMeshParameterK
+  REAL(CMISSRP) :: FluidDynamicViscosity
+  REAL(CMISSRP) :: FluidDensity
+  REAL(CMISSRP) :: YoungsModulus
+  REAL(CMISSRP) :: PoissonsRatio
+  REAL(CMISSRP) :: ShearModulus
+  REAL(CMISSRP) :: BulkModulus
+  REAL(CMISSRP) :: MooneyRivlin1
+  REAL(CMISSRP) :: MooneyRivlin2
 
-  REAL(CMFEDP) :: InitialFieldNavierStokes(3)
-  REAL(CMFEDP) :: InitialFieldMovingMesh(3)
-  REAL(CMFEDP) :: DivergenceTolerance
-  REAL(CMFEDP) :: RelativeTolerance
-  REAL(CMFEDP) :: AbsoluteTolerance
-  REAL(CMFEDP) :: LinesearchAlpha
+  REAL(CMISSRP) :: InitialFieldNavierStokes(3)
+  REAL(CMISSRP) :: InitialFieldMovingMesh(3)
+  REAL(CMISSRP) :: DivergenceTolerance
+  REAL(CMISSRP) :: RelativeTolerance
+  REAL(CMISSRP) :: AbsoluteTolerance
+  REAL(CMISSRP) :: LinesearchAlpha
 
-  REAL(CMFEDP) :: StartTime
-  REAL(CMFEDP) :: StopTime
-  REAL(CMFEDP) :: DynamicSolver_Theta
-  REAL(CMFEDP) :: TimeStepSize
+  REAL(CMISSRP) :: StartTime
+  REAL(CMISSRP) :: StopTime
+  REAL(CMISSRP) :: DynamicSolver_Theta
+  REAL(CMISSRP) :: TimeStepSize
 
   LOGICAL :: FileReadDiagnostics=.FALSE.
   LOGICAL :: ExampleFileProgressDiagnostics=.FALSE.
@@ -260,7 +261,7 @@ PROGRAM FortranExample
 #endif
   
   !Generic CMISS variables
-  INTEGER(CMFEIntg) :: Err
+  INTEGER(CMISSIntg) :: Err
   
 #ifdef WIN32
   !Initialise QuickWin
@@ -313,12 +314,12 @@ PROGRAM FortranExample
   !
   ! I N I T I A L _ V A L U E S _ & _ P R O B L E M _ C O N S T A N T S
   !Set initial values
-  InitialFieldNavierStokes(1)=0.0_CMFEDP
-  InitialFieldNavierStokes(2)=0.0_CMFEDP
-  InitialFieldNavierStokes(3)=0.0_CMFEDP
-  InitialFieldMovingMesh(1)=0.0_CMFEDP
-  InitialFieldMovingMesh(2)=0.0_CMFEDP
-  InitialFieldMovingMesh(3)=0.0_CMFEDP
+  InitialFieldNavierStokes(1)=0.0_CMISSRP
+  InitialFieldNavierStokes(2)=0.0_CMISSRP
+  InitialFieldNavierStokes(3)=0.0_CMISSRP
+  InitialFieldMovingMesh(1)=0.0_CMISSRP
+  InitialFieldMovingMesh(2)=0.0_CMISSRP
+  InitialFieldMovingMesh(3)=0.0_CMISSRP
   !Set output parameters
   SetupOutput=.TRUE.
   !(NoOutput/ProgressOutput/TimingOutput/SolverOutput/SolverMatrixOutput)
@@ -334,21 +335,21 @@ PROGRAM FortranExample
   !Choose 2D or 3D case
   MaterialSpecification=Plate3D
   !Set solver parameters
-  RelativeTolerance=1.0E-4_CMFEDP !default: 1.0E-05_CMFEDP
-  AbsoluteTolerance=1.0E-4_CMFEDP !default: 1.0E-10_CMFEDP
+  RelativeTolerance=1.0E-4_CMISSRP !default: 1.0E-05_CMISSRP
+  AbsoluteTolerance=1.0E-4_CMISSRP !default: 1.0E-10_CMISSRP
   DivergenceTolerance=1.0E5 !default: 1.0E5
   MaximumIterations=100000000 !default: 100000
   MaxFunctionEvaluations=100000
   RestartValue=30 !default: 30
-  LinesearchAlpha=1.0_CMFEDP
+  LinesearchAlpha=1.0_CMISSRP
   MovingMeshParameterK=1.0 !default
-  DynamicSolver_Theta=1.0_CMFEDP
-  StartTime=0.0_CMFEDP
-  StopTime=2000.0_CMFEDP
-  TimeStepSize=1.0_CMFEDP
+  DynamicSolver_Theta=1.0_CMISSRP
+  StartTime=0.0_CMISSRP
+  StopTime=2000.0_CMISSRP
+  TimeStepSize=1.0_CMISSRP
   IF(MaterialSpecification==Plate2D) THEN
-    StopTime=0.1_CMFEDP
-    TimeStepSize=0.05_CMFEDP
+    StopTime=0.1_CMISSRP
+    TimeStepSize=0.05_CMISSRP
   ENDIF
   
   !Material properties
@@ -360,25 +361,25 @@ PROGRAM FortranExample
   YoungsModulus=2.3E4! Pa
   PoissonsRatio=0.49
   !Neo-Hookean material law
-  ShearModulus=YoungsModulus/(2.0_CMFEDP*(1.0_CMFEDP+PoissonsRatio)) ! N/m2
-  BulkModulus=YoungsModulus/(3.0_CMFEDP*(1.0_CMFEDP-2.0_CMFEDP*PoissonsRatio))
-  !MooneyRivlin1=0.5_CMFEDP*ShearModulus ! N/m2
-  MooneyRivlin1=0.0595_CMFEDP
-  MooneyRivlin2=0.0_CMFEDP
+  ShearModulus=YoungsModulus/(2.0_CMISSRP*(1.0_CMISSRP+PoissonsRatio)) ! N/m2
+  BulkModulus=YoungsModulus/(3.0_CMISSRP*(1.0_CMISSRP-2.0_CMISSRP*PoissonsRatio))
+  !MooneyRivlin1=0.5_CMISSRP*ShearModulus ! N/m2
+  MooneyRivlin1=0.0595_CMISSRP
+  MooneyRivlin2=0.0_CMISSRP
    
   !Set geometric dimension n gravity
   SELECT CASE(MaterialSpecification)
   CASE(Plate2D)
     NumberOfDimensions=2
     ALLOCATE(Gravity(NumberOfDimensions))
-    Gravity(:)=[0.0_CMFEDP,9.81_CMFEDP] ! m/s2
+    Gravity(:)=[0.0_CMISSRP,9.81_CMISSRP] ! m/s2
   CASE(Plate3D)
     NumberOfDimensions=3
     CheckWithoutInterfaceCondition=.FALSE.!if set to true we remove all Lagrange field dofs by setting them as zero dirichlet BC
     IF(CheckWithoutInterfaceCondition) THEN
       GravityFlag=.TRUE.
       ALLOCATE(Gravity(NumberOfDimensions))
-      Gravity(:)=[0.0_CMFEDP,9.81_CMFEDP,0.0_CMFEDP] ! m/s2
+      Gravity(:)=[0.0_CMISSRP,9.81_CMISSRP,0.0_CMISSRP] ! m/s2
     ENDIF
   END SELECT
     
@@ -1598,7 +1599,7 @@ PROGRAM FortranExample
       & CMFE_FIELD_VALUES_SET_TYPE,3,DependentField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,3,Err)
   ENDIF
   CALL cmfe_Field_ComponentValuesInitialise(DependentField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & NumberOfDimensions+1,-MooneyRivlin1,Err)!14.0_CMFEDP,Err)
+    & NumberOfDimensions+1,-MooneyRivlin1,Err)!14.0_CMISSRP,Err)
   
   CALL cmfe_Field_ParameterSetUpdateStart(DependentField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
   CALL cmfe_Field_ParameterSetUpdateFinish(DependentField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
@@ -1654,7 +1655,7 @@ PROGRAM FortranExample
   ENDDO
   !Initialise pressure component
   CALL cmfe_Field_ComponentValuesInitialise(DependentField2,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & NumberOfDimensions+1,0.1_CMFEDP,Err)
+    & NumberOfDimensions+1,0.1_CMISSRP,Err)
   !=========================
   IF(ExampleFileProgressDiagnostics) PRINT *, '    >> MOVING MESH DEPENDENT FIELD << == '
   !Create the equations set dependent field variables for moving mesh
@@ -1818,7 +1819,7 @@ PROGRAM FortranExample
   CALL cmfe_InterfaceCondition_LagrangeFieldCreateFinish(InterfaceCondition,Err)
   DO ComponentNumber=1,NumberOfDimensions
     CALL cmfe_Field_ComponentValuesInitialise(LagrangeField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-      & ComponentNumber,0.0_CMFEDP,Err)
+      & ComponentNumber,0.0_CMISSRP,Err)
   ENDDO
   CALL cmfe_Field_ParameterSetUpdateStart(LagrangeField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
   CALL cmfe_Field_ParameterSetUpdateFinish(LagrangeField1,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
@@ -1958,12 +1959,12 @@ PROGRAM FortranExample
     CALL cmfe_Decomposition_NodeDomainGet(SolidDecomposition,NodeNumber,1,NodeDomain,Err)
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField1,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-        & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+        & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
       CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField1,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-        & NodeNumber,2,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+        & NodeNumber,2,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
       IF(NumberOfDimensions==3) THEN
         CALL cmfe_BoundaryConditions_AddNode(BoundaryConditions,DependentField1,CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,3,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+          & NodeNumber,3,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
       ENDIF
     ENDIF
   ENDDO
@@ -1974,7 +1975,7 @@ PROGRAM FortranExample
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
         & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-        & NodeNumber,NumberOfDimensions+1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+        & NodeNumber,NumberOfDimensions+1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
     ENDIF
   ENDDO
   !Inlet velocity nodes, small starting velocity in 1st coordinate direction
@@ -1984,14 +1985,14 @@ PROGRAM FortranExample
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
         & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-        & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED_INLET,0.0_CMFEDP,Err)
+        & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED_INLET,0.0_CMISSRP,Err)
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
         & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-        & NodeNumber,2,CMFE_BOUNDARY_CONDITION_FIXED_INLET,0.0_CMFEDP,Err)
+        & NodeNumber,2,CMFE_BOUNDARY_CONDITION_FIXED_INLET,0.0_CMISSRP,Err)
       IF(NumberOfDimensions==3) THEN
         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
           & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,3,CMFE_BOUNDARY_CONDITION_FIXED_INLET,0.0_CMFEDP,Err)
+          & NodeNumber,3,CMFE_BOUNDARY_CONDITION_FIXED_INLET,0.0_CMISSRP,Err)
       ENDIF
     ENDIF
   ENDDO
@@ -2002,14 +2003,14 @@ PROGRAM FortranExample
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
         & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-        & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+        & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
         & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-        & NodeNumber,2,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+        & NodeNumber,2,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
       IF(NumberOfDimensions==3) THEN
         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
           & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,3,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+          & NodeNumber,3,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
       ENDIF
     ENDIF
   ENDDO
@@ -2020,7 +2021,7 @@ PROGRAM FortranExample
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
         & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-        & NodeNumber,NumberOfDimensions,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+        & NodeNumber,NumberOfDimensions,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
     ENDIF
   ENDDO
   !Set slip BC
@@ -2031,7 +2032,7 @@ PROGRAM FortranExample
       IF(NodeDomain==ComputationalNodeNumber) THEN
         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,DependentField2, &
           & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+          & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
       ENDIF
     ENDDO
   ENDIF
@@ -2039,16 +2040,16 @@ PROGRAM FortranExample
     !Remove dof's at nodes where solid displacement and zero velocity is set (first n last interface node)
     CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
       & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 1,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+      & 1,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
     CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
       & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & 1,2,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+      & 1,2,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
     CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
       & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & NumberOfInterfaceNodes,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+      & NumberOfInterfaceNodes,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
     CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
       & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-      & NumberOfInterfaceNodes,2,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+      & NumberOfInterfaceNodes,2,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
   ELSE
     IF(CheckWithoutInterfaceCondition) THEN
       DO S=1,SIZE(InterfaceNodeNumbersForGeometry)
@@ -2057,13 +2058,13 @@ PROGRAM FortranExample
         IF(NodeDomain==ComputationalNodeNumber) THEN
           CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
             & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-            & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+            & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
           CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
             & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-            & NodeNumber,2,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+            & NodeNumber,2,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
           CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
             & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-            & NodeNumber,3,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+            & NodeNumber,3,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
         ENDIF
       ENDDO
     ELSE
@@ -2073,13 +2074,13 @@ PROGRAM FortranExample
         IF(NodeDomain==ComputationalNodeNumber) THEN
           CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
             & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-            & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+            & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
           CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
             & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-            & NodeNumber,2,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+            & NodeNumber,2,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
           CALL cmfe_BoundaryConditions_SetNode(BoundaryConditions,LagrangeField1, &
             & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-            & NodeNumber,3,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMFEDP,Err)
+            & NodeNumber,3,CMFE_BOUNDARY_CONDITION_FIXED,0.0_CMISSRP,Err)
         ENDIF
       ENDDO
     ENDIF
@@ -2097,14 +2098,14 @@ PROGRAM FortranExample
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
         & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-        & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMFEDP,Err)
+        & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMISSRP,Err)
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
         & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-        & NodeNumber,2,CMFE_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMFEDP,Err)
+        & NodeNumber,2,CMFE_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMISSRP,Err)
       IF(NumberOfDimensions==3) THEN
         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
           & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,3,CMFE_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMFEDP,Err)
+          & NodeNumber,3,CMFE_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMISSRP,Err)
       ENDIF
     ENDIF
   ENDDO
@@ -2115,14 +2116,14 @@ PROGRAM FortranExample
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
         & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-        & NodeNumber,1,CMFE_BOUNDARY_CONDITION_MOVED_WALL,0.0_CMFEDP,Err)
+        & NodeNumber,1,CMFE_BOUNDARY_CONDITION_MOVED_WALL,0.0_CMISSRP,Err)
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
         & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-        & NodeNumber,2,CMFE_BOUNDARY_CONDITION_MOVED_WALL,0.0_CMFEDP,Err)
+        & NodeNumber,2,CMFE_BOUNDARY_CONDITION_MOVED_WALL,0.0_CMISSRP,Err)
       IF(NumberOfDimensions==3) THEN
         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
           & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,3,CMFE_BOUNDARY_CONDITION_MOVED_WALL,0.0_CMFEDP,Err)
+          & NodeNumber,3,CMFE_BOUNDARY_CONDITION_MOVED_WALL,0.0_CMISSRP,Err)
       ENDIF
     ENDIF
   ENDDO
@@ -2133,14 +2134,14 @@ PROGRAM FortranExample
     IF(NodeDomain==ComputationalNodeNumber) THEN
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
         & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-        & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMFEDP,Err)
+        & NodeNumber,1,CMFE_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMISSRP,Err)
       CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
         & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-        & NodeNumber,2,CMFE_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMFEDP,Err)
+        & NodeNumber,2,CMFE_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMISSRP,Err)
       IF(NumberOfDimensions==3) THEN
         CALL cmfe_BoundaryConditions_SetNode(BoundaryConditionsMovingMesh,DependentFieldMovingMesh, &
           & CMFE_FIELD_U_VARIABLE_TYPE,1,1, &
-          & NodeNumber,3,CMFE_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMFEDP,Err)
+          & NodeNumber,3,CMFE_BOUNDARY_CONDITION_FIXED_WALL,0.0_CMISSRP,Err)
       ENDIF
     ENDIF
   ENDDO
@@ -2158,7 +2159,7 @@ PROGRAM FortranExample
   !Finialise CMISS
   CALL cmfe_Finalise(Err)
 
-  e=etime(t)/60.0_CMFEDP
+  e=etime(t)/60.0_CMISSRP
   PRINT *, "Program successfully completed in ",e," minutes."
   
   STOP
