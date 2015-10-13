@@ -2,7 +2,7 @@
 
 #> \file
 #> \author David Ladd
-#> \brief This is an example script to solve a Navier-Stokes lid driven cavity benchmark problem using openCMISS calls in python.
+#> \brief This is an example script to solve a Navier-Stokes lid driven cavity benchmark problem using OpenCMISS calls in python.
 #>
 #> \section LICENSE
 #>
@@ -18,7 +18,7 @@
 #> License for the specific language governing rights and limitations
 #> under the License.
 #>
-#> The Original Code is openCMISS
+#> The Original Code is OpenCMISS
 #>
 #> The Initial Developer of the Original Code is University of Auckland,
 #> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -42,7 +42,7 @@
 #>
 
 #> \example FluidMechanics/NavierStokes/LidDrivenCavity/LidDriven.py
-## Example script to solve a Navier-Stokes lid driven cavity benchmark problem using openCMISS calls in python.
+## Example script to solve a Navier-Stokes lid driven cavity benchmark problem using OpenCMISS calls in python.
 ## \par Latest Builds:
 #<
 
@@ -55,11 +55,11 @@ import math
 import time
 
 # Intialise OpenCMISS
-from opencmiss import CMISS
+from opencmiss import iron
 
 # Get the computational nodes information
-numberOfComputationalNodes = CMISS.ComputationalNumberOfNodesGet()
-computationalNodeNumber = CMISS.ComputationalNodeNumberGet()
+numberOfComputationalNodes = iron.ComputationalNumberOfNodesGet()
+computationalNodeNumber = iron.ComputationalNodeNumberGet()
 
 (coordinateSystemUserNumber,
  regionUserNumber,
@@ -77,33 +77,33 @@ computationalNodeNumber = CMISS.ComputationalNodeNumberGet()
  problemUserNumber) = range(1,15)
 
 # Creation a RC coordinate system
-coordinateSystem = CMISS.CoordinateSystem()
+coordinateSystem = iron.CoordinateSystem()
 coordinateSystem.CreateStart(coordinateSystemUserNumber)
 coordinateSystem.dimension = 2
 coordinateSystem.CreateFinish()
 
 # Create a region
-region = CMISS.Region()
-region.CreateStart(regionUserNumber,CMISS.WorldRegion)
+region = iron.Region()
+region.CreateStart(regionUserNumber,iron.WorldRegion)
 region.label = "Cavity"
 region.coordinateSystem = coordinateSystem
 region.CreateFinish()
 
 # Create a biquadratic lagrange basis
-quadraticBasis = CMISS.Basis()
+quadraticBasis = iron.Basis()
 quadraticBasis.CreateStart(quadraticBasisUserNumber)
-quadraticBasis.type = CMISS.BasisTypes.LAGRANGE_HERMITE_TP
+quadraticBasis.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
 quadraticBasis.numberOfXi = 2
-quadraticBasis.interpolationXi = [CMISS.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE]*2
+quadraticBasis.interpolationXi = [iron.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE]*2
 quadraticBasis.quadratureNumberOfGaussXi = [3]*2
 quadraticBasis.CreateFinish()
 
 # Create a bilinear lagrange basis
-linearBasis = CMISS.Basis()
+linearBasis = iron.Basis()
 linearBasis.CreateStart(linearBasisUserNumber)
-linearBasis.type = CMISS.BasisTypes.LAGRANGE_HERMITE_TP
+linearBasis.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
 linearBasis.numberOfXi = 2
-linearBasis.interpolationXi = [CMISS.BasisInterpolationSpecifications.LINEAR_LAGRANGE]*2
+linearBasis.interpolationXi = [iron.BasisInterpolationSpecifications.LINEAR_LAGRANGE]*2
 linearBasis.quadratureNumberOfGaussXi = [3]*2
 linearBasis.CreateFinish()
 
@@ -126,84 +126,82 @@ def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,
     """
 
     # Create a generated mesh
-    generatedMesh = CMISS.GeneratedMesh()
+    generatedMesh = iron.GeneratedMesh()
     generatedMesh.CreateStart(generatedMeshUserNumber,region)
-    generatedMesh.type = CMISS.GeneratedMeshTypes.REGULAR
+    generatedMesh.type = iron.GeneratedMeshTypes.REGULAR
     generatedMesh.basis = basisList
     generatedMesh.extent = cavityDimensions
     generatedMesh.numberOfElements = numberOfElements
 
-    mesh = CMISS.Mesh()
+    mesh = iron.Mesh()
     generatedMesh.CreateFinish(meshUserNumber,mesh)
 
     # Create a decomposition for the mesh
-    decomposition = CMISS.Decomposition()
+    decomposition = iron.Decomposition()
     decomposition.CreateStart(decompositionUserNumber,mesh)
-    decomposition.type = CMISS.DecompositionTypes.CALCULATED
+    decomposition.type = iron.DecompositionTypes.CALCULATED
     decomposition.numberOfDomains = numberOfComputationalNodes
     decomposition.CreateFinish()
 
     # Create a field for the geometry
-    geometricField = CMISS.Field()
+    geometricField = iron.Field()
     geometricField.CreateStart(geometricFieldUserNumber,region)
     geometricField.meshDecomposition = decomposition
-    geometricField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,1)
-    geometricField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,2,1)
+    geometricField.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,1)
+    geometricField.ComponentMeshComponentSet(iron.FieldVariableTypes.U,2,1)
     geometricField.CreateFinish()
 
     # Set geometry from the generated mesh
     generatedMesh.GeometricParametersCalculate(geometricField)
 
     # Create standard Navier-Stokes equations set
-    equationsSetField = CMISS.Field()
-    equationsSet = CMISS.EquationsSet()
+    equationsSetField = iron.Field()
+    equationsSet = iron.EquationsSet()
     if RBS:
-        equationsSet.CreateStart(equationsSetUserNumber,region,geometricField,
-                CMISS.EquationsSetClasses.FLUID_MECHANICS,
-                CMISS.EquationsSetTypes.NAVIER_STOKES_EQUATION,
-                CMISS.EquationsSetSubtypes.TRANSIENT_RBS_NAVIER_STOKES,
-                equationsSetFieldUserNumber, equationsSetField)
+        equationsSetSpecification = [iron.EquationsSetClasses.FLUID_MECHANICS,
+                iron.EquationsSetTypes.NAVIER_STOKES_EQUATION,
+                iron.EquationsSetSubtypes.TRANSIENT_RBS_NAVIER_STOKES]
     else:
-        equationsSet.CreateStart(equationsSetUserNumber,region,geometricField,
-                CMISS.EquationsSetClasses.FLUID_MECHANICS,
-                CMISS.EquationsSetTypes.NAVIER_STOKES_EQUATION,
-                CMISS.EquationsSetSubtypes.TRANSIENT_NAVIER_STOKES,
-                equationsSetFieldUserNumber, equationsSetField)
+        equationsSetSpecification = [iron.EquationsSetClasses.FLUID_MECHANICS,
+                iron.EquationsSetTypes.NAVIER_STOKES_EQUATION,
+                iron.EquationsSetSubtypes.TRANSIENT_NAVIER_STOKES]
+    equationsSet.CreateStart(equationsSetUserNumber,region,geometricField,
+                equationsSetSpecification,equationsSetFieldUserNumber, equationsSetField)
     equationsSet.CreateFinish()
 
     if RBS:
         # Set max CFL number (default 1.0)
-        equationsSetField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U1,
-                                                      CMISS.FieldParameterSetTypes.VALUES,2,1.0E20)
+        equationsSetField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U1,
+                                                      iron.FieldParameterSetTypes.VALUES,2,1.0E20)
         # Set time increment (default 0.0)
-        equationsSetField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U1,
-                                                      CMISS.FieldParameterSetTypes.VALUES,3,transient[2])
+        equationsSetField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U1,
+                                                      iron.FieldParameterSetTypes.VALUES,3,transient[2])
         # Set stabilisation type (default 1.0 = RBS)
-        equationsSetField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U1,
-                                                      CMISS.FieldParameterSetTypes.VALUES,4,1.0)
+        equationsSetField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U1,
+                                                      iron.FieldParameterSetTypes.VALUES,4,1.0)
 
     # Create dependent field
-    dependentField = CMISS.Field()
+    dependentField = iron.Field()
     equationsSet.DependentCreateStart(dependentFieldUserNumber,dependentField)
-    dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,1,1)
-    dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,2,1)
-    dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.U,3,2)
-    dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,1,1)
-    dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,2,1)
-    dependentField.ComponentMeshComponentSet(CMISS.FieldVariableTypes.DELUDELN,3,2)
-    dependentField.DOFOrderTypeSet(CMISS.FieldVariableTypes.U,CMISS.FieldDOFOrderTypes.SEPARATED)
-    dependentField.DOFOrderTypeSet(CMISS.FieldVariableTypes.DELUDELN,CMISS.FieldDOFOrderTypes.SEPARATED)
+    dependentField.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,1)
+    dependentField.ComponentMeshComponentSet(iron.FieldVariableTypes.U,2,1)
+    dependentField.ComponentMeshComponentSet(iron.FieldVariableTypes.U,3,2)
+    dependentField.ComponentMeshComponentSet(iron.FieldVariableTypes.DELUDELN,1,1)
+    dependentField.ComponentMeshComponentSet(iron.FieldVariableTypes.DELUDELN,2,1)
+    dependentField.ComponentMeshComponentSet(iron.FieldVariableTypes.DELUDELN,3,2)
+    dependentField.DOFOrderTypeSet(iron.FieldVariableTypes.U,iron.FieldDOFOrderTypes.SEPARATED)
+    dependentField.DOFOrderTypeSet(iron.FieldVariableTypes.DELUDELN,iron.FieldDOFOrderTypes.SEPARATED)
     equationsSet.DependentCreateFinish()
     # Initialise dependent field
-    dependentField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,0.0)
+    dependentField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,0.0)
 
     # Create materials field
-    materialsField = CMISS.Field()
+    materialsField = iron.Field()
     equationsSet.MaterialsCreateStart(materialsFieldUserNumber,materialsField)
     equationsSet.MaterialsCreateFinish()
     # Initialise materials field parameters
-    materialsField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,viscosity)
-    materialsField.ComponentValuesInitialiseDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,2,density)
+    materialsField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,viscosity)
+    materialsField.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,2,density)
 
     # If specified, use a sinusoidal waveform to ramp up lid velocity from 0 to 1
     if analytic:
@@ -216,78 +214,78 @@ def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,
         phaseShift = -math.pi/2.0
         startSine = 0.0
         stopSine = rampPeriod
-        analyticField = CMISS.Field()
-        equationsSet.AnalyticCreateStart(CMISS.NavierStokesAnalyticFunctionTypes.SINUSOID,analyticFieldUserNumber,analyticField)
+        analyticField = iron.Field()
+        equationsSet.AnalyticCreateStart(iron.NavierStokesAnalyticFunctionTypes.SINUSOID,analyticFieldUserNumber,analyticField)
         equationsSet.AnalyticCreateFinish()
         analyticParameters = [1.0,0.0,0.0,0.0,amplitude,yOffset,frequency,phaseShift,startSine,stopSine]
 
     # Create equations
-    equations = CMISS.Equations()
+    equations = iron.Equations()
     equationsSet.EquationsCreateStart(equations)
-    equations.sparsityType = CMISS.EquationsSparsityTypes.SPARSE
-    equations.outputType = CMISS.EquationsOutputTypes.NONE
+    equations.sparsityType = iron.EquationsSparsityTypes.SPARSE
+    equations.outputType = iron.EquationsOutputTypes.NONE
     equationsSet.EquationsCreateFinish()
 
     # Create Navier-Stokes problem
-    problem = CMISS.Problem()
-    problem.CreateStart(problemUserNumber)
+    problem = iron.Problem()
     if RBS:
-        problem.SpecificationSet(CMISS.ProblemClasses.FLUID_MECHANICS,
-                                 CMISS.ProblemTypes.NAVIER_STOKES_EQUATION,
-                                 CMISS.ProblemSubTypes.TRANSIENT_RBS_NAVIER_STOKES)
+        problemSpecification = [iron.ProblemClasses.FLUID_MECHANICS,
+                                iron.ProblemTypes.NAVIER_STOKES_EQUATION,
+                                iron.ProblemSubtypes.TRANSIENT_RBS_NAVIER_STOKES]
     else:
-        problem.SpecificationSet(CMISS.ProblemClasses.FLUID_MECHANICS,
-                                 CMISS.ProblemTypes.NAVIER_STOKES_EQUATION,
-                                 CMISS.ProblemSubTypes.TRANSIENT_NAVIER_STOKES)
+        problemSpecification = [iron.ProblemClasses.FLUID_MECHANICS,
+                                iron.ProblemTypes.NAVIER_STOKES_EQUATION,
+                                iron.ProblemSubtypes.TRANSIENT_NAVIER_STOKES]
+    problem.CreateStart(problemUserNumber,problemSpecification)
     problem.CreateFinish()
 
     # Create control loops
     problem.ControlLoopCreateStart()
-    controlLoop = CMISS.ControlLoop()
-    problem.ControlLoopGet([CMISS.ControlLoopIdentifiers.NODE],controlLoop)
+    controlLoop = iron.ControlLoop()
+    problem.ControlLoopGet([iron.ControlLoopIdentifiers.NODE],controlLoop)
     controlLoop.TimesSet(transient[0],transient[1],transient[2])
     controlLoop.TimeOutputSet(transient[3])
     problem.ControlLoopCreateFinish()
 
     # Create problem solver
-    dynamicSolver = CMISS.Solver()
+    dynamicSolver = iron.Solver()
     problem.SolversCreateStart()
-    problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],1,dynamicSolver)
-    dynamicSolver.outputType = CMISS.SolverOutputTypes.NONE
+    problem.SolverGet([iron.ControlLoopIdentifiers.NODE],1,dynamicSolver)
+    dynamicSolver.outputType = iron.SolverOutputTypes.NONE
     dynamicSolver.dynamicTheta = [0.5]
-    nonlinearSolver = CMISS.Solver()
+    nonlinearSolver = iron.Solver()
     dynamicSolver.DynamicNonlinearSolverGet(nonlinearSolver)
     if fdJacobian:
-        nonlinearSolver.newtonJacobianCalculationType = CMISS.JacobianCalculationTypes.FD
+        nonlinearSolver.newtonJacobianCalculationType = iron.JacobianCalculationTypes.FD
     else:
-        nonlinearSolver.newtonJacobianCalculationType = CMISS.JacobianCalculationTypes.EQUATIONS
-    nonlinearSolver.outputType = CMISS.SolverOutputTypes.NONE
+        nonlinearSolver.newtonJacobianCalculationType = iron.JacobianCalculationTypes.EQUATIONS
+    nonlinearSolver.outputType = iron.SolverOutputTypes.NONE
     nonlinearSolver.newtonAbsoluteTolerance = 1.0E-8
     nonlinearSolver.newtonRelativeTolerance = 1.0E-9
     nonlinearSolver.newtonSolutionTolerance = 1.0E-9
     nonlinearSolver.newtonMaximumFunctionEvaluations = 10000
-    nonlinearSolver.newtonLineSearchType = CMISS.NewtonLineSearchTypes.QUADRATIC
-    linearSolver = CMISS.Solver()
+    nonlinearSolver.newtonLineSearchType = iron.NewtonLineSearchTypes.QUADRATIC
+    linearSolver = iron.Solver()
     nonlinearSolver.NewtonLinearSolverGet(linearSolver)
-    linearSolver.outputType = CMISS.SolverOutputTypes.NONE
-    linearSolver.linearType = CMISS.LinearSolverTypes.DIRECT
-    linearSolver.libraryType = CMISS.SolverLibraries.MUMPS
+    linearSolver.outputType = iron.SolverOutputTypes.NONE
+    linearSolver.linearType = iron.LinearSolverTypes.DIRECT
+    linearSolver.libraryType = iron.SolverLibraries.MUMPS
     problem.SolversCreateFinish()
 
     # Create solver equations and add equations set to solver equations
-    solver = CMISS.Solver()
-    solverEquations = CMISS.SolverEquations()
+    solver = iron.Solver()
+    solverEquations = iron.SolverEquations()
     problem.SolverEquationsCreateStart()
-    problem.SolverGet([CMISS.ControlLoopIdentifiers.NODE],1,solver)
+    problem.SolverGet([iron.ControlLoopIdentifiers.NODE],1,solver)
     solver.SolverEquationsGet(solverEquations)
-    solverEquations.sparsityType = CMISS.SolverEquationsSparsityTypes.SPARSE
+    solverEquations.sparsityType = iron.SolverEquationsSparsityTypes.SPARSE
     equationsSetIndex = solverEquations.EquationsSetAdd(equationsSet)
     problem.SolverEquationsCreateFinish()
 
     # Create boundary conditions
-    boundaryConditions = CMISS.BoundaryConditions()
+    boundaryConditions = iron.BoundaryConditions()
     solverEquations.BoundaryConditionsCreateStart(boundaryConditions)
-    nodes = CMISS.Nodes()
+    nodes = iron.Nodes()
     region.NodesGet(nodes)
     print("Total # of nodes: " + str(nodes.numberOfNodes))
     print("Analytic Parameters: " + str(analyticParameters))
@@ -301,35 +299,35 @@ def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,
         # Velocity nodes
         nodeDomain=decomposition.NodeDomainGet(nodeNumber,1)
         if (nodeDomain == computationalNodeNumber):
-            xLocation = geometricField.ParameterSetGetNodeDP(CMISS.FieldVariableTypes.U,
-                                                             CMISS.FieldParameterSetTypes.VALUES,
+            xLocation = geometricField.ParameterSetGetNodeDP(iron.FieldVariableTypes.U,
+                                                             iron.FieldParameterSetTypes.VALUES,
                                                              1,1,nodeNumber,1)
-            yLocation = geometricField.ParameterSetGetNodeDP(CMISS.FieldVariableTypes.U,
-                                                             CMISS.FieldParameterSetTypes.VALUES,
+            yLocation = geometricField.ParameterSetGetNodeDP(iron.FieldVariableTypes.U,
+                                                             iron.FieldParameterSetTypes.VALUES,
                                                              1,1,nodeNumber,2)
             # rigid wall (left,right,bottom) conditions: v=0
             if (xLocation < boundaryTolerance or 
                 cavityDimensions[0]-xLocation < boundaryTolerance or
                 yLocation < boundaryTolerance):
-                boundaryConditions.SetNode(dependentField,CMISS.FieldVariableTypes.U,1,1,nodeNumber,1,CMISS.BoundaryConditionsTypes.FIXED,0.0)
-                boundaryConditions.SetNode(dependentField,CMISS.FieldVariableTypes.U,1,1,nodeNumber,2,CMISS.BoundaryConditionsTypes.FIXED,0.0)
+                boundaryConditions.SetNode(dependentField,iron.FieldVariableTypes.U,1,1,nodeNumber,1,iron.BoundaryConditionsTypes.FIXED,0.0)
+                boundaryConditions.SetNode(dependentField,iron.FieldVariableTypes.U,1,1,nodeNumber,2,iron.BoundaryConditionsTypes.FIXED,0.0)
             # lid (top) conditions: v=v
             elif (cavityDimensions[1]-yLocation < boundaryTolerance):
                 if not (xLocation < boundaryTolerance or 
                         cavityDimensions[0]-xLocation < boundaryTolerance):
                     if analytic:
-                        boundaryConditions.SetNode(dependentField,CMISS.FieldVariableTypes.U,1,1,nodeNumber,1,CMISS.BoundaryConditionsTypes.FIXED_INLET,0.0)
-                        boundaryConditions.SetNode(dependentField,CMISS.FieldVariableTypes.U,1,1,nodeNumber,2,CMISS.BoundaryConditionsTypes.FIXED_INLET,0.0)
+                        boundaryConditions.SetNode(dependentField,iron.FieldVariableTypes.U,1,1,nodeNumber,1,iron.BoundaryConditionsTypes.FIXED_INLET,0.0)
+                        boundaryConditions.SetNode(dependentField,iron.FieldVariableTypes.U,1,1,nodeNumber,2,iron.BoundaryConditionsTypes.FIXED_INLET,0.0)
                         # Set analytic parameters
                         parameterNumber = 0
                         for parameter in analyticParameters:
                             parameterNumber += 1
-                            analyticField.ParameterSetUpdateNodeDP(CMISS.FieldVariableTypes.U,CMISS.FieldParameterSetTypes.VALUES,1,1,
+                            analyticField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,1,
                                                                    nodeNumber,parameterNumber,parameter)
 
                     else:
-                        boundaryConditions.SetNode(dependentField,CMISS.FieldVariableTypes.U,1,1,nodeNumber,1,CMISS.BoundaryConditionsTypes.FIXED,lidVelocity[0])
-                        boundaryConditions.SetNode(dependentField,CMISS.FieldVariableTypes.U,1,1,nodeNumber,2,CMISS.BoundaryConditionsTypes.FIXED,lidVelocity[1])
+                        boundaryConditions.SetNode(dependentField,iron.FieldVariableTypes.U,1,1,nodeNumber,1,iron.BoundaryConditionsTypes.FIXED,lidVelocity[0])
+                        boundaryConditions.SetNode(dependentField,iron.FieldVariableTypes.U,1,1,nodeNumber,2,iron.BoundaryConditionsTypes.FIXED,lidVelocity[1])
 
 
     # Pressure node
@@ -337,7 +335,7 @@ def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,
     nodeDomain=decomposition.NodeDomainGet(nodeNumber,2)
     if (nodeDomain == computationalNodeNumber):
         # bottom left node - reference pressure: p=0
-        boundaryConditions.SetNode(dependentField,CMISS.FieldVariableTypes.U,1,1,nodeNumber,3,CMISS.BoundaryConditionsTypes.FIXED,0.0)
+        boundaryConditions.SetNode(dependentField,iron.FieldVariableTypes.U,1,1,nodeNumber,3,iron.BoundaryConditionsTypes.FIXED,0.0)
         print('pressure node: '+str(nodeNumber))
 
     solverEquations.BoundaryConditionsCreateFinish()
@@ -348,7 +346,7 @@ def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,
 
     print("exporting CMGUI data")
     # Export results
-    fields = CMISS.Fields()
+    fields = iron.Fields()
     fields.CreateRegion(region)
     fields.NodesExport(outputFilename,"FORTRAN")
     fields.ElementsExport(outputFilename,"FORTRAN")
@@ -459,7 +457,7 @@ for elemRes in elementResolutions:
                 f.write(runInfo)
                 f.close() 
 
-CMISS.Finalise()
+iron.Finalise()
 
 
 
