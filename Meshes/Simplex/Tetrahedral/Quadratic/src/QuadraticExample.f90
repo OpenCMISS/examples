@@ -48,9 +48,10 @@
 !> Main program
 PROGRAM QUADRATICTETRAHEDRASIMPLEXEXAMPLE
 
-  USE OPENCMISS
-#ifndef NOMPIMOD
-  USE MPI
+  USE OpenCMISS
+  USE OpenCMISS_Iron
+ #ifndef NOMPIMOD
+   USE MPI
 #endif
 
 #ifdef WIN32
@@ -66,9 +67,9 @@ PROGRAM QUADRATICTETRAHEDRASIMPLEXEXAMPLE
 
   !Test program parameters
 
-  REAL(CMISSDP), PARAMETER :: HEIGHT=1.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: WIDTH=2.0_CMISSDP
-  REAL(CMISSDP), PARAMETER :: LENGTH=3.0_CMISSDP
+  REAL(CMISSRP), PARAMETER :: HEIGHT=1.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: WIDTH=2.0_CMISSRP
+  REAL(CMISSRP), PARAMETER :: LENGTH=3.0_CMISSRP
 
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: RegionUserNumber=2
@@ -88,14 +89,14 @@ PROGRAM QUADRATICTETRAHEDRASIMPLEXEXAMPLE
 
   !CMISS variables
 
-  TYPE(CMISSBasisType) :: Basis
-  TYPE(CMISSCoordinateSystemType) :: CoordinateSystem,WorldCoordinateSystem
-  TYPE(CMISSDecompositionType) :: Decomposition
-  TYPE(CMISSFieldType) :: GeometricField
-  TYPE(CMISSFieldsType) :: Fields
-  TYPE(CMISSGeneratedMeshType) :: GeneratedMesh  
-  TYPE(CMISSMeshType) :: Mesh
-  TYPE(CMISSRegionType) :: Region,WorldRegion
+  TYPE(cmfe_BasisType) :: Basis
+  TYPE(cmfe_CoordinateSystemType) :: CoordinateSystem,WorldCoordinateSystem
+  TYPE(cmfe_DecompositionType) :: Decomposition
+  TYPE(cmfe_FieldType) :: GeometricField
+  TYPE(cmfe_FieldsType) :: Fields
+  TYPE(cmfe_GeneratedMeshType) :: GeneratedMesh  
+  TYPE(cmfe_MeshType) :: Mesh
+  TYPE(cmfe_RegionType) :: Region,WorldRegion
 
 #ifdef WIN32
   !Quickwin type
@@ -120,15 +121,15 @@ PROGRAM QUADRATICTETRAHEDRASIMPLEXEXAMPLE
 #endif
 
   !Intialise OpenCMISS
-  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
+  CALL cmfe_Initialise(WorldCoordinateSystem,WorldRegion,Err)
 
-  CALL CMISSErrorHandlingModeSet(CMISS_ERRORS_TRAP_ERROR,Err)
+  CALL cmfe_ErrorHandlingModeSet(CMFE_ERRORS_TRAP_ERROR,Err)
 
-  CALL CMISSDiagnosticsSetOn(CMISS_IN_DIAG_TYPE,(/1,2,3,4,5/),"Diagnostics",(/"MESH_TOPOLOGY_ELEMENTS_CREATE_FINISH"/),Err)
+  CALL cmfe_DiagnosticsSetOn(CMFE_IN_DIAG_TYPE,[1,2,3,4,5],"Diagnostics",["MESH_TOPOLOGY_ELEMENTS_CREATE_FINISH"],Err)
 
   !Get the computational nodes information
-  CALL CMISSComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
-  CALL CMISSComputationalNodeNumberGet(ComputationalNodeNumber,Err)
+  CALL cmfe_ComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
+  CALL cmfe_ComputationalNodeNumberGet(ComputationalNodeNumber,Err)
   
   NUMBER_GLOBAL_X_ELEMENTS=3
   NUMBER_GLOBAL_Y_ELEMENTS=3
@@ -140,82 +141,82 @@ PROGRAM QUADRATICTETRAHEDRASIMPLEXEXAMPLE
   CALL MPI_BCAST(NUMBER_GLOBAL_Z_ELEMENTS,1,MPI_INTEGER,0,MPI_COMM_WORLD,MPI_IERROR)
 
   !Start the creation of a new RC coordinate system
-  CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
-  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_Initialise(CoordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   !Set the coordinate system to be 3D
-  CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystem,3,Err)
+  CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystem,3,Err)
   !Finish the creation of the coordinate system
-  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Start the creation of the region
-  CALL CMISSRegion_Initialise(Region,Err)
-  CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  CALL cmfe_Region_Initialise(Region,Err)
+  CALL cmfe_Region_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
   !Set the regions coordinate system to the 3D RC coordinate system that we have created
-  CALL CMISSRegion_CoordinateSystemSet(Region,CoordinateSystem,Err)
+  CALL cmfe_Region_CoordinateSystemSet(Region,CoordinateSystem,Err)
   !Finish the creation of the region
-  CALL CMISSRegion_CreateFinish(Region,Err)
+  CALL cmfe_Region_CreateFinish(Region,Err)
 
   !Start the creation of a basis 
-  CALL CMISSBasis_Initialise(Basis,Err)
-  CALL CMISSBasis_CreateStart(BasisUserNumber,Basis,Err)
+  CALL cmfe_Basis_Initialise(Basis,Err)
+  CALL cmfe_Basis_CreateStart(BasisUserNumber,Basis,Err)
   !Set the type to be a Simplex basis
-  CALL CMISSBasis_TypeSet(Basis,CMISS_BASIS_SIMPLEX_TYPE,Err)
+  CALL cmfe_Basis_TypeSet(Basis,CMFE_BASIS_SIMPLEX_TYPE,Err)
   !Set the basis to be a tetrahedral basis
-  CALL CMISSBasis_NumberOfXiSet(Basis,3,Err)
+  CALL cmfe_Basis_NumberOfXiSet(Basis,3,Err)
   !Set the interpolation to be quadratic
-  CALL CMISSBasis_InterpolationXiSet(Basis,(/CMISS_BASIS_QUADRATIC_SIMPLEX_INTERPOLATION, &
-    & CMISS_BASIS_QUADRATIC_SIMPLEX_INTERPOLATION,CMISS_BASIS_QUADRATIC_SIMPLEX_INTERPOLATION/),Err)
+  CALL cmfe_Basis_InterpolationXiSet(Basis,[CMFE_BASIS_QUADRATIC_SIMPLEX_INTERPOLATION, &
+    & CMFE_BASIS_QUADRATIC_SIMPLEX_INTERPOLATION,CMFE_BASIS_QUADRATIC_SIMPLEX_INTERPOLATION],Err)
   !Finish the creation of the basis
-  CALL CMISSBasis_CreateFinish(Basis,Err)
+  CALL cmfe_Basis_CreateFinish(Basis,Err)
 
   !Start the creation of a generated mesh in the region
-  CALL CMISSGeneratedMesh_Initialise(GeneratedMesh,Err)
-  CALL CMISSGeneratedMesh_CreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
+  CALL cmfe_GeneratedMesh_Initialise(GeneratedMesh,Err)
+  CALL cmfe_GeneratedMesh_CreateStart(GeneratedMeshUserNumber,Region,GeneratedMesh,Err)
   !Set up a regular x*y mesh
-  CALL CMISSGeneratedMesh_TypeSet(GeneratedMesh,CMISS_GENERATED_MESH_REGULAR_MESH_TYPE,Err)
+  CALL cmfe_GeneratedMesh_TypeSet(GeneratedMesh,CMFE_GENERATED_MESH_REGULAR_MESH_TYPE,Err)
   !Set the default basis
-  CALL CMISSGeneratedMesh_BasisSet(GeneratedMesh,Basis,Err)   
+  CALL cmfe_GeneratedMesh_BasisSet(GeneratedMesh,Basis,Err)   
   !Define the mesh on the region
-  CALL CMISSGeneratedMesh_ExtentSet(GeneratedMesh,(/WIDTH,HEIGHT,LENGTH/),Err)
-  CALL CMISSGeneratedMesh_NumberOfElementsSet(GeneratedMesh,(/NUMBER_GLOBAL_X_ELEMENTS, &
-    NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS/),Err)
+  CALL cmfe_GeneratedMesh_ExtentSet(GeneratedMesh,[WIDTH,HEIGHT,LENGTH],Err)
+  CALL cmfe_GeneratedMesh_NumberOfElementsSet(GeneratedMesh,[NUMBER_GLOBAL_X_ELEMENTS, &
+    NUMBER_GLOBAL_Y_ELEMENTS,NUMBER_GLOBAL_Z_ELEMENTS],Err)
   !Finish the creation of a generated mesh in the region
-  CALL CMISSMesh_Initialise(Mesh,Err)
-  CALL CMISSGeneratedMesh_CreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
+  CALL cmfe_Mesh_Initialise(Mesh,Err)
+  CALL cmfe_GeneratedMesh_CreateFinish(GeneratedMesh,MeshUserNumber,Mesh,Err)
 
   !Create a decomposition
-  CALL CMISSDecomposition_Initialise(Decomposition,Err)
-  CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
+  CALL cmfe_Decomposition_Initialise(Decomposition,Err)
+  CALL cmfe_Decomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
-  CALL CMISSDecomposition_TypeSet(Decomposition,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
-  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
+  CALL cmfe_Decomposition_TypeSet(Decomposition,CMFE_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL cmfe_Decomposition_NumberOfDomainsSet(Decomposition,NumberOfComputationalNodes,Err)
   !Finish the decomposition
-  CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
+  CALL cmfe_Decomposition_CreateFinish(Decomposition,Err)
   
   !Start to create a default (geometric) field on the region
-  CALL CMISSField_Initialise(GeometricField,Err)
-  CALL CMISSField_CreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
+  CALL cmfe_Field_Initialise(GeometricField,Err)
+  CALL cmfe_Field_CreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
   !Set the decomposition to use
-  CALL CMISSField_MeshDecompositionSet(GeometricField,Decomposition,Err)
+  CALL cmfe_Field_MeshDecompositionSet(GeometricField,Decomposition,Err)
   !Set the domain to be used by the field components.
-  CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,1,1,Err)
-  CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,2,1,Err)
-  CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,3,1,Err)
+  CALL cmfe_Field_ComponentMeshComponentSet(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,1,1,Err)
+  CALL cmfe_Field_ComponentMeshComponentSet(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,2,1,Err)
+  CALL cmfe_Field_ComponentMeshComponentSet(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,3,1,Err)
   !Finish creating the field
-  CALL CMISSField_CreateFinish(GeometricField,Err)
+  CALL cmfe_Field_CreateFinish(GeometricField,Err)
 
   !Update the geometric field parameters
-  CALL CMISSGeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
+  CALL cmfe_GeneratedMesh_GeometricParametersCalculate(GeneratedMesh,GeometricField,Err)
   
   !Export the fields
-  CALL CMISSFields_Initialise(Fields,Err)
-  CALL CMISSFields_Create(Region,Fields,Err)
-  CALL CMISSFields_NodesExport(Fields,"QuadraticTetrahedraSimplex","FORTRAN",Err)
-  CALL CMISSFields_ElementsExport(Fields,"QuadraticTetrahedraSimplex","FORTRAN",Err)
-  CALL CMISSFields_Finalise(Fields,Err)
+  CALL cmfe_Fields_Initialise(Fields,Err)
+  CALL cmfe_Fields_Create(Region,Fields,Err)
+  CALL cmfe_Fields_NodesExport(Fields,"QuadraticTetrahedraSimplex","FORTRAN",Err)
+  CALL cmfe_Fields_ElementsExport(Fields,"QuadraticTetrahedraSimplex","FORTRAN",Err)
+  CALL cmfe_Fields_Finalise(Fields,Err)
   
   !Finialise CMISS
-  CALL CMISSFinalise(Err)
+  CALL cmfe_Finalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
   

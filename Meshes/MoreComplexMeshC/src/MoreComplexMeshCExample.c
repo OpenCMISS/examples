@@ -43,40 +43,59 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "opencmiss.h"
+#include "opencmiss/iron.h"
 
 #define STRING_SIZE 20
 
 #define REGION_USER_NUMBER 1
 
+#define CHECK_ERROR(S) \
+  if(Err != CMFE_NO_ERROR) { \
+    if(Err == CMFE_ERROR_CONVERTING_POINTER) { \
+      fprintf(stderr,"Error: %s: Error converting pointer.\n",(S)); \
+    } \
+    else if(Err == CMFE_POINTER_IS_NULL) { \
+      fprintf(stderr,"Error: %s: Pointer is null.\n",(S)); \
+    } \
+    else if(Err == CMFE_POINTER_NOT_NULL) { \
+      fprintf(stderr,"Error: %s: Pointer is not null.\n",(S)); \
+    } \
+    else if(Err == CMFE_COULD_NOT_ALLOCATE_POINTER) { \
+      fprintf(stderr,"Error: %s: Could not allocate pointer.\n",(S)); \
+    } \
+    exit(Err); \
+  }
+
 int main() 
 {
   /* int WorldCoordinateSystemUserNumber;
      int WorldRegionUserNumber; */
-  CMISSCoordinateSystemType WorldCoordinateSystem=(CMISSCoordinateSystemType)NULL;
-  CMISSRegionType WorldRegion=(CMISSRegionType)NULL,Region=(CMISSRegionType)NULL;
+  cmfe_CoordinateSystemType WorldCoordinateSystem=(cmfe_CoordinateSystemType)NULL;
+  cmfe_RegionType WorldRegion=(cmfe_RegionType)NULL,Region=(cmfe_RegionType)NULL;
   char Label[STRING_SIZE];
   int Err;
 
-  /* Err = CMISSInitialiseNum(&WorldCoordinateSystemUserNumber,&WorldRegionUserNumber); */
-  
-  if(CMISSInitialise(&WorldCoordinateSystem,&WorldRegion) == CMISSNoError)
+  Err = cmfe_CoordinateSystem_Initialise(&WorldCoordinateSystem);
+  CHECK_ERROR("Initialising world coordinate system");
+  Err = cmfe_Region_Initialise(&WorldRegion);
+  CHECK_ERROR("Initialising world region");
+  if(cmfe_Initialise(WorldCoordinateSystem,WorldRegion) == CMFE_NO_ERROR)
     {
 
-      Err = CMISSRegion_LabelGet(WorldRegion,STRING_SIZE,Label);
+      Err = cmfe_Region_LabelGet(WorldRegion,STRING_SIZE,Label);
       printf("The world region label is '%s'.\n",Label);
 
-      Err = CMISSRegion_Initialise(&Region);
-      Err = CMISSRegion_CreateStart(REGION_USER_NUMBER,WorldRegion,Region);
-      Err = CMISSRegion_LabelSet(Region,8,"Testing");
-      Err = CMISSRegion_CreateFinish(Region);
+      Err = cmfe_Region_Initialise(&Region);
+      Err = cmfe_Region_CreateStart(REGION_USER_NUMBER,WorldRegion,Region);
+      Err = cmfe_Region_LabelSet(Region,8,"Testing");
+      Err = cmfe_Region_CreateFinish(Region);
 
-      Err = CMISSRegion_LabelGet(Region,STRING_SIZE,Label);	       
+      Err = cmfe_Region_LabelGet(Region,STRING_SIZE,Label);	       
       printf("The region label is '%s'.\n",Label);
 
-      Err = CMISSRegion_Finalise(&Region);
+      Err = cmfe_Region_Finalise(&Region);
 
-      Err = CMISSFinalise();
+      Err = cmfe_Finalise();
     }
 
   return Err;

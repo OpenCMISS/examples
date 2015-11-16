@@ -18,7 +18,7 @@
 #> License for the specific language governing rights and limitations
 #> under the License.
 #>
-#> The Original Code is openCMISS
+#> The Original Code is OpenCMISS
 #>
 #> The Initial Developer of the Original Code is University of Auckland,
 #> Auckland, New Zealand and University of Oxford, Oxford, United
@@ -49,7 +49,7 @@
 #<
 
 from numpy import pi
-from opencmiss import CMISS as iron
+from opencmiss import iron
 
 import prolate_spheroid_geometry
 
@@ -179,9 +179,11 @@ geometry.setFibres(fibreField)
 # This defines the type of equations to solve
 equationsSetField = iron.Field()
 equationsSet = iron.EquationsSet()
+equationsSetSpecification = [iron.EquationsSetClasses.ELASTICITY, 
+                             iron.EquationsSetTypes.FINITE_ELASTICITY,
+                             constitutiveRelation]
 equationsSet.CreateStart(equationsSetUserNumber, region, fibreField,
-    iron.EquationsSetClasses.ELASTICITY, iron.EquationsSetTypes.FINITE_ELASTICITY,
-    constitutiveRelation, equationsSetFieldUserNumber, equationsSetField)
+    equationsSetSpecification, equationsSetFieldUserNumber, equationsSetField)
 equationsSet.CreateFinish()
 
 # Create the material field, used for setting constitutive parameters
@@ -276,9 +278,8 @@ equationsSet.EquationsCreateFinish()
 problem = iron.Problem()
 problemSpecification = [iron.ProblemClasses.ELASTICITY,
         iron.ProblemTypes.FINITE_ELASTICITY,
-        iron.ProblemSubTypes.NONE]
-problem.CreateStart(problemUserNumber)
-problem.SpecificationSet(*problemSpecification)
+        iron.ProblemSubtypes.NONE]
+problem.CreateStart(problemUserNumber, problemSpecification)
 problem.CreateFinish()
 
 # Create the problem control loops
@@ -298,8 +299,7 @@ solver = iron.Solver()
 problem.SolversCreateStart()
 problem.SolverGet([iron.ControlLoopIdentifiers.NODE], 1, solver)
 solver.OutputTypeSet(iron.SolverOutputTypes.PROGRESS)
-solver.NewtonJacobianCalculationTypeSet(
-        iron.JacobianCalculationTypes.EQUATIONS)
+solver.NewtonJacobianCalculationTypeSet(iron.JacobianCalculationTypes.EQUATIONS)
 solver.NewtonRelativeToleranceSet(1.0e-8)
 solver.NewtonAbsoluteToleranceSet(1.0e-8)
 solver.NewtonSolutionToleranceSet(1.0e-8)

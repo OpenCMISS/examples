@@ -49,9 +49,10 @@
 !> Main program
 PROGRAM MORECOMPLEXMESHEXAMPLE
 
-  USE OPENCMISS
-#ifndef NOMPIMOD
-  USE MPI
+  USE OpenCMISS
+  USE OpenCMISS_Iron
+ #ifndef NOMPIMOD
+   USE MPI
 #endif
 
 #ifdef WIN32
@@ -85,15 +86,15 @@ PROGRAM MORECOMPLEXMESHEXAMPLE
 
   !CMISS variables
 
-  TYPE(CMISSBasisType) :: Basis1,Basis2
-  TYPE(CMISSCoordinateSystemType) :: CoordinateSystem,WorldCoordinateSystem
-  TYPE(CMISSDecompositionType) :: Decomposition
-  TYPE(CMISSFieldType) :: GeometricField
-  TYPE(CMISSFieldsType) :: Fields
-  TYPE(CMISSMeshType) :: Mesh
-  TYPE(CMISSMeshElementsType) :: MeshElements1,MeshElements2
-  TYPE(CMISSNodesType) :: Nodes
-  TYPE(CMISSRegionType) :: Region,WorldRegion
+  TYPE(cmfe_BasisType) :: Basis1,Basis2
+  TYPE(cmfe_CoordinateSystemType) :: CoordinateSystem,WorldCoordinateSystem
+  TYPE(cmfe_DecompositionType) :: Decomposition
+  TYPE(cmfe_FieldType) :: GeometricField
+  TYPE(cmfe_FieldsType) :: Fields
+  TYPE(cmfe_MeshType) :: Mesh
+  TYPE(cmfe_MeshElementsType) :: MeshElements1,MeshElements2
+  TYPE(cmfe_NodesType) :: Nodes
+  TYPE(cmfe_RegionType) :: Region,WorldRegion
 
 #ifdef WIN32
   !Quickwin type
@@ -117,93 +118,93 @@ PROGRAM MORECOMPLEXMESHEXAMPLE
 #endif
 
   !Intialise OpenCMISS
-  CALL CMISSInitialise(WorldCoordinateSystem,WorldRegion,Err)
-  CALL CMISSErrorHandlingModeSet(CMISS_ERRORS_TRAP_ERROR,Err)
+  CALL cmfe_Initialise(WorldCoordinateSystem,WorldRegion,Err)
+  CALL cmfe_ErrorHandlingModeSet(CMFE_ERRORS_TRAP_ERROR,Err)
   
   NUMBER_OF_DOMAINS=1
 
   !Start the creation of a new RC coordinate system
-  CALL CMISSCoordinateSystem_Initialise(CoordinateSystem,Err)
-  CALL CMISSCoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_Initialise(CoordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_CreateStart(CoordinateSystemUserNumber,CoordinateSystem,Err)
   !Set the coordinate system to be 2D
-  CALL CMISSCoordinateSystem_DimensionSet(CoordinateSystem,2,Err)
+  CALL cmfe_CoordinateSystem_DimensionSet(CoordinateSystem,2,Err)
   !Finish the creation of the coordinate system
-  CALL CMISSCoordinateSystem_CreateFinish(CoordinateSystem,Err)
+  CALL cmfe_CoordinateSystem_CreateFinish(CoordinateSystem,Err)
 
   !Start the creation of the region
-  CALL CMISSRegion_Initialise(Region,Err)
-  CALL CMISSRegion_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
+  CALL cmfe_Region_Initialise(Region,Err)
+  CALL cmfe_Region_CreateStart(RegionUserNumber,WorldRegion,Region,Err)
   !Set the regions coordinate system to the 2D RC coordinate system that we have created
-  CALL CMISSRegion_CoordinateSystemSet(Region,CoordinateSystem,Err)
+  CALL cmfe_Region_CoordinateSystemSet(Region,CoordinateSystem,Err)
   !Finish the creation of the region
-  CALL CMISSRegion_CreateFinish(Region,Err)
+  CALL cmfe_Region_CreateFinish(Region,Err)
 
   !Start the creation of a bilinear-Lagrange basis
-  CALL CMISSBasis_Initialise(Basis1,Err)
-  CALL CMISSBasis_CreateStart(Basis1UserNumber,Basis1,Err)
+  CALL cmfe_Basis_Initialise(Basis1,Err)
+  CALL cmfe_Basis_CreateStart(Basis1UserNumber,Basis1,Err)
   !Set the basis to be a bilinear Lagrange basis
-  CALL CMISSBasis_NumberOfXiSet(Basis1,2,Err)
+  CALL cmfe_Basis_NumberOfXiSet(Basis1,2,Err)
   !Finish the creation of the basis
-  CALL CMISSBasis_CreateFinish(Basis1,Err)
+  CALL cmfe_Basis_CreateFinish(Basis1,Err)
   
   !Start the creation of a bicubic-Hermite basis
-  CALL CMISSBasis_Initialise(Basis2,Err)
-  CALL CMISSBasis_CreateStart(Basis2UserNumber,Basis2,Err)
+  CALL cmfe_Basis_Initialise(Basis2,Err)
+  CALL cmfe_Basis_CreateStart(Basis2UserNumber,Basis2,Err)
   !Set the basis to be a bilinear Lagrange basis
-  CALL CMISSBasis_NumberOfXiSet(Basis2,2,Err)
+  CALL cmfe_Basis_NumberOfXiSet(Basis2,2,Err)
   !Set the basis to be a bicubic Hermite basis
-  CALL CMISSBasis_InterpolationXiSet(Basis2,[CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION,CMISS_BASIS_CUBIC_HERMITE_INTERPOLATION],Err)
+  CALL cmfe_Basis_InterpolationXiSet(Basis2,[CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION,CMFE_BASIS_CUBIC_HERMITE_INTERPOLATION],Err)
   !Finish the creation of the basis
-  CALL CMISSBasis_CreateFinish(Basis2,Err)
+  CALL cmfe_Basis_CreateFinish(Basis2,Err)
 
   !Create a mesh
   !The mesh will consist of two elements. There will be two mesh components. For the first component the first element is
   !bilinear Lagrange and the second element bicubic Hermite. For the second component the first element is bicubic Hermite and
   !the second element is bilinear Lagrange.
-  CALL CMISSNodes_Initialise(Nodes,Err)
-  CALL CMISSNodes_CreateStart(Region,6,Nodes,Err)
-  CALL CMISSNodes_CreateFinish(Nodes,Err)
+  CALL cmfe_Nodes_Initialise(Nodes,Err)
+  CALL cmfe_Nodes_CreateStart(Region,6,Nodes,Err)
+  CALL cmfe_Nodes_CreateFinish(Nodes,Err)
   
-  CALL CMISSMesh_Initialise(Mesh,Err)
-  CALL CMISSMesh_CreateStart(MeshUserNumber,Region,2,Mesh,Err)
-  CALL CMISSMesh_NumberOfElementsSet(Mesh,2,Err)
-  CALL CMISSMesh_NumberOfComponentsSet(Mesh,2,Err)
+  CALL cmfe_Mesh_Initialise(Mesh,Err)
+  CALL cmfe_Mesh_CreateStart(MeshUserNumber,Region,2,Mesh,Err)
+  CALL cmfe_Mesh_NumberOfElementsSet(Mesh,2,Err)
+  CALL cmfe_Mesh_NumberOfComponentsSet(Mesh,2,Err)
   
-  CALL CMISSMeshElements_Initialise(MeshElements1,Err)
-  CALL CMISSMeshElements_CreateStart(Mesh,1,Basis2,MeshElements1,Err)
-  CALL CMISSMeshElements_NodesSet(MeshElements1,1,[1,2,4,5],Err)
-  CALL CMISSMeshElements_BasisSet(MeshElements1,2,Basis1,Err)
-  CALL CMISSMeshElements_NodesSet(MeshElements1,2,[2,3,5,6],Err)
-  CALL CMISSMeshElements_CreateFinish(MeshElements1,Err)
+  CALL cmfe_MeshElements_Initialise(MeshElements1,Err)
+  CALL cmfe_MeshElements_CreateStart(Mesh,1,Basis2,MeshElements1,Err)
+  CALL cmfe_MeshElements_NodesSet(MeshElements1,1,[1,2,4,5],Err)
+  CALL cmfe_MeshElements_BasisSet(MeshElements1,2,Basis1,Err)
+  CALL cmfe_MeshElements_NodesSet(MeshElements1,2,[2,3,5,6],Err)
+  CALL cmfe_MeshElements_CreateFinish(MeshElements1,Err)
 
-  CALL CMISSMeshElements_Initialise(MeshElements2,Err)
-  CALL CMISSMeshElements_CreateStart(Mesh,2,Basis1,MeshElements2,Err)
-  CALL CMISSMeshElements_NodesSet(MeshElements2,1,[1,2,4,5],Err)
-  CALL CMISSMeshElements_BasisSet(MeshElements2,2,Basis2,Err)
-  CALL CMISSMeshElements_NodesSet(MeshElements2,2,[2,3,5,6],Err)
-  CALL CMISSMeshElements_CreateFinish(MeshElements2,Err)
+  CALL cmfe_MeshElements_Initialise(MeshElements2,Err)
+  CALL cmfe_MeshElements_CreateStart(Mesh,2,Basis1,MeshElements2,Err)
+  CALL cmfe_MeshElements_NodesSet(MeshElements2,1,[1,2,4,5],Err)
+  CALL cmfe_MeshElements_BasisSet(MeshElements2,2,Basis2,Err)
+  CALL cmfe_MeshElements_NodesSet(MeshElements2,2,[2,3,5,6],Err)
+  CALL cmfe_MeshElements_CreateFinish(MeshElements2,Err)
 
-  CALL CMISSMesh_CreateFinish(Mesh,Err)
+  CALL cmfe_Mesh_CreateFinish(Mesh,Err)
 
   !Create a decomposition
-  CALL CMISSDecomposition_Initialise(Decomposition,Err)
-  CALL CMISSDecomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
+  CALL cmfe_Decomposition_Initialise(Decomposition,Err)
+  CALL cmfe_Decomposition_CreateStart(DecompositionUserNumber,Mesh,Decomposition,Err)
   !Set the decomposition to be a general decomposition with the specified number of domains
-  CALL CMISSDecomposition_TypeSet(Decomposition,CMISS_DECOMPOSITION_CALCULATED_TYPE,Err)
-  CALL CMISSDecomposition_NumberOfDomainsSet(Decomposition,NUMBER_OF_DOMAINS,Err)
+  CALL cmfe_Decomposition_TypeSet(Decomposition,CMFE_DECOMPOSITION_CALCULATED_TYPE,Err)
+  CALL cmfe_Decomposition_NumberOfDomainsSet(Decomposition,NUMBER_OF_DOMAINS,Err)
   !Finish the decomposition
-  CALL CMISSDecomposition_CreateFinish(Decomposition,Err)
+  CALL cmfe_Decomposition_CreateFinish(Decomposition,Err)
   
   !Start to create a default (geometric) field on the region
-  CALL CMISSField_Initialise(GeometricField,Err)
-  CALL CMISSField_CreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
+  CALL cmfe_Field_Initialise(GeometricField,Err)
+  CALL cmfe_Field_CreateStart(GeometricFieldUserNumber,Region,GeometricField,Err)
   !Set the decomposition to use
-  CALL CMISSField_MeshDecompositionSet(GeometricField,Decomposition,Err)
+  CALL cmfe_Field_MeshDecompositionSet(GeometricField,Decomposition,Err)
   !Set the domain to be used by the field components.
-  CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,1,2,Err)
-  CALL CMISSField_ComponentMeshComponentSet(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,2,1,Err)
+  CALL cmfe_Field_ComponentMeshComponentSet(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,1,2,Err)
+  CALL cmfe_Field_ComponentMeshComponentSet(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,2,1,Err)
   !Finish creating the field
-  CALL CMISSField_CreateFinish(GeometricField,Err)
+  CALL cmfe_Field_CreateFinish(GeometricField,Err)
 
   !Set the geometric field values
   !The x (1) component uses the second mesh component,
@@ -211,94 +212,94 @@ PROGRAM MORECOMPLEXMESHEXAMPLE
   !So we don't set x derivatives for nodes 1 and 4
   !and y derivatives for nodes 3 and 6
   !X values
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,1,1,1,0.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,1,2,1,1.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,2,2,1,1.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,3,2,1,0.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,4,2,1,0.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,1,3,1,2.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,2,3,1,1.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,3,3,1,0.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,4,3,1,0.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,1,4,1,0.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,1,5,1,1.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,2,5,1,1.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,3,5,1,0.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,4,5,1,0.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,1,6,1,2.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,2,6,1,1.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,3,6,1,0.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,4,6,1,0.0_CMISSDP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,1,1,0.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,2,1,1.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,2,2,1,1.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,3,2,1,0.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,4,2,1,0.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,3,1,2.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,2,3,1,1.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,3,3,1,0.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,4,3,1,0.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,4,1,0.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,5,1,1.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,2,5,1,1.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,3,5,1,0.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,4,5,1,0.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,6,1,2.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,2,6,1,1.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,3,6,1,0.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,4,6,1,0.0_CMISSRP,Err)
   
   !Y values
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,1,1,2,0.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,2,1,2,0.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,3,1,2,1.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,4,1,2,0.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,1,2,2,0.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,2,2,2,0.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,3,2,2,1.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,4,2,2,0.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,1,3,2,0.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,1,4,2,1.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,2,4,2,0.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,3,4,2,1.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,4,4,2,0.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,1,5,2,1.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,2,5,2,0.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,3,5,2,1.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,4,5,2,0.0_CMISSDP,Err)
-  CALL CMISSField_ParameterSetUpdateNode(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE, &
-    & 1,1,6,2,1.0_CMISSDP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,1,2,0.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,2,1,2,0.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,3,1,2,1.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,4,1,2,0.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,2,2,0.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,2,2,2,0.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,3,2,2,1.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,4,2,2,0.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,3,2,0.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,4,2,1.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,2,4,2,0.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,3,4,2,1.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,4,4,2,0.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,5,2,1.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,2,5,2,0.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,3,5,2,1.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,4,5,2,0.0_CMISSRP,Err)
+  CALL cmfe_Field_ParameterSetUpdateNode(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
+    & 1,1,6,2,1.0_CMISSRP,Err)
 
-  CALL CMISSField_ParameterSetUpdateStart(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
-  CALL CMISSField_ParameterSetUpdateFinish(GeometricField,CMISS_FIELD_U_VARIABLE_TYPE,CMISS_FIELD_VALUES_SET_TYPE,Err)
+  CALL cmfe_Field_ParameterSetUpdateStart(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
+  CALL cmfe_Field_ParameterSetUpdateFinish(GeometricField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,Err)
  
   IF(EXPORT_FIELD) THEN
-    CALL CMISSFields_Initialise(Fields,Err)
-    CALL CMISSFields_Create(Region,Fields,Err)
-    CALL CMISSFields_NodesExport(Fields,"MoreComplexMesh","FORTRAN",Err)
-    CALL CMISSFields_ElementsExport(Fields,"MoreComplexMesh","FORTRAN",Err)
-    CALL CMISSFields_Finalise(Fields,Err)
+    CALL cmfe_Fields_Initialise(Fields,Err)
+    CALL cmfe_Fields_Create(Region,Fields,Err)
+    CALL cmfe_Fields_NodesExport(Fields,"MoreComplexMesh","FORTRAN",Err)
+    CALL cmfe_Fields_ElementsExport(Fields,"MoreComplexMesh","FORTRAN",Err)
+    CALL cmfe_Fields_Finalise(Fields,Err)
   ENDIF
 
   !Finialise CMISS
-  CALL CMISSFinalise(Err)
+  CALL cmfe_Finalise(Err)
 
   WRITE(*,'(A)') "Program successfully completed."
   

@@ -1,0 +1,53 @@
+<?xml version='1.0'?>
+<model cmeta:id="simplegrowth" name="simplegrowth" xmlns="http://www.cellml.org/cellml/1.0#" xmlns:cellml="http://www.cellml.org/cellml/1.0#" xmlns:cmeta="http://www.cellml.org/metadata/1.0#">
+    <units name="millisecond">
+        <unit prefix="milli" units="second"/>
+    </units>
+    <units name="per_millisecond">
+        <unit exponent="-1" prefix="milli" units="second"/>
+    </units>
+    <component name="Main">
+        <variable initial_value="0.02" name="fibrerate" units="per_millisecond"/>
+        <variable initial_value="-0.01" name="sheetrate" units="per_millisecond"/>
+        <variable initial_value="0.005" name="normalrate" units="per_millisecond"/>
+        <variable name="time" units="millisecond"/>
+        <variable initial_value="1.0" name="lambda1" units="dimensionless"/>
+        <variable initial_value="1.0" name="lambda2" units="dimensionless"/>
+        <variable initial_value="1.0" name="lambda3" units="dimensionless"/>
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+                <eq/>
+                <apply>
+                    <diff/>
+                    <bvar>
+                        <ci>time</ci>
+                    </bvar>
+                    <ci>lambda1</ci>
+                </apply>
+                <ci>fibrerate</ci>
+            </apply>
+            <apply>
+                <eq/>
+                <apply>
+                    <diff/>
+                    <bvar>
+                        <ci>time</ci>
+                    </bvar>
+                    <ci>lambda2</ci>
+                </apply>
+                <ci>sheetrate</ci>
+            </apply>
+            <apply>
+                <eq/>
+                <apply>
+                    <diff/>
+                    <bvar>
+                        <ci>time</ci>
+                    </bvar>
+                    <ci>lambda3</ci>
+                </apply>
+                <ci>normalrate</ci>
+            </apply>
+        </math>
+    </component>
+</model>
