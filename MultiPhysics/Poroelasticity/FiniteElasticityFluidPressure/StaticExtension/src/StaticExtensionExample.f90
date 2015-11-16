@@ -48,8 +48,8 @@ PROGRAM POROELASTICITYEXAMPLE
 
   USE OpenCMISS
   USE OpenCMISS_Iron
- #ifndef NOMPIMOD
-   USE MPI
+#ifndef NOMPIMOD
+  USE MPI
 #endif
 
 #ifdef WIN32

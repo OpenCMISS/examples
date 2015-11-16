@@ -50,8 +50,8 @@ PROGRAM VERSIONS3DLAPLACE
 
   USE OpenCMISS
   USE OpenCMISS_Iron
- #ifndef NOMPIMOD
-   USE MPI
+#ifndef NOMPIMOD
+  USE MPI
 #endif
 
 
