@@ -47,10 +47,16 @@ PROGRAM EMBEDDEDMESHEXAMPLE
 
   USE OpenCMISS
   USE OpenCMISS_Iron
+#ifndef NOMPIMOD
   USE MPI
+#endif
 
   IMPLICIT NONE
-  
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
   !Test program parameters
 
   REAL(CMISSRP), PARAMETER :: HEIGHT=1.0_CMISSRP

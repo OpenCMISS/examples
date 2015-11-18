@@ -50,7 +50,9 @@ PROGRAM LAPLACEEXAMPLE
 
   USE OpenCMISS
   USE OpenCMISS_Iron
+#ifndef NOMPIMOD
   USE MPI
+#endif
 
 
 #ifdef WIN32
@@ -58,6 +60,11 @@ PROGRAM LAPLACEEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   !Test program parameters
 

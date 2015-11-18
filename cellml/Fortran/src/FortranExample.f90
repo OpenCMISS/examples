@@ -49,9 +49,15 @@ PROGRAM CELLMLFORTRANEXAMPLE
 
   USE OpenCMISS
   USE OpenCMISS_Iron
+#ifndef NOMPIMOD
   USE MPI
+#endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
 
   !Test program parameters
 

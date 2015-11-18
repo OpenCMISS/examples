@@ -50,7 +50,9 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
 
   USE OpenCMISS
   USE OpenCMISS_Iron
+#ifndef NOMPIMOD
   USE MPI
+#endif
 
 
 #ifdef WIN32
@@ -58,6 +60,10 @@ PROGRAM MONODOMAINBUENOOROVIOEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
 
   !Test program parameters
 

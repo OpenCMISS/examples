@@ -45,7 +45,9 @@ PROGRAM Embedded1DLaplaceExample
 
   USE OpenCMISS
   USE OpenCMISS_Iron
+#ifndef NOMPIMOD
   USE MPI
+#endif
 
 
 #ifdef WIN32
@@ -53,6 +55,11 @@ PROGRAM Embedded1DLaplaceExample
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   !Test program parameters
 

@@ -57,7 +57,9 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
 
   USE OpenCMISS
   USE OpenCMISS_Iron
+#ifndef NOMPIMOD
   USE MPI
+#endif
   USE FIELDML_API
 
 #ifdef WIN32
@@ -71,6 +73,11 @@ PROGRAM NAVIERSTOKESSTATICEXAMPLE
   !PROGRAM VARIABLES AND TYPES
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   !Test program parameters
 

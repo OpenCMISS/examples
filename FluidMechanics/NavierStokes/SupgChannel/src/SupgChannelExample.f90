@@ -59,7 +59,9 @@ PROGRAM SupgChannel
   USE OpenCMISS
   USE OpenCMISS_Iron
   USE FIELDML_API
+#ifndef NOMPIMOD
   USE MPI
+#endif
 
 
 #ifdef WIN32
@@ -73,6 +75,11 @@ PROGRAM SupgChannel
   !PROGRAM VARIABLES AND TYPES
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   !Test program parameters
   INTEGER(CMISSIntg), PARAMETER :: CoordinateSystemUserNumber=1

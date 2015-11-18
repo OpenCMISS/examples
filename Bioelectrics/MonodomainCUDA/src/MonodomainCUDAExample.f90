@@ -53,7 +53,10 @@ PROGRAM MONODOMAINCUDAEXAMPLE
 
   USE OpenCMISS
   USE OpenCMISS_Iron
+#ifndef NOMPIMOD
   USE MPI
+#endif
+
   USE ISO_C_BINDING
 
 #ifdef WIN32
@@ -61,6 +64,10 @@ PROGRAM MONODOMAINCUDAEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
 
   !Test program parameters
 

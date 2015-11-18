@@ -47,8 +47,9 @@
 
 !> Main program
 PROGRAM ANALYTIC_LINEAR_ELASTICITYEXAMPLE
-
+#ifndef NOMPIMOD
   USE MPI
+#endif
   USE OpenCMISS
   USE OpenCMISS_Iron
   USE TEST_FRAMEWORK_ROUTINES
@@ -58,6 +59,11 @@ PROGRAM ANALYTIC_LINEAR_ELASTICITYEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   !Test program parameters
 

@@ -47,10 +47,13 @@
 
 !> Main program
 PROGRAM ANALYTICLAPLACEEXAMPLE
-
+#ifndef NOMPIMOD
   USE MPI
+#endif
+
   USE OpenCMISS
   USE OpenCMISS_Iron
+
   USE TEST_FRAMEWORK_ROUTINES
 
 #ifdef WIN32
@@ -58,6 +61,11 @@ PROGRAM ANALYTICLAPLACEEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   !Test program parameters
 

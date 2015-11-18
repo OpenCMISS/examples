@@ -45,8 +45,9 @@
 
 !> Main program
 PROGRAM LinearElasticity3DHermiteBasis
-
+#ifndef NOMPIMOD
   USE MPI
+#endif
   USE OpenCMISS
   USE OpenCMISS_Iron
 
@@ -55,6 +56,11 @@ PROGRAM LinearElasticity3DHermiteBasis
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   !Test program parameters
 

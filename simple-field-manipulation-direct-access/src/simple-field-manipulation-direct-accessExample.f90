@@ -50,12 +50,19 @@
 
 !> Main program
 PROGRAM SimpleFieldManipulationExample
+  
+#ifndef NOMPIMOD
+  USE MPI
+#endif
 
   USE OpenCMISS
   USE OpenCMISS_Iron
-  USE MPI
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
 
   !Test program parameters
 

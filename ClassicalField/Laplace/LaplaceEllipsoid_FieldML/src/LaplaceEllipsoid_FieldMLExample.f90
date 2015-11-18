@@ -50,7 +50,9 @@ PROGRAM LAPLACEELLIPSOIDEXAMPLE
 
   USE OpenCMISS
   USE OpenCMISS_Iron
+#ifndef NOMPIMOD
   USE MPI
+#endif
   USE FIELDML_API
   USE FIELDML_TYPES
 
@@ -59,6 +61,11 @@ PROGRAM LAPLACEELLIPSOIDEXAMPLE
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   !Test program parameters
 

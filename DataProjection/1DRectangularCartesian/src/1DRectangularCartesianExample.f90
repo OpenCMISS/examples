@@ -40,8 +40,9 @@
 
 !> Main program
 PROGRAM DataProjection1DRectangularCartesian
-
+#ifndef NOMPIMOD
   USE MPI
+#endif
   USE OpenCMISS
   USE OpenCMISS_Iron
 
@@ -50,6 +51,11 @@ PROGRAM DataProjection1DRectangularCartesian
 #endif
 
   IMPLICIT NONE
+
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
 
   !Program parameters
   INTEGER(CMISSIntg),PARAMETER :: BasisUserNumber=1  

@@ -59,7 +59,9 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
 
   USE OPENCMISS
   USE FLUID_MECHANICS_IO_ROUTINES
+#ifndef NOMPIMOD
   USE MPI
+#endif
 
 #ifdef WIN32
   USE IFQWINCMISS
@@ -73,9 +75,12 @@ PROGRAM ANALYTICNAVIERSTOKESEXAMPLE
 
   IMPLICIT NONE
 
+#ifdef NOMPIMOD
+#include "mpif.h"
+#endif
+
   INTEGER(CMFEIntg), PARAMETER :: EquationsSetFieldUserNumber=1337
   TYPE(cmfe_FieldType) :: EquationsSetField
-
 
   !Test program parameters
 
