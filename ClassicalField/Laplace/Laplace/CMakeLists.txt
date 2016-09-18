@@ -11,11 +11,12 @@ include(./OpenCMISS.cmake)
 # Project setup
 # -------------
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
-project(OpenCMISS-Example VERSION 1.0 LANGUAGES Fortran)
-enable_language(C OPTIONAL)
+project(OpenCMISS-Example VERSION 1.0 LANGUAGES Fortran C)
+#enable_language(C OPTIONAL)
 enable_testing()
 
 message(STATUS "C Compiler: ${CMAKE_C_COMPILER}")
+message(STATUS "FORTRAN Compiler: ${CMAKE_Fortran_COMPILER}")
 message(STATUS "MPI: ${MPI}")
 
 
@@ -35,4 +36,7 @@ find_package(OpenCMISS 1.1 REQUIRED COMPONENTS Iron CONFIG)
 # ----------------------
 if (CMAKE_Fortran_COMPILER)
     add_subdirectory(Fortran)
+endif()
+if (CMAKE_C_COMPILER)
+    add_subdirectory(C)
 endif()

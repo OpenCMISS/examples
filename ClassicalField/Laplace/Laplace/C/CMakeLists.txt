@@ -1,5 +1,5 @@
 # Add example executable
-add_executable(laplace_c src/CExample.f90)
+add_executable(laplace_c src/CExample.c)
 
 # Link to opencmiss
 # -----------------
@@ -16,7 +16,7 @@ add_executable(laplace_c src/CExample.f90)
 #     target_link_libraries(${EXAMPLE_BINARY} PRIVATE petsc)
 #
 # All the OpenCMISS dependencies provide a target you can link against corresponding to the (lowercase) component name.
-target_link_libraries(fsi_fortran PRIVATE opencmiss)
+target_link_libraries(laplace_c PRIVATE opencmiss)
 
 # Add a simple test that runs the executable
 add_test(NAME Laplace_C COMMAND laplace_c)
