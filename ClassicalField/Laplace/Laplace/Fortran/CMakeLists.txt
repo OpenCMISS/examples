@@ -27,8 +27,8 @@ target_compile_options(laplace_fortran PRIVATE ${PROC_OPT})
 target_link_libraries(laplace_fortran PRIVATE opencmiss)
 
 # Add a simple test that runs the executable
-add_test(NAME Fsi_Fortran COMMAND laplace_fortran)
-add_opencmiss_environment(Fsi_Fortran)
+add_test(NAME Laplace_Fortran COMMAND laplace_fortran)
+add_opencmiss_environment(Laplace_Fortran)
 
 ###################
 # Developer notice!
