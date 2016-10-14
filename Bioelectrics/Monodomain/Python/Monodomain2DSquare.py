@@ -2,11 +2,12 @@
 
 #DOC-START imports
 import sys, os, math
-# Make sure $OPENCMISS_ROOT/cm/bindings/python is first in our PYTHONPATH.
-sys.path.insert(1, os.path.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
+# Make required inclusions into PYTHONPATH.
+sys.path.append( os.environ['OPENCMISS_INSTALL_DIR'] + '/python' )
+sys.path.append( os.environ['OPENCMISS_INSTALL_DIR'] + '/x86_64_linux/gnu-C5.4-gnu-F5.4/mpich_release/release/python/RELEASE' )
 
 # Intialise OpenCMISS
-from opencmiss import iron
+from opencmiss.iron import iron
 #DOC-END imports
 
 # Set problem parameters

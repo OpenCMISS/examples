@@ -165,12 +165,14 @@ PROGRAM MONODOMAINEXAMPLE
     WRITE(*, '("CellML File: ", A)') CellmlFile
     inquire(file=CellmlFile, exist=fileExist)
     if (.not. fileExist) then
-      write(*, '(">>ERROR: File does not exist")')
+     write(*, '(">>ERROR: File does not exist")')
       stop
     endif
   ELSE
     !If there are not enough arguments die horribly
+    WRITE(*,*) " "
     WRITE(*,'(">>USAGE: ",A)') "MonodomainExample <PDE step size> <stop time> <output frequency> <CellML Model URL>"
+    WRITE(*,*) " "
     STOP
   ENDIF
 
