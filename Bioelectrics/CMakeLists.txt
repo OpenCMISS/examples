@@ -6,17 +6,13 @@
 # For more information see http://www.opencmiss.org/documentation
 
 # Include the OpenCMISS initalisation & macro definition file.
-include(../../OpenCMISS.cmake)
+include(../OpenCMISS.cmake)
 
 # Project setup
 # -------------
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 project(OpenCMISS-Example VERSION 1.0 LANGUAGES Fortran C)
 enable_testing()
-
-message(STATUS "FORTRAN Compiler: ${CMAKE_Fortran_COMPILER}")
-message(STATUS "MPI: ${MPI}")
-
 
 # Find OpenCMISS
 # --------------
@@ -33,5 +29,9 @@ find_package(OpenCMISS 1.1 REQUIRED COMPONENTS Iron CONFIG)
 # CMake application code
 # ----------------------
 if (CMAKE_Fortran_COMPILER)
-    add_subdirectory(Fortran)
+    add_subdirectory(Bidomain)
+    add_subdirectory(Monodomain/Fortran)
+    add_subdirectory(Monodomain_Shiqiang)
+    add_subdirectory(MonodomainTP06)
+    add_subdirectory(MonodomainBuenoOrovio)
 endif()
