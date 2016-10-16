@@ -51,10 +51,15 @@
 
 # Add Python bindings directory to PATH
 import sys, os
-sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
+sys.path.append(os.sep.join((os.environ['OPENCMISS_INSTALL_DIR'],
+                             'python')))
+sys.path.append(os.sep.join((os.environ['OPENCMISS_INSTALL_DIR'],
+                             'x86_64_linux/intel-C16.0-intel-F16.0/intel_release/release',
+                             'python',
+                             'RELEASE')))
 
 # Intialise OpenCMISS-Iron
-from opencmiss import iron
+from opencmiss.iron import iron
 
 parameters.parse()
 

@@ -6,19 +6,13 @@
 # For more information see http://www.opencmiss.org/documentation
 
 # Include the OpenCMISS initalisation & macro definition file.
-include(./OpenCMISS.cmake)
+include(../../OpenCMISS.cmake)
 
 # Project setup
 # -------------
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 project(OpenCMISS-Example VERSION 1.0 LANGUAGES Fortran C)
-#enable_language(C OPTIONAL)
 enable_testing()
-
-message(STATUS "C Compiler: ${CMAKE_C_COMPILER}")
-message(STATUS "FORTRAN Compiler: ${CMAKE_Fortran_COMPILER}")
-message(STATUS "MPI: ${MPI}")
-
 
 # Find OpenCMISS
 # --------------
@@ -35,8 +29,13 @@ find_package(OpenCMISS 1.1 REQUIRED COMPONENTS Iron CONFIG)
 # CMake application code
 # ----------------------
 if (CMAKE_Fortran_COMPILER)
-    add_subdirectory(Fortran)
-endif()
-if (CMAKE_C_COMPILER)
-    add_subdirectory(C)
+    add_subdirectory(Embedded1DLaplace)
+    add_subdirectory(Embedded2DLaplace)
+    add_subdirectory(Laplace/C)
+    add_subdirectory(Laplace/Fortran)
+    add_subdirectory(GeneralisedLaplace/Fortran)
+    add_subdirectory(LaplaceEllipsoid)
+    add_subdirectory(NumberLaplace)
+    add_subdirectory(ParallelLaplace)
+    add_subdirectory(SimplexLaplace/Linear)
 endif()

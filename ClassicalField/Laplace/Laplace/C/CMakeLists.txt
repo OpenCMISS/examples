@@ -15,7 +15,6 @@ add_executable(laplace_c src/CExample.c)
 #     find_package(PETSC <PETSC_VERSION> REQUIRED)
 #     target_link_libraries(${EXAMPLE_BINARY} PRIVATE petsc)
 #
-# All the OpenCMISS dependencies provide a target you can link against corresponding to the (lowercase) component name.
 target_link_libraries(laplace_c PRIVATE opencmiss)
 
 # Add a simple test that runs the executable
