@@ -49,7 +49,13 @@
 from __future__ import print_function
 
 import numpy as np
-from opencmiss import iron
+import sys, os
+
+sys.path.append( os.sep.join((os.environ['OPENCMISS_INSTALL_DIR'], 'python')) )
+sys.path.append( os.sep.join((os.environ['OPENCMISS_INSTALL_DIR'],
+                             'x86_64_linux/gnu-C5.4-gnu-F5.4/mpich2_release/release/python/RELEASE')) )
+
+from opencmiss.iron import iron
 
 
 # Problem parameters:
