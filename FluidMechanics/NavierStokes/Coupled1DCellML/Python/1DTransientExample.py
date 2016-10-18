@@ -112,8 +112,12 @@ from scipy.fftpack import fft,ifft
 from scipy.sparse  import linalg
 from scipy.linalg  import inv,eig
 from scipy.special import jn
-sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
-from opencmiss import iron
+
+sys.path.append( os.sep.join((os.environ['OPENCMISS_INSTALL_DIR'], 'python')) )
+sys.path.append( os.sep.join((os.environ['OPENCMISS_INSTALL_DIR'],
+                             'x86_64_linux/gnu-C5.4-gnu-F5.4/mpich2_release/release/python/RELEASE')) )
+
+from opencmiss.iron import iron
 
 # Diagnostics
 #iron.DiagnosticsSetOn(iron.DiagnosticTypes.ALL,[1,2,3,4,5],"Diagnostics",[""])
