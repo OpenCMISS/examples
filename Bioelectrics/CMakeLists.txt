@@ -30,7 +30,7 @@ find_package(OpenCMISS 1.1 REQUIRED COMPONENTS Iron CONFIG)
 # ----------------------
 if (CMAKE_Fortran_COMPILER)
     add_subdirectory(Bidomain)
-    add_subdirectory(Monodomain/Fortran)
+    add_subdirectory(Monodomain)
     add_subdirectory(Monodomain_Shiqiang)
     add_subdirectory(MonodomainTP06)
     add_subdirectory(MonodomainBuenoOrovio)

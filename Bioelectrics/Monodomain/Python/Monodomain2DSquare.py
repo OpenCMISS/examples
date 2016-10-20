@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
 #DOC-START imports
-import sys, os, math
+#import sys, os, math
+import math
+
 # Make required inclusions into PYTHONPATH.
-sys.path.append( os.environ['OPENCMISS_INSTALL_DIR'] + '/python' )
-sys.path.append( os.environ['OPENCMISS_INSTALL_DIR'] + '/x86_64_linux/gnu-C5.4-gnu-F5.4/mpich_release/release/python/RELEASE' )
+#sys.path.append( os.environ['OPENCMISS_INSTALL_DIR'] + '/python' )
+#sys.path.append( os.environ['OPENCMISS_INSTALL_DIR'] + '/x86_64_linux/gnu-C5.4-gnu-F5.4/mpich_release/release/python/RELEASE' )
 
 # Intialise OpenCMISS
 from opencmiss.iron import iron
@@ -15,8 +17,8 @@ from opencmiss.iron import iron
 # 2D domain size
 height = 1.0
 width = 1.0
-numberOfXElements = 25
-numberOfYElements = 25
+numberOfXElements = 50
+numberOfYElements = 50
 
 # Materials parameters
 Am = 193.6
