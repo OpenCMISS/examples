@@ -28,10 +28,10 @@ conductivity = 0.1
 # Simulation parameters
 stimValue = 100.0
 stimStop = 0.1
-timeStop = 1.5
+timeStop = 1.0
 odeTimeStep = 0.00001
 pdeTimeStep = 0.001
-outputFrequency = 1
+outputFrequency = 250 
 #DOC-END parameters
 
 #Setup field number handles

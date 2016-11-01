@@ -49,11 +49,6 @@
 
 # Add Python bindings directory to PATH
 import sys, os
-
-sys.path.append( os.sep.join((os.environ['OPENCMISS_INSTALL_DIR'], 'python')) )
-sys.path.append( os.sep.join((os.environ['OPENCMISS_INSTALL_DIR'],
-                             'x86_64_linux/gnu-C5.4-gnu-F5.4/mpich2_release/release/python/RELEASE')) )
-
 import math
 import time
 
@@ -376,7 +371,7 @@ def LidDriven(numberOfElements,cavityDimensions,lidVelocity,viscosity,density,
 #==========================================================
 
 dimensions = [1.0,1.0]
-elementResolutions = [10]
+elementResolutions = [23]
 ReynoldsNumbers = [1000]
 lidVelocity = [1.0,0.0]
 density = 1.0
