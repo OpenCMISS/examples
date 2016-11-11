@@ -338,20 +338,8 @@ PROGRAM WHILE_LOOPEXAMPLE
     & NumberOfNodesInXi2*NumberOfNodesInXi3
 
 !##################################################################################################################################
-!  fast_twitch=.true.
-!  if(fast_twitch) then
-    filename= &
-   &"/home/heidlauf/OpenCMISS/OpenCMISS/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/fast_2014_03_25.xml"
-!   &"/home/heidlauf/OpenCMISS/opencmiss/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/shorten_mod_2011_07_04.xml"
+    filename = "cellModelFiles/fast_2014_03_25.xml"
     STIM_VALUE=1200.0_CMISSRP
-!    STIM_VALUE=8000.0_CMISSRP
-!  else !slow twitch
-!    filename2= &
-!  &"/home/heidlauf/OpenCMISS/opencmiss/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/fast_stim_2012_07_23.xml"
-!  &"/home/heidlauf/OpenCMISS/opencmiss/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/slow_2012_07_23.xml_0.401"
-!  &"/home/heidlauf/OpenCMISS/opencmiss/examples/MultiPhysics/BioelectricFiniteElasticity/cellModelFiles/slow_twitch_2012_01_27.xml"
-!    STIM_VALUE=2000.0_CMISSRP
-!  endif
 !##################################################################################################################################
 
 

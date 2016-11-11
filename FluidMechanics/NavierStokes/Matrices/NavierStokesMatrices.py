@@ -49,9 +49,11 @@ import sys
 import os
 
 # Add OpenCMISS python bindings directory to path so we can import it
-sys.path.append(os.sep.join((
-    os.environ['OPENCMISS_ROOT'], 'cm', 'bindings', 'python')))
-from opencmiss import iron
+sys.path.append( os.sep.join((os.environ['OPENCMISS_INSTALL_DIR'], 'python')) )
+sys.path.append( os.sep.join((os.environ['OPENCMISS_INSTALL_DIR'],
+                             'x86_64_linux/gnu-C5.4-gnu-F5.4/mpich2_release/release/python/RELEASE')) )
+
+from opencmiss.iron import iron
 
 
 # Problem parameters

@@ -48,8 +48,14 @@
 ## \li <a href='http://autotest.bioeng.auckland.ac.nz/opencmiss-build/logs_x86_64-linux/FiniteElasticity/LargeUniAxialExtension/build-gnu'>Linux GNU Build</a>
 #<
 
+# Add Python bindings directory to PATH
+import sys, os
+sys.path.append( os.sep.join((os.environ['OPENCMISS_INSTALL_DIR'], 'python')) )
+sys.path.append( os.sep.join((os.environ['OPENCMISS_INSTALL_DIR'],
+                             'x86_64_linux/gnu-C5.4-gnu-F5.4/mpich2_release/release/python/RELEASE')) )
+
 from numpy import pi
-from opencmiss import iron
+from opencmiss.iron import iron
 
 import prolate_spheroid_geometry
 

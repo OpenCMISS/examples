@@ -12,7 +12,7 @@
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
 
-from opencmiss import iron
+from opencmiss.iron import iron
 import numpy
 import math
 

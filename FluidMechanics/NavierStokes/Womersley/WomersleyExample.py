@@ -49,7 +49,9 @@
 
 # Add Python bindings directory to PATH
 import sys, os
-sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
+sys.path.append( os.sep.join((os.environ['OPENCMISS_INSTALL_DIR'], 'python')) )
+sys.path.append( os.sep.join((os.environ['OPENCMISS_INSTALL_DIR'],
+                             'x86_64_linux/gnu-C5.4-gnu-F5.4/mpich2_release/release/python/RELEASE')) )
 
 import numpy
 import gzip
@@ -60,7 +62,7 @@ import contextlib
 import womersleyAnalytic
 
 # Intialise OpenCMISS
-from opencmiss import iron
+from opencmiss.iron import iron
 
 @contextlib.contextmanager
 def ChangeDirectory(path):

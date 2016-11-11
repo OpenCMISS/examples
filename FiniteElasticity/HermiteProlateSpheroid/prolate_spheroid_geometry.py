@@ -9,7 +9,7 @@ import itertools
 import numpy as np
 from numpy import pi, sin, cos, sinh, cosh
 
-from opencmiss import iron
+from opencmiss.iron import iron
 
 
 class ProlateSpheroid(object):

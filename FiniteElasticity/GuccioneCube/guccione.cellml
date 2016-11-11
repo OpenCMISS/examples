@@ -1,0 +1,290 @@
+<?xml version='1.0'?>
+<model cmeta:id="Guccione" name="Guccione" xmlns="http://www.cellml.org/cellml/1.0#" xmlns:cellml="http://www.cellml.org/cellml/1.0#" xmlns:cmeta="http://www.cellml.org/metadata/1.0#">
+    <!-- Global units -->
+    <units name="strain">
+        <unit units="dimensionless"/>
+    </units>
+    <units name="stress">
+        <unit units="dimensionless"/>
+    </units>
+    <component cmeta:id="interface" name="interface">
+        <!-- Variables we expect to be set/controlled externally -->
+        <variable initial_value="0" name="E11" private_interface="out" units="strain"/>
+        <variable initial_value="0" name="E22" private_interface="out" units="strain"/>
+        <variable initial_value="0" name="E33" private_interface="out" units="strain"/>
+        <variable initial_value="0" name="E12" private_interface="out" units="strain"/>
+        <variable initial_value="0" name="E13" private_interface="out" units="strain"/>
+        <variable initial_value="0" name="E23" private_interface="out" units="strain"/>
+        <variable initial_value="0.88" name="c1" private_interface="out" units="strain"/>
+        <variable initial_value="0" name="c2" private_interface="out" units="strain"/>
+        <variable initial_value="18.5" name="c3" private_interface="out" units="strain"/>
+        <variable initial_value="3.58" name="c4" private_interface="out" units="strain"/>
+        <variable initial_value="3.26" name="c5" private_interface="out" units="strain"/>
+        <!-- Variables we want to make available externally -->
+        <variable name="Tdev11" private_interface="in" public_interface="out" units="stress"/>
+        <variable name="Tdev22" private_interface="in" public_interface="out" units="stress"/>
+        <variable name="Tdev33" private_interface="in" public_interface="out" units="stress"/>
+        <variable name="Tdev12" private_interface="in" public_interface="out" units="stress"/>
+        <variable name="Tdev13" private_interface="in" public_interface="out" units="stress"/>
+        <variable name="Tdev23" private_interface="in" public_interface="out" units="stress"/>
+    </component>
+    <!--interface-->
+    <component cmeta:id="equations" name="equations">
+        <!-- Inputs -->
+        <variable name="E11" public_interface="in" units="strain"/>
+        <variable name="E22" public_interface="in" units="strain"/>
+        <variable name="E33" public_interface="in" units="strain"/>
+        <variable name="E12" public_interface="in" units="strain"/>
+        <variable name="E13" public_interface="in" units="strain"/>
+        <variable name="E23" public_interface="in" units="strain"/>
+        <variable name="c1" public_interface="in" units="strain"/>
+        <variable name="c2" public_interface="in" units="strain"/>
+        <variable name="c3" public_interface="in" units="strain"/>
+        <variable name="c4" public_interface="in" units="strain"/>
+        <variable name="c5" public_interface="in" units="strain"/>
+        <!-- Outputs computed here -->
+        <variable name="Tdev11" public_interface="out" units="stress"/>
+        <variable name="Tdev22" public_interface="out" units="stress"/>
+        <variable name="Tdev33" public_interface="out" units="stress"/>
+        <variable name="Tdev12" public_interface="out" units="stress"/>
+        <variable name="Tdev13" public_interface="out" units="stress"/>
+        <variable name="Tdev23" public_interface="out" units="stress"/>
+        <!-- Temporary variables -->
+        <variable name="Q" private_interface="none" public_interface="none" units="strain"/>
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply id="Q_calculation">
+                <eq/>
+                <ci>Q</ci>
+                <apply>
+                    <plus/>
+                    <apply>
+                        <times/>
+                        <cn cellml:units="strain">2</cn>
+                        <ci>c2</ci>
+                        <apply>
+                            <plus/>
+                            <ci>E11</ci>
+                            <ci>E22</ci>
+                            <ci>E33</ci>
+                        </apply>
+                    </apply>
+                    <apply>
+                        <times/>
+                        <ci>c3</ci>
+                        <apply>
+                            <power/>
+                            <ci>E11</ci>
+                            <cn cellml:units="dimensionless">2</cn>
+                        </apply>
+                    </apply>
+                    <apply>
+                        <times/>
+                        <ci>c4</ci>
+                        <apply>
+                            <plus/>
+                            <apply>
+                                <power/>
+                                <ci>E33</ci>
+                                <cn cellml:units="dimensionless">2</cn>
+                            </apply>
+                            <apply>
+                                <power/>
+                                <ci>E22</ci>
+                                <cn cellml:units="dimensionless">2</cn>
+                            </apply>
+                            <apply>
+                                <times/>
+                                <apply>
+                                    <power/>
+                                    <ci>E23</ci>
+                                    <cn cellml:units="dimensionless">2</cn>
+                                </apply>
+                                <cn cellml:units="strain">2</cn>
+                            </apply>
+                        </apply>
+                    </apply>
+                    <apply>
+                        <times/>
+                        <cn cellml:units="strain">2</cn>
+                        <ci>c5</ci>
+                        <apply>
+                            <plus/>
+                            <apply>
+                                <power/>
+                                <ci>E13</ci>
+                                <cn cellml:units="dimensionless">2</cn>
+                            </apply>
+                            <apply>
+                                <power/>
+                                <ci>E12</ci>
+                                <cn cellml:units="dimensionless">2</cn>
+                            </apply>
+                        </apply>
+                    </apply>
+                </apply>
+            </apply>
+            <apply id="Tdev11_calculation">
+                <eq/>
+                <ci>Tdev11</ci>
+                <apply>
+                    <times/>
+                    <ci>c1</ci>
+                    <apply>
+                        <exp/>
+                        <ci>Q</ci>
+                    </apply>
+                    <apply>
+                        <plus/>
+                        <ci>c2</ci>
+                        <apply>
+                            <times/>
+                            <ci>c3</ci>
+                            <ci>E11</ci>
+                        </apply>
+                    </apply>
+                </apply>
+            </apply>
+            <apply id="Tdev22_calculation">
+                <eq/>
+                <ci>Tdev22</ci>
+                <apply>
+                    <times/>
+                    <ci>c1</ci>
+                    <apply>
+                        <exp/>
+                        <ci>Q</ci>
+                    </apply>
+                    <apply>
+                        <plus/>
+                        <ci>c2</ci>
+                        <apply>
+                            <times/>
+                            <ci>c4</ci>
+                            <ci>E22</ci>
+                        </apply>
+                    </apply>
+                </apply>
+            </apply>
+            <apply id="Tdev33_calculation">
+                <eq/>
+                <ci>Tdev33</ci>
+                <apply>
+                    <times/>
+                    <ci>c1</ci>
+                    <apply>
+                        <exp/>
+                        <ci>Q</ci>
+                    </apply>
+                    <apply>
+                        <plus/>
+                        <ci>c2</ci>
+                        <apply>
+                            <times/>
+                            <ci>c4</ci>
+                            <ci>E33</ci>
+                        </apply>
+                    </apply>
+                </apply>
+            </apply>
+            <apply id="Tdev12_calculation">
+                <eq/>
+                <ci>Tdev12</ci>
+                <apply>
+                    <times/>
+                    <ci>c1</ci>
+                    <apply>
+                        <exp/>
+                        <ci>Q</ci>
+                    </apply>
+                    <ci>c5</ci>
+                    <ci>E12</ci>
+                </apply>
+            </apply>
+            <apply id="Tdev13_calculation">
+                <eq/>
+                <ci>Tdev13</ci>
+                <apply>
+                    <times/>
+                    <ci>c1</ci>
+                    <apply>
+                        <exp/>
+                        <ci>Q</ci>
+                    </apply>
+                    <ci>c5</ci>
+                    <ci>E13</ci>
+                </apply>
+            </apply>
+            <apply id="Tdev23_calculation">
+                <eq/>
+                <ci>Tdev23</ci>
+                <apply>
+                    <times/>
+                    <ci>c1</ci>
+                    <apply>
+                        <exp/>
+                        <ci>Q</ci>
+                    </apply>
+                    <ci>c4</ci>
+                    <ci>E23</ci>
+                </apply>
+            </apply>
+        </math>
+    </component>
+    <!--membrane-->
+    <connection>
+        <map_components component_1="interface" component_2="equations"/>
+        <map_variables variable_1="E11" variable_2="E11"/>
+        <map_variables variable_1="E22" variable_2="E22"/>
+        <map_variables variable_1="E33" variable_2="E33"/>
+        <map_variables variable_1="E12" variable_2="E12"/>
+        <map_variables variable_1="E13" variable_2="E13"/>
+        <map_variables variable_1="E23" variable_2="E23"/>
+        <map_variables variable_1="Tdev11" variable_2="Tdev11"/>
+        <map_variables variable_1="Tdev22" variable_2="Tdev22"/>
+        <map_variables variable_1="Tdev33" variable_2="Tdev33"/>
+        <map_variables variable_1="Tdev12" variable_2="Tdev12"/>
+        <map_variables variable_1="Tdev13" variable_2="Tdev13"/>
+        <map_variables variable_1="Tdev23" variable_2="Tdev23"/>
+        <map_variables variable_1="c1" variable_2="c1"/>
+        <map_variables variable_1="c2" variable_2="c2"/>
+        <map_variables variable_1="c3" variable_2="c3"/>
+        <map_variables variable_1="c4" variable_2="c4"/>
+        <map_variables variable_1="c5" variable_2="c5"/>
+    </connection>
+    <group>
+        <relationship_ref relationship="encapsulation"/>
+        <component_ref component="interface">
+            <component_ref component="equations"/>
+        </component_ref>
+    </group>
+    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+        <rdf:Description xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" rdf:about="">
+            <dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/" rdf:parseType="Resource" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                <vCard:N xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" rdf:parseType="Resource" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                    <vCard:Family xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">Rajgopal</vCard:Family>
+                    <vCard:Given xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">Vijayaraghavan</vCard:Given>
+                </vCard:N>
+                <vCard:ORG xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" rdf:parseType="Resource" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                    <vCard:Orgname xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">The University of Auckland</vCard:Orgname>
+                    <vCard:Orgunit xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#">Auckland Bioengineering Institute</vCard:Orgunit>
+                </vCard:ORG>
+            </dc:creator>
+            <dcterms:created xmlns:dcterms="http://purl.org/dc/terms/" rdf:parseType="Resource" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                <dcterms:W3CDTF xmlns:dcterms="http://purl.org/dc/terms/">2003-12-28</dcterms:W3CDTF>
+            </dcterms:created>
+        </rdf:Description>
+        <rdf:Description xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" rdf:about="">
+            <bqs:reference xmlns:bqs="http://www.cellml.org/bqs/1.0#" rdf:parseType="Resource" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                <dc:subject xmlns:dc="http://purl.org/dc/elements/1.1/" rdf:parseType="Resource" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                    <bqs:subject_type xmlns:bqs="http://www.cellml.org/bqs/1.0#">keyword</bqs:subject_type>
+                    <rdf:value xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                        <rdf:Bag xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                            <rdf:li xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">constitutive material law</rdf:li>
+                            <rdf:li xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">mechanical constitutive laws</rdf:li>
+                        </rdf:Bag>
+                    </rdf:value>
+                </dc:subject>
+            </bqs:reference>
+        </rdf:Description>
+    </rdf:RDF>
+</model>

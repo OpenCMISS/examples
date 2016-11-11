@@ -66,7 +66,6 @@ PROGRAM MONODOMAINEXAMPLE
 #include "mpif.h"
 #endif
 
-
   !Test program parameters
 
   REAL(CMISSRP), PARAMETER :: HEIGHT=1.0_CMISSRP
@@ -107,8 +106,11 @@ PROGRAM MONODOMAINEXAMPLE
   INTEGER(CMISSIntg) :: gNacomponent,stimcomponent,node_idx
 
   REAL(CMISSRP) :: X,Y,DISTANCE,gNa_VALUE
-  
-  INTEGER(CMISSIntg), PARAMETER :: NUMBER_OF_ELEMENTS=25
+ 
+  INTEGER(CMISSIntg) :: region_handle
+ 
+!mpch  INTEGER(CMISSIntg), PARAMETER :: NUMBER_OF_ELEMENTS=100
+  INTEGER(CMISSIntg) :: NUMBER_OF_ELEMENTS=25
   INTEGER(CMISSIntg) :: OUTPUT_FREQUENCY = 1
   REAL(CMISSRP), PARAMETER :: STIM_VALUE = 100.0_CMISSRP
   REAL(CMISSRP), PARAMETER :: STIM_STOP = 0.10_CMISSRP
@@ -148,9 +150,9 @@ PROGRAM MONODOMAINEXAMPLE
 
   ! process command line arguments before getting started.
   NUMBER_OF_ARGUMENTS = COMMAND_ARGUMENT_COUNT()
-  IF(NUMBER_OF_ARGUMENTS >= 3) THEN
+!Mpch  IF(NUMBER_OF_ARGUMENTS >= 3) THEN
+  IF(NUMBER_OF_ARGUMENTS == 5) THEN
     CALL GET_COMMAND_ARGUMENT(1,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
-    !IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 1.")
     READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*) PDE_TIME_STEP
     WRITE(*, '("PDE Step Size: ", E14.7)') PDE_TIME_STEP
     CALL GET_COMMAND_ARGUMENT(2,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
@@ -160,17 +162,22 @@ PROGRAM MONODOMAINEXAMPLE
     READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*) OUTPUT_FREQUENCY
     WRITE(*, '("Output Frequency: ", I10)') OUTPUT_FREQUENCY
     CALL GET_COMMAND_ARGUMENT(4,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
-    !IF(STATUS>0) CALL HANDLE_ERROR("Error for command argument 4.")
     CellmlFile = adjustl(COMMAND_ARGUMENT)
     WRITE(*, '("CellML File: ", A)') CellmlFile
     inquire(file=CellmlFile, exist=fileExist)
     if (.not. fileExist) then
-      write(*, '(">>ERROR: File does not exist")')
+     write(*, '(">>ERROR: File does not exist")')
       stop
     endif
+    CALL GET_COMMAND_ARGUMENT(5,COMMAND_ARGUMENT,ARGUMENT_LENGTH,STATUS)
+    READ(COMMAND_ARGUMENT(1:ARGUMENT_LENGTH),*) NUMBER_OF_ELEMENTS 
+    WRITE(*, '("Number of Elements: ", I5)') NUMBER_OF_ELEMENTS 
   ELSE
     !If there are not enough arguments die horribly
-    WRITE(*,'(">>USAGE: ",A)') "MonodomainExample <PDE step size> <stop time> <output frequency> <CellML Model URL>"
+    WRITE(*,*) " "
+!mpch    WRITE(*,'(">>USAGE: ",A)') "MonodomainExample <PDE step size> <stop time> <output frequency> <CellML Model URL>"
+    WRITE(*,'(">>USAGE: ",A)') "MonodomainExample <PDE step size> <stop time> <output frequency> <CellML Model URL> <# of elements>"
+    WRITE(*,*) " "
     STOP
   ENDIF
 

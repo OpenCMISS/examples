@@ -47,7 +47,13 @@
 ## constrained so that the end remains oriented in the y-z plane.
 #<
 
-from opencmiss import iron
+# Add Python bindings directory to PATH
+import sys, os
+sys.path.append( os.sep.join((os.environ['OPENCMISS_INSTALL_DIR'], 'python')) )
+sys.path.append( os.sep.join((os.environ['OPENCMISS_INSTALL_DIR'],
+                             'x86_64_linux/gnu-C5.4-gnu-F5.4/mpich2_release/release/python/RELEASE')) )
+
+from opencmiss.iron import iron
 
 # Problem parameters:
 density = 9.0e-4  # in g mm^-3

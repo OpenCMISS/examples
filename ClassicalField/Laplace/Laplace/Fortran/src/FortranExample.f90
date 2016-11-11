@@ -186,6 +186,16 @@ PROGRAM LAPLACEEXAMPLE
   !Get the computational nodes information
   CALL cmfe_ComputationalNumberOfNodesGet(NumberOfComputationalNodes,Err)
   CALL cmfe_ComputationalNodeNumberGet(ComputationalNodeNumber,Err)
+
+  !If MPI is being used, check that global number of elements is sufficient enough to run
+  IF ( NumberOfComputationalNodes>1 ) THEN
+     IF ( NUMBER_GLOBAL_X_ELEMENTS==1 ) THEN
+        NUMBER_GLOBAL_X_ELEMENTS = 3
+     ENDIF 
+ !    IF ( NUMBER_GLOBAL_Z_ELEMENTS==1 ) THEN
+ !       NUMBER_GLOBAL_Z_ELEMENTS = 3
+ !    ENDIF 
+  ENDIF
     
   !Start the creation of a new RC coordinate system
   CALL cmfe_CoordinateSystem_Initialise(CoordinateSystem,Err)

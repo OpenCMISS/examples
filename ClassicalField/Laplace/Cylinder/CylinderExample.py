@@ -50,18 +50,19 @@ import os
 from optparse import OptionParser
 
 # Add OpenCMISS python bindings directory to path so we can import it
-sys.path.append(os.sep.join((
-    os.environ['OPENCMISS_ROOT'], 'cm', 'bindings', 'python')))
-from opencmiss import iron
+sys.path.append(os.sep.join((os.environ['OPENCMISS_INSTALL_DIR'],
+                             'x86_64_linux/gnu-C5.4-gnu-F5.4/mpich_release/release',
+                             'python/RELEASE')))
+from opencmiss.iron import iron
 
 
 # Read in number of elements
 parser = OptionParser()
-parser.add_option("-r", "--r-elements", dest="r", type="int", default=2,
+parser.add_option("-r", "--r-elements", dest="r", type="int", default=4,
         help="Number of radial elements")
-parser.add_option("-c", "--c-elements", dest="c", type="int", default=16,
+parser.add_option("-c", "--c-elements", dest="c", type="int", default=32,
         help="Number of circumferential elements")
-parser.add_option("-z", "--z-elements", dest="z", type="int", default=2,
+parser.add_option("-z", "--z-elements", dest="z", type="int", default=4,
         help="Number of z elements")
 (opts, args) = parser.parse_args()
 if opts.r <= 0:

@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
 #DOC-START imports
+# Add Python bindings directory to PATH
 import sys, os, exfile
-# Make sure $OPENCMISS_ROOT/cm/bindings/python is first in our PYTHONPATH.
-sys.path.insert(1, os.path.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
+sys.path.append( os.sep.join((os.environ['OPENCMISS_INSTALL_DIR'], 'python')) )
+sys.path.append( os.sep.join((os.environ['OPENCMISS_INSTALL_DIR'],
+                             'x86_64_linux/gnu-C5.4-gnu-F5.4/mpich2_release/release/python/RELEASE')) )
 #DOC-END imports
 
 #DOC-START load exfile
@@ -18,7 +20,7 @@ exregion = exfile.Exregion("hetrogenouscylinder.exregion")
 numberOfXi = 3
 
 # Intialise OpenCMISS
-from opencmiss import iron
+from opencmiss.iron import iron
 
 # Set problem parameters
 #Use pressure to enforce incompressibililty constraint
