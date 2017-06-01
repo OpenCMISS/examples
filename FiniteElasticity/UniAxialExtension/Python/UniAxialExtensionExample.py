@@ -52,10 +52,8 @@
 # Add Python bindings directory to PATH
 import sys, os
 
-sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
-
 # Intialise OpenCMISS
-from opencmiss import iron
+from opencmiss.iron import iron
 
 # Set problem parameters
 height = 1.0
@@ -318,8 +316,8 @@ equationsSet.EquationsCreateFinish()
 # Define the problem
 problem = iron.Problem()
 problemSpecification = [iron.ProblemClasses.ELASTICITY,
-        iron.ProblemTypes.FINITE_ELASTICITY,
-        iron.ProblemSubtypes.NONE]
+                        iron.ProblemTypes.FINITE_ELASTICITY,
+                        iron.ProblemSubtypes.STATIC_FINITE_ELASTICITY]
 problem.CreateStart(problemUserNumber, problemSpecification)
 problem.CreateFinish()
 

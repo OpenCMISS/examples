@@ -6,7 +6,7 @@ import sys, os, math
 sys.path.insert(1, os.path.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
 
 # Intialise OpenCMISS
-from opencmiss import iron
+from opencmiss.iron import iron
 #DOC-END imports
 
 # Set problem parameters
@@ -25,10 +25,10 @@ conductivity = 0.1
 # Simulation parameters
 stimValue = 100.0
 stimStop = 0.1
-timeStop = 1.5
+timeStop = 4.0
 odeTimeStep = 0.00001
 pdeTimeStep = 0.001
-outputFrequency = 1
+outputFrequency = 10
 #DOC-END parameters
 
 #Setup field number handles

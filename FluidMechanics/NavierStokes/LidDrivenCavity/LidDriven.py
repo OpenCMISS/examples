@@ -55,7 +55,7 @@ import math
 import time
 
 # Intialise OpenCMISS
-from opencmiss import iron
+from opencmiss.iron import iron
 
 # Get the computational nodes information
 numberOfComputationalNodes = iron.ComputationalNumberOfNodesGet()

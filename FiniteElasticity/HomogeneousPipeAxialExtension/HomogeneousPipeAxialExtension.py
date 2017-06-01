@@ -18,7 +18,7 @@ exregion = exfile.Exregion("hetrogenouscylinder.exregion")
 numberOfXi = 3
 
 # Intialise OpenCMISS
-from opencmiss import iron
+from opencmiss.iron import iron
 
 # Set problem parameters
 #Use pressure to enforce incompressibililty constraint
@@ -401,7 +401,7 @@ equationsSet.EquationsCreateFinish()
 problem = iron.Problem()
 problemSpecification = [iron.ProblemClasses.ELASTICITY,
     iron.ProblemTypes.FINITE_ELASTICITY,
-    iron.ProblemSubtypes.FINITE_ELASTICITY_CELLML]
+    iron.ProblemSubtypes.FINITE_ELASTICITY_WITH_CELLML]
 problem.CreateStart(problemUserNumber, problemSpecification)
 problem.CreateFinish()
 #DOC-END define CellML finite elasticity problem
