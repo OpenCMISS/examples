@@ -48,7 +48,7 @@
 
 # Add Python bindings directory to PATH
 import sys, os
-sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
+#sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
 
 import exfile
 import numpy
@@ -57,7 +57,7 @@ import math
 import random
 
 # Intialise OpenCMISS
-from opencmiss import iron
+from opencmiss.iron import iron
 
 def writeExdataFile(filename,dataPointLocations,offset):
     "Writes data points to an exdata file"
@@ -377,7 +377,8 @@ equationsSetField = iron.Field()
 equationsSet = iron.EquationsSet()
 equationsSetSpecification = [iron.EquationsSetClasses.FITTING,
                              iron.EquationsSetTypes.DATA_FITTING_EQUATION,
-                             iron.EquationsSetSubtypes.DATA_POINT_VECTOR_STATIC_FITTING]
+                             iron.EquationsSetSubtypes.DATA_POINT_VECTOR_STATIC_FITTING,
+                             iron.EquationsSetFittingSmoothingTypes.SOBOLEV_VALUE]
 equationsSet.CreateStart(equationsSetUserNumber,region,geometricField,
         equationsSetSpecification, equationsSetFieldUserNumber, equationsSetField)
 equationsSet.CreateFinish()

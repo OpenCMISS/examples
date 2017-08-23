@@ -54,9 +54,9 @@ import sys, os
 sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
 
 # Intialise OpenCMISS-Iron
-from opencmiss import iron
+from opencmiss.iron import iron
 
-parameters.parse()
+#parameters.parse()
 
 # Set problem parameters
 height = 1.0
@@ -79,7 +79,7 @@ numberGlobalXElements = 5
 numberGlobalYElements = 5
 numberGlobalZElements = 5
 
-iron.DiagnosticsSetOn(iron.DiagnosticTypes.IN,[1,2,3,4,5],"Diagnostics",["DOMAIN_MAPPINGS_LOCAL_FROM_GLOBAL_CALCULATE"])
+iron.DiagnosticsSetOn(iron.DiagnosticTypes.ALL,[1,2,3,4,5],"Diagnostics",["DOMAIN_MAPPINGS_LOCAL_FROM_GLOBAL_CALCULATE"])
 
 # Get the computational nodes information
 numberOfComputationalNodes = iron.ComputationalNumberOfNodesGet()

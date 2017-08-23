@@ -333,7 +333,7 @@ PROGRAM FortranExample
   LinearSolverMovingMesh_OutputType=CMFE_SOLVER_NO_OUTPUT
   DynamicSolver_OutputType=CMFE_SOLVER_NO_OUTPUT
   LinearSolver_OutputType=CMFE_SOLVER_NO_OUTPUT
-  NonlinearSolver_OutputType=CMFE_SOLVER_NO_OUTPUT
+  NonlinearSolver_OutputType=CMFE_SOLVER_PROGRESS_OUTPUT
   !(NoOutput/TimingOutput/MatrixOutput/ElementOutput)
   EquationsNavierStokesOutput=CMFE_EQUATIONS_NO_OUTPUT
   !Set result output parameter
@@ -2166,8 +2166,8 @@ PROGRAM FortranExample
   !Finialise CMISS
   CALL cmfe_Finalise(Err)
 
-  e=etime(t)/60.0_CMISSRP
-  PRINT *, "Program successfully completed in ",e," minutes."
+  !e=etime(t)/60.0_CMISSRP
+  !PRINT *, "Program successfully completed in ",e," minutes."
   
   STOP
   

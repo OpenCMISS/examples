@@ -145,7 +145,7 @@ InterpolationTypeInterface = InterpolationTypeDisplacement
 # Import the libraries (OpenCMISS,python,numpy,scipy)
 import numpy,csv,time,sys,os,pdb
 sys.path.append(os.sep.join((os.environ['OPENCMISS_ROOT'],'cm','bindings','python')))
-from opencmiss import iron
+from opencmiss.iron import iron
 
 # Diagnostics
 #iron.DiagnosticsSetOn(iron.DiagnosticTypes.ALL,[1,2,3,4,5],"Diagnostics",[""])
@@ -1753,6 +1753,10 @@ InterfaceCondition.EquationsCreateStart(InterfaceEquations)
 InterfaceEquations.sparsityType = iron.EquationsSparsityTypes.SPARSE
 # Set the interface equations output
 InterfaceEquations.outputType = iron.EquationsOutputTypes.NONE
+# Set the time dependence of the interface matrix to determine the interface matrix coefficient in the solver matrix
+# (basiy position in big coupled matrix system)
+InterfaceEquations.MatrixTimeDependenceTypeSet(SolidEquationsSetIndex,True,[iron.InterfaceMatricesTimeDependenceTypes.STATIC,iron.InterfaceMatricesTimeDependenceTypes.FIRST_ORDER_DYNAMIC])
+InterfaceEquations.MatrixTimeDependenceTypeSet(FluidEquationsSetIndex,True,[iron.InterfaceMatricesTimeDependenceTypes.STATIC,iron.InterfaceMatricesTimeDependenceTypes.STATIC])
 # Finish creating the interface equations
 InterfaceCondition.EquationsCreateFinish()
 
@@ -1860,10 +1864,6 @@ CoupledSolverEquations.sparsityType = iron.SolverEquationsSparsityTypes.SPARSE
 CoupledSolverEquationsSet = CoupledSolverEquations.EquationsSetAdd(SolidEquationsSet)
 CoupledSolverEquationsSet = CoupledSolverEquations.EquationsSetAdd(FluidEquationsSet)
 CoupledSolverEquationsSet = CoupledSolverEquations.InterfaceConditionAdd(InterfaceCondition)
-# Set the time dependence of the interface matrix to determine the interface matrix coefficient in the solver matrix
-# (basiy position in big coupled matrix system)
-InterfaceMatrices.TimeDependenceTypeSet(SolidEquationsSetIndex,True,[CMISS_INTERFACE_MATRIX_STATIC,CMISS_INTERFACE_MATRIX_FIRST_ORDER_DYNAMIC])
-InterfaceMatrices.TimeDependenceTypeSet(FluidEquationsSetIndex,True,[CMISS_INTERFACE_MATRIX_STATIC,CMISS_INTERFACE_MATRIX_STATIC])
 # Finish the creation of the problem solver equations
 CoupledProblem.SolverEquationsCreateFinish()
     
